@@ -1,0 +1,11 @@
+# dependencies
+/node_modules
+
+# production
+/dist
+/tenacity-oms
+
+# idea
+/.idea
+
+yarn-error.log
