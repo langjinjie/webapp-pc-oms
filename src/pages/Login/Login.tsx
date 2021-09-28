@@ -31,9 +31,6 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className={style.loginBg}>
-      <h3 className={style.header}>
-        <div className={style.brand} />
-      </h3>
       <div className={style.loginWrap}>
         <h3 className={style.title}>账号登录</h3>
         <Form onFinish={onSubmit}>
@@ -47,7 +44,7 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
             />
           </Item>
           <Item>
-            <Button type="primary" shape="round" htmlType="submit">
+            <Button type="primary" htmlType="submit">
               登录
             </Button>
           </Item>
@@ -56,7 +53,8 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
       <footer className={style.footer}>
         <div className={style.copyright}>
           本服务由年高提供。年高，面向金融领域提供产业应用方案。
-          <br /> Copyright @ 2021 Niangao All Rights Reserved
+          <br />
+          Copyright @ 2021 Niangao All Rights Reserved
         </div>
       </footer>
     </div>
