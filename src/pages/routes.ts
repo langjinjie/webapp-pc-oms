@@ -19,9 +19,17 @@ export const routes: RouteProps[] = [
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
   },
+  /**
+   * 机构管理->账号管理
+   */
   {
     path: '/orgManage',
-    component: lazy(() => import('src/pages/OrgManage/OrgManage'))
+    component: lazy(() => import('src/pages/OrgManage/AccountManage/CorpList/CorpList'))
+  },
+  // 员工列表
+  {
+    path: '/orgManage/detail',
+    component: lazy(() => import('src/pages/OrgManage/AccountManage/StaffList/StaffList'))
   }
 ];
 

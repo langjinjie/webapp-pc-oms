@@ -42,6 +42,8 @@ const Layout: React.FC<RouteComponentProps> = ({ history }) => {
     const currentMenuIndex = menus.findIndex((menu: Menu) =>
       menu.children?.some((subMenu: Menu) => subMenu.path.includes(currentMenu))
     );
+    console.log(currentMenu, currentMenuIndex);
+
     if (currentMenuIndex > -1) {
       const subMenus = menus[currentMenuIndex].children || [];
       setMenuIndex(currentMenuIndex);
@@ -62,6 +64,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     const token = getCookie('pmsuid');
+    initMenu();
     if (token) {
       initMenu();
       getUserInfo();
