@@ -21,11 +21,7 @@ export const routes: RouteProps[] = [
   },
   {
     path: '/orgManage',
-    component: lazy(() => import('src/pages/OrgManage/Index'))
-  },
-  {
-    path: '/orgManage/detail',
-    component: lazy(() => import('src/pages/OrgManage/AccountManage/AccountManage'))
+    component: lazy(() => import('src/pages/OrgManage/OrgManage'))
   }
 ];
 

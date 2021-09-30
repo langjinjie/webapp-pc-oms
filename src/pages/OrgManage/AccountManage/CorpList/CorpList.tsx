@@ -5,7 +5,7 @@ import { requestGetCorpList } from 'src/apis/OrgManage';
 import { ICorpList } from 'src/utils/interface';
 import style from './style.module.less';
 
-const AccountManage: React.FC = () => {
+const CorpList: React.FC = () => {
   const [corpList, setCorpList] = useState<ICorpList[]>();
   const [isLoading, setIsloading] = useState<boolean>(false);
 
@@ -56,4 +56,4 @@ const AccountManage: React.FC = () => {
     </div>
   );
 };
-export default AccountManage;
+export default CorpList;
