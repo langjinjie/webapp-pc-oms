@@ -139,3 +139,8 @@ export const requestGetStaffList: HttpFC = (param) => {
   });
   return http.post('/tenacity-admin/api/staff/list', param);
 };
+
+// 员工激活/停用
+export const requestSetStaffOpstatus: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/staff/opstatus', param);
+};
