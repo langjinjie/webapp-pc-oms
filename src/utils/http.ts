@@ -5,7 +5,6 @@
 
 import Axios, { AxiosInstance, Method, AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios';
 import { message } from 'antd';
-import wxLoginAuth from './wxLoginAuth';
 
 type HttpMethod = (...args: any) => Promise<any>;
 
@@ -53,11 +52,13 @@ const handleError = (err: AxiosError) => {
  */
 const handleRes = (res: AxiosResponse, resolve: Function) => {
   if (res.status === 200) {
-    if (res.data.code === 0) {
-      resolve(res.data.data || typeof res.data.retdata === 'boolean' ? res.data.data : {});
+    if (res.data.ret === 0) {
+      resolve(res.data.retdata || typeof res.data.retdata === 'boolean' ? res.data.retdata : {});
     } else {
-      if (res.data.code === 1000001) {
-        wxLoginAuth();
+      if (res.data.ret === 1000001) {
+        const { origin, href } = window.location;
+        const url: string = origin + '/tenacity-oms/login?redirectUrl=' + encodeURIComponent(href);
+        window.location.replace(url);
       } else {
         const { errorMsg } = res.data;
         message.error(errorMsg);
@@ -112,7 +113,7 @@ const deleteMethod: any = (url: string, data: any, config?: AxiosRequestConfig) 
 type RequestMethod = 'post' | 'put';
 
 const unGet = (type: RequestMethod) => {
-  return (url: string, data: any, config?: AxiosRequestConfig) => {
+  return (url: string, data: any = {}, config?: AxiosRequestConfig) => {
     return new Promise((resolve) => {
       instance[type](url, data, {
         ...config
@@ -137,12 +138,8 @@ const request: HttpMethod = (url: string, params?: any, type: Method = 'get', co
      */
     const handleRes = (res: AxiosResponse) => {
       if (res.status === 200) {
-        // @ts-ignore
-        if (res.config.responseType === 'bold') {
-          return resolve(res.data);
-        }
-        if (res.data.code === 0) {
-          resolve(res.data.data || typeof res.data.retdata === 'boolean' ? res.data.data : {});
+        if (res.data.ret === 0) {
+          resolve(res.data.retdata || typeof res.data.retdata === 'boolean' ? res.data.retdata : {});
         } else {
           const { errorMsg } = res.data;
           message.error(errorMsg);

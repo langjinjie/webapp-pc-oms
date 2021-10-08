@@ -11,19 +11,34 @@ import http, { HttpFunction, Void2Promise } from 'src/utils/http';
  * @param param
  */
 export const login: HttpFunction = (param: Object) => {
-  return http.post('/message_business/index/user_login', param);
+  return http.post('/tenacity-admin/api/user/login', param);
 };
 
 /**
  * 退出登录
  */
 export const logout: Void2Promise = () => {
-  return http.get('/message_business/index/logout');
+  return http.post('/tenacity-admin/api/user/logout');
 };
 
 /**
  * 查询用户信息
  */
-export const queryUserInfo: () => Promise<any> = () => {
-  return http.get('/message_business/api/system_auth/privileges');
+export const queryUserInfo: Void2Promise = () => {
+  return http.post('/tenacity-admin/api/user/info');
+};
+
+/**
+ * 查询机构列表
+ */
+export const queryInstList: Void2Promise = () => {
+  return http.post('/tenacity-admin/api/corp/list');
+};
+
+/**
+ * 选择机构
+ * @param param
+ */
+export const chooseInst: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/user/selectcorp', param);
 };
