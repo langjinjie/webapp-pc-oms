@@ -13,15 +13,15 @@ const CorpList: React.FC = () => {
 
   // 获取企业列表
   const getCorpList = async () => {
-    const res = await requestGetCorpList({});
-    setCorpList(res.list);
+    const res = await requestGetCorpList();
+    res && setCorpList(res);
     res && setIsloading(false);
   };
 
   // 表格标题
   const columns = [
     { title: '企业名称', dataIndex: 'corpName' },
-    { title: '企业ID', dataIndex: 'coprId' },
+    { title: '企业ID', dataIndex: 'corpId' },
     {
       title: '编辑',
       render: (row: ICorpList) => (
@@ -51,7 +51,7 @@ const CorpList: React.FC = () => {
         className={style.tableWrap}
         dataSource={corpList}
         pagination={false}
-        rowKey={'coprId'}
+        rowKey={'corpId'}
       />
     </div>
   );
