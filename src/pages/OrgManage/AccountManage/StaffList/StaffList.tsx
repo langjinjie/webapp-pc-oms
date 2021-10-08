@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
 import { useHistory } from 'react-router';
-import { Button, Card, Form, Input, Select, Space, Table } from 'antd';
+import { Button, Card, Form, Input, Select, Space, Table, Modal } from 'antd';
 import { requestGetStaffList } from 'src/apis/OrgManage';
 import { IStaffList } from 'src/utils/interface';
+import { Icon } from 'src/components/index';
 import style from './style.module.less';
 
 const StaffList: React.FC = () => {
   const [staffList, setStaffList] = useState<IStaffList[]>();
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const history = useHistory();
 
   const formRef: MutableRefObject<any> = useRef();
@@ -16,7 +19,10 @@ const StaffList: React.FC = () => {
   const getStaffList = async () => {
     const coprId = history.location.state;
     const res = await requestGetStaffList({ coprId });
-    res.list && setStaffList(res.list);
+    if (res.list) {
+      setStaffList(res.list);
+      setIsLoading(false);
+    }
   };
 
   const onSelectChange = (newSelectedRowKeys: any[]) => {
@@ -82,11 +88,31 @@ const StaffList: React.FC = () => {
   const onFinish = (values: any) => {
     console.log(values);
   };
+
+  // 手动同步通讯录
+  const syncAccount = () => {
+    setIsModalVisible(true);
+  };
+
   useEffect(() => {
     getStaffList();
   }, []);
   return (
     <>
+      <Modal
+        title="容量通知"
+        visible={isModalVisible}
+        centered
+        onCancel={() => setIsModalVisible(false)}
+        closeIcon={<span />}
+      >
+        <div className={style.modalContent}>
+          <p className={style.title}>
+            <span className={style.icon}></span>账号告罄
+          </p>
+          <p className={style.content}>当前启用账号已超出系统设定账号，请联系管理员修改后台账号容量</p>
+        </div>
+      </Modal>
       <Card bordered={false}>
         <Form name="base" layout="inline" ref={formRef} onFinish={onFinish}>
           <Space className={style.antSpace}>
@@ -131,7 +157,21 @@ const StaffList: React.FC = () => {
             </Form.Item>
           </Space>
         </Form>
-        <Table rowKey="staffId" rowSelection={rowSelection} columns={columns} dataSource={staffList}></Table>
+        <div className={style.accountSituation}>
+          <span className={style.text}>*机构使用情况: </span>
+          <span>{999}/1000</span>
+          <Icon className={style.icon} name="shuaxin" />
+          <span className={style.refresh} onClick={syncAccount}>
+            手动同步通讯录
+          </span>
+        </div>
+        <Table
+          rowKey="staffId"
+          rowSelection={rowSelection}
+          columns={columns}
+          dataSource={staffList}
+          loading={isLoading}
+        ></Table>
       </Card>
     </>
   );

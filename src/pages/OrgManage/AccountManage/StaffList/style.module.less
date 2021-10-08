@@ -1,3 +1,31 @@
+// Modal内容样式
+.modalContent {
+  .title {
+    .icon {
+      display: inline-block;
+      margin-right: 3px;
+      width: 16px;
+      height: 22px;
+      background: url('/src/assets/images/icon_warning.png') no-repeat;
+      background-position: center center;
+      vertical-align: top;
+    }
+    font-size: 16px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #111111;
+    line-height: 22px;
+    text-align: center;
+  }
+  .content {
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #7e8185;
+    line-height: 20px;
+  }
+}
+
 // Form 的样式
 .antSpace {
   width: 100%;
@@ -7,6 +35,34 @@
   }
   .btn {
     border-radius: 16px;
+  }
+}
+
+// 账号使用情况样式
+.accountSituation {
+  margin: -10px 0 24px;
+  font-size: 14px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  line-height: 20px;
+  & > span {
+    vertical-align: middle;
+  }
+  .text {
+    color: #7e8185;
+  }
+  .icon {
+    height: 11px;
+    margin: 0 5px 0 30px;
+    color: #318cf5;
+  }
+  .refresh {
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #318cf5;
+    line-height: 20px;
+    cursor: pointer;
   }
 }
 
@@ -20,10 +76,29 @@
   cursor: pointer;
 }
 
-// :global{
-//   .ant-checkbox-disabled{
-//     input{
-
-//     }
-//   }
-// }
+// 修改默认样式
+:global {
+  .ant-modal-content {
+    border-radius: 8px;
+    .ant-modal-header {
+      border-radius: 8px 8px 0 0;
+    }
+    .ant-modal-footer {
+      button {
+        border-radius: 18px;
+      }
+    }
+  }
+  .ant-modal-title {
+    font-size: 16px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: #111111;
+    line-height: 22px;
+  }
+  .ant-modal-close-x {
+    background: url('/src/assets/images/icon_modal_close.png') no-repeat;
+    background-size: 16px 16px;
+    background-position: center center;
+  }
+}
