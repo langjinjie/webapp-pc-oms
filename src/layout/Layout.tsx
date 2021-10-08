@@ -61,7 +61,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   useEffect(() => {
-    const token = getCookie('pmsuid');
+    const token = getCookie('b2632ff42e4a58b67f37c8c1f322b213');
     if (token) {
       initMenu();
       getUserInfo();

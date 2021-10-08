@@ -1,5 +1,5 @@
 export interface InstItem {
-  id: string;
-  name: string;
+  corpId: string;
+  corpName: string;
   logo: string;
 }

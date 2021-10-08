@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Form, Input, Button } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { getQueryParam } from 'lester-tools';
-import { SHA256 } from 'crypto-js';
+import md5 from 'js-md5';
 import { Context } from 'src/store';
 import { login, queryUserInfo } from 'src/apis';
 import style from './style.module.less';
@@ -16,13 +16,13 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
 
   const onSubmit = async ({ userName, password }: any) => {
     // @ts-ignore
-    const res = await login({ userName: window.btoa(userName), password: window.btoa(SHA256(password)) });
+    const res = await login({ userName, password: md5(password).slice(8, 24) });
     if (res) {
       const redirectUrl: string = getQueryParam('redirectUrl');
       if (redirectUrl) {
         window.location.replace(redirectUrl);
       } else {
-        history.push('/index');
+        history.push('/chooseInst');
         const resInfo: any = (await queryUserInfo()) || {};
         setUserInfo(resInfo);
       }
