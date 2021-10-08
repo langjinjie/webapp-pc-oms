@@ -6,7 +6,7 @@ export interface InstItem {
 
 // 机构列表
 export interface ICorpList {
-  coprId: string;
+  corpId: string;
   corpName: string;
   logo: string;
 }
@@ -15,7 +15,7 @@ export interface ICorpList {
 export interface IStaffList {
   staffId: string;
   userId: string;
-  coprId: string;
+  corpId: string;
   staffName: string;
   mangerName: string;
   serviceType: string;
