@@ -129,8 +129,8 @@ const StaffList: React.FC = () => {
     { value: '1', label: '离职' }
   ];
   const accountStatusList = [
-    { value: '1', label: '已激活' },
-    { value: '2', label: '已禁用' },
+    { value: '1', label: '在用' },
+    { value: '2', label: '停用' },
     { value: '4', label: '未激活' }
   ];
 
