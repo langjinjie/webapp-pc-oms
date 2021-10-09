@@ -162,6 +162,7 @@ const StaffList: React.FC = () => {
   // 批量激活/停用
   const staffPpstatus = (opType: number) => {
     return async () => {
+      if (!selectedRowKeys.length) return;
       const { corpId } = staffList![0];
       const params = {
         opType,
@@ -273,8 +274,12 @@ const StaffList: React.FC = () => {
         />
 
         <div className={style.btn}>
-          <Button onClick={staffPpstatus(0)}>批量停用</Button>
-          <Button onClick={staffPpstatus(1)}>批量激活</Button>
+          <Button disabled={!selectedRowKeys.length} onClick={staffPpstatus(0)}>
+            批量停用
+          </Button>
+          <Button disabled={!selectedRowKeys.length} onClick={staffPpstatus(1)}>
+            批量激活
+          </Button>
         </div>
       </Card>
     </>
