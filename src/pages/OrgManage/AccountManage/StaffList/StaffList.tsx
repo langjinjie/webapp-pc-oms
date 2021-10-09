@@ -266,8 +266,8 @@ const StaffList: React.FC = () => {
             total,
             current,
             showQuickJumper: true,
-            onChange: async (value) => {
-              await getStaffList(value);
+            onChange (value: number) {
+              getStaffList(value);
               setCurrent(value);
             }
           }}
