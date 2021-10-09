@@ -235,10 +235,10 @@ const StaffList: React.FC = () => {
             </Form.Item>
             <Form.Item>
               <Space size="small">
-                <Button className={style.btn} type="primary" htmlType="submit" onClick={onFinish}>
+                <Button className={style.searchBtn} type="primary" htmlType="submit" onClick={onFinish}>
                   查询
                 </Button>
-                <Button className={style.btn} htmlType="button" onClick={onReset}>
+                <Button className={style.resetBtn} htmlType="button" onClick={onReset}>
                   重置
                 </Button>
               </Space>
@@ -273,7 +273,7 @@ const StaffList: React.FC = () => {
           }}
         />
 
-        <div className={style.btn}>
+        <div className={style.btnWrap}>
           <Button disabled={!selectedRowKeys.length} onClick={staffPpstatus(0)}>
             批量停用
           </Button>
