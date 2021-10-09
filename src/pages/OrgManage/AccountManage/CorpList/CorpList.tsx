@@ -45,7 +45,7 @@ const CorpList: React.FC = () => {
   return (
     <div>
       <Table
-        bordered
+        // bordered
         loading={isLoading}
         columns={columns}
         className={style.tableWrap}
