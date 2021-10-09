@@ -66,18 +66,45 @@
   }
 }
 
+// 底部按钮样式
+.btn {
+  margin-top: -48px;
+  padding-left: 32px;
+  button {
+    margin-right: 20px;
+    width: 90px;
+    height: 32px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #318cf5;
+    span {
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #318cf5;
+      line-height: 20px;
+    }
+  }
+}
+
 // Table 的样式
 .edit {
+  display: inline-block;
+  width: 100%;
   font-size: 14px;
   font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 400;
   color: #318cf5;
   line-height: 20px;
   cursor: pointer;
+  &.disabled {
+    cursor: not-allowed;
+  }
 }
 
 // 修改默认样式
 :global {
+  // modal框
   .ant-modal-content {
     border-radius: 8px;
     .ant-modal-header {
@@ -100,5 +127,33 @@
     background: url('/src/assets/images/icon_modal_close.png') no-repeat;
     background-size: 16px 16px;
     background-position: center center;
+  }
+
+  // Table组件
+
+  .ant-table-pagination {
+    .ant-pagination-item {
+      border-radius: 8px;
+    }
+    .ant-pagination-item-link {
+      border-radius: 8px;
+    }
+    .ant-pagination-options {
+      input {
+        border-radius: 8px;
+      }
+    }
+  }
+  .ant-checkbox-disabled > .ant-checkbox-inner::after {
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background-color: #cccdd0;
+    border: 0;
+    -webkit-transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    content: ' ';
   }
 }

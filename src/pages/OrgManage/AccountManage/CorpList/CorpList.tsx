@@ -27,7 +27,7 @@ const CorpList: React.FC = () => {
       render: (row: ICorpList) => (
         <span
           onClick={() => {
-            history.push('/orgManage/detail', { coprId: row.coprId });
+            history.push('/orgManage/detail', { corpId: row.corpId });
             console.log(row);
           }}
           className={style.detail}
