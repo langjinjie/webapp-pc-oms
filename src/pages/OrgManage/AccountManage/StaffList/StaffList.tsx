@@ -47,12 +47,14 @@ const StaffList: React.FC = () => {
         const currentStaff = staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId);
         setDisabledColumnType(currentStaff?.accountStatus === '1' ? '4' : '1');
       } else {
-        // false 为全部取消勾选
-        setDisabledColumnType('2');
+        // false 为全部取消勾选,需要判断账号状态的查询条件
+        const { accountStatus } = form.getFieldsValue();
+        setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
       }
     } else {
       // false 为首次勾选
       if (newSelectedRowKeys.length > 1) {
+        // true 全选
         setDisabledColumnType(disabledColumnType === '2' ? '4' : disabledColumnType);
         newSelectedRowKeys.forEach((item) => {
           const currentStaff = staffList?.find((staffItem) => item === staffItem.staffId);
@@ -64,6 +66,7 @@ const StaffList: React.FC = () => {
           }
         });
       } else {
+        // false 为单选
         filterSelectedRowKeys = [...(newSelectedRowKeys as string[])];
         // 找出选中的员工的账号状态
         const currentStaff = staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId);
@@ -85,7 +88,9 @@ const StaffList: React.FC = () => {
         key: 'clear',
         text: '取消全选',
         onSelect () {
-          setDisabledColumnType('2');
+          // false 为全部取消勾选,需要判断账号状态的查询条件
+          const { accountStatus } = form.getFieldsValue();
+          setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
           setSelectedRowKeys([]);
         }
       },
@@ -160,13 +165,12 @@ const StaffList: React.FC = () => {
               const { corpId, staffId, accountStatus } = row;
               if (accountStatus === '2') return;
               // 判断是否超过最大
-              if (usedCount >= licenseCount) return setIsModalVisible(true);
+              if (usedCount >= 50) return setIsModalVisible(true);
               const params = {
                 opType: accountStatus !== '1' ? 1 : 0,
                 corpId,
                 userIds: [staffId]
               };
-              console.log(params);
               await requestSetStaffOpstatus(params);
               getStaffList(current, form.getFieldsValue());
             }}
@@ -197,7 +201,6 @@ const StaffList: React.FC = () => {
   const onFinish = async () => {
     setSelectedRowKeys([]);
     const { accountStatus } = form.getFieldsValue();
-    console.log(accountStatus);
     setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
     setStaffList([]);
     await getStaffList(1, form.getFieldsValue());
@@ -205,12 +208,12 @@ const StaffList: React.FC = () => {
   };
 
   // 重置
-  const onReset = () => {
-    setCurrent(1);
+  const onReset = async () => {
     setSelectedRowKeys([]);
     setDisabledColumnType('2');
     form.resetFields();
-    getStaffList(1);
+    await getStaffList(1);
+    setCurrent(1);
   };
 
   // 手动同步通讯录
@@ -231,7 +234,7 @@ const StaffList: React.FC = () => {
   // 批量激活/停用
   const staffPpstatus = (opType: number) => {
     return async () => {
-      if (!selectedRowKeys.length) return;
+      if (usedCount + selectedRowKeys.length >= 50) return setIsModalVisible(true);
       const { corpId } = staffList![0];
       const params = {
         opType,
@@ -254,7 +257,11 @@ const StaffList: React.FC = () => {
         closeIcon={<span />}
         visible={isModalVisible}
         centered
-        onCancel={() => setIsModalVisible(false)}
+        onCancel={() => {
+          setIsModalVisible(false);
+          setSelectedRowKeys([]);
+          setDisabledColumnType('2');
+        }}
         onOk={() => setIsModalVisible(false)}
       >
         <div className={style.modalContent}>
@@ -268,10 +275,10 @@ const StaffList: React.FC = () => {
         <Form name="base" layout="inline" form={form}>
           <Space className={style.antSpace}>
             <Form.Item name="staffName" label="员工姓名">
-              <Input placeholder="待选择" className={style.inputBox} allowClear />
+              <Input placeholder="待输入" className={style.inputBox} allowClear />
             </Form.Item>
             <Form.Item name="mangerName" label="经理姓名">
-              <Input placeholder="待选择" className={style.inputBox} allowClear />
+              <Input placeholder="待输入" className={style.inputBox} allowClear />
             </Form.Item>
           </Space>
           <Space className={style.antSpace}>
