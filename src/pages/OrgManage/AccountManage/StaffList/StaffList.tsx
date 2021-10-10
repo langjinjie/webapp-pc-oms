@@ -18,6 +18,7 @@ const StaffList: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [disabledColumnType, setDisabledColumnType] = useState<string>('2');
 
   const history = useHistory();
 
@@ -35,15 +36,62 @@ const StaffList: React.FC = () => {
     setIsLoading(false);
   };
 
-  const onSelectChange = (newSelectedRowKeys: any[]) => {
-    setSelectedRowKeys(newSelectedRowKeys);
+  const onSelectChange = (newSelectedRowKeys: unknown[]) => {
+    let filterSelectedRowKeys: string[] = [];
+    if (selectedRowKeys.length) {
+      // 判断是否处于首次勾选 true 为不是首次勾选
+      if (newSelectedRowKeys.length) {
+        // true继续勾选
+        filterSelectedRowKeys = [...(newSelectedRowKeys as string[])];
+        // 找出首次选中的员工的账号状态,已确认后续可选中的账号的状态
+        const currentStaff = staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId);
+        setDisabledColumnType(currentStaff?.accountStatus === '1' ? '4' : '1');
+      } else {
+        // false 为全部取消勾选
+        setDisabledColumnType('2');
+      }
+    } else {
+      // false 为首次勾选
+      if (newSelectedRowKeys.length > 1) {
+        console.log('首次勾选');
+        setDisabledColumnType(disabledColumnType === '2' ? '4' : disabledColumnType);
+        newSelectedRowKeys.forEach((item) => {
+          const currentStaff = staffList?.find((staffItem) => item === staffItem.staffId);
+          // 判断该账号是否处于在用的状态
+          if (
+            currentStaff?.accountStatus === (disabledColumnType === '2' ? '1' : disabledColumnType === '4' ? '1' : '4')
+          ) { return filterSelectedRowKeys.push(item as string); }
+        });
+      } else {
+        filterSelectedRowKeys = [...(newSelectedRowKeys as string[])];
+        // 找出选中的员工的账号状态
+        const currentStaff = staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId);
+        setDisabledColumnType(currentStaff?.accountStatus === '1' ? '4' : '1');
+      }
+    }
+
+    setSelectedRowKeys(filterSelectedRowKeys as string[]);
   };
 
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
-    getCheckboxProps: (record: IStaffList) => ({ disabled: record.accountStatus === '2' }),
-    selections: []
+    getCheckboxProps: (record: IStaffList) => ({
+      disabled: record.accountStatus === '2' || record.accountStatus === disabledColumnType
+    }),
+    selections: [
+      Table.SELECTION_NONE,
+      {
+        key: 'odd',
+        text: '选择在用的员工',
+        onSelect (changableRowKeys: unknown[]) {
+          console.log('xixixi');
+
+          console.log(changableRowKeys);
+          // 过滤出来只有员工状态为
+        }
+      }
+    ]
   };
 
   // 定义columns
@@ -136,6 +184,10 @@ const StaffList: React.FC = () => {
 
   // 查询
   const onFinish = async () => {
+    setSelectedRowKeys([]);
+    const { accountStatus } = form.getFieldsValue();
+    console.log(accountStatus);
+    setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
     setStaffList([]);
     await getStaffList(1, form.getFieldsValue());
     setCurrent(1);
@@ -143,12 +195,16 @@ const StaffList: React.FC = () => {
 
   // 重置
   const onReset = () => {
+    setSelectedRowKeys([]);
+    setDisabledColumnType('2');
     form.resetFields();
     getStaffList();
   };
 
   // 手动同步通讯录
   const syncAccount = async () => {
+    setSelectedRowKeys([]);
+    setDisabledColumnType('2');
     setIsLoading(true);
     const res = await requestSyncSpcontentdel();
     if (res) {
@@ -199,15 +255,15 @@ const StaffList: React.FC = () => {
         <Form name="base" layout="inline" form={form}>
           <Space className={style.antSpace}>
             <Form.Item name="staffName" label="员工姓名">
-              <Input placeholder="待选择" className={style.inputBox} />
+              <Input placeholder="待选择" className={style.inputBox} allowClear />
             </Form.Item>
             <Form.Item name="mangerName" label="经理姓名">
-              <Input placeholder="待选择" className={style.inputBox} />
+              <Input placeholder="待选择" className={style.inputBox} allowClear />
             </Form.Item>
           </Space>
           <Space className={style.antSpace}>
             <Form.Item name="serviceType" label="业务类型">
-              <Select placeholder="待选择" className={style.inputBox}>
+              <Select placeholder="待选择" className={style.inputBox} allowClear>
                 {serviceTypeList.map((item) => (
                   <Select.Option key={item.label} value={item.value}>
                     {item.label}
@@ -216,7 +272,7 @@ const StaffList: React.FC = () => {
               </Select>
             </Form.Item>
             <Form.Item name="staffStatus" label="员工状态">
-              <Select placeholder="待选择" className={style.inputBox}>
+              <Select placeholder="待选择" className={style.inputBox} allowClear>
                 {staffStatusList.map((item) => (
                   <Select.Option key={item.label} value={item.value}>
                     {item.label}
@@ -225,7 +281,7 @@ const StaffList: React.FC = () => {
               </Select>
             </Form.Item>
             <Form.Item name="accountStatus" label="账号状态">
-              <Select placeholder="待选择" className={style.inputBox}>
+              <Select placeholder="待选择" className={style.inputBox} allowClear>
                 {accountStatusList.map((item) => (
                   <Select.Option key={item.label} value={item.value}>
                     {item.label}
@@ -256,7 +312,7 @@ const StaffList: React.FC = () => {
           </span>
         </div>
         <Table
-          rowKey="userId"
+          rowKey="staffId"
           dataSource={staffList}
           columns={columns}
           rowSelection={rowSelection}
@@ -273,14 +329,16 @@ const StaffList: React.FC = () => {
           }}
         />
 
-        <div className={style.btnWrap}>
-          <Button disabled={!selectedRowKeys.length} onClick={staffPpstatus(0)}>
-            批量停用
-          </Button>
-          <Button disabled={!selectedRowKeys.length} onClick={staffPpstatus(1)}>
-            批量激活
-          </Button>
-        </div>
+        {!!staffList?.length && (
+          <div className={style.btnWrap}>
+            <Button disabled={disabledColumnType !== '4' || !selectedRowKeys.length} onClick={staffPpstatus(0)}>
+              批量停用
+            </Button>
+            <Button disabled={disabledColumnType !== '1' || !selectedRowKeys.length} onClick={staffPpstatus(1)}>
+              批量激活
+            </Button>
+          </div>
+        )}
       </Card>
     </>
   );
