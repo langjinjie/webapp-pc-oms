@@ -206,21 +206,23 @@ const StaffList: React.FC = () => {
 
   // 重置
   const onReset = () => {
+    setCurrent(1);
     setSelectedRowKeys([]);
     setDisabledColumnType('2');
     form.resetFields();
-    getStaffList(current);
+    getStaffList(1);
   };
 
   // 手动同步通讯录
   const syncAccount = async () => {
+    setCurrent(1);
     setSelectedRowKeys([]);
     setDisabledColumnType('2');
     setIsLoading(true);
     const res = await requestSyncSpcontentdel();
     if (res) {
       form.resetFields();
-      getStaffList(current);
+      getStaffList(1);
     } else {
       setIsLoading(false);
     }
