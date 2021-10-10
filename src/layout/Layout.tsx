@@ -73,7 +73,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className="layout-wrap">
-      <Header />
+      <Header setMenuIndex={setMenuIndex} setSubMenus={setSubMenus} />
       <div className="layout-content">
         <div
           className={classNames('collapse-wrap', isCollapse ? 'is-collapse' : 'is-expand')}

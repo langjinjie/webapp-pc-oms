@@ -12,7 +12,12 @@ import { chooseInst, logout, queryInstList } from 'src/apis';
 import { InstItem } from 'src/utils/interface';
 import './style.less';
 
-const Header: React.FC = () => {
+interface IIndexProps {
+  setMenuIndex: (param: any) => void;
+  setSubMenus: (param: any) => void;
+}
+
+const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
   const { userInfo, instList, setInstList } = useContext(Context);
   const [changeVisible, setChangeVisible] = useState<boolean>(false);
 
@@ -57,7 +62,11 @@ const Header: React.FC = () => {
         className="header-logo"
         src={require('src/assets/images/corp_logo.png')}
         alt=""
-        onClick={() => history.push('/index')}
+        onClick={() => {
+          history.push('/index');
+          setMenuIndex(null);
+          setSubMenus([]);
+        }}
       />
       <div className="header-info">
         <img className="header-avatar" src={userInfo.avatar} alt="" />
