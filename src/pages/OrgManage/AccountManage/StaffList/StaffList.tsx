@@ -98,6 +98,9 @@ const StaffList: React.FC = () => {
         key: 'noActived',
         text: '选择未激活的员工',
         onSelect (changableRowKeys: unknown[]) {
+          console.log(disabledColumnType);
+
+          if (disabledColumnType === '4') return;
           setDisabledColumnType('1');
           setSelectedRowKeys(
             changableRowKeys.filter((item) => {
