@@ -49,17 +49,11 @@ const StaffList: React.FC = () => {
     let filterSelectedRowKeys: string[] = [];
     if (selectedRowKeys.length) {
       // 判断是否处于首次勾选 true 为不是首次勾选
-      if (newSelectedRowKeys.length) {
-        // true继续勾选
-        filterSelectedRowKeys = [...(newSelectedRowKeys as string[])];
-        // 找出首次选中的员工的账号状态,已确认后续可选中的账号的状态
-        const currentStaff = staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId);
-        setDisabledColumnType(currentStaff?.accountStatus === '1' ? '4' : '1');
-      } else {
-        // false 为全部取消勾选,需要判断账号状态的查询条件
-        const { accountStatus } = currentSearchFlag;
-        setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
-      }
+      newSelectedRowKeys.length // 判断是增加勾选还是取消全选
+        ? (filterSelectedRowKeys = [...(newSelectedRowKeys as string[])])
+        : setDisabledColumnType(
+          currentSearchFlag.accountStatus === undefined ? '2' : currentSearchFlag.accountStatus === '1' ? '4' : '1'
+        );
     } else {
       // false 为首次勾选
       if (newSelectedRowKeys.length > 1) {
@@ -67,22 +61,18 @@ const StaffList: React.FC = () => {
         setDisabledColumnType(disabledColumnType === '2' ? '4' : disabledColumnType);
         newSelectedRowKeys.forEach((item) => {
           const currentStaff = staffList?.find((staffItem) => item === staffItem.staffId);
-          // 根据disabledColumnType状态来决定选中的账号类型 2 则选中已激活,4 则选中已激活 1 则选中未激活
+          // 根据disabledColumnType状态来过滤出选中的账号类型 2 则选中已激活,4 则选中已激活 1 则选中未激活
           if (
             currentStaff?.accountStatus === (disabledColumnType === '2' ? '1' : disabledColumnType === '4' ? '1' : '4')
-          ) {
-            return filterSelectedRowKeys.push(item as string);
-          }
+          ) { filterSelectedRowKeys.push(item as string); }
         });
       } else {
         // false 为单选
         filterSelectedRowKeys = [...(newSelectedRowKeys as string[])];
-        // 找出选中的员工的账号状态
         const currentStaff = staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId);
         setDisabledColumnType(currentStaff?.accountStatus === '1' ? '4' : '1');
       }
     }
-
     setSelectedRowKeys(filterSelectedRowKeys as string[]);
   };
 
@@ -97,9 +87,10 @@ const StaffList: React.FC = () => {
         key: 'clear',
         text: '取消全选',
         onSelect () {
-          // false 为全部取消勾选,需要判断账号状态的查询条件
-          const { accountStatus } = currentSearchFlag;
-          setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
+          // 全部取消勾选,需要判断账号状态的查询条件
+          setDisabledColumnType(
+            currentSearchFlag.accountStatus === undefined ? '2' : currentSearchFlag.accountStatus === '1' ? '4' : '1'
+          );
           setSelectedRowKeys([]);
         }
       },
