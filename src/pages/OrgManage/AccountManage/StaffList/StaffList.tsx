@@ -53,14 +53,15 @@ const StaffList: React.FC = () => {
     } else {
       // false 为首次勾选
       if (newSelectedRowKeys.length > 1) {
-        console.log('首次勾选');
         setDisabledColumnType(disabledColumnType === '2' ? '4' : disabledColumnType);
         newSelectedRowKeys.forEach((item) => {
           const currentStaff = staffList?.find((staffItem) => item === staffItem.staffId);
-          // 判断该账号是否处于在用的状态
+          // 根据disabledColumnType状态来决定选中的账号类型 2 则选中已激活,4 则选中已激活 1 则选中未激活
           if (
             currentStaff?.accountStatus === (disabledColumnType === '2' ? '1' : disabledColumnType === '4' ? '1' : '4')
-          ) { return filterSelectedRowKeys.push(item as string); }
+          ) {
+            return filterSelectedRowKeys.push(item as string);
+          }
         });
       } else {
         filterSelectedRowKeys = [...(newSelectedRowKeys as string[])];
@@ -80,15 +81,25 @@ const StaffList: React.FC = () => {
       disabled: record.accountStatus === '2' || record.accountStatus === disabledColumnType
     }),
     selections: [
-      Table.SELECTION_NONE,
       {
-        key: 'odd',
-        text: '选择在用的员工',
+        key: 'clear',
+        text: '取消全选',
+        onSelect () {
+          setDisabledColumnType('2');
+          setSelectedRowKeys([]);
+        }
+      },
+      {
+        key: 'noActived',
+        text: '选择未激活的员工',
         onSelect (changableRowKeys: unknown[]) {
-          console.log('xixixi');
-
-          console.log(changableRowKeys);
-          // 过滤出来只有员工状态为
+          setDisabledColumnType('1');
+          setSelectedRowKeys(
+            changableRowKeys.filter((item) => {
+              const currentStaff = staffList?.find((staffItem) => item === staffItem.staffId);
+              return currentStaff?.accountStatus === '4';
+            }) as string[]
+          );
         }
       }
     ]
@@ -198,7 +209,7 @@ const StaffList: React.FC = () => {
     setSelectedRowKeys([]);
     setDisabledColumnType('2');
     form.resetFields();
-    getStaffList();
+    getStaffList(current);
   };
 
   // 手动同步通讯录
@@ -323,7 +334,7 @@ const StaffList: React.FC = () => {
             current,
             showQuickJumper: true,
             onChange (value: number) {
-              getStaffList(value);
+              getStaffList(value, form.getFieldsValue());
               setCurrent(value);
             }
           }}
