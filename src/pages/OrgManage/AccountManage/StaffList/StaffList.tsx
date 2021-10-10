@@ -213,7 +213,6 @@ const StaffList: React.FC = () => {
     setSelectedRowKeys([]);
     const { accountStatus } = form.getFieldsValue();
     setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
-    setStaffList([]);
     await getStaffList(1, form.getFieldsValue());
     setCurrentSearchFlag(form.getFieldsValue());
     setCurrent(1);
