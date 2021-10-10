@@ -8,6 +8,14 @@ import { serviceType2Name, accountStatus2Name, accountStatusEdit2Name, staffStat
 import classNames from 'classnames';
 import style from './style.module.less';
 
+interface ICurrentSearchFlag {
+  staffName?: string;
+  mangerName?: string;
+  serviceType?: string;
+  staffStatus?: string;
+  accountStatus?: string;
+}
+
 const StaffList: React.FC = () => {
   const [form] = Form.useForm();
   const [current, setCurrent] = useState<number>(1);
@@ -19,6 +27,7 @@ const StaffList: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [disabledColumnType, setDisabledColumnType] = useState<string>('2');
+  const [currentSearchFlag, setCurrentSearchFlag] = useState<ICurrentSearchFlag>({});
 
   const history = useHistory();
 
@@ -48,7 +57,7 @@ const StaffList: React.FC = () => {
         setDisabledColumnType(currentStaff?.accountStatus === '1' ? '4' : '1');
       } else {
         // false 为全部取消勾选,需要判断账号状态的查询条件
-        const { accountStatus } = form.getFieldsValue();
+        const { accountStatus } = currentSearchFlag;
         setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
       }
     } else {
@@ -89,7 +98,7 @@ const StaffList: React.FC = () => {
         text: '取消全选',
         onSelect () {
           // false 为全部取消勾选,需要判断账号状态的查询条件
-          const { accountStatus } = form.getFieldsValue();
+          const { accountStatus } = currentSearchFlag;
           setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
           setSelectedRowKeys([]);
         }
@@ -98,8 +107,6 @@ const StaffList: React.FC = () => {
         key: 'noActived',
         text: '选择未激活的员工',
         onSelect (changableRowKeys: unknown[]) {
-          console.log(disabledColumnType);
-
           if (disabledColumnType === '4') return;
           setDisabledColumnType('1');
           setSelectedRowKeys(
@@ -167,15 +174,16 @@ const StaffList: React.FC = () => {
             onClick={async () => {
               const { corpId, staffId, accountStatus } = row;
               if (accountStatus === '2') return;
+              // 判断执行的是停用操作还是执行的激活操作
+              if (accountStatus === '4') if (usedCount >= licenseCount) return setIsModalVisible(true);
               // 判断是否超过最大
-              if (usedCount >= licenseCount) return setIsModalVisible(true);
               const params = {
                 opType: accountStatus !== '1' ? 1 : 0,
                 corpId,
                 userIds: [staffId]
               };
               await requestSetStaffOpstatus(params);
-              getStaffList(current, form.getFieldsValue());
+              getStaffList(current, currentSearchFlag);
             }}
           >
             {accountStatusEdit2Name[row.accountStatus]}
@@ -207,6 +215,7 @@ const StaffList: React.FC = () => {
     setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
     setStaffList([]);
     await getStaffList(1, form.getFieldsValue());
+    setCurrentSearchFlag(form.getFieldsValue());
     setCurrent(1);
   };
 
@@ -216,6 +225,7 @@ const StaffList: React.FC = () => {
     setDisabledColumnType('2');
     form.resetFields();
     await getStaffList(1);
+    setCurrentSearchFlag({});
     setCurrent(1);
   };
 
@@ -229,6 +239,7 @@ const StaffList: React.FC = () => {
     if (res) {
       form.resetFields();
       getStaffList(1);
+      setCurrentSearchFlag({});
     } else {
       setIsLoading(false);
     }
@@ -237,7 +248,7 @@ const StaffList: React.FC = () => {
   // 批量激活/停用
   const staffPpstatus = (opType: number) => {
     return async () => {
-      if (usedCount + selectedRowKeys.length >= licenseCount) return setIsModalVisible(true);
+      if (opType) if (usedCount + selectedRowKeys.length > licenseCount) return setIsModalVisible(true);
       const { corpId } = staffList![0];
       const params = {
         opType,
@@ -245,7 +256,7 @@ const StaffList: React.FC = () => {
         userIds: selectedRowKeys
       };
       await requestSetStaffOpstatus(params);
-      getStaffList(current, form.getFieldsValue());
+      getStaffList(current, currentSearchFlag);
       setSelectedRowKeys([]);
     };
   };
@@ -346,8 +357,11 @@ const StaffList: React.FC = () => {
             current,
             showQuickJumper: true,
             onChange (value: number) {
-              getStaffList(value, form.getFieldsValue());
+              getStaffList(value, currentSearchFlag);
               setCurrent(value);
+              setSelectedRowKeys([]);
+              const { accountStatus } = currentSearchFlag;
+              setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
             }
           }}
         />
