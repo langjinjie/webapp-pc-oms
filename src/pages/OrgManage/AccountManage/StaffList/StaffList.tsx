@@ -168,7 +168,7 @@ const StaffList: React.FC = () => {
               const { corpId, staffId, accountStatus } = row;
               if (accountStatus === '2') return;
               // 判断是否超过最大
-              if (usedCount >= 50) return setIsModalVisible(true);
+              if (usedCount >= licenseCount) return setIsModalVisible(true);
               const params = {
                 opType: accountStatus !== '1' ? 1 : 0,
                 corpId,
@@ -237,7 +237,7 @@ const StaffList: React.FC = () => {
   // 批量激活/停用
   const staffPpstatus = (opType: number) => {
     return async () => {
-      if (usedCount + selectedRowKeys.length >= 50) return setIsModalVisible(true);
+      if (usedCount + selectedRowKeys.length >= licenseCount) return setIsModalVisible(true);
       const { corpId } = staffList![0];
       const params = {
         opType,
