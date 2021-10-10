@@ -157,14 +157,14 @@ const StaffList: React.FC = () => {
           <span
             className={classNames(style.edit, { [style.disabled]: row.accountStatus === '2' })}
             onClick={async () => {
-              const { corpId, userId, accountStatus } = row;
+              const { corpId, staffId, accountStatus } = row;
               if (accountStatus === '2') return;
               // 判断是否超过最大
               if (usedCount >= licenseCount) return setIsModalVisible(true);
               const params = {
                 opType: accountStatus !== '1' ? 1 : 0,
                 corpId,
-                userIds: [userId]
+                userIds: [staffId]
               };
               console.log(params);
               await requestSetStaffOpstatus(params);
