@@ -26,9 +26,14 @@ const StaffList: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [modalType, setModalType] = useState<string>('');
+  const [modalContentTitle, setModalContentTitle] = useState<string>('');
+  const [modalContent, setModalContent] = useState<string>('');
   const [disabledColumnType, setDisabledColumnType] = useState<string>('2');
   const [currentSearchFlag, setCurrentSearchFlag] = useState<ICurrentSearchFlag>({});
   const [popconfirmVisible, setPopconfirmVisible] = useState<string>('');
+  const [isCommitEdit, setIsCommitEdit] = useState<boolean>(false);
+  const [opType, setOpType] = useState<number>(0);
   const history = useHistory();
 
   // 获取员工列表
@@ -125,7 +130,14 @@ const StaffList: React.FC = () => {
               const { corpId, staffId, accountStatus } = row;
               if (accountStatus === '2') return;
               // 判断执行的是停用操作还是执行的激活操作
-              if (accountStatus === '4') if (usedCount >= licenseCount) return setIsModalVisible(true);
+              if (accountStatus === '4') {
+                if (usedCount >= licenseCount) {
+                  setModalType('容量通知');
+                  setModalContentTitle('账号告罄');
+                  setModalContent('当前启用账号已超出系统设定账号，请联系管理员修改后台账号容量');
+                  return setIsModalVisible(true);
+                }
+              }
               // 判断是否超过最大
               const params = {
                 opType: accountStatus !== '1' ? 1 : 0,
@@ -205,19 +217,26 @@ const StaffList: React.FC = () => {
   };
 
   // 批量激活/停用
-  const staffPpstatus = (opType: number) => {
-    return async () => {
-      if (opType) if (usedCount + selectedRowKeys.length > licenseCount) return setIsModalVisible(true);
-      const { corpId } = staffList![0];
-      const params = {
-        opType,
-        corpId,
-        userIds: selectedRowKeys
-      };
-      await requestSetStaffOpstatus(params);
-      getStaffList(current, currentSearchFlag);
-      setSelectedRowKeys([]);
+  const staffPpstatus = async (opType: number) => {
+    if (opType) {
+      if (usedCount + selectedRowKeys.length > licenseCount) {
+        setModalType('容量通知');
+        setModalContentTitle('账号告罄');
+        setModalContent('当前启用账号已超出系统设定账号，请联系管理员修改后台账号容量');
+        setIsCommitEdit(false);
+        return setIsModalVisible(true);
+      }
+    }
+    const { corpId } = staffList![0];
+    const params = {
+      opType,
+      corpId,
+      userIds: selectedRowKeys
     };
+    await requestSetStaffOpstatus(params);
+    await getStaffList(current, currentSearchFlag);
+    setSelectedRowKeys([]);
+    setIsCommitEdit(false);
   };
 
   useEffect(() => {
@@ -226,20 +245,22 @@ const StaffList: React.FC = () => {
   return (
     <>
       <Modal
-        title="容量通知"
+        title={modalType}
         closeIcon={<span />}
         visible={isModalVisible}
         centered
-        onCancel={() => {
+        onCancel={() => setIsModalVisible(false)}
+        onOk={() => {
           setIsModalVisible(false);
+          isCommitEdit && staffPpstatus(opType);
         }}
-        onOk={() => setIsModalVisible(false)}
       >
         <div className={style.modalContent}>
           <p className={style.title}>
-            <span className={style.icon}></span>账号告罄
+            <span className={style.icon} />
+            {modalContentTitle}
           </p>
-          <p className={style.content}>当前启用账号已超出系统设定账号，请联系管理员修改后台账号容量</p>
+          <p className={style.content}>{modalContent}</p>
         </div>
       </Modal>
       <Card bordered={false}>
@@ -325,10 +346,30 @@ const StaffList: React.FC = () => {
 
         {!!staffList?.length && (
           <div className={style.btnWrap}>
-            <Button disabled={disabledColumnType !== '4' || !selectedRowKeys.length} onClick={staffPpstatus(0)}>
+            <Button
+              disabled={disabledColumnType !== '4' || !selectedRowKeys.length}
+              onClick={() => {
+                setModalType('操作通知');
+                setModalContentTitle('确认批量停用账号吗');
+                setModalContent('');
+                setIsModalVisible(true);
+                setIsCommitEdit(true);
+                setOpType(0);
+              }}
+            >
               批量停用
             </Button>
-            <Button disabled={disabledColumnType !== '1' || !selectedRowKeys.length} onClick={staffPpstatus(1)}>
+            <Button
+              disabled={disabledColumnType !== '1' || !selectedRowKeys.length}
+              onClick={() => {
+                setModalType('操作通知');
+                setModalContentTitle('确认批量激活账号吗');
+                setModalContent('');
+                setIsModalVisible(true);
+                setIsCommitEdit(true);
+                setOpType(1);
+              }}
+            >
               批量激活
             </Button>
           </div>
