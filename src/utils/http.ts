@@ -60,8 +60,8 @@ const handleRes = (res: AxiosResponse, resolve: Function) => {
         const url: string = origin + '/tenacity-oms/login?redirectUrl=' + encodeURIComponent(href);
         window.location.replace(url);
       } else {
-        const { errorMsg } = res.data;
-        message.error(errorMsg);
+        const { retmsg } = res.data;
+        message.error(retmsg);
         resolve(null);
       }
     }
@@ -141,8 +141,8 @@ const request: HttpMethod = (url: string, params?: any, type: Method = 'get', co
         if (res.data.ret === 0) {
           resolve(res.data.retdata || typeof res.data.retdata === 'boolean' ? res.data.retdata : {});
         } else {
-          const { errorMsg } = res.data;
-          message.error(errorMsg);
+          const { retmsg } = res.data;
+          message.error(retmsg);
           resolve(null);
         }
       } else {
