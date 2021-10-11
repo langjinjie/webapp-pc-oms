@@ -12,6 +12,8 @@ export const Context: ContextProps<any> = createContext({});
 const StoreContext: React.FC = ({ children }) => {
   const [userInfo, setUserInfo] = useState<any>({});
   const [instList, setInstList] = useState<InstItem[]>([]);
+  const [isMainCorp, setIsMainCorp] = useState<boolean>(true);
+  const [currentCorpId, setCurrentCorpId] = useState<string>('');
 
   return (
     <Context.Provider
@@ -19,7 +21,11 @@ const StoreContext: React.FC = ({ children }) => {
         userInfo,
         setUserInfo: (state: any) => setUserInfo({ ...userInfo, ...state }),
         instList,
-        setInstList
+        setInstList,
+        isMainCorp,
+        setIsMainCorp,
+        currentCorpId,
+        setCurrentCorpId
       }}
     >
       {children}

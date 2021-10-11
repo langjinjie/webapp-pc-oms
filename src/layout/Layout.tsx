@@ -27,7 +27,7 @@ const Routes = withRouter(({ location }) => (
 ));
 
 const Layout: React.FC<RouteComponentProps> = ({ history }) => {
-  const { setUserInfo } = useContext(Context);
+  const { setUserInfo, setIsMainCorp, setCurrentCorpId } = useContext(Context);
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
   const [subMenus, setSubMenus] = useState<Menu[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -57,6 +57,8 @@ const Layout: React.FC<RouteComponentProps> = ({ history }) => {
     const res = await queryUserInfo();
     if (res) {
       setUserInfo(res);
+      setIsMainCorp(res.isMainCorp === 1);
+      setCurrentCorpId(res.corpId);
     }
   };
 
