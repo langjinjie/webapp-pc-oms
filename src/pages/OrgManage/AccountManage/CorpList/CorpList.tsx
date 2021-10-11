@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Table } from 'antd';
 import { requestGetCorpList } from 'src/apis/OrgManage';
 import { ICorpList } from 'src/utils/interface';
+import { Context } from 'src/store';
+import classNames from 'classnames';
 import style from './style.module.less';
 
 const CorpList: React.FC = () => {
+  const { isMainCorp, currentCorpId } = useContext(Context);
   const [corpList, setCorpList] = useState<ICorpList[]>();
   const [isLoading, setIsloading] = useState<boolean>(false);
 
@@ -27,16 +30,22 @@ const CorpList: React.FC = () => {
       render: (row: ICorpList) => (
         <span
           onClick={() => {
+            if (isMainCorp ? '' : row.corpId !== currentCorpId) return;
             history.push('/orgManage/detail', { corpId: row.corpId });
-            console.log(row);
           }}
-          className={style.detail}
+          className={classNames(style.detail, {
+            [style.detailDisabled]: isMainCorp ? '' : row.corpId !== currentCorpId
+          })}
         >
           详情
         </span>
       )
     }
   ];
+
+  const rowClassName = (record: ICorpList) => {
+    return isMainCorp ? '' : record.corpId !== currentCorpId ? style.rowDisabled : '';
+  };
 
   useEffect(() => {
     setIsloading(true);
@@ -52,6 +61,7 @@ const CorpList: React.FC = () => {
         dataSource={corpList}
         pagination={false}
         rowKey={'corpId'}
+        rowClassName={rowClassName}
       />
     </div>
   );

@@ -12,7 +12,7 @@ const { Password } = Input;
 const { Item } = Form;
 
 const Login: React.FC<RouteComponentProps> = ({ history }) => {
-  const { setUserInfo } = useContext(Context);
+  const { setUserInfo, setIsMainCorp, setCurrentCorpId } = useContext(Context);
 
   const onSubmit = async ({ userName, password }: any) => {
     // @ts-ignore
@@ -25,6 +25,8 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
         history.push('/chooseInst');
         const resInfo: any = (await queryUserInfo()) || {};
         setUserInfo(resInfo);
+        setIsMainCorp(resInfo.isMainCorp === 1);
+        setCurrentCorpId(resInfo.corpId);
       }
     }
   };
