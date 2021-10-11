@@ -46,71 +46,26 @@ const StaffList: React.FC = () => {
   };
 
   const onSelectChange = (newSelectedRowKeys: unknown[]) => {
-    let filterSelectedRowKeys: string[] = [];
-    if (selectedRowKeys.length) {
-      // 判断是否处于首次勾选 true 为不是首次勾选
-      newSelectedRowKeys.length // 判断是增加勾选还是取消全选
-        ? (filterSelectedRowKeys = [...(newSelectedRowKeys as string[])])
-        : setDisabledColumnType(
-          currentSearchFlag.accountStatus === undefined ? '2' : currentSearchFlag.accountStatus === '1' ? '4' : '1'
+    if (newSelectedRowKeys.length) {
+      !selectedRowKeys.length &&
+        setDisabledColumnType(
+          staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId)?.accountStatus === '1' ? '4' : '1'
         );
+      setSelectedRowKeys(newSelectedRowKeys as string[]);
     } else {
-      // false 为首次勾选
-      if (newSelectedRowKeys.length > 1) {
-        // true 全选
-        setDisabledColumnType(disabledColumnType === '2' ? '4' : disabledColumnType);
-        newSelectedRowKeys.forEach((item) => {
-          const currentStaff = staffList?.find((staffItem) => item === staffItem.staffId);
-          // 根据disabledColumnType状态来过滤出选中的账号类型 2 则选中已激活,4 则选中已激活 1 则选中未激活
-          if (
-            currentStaff?.accountStatus === (disabledColumnType === '2' ? '1' : disabledColumnType === '4' ? '1' : '4')
-          ) {
-            filterSelectedRowKeys.push(item as string);
-          }
-        });
-      } else {
-        // false 为单选
-        filterSelectedRowKeys = [...(newSelectedRowKeys as string[])];
-        const currentStaff = staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId);
-        setDisabledColumnType(currentStaff?.accountStatus === '1' ? '4' : '1');
-      }
+      setSelectedRowKeys([]);
+      setDisabledColumnType('2');
     }
-    setSelectedRowKeys(filterSelectedRowKeys as string[]);
   };
 
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
+    columnTitle: ' ', // 去掉全选
+    hideDefaultSelections: true, // 去掉全选
     getCheckboxProps: (record: IStaffList) => ({
       disabled: record.accountStatus === '2' || record.accountStatus === disabledColumnType
-    }),
-    selections: [
-      {
-        key: 'clear',
-        text: '取消全选',
-        onSelect () {
-          // 全部取消勾选,需要判断账号状态的查询条件
-          setDisabledColumnType(
-            currentSearchFlag.accountStatus === undefined ? '2' : currentSearchFlag.accountStatus === '1' ? '4' : '1'
-          );
-          setSelectedRowKeys([]);
-        }
-      },
-      {
-        key: 'noActived',
-        text: '选择未激活的员工',
-        onSelect (changableRowKeys: unknown[]) {
-          if (disabledColumnType === '4') return;
-          setDisabledColumnType('1');
-          setSelectedRowKeys(
-            changableRowKeys.filter((item) => {
-              const currentStaff = staffList?.find((staffItem) => item === staffItem.staffId);
-              return currentStaff?.accountStatus === '4';
-            }) as string[]
-          );
-        }
-      }
-    ]
+    })
   };
 
   // 定义columns
