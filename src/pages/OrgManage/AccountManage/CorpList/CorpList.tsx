@@ -44,7 +44,6 @@ const CorpList: React.FC = () => {
   ];
 
   const rowClassName = (record: ICorpList) => {
-    console.log(record);
     return isMainCorp ? '' : record.corpId !== currentCorpId ? style.rowDisabled : '';
   };
 
