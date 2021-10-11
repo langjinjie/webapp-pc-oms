@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { Button, Card, Form, Input, Select, Space, Table, Modal } from 'antd';
+import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm } from 'antd';
 import { requestGetStaffList, requestSetStaffOpstatus, requestSyncSpcontentdel } from 'src/apis/OrgManage';
 import { IStaffList } from 'src/utils/interface';
 import { Icon } from 'src/components/index';
@@ -28,7 +28,7 @@ const StaffList: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [disabledColumnType, setDisabledColumnType] = useState<string>('2');
   const [currentSearchFlag, setCurrentSearchFlag] = useState<ICurrentSearchFlag>({});
-
+  const [popconfirmVisible, setPopconfirmVisible] = useState<string>('');
   const history = useHistory();
 
   // 获取员工列表
@@ -64,7 +64,9 @@ const StaffList: React.FC = () => {
           // 根据disabledColumnType状态来过滤出选中的账号类型 2 则选中已激活,4 则选中已激活 1 则选中未激活
           if (
             currentStaff?.accountStatus === (disabledColumnType === '2' ? '1' : disabledColumnType === '4' ? '1' : '4')
-          ) { filterSelectedRowKeys.push(item as string); }
+          ) {
+            filterSelectedRowKeys.push(item as string);
+          }
         });
       } else {
         // false 为单选
@@ -160,9 +162,11 @@ const StaffList: React.FC = () => {
       align: 'center',
       render (row: IStaffList) {
         return (
-          <span
-            className={classNames(style.edit, { [style.disabled]: row.accountStatus === '2' })}
-            onClick={async () => {
+          <Popconfirm
+            title={'确认' + (row.accountStatus === '1' ? '停用' : '激活') + '该账号吗'}
+            visible={popconfirmVisible === row.staffId}
+            onConfirm={async () => {
+              setPopconfirmVisible('');
               const { corpId, staffId, accountStatus } = row;
               if (accountStatus === '2') return;
               // 判断执行的是停用操作还是执行的激活操作
@@ -176,9 +180,19 @@ const StaffList: React.FC = () => {
               await requestSetStaffOpstatus(params);
               getStaffList(current, currentSearchFlag);
             }}
+            onCancel={() => setPopconfirmVisible('')}
           >
-            {accountStatusEdit2Name[row.accountStatus]}
-          </span>
+            <span
+              key={row.staffId}
+              className={classNames(style.edit, { [style.disabled]: row.accountStatus === '2' })}
+              onClick={async () => {
+                if (row.accountStatus === '2') return;
+                setPopconfirmVisible(row.staffId);
+              }}
+            >
+              {accountStatusEdit2Name[row.accountStatus]}
+            </span>
+          </Popconfirm>
         );
       }
     }
@@ -263,8 +277,6 @@ const StaffList: React.FC = () => {
         centered
         onCancel={() => {
           setIsModalVisible(false);
-          setSelectedRowKeys([]);
-          setDisabledColumnType('2');
         }}
         onOk={() => setIsModalVisible(false)}
       >
