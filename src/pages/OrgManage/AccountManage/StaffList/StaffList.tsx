@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm } from 'antd';
 import { requestGetStaffList, requestSetStaffOpstatus, requestSyncSpcontentdel } from 'src/apis/OrgManage';
 import { IStaffList } from 'src/utils/interface';
@@ -35,11 +35,14 @@ const StaffList: React.FC = () => {
   const [isCommitEdit, setIsCommitEdit] = useState<boolean>(false);
   const [opType, setOpType] = useState<number>(0);
   const history = useHistory();
+  const location = useLocation();
 
   // 获取员工列表
   const getStaffList = async (pageNum = 1, params = {}) => {
+    console.log(location);
+
     setIsLoading(true);
-    const { corpId } = history.location.state as { [key: string]: unknown };
+    const { corpId } = location.state as { [key: string]: unknown };
     const res = await requestGetStaffList({ corpId, pageNum, ...params });
     if (res.list) {
       setTotal(res.total);
@@ -206,7 +209,7 @@ const StaffList: React.FC = () => {
     setSelectedRowKeys([]);
     setDisabledColumnType('2');
     setIsLoading(true);
-    const res = await requestSyncSpcontentdel();
+    const res = await requestSyncSpcontentdel({ corpId: (location.state as { [key: string]: string }).corpId });
     if (res) {
       form.resetFields();
       getStaffList(1);
@@ -238,9 +241,16 @@ const StaffList: React.FC = () => {
     setSelectedRowKeys([]);
     setIsCommitEdit(false);
   };
-
+  const beforeunloadHandle = () => {
+    history.push('/orgManage/detail', {}); // 清空state参数
+  };
   useEffect(() => {
+    if (!(location.state as { [key: string]: string }).corpId) return history.push('/orgManage');
     getStaffList();
+    window.addEventListener('beforeunload', beforeunloadHandle);
+    return () => {
+      window.removeEventListener('beforeunload', beforeunloadHandle);
+    };
   }, []);
   return (
     <>

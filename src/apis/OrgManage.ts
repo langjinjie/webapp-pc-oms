@@ -18,6 +18,6 @@ export const requestSetStaffOpstatus: HttpFC = (param) => {
 };
 
 // 手动同步通讯录
-export const requestSyncSpcontentdel: HttpVoid = () => {
-  return http.post('/tenacity-admin/api/collect/spcontentdel');
+export const requestSyncSpcontentdel: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/collect/spcontentdel', param);
 };
