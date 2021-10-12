@@ -80,7 +80,7 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
             setChangeVisible(true);
           }}
         >
-          切换角色
+          切换机构
         </span>
         <span className="logout-btn" onClick={() => logoutHandle()}>
           退出
