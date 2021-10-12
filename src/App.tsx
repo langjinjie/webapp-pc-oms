@@ -8,6 +8,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Layout from 'src/layout/Layout';
 import Login from 'src/pages/Login/Login';
+import ChooseInst from 'src/pages/ChooseInst/ChooseInst';
 import Context from 'src/store';
 
 const App: React.FC = () => {
@@ -16,6 +17,7 @@ const App: React.FC = () => {
       <Router basename="/tenacity-oms">
         <Switch>
           <Route exact path="/login" component={Login} />
+          <Route exact path="/chooseInst" component={ChooseInst} />
           <Route path="/" component={Layout} />
         </Switch>
       </Router>

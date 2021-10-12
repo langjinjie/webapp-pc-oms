@@ -1,25 +1,25 @@
-export interface TagItem {
-  tagId: string;
-  tagName: string;
-  groupId?: string;
-  groupName?: string;
-  modified?: number;
-  displayType?: number;
+export interface InstItem {
+  corpId: string;
+  corpName: string;
+  logo: string;
 }
 
-export interface TagInterface {
-  tagId: string;
-  tagName: string;
-  groupId: string;
-  tagList?: TagItem[];
-}
-export interface TagGroup {
-  groupId: string;
-  groupName: string;
-  tagList: TagInterface[];
+// 机构列表
+export interface ICorpList {
+  corpId: string;
+  corpName: string;
+  logo: string;
 }
 
-export interface TagCategory {
-  category: number;
-  groupList: TagGroup[];
+// 员工列表
+export interface IStaffList {
+  staffId: string;
+  userId: string;
+  corpId: string;
+  staffName: string;
+  mangerName: string;
+  serviceType: string;
+  staffStatus: string;
+  accountStatus: string;
+  lastLoginTime: string;
 }

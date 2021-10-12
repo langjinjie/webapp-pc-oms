@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Form, Input, Button } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { getQueryParam } from 'lester-tools';
-import { SHA256 } from 'crypto-js';
+// import { getQueryParam } from 'lester-tools';
+import md5 from 'js-md5';
 import { Context } from 'src/store';
 import { login, queryUserInfo } from 'src/apis';
 import style from './style.module.less';
@@ -12,28 +12,32 @@ const { Password } = Input;
 const { Item } = Form;
 
 const Login: React.FC<RouteComponentProps> = ({ history }) => {
-  const { setUserInfo } = useContext(Context);
+  const { setUserInfo, setIsMainCorp, setCurrentCorpId } = useContext(Context);
 
   const onSubmit = async ({ userName, password }: any) => {
     // @ts-ignore
-    const res = await login({ userName: window.btoa(userName), password: window.btoa(SHA256(password)) });
+    const res = await login({ userName, password: md5(password).slice(8, 24) });
     if (res) {
-      const redirectUrl: string = getQueryParam('redirectUrl');
+      history.push('/chooseInst');
+      const resInfo: any = (await queryUserInfo()) || {};
+      setUserInfo(resInfo);
+      setIsMainCorp(resInfo.isMainCorp === 1);
+      setCurrentCorpId(resInfo.corpId);
+      /* const redirectUrl: string = getQueryParam('redirectUrl');
       if (redirectUrl) {
         window.location.replace(redirectUrl);
       } else {
-        history.push('/index');
+        history.push('/chooseInst');
         const resInfo: any = (await queryUserInfo()) || {};
         setUserInfo(resInfo);
-      }
+        setIsMainCorp(resInfo.isMainCorp === 1);
+        setCurrentCorpId(resInfo.corpId);
+      } */
     }
   };
 
   return (
     <div className={style.loginBg}>
-      <h3 className={style.header}>
-        <div className={style.brand} />
-      </h3>
       <div className={style.loginWrap}>
         <h3 className={style.title}>账号登录</h3>
         <Form onFinish={onSubmit}>
@@ -47,7 +51,7 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
             />
           </Item>
           <Item>
-            <Button type="primary" shape="round" htmlType="submit">
+            <Button type="primary" htmlType="submit">
               登录
             </Button>
           </Item>
@@ -56,7 +60,8 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
       <footer className={style.footer}>
         <div className={style.copyright}>
           本服务由年高提供。年高，面向金融领域提供产业应用方案。
-          <br /> Copyright @ 2021 Niangao All Rights Reserved
+          <br />
+          Copyright @ 2021 Niangao All Rights Reserved
         </div>
       </footer>
     </div>
