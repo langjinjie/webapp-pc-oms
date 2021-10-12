@@ -5,9 +5,6 @@
 
 import Axios, { AxiosInstance, Method, AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios';
 import { message } from 'antd';
-import { useHistory } from 'react-router-dom';
-
-const history = useHistory();
 
 type HttpMethod = (...args: any) => Promise<any>;
 
@@ -42,10 +39,9 @@ instance.interceptors.response.use(
  */
 const handleError = (err: AxiosError) => {
   if (JSON.stringify(err).includes('403')) {
-    history.push('/login');
-    /* const { origin, href } = window.location;
+    const { origin, href } = window.location;
     const url: string = origin + '/tenacity-oms/login?redirectUrl=' + encodeURIComponent(href);
-    window.location.replace(url); */
+    window.location.replace(url);
   }
 };
 
@@ -60,10 +56,9 @@ const handleRes = (res: AxiosResponse, resolve: Function) => {
       resolve(res.data.retdata || typeof res.data.retdata === 'boolean' ? res.data.retdata : {});
     } else {
       if (res.data.ret === 1000001) {
-        history.push('/login');
-        /* const { origin, href } = window.location;
+        const { origin, href } = window.location;
         const url: string = origin + '/tenacity-oms/login?redirectUrl=' + encodeURIComponent(href);
-        window.location.replace(url); */
+        window.location.replace(url);
       } else {
         const { retmsg } = res.data;
         message.error(retmsg);

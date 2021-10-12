@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Form, Input, Button } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { getQueryParam } from 'lester-tools';
+// import { getQueryParam } from 'lester-tools';
 import md5 from 'js-md5';
 import { Context } from 'src/store';
 import { login, queryUserInfo } from 'src/apis';
@@ -18,7 +18,12 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
     // @ts-ignore
     const res = await login({ userName, password: md5(password).slice(8, 24) });
     if (res) {
-      const redirectUrl: string = getQueryParam('redirectUrl');
+      history.push('/chooseInst');
+      const resInfo: any = (await queryUserInfo()) || {};
+      setUserInfo(resInfo);
+      setIsMainCorp(resInfo.isMainCorp === 1);
+      setCurrentCorpId(resInfo.corpId);
+      /* const redirectUrl: string = getQueryParam('redirectUrl');
       if (redirectUrl) {
         window.location.replace(redirectUrl);
       } else {
@@ -27,7 +32,7 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
         setUserInfo(resInfo);
         setIsMainCorp(resInfo.isMainCorp === 1);
         setCurrentCorpId(resInfo.corpId);
-      }
+      } */
     }
   };
 
