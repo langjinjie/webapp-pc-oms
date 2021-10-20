@@ -35,6 +35,18 @@ export const routes: RouteProps[] = [
   {
     path: '/marketing/poster',
     component: lazy(() => import('src/pages/Marketing/Poster/List'))
+  },
+  /**
+   * 机构管理->账号管理
+   */
+  {
+    path: '/orgManage',
+    component: lazy(() => import('src/pages/OrgManage/AccountManage/CorpList/CorpList'))
+  },
+  // 员工列表
+  {
+    path: '/orgManage/detail',
+    component: lazy(() => import('src/pages/OrgManage/AccountManage/StaffList/StaffList'))
   }
 ];
 

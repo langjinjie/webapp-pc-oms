@@ -43,8 +43,8 @@ const devServerOptions = {
   },
   proxy: [
     {
-      context: ['/api', '/message_business'],
-      target: 'https://dev-man-chat.tenacity.com.cn:8443',
+      context: ['/api', '/tenacity-admin'],
+      target: 'https://dev.tenacity.com.cn',
       // target: 'https://uat.tenacity.com.cn',
       secure: false,
       changeOrigin: true,

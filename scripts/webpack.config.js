@@ -95,9 +95,9 @@ module.exports = function () {
       main: path.resolve(ROOT_PATH, './src/index.tsx')
     },
     output: {
-      path: path.resolve(ROOT_PATH, './tenacity-conversation'),
+      path: path.resolve(ROOT_PATH, './tenacity-oms'),
       filename: 'js/[name].[chunkhash:8].bundle.js',
-      publicPath: isDev ? '/' : '/tenacity-conversation/'
+      publicPath: isDev ? '/' : '/tenacity-oms/'
       // publicPath: isDev ? '/' : './'
     },
     mode: NODE_ENV || 'production',
