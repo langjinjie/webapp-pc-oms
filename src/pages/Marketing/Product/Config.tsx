@@ -1,7 +1,6 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { Tag, Popconfirm, Space, Button } from 'antd';
-import { OptionProps, searchCol } from 'src/components/SearchComponent/SearchComponent';
 import moment, { Moment } from 'moment';
 import classNames from 'classnames';
 
@@ -12,43 +11,6 @@ export interface SearchParamsProps {
   syncBank: string;
   corpId: string;
 }
-
-const setSearchCols = (options: any[], corpOptions?: OptionProps[] | null): searchCol[] => {
-  return [
-    {
-      name: 'corpId',
-      type: 'select',
-      label: '可见机构',
-      width: 160,
-      options: corpOptions
-    },
-    {
-      name: 'title',
-      type: 'input',
-      label: '标题',
-      placeholder: '请输入'
-    },
-    {
-      name: 'categoryId',
-      type: 'select',
-      label: '分类',
-      width: 160,
-      options: options
-    },
-    {
-      name: 'syncBank',
-      type: 'select',
-      label: '文章状态',
-      width: 160,
-      options: [
-        { id: 0, name: '未上架' },
-        { id: 1, name: '已上架' },
-        { id: 2, name: '已下架' }
-      ]
-    },
-    { name: 'rangePicker', type: 'rangePicker', label: '创建时间' }
-  ];
-};
 
 interface ColumnProps {
   productId: string;
@@ -206,4 +168,4 @@ const columns = (args: colargsType): ColumnsType<ColumnProps> => {
   ];
 };
 
-export { columns, setSearchCols };
+export { columns };

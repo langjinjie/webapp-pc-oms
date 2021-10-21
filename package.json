@@ -26,6 +26,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
     "@babel/polyfill": "^7.12.1",
+    "@tinymce/tinymce-react": "^3.13.0",
     "@types/dom-to-image": "^2.6.2",
     "@types/react": "^17.0.5",
     "@types/react-dom": "^17.0.3",
@@ -42,7 +43,8 @@
     "react-dom": "^17.0.2",
     "react-router-cache-route": "^1.11.1",
     "react-router-dom": "^5.2.0",
-    "react-transition-group": "^4.4.2"
+    "react-transition-group": "^4.4.2",
+    "tinymce": "^5.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",

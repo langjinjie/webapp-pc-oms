@@ -4,6 +4,7 @@
  * @date 2021-05-29 17:29
  */
 import { getQueryParam } from 'lester-tools';
+import qs, { ParsedQs } from 'qs';
 
 type commonFC = (...args: any) => any;
 
@@ -55,4 +56,8 @@ export const setCookie: (name: string, value: string, time: number) => void = (
   const exp = new Date();
   exp.setTime(exp.getTime() + time * 1000);
   document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + ';path=/';
+};
+
+export const URLSearchParams = (search: string): ParsedQs => {
+  return qs.parse(search, { ignoreQueryPrefix: true });
 };

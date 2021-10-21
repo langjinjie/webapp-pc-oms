@@ -1,4 +1,4 @@
-@import './comm.less';
+@import './variable.less';
 html,
 body,
 #root {
@@ -37,6 +37,37 @@ ul {
   overflow: hidden;
   cursor: pointer;
 }
+.container {
+  padding: 24px;
+  background: #fff;
+}
+
+// fontSize 12-28px
+.font(@i) when(@i <= 28) {
+  f@{i} {
+    font-size: @i + 0px;
+  }
+  .font((@i + 2));
+}
+.font(12);
+
+// 上边距 5->40px
+.pt(@i) when(@i<=40) {
+  .pt@{i} {
+    padding-top: @i + 0px;
+  }
+  .pt((@i + 5));
+}
+.pt(5);
+
+// 下边距 5->40px
+.pb(@i) when(@i<=40) {
+  .pb@{i} {
+    padding-bottom: @i + 0px;
+  }
+  .pb((@i + 5));
+}
+.pb(5);
 
 @bgColor_3078DB: #3078db;
 @color_fff: #fff;

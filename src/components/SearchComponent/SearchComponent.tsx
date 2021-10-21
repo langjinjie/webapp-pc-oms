@@ -7,7 +7,7 @@ export interface OptionProps {
   id: string;
   name: string;
 }
-export interface searchCol {
+export interface SearchCol {
   type: 'input' | 'select' | 'date' | 'rangePicker';
   name: string;
   label: string;
@@ -17,7 +17,7 @@ export interface searchCol {
 }
 
 interface SearchComponentProps {
-  searchCols: searchCol[];
+  searchCols: SearchCol[];
   onSearch: (params: any) => void;
   onValuesChange: (changeValues: any, value: any) => void;
 }
@@ -62,10 +62,12 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
       })}
       <Form.Item>
         <Space>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" className={style.btnConfirm} shape="round">
             查询
           </Button>
-          <Button htmlType="reset">重置</Button>
+          <Button htmlType="reset" type="primary" className={style.btnReset} shape="round" ghost>
+            重置
+          </Button>
         </Space>
       </Form.Item>
     </Form>

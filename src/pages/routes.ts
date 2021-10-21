@@ -25,16 +25,36 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Marketing/Product/List'))
   },
   {
+    path: '/marketing/product/edit',
+    component: lazy(() => import('src/pages/Marketing/Product/EditGoods'))
+  },
+  {
+    path: '/marketing/product/edit-choiceness',
+    component: lazy(() => import('src/pages/Marketing/Product/EditChoiceness'))
+  },
+  {
     path: '/marketing/activity',
     component: lazy(() => import('src/pages/Marketing/Activity/List'))
+  },
+  {
+    path: '/marketing/activity/Edit',
+    component: lazy(() => import('src/pages/Marketing/Activity/Edit'))
   },
   {
     path: '/marketing/article',
     component: lazy(() => import('src/pages/Marketing/Article/List'))
   },
   {
+    path: '/marketing/article/edit',
+    component: lazy(() => import('src/pages/Marketing/Article/Edit'))
+  },
+  {
     path: '/marketing/poster',
     component: lazy(() => import('src/pages/Marketing/Poster/List'))
+  },
+  {
+    path: '/marketing/poster/edit',
+    component: lazy(() => import('src/pages/Marketing/Poster/Edit'))
   },
   /**
    * 机构管理->账号管理
@@ -55,7 +75,7 @@ export const menus: Menu[] = [
     name: '机构管理',
     icon: 'a-bianzu101',
     path: 'seatManage',
-    children: [{ name: '账号管理', path: '/index' }]
+    children: [{ name: '账号管理', path: '/orgManage' }]
   },
   {
     name: '营销素材',

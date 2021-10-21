@@ -55,11 +55,11 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 添加商品
   const addProduct = () => {
-    history.push('/productLibrary/productConfig');
+    history.push('/marketing/product/edit');
   };
 
   const addFeatureProduct = () => {
-    history.push('/productLibrary/productFeatureConfig');
+    history.push('/marketing/product/edit-choiceness');
   };
   const onFinish = async (fieldsValue: any) => {
     const rangeValue = fieldsValue['range-picker'];
@@ -87,7 +87,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     formRef.current!.resetFields();
   };
   return (
-    <div className="pa24">
+    <div className="container">
       {/* 表单查询 start */}
       <header>
         <div className={style.addBtnWrap}>
