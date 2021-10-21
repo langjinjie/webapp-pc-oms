@@ -56,6 +56,10 @@ export const routes: RouteProps[] = [
     path: '/marketing/poster/edit',
     component: lazy(() => import('src/pages/Marketing/Poster/Edit'))
   },
+  {
+    path: '/marketingIndex',
+    component: lazy(() => import('src/pages/Marketing/Index/Index'))
+  },
   /**
    * 机构管理->账号管理
    */
@@ -97,6 +101,10 @@ export const menus: Menu[] = [
       {
         name: '产品库',
         path: '/marketing/product'
+      },
+      {
+        name: '首页配置',
+        path: '/marketingIndex'
       }
     ]
   }
