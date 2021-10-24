@@ -191,11 +191,14 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
       >
         添加
       </Button>
-      <NgFormSearch
-        searchCols={setSearchCols(categoryList, corpList)}
-        onSearch={onSearch}
-        onValuesChange={onValuesChange}
-      />
+      <div className={'pt20'}>
+        <NgFormSearch
+          isInline={false}
+          searchCols={setSearchCols(categoryList, corpList)}
+          onSearch={onSearch}
+          onValuesChange={onValuesChange}
+        />
+      </div>
       {/* Form 表单查询 end */}
       {/* 列表数据 start */}
       <div className={'pt20'}>

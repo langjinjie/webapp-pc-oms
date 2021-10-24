@@ -88,7 +88,7 @@ export const getNewsDetail: HttpFunction = (params) => {
  * @params {file}
  */
 export const uploadImage: HttpFunction = (params: any) => {
-  return http.post('/tenacity-news/api/file/upload.do', params, {
+  return http.post('/tenacity-admin/api/file/upload', params, {
     headers: { 'Content-Type': 'multipart/form-data' }
   });
 };
@@ -280,4 +280,47 @@ export const activityEdit: HttpFunction = (param: Object) => {
  */
 export const activityManage: HttpFunction = (param: Object) => {
   return http.post('/tenacity-manage/api/activity/manage', param);
+};
+
+/**
+ * 获取海报列表
+ *
+ */
+export const getPosterList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/poster/list', param);
+};
+/**
+ * 海报（批量）上架/下架接口
+ *
+ */
+export const toggleOnlineState: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/poster/offonline', param);
+};
+/**
+ * 海报操作(置顶/删除)接口
+ *
+ */
+export const posterOperation: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/poster/operation', param);
+};
+/**
+ * 海报操作(置顶/删除)接口
+ *
+ */
+export const getPosterDetail: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/poster/get', param);
+};
+/**
+ * 海报分类列表查询接口，树形结构，一次性查出
+ *
+ */
+export const getPosterCategoryList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/poster/categorys', param);
+};
+
+/**
+ * 海报签列表查询接口
+ */
+export const getPosterTagList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/poster/tags', param);
 };
