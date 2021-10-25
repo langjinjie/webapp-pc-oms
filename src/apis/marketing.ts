@@ -318,3 +318,42 @@ export const getPosterTagList: HttpFunction = (param: Object) => {
 export const savePoster: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/poster/save', param);
 };
+
+/**
+ * 查询文章列表
+ * @param param
+ */
+export const queryArticleList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/news/list', param);
+};
+
+/**
+ * 查询产品列表
+ * @param param
+ */
+export const queryProductList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/home/recommend/product/list', param);
+};
+
+/**
+ * 查询活动列表
+ * @param param
+ */
+export const queryActivityList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/home/recommend/activity/list', param);
+};
+
+/**
+ * 查询首页配置
+ */
+export const queryIndexConfig: VoidFunction = () => {
+  return http.post('/tenacity-admin/api/home/recommend/list');
+};
+
+/**
+ * 保存首页配置
+ * @param param
+ */
+export const saveIndexConfig: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/home/recommend/save', param);
+};

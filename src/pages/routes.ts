@@ -56,6 +56,7 @@ export const routes: RouteProps[] = [
     path: '/marketingPoster/edit',
     component: lazy(() => import('src/pages/Marketing/Poster/Edit'))
   },
+  // 首页配置
   {
     path: '/marketingIndex',
     component: lazy(() => import('src/pages/Marketing/Index/Index'))
@@ -71,6 +72,11 @@ export const routes: RouteProps[] = [
   {
     path: '/orgManage/detail',
     component: lazy(() => import('src/pages/OrgManage/AccountManage/StaffList/StaffList'))
+  },
+  // 座席战报
+  {
+    path: '/seatReport',
+    component: lazy(() => import('src/pages/Statistics/SeatReport/SeatReport'))
   }
 ];
 
@@ -105,6 +111,17 @@ export const menus: Menu[] = [
       {
         name: '首页配置',
         path: '/marketingIndex'
+      }
+    ]
+  },
+  {
+    name: '数据统计',
+    icon: 'a-bianzu101',
+    path: 'statistics',
+    children: [
+      {
+        name: '座席战报',
+        path: '/seatReport'
       }
     ]
   }
