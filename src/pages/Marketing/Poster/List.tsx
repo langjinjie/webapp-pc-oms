@@ -9,7 +9,7 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { PaginationProps } from '../types';
 import { RouteComponentProps } from 'react-router';
-import { getPosterList, toggleOnlineState, posterOperation } from 'src/apis/marketing';
+import { getPosterList, toggleOnlineState, posterOperation, getPosterCategoryList } from 'src/apis/marketing';
 import { useAsync } from 'src/utils/use-async';
 import { Context } from 'src/store';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
@@ -33,16 +33,28 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const { currentCorpId } = useContext(Context);
   const [visible, setVisible] = useState(false);
+  const [categoryList, setCategoryList] = useState<any[]>([]);
 
-  const [params, setParams] = useState({
-    name: '',
-    corpId: '',
-    status: '',
-    typeId: ''
+  const [params, setParams] = useState<{
+    name: string | null;
+    corpId: string | null;
+    status: string | null;
+    typeIds: string[] | any;
+  }>({
+    name: null,
+    corpId: null,
+    status: null,
+    typeIds: []
   });
 
   const { isLoading, run, data: posterData } = useAsync<PostPosterData>();
   const [currentItem, setCurrentItem] = useState<Poster | null>();
+
+  const getCategoryList = async () => {
+    const res = (await getPosterCategoryList({})) || [];
+    setCategoryList(res);
+  };
+
   const getList = (autoParams?: {
     pageNum?: number;
     pageSize?: number;
@@ -50,6 +62,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     corpId?: string;
     status?: string;
     typeId?: string;
+    fatherTypeId?: string;
   }) => {
     // 列表数据跟新前，先清空操作状态和选中项
     setOperationType(null);
@@ -57,7 +70,11 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     const postParams = {
       pageSize: pagination.pageSize,
       pageNum: pagination.current,
-      ...params,
+      name: params.name?.trim(),
+      corpId: params.corpId,
+      status: params.status,
+      fatherTypeId: params.typeIds[0] || null,
+      typeId: params.typeIds[1] || null,
       ...autoParams
     };
     run(getPosterList(postParams));
@@ -65,6 +82,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     getList();
+    getCategoryList();
   }, []);
   const paginationChange = (page: number, pageSize?: number) => {
     setPagination((pagination) => {
@@ -79,8 +97,8 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 查询条件切换
   const handleSearchValueChange = (changesValue: any, values: any) => {
-    const { name = '', status = '', typeId = '' } = values;
-    setParams((params) => ({ ...params, name, status, typeId }));
+    const { name = null, status = null, typeIds = [] } = values;
+    setParams((params) => ({ ...params, name, status, typeIds }));
   };
 
   /**
@@ -88,9 +106,10 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
    */
   const handleSearch = (values: any) => {
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    const { name = '', status = '', typeId = '' } = values;
-    setParams((params) => ({ ...params, name, status, typeId }));
-    getList({ pageNum: 1, name, status, typeId });
+    const { name = null, status = null, typeIds = [] } = values;
+
+    setParams((params) => ({ ...params, name, status, typeIds }));
+    getList({ pageNum: 1, name: name?.trim(), status, typeId: typeIds[1], fatherTypeId: typeIds[0] });
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: Poster[]) => {
@@ -186,8 +205,11 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const columnList = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleTop });
 
-  const isDisabled = (operationType: number | null, status: number) => {
+  const isDisabled = (operationType: number | null, status: number, record: Poster) => {
     let _isDisabled = false;
+    if (record.productId) {
+      return true;
+    }
     if (operationType) {
       if (operationType === 1 && status === 2) {
         _isDisabled = true;
@@ -207,7 +229,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     },
     getCheckboxProps: (record: Poster) => {
       return {
-        disabled: isDisabled(operationType, record.status),
+        disabled: isDisabled(operationType, record.status, record),
         name: record.name
       };
     }
@@ -228,7 +250,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
           添加
         </Button>
         <FormSearch
-          searchCols={setSearchCols()}
+          searchCols={setSearchCols(categoryList)}
           onSearch={handleSearch}
           onValuesChange={(changesValue, values) => {
             handleSearchValueChange(changesValue, values);

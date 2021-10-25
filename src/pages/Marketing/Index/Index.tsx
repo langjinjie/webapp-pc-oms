@@ -67,32 +67,33 @@ const MarketIndex: React.FC = () => {
     console.log(values);
     const {
       product,
-      product2,
-      product3,
+      productTwo,
+      productThree,
       article,
-      article2,
-      article3,
+      articleTwo,
+      articleThree,
       poster,
-      poster2,
-      poster3,
+      posterTwo,
+      posterThree,
       activity,
-      activity2,
-      activity3
+      activityTwo,
+      activityThree
     } = values;
+
     const param: any = {
       products: [{ extId: product }],
-      news: [{ extId: article }, { extId: article2 }, { extId: article3 }],
-      posters: [{ extId: poster }, { extId: poster2 }, { extId: poster3 }],
+      news: [{ extId: article }, { extId: articleTwo }, { extId: articleThree }],
+      posters: [{ extId: poster }, { extId: posterTwo }, { extId: posterThree }],
       activitys: []
     };
-    if (product2) {
+    if (productTwo) {
       param.products.push({
-        extId: product2
+        extId: productTwo
       });
     }
-    if (product3) {
+    if (productThree) {
       param.products.push({
-        extId: product3
+        extId: productThree
       });
     }
     if (activity) {
@@ -100,14 +101,14 @@ const MarketIndex: React.FC = () => {
         extId: activity
       });
     }
-    if (activity2) {
+    if (activityTwo) {
       param.activitys.push({
-        extId: activity2
+        extId: activityTwo
       });
     }
-    if (activity3) {
+    if (activityThree) {
       param.activitys.push({
-        extId: activity3
+        extId: activityThree
       });
     }
     const res: any = await saveIndexConfig(param);
@@ -151,29 +152,29 @@ const MarketIndex: React.FC = () => {
       if (posterList && posterList.length > 0) {
         form.setFieldsValue({
           poster: posterList[0].status === 3 ? undefined : posterList[0].posterId,
-          poster2: (posterList[1] || {}).status === 3 ? undefined : (posterList[1] || {}).posterId,
-          poster3: (posterList[2] || {}).status === 3 ? undefined : (posterList[2] || {}).posterId
+          posterTwo: (posterList[1] || {}).status === 3 ? undefined : (posterList[1] || {}).posterId,
+          posterThree: (posterList[2] || {}).status === 3 ? undefined : (posterList[2] || {}).posterId
         });
       }
       if (newsList && newsList.length > 0) {
         form.setFieldsValue({
           article: newsList[0].status === 2 ? undefined : newsList[0].articleId,
-          article2: (newsList[1] || {}).status === 2 ? undefined : (newsList[1] || {}).articleId,
-          article3: (newsList[2] || {}).status === 2 ? undefined : (newsList[2] || {}).articleId
+          articleTwo: (newsList[1] || {}).status === 2 ? undefined : (newsList[1] || {}).articleId,
+          articleThree: (newsList[2] || {}).status === 2 ? undefined : (newsList[2] || {}).articleId
         });
       }
       if (productTypeList && productTypeList.length > 0) {
         form.setFieldsValue({
           product: productTypeList[0].status === 3 ? undefined : productTypeList[0].productId,
-          product2: (productTypeList[1] || {}).status === 3 ? undefined : (productTypeList[1] || {}).productId,
-          product3: (productTypeList[2] || {}).status === 3 ? undefined : (productTypeList[2] || {}).productId
+          productTwo: (productTypeList[1] || {}).status === 3 ? undefined : (productTypeList[1] || {}).productId,
+          productThree: (productTypeList[2] || {}).status === 3 ? undefined : (productTypeList[2] || {}).productId
         });
       }
       if (activityList && activityList.length > 0) {
         form.setFieldsValue({
           activity: activityList[0].status === 3 ? undefined : activityList[0].activityId,
-          activity2: (activityList[1] || {}).status === 3 ? undefined : (activityList[1] || {}).activityId,
-          activity3: (activityList[2] || {}).status === 3 ? undefined : (activityList[2] || {}).activityId
+          activityTwo: (activityList[1] || {}).status === 3 ? undefined : (activityList[1] || {}).activityId,
+          activityThree: (activityList[2] || {}).status === 3 ? undefined : (activityList[2] || {}).activityId
         });
       }
       const activityMessages: string[] = [];
@@ -269,7 +270,7 @@ const MarketIndex: React.FC = () => {
                 ))}
               </Select>
             </Item>
-            <Item name="product2" label="产品二">
+            <Item name="productTwo" label="产品二">
               <Select
                 placeholder={getMarketMessage(0, productMessage[1])}
                 showSearch
@@ -283,7 +284,7 @@ const MarketIndex: React.FC = () => {
                 ))}
               </Select>
             </Item>
-            <Item name="product3" label="产品三">
+            <Item name="productThree" label="产品三">
               <Select
                 placeholder={getMarketMessage(0, productMessage[2])}
                 showSearch
@@ -318,7 +319,7 @@ const MarketIndex: React.FC = () => {
               </Select>
             </Item>
             <Item
-              name="article2"
+              name="articleTwo"
               label="文章二"
               rules={[{ required: true, message: getMarketMessage(1, articleMessage[1]) }]}
             >
@@ -336,7 +337,7 @@ const MarketIndex: React.FC = () => {
               </Select>
             </Item>
             <Item
-              name="article3"
+              name="articleThree"
               label="文章三"
               rules={[{ required: true, message: getMarketMessage(1, articleMessage[2]) }]}
             >
@@ -374,7 +375,7 @@ const MarketIndex: React.FC = () => {
               </Select>
             </Item>
             <Item
-              name="poster2"
+              name="posterTwo"
               label="海报二"
               rules={[{ required: true, message: getMarketMessage(2, posterMessage[1]) }]}
             >
@@ -392,7 +393,7 @@ const MarketIndex: React.FC = () => {
               </Select>
             </Item>
             <Item
-              name="poster3"
+              name="posterThree"
               label="海报三"
               rules={[{ required: true, message: getMarketMessage(2, posterMessage[2]) }]}
             >
@@ -425,7 +426,7 @@ const MarketIndex: React.FC = () => {
                 ))}
               </Select>
             </Item>
-            <Item name="activity2" label="活动二">
+            <Item name="activityTwo" label="活动二">
               <Select
                 placeholder={getMarketMessage(3, activityMessage[1])}
                 showSearch
@@ -439,7 +440,7 @@ const MarketIndex: React.FC = () => {
                 ))}
               </Select>
             </Item>
-            <Item name="activity3" label="活动三">
+            <Item name="activityThree" label="活动三">
               <Select
                 placeholder={getMarketMessage(3, activityMessage[2])}
                 showSearch

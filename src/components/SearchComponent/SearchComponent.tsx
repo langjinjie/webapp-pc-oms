@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Form, DatePicker, Button, Input, Space, Select, Row } from 'antd';
+import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'antd';
 import style from './style.module.less';
 
 export interface OptionProps {
@@ -8,12 +8,18 @@ export interface OptionProps {
   name: string;
 }
 export interface SearchCol {
-  type: 'input' | 'select' | 'date' | 'rangePicker';
+  type: 'input' | 'select' | 'date' | 'rangePicker' | 'cascader';
   name: string;
   label: string;
   width?: number;
   placeholder?: string;
   options?: OptionProps[] | null;
+  cascaderOptions?: any[];
+  fieldNames?: {
+    label: string;
+    value: string;
+    children: string;
+  };
 }
 
 interface SearchComponentProps {
@@ -61,6 +67,15 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 (col.type === 'rangePicker' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <RangePicker format="YYYY-MM-DD" />
+                  </Form.Item>
+                )) ||
+                (col.type === 'cascader' && (
+                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                    <Cascader
+                      changeOnSelect
+                      options={col.cascaderOptions}
+                      fieldNames={{ ...col.fieldNames }}
+                    ></Cascader>
                   </Form.Item>
                 ))
               );

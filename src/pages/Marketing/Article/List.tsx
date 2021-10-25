@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Button, message, Modal } from 'antd';
+import { Button, message, Modal, Space } from 'antd';
 
 import {
   getNewsList,
@@ -16,20 +16,11 @@ import style from './style.module.less';
 // import { GlobalContent, UPDATE_CATEGORY, UPDATE_TAGS } from 'src/store';
 
 import { NgFormSearch, NgTable } from 'src/components';
-import { setSearchCols, SearchParamsProps, columns } from './Config';
+import { setSearchCols, SearchParamsProps, columns, Article } from './Config';
 import { useGetCorps } from 'src/utils/corp';
 import classNames from 'classnames';
 import { PlusOutlined } from '@ant-design/icons';
 
-interface ColumnProps {
-  newsId: string;
-  title: string;
-  key: string;
-  age: number;
-  address: string;
-  syncBank: number;
-  tags?: string[];
-}
 interface paginationProps {
   current: number;
   pageSize: number;
@@ -47,6 +38,9 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
+  // operationType 1=上架;2=下架;
+  const [operationType, setOperationType] = useState<number | null>(null);
+  const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [tableSource, setTableSource] = useState([]);
   const [visible, toggleVisible] = useState(false);
@@ -126,7 +120,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   // 修改资讯上下架状态
-  const changeItemStatus = async (record: ColumnProps) => {
+  const changeItemStatus = async (record: Article) => {
     const res = await updateNewsState({ newsId: record.newsId, syncBank: record.syncBank === 1 ? 2 : 1 });
     if (res) {
       message.success('操作成功！');
@@ -138,7 +132,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     toggleVisible(!visible);
   };
 
-  const viewItem = async (record: ColumnProps) => {
+  const viewItem = async (record: Article) => {
     const res = await getNewsDetail({ newsId: record.newsId });
     const htmlStr = res.crawl === 0 ? res.txt : (res && res.content && res.content[0].content) || '';
     setHtmlStr(htmlStr);
@@ -146,7 +140,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   // 删除某条文件
-  const deleteItem = async (record: ColumnProps) => {
+  const deleteItem = async (record: Article) => {
     try {
       await deleteNews({ newsIds: record.newsId });
       message.success('删除成功');
@@ -157,8 +151,8 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   // 编辑某条资讯
-  const handleEdit = (record: ColumnProps) => {
-    history.push('/addInternal?id=' + record.newsId);
+  const handleEdit = (record: Article) => {
+    history.push('/marketing/article/edit?id=' + record.newsId);
   };
   const paginationChange = (page: number, pageSize?: number) => {
     setPagination((pagination) => {
@@ -176,7 +170,59 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus });
+  const isDisabled = (operationType: number | null, status: number) => {
+    let _isDisabled = false;
+    if (operationType) {
+      if (operationType === 1 && status === 2) {
+        _isDisabled = true;
+      } else if (operationType === 2 && (status === 1 || status === 3)) {
+        _isDisabled = true;
+      }
+    }
+    return _isDisabled;
+  };
+  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
+    setSelectRowKeys(selectedRowKeys);
+    const current = selectedRows[0];
+    if (current) {
+      if (current.status === 1 || current.status === 3) {
+        setOperationType(1);
+      } else {
+        setOperationType(2);
+      }
+    } else {
+      setOperationType(null);
+    }
+  };
+  // 表格RowSelection配置项
+  const rowSelection = {
+    hideSelectAll: true,
+    selectedRowKeys: selectedRowKeys,
+    onChange: (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
+      onSelectChange(selectedRowKeys, selectedRows);
+    },
+    getCheckboxProps: (record: Article) => {
+      return {
+        disabled: isDisabled(operationType, record.status),
+        name: record.name
+      };
+    }
+  };
 
+  const handleToggleOnlineState = async (type: number) => {
+    if (type === 2) {
+      Modal.confirm({
+        content: '下架后会影响所有机构',
+        cancelText: '否',
+        okText: '是',
+        onOk: () => {
+          // onSubmitToggleOnline(type);
+        }
+      });
+    } else {
+      // setVisible(true);
+    }
+  };
   return (
     <div className={classNames(style.wrap, 'container')}>
       {/* Form 表单查询 start */}
@@ -205,6 +251,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         <NgTable
           loading={loading}
           columns={myColumns}
+          rowSelection={rowSelection}
           dataSource={tableSource}
           pagination={pagination}
           paginationChange={paginationChange}
@@ -212,6 +259,28 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
             return record.newsId;
           }}
         />
+        <div className={style.operationWrap}>
+          <Space size={20}>
+            <Button
+              type="primary"
+              shape={'round'}
+              ghost
+              disabled={operationType !== 1}
+              onClick={() => handleToggleOnlineState(1)}
+            >
+              批量上架
+            </Button>
+            <Button
+              type="primary"
+              shape={'round'}
+              ghost
+              disabled={operationType !== 2}
+              onClick={() => handleToggleOnlineState(2)}
+            >
+              批量下架
+            </Button>
+          </Space>
+        </div>
         {/* 列表数据 end */}
       </div>
       <Modal

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { Tag, Popconfirm, Space } from 'antd';
-import { OptionProps, SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { Moment } from 'moment';
 
 export interface SearchParamsProps {
@@ -12,15 +12,8 @@ export interface SearchParamsProps {
   corpId: string;
 }
 
-const setSearchCols = (options: any[], corpOptions?: OptionProps[] | null): SearchCol[] => {
+const setSearchCols = (options: any[]): SearchCol[] => {
   return [
-    {
-      name: 'corpId',
-      type: 'select',
-      label: '可见机构',
-      width: 160,
-      options: corpOptions
-    },
     {
       name: 'title',
       type: 'input',
@@ -49,7 +42,7 @@ const setSearchCols = (options: any[], corpOptions?: OptionProps[] | null): Sear
   ];
 };
 
-interface ColumnProps {
+export interface Article {
   newsId: string;
   title: string;
   key: string;
@@ -66,7 +59,7 @@ type colargsType = {
   viewItem: (record: any) => void;
   deleteItem: (record: any) => void;
 };
-const columns = (args: colargsType): ColumnsType<ColumnProps> => {
+const columns = (args: colargsType): ColumnsType<Article> => {
   const { handleEdit, changeItemStatus, viewItem, deleteItem } = args;
   return [
     { title: '文章Id', dataIndex: 'newsId', key: 'newsId', width: 274 },

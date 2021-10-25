@@ -7,7 +7,7 @@ import classNames from 'classnames';
 
 import styles from './style.module.less';
 
-export const setSearchCols = (): SearchCol[] => {
+export const setSearchCols = (options: any[]): SearchCol[] => {
   return [
     {
       name: 'name',
@@ -28,15 +28,12 @@ export const setSearchCols = (): SearchCol[] => {
       ]
     },
     {
-      name: 'typeId',
-      type: 'select',
+      name: 'typeIds',
+      type: 'cascader',
+      fieldNames: { label: 'name', value: 'typeId', children: 'childs' },
       label: '分类',
       width: 160,
-      options: [
-        // { id: 0, name: '未上架' },
-        { id: '1', name: '已上架' },
-        { id: '2', name: '已下架' }
-      ]
+      cascaderOptions: options
     }
   ];
 };
@@ -63,6 +60,7 @@ export interface Poster {
   updateBy: null | string;
   lastUpdated: string;
   usedCorpsName: string;
+  fatherTypeName: string;
 }
 const UNKNOWN = '— —';
 enum StatusEnum {
@@ -100,11 +98,11 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
     },
     {
       title: '分类',
-      dataIndex: 'typeName',
       align: 'center',
+      dataIndex: 'typeName',
       width: 180,
-      render: (text: String) => {
-        return text || '---';
+      render: (text: String, record: Poster) => {
+        return record.fatherTypeName ? record.fatherTypeName + '-' + text : text || UNKNOWN;
       }
     },
     {
@@ -165,28 +163,31 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
       fixed: 'right',
       render: (status: number, obj: Poster) => (
         <Space size={10} className="spaceWrap">
-          <Button type="link" onClick={() => handleTop(obj)}>
-            置顶
-          </Button>
+          {!obj.productId && (
+            <Button type="link" onClick={() => handleTop(obj)}>
+              置顶
+            </Button>
+          )}
+
           <Button type="link" onClick={() => viewItem(obj)}>
             查看
           </Button>
-          {(status === 1 || status === 3) && (
+          {(status === 1 || status === 3) && !obj.productId && (
             <Button type="link" onClick={() => handleEdit(obj)}>
               编辑
             </Button>
           )}
-          {(status === 1 || status === 3) && (
+          {(status === 1 || status === 3) && !obj.productId && (
             <Button type="link" onClick={() => changeItemStatus(1, obj)}>
               上架
             </Button>
           )}
-          {status === 2 && (
+          {status === 2 && !obj.productId && (
             <Button type="link" onClick={() => changeItemStatus(2, obj)}>
               下架
             </Button>
           )}
-          {status === 3 && (
+          {status === 3 && !obj.productId && (
             <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)}>
               <Button type="link">删除</Button>
             </Popconfirm>
