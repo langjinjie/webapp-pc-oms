@@ -41,11 +41,11 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Marketing/Activity/Edit'))
   },
   {
-    path: '/marketing/article',
+    path: '/marketingArticle',
     component: lazy(() => import('src/pages/Marketing/Article/List'))
   },
   {
-    path: '/marketing/article/edit',
+    path: '/marketingArticle/edit',
     component: lazy(() => import('src/pages/Marketing/Article/Edit'))
   },
   {
@@ -88,7 +88,7 @@ export const menus: Menu[] = [
     children: [
       {
         name: '文章库',
-        path: '/marketing/article'
+        path: '/marketingArticle'
       },
       {
         name: '海报库',

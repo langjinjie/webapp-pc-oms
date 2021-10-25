@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Tag, Modal, message, Button, Select } from 'antd';
+import React, { useEffect, useState, useContext } from 'react';
+import { Form, Input, message, Button, Switch, Popconfirm } from 'antd';
 import style from '../style.module.less';
 import { Link } from 'react-router-dom';
 // import { GlobalContent, changeListAction } from 'src/store';
-import { getOfficialAccountsList, deleteOfficialAccounts, addOfficialAccounts } from 'src/apis/marketing';
-import { useGetCorps } from 'src/utils/corp';
+import { getOfficialAccountsList, operateInformation, addOfficialAccounts } from 'src/apis/marketing';
 import { useForm } from 'antd/lib/form/Form';
+
+import { Context } from 'src/store';
+import classNames from 'classnames';
 
 // interface addressProps {
 //   id: number;
@@ -13,18 +15,26 @@ import { useForm } from 'antd/lib/form/Form';
 //   corpName?: string;
 // }
 
+interface GzhProps {
+  corpId: string;
+  corpName: string;
+  id: string;
+  name: string;
+  status: number;
+}
 const TabView1: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   // const { data, dispatch } = useContext(GlobalContent);
-  const list: any[] = [];
+  const [list, setList] = useState<GzhProps[]>([]);
   const [form] = useForm();
-  const { data: corpList } = useGetCorps();
+
+  const { currentCorpId } = useContext(Context);
 
   // 获取公众号列表
   const getList = async () => {
-    const res = await getOfficialAccountsList({});
-    console.log(res);
-    // dispatch(changeListAction(res.newsTaskList));
+    const res = (await getOfficialAccountsList({})) || {};
+    const { newsTaskList } = res;
+    setList(newsTaskList || []);
   };
 
   useEffect(() => {
@@ -34,26 +44,19 @@ const TabView1: React.FC = () => {
   }, []);
 
   // 删除某个公众号
-  const deleteItem = (event: any, id: number) => {
-    event.preventDefault();
-    Modal.confirm({
-      title: '确认删除',
-      content: '你确认删除此公众号？',
-      onOk: async function () {
-        await deleteOfficialAccounts({ newsTaskId: id });
-        message.success('删除成功');
-        const filterList = list.filter((item) => item.id !== id);
-        // dispatch(changeListAction(filterList));
-        console.log(filterList);
-      }
-    });
+  const deleteItem = async (id: string) => {
+    const res = await operateInformation({ newsTaskId: id, opstatus: 4 });
+    if (!res) return false;
+    message.success('删除成功');
+    const filterList = list.filter((item) => item.id !== id);
+    setList(filterList);
   };
 
   const addItem = async (values: any) => {
-    const { corpId = '', publicAddressNames } = values;
+    const { publicAddressNames } = values;
     try {
       setLoading(true);
-      await addOfficialAccounts({ publicAddressNames, corpId });
+      await addOfficialAccounts({ publicAddressNames, corpId: currentCorpId });
       form.resetFields();
       message.success('添加成功');
       await getList();
@@ -89,36 +92,18 @@ const TabView1: React.FC = () => {
     }
   };
 
+  // 是否同步更新开关
+  const handleSwitchChange = async (index: number, item: GzhProps) => {
+    const copyList = [...list];
+    copyList[index].status = item.status === 1 ? 0 : 1;
+    setList(copyList);
+    console.log(item.status);
+    await operateInformation({ newsTaskId: item.id, opstatus: item.status === 1 ? 1 : 2 });
+  };
+
   return (
     <div className="bindAccountView">
       <Form onFinish={addItem} form={form}>
-        <Form.Item labelCol={{ span: 3 }} label="已添加公众号">
-          <div>
-            {list.map((item) => {
-              return (
-                <Tag
-                  color="blue"
-                  closable
-                  className={style.myTag}
-                  key={item.id}
-                  onClose={(event) => deleteItem(event, item.id)}
-                >
-                  {item.name} {item.corpName ? `（${item.corpName}）` : null}
-                </Tag>
-              );
-            })}
-          </div>
-        </Form.Item>
-        <Form.Item label="可见机构" labelCol={{ span: 3 }} name={'corpId'}>
-          <Select style={{ width: '400px' }} allowClear placeholder={'请选择可见机构'}>
-            <Select.Option value={''}>全部机构</Select.Option>
-            {corpList.map((corp) => (
-              <Select.Option value={corp.id} key={corp.id}>
-                {corp.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
         <Form.Item
           label="添加行内公众号"
           labelCol={{ span: 3 }}
@@ -149,6 +134,45 @@ const TabView1: React.FC = () => {
           </Button>
         </Form.Item>
       </Form>
+      <Form.Item wrapperCol={{ offset: 3 }}>
+        <div className={style.customList}>
+          <ul className={classNames(style.listHeader, 'flex cell')}>
+            <li className={style.firstCol}>序号</li>
+            <li className={style.secondCol}>公众号名称</li>
+            <li className={style.thirdCol}>是否同步更新</li>
+            <li className={classNames(style.fourthCol, 'cell')}>操作</li>
+          </ul>
+          <div className={style.listContent}>
+            {list.map((item, index) => {
+              return (
+                <ul key={item.id} className={classNames('flex', style.item)}>
+                  <li className={style.firstCol}>{index + 1}</li>
+                  <li className={style.secondCol}>{item.name}</li>
+                  <li className={classNames(style.thirdCol, 'flex justify-center align-center')}>
+                    <Popconfirm
+                      title={'确定修改更新状态'}
+                      placement="right"
+                      onConfirm={() => handleSwitchChange(index, item)}
+                    >
+                      <Switch
+                        checkedChildren="是"
+                        unCheckedChildren="否"
+                        checked={item.status === 1}
+                        // onChange={(checked) => handleSwitchChange(index, checked)}
+                      />
+                    </Popconfirm>
+                  </li>
+                  <li className={classNames(style.fourthCol, 'cell')}>
+                    <Popconfirm title="您确定要删除?" placement="right" onConfirm={() => deleteItem(item.id)}>
+                      <Button type="link">删除</Button>
+                    </Popconfirm>
+                  </li>
+                </ul>
+              );
+            })}
+          </div>
+        </div>
+      </Form.Item>
     </div>
   );
 };

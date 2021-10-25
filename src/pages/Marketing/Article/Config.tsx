@@ -58,9 +58,10 @@ type colargsType = {
   changeItemStatus: (record: any) => void;
   viewItem: (record: any) => void;
   deleteItem: (record: any) => void;
+  handleTop: (record: any) => void;
 };
 const columns = (args: colargsType): ColumnsType<Article> => {
-  const { handleEdit, changeItemStatus, viewItem, deleteItem } = args;
+  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleTop } = args;
   return [
     { title: '文章Id', dataIndex: 'newsId', key: 'newsId', width: 274 },
     {
@@ -167,9 +168,10 @@ const columns = (args: colargsType): ColumnsType<Article> => {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 140,
+      width: 180,
       render: (text, record) => (
         <Space size="small">
+          <a onClick={() => handleTop(record)}>置顶</a>
           <a onClick={() => handleEdit(record)}>编辑</a>
           <a onClick={() => changeItemStatus(record)}>{record.syncBank !== 1 ? '上架' : '下架'}</a>
 

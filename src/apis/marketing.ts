@@ -44,10 +44,8 @@ export const getNewsList: HttpFunction<getNewsListParamsProps> = (params) => {
 /**
  * 删除文章
  */
-export const deleteNews: HttpFunction = (params) => {
-  return http.post('/tenacity-news/api/news/delete.do', params, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  });
+export const operateArticleStatus: HttpFunction = (params) => {
+  return http.post('/tenacity-admin/api/news/opstatus', params);
 };
 
 /**
@@ -63,14 +61,14 @@ type HttpFunction2<T = any> = (param: T, config: any) => Promise<any>;
  * 爬取文章
  */
 export const peerNews: HttpFunction = (params) => {
-  return http.post('/tenacity-news/api/news/peer/save.do', params);
+  return http.post('/tenacity-admin/api/news/peer/save', params);
 };
 
 /**
  * 保存文章（无需爬取）
  */
 export const saveNews: HttpFunction = (params) => {
-  return http.post('/tenacity-news/api/news/save.do', params);
+  return http.post('/tenacity-admin/api/news/save', params);
 };
 
 /**
@@ -118,27 +116,21 @@ export const uploadFile: HttpFunction2 = (param: Object, fn: Function) => {
  * 添加公众号
  */
 export const addOfficialAccounts: HttpFunction = (params) => {
-  return http.post('/tenacity-news/api/news/information/create.do', params, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  });
+  return http.post('/tenacity-admin/api/news/information/create', params);
 };
 
 /**
  * 删除公众号
  */
-export const deleteOfficialAccounts: HttpFunction = (params) => {
-  return http.post('/tenacity-news/api/news/information/delete.do', params, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  });
+export const operateInformation: HttpFunction = (params) => {
+  return http.post('/tenacity-admin/api/news/information/opstatus', params);
 };
 
 /**
  * 查询公众号列表
  */
 export const getOfficialAccountsList: HttpFunction = (params) => {
-  return http.post('/tenacity-admin/api/news/information/list', params, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  });
+  return http.post('/tenacity-admin/api/news/information/list', params);
 };
 
 /**
@@ -158,7 +150,7 @@ export interface TagsOrCategoryProps {
  * @description 查询企业列表
  */
 export const getCorpList: HttpFunction = () => {
-  return http.post('/tenacity-news/api/paper/corplist', null);
+  return Promise.resolve({});
 };
 
 /**

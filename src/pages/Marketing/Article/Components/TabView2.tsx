@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Form, Input, Upload, Select, Button, message } from 'antd';
 import { peerNews, uploadImage, getTagsOrCategorys } from 'src/apis/marketing';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 // import { GlobalContent, UPDATE_CATEGORY, UPDATE_TAGS } from 'src/store';
-import { useGetCorps } from 'src/utils/corp';
+// import { useGetCorps } from 'src/utils/corp';
+import { Context } from 'src/store';
 
 interface formDataProps {
   newsUrl: string;
@@ -27,10 +28,11 @@ const TabView2: React.FC = () => {
     originalCreator: '',
     summary: ''
   });
-  const { data: corpList } = useGetCorps();
+  // const { data: corpList } = useGetCorps();
+  const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList } =
+    useContext(Context);
   const [form] = Form.useForm();
   const RouterHistory = useHistory();
-  // const { data, dispatch } = useContext(GlobalContent);
   const [categoryList] = useState<typeProps[]>([]);
   const [tagList] = useState<typeProps[]>([]);
   const changeSummary: React.ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -40,7 +42,9 @@ const TabView2: React.FC = () => {
   const asyncGetTagsOrCategory = async (type: 'category' | 'tag') => {
     try {
       const res = await getTagsOrCategorys({ type });
-      console.log(res);
+      if (res) {
+        type === 'category' ? setArticleCategoryList(res) : setArticleTagList(res);
+      }
     } catch (err) {
       // throw Error(err);
     }
@@ -95,9 +99,10 @@ const TabView2: React.FC = () => {
   const onFinish = async (values: any) => {
     try {
       setSubmitting(true);
-      const { corpId = '' } = values;
-      await peerNews({ ...values, defaultImg: formData.defaultImg, corpId });
-
+      const res = await peerNews({ ...values, defaultImg: formData.defaultImg, corpId: currentCorpId });
+      if (!res) {
+        return false;
+      }
       message.success('添加成功！').then(() => {
         form.resetFields();
         setSubmitting(false);
@@ -108,7 +113,7 @@ const TabView2: React.FC = () => {
           summary: ''
         }));
         form.resetFields();
-        RouterHistory.push('/index');
+        RouterHistory.push('/marketingArticle');
       });
     } catch (e) {
       setSubmitting(false);
@@ -154,16 +159,6 @@ const TabView2: React.FC = () => {
       >
         <Input.TextArea rows={2} placeholder="复制文章链接粘贴到此处"></Input.TextArea>
       </Form.Item>
-      <Form.Item label="可见机构" labelCol={{ span: 3 }} name={'corpId'}>
-        <Select allowClear placeholder={'请选择可见机构'}>
-          <Select.Option value={''}>全部机构</Select.Option>
-          {corpList.map((corp) => (
-            <Select.Option value={corp.id} key={corp.id}>
-              {corp.name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
       <Form.Item
         name="originalCreator"
         label="原创信息"
@@ -208,7 +203,7 @@ const TabView2: React.FC = () => {
       </Form.Item>
       <Form.Item label="选择分类" name="categoryId">
         <Select style={{ width: '100%' }} placeholder="请选择分类" optionFilterProp="children" showSearch>
-          {categoryList.map((category) => (
+          {articleCategoryList?.map((category: any) => (
             <Select.Option value={category.id} key={category.id}>
               {category.name}
             </Select.Option>
@@ -223,7 +218,7 @@ const TabView2: React.FC = () => {
           showSearch
           mode="multiple"
         >
-          {tagList?.map((tag) => (
+          {articleTagList?.map((tag: any) => (
             <Select.Option value={tag.id} key={tag.id}>
               {tag.name}
             </Select.Option>

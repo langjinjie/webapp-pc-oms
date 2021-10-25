@@ -106,3 +106,42 @@
     }
   }
 }
+
+.customList {
+  width: 652px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  .listHeader {
+    height: 42px;
+    background-color: #f5f6fa;
+    line-height: 42px;
+    color: #7e8185;
+  }
+  .firstCol {
+    width: 150px;
+    padding-left: 30px;
+  }
+  .secondCol {
+    width: 230px;
+  }
+  .thirdCol {
+    width: 84px;
+  }
+  .fourthCol {
+    text-align: right;
+    margin-right: 30px;
+  }
+
+  .item {
+    height: 42px;
+    line-height: 42px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+    :global {
+      .ant-btn-link {
+        padding: 0;
+      }
+    }
+  }
+}

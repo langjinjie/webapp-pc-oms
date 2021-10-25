@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Form, Input, Upload, Select, Button, message, Spin } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { getNewsDetail, saveNews, uploadImage, getTagsOrCategorys } from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
-// import { UPDATE_CATEGORY, UPDATE_TAGS, GlobalContent } from 'src/store';
+import { Context } from 'src/store';
 import { NgEditor } from 'src/components';
-import { useGetCorps } from 'src/utils/corp';
 interface TabView3Props {
   isEdit: boolean;
   newsId: string;
@@ -29,6 +28,8 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     editorHtml: '',
     editorHtmlChanged: ''
   });
+  const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList } =
+    useContext(Context);
   // const { data, dispatch } = useContext(GlobalContent);
   const [categoryList] = useState<TypeProps[]>([]);
   const [tagList] = useState<TypeProps[]>([]);
@@ -36,7 +37,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   const [form] = Form.useForm();
   const { isEdit, newsId } = props;
   const RouterHistory = useHistory();
-  const { data: corpList } = useGetCorps();
 
   // editor 发生改变
   const changeEditorHtml = (editorHtml: string) => {
@@ -64,11 +64,9 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   const asyncGetTagsOrCategory = async (type: 'category' | 'tag') => {
     try {
       const res = await getTagsOrCategorys({ type });
-      // dispatch({
-      //   type: type === 'category' ? UPDATE_CATEGORY : UPDATE_TAGS,
-      //   data: res
-      // });
-      console.log(res);
+      if (res) {
+        type === 'category' ? setArticleCategoryList(res) : setArticleTagList(res);
+      }
     } catch (err) {
       // throw Error(err);
     }
@@ -114,12 +112,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         ...values,
         newsId: newsId,
         defaultImg: formData.defaultImg,
-        content: submitHTML
+        content: submitHTML,
+        corpId: currentCorpId
       });
       message.success('添加成功！').then(() => {
         setSubmitting(false);
         form.resetFields();
-        RouterHistory.push('/index');
+        RouterHistory.push('/marketingArticle');
       });
     } catch (e) {
       setSubmitting(false);
@@ -131,16 +130,16 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     if (categoryList.length === 0) {
       asyncGetTagsOrCategory('category');
     }
-    // if (tagList.length === 0) {
-    //   asyncGetTagsOrCategory('tag');
-    // }
+    if (tagList.length === 0) {
+      asyncGetTagsOrCategory('tag');
+    }
     if (isEdit) {
       getDetail();
     }
     return () => {
       console.log('unmounted');
     };
-  }, [isEdit]);
+  }, []);
 
   const getBase64 = (img: any, callback: (imageUrl: any) => void) => {
     const reader: FileReader = new FileReader();
@@ -204,16 +203,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         >
           <Input placeholder="请输入文章标题，限100个字符以内。" maxLength={100} onChange={onChangeTitle} />
         </Form.Item>
-        <Form.Item label="可见机构" name={'corpId'}>
-          <Select allowClear placeholder={'请选择可见机构'}>
-            <Select.Option value={''}>全部机构</Select.Option>
-            {corpList?.map((corp) => (
-              <Select.Option value={corp.id} key={corp.id}>
-                {corp.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+
         <Form.Item
           label="原创信息"
           rules={[
@@ -269,7 +259,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         </Form.Item>
         <Form.Item label="选择分类" labelCol={{ span: 3 }} wrapperCol={{ span: 12 }} name="categoryId">
           <Select style={{ width: '100%' }} placeholder="请选择分类" showSearch optionFilterProp="children">
-            {categoryList.map((category) => (
+            {articleCategoryList?.map((category) => (
               <Select.Option value={category.id + ''} key={category.id}>
                 {category.name}
               </Select.Option>
@@ -284,7 +274,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
             showSearch
             mode="multiple"
           >
-            {tagList?.map((tag) => (
+            {articleTagList?.map((tag) => (
               <Select.Option value={tag.id + ''} key={tag.id}>
                 {tag.name}
               </Select.Option>
