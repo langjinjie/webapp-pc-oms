@@ -14,6 +14,7 @@ interface NgUploadProps {
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
+  console.log('a');
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
@@ -46,18 +47,21 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
     return isJpgOrPng && isLt2M;
   };
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
+    console.log('aaaaaaaaaaaaaaaaa', info.file.status);
     if (info.file.status === 'uploading') {
       setStates((states) => ({ ...states, loading: true }));
       return;
     }
+    console.log(info.file.status);
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl: string) =>
+      getBase64(info.file.originFileObj, (imageUrl: string) => {
+        console.log(imageUrl);
         setStates({
           imageUrl,
           loading: false
-        })
-      );
+        });
+      });
     }
   };
 
@@ -68,9 +72,10 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
     uploadData.append('file', options.file);
     uploadData.append('bizKey', 'news');
     const res: any = await uploadImage(uploadData);
+    console.log(res);
     if (res) {
-      onChange?.(res);
-      setStates((states) => ({ ...states, loading: false, imageUrl: res || '' }));
+      onChange?.(res.filePath);
+      setStates((states) => ({ ...states, loading: false, imageUrl: res.filePath || '' }));
     }
   };
 

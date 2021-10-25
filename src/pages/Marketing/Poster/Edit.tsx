@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Button, Cascader, Form, Input, Select } from 'antd';
+import { Button, Cascader, Form, Input, message, Select } from 'antd';
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router';
 import { URLSearchParams } from 'src/utils/base';
-import { getPosterCategoryList, getPosterDetail, getPosterTagList } from 'src/apis/marketing';
+import { getPosterCategoryList, getPosterDetail, getPosterTagList, savePoster } from 'src/apis/marketing';
 import { Poster } from './Config';
 import { useForm } from 'antd/es/form/Form';
 import NgUpload from '../Components/Upload/Upload';
@@ -44,7 +44,8 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
       setPoster(res);
       myForm.setFieldsValue({
         ...res,
-        typeId: [res.typeId]
+        typeIds: res.fatherTypeId !== '0' ? [res.fatherTypeId, res.typeId] : [res.typeId],
+        tags: res.tags?.split(',')
       });
     }
   };
@@ -69,7 +70,6 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
     getCategoryList();
     getTagList();
     const { id, viewport } = URLSearchParams(location.search);
-    console.log(id, viewport);
     if (id && viewport) {
       setIsView(true);
     }
@@ -77,26 +77,49 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
       getDetail(id);
     }
   }, []);
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: any) => {
     console.log(values);
+    const { typeIds = [], tags = [] } = values;
+    let postData: any = {};
+    if (poster) {
+      postData = {
+        ...values,
+        typeId: typeIds.pop(),
+        corpId: poster?.corpId,
+        posterId: poster.posterId,
+        tags: tags.join(',')
+      };
+    } else {
+      postData = {
+        ...values,
+        typeId: typeIds.pop(),
+        posterId: '',
+        tags: tags.join(',')
+      };
+    }
+    const res = await savePoster(postData);
+    if (res) {
+      message.success('保存成功');
+    }
+    console.log(res);
   };
   return (
     <div className={styles.pa20}>
       <Form labelCol={{ span: 3 }} wrapperCol={{ span: 8 }} form={myForm} onFinish={onSubmit}>
-        <Form.Item label="海报名称" name="name">
+        <Form.Item label="海报名称" name="name" rules={[{ required: true }]}>
           <Input type="text" />
         </Form.Item>
         <Form.Item label="文章ID">
           <Input type="text" />
         </Form.Item>
-        <Form.Item label="海报样式" name="imgUrl">
+        <Form.Item label="海报样式" name="imgUrl" rules={[{ required: true }]}>
           <NgUpload />
         </Form.Item>
-        <Form.Item label="分类" name={'typeId'}>
+        <Form.Item label="分类" name={'typeIds'} rules={[{ required: true }]}>
           <Cascader options={categoryList} fieldNames={{ label: 'name', value: 'typeId', children: 'childs' }} />
         </Form.Item>
-        <Form.Item label="标签" name={'tags'}>
-          <Select>
+        <Form.Item label="标签" name={'tags'} rules={[{ required: true }]}>
+          <Select mode="multiple">
             {tagList.map((tag) => (
               <Select.Option key={tag.name} value={tag.name}>
                 {tag.name}
@@ -104,7 +127,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="营销话术" name={'speechcraft'}>
+        <Form.Item label="营销话术" name={'speechcraft'} rules={[{ required: true }]}>
           <Input.TextArea placeholder="待输入" maxLength={300} showCount />
         </Form.Item>
 

@@ -38,7 +38,7 @@ interface getNewsListParamsProps {
   pageSize: number | '';
 }
 export const getNewsList: HttpFunction<getNewsListParamsProps> = (params) => {
-  return http.post('/tenacity-news/api/news/list.do', params);
+  return http.post('/tenacity-admin/api/news/list', params);
 };
 
 /**
@@ -54,7 +54,7 @@ export const deleteNews: HttpFunction = (params) => {
  * 文章上下架操作
  */
 export const updateNewsState: HttpFunction = (params) => {
-  return http.post('/tenacity-news/api/news/syncBank.do', params);
+  return http.post('/tenacity-admin/api/news/syncBank', params);
 };
 
 type HttpFunction2<T = any> = (param: T, config: any) => Promise<any>;
@@ -78,9 +78,7 @@ export const saveNews: HttpFunction = (params) => {
  * @params {newsId}
  */
 export const getNewsDetail: HttpFunction = (params) => {
-  return http.post('/tenacity-news/api/news/detail.do', params, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  });
+  return http.post('/tenacity-admin/api/news/detail', params);
 };
 
 /**
@@ -138,16 +136,16 @@ export const deleteOfficialAccounts: HttpFunction = (params) => {
  * 查询公众号列表
  */
 export const getOfficialAccountsList: HttpFunction = (params) => {
-  return http.post('/tenacity-news/api/news/information/list.do', params, {
+  return http.post('/tenacity-admin/api/news/information/list', params, {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   });
 };
 
 /**
- * 查询分类\标签
+ * 查询文章分类\标签
  */
 export const getTagsOrCategorys: HttpFunction = (params: { type: 'category' | 'tag' }) => {
-  return http.post('/tenacity-news/api/news/config/list.do', params);
+  return http.post('/tenacity-admin/api/news/config/list', params);
 };
 
 export interface TagsOrCategoryProps {
@@ -323,4 +321,8 @@ export const getPosterCategoryList: HttpFunction = (param: Object) => {
  */
 export const getPosterTagList: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/poster/tags', param);
+};
+
+export const savePoster: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/poster/save', param);
 };
