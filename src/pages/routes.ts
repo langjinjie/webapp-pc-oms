@@ -49,11 +49,11 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Marketing/Article/Edit'))
   },
   {
-    path: '/marketing/poster',
+    path: '/marketingPoster',
     component: lazy(() => import('src/pages/Marketing/Poster/List'))
   },
   {
-    path: '/marketing/poster/edit',
+    path: '/marketingPoster/edit',
     component: lazy(() => import('src/pages/Marketing/Poster/Edit'))
   },
   // 首页配置
@@ -98,7 +98,7 @@ export const menus: Menu[] = [
       },
       {
         name: '海报库',
-        path: '/marketing/poster'
+        path: '/marketingPoster'
       },
       {
         name: '活动库',

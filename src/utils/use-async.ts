@@ -116,7 +116,6 @@ export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defa
     },
     [config.throwError, setData, setError, safeDispatch]
   );
-  console.log(state.data);
   return {
     isIdle: state.stat === 'idle',
     isLoading: state.stat === 'loading',

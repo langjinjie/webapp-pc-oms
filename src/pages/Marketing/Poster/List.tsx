@@ -126,10 +126,18 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const onSubmitToggleOnline = async (type: number, corpIds?: string[]) => {
+  const onSubmitToggleOnline = async ({
+    type,
+    corpIds,
+    record
+  }: {
+    type: number;
+    corpIds?: string[];
+    record?: Poster;
+  }) => {
     const res = await toggleOnlineState({
       opType: type,
-      posterIds: operationType ? selectedRowKeys : [currentItem?.posterId], // 判断是否是批量操作
+      posterIds: operationType ? selectedRowKeys : [record?.posterId || currentItem?.posterId], // 判断是否是批量操作
       corpIds: corpIds || [currentCorpId]
     });
     if (res) {
@@ -143,18 +151,18 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
    * 确认上架
    */
   const submitOnline = (corpIds: any[]) => {
-    onSubmitToggleOnline(1, corpIds);
+    onSubmitToggleOnline({ type: 1, corpIds });
     setVisible(false);
   };
 
-  const handleToggleOnlineState = async (type: number) => {
+  const handleToggleOnlineState = async (type: number, record?: Poster) => {
     if (type === 2) {
       Modal.confirm({
         content: '下架后会影响所有机构',
         cancelText: '否',
         okText: '是',
         onOk: () => {
-          onSubmitToggleOnline(type);
+          onSubmitToggleOnline({ type, record });
         }
       });
     } else {
@@ -164,10 +172,10 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 新增海报
   const handleAdd = () => {
-    history.push('/marketing/poster/edit');
+    history.push('/marketingPoster/edit');
   };
   const handleEdit = (poster: Poster) => {
-    history.push('/marketing/poster/edit?id=' + poster.posterId);
+    history.push('/marketingPoster/edit?id=' + poster.posterId);
   };
   // 删除
   const deleteItem = async (record: Poster) => {
@@ -182,12 +190,14 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
       handleSearch({});
     }
   };
+  // 查看详情
   const viewItem = (poster: Poster) => {
-    history.push('/marketing/poster/edit?id=' + poster.posterId + '&viewport=1');
+    history.push('/marketingPoster/edit?id=' + poster.posterId + '&viewport=1');
   };
+  // 上下架
   const changeItemStatus = (type: number, record: Poster) => {
     setCurrentItem(record);
-    handleToggleOnlineState(type);
+    handleToggleOnlineState(type, record);
   };
   // 置顶
   const handleTop = async (record: Poster) => {
