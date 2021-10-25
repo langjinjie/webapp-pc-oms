@@ -64,7 +64,6 @@ const MarketIndex: React.FC = () => {
   };
 
   const onSubmit = async (values: any) => {
-    console.log(values);
     const {
       product,
       productTwo,
@@ -118,28 +117,28 @@ const MarketIndex: React.FC = () => {
   };
 
   const getPosterData = async () => {
-    const res: any = await getPosterList({ pageSize: 1000 });
+    const res: any = await getPosterList({ pageSize: 1000, status: 2 });
     if (res) {
       setPosterList(res.list || []);
     }
   };
 
   const getArticleList = async () => {
-    const res: any = await queryArticleList({ pageSize: 1000 });
+    const res: any = await queryArticleList({ pageSize: 1000, syncBank: 1 });
     if (res) {
       setArticleList(res.newsList || []);
     }
   };
 
   const getProductList = async () => {
-    const res: any = await queryProductList({ pageSize: 1000 });
+    const res: any = await queryProductList({ pageSize: 1000, status: 2 });
     if (res) {
       setProductList(res.list || []);
     }
   };
 
   const getActivityList = async () => {
-    const res: any = await queryActivityList({ pageSize: 1000 });
+    const res: any = await queryActivityList({ pageSize: 1000, status: 2 });
     if (res) {
       setActivityList(res.list || []);
     }
