@@ -54,6 +54,7 @@ const MarketIndex: React.FC = () => {
   const [productMessage, setProductMessage] = useState<string[]>([]);
   const [posterMessage, setPosterMessage] = useState<string[]>([]);
   const [articleMessage, setArticleMessage] = useState<string[]>([]);
+  const [chooseValue, setChooseValue] = useState<any>({});
 
   const [form] = useForm();
 
@@ -62,6 +63,10 @@ const MarketIndex: React.FC = () => {
     labelCol: { span: 3 },
     wrapperCol: { span: 6 }
   };
+
+  /* const isRepeat = (data: string[]) => {
+    return data.length !== Array.from(new Set(data)).length;
+  }; */
 
   const onSubmit = async (values: any) => {
     const {
@@ -148,62 +153,91 @@ const MarketIndex: React.FC = () => {
     const res: any = await queryIndexConfig();
     if (res) {
       const { activityList, newsList, posterList, productTypeList } = res;
+      let initChooseValue = {};
       if (posterList && posterList.length > 0) {
-        form.setFieldsValue({
+        const initValue = {
           poster: posterList[0].status === 3 ? undefined : posterList[0].posterId,
           posterTwo: (posterList[1] || {}).status === 3 ? undefined : (posterList[1] || {}).posterId,
           posterThree: (posterList[2] || {}).status === 3 ? undefined : (posterList[2] || {}).posterId
+        };
+        form.setFieldsValue({
+          ...initValue
         });
+        initChooseValue = {
+          ...initValue
+        };
       }
       if (newsList && newsList.length > 0) {
-        form.setFieldsValue({
+        const initValue = {
           article: newsList[0].status === 2 ? undefined : newsList[0].articleId,
           articleTwo: (newsList[1] || {}).status === 2 ? undefined : (newsList[1] || {}).articleId,
           articleThree: (newsList[2] || {}).status === 2 ? undefined : (newsList[2] || {}).articleId
+        };
+        form.setFieldsValue({
+          ...initValue
         });
+        initChooseValue = {
+          ...initChooseValue,
+          ...initValue
+        };
       }
       if (productTypeList && productTypeList.length > 0) {
-        form.setFieldsValue({
+        const initValue = {
           product: productTypeList[0].status === 3 ? undefined : productTypeList[0].productId,
           productTwo: (productTypeList[1] || {}).status === 3 ? undefined : (productTypeList[1] || {}).productId,
           productThree: (productTypeList[2] || {}).status === 3 ? undefined : (productTypeList[2] || {}).productId
+        };
+        form.setFieldsValue({
+          ...initValue
         });
+        initChooseValue = {
+          ...initChooseValue,
+          ...initValue
+        };
       }
       if (activityList && activityList.length > 0) {
-        form.setFieldsValue({
+        const initValue = {
           activity: activityList[0].status === 3 ? undefined : activityList[0].activityId,
           activityTwo: (activityList[1] || {}).status === 3 ? undefined : (activityList[1] || {}).activityId,
           activityThree: (activityList[2] || {}).status === 3 ? undefined : (activityList[2] || {}).activityId
+        };
+        form.setFieldsValue({
+          ...initValue
         });
+        initChooseValue = {
+          ...initChooseValue,
+          ...initValue
+        };
       }
+      setChooseValue(initChooseValue);
       const activityMessages: string[] = [];
       const productMessages: string[] = [];
       const posterMessages: string[] = [];
       const articleMessages: string[] = [];
       activityList.forEach(({ status, activityName, activityId }: Activity) => {
         if (status === 3) {
-          activityMessages.push(`${activityName || activityId}已过期，请重新选择`);
+          activityMessages.push(`${activityName || activityId}已下架，请重新选择`);
         } else {
           activityMessages.push('请选择活动');
         }
       });
       productTypeList.forEach(({ status, productName, productId }: Product) => {
         if (status === 3) {
-          productMessages.push(`${productName || productId}已过期，请重新选择`);
+          productMessages.push(`${productName || productId}已下架，请重新选择`);
         } else {
           productMessages.push('请选择产品');
         }
       });
       posterList.forEach(({ status, name, posterId }: Poster) => {
         if (status === 3) {
-          posterMessages.push(`${name || posterId}已过期，请重新选择`);
+          posterMessages.push(`${name || posterId}已下架，请重新选择`);
         } else {
           posterMessages.push('请选择海报');
         }
       });
       newsList.forEach(({ status, title, articleId }: Article) => {
-        if (status === 3) {
-          articleMessages.push(`${title || articleId}已过期，请重新选择`);
+        if (status === 2) {
+          articleMessages.push(`${title || articleId}已下架，请重新选择`);
         } else {
           articleMessages.push('请选择文章');
         }
@@ -258,12 +292,19 @@ const MarketIndex: React.FC = () => {
             >
               <Select
                 placeholder={getMarketMessage(0, productMessage[0])}
+                onChange={(val) => setChooseValue({ ...chooseValue, product: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {productList.map((item) => (
-                  <Option key={item.productId} value={item.productId} disabled={item.status === 3}>
+                  <Option
+                    key={item.productId}
+                    value={item.productId}
+                    disabled={
+                      item.status === 3 || [chooseValue.productTwo, chooseValue.productThree].includes(item.productId)
+                    }
+                  >
                     {item.productName}
                   </Option>
                 ))}
@@ -272,12 +313,19 @@ const MarketIndex: React.FC = () => {
             <Item name="productTwo" label="产品二">
               <Select
                 placeholder={getMarketMessage(0, productMessage[1])}
+                onChange={(val) => setChooseValue({ ...chooseValue, productTwo: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {productList.map((item) => (
-                  <Option key={item.productId} value={item.productId} disabled={item.status === 3}>
+                  <Option
+                    key={item.productId}
+                    value={item.productId}
+                    disabled={
+                      item.status === 3 || [chooseValue.product, chooseValue.productThree].includes(item.productId)
+                    }
+                  >
                     {item.productName}
                   </Option>
                 ))}
@@ -286,12 +334,19 @@ const MarketIndex: React.FC = () => {
             <Item name="productThree" label="产品三">
               <Select
                 placeholder={getMarketMessage(0, productMessage[2])}
+                onChange={(val) => setChooseValue({ ...chooseValue, productThree: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {productList.map((item) => (
-                  <Option key={item.productId} value={item.productId} disabled={item.status === 3}>
+                  <Option
+                    key={item.productId}
+                    value={item.productId}
+                    disabled={
+                      item.status === 3 || [chooseValue.product, chooseValue.productTwo].includes(item.productId)
+                    }
+                  >
                     {item.productName}
                   </Option>
                 ))}
@@ -306,12 +361,19 @@ const MarketIndex: React.FC = () => {
             >
               <Select
                 placeholder={getMarketMessage(1, articleMessage[0])}
+                onChange={(val) => setChooseValue({ ...chooseValue, article: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {articleList.map((item) => (
-                  <Option key={item.newsId} value={item.newsId} disabled={item.syncBank === 2}>
+                  <Option
+                    key={item.newsId}
+                    value={item.newsId}
+                    disabled={
+                      item.syncBank === 2 || [chooseValue.articleTwo, chooseValue.articleThree].includes(item.newsId)
+                    }
+                  >
                     {item.title}
                   </Option>
                 ))}
@@ -324,12 +386,19 @@ const MarketIndex: React.FC = () => {
             >
               <Select
                 placeholder={getMarketMessage(1, articleMessage[1])}
+                onChange={(val) => setChooseValue({ ...chooseValue, articleTwo: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {articleList.map((item) => (
-                  <Option key={item.newsId} value={item.newsId} disabled={item.syncBank === 2}>
+                  <Option
+                    key={item.newsId}
+                    value={item.newsId}
+                    disabled={
+                      item.syncBank === 2 || [chooseValue.article, chooseValue.articleThree].includes(item.newsId)
+                    }
+                  >
                     {item.title}
                   </Option>
                 ))}
@@ -342,12 +411,19 @@ const MarketIndex: React.FC = () => {
             >
               <Select
                 placeholder={getMarketMessage(1, articleMessage[2])}
+                onChange={(val) => setChooseValue({ ...chooseValue, articleThree: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {articleList.map((item) => (
-                  <Option key={item.newsId} value={item.newsId} disabled={item.syncBank === 2}>
+                  <Option
+                    key={item.newsId}
+                    value={item.newsId}
+                    disabled={
+                      item.syncBank === 2 || [chooseValue.article, chooseValue.articleTwo].includes(item.newsId)
+                    }
+                  >
                     {item.title}
                   </Option>
                 ))}
@@ -362,12 +438,19 @@ const MarketIndex: React.FC = () => {
             >
               <Select
                 placeholder={getMarketMessage(2, posterMessage[0])}
+                onChange={(val) => setChooseValue({ ...chooseValue, poster: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {posterList.map((item) => (
-                  <Option key={item.posterId} value={item.posterId} disabled={item.status === 3}>
+                  <Option
+                    key={item.posterId}
+                    value={item.posterId}
+                    disabled={
+                      item.status === 3 || [chooseValue.posterTwo, chooseValue.posterThree].includes(item.posterId)
+                    }
+                  >
                     {item.name}
                   </Option>
                 ))}
@@ -380,12 +463,19 @@ const MarketIndex: React.FC = () => {
             >
               <Select
                 placeholder={getMarketMessage(2, posterMessage[1])}
+                onChange={(val) => setChooseValue({ ...chooseValue, posterTwo: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {posterList.map((item) => (
-                  <Option key={item.posterId} value={item.posterId} disabled={item.status === 3}>
+                  <Option
+                    key={item.posterId}
+                    value={item.posterId}
+                    disabled={
+                      item.status === 3 || [chooseValue.poster, chooseValue.posterThree].includes(item.posterId)
+                    }
+                  >
                     {item.name}
                   </Option>
                 ))}
@@ -398,12 +488,17 @@ const MarketIndex: React.FC = () => {
             >
               <Select
                 placeholder={getMarketMessage(2, posterMessage[2])}
+                onChange={(val) => setChooseValue({ ...chooseValue, posterThree: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {posterList.map((item) => (
-                  <Option key={item.posterId} value={item.posterId} disabled={item.status === 3}>
+                  <Option
+                    key={item.posterId}
+                    value={item.posterId}
+                    disabled={item.status === 3 || [chooseValue.poster, chooseValue.posterTwo].includes(item.posterId)}
+                  >
                     {item.name}
                   </Option>
                 ))}
@@ -414,12 +509,20 @@ const MarketIndex: React.FC = () => {
             <Item name="activity" label="活动一">
               <Select
                 placeholder={getMarketMessage(3, activityMessage[0])}
+                onChange={(val) => setChooseValue({ ...chooseValue, activity: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {activityList.map((item) => (
-                  <Option key={item.activityId} value={item.activityId} disabled={item.status === 3}>
+                  <Option
+                    key={item.activityId}
+                    value={item.activityId}
+                    disabled={
+                      item.status === 3 ||
+                      [chooseValue.activityTwo, chooseValue.activityThree].includes(item.activityId)
+                    }
+                  >
                     {item.activityName}
                   </Option>
                 ))}
@@ -428,12 +531,19 @@ const MarketIndex: React.FC = () => {
             <Item name="activityTwo" label="活动二">
               <Select
                 placeholder={getMarketMessage(3, activityMessage[1])}
+                onChange={(val) => setChooseValue({ ...chooseValue, activityTwo: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {activityList.map((item) => (
-                  <Option key={item.activityId} value={item.activityId} disabled={item.status === 3}>
+                  <Option
+                    key={item.activityId}
+                    value={item.activityId}
+                    disabled={
+                      item.status === 3 || [chooseValue.activity, chooseValue.activityThree].includes(item.activityId)
+                    }
+                  >
                     {item.activityName}
                   </Option>
                 ))}
@@ -442,12 +552,19 @@ const MarketIndex: React.FC = () => {
             <Item name="activityThree" label="活动三">
               <Select
                 placeholder={getMarketMessage(3, activityMessage[2])}
+                onChange={(val) => setChooseValue({ ...chooseValue, activityThree: val })}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
               >
                 {activityList.map((item) => (
-                  <Option key={item.activityId} value={item.activityId} disabled={item.status === 3}>
+                  <Option
+                    key={item.activityId}
+                    value={item.activityId}
+                    disabled={
+                      item.status === 3 || [chooseValue.activity, chooseValue.activityTwo].includes(item.activityId)
+                    }
+                  >
                     {item.activityName}
                   </Option>
                 ))}
