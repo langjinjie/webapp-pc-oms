@@ -211,12 +211,12 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
               </Button>
             )}
             {status === 2 && !obj.productId && (
-              <Button type="link" onClick={() => changeItemStatus(2, obj)}>
-                下架
-              </Button>
+              <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => changeItemStatus(2, obj)}>
+                <Button type="link">下架</Button>
+              </Popconfirm>
             )}
             {status === 3 && !obj.productId && (
-              <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)}>
+              <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => deleteItem(obj)}>
                 <Button type="link">删除</Button>
               </Popconfirm>
             )}
@@ -339,9 +339,9 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
               </Button>
             )}
             {status === 2 && !obj.productId && (
-              <Button type="link" onClick={() => changeItemStatus(2, obj)}>
-                下架
-              </Button>
+              <Popconfirm title="确定要下架?" onConfirm={() => changeItemStatus(2, obj)}>
+                <Button type="link">下架</Button>
+              </Popconfirm>
             )}
             {status === 3 && !obj.productId && (
               <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)}>

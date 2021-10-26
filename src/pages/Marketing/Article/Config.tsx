@@ -194,10 +194,15 @@ const columns = (args: colargsType): ColumnsType<Article> => {
           <Space size="small">
             <a onClick={() => handleTop(record)}>{record.isTop ? '取消置顶' : '置顶'}</a>
             <a onClick={() => handleEdit(record)}>编辑</a>
-            <a onClick={() => changeItemStatus(record)}>{record.syncBank !== 1 ? '上架' : '下架'}</a>
+            {record.syncBank !== 1 && <a onClick={() => changeItemStatus(record)}>上架</a>}
 
+            {record.syncBank === 1 && (
+              <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => changeItemStatus(record)}>
+                <a>下架</a>
+              </Popconfirm>
+            )}
             {record.syncBank !== 1 && (
-              <Popconfirm title="您确定要删除?" onConfirm={() => deleteItem(record)}>
+              <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => deleteItem(record)}>
                 <a>删除</a>
               </Popconfirm>
             )}
@@ -310,10 +315,14 @@ const columns = (args: colargsType): ColumnsType<Article> => {
           <Space size="small">
             <a onClick={() => handleTop(record)}>{record.isTop ? '取消置顶' : '置顶'}</a>
             <a onClick={() => handleEdit(record)}>编辑</a>
-            <a onClick={() => changeItemStatus(record)}>{record.syncBank !== 1 ? '上架' : '下架'}</a>
-
+            {record.syncBank !== 1 && <a onClick={() => changeItemStatus(record)}>上架</a>}
+            {record.syncBank === 1 && (
+              <Popconfirm title="确定要下架?" onConfirm={() => changeItemStatus(record)}>
+                <a>下架</a>
+              </Popconfirm>
+            )}
             {record.syncBank !== 1 && (
-              <Popconfirm title="您确定要删除?" onConfirm={() => deleteItem(record)}>
+              <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(record)}>
                 <a>删除</a>
               </Popconfirm>
             )}
