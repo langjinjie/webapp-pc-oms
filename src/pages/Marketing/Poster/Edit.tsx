@@ -53,11 +53,11 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     }
   }, []);
   const onSubmit = async (values: any) => {
-    console.log(values);
     const { typeIds = [], tags = [] } = values;
     let postData: any = {};
     if (poster) {
       postData = {
+        ...poster,
         ...values,
         typeId: typeIds.pop(),
         corpId: poster?.corpId,
