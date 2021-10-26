@@ -341,8 +341,9 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         onOk={handlePreview}
         onCancel={handlePreview}
         footer={null}
+        width={990}
       >
-        <div className="bf-preview-desc" dangerouslySetInnerHTML={{ __html: htmlStr }}></div>
+        <div className={style.previewDesc} dangerouslySetInnerHTML={{ __html: htmlStr }}></div>
       </Modal>
     </div>
   );

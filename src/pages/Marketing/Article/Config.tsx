@@ -53,6 +53,7 @@ export interface Article {
   syncBank: number;
   isTop: boolean;
   tags?: string[];
+  corpNames: string[];
 }
 
 // 表哥配置项
@@ -110,6 +111,16 @@ const columns = (args: colargsType): ColumnsType<Article> => {
           {tagNameList.length === 0 && '---'}
         </>
       )
+    },
+    {
+      title: '上架机构',
+      key: 'corpNames',
+      width: 260,
+      align: 'left',
+      dataIndex: 'corpNames',
+      render: (corpNames) => {
+        return <span>{corpNames.join(';')}</span>;
+      }
     },
     {
       title: '发送次数',
