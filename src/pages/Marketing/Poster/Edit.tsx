@@ -80,6 +80,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   };
 
   const beforeUpload = (file: RcFile) => {
+    console.log(file);
     const isJpg = file.type === 'image/jpeg';
     if (!isJpg) {
       message.error('你只可以上传 JPG 文件!');
@@ -90,34 +91,36 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     }
     let isW750 = false;
     // 读取图片数据
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      console.log(e);
-      // @ts-ignore
-      const data = e.target.result;
-      // 加载图片获取图片真实宽度和高度
-      const image = new Image();
-      // @ts-ignore
-      image.src = data;
-      image.onload = function () {
-        const width = image.width;
-        // const height = image.height;
-        isW750 = width === 750;
+
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          // const height = image.height;
+          isW750 = width === 750;
+          if (!isW750) {
+            message.error('海报宽度必须为 750px');
+          }
+          resolve(isJpg && isLt2M && isW750);
+        };
       };
-    };
-    if (!isW750) {
-      message.error('海报宽度必须为 750px');
-    }
-    reader.readAsDataURL(file);
-    return isJpg && isLt2M && isW750;
+      reader.readAsDataURL(file);
+    });
   };
   return (
     <div className={styles.pa20}>
       <Form labelCol={{ span: 3 }} wrapperCol={{ span: 8 }} form={myForm} onFinish={onSubmit}>
-        <Form.Item label="海报名称" name="name" rules={[{ required: true }, { max: 30, message: '最多30个字符' }]}>
+        <Form.Item label="海报名称" name="name" rules={[{ required: true }, { max: 60, message: '最多60个字符' }]}>
           <Input type="text" />
         </Form.Item>
-        <Form.Item label="文章ID" rules={[{ max: 100, message: '最多100个字符' }]}>
+        <Form.Item label="海报ID" name="exterPosterId" rules={[{ max: 60, message: '最多60个字符' }]}>
           <Input type="text" />
         </Form.Item>
         <Form.Item

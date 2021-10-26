@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { message, Upload } from 'antd';
+import { Upload } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -38,21 +38,21 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) =>
       </div>
     </div>
   );
-  const handleBeforeUpload = (file: RcFile) => {
-    if (beforeUpload) {
-      const res = beforeUpload?.(file);
-      return res;
-    }
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error('你只可以上传 JPG/PNG 文件!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('图片大小不能超过 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-  };
+  // const handleBeforeUpload = async (file: RcFile) => {
+  //   if (beforeUpload) {
+  //     const res = await beforeUpload?.(file);
+  //     return res;
+  //   }
+  //   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  //   if (!isJpgOrPng) {
+  //     message.error('你只可以上传 JPG/PNG 文件!');
+  //   }
+  //   const isLt2M = file.size / 1024 / 1024 < 2;
+  //   if (!isLt2M) {
+  //     message.error('图片大小不能超过 2MB!');
+  //   }
+  //   return isJpgOrPng && isLt2M;
+  // };
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
     if (info.file.status === 'uploading') {
       setStates((states) => ({ ...states, loading: true }));
@@ -77,7 +77,6 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) =>
     uploadData.append('file', options.file);
     uploadData.append('bizKey', 'news');
     const res: any = await uploadImage(uploadData);
-    console.log(res);
     if (res) {
       onChange?.(res.filePath);
       setStates((states) => ({ ...states, loading: false, imageUrl: res.filePath || '' }));
@@ -88,7 +87,7 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) =>
     <Upload
       onChange={handleChange}
       listType="picture-card"
-      beforeUpload={handleBeforeUpload}
+      beforeUpload={beforeUpload}
       showUploadList={false}
       className="avatar-uploader"
       customRequest={posterUploadFile}
