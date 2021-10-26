@@ -79,7 +79,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     }
   };
 
-  const beforeUpload = (file: RcFile) => {
+  const beforeUpload = (file: RcFile): Promise<boolean> => {
     console.log(file);
     const isJpg = file.type === 'image/jpeg';
     if (!isJpg) {

@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Form, Input, Upload, Select, Button, message, Spin } from 'antd';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { getNewsDetail, saveNews, uploadImage, getTagsOrCategorys } from 'src/apis/marketing';
+import { Form, Input, Select, Button, message, Spin } from 'antd';
+import { getNewsDetail, saveNews, getTagsOrCategorys } from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import { NgEditor } from 'src/components';
+import NgUpload from '../../Components/Upload/Upload';
+
 interface TabView3Props {
   isEdit: boolean;
   newsId: string;
@@ -15,10 +16,8 @@ interface TypeProps {
   type: string;
 }
 const TabView3: React.FC<TabView3Props> = (props) => {
-  const [loading, changeLoading] = useState(false);
   const [isGetDetailLoading, changeGetDetailLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [imageUrl, changeImgUrl] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     originalCreator: '',
@@ -83,13 +82,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         ...resdata,
         editorHtml: content || ''
       }));
-      changeImgUrl(resdata.defaultImg);
       form.setFields([
         { name: 'title', value: res.title },
         { name: 'originalCreator', value: res.originalCreator },
         { name: 'summary', value: res.summary },
         { name: 'categoryId', value: res.categoryId || '' },
         { name: 'tagIdList', value: res.tagIdList || [] },
+        { name: 'defaultImg', value: res.defaultImg },
         {
           name: 'corpId',
           value: res.corpId || undefined
@@ -141,48 +140,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     };
   }, []);
 
-  const getBase64 = (img: any, callback: (imageUrl: any) => void) => {
-    const reader: FileReader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
-
-  // 长期修改
-  const handleChange = (info: any) => {
-    if (info.file.status === 'uploading') {
-      changeLoading(true);
-      return;
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        changeLoading(false);
-        changeImgUrl(imageUrl);
-      });
-    }
-  };
-
-  // 自定义上传
-  const uploadToServer = async (options: any) => {
-    const fileData = new FormData();
-    fileData.append('file', options.file);
-    fileData.append('bizKey', 'news');
-    try {
-      const res = await uploadImage(fileData);
-      options.onSuccess(options);
-      setFormData((formData) => ({ ...formData, defaultImg: res.filePath }));
-    } catch (e) {
-      message.error('图片上传失败，请重试' + e);
-    }
-  };
-
-  const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>上传图片</div>
-    </div>
-  );
-
   return (
     <Spin spinning={isGetDetailLoading} tip="加载中...">
       <Form
@@ -214,27 +171,23 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         >
           <Input maxLength={15} placeholder={'请输入原创作者名称，限15个字符以内。'} />
         </Form.Item>
-        <Form.Item label="文章封面" labelCol={{ span: 3 }} wrapperCol={{ span: 12 }}>
-          <Upload
-            name="avatar"
-            maxCount={1}
-            listType="picture-card"
-            className="avatar-uploader"
-            showUploadList={false}
-            beforeUpload={beforeUpload}
-            customRequest={uploadToServer}
-            onChange={handleChange}
-          >
-            {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-          </Upload>
-          <p className="color-info">
-            为确保最佳展示效果，请上传154*154像素高清图片，支持.png及.jpg格式的图片。若不上传，则默认为链接对应文章的自带封面。
-          </p>
+        <Form.Item
+          label="文章封面"
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 12 }}
+          rules={[{ required: true, message: '请上传文章封面' }]}
+          name="defaultImg"
+          extra=" 为确保最佳展示效果，请上传154*154像素高清图片，支持.png及.jpg格式的图片。若不上传，则默认为链接对应文章的自带封面"
+        >
+          <NgUpload beforeUpload={beforeUpload} />
         </Form.Item>
         <Form.Item
-          label={<span>文章分享摘要</span>}
+          label={'文章分享摘要'}
           name="summary"
-          rules={[{ type: 'string' }, { message: '分享摘要最多100个字符', max: 100 }]}
+          rules={[
+            { type: 'string', required: true },
+            { message: '分享摘要最多100个字符', max: 100 }
+          ]}
           extra="请输入分享摘要，限100个字符以内，若不输入，则默认为链接对应文章的自带摘要。"
         >
           <Input placeholder={'请输入分享摘要，限100个字符以内。'} onChange={onChangeSummary} />
@@ -257,16 +210,28 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         >
           <NgEditor initialValue={formData.editorHtml} handleEditorChange={changeEditorHtml} />
         </Form.Item>
-        <Form.Item label="选择分类" labelCol={{ span: 3 }} wrapperCol={{ span: 12 }} name="categoryId">
+        <Form.Item
+          label="选择分类"
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 12 }}
+          name="categoryId"
+          rules={[{ required: true, message: '请选择分类' }]}
+        >
           <Select style={{ width: '100%' }} placeholder="请选择分类" showSearch optionFilterProp="children">
-            {articleCategoryList?.map((category) => (
+            {articleCategoryList?.map((category: any) => (
               <Select.Option value={category.id + ''} key={category.id}>
                 {category.name}
               </Select.Option>
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="选择标签" labelCol={{ span: 3 }} wrapperCol={{ span: 12 }} name="tagIdList">
+        <Form.Item
+          label="选择标签"
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 12 }}
+          name="tagIdList"
+          rules={[{ required: true, message: '请选择标签' }]}
+        >
           <Select
             style={{ width: '100%' }}
             placeholder="请选择标签"
@@ -274,7 +239,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
             showSearch
             mode="multiple"
           >
-            {articleTagList?.map((tag) => (
+            {articleTagList?.map((tag: any) => (
               <Select.Option value={tag.id + ''} key={tag.id}>
                 {tag.name}
               </Select.Option>
