@@ -61,3 +61,5 @@ export const setCookie: (name: string, value: string, time: number) => void = (
 export const URLSearchParams = (search: string): ParsedQs => {
   return qs.parse(search, { ignoreQueryPrefix: true });
 };
+
+export const UNKNOWN = '— —';

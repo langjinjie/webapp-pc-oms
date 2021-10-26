@@ -16,7 +16,7 @@ interface OnlineModalProps {
 }
 
 export const OnlineModal: React.FC<OnlineModalProps> = ({ onOk, onCancel, visible }) => {
-  const { instList: corpList } = useContext(Context);
+  const { instList: corpList, currentCorpId } = useContext(Context);
   const [corpIds, setCorpIds] = useState<CheckboxValueType[]>([]);
   useEffect(() => {
     if (visible && corpList) {
@@ -40,7 +40,11 @@ export const OnlineModal: React.FC<OnlineModalProps> = ({ onOk, onCancel, visibl
           return (
             <Row key={corp.corpId} className={'pb10'}>
               <Col>
-                <Checkbox value={corp.corpId}>
+                <Checkbox
+                  value={corp.corpId}
+                  checked={currentCorpId === corp.corpId}
+                  disabled={currentCorpId === corp.corpId}
+                >
                   <span className="color-text-primary">{corp.corpName}</span>
                 </Checkbox>
               </Col>

@@ -11,6 +11,7 @@ import { uploadImage } from 'src/apis/marketing';
 interface NgUploadProps {
   onChange?: (imgUrl: string) => void;
   value?: string;
+  beforeUpload?: (file: RcFile) => void;
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -19,7 +20,7 @@ const getBase64 = (img: any, callback: (str: any) => void) => {
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 };
-const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
+const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) => {
   const [states, setStates] = useState({
     loading: false,
     imageUrl: ''
@@ -31,23 +32,28 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
   }, [value]);
   const uploadButton = (
     <div>
-      {states.loading ? <LoadingOutlined /> : <Icon className={'font16'} name="upload" />}
-      <div style={{ marginTop: 8 }}>Upload</div>
+      {states.loading ? <LoadingOutlined /> : <Icon className={'font36'} name="upload" />}
+      <div style={{ marginTop: 8 }} className={'color-text-regular'}>
+        上传图片
+      </div>
     </div>
   );
-  const beforeUpload = (file: RcFile) => {
+  const handleBeforeUpload = (file: RcFile) => {
+    if (beforeUpload) {
+      const res = beforeUpload?.(file);
+      return res;
+    }
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
+      message.error('你只可以上传 JPG/PNG 文件!');
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
+      message.error('图片大小不能超过 2MB!');
     }
     return isJpgOrPng && isLt2M;
   };
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
-    console.log('aaaaaaaaaaaaaaaaa', info.file.status);
     if (info.file.status === 'uploading') {
       setStates((states) => ({ ...states, loading: true }));
       return;
@@ -56,7 +62,6 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       getBase64(info.file.originFileObj, (imageUrl: string) => {
-        console.log(imageUrl);
         setStates({
           imageUrl,
           loading: false
@@ -83,7 +88,7 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
     <Upload
       onChange={handleChange}
       listType="picture-card"
-      beforeUpload={beforeUpload}
+      beforeUpload={handleBeforeUpload}
       showUploadList={false}
       className="avatar-uploader"
       customRequest={posterUploadFile}

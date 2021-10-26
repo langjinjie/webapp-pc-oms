@@ -8,6 +8,7 @@ import { getPosterCategoryList, getPosterDetail, getPosterTagList, savePoster } 
 import { Poster } from './Config';
 import { useForm } from 'antd/es/form/Form';
 import NgUpload from '../Components/Upload/Upload';
+import { RcFile } from 'antd/lib/upload';
 
 const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [isView, setIsView] = useState(false);
@@ -77,23 +78,61 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       history.push('/marketingPoster');
     }
   };
+
+  const beforeUpload = (file: RcFile) => {
+    const isJpg = file.type === 'image/jpeg';
+    if (!isJpg) {
+      message.error('你只可以上传 JPG 文件!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不能超过 2MB!');
+    }
+    let isW750 = false;
+    // 读取图片数据
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      console.log(e);
+      // @ts-ignore
+      const data = e.target.result;
+      // 加载图片获取图片真实宽度和高度
+      const image = new Image();
+      // @ts-ignore
+      image.src = data;
+      image.onload = function () {
+        const width = image.width;
+        // const height = image.height;
+        isW750 = width === 750;
+      };
+    };
+    if (!isW750) {
+      message.error('海报宽度必须为 750px');
+    }
+    reader.readAsDataURL(file);
+    return isJpg && isLt2M && isW750;
+  };
   return (
     <div className={styles.pa20}>
       <Form labelCol={{ span: 3 }} wrapperCol={{ span: 8 }} form={myForm} onFinish={onSubmit}>
-        <Form.Item label="海报名称" name="name" rules={[{ required: true }]}>
+        <Form.Item label="海报名称" name="name" rules={[{ required: true }, { max: 30, message: '最多30个字符' }]}>
           <Input type="text" />
         </Form.Item>
-        <Form.Item label="文章ID">
+        <Form.Item label="文章ID" rules={[{ max: 100, message: '最多100个字符' }]}>
           <Input type="text" />
         </Form.Item>
-        <Form.Item label="海报样式" name="imgUrl" rules={[{ required: true }]}>
-          <NgUpload />
+        <Form.Item
+          label="海报样式"
+          name="imgUrl"
+          rules={[{ required: true }]}
+          extra={'为确保最佳展示效果，请上传宽度为750像素的高清图片，仅支持.jpg格式'}
+        >
+          <NgUpload beforeUpload={beforeUpload} />
         </Form.Item>
         <Form.Item label="分类" name={'typeIds'} rules={[{ required: true }]}>
           <Cascader options={categoryList} fieldNames={{ label: 'name', value: 'typeId', children: 'childs' }} />
         </Form.Item>
         <Form.Item label="标签" name={'tags'} rules={[{ required: true }]}>
-          <Select mode="multiple">
+          <Select mode="multiple" placeholder="待添加">
             {tagList.map((tag) => (
               <Select.Option key={tag.name} value={tag.name}>
                 {tag.name}
