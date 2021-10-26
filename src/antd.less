@@ -151,7 +151,7 @@
   }
 }
 
-.ant-checkbox-disabled > .ant-checkbox-inner::after {
+.ant-checkbox-disabled:not(.ant-checkbox-checked) > .ant-checkbox-inner::after {
   top: 50%;
   left: 50%;
   width: 8px;
@@ -162,4 +162,15 @@
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
   content: ' ';
+}
+
+.avatar-uploader {
+  .ant-upload {
+    width: 100%;
+    min-height: 104px;
+  }
+  .ant-upload.ant-upload-select-picture-card {
+    background: #fff;
+    color: #7e8185;
+  }
 }

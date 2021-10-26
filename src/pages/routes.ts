@@ -100,14 +100,14 @@ export const menus: Menu[] = [
         name: '海报库',
         path: '/marketingPoster'
       },
-      {
-        name: '活动库',
-        path: '/marketing/activity'
-      },
-      {
-        name: '产品库',
-        path: '/marketing/product'
-      },
+      // {
+      //   name: '活动库',
+      //   path: '/marketing/activity'
+      // },
+      // {
+      //   name: '产品库',
+      //   path: '/marketing/product'
+      // },
       {
         name: '首页配置',
         path: '/marketingIndex'

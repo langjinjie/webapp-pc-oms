@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Form, Input, Upload, Select, Button, message } from 'antd';
-import { peerNews, uploadImage, getTagsOrCategorys } from 'src/apis/marketing';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { Form, Input, Select, Button, message } from 'antd';
+import { peerNews, getTagsOrCategorys } from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
-// import { GlobalContent, UPDATE_CATEGORY, UPDATE_TAGS } from 'src/store';
-// import { useGetCorps } from 'src/utils/corp';
 import { Context } from 'src/store';
+import NgUpload from '../../Components/Upload/Upload';
 
 interface formDataProps {
   newsUrl: string;
@@ -19,16 +17,13 @@ interface typeProps {
   type: string;
 }
 const TabView2: React.FC = () => {
-  const [loading, changeLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [imageUrl, changeImgUrl] = useState('');
   const [formData, changeFormData] = useState<formDataProps>({
     newsUrl: '',
     defaultImg: '',
     originalCreator: '',
     summary: ''
   });
-  // const { data: corpList } = useGetCorps();
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList } =
     useContext(Context);
   const [form] = Form.useForm();
@@ -63,12 +58,6 @@ const TabView2: React.FC = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  const getBase64 = (img: any, callback: (imageUrl: any) => void) => {
-    const reader: FileReader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
-
   useEffect(() => {
     if (categoryList.length === 0) {
       asyncGetTagsOrCategory('category');
@@ -81,26 +70,12 @@ const TabView2: React.FC = () => {
     };
   }, []);
 
-  // 上传修改
-  const handleChange = (info: any) => {
-    if (info.file.status === 'uploading') {
-      changeLoading(true);
-      return;
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        changeLoading(false);
-        changeImgUrl(imageUrl);
-      });
-    }
-  };
-
   const onFinish = async (values: any) => {
     try {
       setSubmitting(true);
-      const res = await peerNews({ ...values, defaultImg: formData.defaultImg, corpId: currentCorpId });
+      const res = await peerNews({ ...values, corpId: currentCorpId });
       if (!res) {
+        setSubmitting(false);
         return false;
       }
       message.success('添加成功！').then(() => {
@@ -120,25 +95,7 @@ const TabView2: React.FC = () => {
       console.log(e);
     }
   };
-  const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>上传图片</div>
-    </div>
-  );
-  // 自定义上传
-  const uploadToServer = async (options: any) => {
-    const fileData = new FormData();
-    fileData.append('file', options.file);
-    fileData.append('bizKey', 'news');
-    try {
-      const res = await uploadImage(fileData);
-      options.onSuccess(options);
-      changeFormData((formData) => ({ ...formData, defaultImg: res.filePath }));
-    } catch (e) {
-      message.error('图片上传失败，请重试' + e);
-    }
-  };
+
   return (
     <Form
       form={form}
@@ -168,21 +125,11 @@ const TabView2: React.FC = () => {
         <Input placeholder="请输入" />
       </Form.Item>
       <Form.Item
-        label={<span>文章分享封面</span>}
+        name="defaultImg"
+        label={'文章分享封面'}
         extra=" 为确保最佳展示效果，请上传154*154像素高清图片，支持.png及.jpg格式的图片。若不上传，则默认为链接对应文章的自带封面。"
       >
-        <Upload
-          name="avatar"
-          maxCount={1}
-          listType="picture-card"
-          className="avatar-uploader"
-          showUploadList={false}
-          beforeUpload={beforeUpload}
-          customRequest={uploadToServer}
-          onChange={handleChange}
-        >
-          {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-        </Upload>
+        <NgUpload beforeUpload={beforeUpload} />
       </Form.Item>
       <Form.Item
         name="summary"
@@ -201,7 +148,7 @@ const TabView2: React.FC = () => {
           </div>
         </div>
       </Form.Item>
-      <Form.Item label="选择分类" name="categoryId">
+      <Form.Item label="选择分类" name="categoryId" rules={[{ required: true, message: '请选择分类' }]}>
         <Select style={{ width: '100%' }} placeholder="请选择分类" optionFilterProp="children" showSearch>
           {articleCategoryList?.map((category: any) => (
             <Select.Option value={category.id} key={category.id}>
@@ -210,7 +157,7 @@ const TabView2: React.FC = () => {
           ))}
         </Select>
       </Form.Item>
-      <Form.Item label="选择标签" name="tagIdList">
+      <Form.Item label="选择标签" name="tagIdList" rules={[{ required: true, message: '请选择标签' }]}>
         <Select
           style={{ width: '100%' }}
           placeholder="请选择标签"

@@ -31,7 +31,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   // operationType 1=上架;2=下架;
   const [operationType, setOperationType] = useState<number | null>(null);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
-  const { currentCorpId } = useContext(Context);
+  const { currentCorpId, isMainCorp } = useContext(Context);
   const [visible, setVisible] = useState(false);
   const [categoryList, setCategoryList] = useState<any[]>([]);
 
@@ -158,15 +158,26 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   const handleToggleOnlineState = async (type: number, record?: Poster) => {
     if (type === 2) {
       Modal.confirm({
-        content: '下架后会影响所有机构',
-        cancelText: '否',
-        okText: '是',
+        content: isMainCorp ? '下架后会影响所有机构' : '确定下架',
+        cancelText: '取消',
+        okText: '确定',
         onOk: () => {
           onSubmitToggleOnline({ type, record });
         }
       });
     } else {
-      setVisible(true);
+      if (isMainCorp) {
+        setVisible(true);
+      } else {
+        Modal.confirm({
+          content: '确认上架？',
+          cancelText: '取消',
+          okText: '确定',
+          onOk: () => {
+            onSubmitToggleOnline({ type, record });
+          }
+        });
+      }
     }
   };
 
@@ -203,11 +214,11 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   const handleTop = async (record: Poster) => {
     const res = await posterOperation({
       corpIds: null,
-      opType: 3,
+      opType: record.weightRecommend ? -3 : 3,
       posterId: record.posterId
     });
     if (res) {
-      message.success('置顶成功');
+      message.success(record.weightRecommend ? '取消置顶成功' : '置顶成功');
       // 置顶成功之后，刷新列表
       handleSearch({});
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { message, Upload } from 'antd';
+import { Upload } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -11,6 +11,7 @@ import { uploadImage } from 'src/apis/marketing';
 interface NgUploadProps {
   onChange?: (imgUrl: string) => void;
   value?: string;
+  beforeUpload?: (file: RcFile) => void;
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -19,7 +20,7 @@ const getBase64 = (img: any, callback: (str: any) => void) => {
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 };
-const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
+const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) => {
   const [states, setStates] = useState({
     loading: false,
     imageUrl: ''
@@ -31,23 +32,28 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
   }, [value]);
   const uploadButton = (
     <div>
-      {states.loading ? <LoadingOutlined /> : <Icon className={'font16'} name="upload" />}
-      <div style={{ marginTop: 8 }}>Upload</div>
+      {states.loading ? <LoadingOutlined /> : <Icon className={'font36'} name="upload" />}
+      <div style={{ marginTop: 8 }} className={'color-text-regular'}>
+        上传图片
+      </div>
     </div>
   );
-  const beforeUpload = (file: RcFile) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-  };
+  // const handleBeforeUpload = async (file: RcFile) => {
+  //   if (beforeUpload) {
+  //     const res = await beforeUpload?.(file);
+  //     return res;
+  //   }
+  //   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  //   if (!isJpgOrPng) {
+  //     message.error('你只可以上传 JPG/PNG 文件!');
+  //   }
+  //   const isLt2M = file.size / 1024 / 1024 < 2;
+  //   if (!isLt2M) {
+  //     message.error('图片大小不能超过 2MB!');
+  //   }
+  //   return isJpgOrPng && isLt2M;
+  // };
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
-    console.log('aaaaaaaaaaaaaaaaa', info.file.status);
     if (info.file.status === 'uploading') {
       setStates((states) => ({ ...states, loading: true }));
       return;
@@ -56,7 +62,6 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       getBase64(info.file.originFileObj, (imageUrl: string) => {
-        console.log(imageUrl);
         setStates({
           imageUrl,
           loading: false
@@ -72,7 +77,6 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value }) => {
     uploadData.append('file', options.file);
     uploadData.append('bizKey', 'news');
     const res: any = await uploadImage(uploadData);
-    console.log(res);
     if (res) {
       onChange?.(res.filePath);
       setStates((states) => ({ ...states, loading: false, imageUrl: res.filePath || '' }));

@@ -1,11 +1,12 @@
-import React from 'react';
-import { Button, Image, Popconfirm, Space } from 'antd';
+import React, { useContext } from 'react';
+import { Button, Image, Popconfirm, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import classNames from 'classnames';
 
 import styles from './style.module.less';
+import { Context } from 'src/store';
 
 export const setSearchCols = (options: any[]): SearchCol[] => {
   return [
@@ -78,122 +79,278 @@ type OperationsType = {
   handleTop: (record: any) => void;
 };
 export const columns = (args: OperationsType): ColumnsType<Poster> => {
+  const { isMainCorp } = useContext(Context);
   const { handleEdit, changeItemStatus, viewItem, deleteItem, handleTop } = args;
-  return [
-    {
-      title: '海报样式',
-      dataIndex: 'imgUrl',
-      render: (imgUrl: string) => {
-        return (
-          <div className={styles.listImgWrap}>
-            <Image src={imgUrl} />
-          </div>
-        );
-      }
-    },
-    {
-      title: '名称',
-      dataIndex: 'name',
-      align: 'left'
-    },
-    {
-      title: '分类',
-      align: 'center',
-      dataIndex: 'typeName',
-      width: 180,
-      render: (text: String, record: Poster) => {
-        return record.fatherTypeName ? record.fatherTypeName + '-' + text : text || UNKNOWN;
-      }
-    },
-    {
-      title: '上架时间',
-      dataIndex: 'onlineTime',
-      align: 'center',
-      width: 160,
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '下架时间',
-      dataIndex: 'offlineTime',
-      align: 'center',
-      width: 160,
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '操作人',
-      dataIndex: 'updateBy',
-      align: 'center',
-      width: 120,
-      render: (text: string) => {
-        return <span>{text || UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      align: 'center',
-      className: 'status-color',
-      width: 100,
-      render: (status: number) => {
-        return (
-          <a className="status-color">
-            <i
-              className={classNames('status-point', [
-                {
-                  'status-point-gray': status === 1,
-                  'status-point-green': status === 2,
-                  'status-point-red': status === 3
-                }
-              ])}
-            ></i>
-            {StatusEnum[status]}
-          </a>
-        );
-      }
-    },
-    {
-      title: '操作',
-      width: 220,
-      dataIndex: 'status',
-      align: 'left',
-      fixed: 'right',
-      render: (status: number, obj: Poster) => (
-        <Space size={10} className="spaceWrap">
-          {!obj.productId && (
-            <Button type="link" onClick={() => handleTop(obj)}>
-              置顶
-            </Button>
-          )}
+  if (isMainCorp) {
+    return [
+      {
+        title: '海报样式',
+        dataIndex: 'imgUrl',
+        width: 100,
+        render: (imgUrl: string) => {
+          return (
+            <div className={styles.listImgWrap}>
+              <Image src={imgUrl} />
+            </div>
+          );
+        }
+      },
+      {
+        title: '名称',
+        dataIndex: 'name',
+        align: 'left',
+        width: 200,
+        ellipsis: {
+          showTitle: false
+        },
+        render: (name) => (
+          <Tooltip placement="topLeft" title={name}>
+            {name || UNKNOWN}
+          </Tooltip>
+        )
+      },
+      {
+        title: '分类',
+        dataIndex: 'typeName',
+        align: 'left',
+        width: 180,
+        render: (text: String, record: Poster) => {
+          return record.fatherTypeName ? record.fatherTypeName + '-' + text : text || UNKNOWN;
+        }
+      },
+      {
+        title: '上架机构',
+        align: 'left',
+        dataIndex: 'usedCorpsName',
+        width: 200,
+        ellipsis: {
+          showTitle: false
+        },
+        render: (usedCorpsName) => (
+          <Tooltip placement="topLeft" title={usedCorpsName}>
+            {usedCorpsName || UNKNOWN}
+          </Tooltip>
+        )
+      },
 
-          <Button type="link" onClick={() => viewItem(obj)}>
-            查看
-          </Button>
-          {(status === 1 || status === 3) && !obj.productId && (
-            <Button type="link" onClick={() => handleEdit(obj)}>
-              编辑
+      {
+        title: '上架时间',
+        dataIndex: 'onlineTime',
+        align: 'center',
+        width: 160,
+        render: (text: string) => {
+          return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
+        }
+      },
+      {
+        title: '下架时间',
+        dataIndex: 'offlineTime',
+        align: 'center',
+        width: 160,
+        render: (text: string) => {
+          return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
+        }
+      },
+      {
+        title: '操作人',
+        dataIndex: 'updateBy',
+        align: 'center',
+        width: 120,
+        render: (text: string) => {
+          return <span>{text || UNKNOWN}</span>;
+        }
+      },
+      {
+        title: '状态',
+        dataIndex: 'status',
+        align: 'center',
+        className: 'status-color',
+        width: 100,
+        render: (status: number) => {
+          return (
+            <a className="status-color">
+              <i
+                className={classNames('status-point', [
+                  {
+                    'status-point-gray': status === 1,
+                    'status-point-green': status === 2,
+                    'status-point-red': status === 3
+                  }
+                ])}
+              ></i>
+              {StatusEnum[status]}
+            </a>
+          );
+        }
+      },
+      {
+        title: '操作',
+        width: 250,
+        dataIndex: 'status',
+        align: 'left',
+        fixed: 'right',
+        render: (status: number, obj: Poster) => (
+          <Space size={10} className="spaceWrap">
+            {!obj.productId && (
+              <Button type="link" onClick={() => handleTop(obj)}>
+                {obj.weightRecommend ? '取消置顶' : '置顶'}
+              </Button>
+            )}
+
+            <Button type="link" onClick={() => viewItem(obj)}>
+              查看
             </Button>
-          )}
-          {(status === 1 || status === 3) && !obj.productId && (
-            <Button type="link" onClick={() => changeItemStatus(1, obj)}>
-              上架
+            {(status === 1 || status === 3) && !obj.productId && (
+              <Button type="link" onClick={() => handleEdit(obj)}>
+                编辑
+              </Button>
+            )}
+            {(status === 1 || status === 3) && !obj.productId && (
+              <Button type="link" onClick={() => changeItemStatus(1, obj)}>
+                上架
+              </Button>
+            )}
+            {status === 2 && !obj.productId && (
+              <Button type="link" onClick={() => changeItemStatus(2, obj)}>
+                下架
+              </Button>
+            )}
+            {status === 3 && !obj.productId && (
+              <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)}>
+                <Button type="link">删除</Button>
+              </Popconfirm>
+            )}
+          </Space>
+        )
+      }
+    ];
+  } else {
+    return [
+      {
+        title: '海报样式',
+        dataIndex: 'imgUrl',
+        width: 100,
+        render: (imgUrl: string) => {
+          return (
+            <div className={styles.listImgWrap}>
+              <Image src={imgUrl} />
+            </div>
+          );
+        }
+      },
+      {
+        title: '名称',
+        dataIndex: 'name',
+        align: 'left',
+        width: 200,
+        ellipsis: {
+          showTitle: false
+        },
+        render: (name) => (
+          <Tooltip placement="topLeft" title={name}>
+            {name || UNKNOWN}
+          </Tooltip>
+        )
+      },
+      {
+        title: '分类',
+        dataIndex: 'typeName',
+        align: 'left',
+        width: 180,
+        render: (text: String, record: Poster) => {
+          return record.fatherTypeName ? record.fatherTypeName + '-' + text : text || UNKNOWN;
+        }
+      },
+      {
+        title: '上架时间',
+        dataIndex: 'onlineTime',
+        align: 'center',
+        width: 160,
+        render: (text: string) => {
+          return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
+        }
+      },
+      {
+        title: '下架时间',
+        dataIndex: 'offlineTime',
+        align: 'center',
+        width: 160,
+        render: (text: string) => {
+          return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
+        }
+      },
+      {
+        title: '操作人',
+        dataIndex: 'updateBy',
+        align: 'center',
+        width: 120,
+        render: (text: string) => {
+          return <span>{text || UNKNOWN}</span>;
+        }
+      },
+      {
+        title: '状态',
+        dataIndex: 'status',
+        align: 'center',
+        className: 'status-color',
+        width: 100,
+        render: (status: number) => {
+          return (
+            <a className="status-color">
+              <i
+                className={classNames('status-point', [
+                  {
+                    'status-point-gray': status === 1,
+                    'status-point-green': status === 2,
+                    'status-point-red': status === 3
+                  }
+                ])}
+              ></i>
+              {StatusEnum[status]}
+            </a>
+          );
+        }
+      },
+      {
+        title: '操作',
+        width: 250,
+        dataIndex: 'status',
+        align: 'left',
+        fixed: 'right',
+        render: (status: number, obj: Poster) => (
+          <Space size={10} className="spaceWrap">
+            {!obj.productId && (
+              <Button type="link" onClick={() => handleTop(obj)}>
+                {obj.weightRecommend ? '取消置顶' : '置顶'}
+              </Button>
+            )}
+
+            <Button type="link" onClick={() => viewItem(obj)}>
+              查看
             </Button>
-          )}
-          {status === 2 && !obj.productId && (
-            <Button type="link" onClick={() => changeItemStatus(2, obj)}>
-              下架
-            </Button>
-          )}
-          {status === 3 && !obj.productId && (
-            <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)}>
-              <Button type="link">删除</Button>
-            </Popconfirm>
-          )}
-        </Space>
-      )
-    }
-  ];
+            {(status === 1 || status === 3) && !obj.productId && (
+              <Button type="link" onClick={() => handleEdit(obj)}>
+                编辑
+              </Button>
+            )}
+            {(status === 1 || status === 3) && !obj.productId && (
+              <Button type="link" onClick={() => changeItemStatus(1, obj)}>
+                上架
+              </Button>
+            )}
+            {status === 2 && !obj.productId && (
+              <Button type="link" onClick={() => changeItemStatus(2, obj)}>
+                下架
+              </Button>
+            )}
+            {status === 3 && !obj.productId && (
+              <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)}>
+                <Button type="link">删除</Button>
+              </Popconfirm>
+            )}
+          </Space>
+        )
+      }
+    ];
+  }
 };

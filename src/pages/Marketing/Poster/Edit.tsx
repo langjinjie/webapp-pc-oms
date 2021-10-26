@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Cascader, Form, Input, message, Select } from 'antd';
 
 import styles from './style.module.less';
@@ -8,29 +8,9 @@ import { getPosterCategoryList, getPosterDetail, getPosterTagList, savePoster } 
 import { Poster } from './Config';
 import { useForm } from 'antd/es/form/Form';
 import NgUpload from '../Components/Upload/Upload';
-const getParentIds = (id: string, data: any[]) => {
-  // 深度遍历查找
-  const dfs = (data: any[], id: string, parents: any[]) => {
-    for (let i = 0; i < data.length; i++) {
-      const item = data[i];
-      // 找到id则返回父级id
-      if (item.id === id) return parents;
-      // children不存在或为空则不递归
-      if (!item.children || !item.children.length) continue;
-      // 往下查找时将当前id入栈
-      parents.push(item.id);
+import { RcFile } from 'antd/lib/upload';
 
-      if (dfs(item.children, id, parents).length) return parents;
-      // 深度遍历查找未找到时当前id 出栈
-      parents.pop();
-    }
-    // 未找到时返回空数组
-    return [];
-  };
-
-  return dfs(data, id, []);
-};
-const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
+const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [isView, setIsView] = useState(false);
   const [poster, setPoster] = useState<Poster | null>(null);
   const [categoryList, setCategoryList] = useState<any[]>([]);
@@ -49,12 +29,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
       });
     }
   };
-  useMemo(() => {
-    if (poster && categoryList.length > 0) {
-      const res = getParentIds(poster?.typeId || '', categoryList);
-      console.log(res);
-    }
-  }, [poster, categoryList]);
+
   const getTagList = async () => {
     const res = (await getPosterTagList({})) || [];
     if (res) {
@@ -78,11 +53,11 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
     }
   }, []);
   const onSubmit = async (values: any) => {
-    console.log(values);
     const { typeIds = [], tags = [] } = values;
     let postData: any = {};
     if (poster) {
       postData = {
+        ...poster,
         ...values,
         typeId: typeIds.pop(),
         corpId: poster?.corpId,
@@ -100,26 +75,67 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
     const res = await savePoster(postData);
     if (res) {
       message.success('保存成功');
+      history.push('/marketingPoster');
     }
-    console.log(res);
+  };
+
+  const beforeUpload = (file: RcFile): Promise<boolean> => {
+    console.log(file);
+    const isJpg = file.type === 'image/jpeg';
+    if (!isJpg) {
+      message.error('你只可以上传 JPG 文件!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不能超过 2MB!');
+    }
+    let isW750 = false;
+    // 读取图片数据
+
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          // const height = image.height;
+          isW750 = width === 750;
+          if (!isW750) {
+            message.error('海报宽度必须为 750px');
+          }
+          resolve(isJpg && isLt2M && isW750);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
   };
   return (
     <div className={styles.pa20}>
       <Form labelCol={{ span: 3 }} wrapperCol={{ span: 8 }} form={myForm} onFinish={onSubmit}>
-        <Form.Item label="海报名称" name="name" rules={[{ required: true }]}>
+        <Form.Item label="海报名称" name="name" rules={[{ required: true }, { max: 60, message: '最多60个字符' }]}>
           <Input type="text" />
         </Form.Item>
-        <Form.Item label="文章ID">
+        <Form.Item label="海报ID" name="exterPosterId" rules={[{ max: 60, message: '最多60个字符' }]}>
           <Input type="text" />
         </Form.Item>
-        <Form.Item label="海报样式" name="imgUrl" rules={[{ required: true }]}>
-          <NgUpload />
+        <Form.Item
+          label="海报样式"
+          name="imgUrl"
+          rules={[{ required: true }]}
+          extra={'为确保最佳展示效果，请上传宽度为750像素的高清图片，仅支持.jpg格式'}
+        >
+          <NgUpload beforeUpload={beforeUpload} />
         </Form.Item>
         <Form.Item label="分类" name={'typeIds'} rules={[{ required: true }]}>
           <Cascader options={categoryList} fieldNames={{ label: 'name', value: 'typeId', children: 'childs' }} />
         </Form.Item>
         <Form.Item label="标签" name={'tags'} rules={[{ required: true }]}>
-          <Select mode="multiple">
+          <Select mode="multiple" placeholder="待添加">
             {tagList.map((tag) => (
               <Select.Option key={tag.name} value={tag.name}>
                 {tag.name}
