@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Cascader, Form, Input, message, Select } from 'antd';
 
 import styles from './style.module.less';
@@ -8,29 +8,8 @@ import { getPosterCategoryList, getPosterDetail, getPosterTagList, savePoster } 
 import { Poster } from './Config';
 import { useForm } from 'antd/es/form/Form';
 import NgUpload from '../Components/Upload/Upload';
-const getParentIds = (id: string, data: any[]) => {
-  // 深度遍历查找
-  const dfs = (data: any[], id: string, parents: any[]) => {
-    for (let i = 0; i < data.length; i++) {
-      const item = data[i];
-      // 找到id则返回父级id
-      if (item.id === id) return parents;
-      // children不存在或为空则不递归
-      if (!item.children || !item.children.length) continue;
-      // 往下查找时将当前id入栈
-      parents.push(item.id);
 
-      if (dfs(item.children, id, parents).length) return parents;
-      // 深度遍历查找未找到时当前id 出栈
-      parents.pop();
-    }
-    // 未找到时返回空数组
-    return [];
-  };
-
-  return dfs(data, id, []);
-};
-const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
+const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [isView, setIsView] = useState(false);
   const [poster, setPoster] = useState<Poster | null>(null);
   const [categoryList, setCategoryList] = useState<any[]>([]);
@@ -49,12 +28,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
       });
     }
   };
-  useMemo(() => {
-    if (poster && categoryList.length > 0) {
-      const res = getParentIds(poster?.typeId || '', categoryList);
-      console.log(res);
-    }
-  }, [poster, categoryList]);
+
   const getTagList = async () => {
     const res = (await getPosterTagList({})) || [];
     if (res) {
@@ -100,8 +74,8 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location }) => {
     const res = await savePoster(postData);
     if (res) {
       message.success('保存成功');
+      history.push('/marketingPoster');
     }
-    console.log(res);
   };
   return (
     <div className={styles.pa20}>

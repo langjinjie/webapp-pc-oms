@@ -36,9 +36,8 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
-  const { currentCorpId, articleCategoryList, setArticleCategoryList } = useContext(Context);
+  const { currentCorpId, articleCategoryList, setArticleCategoryList, isMainCorp } = useContext(Context);
   const [visibleOnline, setVisibleOnline] = useState(false);
-  console.log(currentCorpId);
   // operationType 1=上架;2=下架;
   const [operationType, setOperationType] = useState<number | null>(null);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
@@ -160,9 +159,9 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const handleTop = async (record: Article) => {
-    const res = await operateArticleStatus({ newsId: record.newsId, opType: 3 });
+    const res = await operateArticleStatus({ newsId: record.newsId, opType: record.isTop ? -3 : 3 });
     if (res) {
-      message.success('置顶成功');
+      message.success(!record.isTop ? '置顶成功' : '取消置顶成功');
       await getList({});
     }
   };
@@ -201,7 +200,18 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         }
       });
     } else {
-      setVisibleOnline(true);
+      if (isMainCorp) {
+        setVisibleOnline(true);
+      } else {
+        Modal.confirm({
+          content: '确认上架？',
+          cancelText: '取消',
+          okText: '确定',
+          onOk: () => {
+            onSubmitToggleOnline({ type, record });
+          }
+        });
+      }
     }
   };
 
@@ -286,7 +296,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
       </div>
       {/* Form 表单查询 end */}
       {/* 列表数据 start */}
-      <div className={'pt20'}>
+      <div className={'pt5'}>
         <NgTable
           loading={loading}
           columns={myColumns}
@@ -298,28 +308,30 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
             return record.newsId;
           }}
         />
-        <div className={style.operationWrap}>
-          <Space size={20}>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={operationType !== 1}
-              onClick={() => handleToggleOnlineState(1)}
-            >
-              批量上架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={operationType !== 2}
-              onClick={() => handleToggleOnlineState(2)}
-            >
-              批量下架
-            </Button>
-          </Space>
-        </div>
+        {tableSource.length > 0 && (
+          <div className={style.operationWrap}>
+            <Space size={20}>
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={operationType !== 1}
+                onClick={() => handleToggleOnlineState(1)}
+              >
+                批量上架
+              </Button>
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={operationType !== 2}
+                onClick={() => handleToggleOnlineState(2)}
+              >
+                批量下架
+              </Button>
+            </Space>
+          </div>
+        )}
         {/* 列表数据 end */}
       </div>
       <OnlineModal visible={visibleOnline} onCancel={() => setVisibleOnline(false)} onOk={submitOnline}></OnlineModal>

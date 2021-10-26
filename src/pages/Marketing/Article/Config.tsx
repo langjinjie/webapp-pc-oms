@@ -17,7 +17,8 @@ const setSearchCols = (options: any[]): SearchCol[] => {
     {
       name: 'title',
       type: 'input',
-      label: '标题',
+      label: '文章标题',
+      width: '268px',
       placeholder: '请输入'
     },
     {
@@ -27,18 +28,19 @@ const setSearchCols = (options: any[]): SearchCol[] => {
       width: 160,
       options: options
     },
+    { name: 'rangePicker', width: '268px', type: 'rangePicker', label: '创建时间' },
     {
       name: 'syncBank',
       type: 'select',
-      label: '文章状态',
       width: 160,
+      label: '状态',
+
       options: [
         { id: 0, name: '未上架' },
         { id: 1, name: '已上架' },
         { id: 2, name: '已下架' }
       ]
-    },
-    { name: 'rangePicker', type: 'rangePicker', label: '创建时间' }
+    }
   ];
 };
 
@@ -49,6 +51,7 @@ export interface Article {
   age: number;
   address: string;
   syncBank: number;
+  isTop: boolean;
   tags?: string[];
 }
 
@@ -168,10 +171,10 @@ const columns = (args: colargsType): ColumnsType<Article> => {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 180,
+      width: 220,
       render: (text, record) => (
         <Space size="small">
-          <a onClick={() => handleTop(record)}>置顶</a>
+          <a onClick={() => handleTop(record)}>{record.isTop ? '取消置顶' : '置顶'}</a>
           <a onClick={() => handleEdit(record)}>编辑</a>
           <a onClick={() => changeItemStatus(record)}>{record.syncBank !== 1 ? '上架' : '下架'}</a>
 

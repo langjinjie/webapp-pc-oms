@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Image, Popconfirm, Space } from 'antd';
+import { Button, Image, Popconfirm, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
@@ -83,6 +83,7 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
     {
       title: '海报样式',
       dataIndex: 'imgUrl',
+      width: 100,
       render: (imgUrl: string) => {
         return (
           <div className={styles.listImgWrap}>
@@ -94,16 +95,39 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
     {
       title: '名称',
       dataIndex: 'name',
-      align: 'left'
+      align: 'left',
+      width: 200,
+      ellipsis: {
+        showTitle: false
+      },
+      render: (name) => (
+        <Tooltip placement="topLeft" title={name}>
+          {name || UNKNOWN}
+        </Tooltip>
+      )
     },
     {
       title: '分类',
-      align: 'center',
       dataIndex: 'typeName',
+      align: 'left',
       width: 180,
       render: (text: String, record: Poster) => {
         return record.fatherTypeName ? record.fatherTypeName + '-' + text : text || UNKNOWN;
       }
+    },
+    {
+      title: '上架机构',
+      align: 'left',
+      dataIndex: 'usedCorpsName',
+      width: 200,
+      ellipsis: {
+        showTitle: false
+      },
+      render: (usedCorpsName) => (
+        <Tooltip placement="topLeft" title={usedCorpsName}>
+          {usedCorpsName || UNKNOWN}
+        </Tooltip>
+      )
     },
     {
       title: '上架时间',
@@ -157,7 +181,7 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
     },
     {
       title: '操作',
-      width: 220,
+      width: 250,
       dataIndex: 'status',
       align: 'left',
       fixed: 'right',
@@ -165,7 +189,7 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
         <Space size={10} className="spaceWrap">
           {!obj.productId && (
             <Button type="link" onClick={() => handleTop(obj)}>
-              置顶
+              {obj.weightRecommend ? '取消置顶' : '置顶'}
             </Button>
           )}
 
