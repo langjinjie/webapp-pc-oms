@@ -6,80 +6,73 @@
 import React, { useState, useEffect } from 'react';
 import { Select, Button, Table } from 'antd';
 import Dom2Img from 'dom-to-image';
+import { queryReportList } from 'src/apis/seatReport';
 import { downloadImage } from 'src/utils/base';
 import style from './style.module.less';
 
 const { Option } = Select;
 
-interface TimeItem {
-  id: string;
-  name: string;
+interface ReportItem {
+  reportId?: string;
+  reportName?: string;
+  updateTime?: string;
+  totalWorkDay?: number;
+  weekDay?: number;
 }
 
-interface OverallItem {
+interface areaGroupItem {
   id: string;
-  name: string;
-  dayCount: number;
-  total: number;
-  passRate: number;
-  averageMoment: number;
-  carNumRate: number;
+  areaName: string;
+  dayAddFriendCount: number;
+  totalAddFriendCount: number;
+  addFriendRate: string;
+  avgCircleCount: number;
+  markCarNumRate: string;
   market: number;
-  sale: number;
-}
-
-interface AgeItem {
-  total: number;
-  eighty: number;
-  ninety: number;
-  zero: number;
+  smart: number;
 }
 
 interface LevelItem {
-  level: string;
-  manpower: string;
-  score: string;
-}
-
-interface YearItem {
-  year: string;
-  manpower: string;
-  score: string;
+  leveName: string;
+  perCount: number;
+  mark: number;
 }
 
 interface StatisticsItem {
   id: string;
-  leaderName: string;
-  dayScore: number;
-  totalScore: number;
-  dayCount: number;
-  total: number;
-  passRate: number;
-  averageMoment: number;
-  carNumRate: number;
-  market: number;
-  sale: number;
-  teamManpower?: number;
-  date?: string;
+  order: number;
+  teamName: string;
+  dayUsedMark: number;
+  multiUseMark: number;
+  dayAddFriendCount: number;
+  totalAddFriendCount: number;
+  addFriendRate: string;
+  avgCircleCount: number;
+  markCarNumRate: string;
+  dayMarket: number;
+  daySmart: number;
+  perCount?: number;
+  trialStarDate?: string;
 }
 
 interface ClientManagerItem {
-  id: string;
-  name: string;
-  statisticsList: StatisticsItem[];
+  teamName: string;
+  teamShowName: string;
+  staffOrderList: StatisticsItem[];
 }
 
 interface RePort {
-  overallList?: OverallItem[];
-  age?: AgeItem;
-  level?: LevelItem;
-  year?: YearItem;
-  teamList?: StatisticsItem[];
-  clientManager?: ClientManagerItem[];
+  areaGroupList?: areaGroupItem[];
+  ageGroupList?: LevelItem[];
+  leveGroupList?: LevelItem[];
+  corpGroupList?: LevelItem[];
+  teamOrderList?: StatisticsItem[];
+  teamDetailList?: ClientManagerItem[];
 }
 
 const SeatReport: React.FC = () => {
-  const [timeList, setTimeList] = useState<TimeItem[]>([]);
+  const [reportList, setReportList] = useState<ReportItem[]>([]);
+  const [currentReport, setCurrentReport] = useState<ReportItem>({});
   const [reportData, setReportData] = useState<RePort>({});
 
   /**
@@ -91,13 +84,16 @@ const SeatReport: React.FC = () => {
     downloadImage(res, '战报');
   };
 
+  const getReportList = async () => {
+    const res: any = await queryReportList();
+    if (res) {
+      setReportList(res);
+      setCurrentReport(res[0]);
+    }
+  };
+
   useEffect(() => {
-    setTimeList([
-      {
-        id: '123',
-        name: '2021-10-22'
-      }
-    ]);
+    getReportList();
     setReportData({});
   }, []);
 
@@ -106,10 +102,13 @@ const SeatReport: React.FC = () => {
       <div className={style.row}>
         <div className={style.colLabel}>更新时间:</div>
         <div className={style.colValue}>
-          <Select placeholder="请选择">
-            {timeList.map((item) => (
-              <Option key={item.id} value={item.id}>
-                {item.name}
+          <Select
+            placeholder="请选择"
+            onChange={(val) => setCurrentReport(reportList.find((item) => item.reportId === val) || {})}
+          >
+            {reportList.map((item) => (
+              <Option key={item.reportId} value={item.reportId!}>
+                {item.reportName}
               </Option>
             ))}
           </Select>
@@ -123,9 +122,9 @@ const SeatReport: React.FC = () => {
           <img className={style.reportImg} src={require('src/assets/images/statistics/report_text.png')} alt="" />
         </header>
         <div className={style.timeInfo}>
-          <div>更新时间：9月27日 24:00</div>
-          <div>累计试点工作日：26</div>
-          <div>本周已过工作日：2</div>
+          <div>更新时间：{currentReport.updateTime}</div>
+          <div>累计试点工作日：{currentReport.totalWorkDay}</div>
+          <div>本周已过工作日：{currentReport.weekDay}</div>
         </div>
         <div className={style.reportTitle}>
           <img className={style.titleImg} src={require('src/assets/images/statistics/report_title.png')} alt="" />
@@ -140,7 +139,7 @@ const SeatReport: React.FC = () => {
             <img className={style.titleImg} src={require('src/assets/images/statistics/title1.png')} alt="" />
           </div>
           <div>
-            <Table dataSource={reportData.overallList || []} />
+            <Table dataSource={reportData.areaGroupList || []} />
           </div>
         </section>
       </div>
