@@ -6,8 +6,10 @@ import { ICorpList } from 'src/utils/interface';
 import { Context } from 'src/store';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { useDocumentTitle } from 'src/utils/base';
 
 const CorpList: React.FC = () => {
+  useDocumentTitle('机构管理-账号管理');
   const { isMainCorp, currentCorpId } = useContext(Context);
   const [corpList, setCorpList] = useState<ICorpList[]>();
   const [isLoading, setIsloading] = useState<boolean>(false);

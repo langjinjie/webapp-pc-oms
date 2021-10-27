@@ -4,7 +4,8 @@
  * @date 2021-05-29 17:29
  */
 import { getQueryParam } from 'lester-tools';
-
+import qs, { ParsedQs } from 'qs';
+import { useEffect, useRef } from 'react';
 type commonFC = (...args: any) => any;
 
 /**
@@ -56,3 +57,26 @@ export const setCookie: (name: string, value: string, time: number) => void = (
   exp.setTime(exp.getTime() + time * 1000);
   document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + ';path=/';
 };
+
+export const URLSearchParams = (search: string): ParsedQs => {
+  return qs.parse(search, { ignoreQueryPrefix: true });
+};
+export const useDocumentTitle = (title: string, keepOnUumount = true): void => {
+  const oldTitle = useRef(document.title).current;
+  // 页面加载时：oldTitle === 旧title 'React App'
+  // 加载后：oldTitle === 新title
+
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
+  useEffect(() => {
+    return () => {
+      if (!keepOnUumount) {
+        // 如果不指定依赖，读取的是旧title
+        document.title = oldTitle;
+      }
+    };
+  }, [keepOnUumount, oldTitle]);
+};
+export const UNKNOWN = '— —';

@@ -14,6 +14,8 @@ const StoreContext: React.FC = ({ children }) => {
   const [instList, setInstList] = useState<InstItem[]>([]);
   const [isMainCorp, setIsMainCorp] = useState<boolean>(true);
   const [currentCorpId, setCurrentCorpId] = useState<string>('');
+  const [articleCategoryList, setArticleCategoryList] = useState<any[]>([]);
+  const [articleTagList, setArticleTagList] = useState<any[]>([]);
 
   return (
     <Context.Provider
@@ -25,7 +27,11 @@ const StoreContext: React.FC = ({ children }) => {
         isMainCorp,
         setIsMainCorp,
         currentCorpId,
-        setCurrentCorpId
+        setCurrentCorpId,
+        articleCategoryList,
+        setArticleCategoryList,
+        articleTagList,
+        setArticleTagList
       }}
     >
       {children}

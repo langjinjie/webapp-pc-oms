@@ -26,13 +26,15 @@
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
     "@babel/polyfill": "^7.12.1",
+    "@tinymce/tinymce-react": "^3.13.0",
     "@types/dom-to-image": "^2.6.2",
     "@types/react": "^17.0.5",
     "@types/react-dom": "^17.0.3",
     "@types/react-router-dom": "^5.1.7",
     "antd": "^4.15.6",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "classnames": "^2.3.1",
+    "dom-to-image": "^2.6.0",
     "js-md5": "^0.7.3",
     "lester-tools": "^1.1.0",
     "moment": "^2.29.1",
@@ -42,7 +44,8 @@
     "react-dom": "^17.0.2",
     "react-router-cache-route": "^1.11.1",
     "react-router-dom": "^5.2.0",
-    "react-transition-group": "^4.4.2"
+    "react-transition-group": "^4.4.2",
+    "tinymce": "^5.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
