@@ -59,7 +59,7 @@ export const queryReportDetail: HttpFunction = (param: Object) => {
         areaName: '纪雨佳',
         dayAddFriendCount: 12,
         totalAddFriendCount: 1200,
-        addFriendRate: '52.2',
+        addFriendRate: '0.0',
         avgCircleCount: 1.2,
         markCarNumRate: '76.9',
         market: 68,
@@ -102,7 +102,7 @@ export const queryReportDetail: HttpFunction = (param: Object) => {
       {
         leveName: '中级',
         perCount: 32,
-        mark: 173
+        mark: 273
       },
       {
         leveName: '高级',

@@ -117,8 +117,8 @@ export const menus: Menu[] = [
         path: '/marketingIndex'
       }
     ]
-  },
-  {
+  }
+  /* {
     name: '数据统计',
     icon: 'a-bianzu101',
     path: 'statistics',
@@ -128,5 +128,5 @@ export const menus: Menu[] = [
         path: '/seatReport'
       }
     ]
-  }
+  } */
 ];
