@@ -107,17 +107,19 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         return message.error('请输入文章内容');
       }
       setSubmitting(true);
-      await saveNews({
+      const res = await saveNews({
         ...values,
         newsId: newsId,
         content: submitHTML,
         corpId: currentCorpId
       });
-      message.success('添加成功！').then(() => {
-        setSubmitting(false);
-        form.resetFields();
-        RouterHistory.push('/marketingArticle');
-      });
+      if (res) {
+        message.success('添加成功！').then(() => {
+          setSubmitting(false);
+          form.resetFields();
+          RouterHistory.push('/marketingArticle');
+        });
+      }
     } catch (e) {
       setSubmitting(false);
       console.log(e);
