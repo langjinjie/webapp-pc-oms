@@ -3,7 +3,7 @@ import { Button, Cascader, Form, Input, message, Select } from 'antd';
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router';
-import { URLSearchParams } from 'src/utils/base';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import { getPosterCategoryList, getPosterDetail, getPosterTagList, savePoster } from 'src/apis/marketing';
 import { Poster } from './Config';
 import { useForm } from 'antd/es/form/Form';
@@ -11,6 +11,7 @@ import NgUpload from '../Components/Upload/Upload';
 import { RcFile } from 'antd/lib/upload';
 
 const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
+  useDocumentTitle('海报编辑');
   const [isView, setIsView] = useState(false);
   const [poster, setPoster] = useState<Poster | null>(null);
   const [categoryList, setCategoryList] = useState<any[]>([]);
@@ -32,6 +33,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
 
   const getTagList = async () => {
     const res = (await getPosterTagList({})) || [];
+
     if (res) {
       setTagList(res);
     }
@@ -135,9 +137,9 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
           <Cascader options={categoryList} fieldNames={{ label: 'name', value: 'typeId', children: 'childs' }} />
         </Form.Item>
         <Form.Item label="标签" name={'tags'} rules={[{ required: true }]}>
-          <Select mode="multiple" placeholder="待添加">
-            {tagList.map((tag) => (
-              <Select.Option key={tag.name} value={tag.name}>
+          <Select mode="tags" placeholder="待添加" maxTagCount={4}>
+            {tagList.map((tag, index) => (
+              <Select.Option key={index} value={tag.name}>
                 {tag.name}
               </Select.Option>
             ))}

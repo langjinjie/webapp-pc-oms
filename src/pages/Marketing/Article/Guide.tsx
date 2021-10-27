@@ -1,8 +1,10 @@
 import React from 'react';
+import { useDocumentTitle } from 'src/utils/base';
 import styles from './style.module.less';
 
 // 如何绑定公众号操作手册
 const Guide: React.FC = () => {
+  useDocumentTitle('新增公众号指引');
   return (
     <div className={styles.wrap}>
       <div className={styles.content}>

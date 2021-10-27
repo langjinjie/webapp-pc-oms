@@ -14,6 +14,7 @@ import {
   saveIndexConfig
 } from 'src/apis/marketing';
 import style from './style.module.less';
+import { useDocumentTitle } from 'src/utils/base';
 
 interface Poster {
   posterId: string;
@@ -46,6 +47,7 @@ const { Item, useForm } = Form;
 const { Option } = Select;
 
 const MarketIndex: React.FC = () => {
+  useDocumentTitle('移动端首页配置');
   const [posterList, setPosterList] = useState<Poster[]>([]);
   const [articleList, setArticleList] = useState<Article[]>([]);
   const [productList, setProductList] = useState<Product[]>([]);

@@ -19,6 +19,7 @@ import { setSearchCols, SearchParamsProps, columns, Article } from './Config';
 import classNames from 'classnames';
 import { PlusOutlined } from '@ant-design/icons';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
+import { useDocumentTitle } from 'src/utils/base';
 
 interface paginationProps {
   current: number;
@@ -28,6 +29,7 @@ interface paginationProps {
 }
 
 const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
+  useDocumentTitle('文章列表');
   const [pagination, setPagination] = useState<paginationProps>({
     current: 1,
     pageSize: 10,

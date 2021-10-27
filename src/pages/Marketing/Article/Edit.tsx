@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PageHeader, Divider, Form, Radio, RadioChangeEvent } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
-import { URLSearchParams } from 'src/utils/base';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 
 import TabView1 from './Components/TabView1';
 import TabView2 from './Components/TabView2';
@@ -13,6 +13,7 @@ interface tabsPorps {
   newsId: string;
 }
 const MyTabs: React.FC<tabsPorps> = ({ isEdit, newsId }) => {
+  useDocumentTitle('文章编辑');
   const [editType, setEditType] = React.useState(1);
 
   useEffect(() => {

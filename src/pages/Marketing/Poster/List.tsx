@@ -13,12 +13,14 @@ import { getPosterList, toggleOnlineState, posterOperation, getPosterCategoryLis
 import { useAsync } from 'src/utils/use-async';
 import { Context } from 'src/store';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
+import { useDocumentTitle } from 'src/utils/base';
 
 interface PostPosterData {
   total: number;
   list: Poster[];
 }
 const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
+  useDocumentTitle('海报列表页');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
