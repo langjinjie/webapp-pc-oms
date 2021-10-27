@@ -120,7 +120,7 @@ const TabView1: React.FC = () => {
           extra={
             <span style={{ color: '#aaa' }}>
               绑定公众号后，公众号的内容将自动同步到后台中方便转发。
-              <Link to="/addPublicAddress" replace>
+              <Link to="/marketingArticle/editGuide" replace>
                 如何添加
               </Link>
             </span>
