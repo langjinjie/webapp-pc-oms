@@ -49,6 +49,10 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Marketing/Article/Edit'))
   },
   {
+    path: '/marketingArticle/editGuide',
+    component: lazy(() => import('src/pages/Marketing/Article/Guide'))
+  },
+  {
     path: '/marketingPoster',
     component: lazy(() => import('src/pages/Marketing/Poster/List'))
   },

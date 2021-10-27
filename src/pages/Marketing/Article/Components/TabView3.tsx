@@ -110,7 +110,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       await saveNews({
         ...values,
         newsId: newsId,
-        defaultImg: formData.defaultImg,
         content: submitHTML,
         corpId: currentCorpId
       });

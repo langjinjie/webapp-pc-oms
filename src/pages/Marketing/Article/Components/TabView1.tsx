@@ -24,7 +24,6 @@ interface GzhProps {
 }
 const TabView1: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  // const { data, dispatch } = useContext(GlobalContent);
   const [list, setList] = useState<GzhProps[]>([]);
   const [form] = useForm();
 
@@ -56,10 +55,12 @@ const TabView1: React.FC = () => {
     const { publicAddressNames } = values;
     try {
       setLoading(true);
-      await addOfficialAccounts({ publicAddressNames, corpId: currentCorpId });
-      form.resetFields();
-      message.success('添加成功');
-      await getList();
+      const res = await addOfficialAccounts({ publicAddressNames, corpId: currentCorpId });
+      if (res) {
+        form.resetFields();
+        message.success('添加成功');
+        await getList();
+      }
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -97,7 +98,6 @@ const TabView1: React.FC = () => {
     const copyList = [...list];
     copyList[index].status = item.status === 1 ? 0 : 1;
     setList(copyList);
-    console.log(item.status);
     await operateInformation({ newsTaskId: item.id, opstatus: item.status === 1 ? 1 : 2 });
   };
 
@@ -120,7 +120,7 @@ const TabView1: React.FC = () => {
           extra={
             <span style={{ color: '#aaa' }}>
               绑定公众号后，公众号的内容将自动同步到后台中方便转发。
-              <Link to="/addPublicAddress" replace>
+              <Link to="/marketingArticle/editGuide" replace>
                 如何添加
               </Link>
             </span>

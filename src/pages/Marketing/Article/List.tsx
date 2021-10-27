@@ -191,14 +191,18 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const handleToggleOnlineState = async (type: number, record?: Article) => {
     if (type === 2) {
-      Modal.confirm({
-        content: '下架后会影响所有机构',
-        cancelText: '否',
-        okText: '是',
-        onOk: () => {
-          onSubmitToggleOnline({ type, record });
-        }
-      });
+      if (operationType && !record) {
+        Modal.confirm({
+          content: isMainCorp ? '下架后会影响所有机构' : '确定下架',
+          cancelText: '否',
+          okText: '是',
+          onOk: () => {
+            onSubmitToggleOnline({ type });
+          }
+        });
+      } else {
+        onSubmitToggleOnline({ type, record });
+      }
     } else {
       if (isMainCorp) {
         setVisibleOnline(true);
