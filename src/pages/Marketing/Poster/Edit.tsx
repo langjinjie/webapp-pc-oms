@@ -84,6 +84,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const beforeUpload = (file: RcFile): Promise<boolean> => {
     console.log(file);
     const isJpg = file.type === 'image/jpeg';
+
     if (!isJpg) {
       message.error('你只可以上传 JPG 文件!');
     }
@@ -120,7 +121,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     <div className={styles.pa20}>
       <Form labelCol={{ span: 3 }} wrapperCol={{ span: 8 }} form={myForm} onFinish={onSubmit}>
         <Form.Item label="海报名称" name="name" rules={[{ required: true }, { max: 60, message: '最多60个字符' }]}>
-          <Input type="text" />
+          <Input type="text" placeholder="请输入" />
         </Form.Item>
         <Form.Item label="海报ID" name="exterPosterId" rules={[{ max: 60, message: '最多60个字符' }]}>
           <Input type="text" />
