@@ -193,7 +193,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     if (type === 2) {
       if (operationType && !record) {
         Modal.confirm({
-          content: '下架后会影响所有机构',
+          content: isMainCorp ? '下架后会影响所有机构' : '确定下架',
           cancelText: '否',
           okText: '是',
           onOk: () => {
