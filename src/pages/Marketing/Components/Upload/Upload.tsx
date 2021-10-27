@@ -15,7 +15,6 @@ interface NgUploadProps {
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
-  console.log('a');
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
@@ -80,6 +79,8 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) =>
     if (res) {
       onChange?.(res.filePath);
       setStates((states) => ({ ...states, loading: false, imageUrl: res.filePath || '' }));
+    } else {
+      setStates((states) => ({ ...states, loading: false }));
     }
   };
 
