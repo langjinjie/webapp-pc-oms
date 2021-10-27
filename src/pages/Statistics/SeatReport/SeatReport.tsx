@@ -75,7 +75,35 @@ const SeatReport: React.FC = () => {
   const [reportList, setReportList] = useState<ReportItem[]>([]);
   const [currentReport, setCurrentReport] = useState<ReportItem>({});
   const [reportData, setReportData] = useState<RePort>({});
+  const [reportId, setReportId] = useState<string | undefined>(undefined);
 
+  /**
+   * 判断是否显示火的图标
+   * @param value
+   * @param type
+   */
+  const isHot = (value: number, type: number) => {
+    if (type === 0) {
+      return (
+        value ===
+        Math.max(...(reportData.ageGroupList || []).filter((item) => item.leveName !== '合计').map((item) => item.mark))
+      );
+    } else {
+      const levelData = type === 1 ? reportData.leveGroupList : reportData.corpGroupList;
+      return (levelData || [])
+        .map((item) => item.mark)
+        .sort((a, b) => b - a)
+        .slice(0, 2)
+        .includes(value);
+    }
+  };
+
+  /**
+   * 判断是否标红
+   * @param value
+   * @param data
+   * @param key
+   */
   const showRed = (value: number, data: any[], key: string) => {
     if (value === 0) {
       return true;
@@ -83,8 +111,10 @@ const SeatReport: React.FC = () => {
     return Math.min(...data.map((item) => +item[key])) === value;
   };
 
-  const tdRender = (value: number, data: any[], key: string) => (
-    <dt className={showRed(value, data, key) ? style.red : ''}>{value}</dt>
+  const tdRender = (value: number | string, data: any[], key: string) => (
+    <dt className={showRed(+value, data, key) ? style.red : ''}>
+      {['addFriendRate', 'markCarNumRate'].includes(key) ? `${value}%` : value}
+    </dt>
   );
 
   const areaGroupColumns: TableColumnType<areaGroupItem>[] = [
@@ -109,7 +139,7 @@ const SeatReport: React.FC = () => {
       title: '好友通过率',
       dataIndex: 'addFriendRate',
       align: 'center',
-      render: (value) => tdRender(+value, reportData.areaGroupList || [], 'addFriendRate')
+      render: (value) => tdRender(value, reportData.areaGroupList || [], 'addFriendRate')
     },
     {
       title: '人均朋友圈',
@@ -121,7 +151,7 @@ const SeatReport: React.FC = () => {
       title: '备注车牌率',
       dataIndex: 'markCarNumRate',
       align: 'center',
-      render: (value) => tdRender(+value, reportData.areaGroupList || [], 'markCarNumRate')
+      render: (value) => tdRender(value, reportData.areaGroupList || [], 'markCarNumRate')
     },
     {
       title: '营销平台',
@@ -245,6 +275,7 @@ const SeatReport: React.FC = () => {
       setReportList(res);
       setCurrentReport(res[0]);
       getReportDetail(res[0].reportId);
+      setReportId(res[0].reportId);
     }
   };
 
@@ -259,7 +290,12 @@ const SeatReport: React.FC = () => {
         <div className={style.colValue}>
           <Select
             placeholder="请选择"
-            onChange={(val) => setCurrentReport(reportList.find((item) => item.reportId === val) || {})}
+            value={reportId}
+            onChange={(val) => {
+              setReportId(val);
+              setCurrentReport(reportList.find((item) => item.reportId === val) || {});
+              getReportDetail(val);
+            }}
           >
             {reportList.map((item) => (
               <Option key={item.reportId} value={item.reportId!}>
@@ -307,12 +343,12 @@ const SeatReport: React.FC = () => {
                 <span className={style.levelColTwo}>人力</span>
                 <span className={style.levelColThree}>使用分</span>
               </li>
-              {(reportData.ageGroupList || []).map((item, index) => (
+              {(reportData.ageGroupList || []).map((item) => (
                 <li key={item.leveName} className={style.levelItem}>
                   <dt className={style.levelColOne}>
                     <div
                       className={classNames(style.hotWrap, {
-                        [style.hotImg]: index === 0
+                        [style.hotImg]: isHot(item.mark, 0)
                       })}
                     >
                       {item.leveName}
@@ -331,7 +367,15 @@ const SeatReport: React.FC = () => {
               </li>
               {(reportData.leveGroupList || []).map((item) => (
                 <li key={item.leveName} className={style.levelItem}>
-                  <dt className={style.levelColOne}>{item.leveName}</dt>
+                  <dt className={style.levelColOne}>
+                    <div
+                      className={classNames(style.hotWrap, {
+                        [style.hotImg]: isHot(item.mark, 1)
+                      })}
+                    >
+                      {item.leveName}
+                    </div>
+                  </dt>
                   <dt className={style.levelColTwo}>{item.perCount}</dt>
                   <dt className={style.levelColThree}>{item.mark}</dt>
                 </li>
@@ -345,7 +389,15 @@ const SeatReport: React.FC = () => {
               </li>
               {(reportData.corpGroupList || []).map((item) => (
                 <li key={item.leveName} className={style.levelItem}>
-                  <dt className={style.levelColOne}>{item.leveName}</dt>
+                  <dt className={style.levelColOne}>
+                    <div
+                      className={classNames(style.hotWrap, {
+                        [style.hotImg]: isHot(item.mark, 2)
+                      })}
+                    >
+                      {item.leveName}
+                    </div>
+                  </dt>
                   <dt className={style.levelColTwo}>{item.perCount}</dt>
                   <dt className={style.levelColThree}>{item.mark}</dt>
                 </li>
@@ -428,12 +480,16 @@ const SeatReport: React.FC = () => {
                       if (col.dataIndex === 'addFriendRate') {
                         return {
                           ...col,
-                          render: (value: number | string) => <dt className={+value < 50 ? style.red : ''}>{value}</dt>
+                          render: (value: number | string) => (
+                            <dt className={+value < 50 ? style.red : ''}>{value}%</dt>
+                          )
                         };
                       } else if (col.dataIndex === 'markCarNumRate') {
                         return {
                           ...col,
-                          render: (value: number | string) => <dt className={+value < 80 ? style.red : ''}>{value}</dt>
+                          render: (value: number | string) => (
+                            <dt className={+value < 80 ? style.red : ''}>{value}%</dt>
+                          )
                         };
                       } else {
                         return {
