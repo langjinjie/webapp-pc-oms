@@ -3,6 +3,7 @@ import { ColumnsType } from 'antd/es/table';
 import { Tag, Popconfirm, Space, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import classNames from 'classnames';
+import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 
 export interface SearchParamsProps {
   rangePicker: undefined | Moment[];
@@ -12,7 +13,7 @@ export interface SearchParamsProps {
   corpId: string;
 }
 
-interface ColumnProps {
+export interface ProductProps {
   productId: string;
   productName: string;
   categoryId: number;
@@ -30,14 +31,46 @@ enum ProductStatus {
   '已上架',
   '已下架',
 }
+
+export const setSearchCols = (options: any[]): SearchCol[] => {
+  return [
+    {
+      name: 'productName',
+      type: 'input',
+      label: '产品名称',
+      width: '268px',
+      placeholder: '请输入'
+    },
+    {
+      name: 'category',
+      type: 'select',
+      label: '分类',
+      width: 160,
+      options: options
+    },
+    { name: 'rangePicker', width: '268px', type: 'rangePicker', label: '创建时间' },
+    {
+      name: 'status',
+      type: 'select',
+      width: 160,
+      label: '状态',
+
+      options: [
+        { id: 0, name: '未上架' },
+        { id: 1, name: '已上架' },
+        { id: 2, name: '已下架' }
+      ]
+    }
+  ];
+};
 // 表哥配置项
 type colargsType = {
-  handleEdit: (record: any) => void;
-  changeItemStatus: (record: any) => void;
-  viewItem: (record: any) => void;
-  deleteItem: (record: any) => void;
+  handleEdit: (record: ProductProps) => void;
+  changeItemStatus: (record: ProductProps, index: number) => void;
+  viewItem: (record: ProductProps) => void;
+  deleteItem: (record: ProductProps) => void;
 };
-const columns = (args: colargsType): ColumnsType<ColumnProps> => {
+const columns = (args: colargsType): ColumnsType<ProductProps> => {
   const { handleEdit, changeItemStatus, viewItem, deleteItem } = args;
   return [
     { title: '产品名称', dataIndex: 'productName', width: 200, ellipsis: { showTitle: true } },
@@ -129,37 +162,23 @@ const columns = (args: colargsType): ColumnsType<ColumnProps> => {
             查看
           </Button>
           {status === 1 && (
-            <Button type="link" onClick={() => handleEdit(obj)} disabled={obj.isOwner === '0'}>
+            <Button type="link" onClick={() => handleEdit(obj)}>
               编辑
             </Button>
           )}
           {(status === 1 || status === 3) && (
-            <Popconfirm
-              title="确定要上架?"
-              onConfirm={() => changeItemStatus(obj, index)}
-              disabled={obj.isOwner === '0'}
-            >
-              <Button type="link" disabled={obj.isOwner === '0'}>
-                上架
-              </Button>
+            <Popconfirm title="确定要上架?" onConfirm={() => changeItemStatus(obj, index)}>
+              <Button type="link">上架</Button>
             </Popconfirm>
           )}
           {status === 2 && (
-            <Popconfirm
-              title="确定要下架?"
-              onConfirm={() => changeItemStatus(obj, index)}
-              disabled={obj.isOwner === '0'}
-            >
-              <Button type="link" disabled={obj.isOwner === '0'}>
-                下架
-              </Button>
+            <Popconfirm title="确定要下架?" onConfirm={() => changeItemStatus(obj, index)}>
+              <Button type="link">下架</Button>
             </Popconfirm>
           )}
           {status === 3 && (
-            <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)} disabled={obj.isOwner === '0'}>
-              <Button type="link" disabled={obj.isOwner === '0'}>
-                删除
-              </Button>
+            <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)}>
+              <Button type="link">删除</Button>
             </Popconfirm>
           )}
         </Space>

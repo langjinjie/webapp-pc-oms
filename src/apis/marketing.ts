@@ -159,7 +159,7 @@ export const getCorpList: HttpFunction = () => {
  * @return {*}
  */
 export const getProductList: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/product/list', param);
+  return http.post('/tenacity-admin/api/product/list', param);
 };
 
 /**
@@ -167,7 +167,7 @@ export const getProductList: HttpFunction = (param: Object) => {
  *
  */
 export const getProductOnlineList: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/product/select', param);
+  return http.post('/tenacity-admin/api/product/select', param);
 };
 
 /**
@@ -177,7 +177,7 @@ export const getProductOnlineList: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const productConfig: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/product/config', param);
+  return http.post('/tenacity-admin/api/product/config', param);
 };
 
 /**
@@ -186,7 +186,7 @@ export const productConfig: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const productDetail: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/product/detail', param);
+  return http.post('/tenacity-admin/api/product/detail', param);
 };
 
 /**
@@ -195,7 +195,7 @@ export const productDetail: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const productEdit: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/product/edit', param);
+  return http.post('/tenacity-admin/api/product/edit', param);
 };
 
 /**
@@ -204,7 +204,7 @@ export const productEdit: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const productManage: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/product/manage', param);
+  return http.post('/tenacity-admin/api/product/manage', param);
 };
 
 /**
@@ -213,7 +213,7 @@ export const productManage: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const productChoiceList: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/product/choicelist', param);
+  return http.post('/tenacity-admin/api/product/choicelist', param);
 };
 
 /**
@@ -242,7 +242,7 @@ export const uploadImg: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const activityList: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/activity/list', param);
+  return http.post('/tenacity-admin/api/activity/list', param);
 };
 
 /**
@@ -251,7 +251,7 @@ export const activityList: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const activityDetail: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/activity/detail', param);
+  return http.post('/tenacity-admin/api/activity/detail', param);
 };
 
 /**
@@ -260,7 +260,7 @@ export const activityDetail: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const activityEdit: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/activity/edit', param);
+  return http.post('/tenacity-admin/api/activity/edit', param);
 };
 
 /**
@@ -269,7 +269,7 @@ export const activityEdit: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const activityManage: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/activity/manage', param);
+  return http.post('/tenacity-admin/api/activity/manage', param);
 };
 
 /**
