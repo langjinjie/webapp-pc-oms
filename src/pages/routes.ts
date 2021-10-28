@@ -21,23 +21,23 @@ export const routes: RouteProps[] = [
   },
   // 营销平台
   {
-    path: '/marketing/product',
+    path: '/marketingProduct',
     component: lazy(() => import('src/pages/Marketing/Product/List'))
   },
   {
-    path: '/marketing/product/edit',
+    path: '/marketingProduct/edit',
     component: lazy(() => import('src/pages/Marketing/Product/EditGoods'))
   },
   {
-    path: '/marketing/product/edit-choiceness',
+    path: '/marketingProduct/edit-choiceness',
     component: lazy(() => import('src/pages/Marketing/Product/EditChoiceness'))
   },
   {
-    path: '/marketing/activity',
+    path: '/marketingActivity',
     component: lazy(() => import('src/pages/Marketing/Activity/List'))
   },
   {
-    path: '/marketing/activity/Edit',
+    path: '/marketingActivity/Edit',
     component: lazy(() => import('src/pages/Marketing/Activity/Edit'))
   },
   {
@@ -106,11 +106,11 @@ export const menus: Menu[] = [
       },
       // {
       //   name: '活动库',
-      //   path: '/marketing/activity'
+      //   path: '/marketingActivity'
       // },
       // {
       //   name: '产品库',
-      //   path: '/marketing/product'
+      //   path: '/marketingProduct'
       // },
       {
         name: '首页配置',
