@@ -6,8 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Table, Button, Card, TableColumnType, PaginationProps } from 'antd';
-import { useDidRecover } from 'react-router-cache-route';
+import { Table, Button, Card, TableColumnType, PaginationProps, Form, DatePicker } from 'antd';
 import moment from 'moment';
 import qs from 'qs';
 import { setTitle } from 'lester-tools';
@@ -23,6 +22,14 @@ interface StationItem {
   isOwner: string;
 }
 
+interface QueryParam {
+  startTime?: number;
+  endTime?: number;
+}
+
+const { Item, useForm } = Form;
+const { RangePicker } = DatePicker;
+
 const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [list, setList] = useState<StationItem[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -31,6 +38,9 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     total: 0,
     showTotal: (total: number) => `共 ${total} 条`
   });
+  const [queryParam, setQueryParam] = useState<QueryParam>({});
+
+  const [form] = useForm();
 
   /**
    * 操作处理
@@ -49,11 +59,11 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     const params: any = {
       pageNum: pagination.current,
       pageSize: pagination.pageSize,
+      ...queryParam,
       ...param
     };
     const res: any = await queryStationList(params);
     if (res) {
-      console.log(res);
       const { total, list } = res;
       setList(list || []);
       setPagination({
@@ -71,7 +81,6 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
    * @param pageSize
    */
   const pageChange = (pageNum: number, pageSize?: number) => {
-    console.log(pageNum, pageSize);
     getStationList({
       pageNum,
       pageSize
@@ -113,10 +122,25 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     }
   ];
 
-  useDidRecover(() => {
-    console.log('didRecover');
-    getStationList();
-  });
+  const onsubmit = (values: any) => {
+    console.log(values);
+    const { onlineTime } = values;
+    if (onlineTime && onlineTime.length > 1) {
+      console.log(onlineTime);
+      const param = {
+        startTime: onlineTime[0].startOf('day').valueOf(),
+        endTime: onlineTime[1].endOf('day').valueOf()
+      };
+      setQueryParam({ ...param });
+      getStationList({
+        pageNum: 1,
+        ...param
+      });
+    } else {
+      setQueryParam({});
+      getStationList({ pageNum: 1 });
+    }
+  };
 
   useEffect(() => {
     getStationList();
@@ -129,6 +153,17 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
         <Icon className={style.addIcon} name="xinjian" />
         添加
       </div>
+      <Form className={style.formWrap} form={form} layout="inline" onFinish={onsubmit} onReset={() => onsubmit({})}>
+        <Item label="上架时间" name="onlineTime">
+          <RangePicker />
+        </Item>
+        <Item>
+          <Button type="primary" htmlType="submit">
+            查询
+          </Button>
+          <Button htmlType="reset">重置</Button>
+        </Item>
+      </Form>
       <Table
         rowKey="settingId"
         dataSource={list}

@@ -138,8 +138,8 @@ export const menus: Menu[] = [
         path: '/station'
       }
     ]
-  }
-  /* {
+  },
+  {
     name: '数据统计',
     icon: 'a-bianzu101',
     path: 'statistics',
@@ -149,5 +149,5 @@ export const menus: Menu[] = [
         path: '/seatReport'
       }
     ]
-  } */
+  }
 ];
