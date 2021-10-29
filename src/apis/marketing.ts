@@ -222,20 +222,8 @@ export const productChoiceList: HttpFunction = (param: Object) => {
  * @return {*}
  */
 export const productChoiceEdit: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/product/choiceedit', param);
+  return http.post('/tenacity-admin/api/product/choiceedit', param);
 };
-
-/**
- * @Descripttion: 图片上传接口
- * @param {Object} param
- * @return {*}
- */
-export const uploadImg: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-manage/api/upload/img', param, {
-    timeout: 20000
-  });
-};
-
 /**
  * @Descripttion:查询活动列表
  * @param {Object} param

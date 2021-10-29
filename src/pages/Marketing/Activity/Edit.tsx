@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Row, Col, Card, Form, Input, Upload, message, Button, Select } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Form, Input, message, Button, Select } from 'antd';
 import { getQueryParam } from 'lester-tools';
 import { Context } from 'src/store';
-import { activityDetail, uploadImg, activityEdit, productConfig } from 'src/apis/marketing';
+import { activityDetail, activityEdit, productConfig } from 'src/apis/marketing';
 import style from './style.module.less';
-import { Icon } from 'src/components';
 import classNames from 'classnames';
+import NgUpload from '../Components/Upload/Upload';
 
 interface ActivityPageProps {
   id: number;
@@ -62,7 +61,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
         corpActivityLink,
         speechcraft,
         tags: tags?.split(','),
-        shareCoverImgUrl: [{ src: shareCoverImgUrl }],
+        shareCoverImgUrl,
         shareTitle
       });
     }
@@ -103,28 +102,6 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
       history.replace('/activityLibrary?pageNum=1');
     }
   };
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <Icon name="upload" className="font36" />}
-      <div style={{ marginTop: 8 }} className="color-text-regular">
-        上传图片
-      </div>
-    </div>
-  );
-  const getBase64 = (img: any, callback: Function) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
-
-  const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e && e.fileList;
-  };
 
   const beforeUpload = (file: any) => {
     const isJpg = file.type === 'image/jpeg';
@@ -137,33 +114,10 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
     }
     return isJpg && isLt2M;
   };
-  const uploadFile = async (option: any) => {
-    // 创建一个空对象实例
-    const uploadData = new FormData();
-    // 调用append()方法来添加数据
-    uploadData.append('file', option.file);
-    const res = await uploadImg(uploadData);
-    setLoading(false);
-    if (res) {
-      setActive((active) => ({ ...active, shareCoverImgUrl: res }));
-    }
-  };
-
-  const handleChange = (info: any) => {
-    if (info.file.status === 'uploading') {
-      setLoading(true);
-      return;
-    }
-    if (info.file.status === 'done') {
-      getBase64(info.file.originFileObj, () => {
-        setLoading(false);
-      });
-    }
-  };
 
   const onFormValuesChange = (values: ActivityProps) => {
-    const { shareTitle, activityName } = values;
-    setActive((active) => ({ ...active, shareTitle, activityName }));
+    const { shareTitle, activityName, shareCoverImgUrl } = values;
+    setActive((active) => ({ ...active, shareTitle, activityName, shareCoverImgUrl }));
   };
   return (
     <Card title="活动配置" bordered={false} className="edit">
@@ -233,29 +187,10 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
             <Form.Item
               label="分享封面图："
               name="shareCoverImgUrl"
-              getValueFromEvent={normFile}
-              valuePropName="fileList"
               rules={[{ required: true, message: '请上传分享封面图' }]}
               extra="为确保最佳展示效果，请上传132*132像素高清图片，仅支持.jpg格式"
             >
-              <Upload
-                multiple={false}
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                customRequest={uploadFile}
-                beforeUpload={beforeUpload}
-                onChange={handleChange}
-                disabled={isReadOnly}
-              >
-                {active.shareCoverImgUrl
-                  ? (
-                  <img src={active.shareCoverImgUrl} alt="avatar" style={{ width: '100%' }} />
-                    )
-                  : (
-                      uploadButton
-                    )}
-              </Upload>
+              <NgUpload beforeUpload={beforeUpload} />
             </Form.Item>
             <Form.Item
               label="小标题："

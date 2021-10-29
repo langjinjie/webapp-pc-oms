@@ -56,9 +56,9 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       label: '状态',
 
       options: [
-        { id: 0, name: '未上架' },
-        { id: 1, name: '已上架' },
-        { id: 2, name: '已下架' }
+        { id: 1, name: '未上架' },
+        { id: 2, name: '已上架' },
+        { id: 3, name: '已下架' }
       ]
     }
   ];
