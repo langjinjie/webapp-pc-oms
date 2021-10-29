@@ -23,3 +23,10 @@ export interface IStaffList {
   accountStatus: string;
   lastLoginTime: string;
 }
+
+// 产品分类列表
+export interface IProductTypeItem {
+  typeId: string;
+  name: string;
+  children?: IProductTypeItem[];
+}
