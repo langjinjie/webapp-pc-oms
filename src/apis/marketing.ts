@@ -345,3 +345,21 @@ export const queryIndexConfig: VoidFunction = () => {
 export const saveIndexConfig: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/home/recommend/save', param);
 };
+
+// 活动置顶操作
+export const sortTopAtActivity: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/activity/top', param);
+};
+// 活动取消置顶操作
+export const sortCancelTopAtActivity: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/activity/top/cancel', param);
+};
+
+// 产品设置置顶
+export const sortTopAtProduct: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/product/top', param);
+};
+// 产品设置置顶
+export const sortCancelTopAtProduct: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/product/top/cancel', param);
+};

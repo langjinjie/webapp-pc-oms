@@ -21,9 +21,9 @@ export const SearchCols: SearchCol[] = [
     label: '状态',
 
     options: [
-      { id: 0, name: '未上架' },
-      { id: 1, name: '已上架' },
-      { id: 2, name: '已下架' }
+      { id: 1, name: '未上架' },
+      { id: 2, name: '已上架' },
+      { id: 3, name: '已下架' }
     ]
   }
 ];
@@ -41,6 +41,7 @@ const statusHandle = (status: number | undefined | null) => {
 };
 interface OperateProps {
   viewItem: (id: string) => void;
+  handleSort: (record: ActivityProps) => void;
   handleOperate: (operateType: number, activityId: string, index: number) => void;
 }
 export interface ActivityProps {
@@ -52,9 +53,10 @@ export interface ActivityProps {
   isOwner: string;
   createBy: string;
   activityId: string;
+  isTop: string;
 }
 export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
-  const { viewItem, handleOperate } = args;
+  const { viewItem, handleOperate, handleSort } = args;
   return [
     {
       title: '活动名称',
@@ -125,6 +127,9 @@ export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
       fixed: 'right',
       render: (status: number, record: any, index: number) => (
         <Space size={10} className="spaceWrap">
+          <Button type="link" onClick={() => handleSort(record)}>
+            {record.isTop === '1' ? '取消置顶' : '置顶'}
+          </Button>
           <Button type="link" onClick={() => viewItem(record.activityId)}>
             查看
           </Button>

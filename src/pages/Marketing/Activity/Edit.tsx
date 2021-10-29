@@ -99,7 +99,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
     const res = await activityEdit(editParams);
     if (res) {
       message.success(active.activityId ? '编辑成功！' : '新增成功！');
-      history.replace('/activityLibrary?pageNum=1');
+      history.replace('/marketingActivity?pageNum=1');
     }
   };
 

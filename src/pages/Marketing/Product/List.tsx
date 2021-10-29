@@ -7,7 +7,7 @@ import style from './style.module.less';
 import { columns, ProductProps, setSearchCols } from './Config';
 import { PlusOutlined } from '@ant-design/icons';
 import { RouteComponentProps } from 'react-router';
-import { getProductList, productManage } from 'src/apis/marketing';
+import { getProductList, productManage, sortCancelTopAtProduct, sortTopAtProduct } from 'src/apis/marketing';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import moment from 'moment';
 
@@ -32,44 +32,53 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   const handleEdit = (record: ProductProps) => {
     history.push('/marketingProduct/edit', { id: record.productId, type: '2' });
   };
-  const deleteItem = () => {
-    console.log('deleteItem');
+
+  const getList = async (args: any) => {
+    const res: any = await getProductList({
+      ...params,
+      pageNum: pagination.current,
+      pageSize: pagination.pageSize,
+      ...args
+    });
+    if (res) {
+      setDataSource(res.list);
+      setPagination((pagination) => ({ ...pagination, total: res.total }));
+    }
+  };
+  const deleteItem = async (record: ProductProps, index: number) => {
+    const res = await productManage({
+      type: 3,
+      productId: record.productId
+    });
+    if (res) {
+      message.success('删除成功');
+      const copyData = [...dataSource];
+      copyData.splice(index, 1);
+      setDataSource(copyData);
+      if (copyData.length === 0) {
+        getList({ pageNum: 1 });
+      } else {
+        setPagination((pagination) => ({ ...pagination, total: pagination.total - 1 }));
+      }
+    }
   };
   const viewItem = (record: ProductProps) => {
     history.push('/marketingProduct/edit', { id: record.productId, type: '1' });
   };
   const changeItemStatus = async (record: ProductProps, index: number) => {
     const res = await productManage({
-      type: record.status === 1 ? 2 : 1,
+      type: record.status === 2 ? 2 : 1,
       productId: record.productId
     });
     if (res) {
-      message.success('下架成功');
+      message.success(record.status === 2 ? '下架成功' : '上架成功');
       const copyData = [...dataSource];
-      copyData[index].status = 3;
+      copyData[index].status = record.status === 2 ? 3 : 2;
       copyData[index].offlineTime = moment().format();
       setDataSource(copyData);
     }
   };
 
-  const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus });
-
-  // 添加商品
-  const addProduct = () => {
-    history.push('/marketingProduct/edit');
-  };
-
-  const addFeatureProduct = () => {
-    history.push('/marketingProduct/edit-choiceness');
-  };
-
-  const getList = async (args: any) => {
-    const res: any = await getProductList({ ...params, ...args });
-    if (res) {
-      setDataSource(res.list);
-      setPagination((pagination) => ({ ...pagination, total: res.total }));
-    }
-  };
   const onSearch = async (fieldsValue: any) => {
     const { category, productName, status, rangePicker } = fieldsValue;
 
@@ -87,6 +96,30 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     });
     getList({ pageNum: 1, category, productName, status, onlineTimeBegin, onlineTimeEnd });
   };
+  const handleSort = async (record: ProductProps) => {
+    let res: any;
+    if (record.isTop === '1') {
+      res = await sortCancelTopAtProduct({ productId: record.productId });
+    } else {
+      res = await sortTopAtProduct({ productId: record.productId });
+    }
+    if (res) {
+      message.success(record.isTop === '1' ? '取消置顶成功' : '置顶成功');
+      onSearch({});
+    }
+  };
+
+  const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleSort });
+
+  // 添加商品
+  const addProduct = () => {
+    history.push('/marketingProduct/edit');
+  };
+
+  const addFeatureProduct = () => {
+    history.push('/marketingProduct/edit-choiceness');
+  };
+
   const paginationChange = (page: number, pageSize?: number) => {
     setPagination((pagination) => {
       return {

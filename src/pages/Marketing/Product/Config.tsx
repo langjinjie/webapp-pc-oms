@@ -24,6 +24,7 @@ export interface ProductProps {
   offlineTime: string;
   status: number;
   isOwner: string;
+  isTop: string;
 }
 
 enum ProductStatus {
@@ -64,14 +65,15 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
   ];
 };
 // 表哥配置项
-type colargsType = {
+type ColumnsArgs = {
   handleEdit: (record: ProductProps) => void;
   changeItemStatus: (record: ProductProps, index: number) => void;
   viewItem: (record: ProductProps) => void;
-  deleteItem: (record: ProductProps) => void;
+  deleteItem: (record: ProductProps, index: number) => void;
+  handleSort: (record: ProductProps) => void;
 };
-const columns = (args: colargsType): ColumnsType<ProductProps> => {
-  const { handleEdit, changeItemStatus, viewItem, deleteItem } = args;
+const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
+  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort } = args;
   return [
     { title: '产品名称', dataIndex: 'productName', width: 200, ellipsis: { showTitle: true } },
     {
@@ -152,12 +154,15 @@ const columns = (args: colargsType): ColumnsType<ProductProps> => {
     },
     {
       title: '操作',
-      width: 120,
+      width: 180,
       dataIndex: 'status',
       align: 'left',
       fixed: 'right',
       render: (status: number, obj: any, index: number) => (
         <Space size={10} className="spaceWrap">
+          <Button type="link" onClick={() => handleSort(obj)}>
+            {obj.isTop === '1' ? '取消置顶' : '置顶'}
+          </Button>
           <Button type="link" onClick={() => viewItem(obj)}>
             查看
           </Button>
@@ -177,7 +182,7 @@ const columns = (args: colargsType): ColumnsType<ProductProps> => {
             </Popconfirm>
           )}
           {status === 3 && (
-            <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)}>
+            <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj, index)}>
               <Button type="link">删除</Button>
             </Popconfirm>
           )}

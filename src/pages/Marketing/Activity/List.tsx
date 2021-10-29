@@ -9,7 +9,7 @@ import { NgTable, NgFormSearch } from 'src/components';
 
 import style from './style.module.less';
 
-import { activityList, activityManage } from 'src/apis/marketing';
+import { activityList, activityManage, sortCancelTopAtActivity, sortTopAtActivity } from 'src/apis/marketing';
 import { SearchCols, columns, ActivityProps } from './Config';
 import { useDocumentTitle } from 'src/utils/base';
 import moment from 'moment';
@@ -165,6 +165,19 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  const handleSort = async (record: ActivityProps) => {
+    let res: any;
+    if (record.isTop === '1') {
+      res = await sortCancelTopAtActivity({ activityId: record.activityId });
+    } else {
+      res = await sortTopAtActivity({ activityId: record.activityId });
+    }
+    if (res) {
+      message.success(record.isTop === '1' ? '取消置顶成功' : '置顶成功');
+      onSearch({});
+    }
+  };
+
   const rowSelection = {
     hideSelectAll: true,
     selectedRowKeys: selectedRowKeys,
@@ -203,7 +216,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
               return record.activityId;
             }}
             loading={loading}
-            columns={columns({ handleOperate, viewItem })}
+            columns={columns({ handleOperate, viewItem, handleSort })}
             rowSelection={rowSelection}
             dataSource={dataSource}
             pagination={pagination}
