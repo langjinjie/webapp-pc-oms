@@ -1,8 +1,10 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
-import { Tag, Popconfirm, Space, Button } from 'antd';
+import { Popconfirm, Space, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import classNames from 'classnames';
+import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { UNKNOWN } from 'src/utils/base';
 
 export interface SearchParamsProps {
   rangePicker: undefined | Moment[];
@@ -12,7 +14,7 @@ export interface SearchParamsProps {
   corpId: string;
 }
 
-interface ColumnProps {
+export interface ProductProps {
   productId: string;
   productName: string;
   categoryId: number;
@@ -23,6 +25,7 @@ interface ColumnProps {
   offlineTime: string;
   status: number;
   isOwner: string;
+  isTop: string;
 }
 
 enum ProductStatus {
@@ -30,15 +33,48 @@ enum ProductStatus {
   '已上架',
   '已下架',
 }
-// 表哥配置项
-type colargsType = {
-  handleEdit: (record: any) => void;
-  changeItemStatus: (record: any) => void;
-  viewItem: (record: any) => void;
-  deleteItem: (record: any) => void;
+
+export const setSearchCols = (options: any[]): SearchCol[] => {
+  return [
+    {
+      name: 'productName',
+      type: 'input',
+      label: '产品名称',
+      width: '268px',
+      placeholder: '请输入'
+    },
+    {
+      name: 'category',
+      type: 'select',
+      label: '分类',
+      width: 160,
+      options: options
+    },
+    { name: 'rangePicker', width: '268px', type: 'rangePicker', label: '创建时间' },
+    {
+      name: 'status',
+      type: 'select',
+      width: 160,
+      label: '状态',
+
+      options: [
+        { id: 1, name: '未上架' },
+        { id: 2, name: '已上架' },
+        { id: 3, name: '已下架' }
+      ]
+    }
+  ];
 };
-const columns = (args: colargsType): ColumnsType<ColumnProps> => {
-  const { handleEdit, changeItemStatus, viewItem, deleteItem } = args;
+// 表哥配置项
+type ColumnsArgs = {
+  handleEdit: (record: ProductProps) => void;
+  changeItemStatus: (record: ProductProps, index: number) => void;
+  viewItem: (record: ProductProps) => void;
+  deleteItem: (record: ProductProps, index: number) => void;
+  handleSort: (record: ProductProps) => void;
+};
+const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
+  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort } = args;
   return [
     { title: '产品名称', dataIndex: 'productName', width: 200, ellipsis: { showTitle: true } },
     {
@@ -56,43 +92,35 @@ const columns = (args: colargsType): ColumnsType<ColumnProps> => {
       align: 'center',
       width: 80,
       render: (text: String) => {
-        return text || '---';
+        return text || UNKNOWN;
       }
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
       align: 'center',
-      width: 120,
+      width: 140,
       render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '---'}</span>;
+        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
       }
     },
     {
       title: '上架时间',
       dataIndex: 'onlineTime',
       align: 'center',
-      width: 120,
+      width: 140,
       render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '---'}</span>;
+        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
       }
     },
     {
       title: '下架时间',
       dataIndex: 'offlineTime',
       align: 'center',
-      width: 120,
+      width: 140,
       render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '---'}</span>;
+        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
       }
-    },
-    {
-      title: '分类',
-      dataIndex: 'categoryName',
-      width: 110,
-      key: 'categoryName',
-      align: 'center',
-      render: (categoryName: string) => (categoryName ? <Tag className="category_tag"> {categoryName}</Tag> : '---')
     },
     {
       title: '产品状态',
@@ -119,47 +147,36 @@ const columns = (args: colargsType): ColumnsType<ColumnProps> => {
     },
     {
       title: '操作',
-      width: 120,
+      width: 180,
       dataIndex: 'status',
       align: 'left',
       fixed: 'right',
       render: (status: number, obj: any, index: number) => (
         <Space size={10} className="spaceWrap">
+          <Button type="link" onClick={() => handleSort(obj)}>
+            {obj.isTop === '1' ? '取消置顶' : '置顶'}
+          </Button>
           <Button type="link" onClick={() => viewItem(obj)}>
             查看
           </Button>
           {status === 1 && (
-            <Button type="link" onClick={() => handleEdit(obj)} disabled={obj.isOwner === '0'}>
+            <Button type="link" onClick={() => handleEdit(obj)}>
               编辑
             </Button>
           )}
           {(status === 1 || status === 3) && (
-            <Popconfirm
-              title="确定要上架?"
-              onConfirm={() => changeItemStatus(obj, index)}
-              disabled={obj.isOwner === '0'}
-            >
-              <Button type="link" disabled={obj.isOwner === '0'}>
-                上架
-              </Button>
+            <Popconfirm title="确定要上架?" onConfirm={() => changeItemStatus(obj, index)}>
+              <Button type="link">上架</Button>
             </Popconfirm>
           )}
           {status === 2 && (
-            <Popconfirm
-              title="确定要下架?"
-              onConfirm={() => changeItemStatus(obj, index)}
-              disabled={obj.isOwner === '0'}
-            >
-              <Button type="link" disabled={obj.isOwner === '0'}>
-                下架
-              </Button>
+            <Popconfirm title="确定要下架?" onConfirm={() => changeItemStatus(obj, index)}>
+              <Button type="link">下架</Button>
             </Popconfirm>
           )}
           {status === 3 && (
-            <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj)} disabled={obj.isOwner === '0'}>
-              <Button type="link" disabled={obj.isOwner === '0'}>
-                删除
-              </Button>
+            <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj, index)}>
+              <Button type="link">删除</Button>
             </Popconfirm>
           )}
         </Space>
