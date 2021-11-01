@@ -62,7 +62,12 @@ export interface Article {
   tags?: string[];
   corpNames: string[];
 }
-
+export interface PaginationProps {
+  current: number;
+  pageSize: number;
+  total: number;
+  showTotal: (total: any) => string;
+}
 // 表哥配置项
 type colargsType = {
   handleEdit: (record: any) => void;
