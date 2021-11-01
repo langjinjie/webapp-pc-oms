@@ -1,9 +1,10 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
-import { Tag, Popconfirm, Space, Button } from 'antd';
+import { Popconfirm, Space, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import classNames from 'classnames';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { UNKNOWN } from 'src/utils/base';
 
 export interface SearchParamsProps {
   rangePicker: undefined | Moment[];
@@ -91,43 +92,35 @@ const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
       align: 'center',
       width: 80,
       render: (text: String) => {
-        return text || '---';
+        return text || UNKNOWN;
       }
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
       align: 'center',
-      width: 120,
+      width: 140,
       render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '---'}</span>;
+        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
       }
     },
     {
       title: '上架时间',
       dataIndex: 'onlineTime',
       align: 'center',
-      width: 120,
+      width: 140,
       render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '---'}</span>;
+        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
       }
     },
     {
       title: '下架时间',
       dataIndex: 'offlineTime',
       align: 'center',
-      width: 120,
+      width: 140,
       render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : '---'}</span>;
+        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
       }
-    },
-    {
-      title: '分类',
-      dataIndex: 'categoryName',
-      width: 110,
-      key: 'categoryName',
-      align: 'center',
-      render: (categoryName: string) => (categoryName ? <Tag className="category_tag"> {categoryName}</Tag> : '---')
     },
     {
       title: '产品状态',

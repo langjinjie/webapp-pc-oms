@@ -359,7 +359,16 @@ export const sortCancelTopAtActivity: HttpFunction = (param) => {
 export const sortTopAtProduct: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/product/top', param);
 };
-// 产品设置置顶
+// 产品取消设置置顶
 export const sortCancelTopAtProduct: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/product/top/cancel', param);
+};
+
+// 活动批量上下架
+export const batchOperateActivity: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/activity/batch/manage', param);
+};
+// 产品批量上下架
+export const batchOperateProduct: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/product/batch/manage', param);
 };

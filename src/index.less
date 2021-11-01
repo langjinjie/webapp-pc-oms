@@ -742,3 +742,41 @@ ul {
   border: 1px solid #33cdb8;
   margin-right: 4px;
 }
+
+// 表格底部的批量操作样式
+.operationWrap {
+  float: left;
+  margin-top: -50px;
+}
+
+:global {
+  .ant-modal-content {
+    border-radius: 8px;
+  }
+  .ant-modal-body {
+    padding-bottom: 14px;
+  }
+  .ant-modal-footer,
+  .ant-modal-confirm-btns {
+    .ant-btn {
+      width: 76px;
+      height: 32px;
+      border-radius: 16px;
+      color: #7e8185;
+      &:hover {
+        color: #111;
+      }
+    }
+    .ant-btn-primary {
+      color: #fff;
+      background: #318cf5;
+      border-color: #318cf5;
+    }
+    .ant-btn-primary:hover,
+    .ant-btn-primary:focus {
+      color: #fff;
+      background: #40a9ff;
+      border-color: #40a9ff;
+    }
+  }
+}

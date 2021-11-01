@@ -308,7 +308,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
           }}
         />
         {tableSource.length > 0 && (
-          <div className={style.operationWrap}>
+          <div className={'operationWrap'}>
             <Space size={20}>
               <Button
                 type="primary"

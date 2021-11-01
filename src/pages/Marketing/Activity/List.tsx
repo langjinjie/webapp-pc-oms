@@ -2,14 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { useDidRecover } from 'react-router-cache-route';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { Button, message, Modal, Space } from 'antd';
 import classNames from 'classnames';
 
 import { NgTable, NgFormSearch } from 'src/components';
 
 import style from './style.module.less';
 
-import { activityList, activityManage, sortCancelTopAtActivity, sortTopAtActivity } from 'src/apis/marketing';
+import {
+  activityList,
+  activityManage,
+  batchOperateActivity,
+  sortCancelTopAtActivity,
+  sortTopAtActivity
+} from 'src/apis/marketing';
 import { SearchCols, columns, ActivityProps } from './Config';
 import { useDocumentTitle } from 'src/utils/base';
 import moment from 'moment';
@@ -39,7 +45,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
 
   const [operationType, setOperationType] = useState<number | null>(null);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [dataSource, setDataSource] = useState<ActivityProps[]>([]);
 
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -53,6 +59,9 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 查询活动列表
   const getList = async (queryParams: any) => {
+    setOperationType(null);
+    setSelectRowKeys([]);
+    setLoading(true);
     const res: any = await activityList({ ...params, ...queryParams });
     setLoading(false);
     if (res) {
@@ -142,20 +151,20 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
   const isDisabled = (operationType: number | null, status: number) => {
     let _isDisabled = false;
     if (operationType) {
-      if (operationType === 1 && status === 1) {
+      if (operationType === 1 && status === 2) {
         _isDisabled = true;
-      } else if (operationType === 2 && (status === 0 || status === 2)) {
+      } else if (operationType === 2 && (status === 1 || status === 3)) {
         _isDisabled = true;
       }
     }
     return _isDisabled;
   };
 
-  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
+  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: ActivityProps[]) => {
     setSelectRowKeys(selectedRowKeys);
     const current = selectedRows[0];
     if (current) {
-      if (current.syncBank === 0 || current.syncBank === 2) {
+      if (current.status === 1 || current.status === 3) {
         setOperationType(1);
       } else {
         setOperationType(2);
@@ -192,6 +201,25 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  const handleToggleOnlineState = (type: number) => {
+    Modal.confirm({
+      content: '确认上架？',
+      cancelText: '取消',
+      okText: '确定',
+      onOk: async () => {
+        const res = await batchOperateActivity({
+          type,
+          activityIds: selectedRowKeys
+        });
+        if (res) {
+          message.success(type === 1 ? '上架成功' : '下架成功');
+
+          onSearch({});
+        }
+      }
+    });
+  };
+
   return (
     <div className={classNames(style.addFriendBox, 'container')}>
       <div className={style.addFriendContent}>
@@ -212,7 +240,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
         </div>
         <div className={'pt20'}>
           <NgTable
-            rowKey={(record: any) => {
+            setRowKey={(record: ActivityProps) => {
               return record.activityId;
             }}
             loading={loading}
@@ -222,6 +250,30 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
             pagination={pagination}
             paginationChange={paginationChange}
           />
+          {dataSource.length > 0 && (
+            <div className={'operationWrap'}>
+              <Space size={20}>
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={operationType !== 1}
+                  onClick={() => handleToggleOnlineState(1)}
+                >
+                  批量上架
+                </Button>
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={operationType !== 2}
+                  onClick={() => handleToggleOnlineState(2)}
+                >
+                  批量下架
+                </Button>
+              </Space>
+            </div>
+          )}
         </div>
       </div>
     </div>

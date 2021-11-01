@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, message } from 'antd';
+import { Button, message, Modal, Space } from 'antd';
 
 import { NgFormSearch, NgTable } from 'src/components';
 import style from './style.module.less';
@@ -7,7 +7,13 @@ import style from './style.module.less';
 import { columns, ProductProps, setSearchCols } from './Config';
 import { PlusOutlined } from '@ant-design/icons';
 import { RouteComponentProps } from 'react-router';
-import { getProductList, productManage, sortCancelTopAtProduct, sortTopAtProduct } from 'src/apis/marketing';
+import {
+  batchOperateProduct,
+  getProductList,
+  productManage,
+  sortCancelTopAtProduct,
+  sortTopAtProduct
+} from 'src/apis/marketing';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import moment from 'moment';
 
@@ -28,18 +34,24 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   });
   const [dataSource, setDataSource] = useState<ProductProps[]>([]);
-
+  const [operationType, setOperationType] = useState<number | null>(null);
+  const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
+  const [loading, setLoading] = useState(true);
   const handleEdit = (record: ProductProps) => {
     history.push('/marketingProduct/edit', { id: record.productId, type: '2' });
   };
 
   const getList = async (args: any) => {
+    setOperationType(null);
+    setSelectRowKeys([]);
+    setLoading(true);
     const res: any = await getProductList({
       ...params,
       pageNum: pagination.current,
       pageSize: pagination.pageSize,
       ...args
     });
+    setLoading(false);
     if (res) {
       setDataSource(res.list);
       setPagination((pagination) => ({ ...pagination, total: res.total }));
@@ -145,6 +157,63 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     }
     setParams((params) => ({ ...params, category, productName, status, onlineTimeBegin, onlineTimeEnd }));
   };
+  const isDisabled = (operationType: number | null, status: number) => {
+    let _isDisabled = false;
+    if (operationType) {
+      if (operationType === 1 && status === 2) {
+        _isDisabled = true;
+      } else if (operationType === 2 && (status === 1 || status === 3)) {
+        _isDisabled = true;
+      }
+    }
+    return _isDisabled;
+  };
+
+  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: ProductProps[]) => {
+    setSelectRowKeys(selectedRowKeys);
+    const current = selectedRows[0];
+    if (current) {
+      if (current.status === 1 || current.status === 3) {
+        setOperationType(1);
+      } else {
+        setOperationType(2);
+      }
+    } else {
+      setOperationType(null);
+    }
+  };
+  const rowSelection = {
+    hideSelectAll: true,
+    selectedRowKeys: selectedRowKeys,
+    onChange: (selectedRowKeys: React.Key[], selectedRows: ProductProps[]) => {
+      onSelectChange(selectedRowKeys, selectedRows);
+    },
+    getCheckboxProps: (record: ProductProps) => {
+      return {
+        disabled: isDisabled(operationType, record.status),
+        name: record.productName
+      };
+    }
+  };
+
+  const handleToggleOnlineState = (type: number) => {
+    Modal.confirm({
+      content: type === 1 ? '确认上架？' : '确认下架？',
+      cancelText: '取消',
+      okText: '确定',
+      onOk: async () => {
+        const res = await batchOperateProduct({
+          type,
+          productIds: selectedRowKeys
+        });
+        if (res) {
+          message.success(type === 1 ? '上架成功' : '下架成功');
+
+          onSearch({});
+        }
+      }
+    });
+  };
   return (
     <div className="container">
       {/* 表单查询 start */}
@@ -182,27 +251,40 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
       </header>
       {/* 表单查询 end */}
       <NgTable
-        rowSelection={{
-          hideSelectAll: true,
-          onChange: (selectedRowKeys, selectedRows) => {
-            console.log(selectedRowKeys, selectedRows);
-          },
-          getCheckboxProps: (record: ProductProps) => {
-            return {
-              disabled: false,
-              name: record.productName
-            };
-          }
-        }}
+        rowSelection={rowSelection}
         columns={myColumns}
         dataSource={dataSource}
-        loading={false}
+        loading={loading}
         pagination={pagination}
         paginationChange={paginationChange}
         setRowKey={(record: any) => {
           return record.productId;
         }}
       />
+      {dataSource.length > 0 && (
+        <div className={'operationWrap'}>
+          <Space size={20}>
+            <Button
+              type="primary"
+              shape={'round'}
+              ghost
+              disabled={operationType !== 1}
+              onClick={() => handleToggleOnlineState(1)}
+            >
+              批量上架
+            </Button>
+            <Button
+              type="primary"
+              shape={'round'}
+              ghost
+              disabled={operationType !== 2}
+              onClick={() => handleToggleOnlineState(2)}
+            >
+              批量下架
+            </Button>
+          </Space>
+        </div>
+      )}
     </div>
   );
 };
