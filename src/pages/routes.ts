@@ -81,6 +81,16 @@ export const routes: RouteProps[] = [
   {
     path: '/seatReport',
     component: lazy(() => import('src/pages/Statistics/SeatReport/SeatReport'))
+  },
+  // 小站配置
+  {
+    path: '/station',
+    component: lazy(() => import('src/pages/Operation/StationConfig/StationConfig'))
+  },
+  // 新增小站配置
+  {
+    path: '/station/add',
+    component: lazy(() => import('src/pages/Operation/AddStationConfig/AddStationConfig'))
   }
 ];
 
@@ -117,8 +127,19 @@ export const menus: Menu[] = [
         path: '/marketingIndex'
       }
     ]
-  }
-  /* {
+  },
+  {
+    name: '运营配置',
+    icon: 'icon_daohang_28_yingxiaopingtai',
+    path: 'operation',
+    children: [
+      {
+        name: '小站配置',
+        path: '/station'
+      }
+    ]
+  },
+  {
     name: '数据统计',
     icon: 'a-bianzu101',
     path: 'statistics',
@@ -128,5 +149,5 @@ export const menus: Menu[] = [
         path: '/seatReport'
       }
     ]
-  } */
+  }
 ];
