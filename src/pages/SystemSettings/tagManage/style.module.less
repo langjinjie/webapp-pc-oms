@@ -1,0 +1,75 @@
+.tabsWrap {
+  height: 64px;
+  padding-left: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  .tabItem {
+    position: relative;
+    display: inline-block;
+    height: 64px;
+    width: 68px;
+    font-size: 16px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: #111111;
+    line-height: 64px;
+    text-align: center;
+    &:not(:last-child) {
+      margin-right: 44px;
+    }
+    &.active {
+      color: #318cf5;
+      &::after {
+        position: absolute;
+        display: block;
+        content: ' ';
+        bottom: 0;
+        width: 68px;
+        height: 4px;
+        background: #318cf5;
+        border-radius: 2px;
+      }
+    }
+  }
+}
+.content {
+  padding: 4px 20px;
+  .tagItemWrap {
+    margin-top: 20px;
+    width: 760px;
+    padding: 0 32px;
+    background: #ffffff;
+    box-shadow: 2px 0px 16px 0px rgba(129, 141, 168, 0.2);
+    border-radius: 8px;
+    line-height: 60px;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      height: 60px;
+      span {
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+      }
+    }
+    .tagListContent {
+      height: 0;
+      overflow: hidden;
+      &.active {
+        height: auto;
+        padding: 10px 0 20px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        line-height: 0;
+      }
+      span {
+        display: inline-block;
+        margin-right: 10px;
+        margin-top: 10px;
+        height: 28px;
+        padding: 0 12px;
+        background: #f7f7f8;
+        border-radius: 4px;
+        line-height: 28px;
+      }
+    }
+  }
+}

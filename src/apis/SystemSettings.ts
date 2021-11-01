@@ -120,3 +120,8 @@ export const requestSavePosterType: HttpFC = (param) => {
 export const requestDeletePosterType: HttpFC = (param) => {
   return http.post('/tenacity_admin/api/poster/typedel', param);
 };
+
+// 获取产品库、文章库、海报库、活动库、标签列表
+export const requestGetAllTagList: HttpVoid = () => {
+  return http.post('/tenacity-admin/api/tag/markettaglist');
+};

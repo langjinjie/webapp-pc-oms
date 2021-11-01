@@ -30,3 +30,16 @@ export interface IProductTypeItem {
   name: string;
   children?: IProductTypeItem[];
 }
+
+// 分类标签列表
+export interface ITagItem {
+  type: number;
+  tagId: string;
+  tagName: string;
+}
+export interface IAllTagList {
+  productTagList: ITagItem[];
+  newsTagList: ITagItem[];
+  posterTagList: ITagItem[];
+  activityTagList: ITagItem[];
+}
