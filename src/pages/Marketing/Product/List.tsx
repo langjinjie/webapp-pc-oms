@@ -10,6 +10,7 @@ import { RouteComponentProps } from 'react-router';
 import {
   batchOperateProduct,
   getProductList,
+  productConfig,
   productManage,
   sortCancelTopAtProduct,
   sortTopAtProduct
@@ -37,8 +38,17 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   const [operationType, setOperationType] = useState<number | null>(null);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(true);
+  const [productOptions, setProductOptions] = useState<any>([]);
   const handleEdit = (record: ProductProps) => {
     history.push('/marketingProduct/edit', { id: record.productId, type: '2' });
+  };
+
+  // 获取配置列表
+  const getProductConfig = async () => {
+    const res = await productConfig({ type: [1] });
+    if (res) {
+      setProductOptions(res.productTypeList || []);
+    }
   };
 
   const getList = async (args: any) => {
@@ -144,6 +154,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   useEffect(() => {
     onSearch({});
+    getProductConfig();
   }, []);
 
   const onValuesChange = (changeValues: any, values: any) => {
@@ -244,7 +255,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
           <NgFormSearch
             isInline={false}
             onSearch={onSearch}
-            searchCols={setSearchCols([])}
+            searchCols={setSearchCols(productOptions)}
             onValuesChange={onValuesChange}
           />
         </div>
