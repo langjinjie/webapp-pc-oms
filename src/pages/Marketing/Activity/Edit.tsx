@@ -6,6 +6,7 @@ import { activityDetail, activityEdit, productConfig } from 'src/apis/marketing'
 import style from './style.module.less';
 import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
+import { WechatShare } from '../Components/WechatShare/WechatShare';
 
 interface ActivityPageProps {
   id: number;
@@ -209,25 +210,12 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
               <h3 style={{ fontSize: '14px', fontWeight: 500 }} className="margin-bottom20">
                 分享给客户样例展示
               </h3>
-              <div className={style.userImg}>
-                <img src={userInfo.avatar} alt="" />
-              </div>
-              <div className={style.shareWrap}>
-                <div style={{ overflow: 'hidden' }}>
-                  <div className={style.shareInfo}>
-                    <h3 style={{ fontSize: '14px', fontWeight: 500 }} className="ellipsis">
-                      {active.activityName}
-                    </h3>
-                    <p style={{ fontSize: '12px' }} className="ellipsis">
-                      {active.shareTitle}
-                    </p>
-                  </div>
-                  <div className={style.shareImg}>
-                    <img src={active.shareCoverImgUrl} alt="" />
-                  </div>
-                </div>
-                <p className={style.shareTag}>企业微信</p>
-              </div>
+              <WechatShare
+                avatar={userInfo.avatar}
+                title={active.activityName}
+                desc={active.shareTitle}
+                shareCoverImgUrl={active.shareCoverImgUrl}
+              />
             </div>
           </Col>
         </Row>
