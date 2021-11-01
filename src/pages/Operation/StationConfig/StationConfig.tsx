@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Table, Button, Card, TableColumnType, PaginationProps, Form, DatePicker } from 'antd';
+import { Table, Button, Card, TableColumnType, PaginationProps } from 'antd';
 import moment from 'moment';
 import qs from 'qs';
 import { setTitle } from 'lester-tools';
@@ -22,13 +22,13 @@ interface StationItem {
   isOwner: string;
 }
 
-interface QueryParam {
+/* interface QueryParam {
   startTime?: number;
   endTime?: number;
-}
+} */
 
-const { Item, useForm } = Form;
-const { RangePicker } = DatePicker;
+/* const { Item, useForm } = Form;
+const { RangePicker } = DatePicker; */
 
 const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [list, setList] = useState<StationItem[]>([]);
@@ -38,9 +38,9 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     total: 0,
     showTotal: (total: number) => `共 ${total} 条`
   });
-  const [queryParam, setQueryParam] = useState<QueryParam>({});
+  // const [queryParam, setQueryParam] = useState<QueryParam>({});
 
-  const [form] = useForm();
+  // const [form] = useForm();
 
   /**
    * 操作处理
@@ -59,7 +59,7 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     const params: any = {
       pageNum: pagination.current,
       pageSize: pagination.pageSize,
-      ...queryParam,
+      // ...queryParam,
       ...param
     };
     const res: any = await queryStationList(params);
@@ -104,17 +104,12 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     {
       title: '操作',
       dataIndex: 'settingId',
-      render: (text: number, record: StationItem) => (
+      render: (text: number) => (
         <>
           <Button type="link" onClick={() => operateHandle(text, 1)}>
             查看
           </Button>
-          <Button
-            type="link"
-            title={record.isOwner === '0' ? '非创建者不可编辑' : ''}
-            disabled={record.isOwner === '0'}
-            onClick={() => operateHandle(text, 0)}
-          >
+          <Button type="link" onClick={() => operateHandle(text, 0)}>
             编辑
           </Button>
         </>
@@ -122,7 +117,7 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     }
   ];
 
-  const onsubmit = (values: any) => {
+  /* const onsubmit = (values: any) => {
     console.log(values);
     const { onlineTime } = values;
     if (onlineTime && onlineTime.length > 1) {
@@ -140,7 +135,7 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
       setQueryParam({});
       getStationList({ pageNum: 1 });
     }
-  };
+  }; */
 
   useEffect(() => {
     getStationList();
@@ -153,7 +148,7 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
         <Icon className={style.addIcon} name="xinjian" />
         添加
       </div>
-      <Form className={style.formWrap} form={form} layout="inline" onFinish={onsubmit} onReset={() => onsubmit({})}>
+      {/* <Form className={style.formWrap} form={form} layout="inline" onFinish={onsubmit} onReset={() => onsubmit({})}>
         <Item label="上架时间" name="onlineTime">
           <RangePicker />
         </Item>
@@ -163,7 +158,7 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
           </Button>
           <Button htmlType="reset">重置</Button>
         </Item>
-      </Form>
+      </Form> */}
       <Table
         rowKey="settingId"
         dataSource={list}

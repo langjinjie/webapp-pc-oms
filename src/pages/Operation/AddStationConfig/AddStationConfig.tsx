@@ -63,7 +63,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
       visibleScopeDeptIds: visibleScopeDeptIds.toString(),
       activityList: activityList.map(({ activityId, bannerUrl }: Activity) => ({
         activityId,
-        bannerUrl: bannerUrl[0]?.response?.retdata
+        bannerUrl: bannerUrl[0]?.response?.retdata.filePath
       }))
     };
     if (settingId) {
@@ -317,7 +317,8 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                           accept="image/*"
                           disabled={+type === 1}
                           listType="picture-card"
-                          action="/tenacity-manage/api/upload/img"
+                          action="/tenacity-admin/api/file/upload"
+                          data={{ bizKey: 'news' }}
                           beforeUpload={beforeUpload}
                         >
                           <Icon className={style.uploadIcon} name="icon_daohang_28_jiahaoyou" />

@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import { queryReportList, queryReportDetail } from 'src/apis/seatReport';
 import { downloadImage } from 'src/utils/base';
 import style from './style.module.less';
+import { setTitle } from 'lester-tools';
 
 const { Option } = Select;
 
@@ -281,6 +282,7 @@ const SeatReport: React.FC = () => {
 
   useEffect(() => {
     getReportList();
+    setTitle('座席战报');
   }, []);
 
   return (
