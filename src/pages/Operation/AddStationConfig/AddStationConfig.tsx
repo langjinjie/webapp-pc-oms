@@ -63,7 +63,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
       visibleScopeDeptIds: visibleScopeDeptIds.toString(),
       activityList: activityList.map(({ activityId, bannerUrl }: Activity) => ({
         activityId,
-        bannerUrl: bannerUrl[0]?.response?.retdata.filePath
+        bannerUrl: bannerUrl[0]?.response?.retdata?.filePath
       }))
     };
     if (settingId) {
