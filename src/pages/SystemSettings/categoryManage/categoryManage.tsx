@@ -135,9 +135,7 @@ const categoryManage: React.FC = () => {
         return message.error('其他分类不支持拖动排序');
       }
       await setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
-      console.log(requestSaveSortMarket);
       const sortTypeIdList = newData.reverse().map((item: any) => item.typeId || item.id);
-      console.log(sortTypeIdList);
       const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
       if (res) {
         message.success('排序成功');
@@ -217,7 +215,6 @@ const categoryManage: React.FC = () => {
                                   className={style.edit}
                                   onClick={async () => {
                                     setParentId('0');
-                                    console.log('0');
                                     setChildrenEditType('');
                                     await setEditType(
                                       (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
@@ -226,7 +223,6 @@ const categoryManage: React.FC = () => {
                                     const inputNode: HTMLElement = document.querySelector(
                                       'input[type=text]'
                                     ) as HTMLElement;
-                                    console.log(inputNode);
                                     inputNode.focus();
                                   }}
                                 >
@@ -408,7 +404,6 @@ const categoryManage: React.FC = () => {
                                         >
                                           <span
                                             onClick={() => {
-                                              console.log('即将删除');
                                               setPopconfirmVisible(
                                                 (childrenItem as IProductTypeItem).typeId ||
                                                   (childrenItem as IPosterTypeItem).id
@@ -484,7 +479,6 @@ const categoryManage: React.FC = () => {
                                   setParentId((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
                                   await setIsModalVisible(true);
                                   setModalType('新增分类');
-                                  console.log(addInputNode);
                                   addInputNode.current.focus();
                                 }}
                               >

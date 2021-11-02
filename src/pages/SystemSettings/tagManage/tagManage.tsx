@@ -12,8 +12,7 @@ const tagManage: React.FC = () => {
 
   const getAllTagList = async () => {
     const res = await requestGetAllTagList();
-    console.log(res);
-    setTagList(res);
+    res && setTagList(res);
   };
   useEffect(() => {
     getAllTagList();
