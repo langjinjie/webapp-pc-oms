@@ -30,6 +30,7 @@ const categoryManage: React.FC = () => {
   const [parentId, setParentId] = useState('0');
   const [isShowChildrenType, setIsShowChildrenType] = useState('');
   const [popconfirmVisible, setPopconfirmVisible] = useState<string>('');
+  const [isOnDrag, setIsOnDrag] = useState(-1);
 
   const tabs = ['产品库', '文章库', '海报库', '活动库'];
   const addInputNode: MutableRefObject<any> = useRef();
@@ -121,18 +122,23 @@ const categoryManage: React.FC = () => {
     result.splice(endIndex, 0, removed);
     return result;
   };
+  const onDragStart = (result: any) => setIsOnDrag(+result.draggableId.split('draggableId')[0]);
   // 拖拽结束
   const onDragEnd = async (result: any) => {
+    setIsOnDrag(-1);
     try {
       if (!result.destination) {
         return;
       }
       // 获取拖拽后的数据 重新赋值
       const newData = reorder(typeList, result.source.index, result.destination.index);
+      const index = newData.findIndex((item: any) => item.name === '其他');
+      if (index < newData.length - 1) {
+        getTypeList(tabIndex);
+        return message.error('其他分类不支持拖动排序');
+      }
       await setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
-      console.log(requestSaveSortMarket);
       const sortTypeIdList = newData.reverse().map((item: any) => item.typeId || item.id);
-      console.log(sortTypeIdList);
       const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
       if (res) {
         message.success('排序成功');
@@ -172,7 +178,7 @@ const categoryManage: React.FC = () => {
         ))}
       </div>
       <div className={style.content}>
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
           {/* direction代表拖拽方向  默认垂直方向  水平方向:horizontal */}
           <Droppable droppableId="droppable" type="app">
             {(provided: any) => (
@@ -197,7 +203,7 @@ const categoryManage: React.FC = () => {
                           })}
                         >
                           <div
-                            className={style.typeItem}
+                            className={classNames(style.typeItem, { [style.isOnDrag]: isOnDrag === index })}
                             style={
                               editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
                                 ? {}
@@ -212,7 +218,6 @@ const categoryManage: React.FC = () => {
                                   className={style.edit}
                                   onClick={async () => {
                                     setParentId('0');
-                                    console.log('0');
                                     setChildrenEditType('');
                                     await setEditType(
                                       (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
@@ -221,7 +226,6 @@ const categoryManage: React.FC = () => {
                                     const inputNode: HTMLElement = document.querySelector(
                                       'input[type=text]'
                                     ) as HTMLElement;
-                                    console.log(inputNode);
                                     inputNode.focus();
                                   }}
                                 >
@@ -307,6 +311,7 @@ const categoryManage: React.FC = () => {
                                 setTypeName({ ...typeName, name: e.target.value });
                               }}
                               onKeyDown={async (e) => {
+                                if (!typeName?.name) return message.error('分类名称不能为空');
                                 if (typeName?.name === item.name) return;
                                 if (e.keyCode === 13) {
                                   const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
@@ -403,7 +408,6 @@ const categoryManage: React.FC = () => {
                                         >
                                           <span
                                             onClick={() => {
-                                              console.log('即将删除');
                                               setPopconfirmVisible(
                                                 (childrenItem as IProductTypeItem).typeId ||
                                                   (childrenItem as IPosterTypeItem).id
@@ -440,6 +444,7 @@ const categoryManage: React.FC = () => {
                                           setTypeName({ ...typeName, name: e.target.value });
                                         }}
                                         onKeyDown={async (e) => {
+                                          if (!typeName?.name) return message.error('分类名称不能为空');
                                           if (typeName?.name === childrenItem.name) return;
                                           if (e.keyCode === 13) {
                                             const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
@@ -479,7 +484,6 @@ const categoryManage: React.FC = () => {
                                   setParentId((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
                                   await setIsModalVisible(true);
                                   setModalType('新增分类');
-                                  console.log(addInputNode);
                                   addInputNode.current.focus();
                                 }}
                               >
