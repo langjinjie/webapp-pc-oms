@@ -6,6 +6,7 @@ import { Context } from 'src/store';
 import style from './style.module.less';
 import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
+import { WechatShare } from '../Components/WechatShare/WechatShare';
 interface productConfigProps {
   id: number;
   type: number;
@@ -426,23 +427,12 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           <Col span="12">
             <div className="sharePreviewWrap">
               <h3 className="margin-bottom20 font14 bold">分享给客户样例展示</h3>
-              <div className="userImg">
-                <img src={userInfo.avatar} alt="" />
-              </div>
-              <div className="shareWrap">
-                <div style={{ overflow: 'hidden' }}>
-                  <div className="shareInfo">
-                    <h3 className="ellipsis font14 bold">{shareInfo.productName}</h3>
-                    <div className="two-line-ellipsis font12 color-text-regular" style={{ marginTop: '5px' }}>
-                      {shareInfo.shareTitle}
-                    </div>
-                  </div>
-                  <div className="shareImg">
-                    <img src={shareInfo.shareCoverImgUrl} alt="" />
-                  </div>
-                </div>
-                <p className="shareTag">企业微信</p>
-              </div>
+              <WechatShare
+                avatar={userInfo.avatar}
+                desc={shareInfo.shareTitle}
+                shareCoverImgUrl={shareInfo.shareCoverImgUrl}
+                title={shareInfo.productName}
+              />
             </div>
           </Col>
         </Row>

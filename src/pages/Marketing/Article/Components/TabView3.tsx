@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import { NgEditor } from 'src/components';
 import NgUpload from '../../Components/Upload/Upload';
+import { WechatShare } from '../../Components/WechatShare/WechatShare';
 
 interface TabView3Props {
   isEdit: boolean;
@@ -27,7 +28,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     editorHtml: '',
     editorHtmlChanged: ''
   });
-  const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList } =
+  const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList, userInfo } =
     useContext(Context);
   // const { data, dispatch } = useContext(GlobalContent);
   const [categoryList] = useState<TypeProps[]>([]);
@@ -57,9 +58,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   const onChangeTitle: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     setFormData((formData) => ({ ...formData, title: event.target.value }));
   };
-  const onChangeSummary: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    setFormData((formData) => ({ ...formData, summary: event.target.value }));
-  };
+
   const asyncGetTagsOrCategory = async (type: 'category' | 'tag') => {
     try {
       const res = await getTagsOrCategorys({ type });
@@ -140,13 +139,17 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       console.log('unmounted');
     };
   }, []);
-
+  const onFormValuesChange = (changeValues: any, values: any) => {
+    const { defaultImg, summary } = values;
+    setFormData((formData) => ({ ...formData, defaultImg, summary }));
+  };
   return (
     <Spin spinning={isGetDetailLoading} tip="加载中...">
       <Form
         form={form}
         initialValues={formData}
         onFinish={onFinish}
+        onValuesChange={onFormValuesChange}
         scrollToFirstError={true}
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 12 }}
@@ -191,16 +194,15 @@ const TabView3: React.FC<TabView3Props> = (props) => {
           ]}
           extra="请输入分享摘要，限100个字符以内，若不输入，则默认为链接对应文章的自带摘要。"
         >
-          <Input placeholder={'请输入分享摘要，限100个字符以内。'} onChange={onChangeSummary} />
+          <Input placeholder={'请输入分享摘要，限100个字符以内。'} />
         </Form.Item>
         <Form.Item label={<span>文章分享预览</span>} labelCol={{ span: 3 }} wrapperCol={{ span: 12 }}>
-          <div className={'shareCardView'}>
-            <img className={'shareImg'} src={formData.defaultImg} />
-            <div className={'shareContent'}>
-              <div className={'text-ellipsis shareTitle'}>{formData.title || '文章标题'}</div>
-              <div className={'text-ellipsis shareSubTitle'}>{formData.summary}</div>
-            </div>
-          </div>
+          <WechatShare
+            avatar={userInfo.avatar}
+            title={formData.title}
+            desc={formData.summary}
+            shareCoverImgUrl={formData.defaultImg}
+          />
         </Form.Item>
         <Form.Item
           label={<span className="is_required">输入内容</span>}
