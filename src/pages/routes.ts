@@ -91,6 +91,15 @@ export const routes: RouteProps[] = [
   {
     path: '/station/add',
     component: lazy(() => import('src/pages/Operation/AddStationConfig/AddStationConfig'))
+  },
+  // 系统设置
+  {
+    path: '/categoryManage',
+    component: lazy(() => import('src/pages/SystemSettings/categoryManage/categoryManage'))
+  },
+  {
+    path: '/tagManage',
+    component: lazy(() => import('src/pages/SystemSettings/tagManage/tagManage'))
   }
 ];
 
@@ -139,7 +148,7 @@ export const menus: Menu[] = [
       }
     ]
   },
-  {
+  /* {
     name: '数据统计',
     icon: 'a-bianzu101',
     path: 'statistics',
@@ -148,6 +157,15 @@ export const menus: Menu[] = [
         name: '座席战报',
         path: '/seatReport'
       }
+    ]
+  } */
+  {
+    name: '系统设置',
+    icon: 'a-bianzu101',
+    path: 'systemsettings',
+    children: [
+      { name: '分类管理', path: '/categoryManage' },
+      { name: '标签管理', path: '/tagManage' }
     ]
   }
 ];
