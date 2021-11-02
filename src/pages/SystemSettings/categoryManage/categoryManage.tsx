@@ -129,6 +129,11 @@ const categoryManage: React.FC = () => {
       }
       // 获取拖拽后的数据 重新赋值
       const newData = reorder(typeList, result.source.index, result.destination.index);
+      const index = newData.findIndex((item: any) => item.name === '其他');
+      if (index < newData.length - 1) {
+        getTypeList(tabIndex);
+        return message.error('其他分类不支持拖动排序');
+      }
       await setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
       console.log(requestSaveSortMarket);
       const sortTypeIdList = newData.reverse().map((item: any) => item.typeId || item.id);
