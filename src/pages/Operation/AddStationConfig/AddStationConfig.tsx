@@ -122,7 +122,9 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
               status: 'done',
               thumbUrl: bannerUrl,
               response: {
-                retdata: bannerUrl
+                retdata: {
+                  filePath: bannerUrl
+                }
               }
             }
           ]
