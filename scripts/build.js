@@ -20,7 +20,7 @@ const TerserWebpackPlugin = require('terser-webpack-plugin'); // js压缩
 const webpackConfig = require('./webpack.config');
 
 const buildConfig = {
-  devtool: 'source-map',
+  // devtool: 'source-map',
   plugins: [
     new CleanWebpackPlugin(),
     new SimpleProgressWebpackPlugin()

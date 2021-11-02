@@ -1,5 +1,6 @@
 .wrap {
   min-height: calc(100vh - 80px);
+  padding-bottom: 20px;
 }
 .tabsWrap {
   height: 64px;
@@ -51,6 +52,7 @@
     }
     .typeItem,
     .inputTypeItem {
+      position: relative;
       display: flex;
       justify-content: space-between;
       // margin-top: 20px;
@@ -74,7 +76,7 @@
         border: 2px solid #318cf5;
       }
       &.isOnDrag {
-        background: #e0edff;
+        background-color: #e0edff;
         border: 2px solid #e0edff;
       }
       .typeName {
@@ -129,10 +131,17 @@
         background: url('/src/assets/images/icon_common_16_Close-Circle.png') no-repeat;
         background-size: 20px 20px;
       }
+      .check {
+        position: absolute;
+        top: 15px;
+        left: 32px;
+        color: red;
+      }
     }
     .childrenWrap {
       width: 696px;
       margin: 0 auto;
+      margin-bottom: 10px;
       border-top: 1px solid #d8d8d8;
       border-bottom: 1px solid #d8d8d8;
       .childrenItemWrap {
@@ -196,6 +205,7 @@
     }
     .addChilrenType {
       margin: 20px 63px;
+      margin-top: 10px;
       width: 92px;
       height: 32px;
       background: #ffffff;
@@ -254,6 +264,7 @@
 }
 .modalWrap {
   .modalContent {
+    position: relative;
     margin: 22px auto;
     .content {
       text-align: center;
@@ -268,6 +279,11 @@
       border-radius: 18px;
       border: 1px solid #e1e2e6;
       outline: none;
+    }
+    .check {
+      left: 56px;
+      position: absolute;
+      color: red;
     }
   }
   :global {
