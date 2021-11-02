@@ -17,8 +17,10 @@ import {
 } from 'src/apis/marketing';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import moment from 'moment';
+import { useDocumentTitle } from 'src/utils/base';
 
 const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
+  useDocumentTitle('产品列表');
   const [params, setParams] = useState({
     productName: '',
     category: '',
@@ -95,8 +97,8 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     if (res) {
       message.success(record.status === 2 ? '下架成功' : '上架成功');
       const copyData = [...dataSource];
+      copyData[index][record.status === 2 ? 'offlineTime' : 'onlineTime'] = moment().format();
       copyData[index].status = record.status === 2 ? 3 : 2;
-      copyData[index].offlineTime = moment().format();
       setDataSource(copyData);
     }
   };

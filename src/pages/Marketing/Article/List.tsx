@@ -82,7 +82,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     getList({});
-    if (articleCategoryList.length === 0) {
+    if (articleCategoryList?.length === 0) {
       asyncGetTagsOrCategory('category');
     }
   }, []);

@@ -89,7 +89,7 @@ export const uploadImage: HttpFunction = (params: any) => {
   });
 };
 export const uploadImage2: HttpFunction2 = (params: any, config: any) => {
-  return http.post('/tenacity-news/api/file/upload.do', params, {
+  return http.post('/tenacity-admin/api/file/upload', params, {
     headers: { 'Content-Type': 'multipart/form-data' },
     ...config
   });

@@ -168,7 +168,7 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
     setSubmitting(false);
     if (res) {
       message.success('添加成功');
-      history.replace('/marketingProduct');
+      history.goBack();
     }
   };
 

@@ -1,0 +1,41 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2021-05-22 16:03
+*/
+
+.wrap {
+  .addBtn {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 128px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 16px;
+    background: #3078db;
+    border-radius: 20px;
+    cursor: pointer;
+    color: white;
+
+    .addIcon {
+      font-size: 20px;
+      margin-right: 4px;
+    }
+  }
+}
+
+.formWrap {
+  margin-bottom: 15px;
+
+  :global {
+    .ant-btn {
+      border-radius: 20px;
+    }
+
+    .ant-btn + .ant-btn {
+      margin-left: 10px;
+    }
+  }
+}
