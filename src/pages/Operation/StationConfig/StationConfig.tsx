@@ -99,7 +99,7 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     {
       title: '创建时间',
       dataIndex: 'createTime',
-      render: (text: string) => moment(text).format('YYYY-MM-DD MM:HH')
+      render: (text: string) => moment(text).format('YYYY-MM-DD HH:mm')
     },
     {
       title: '操作',

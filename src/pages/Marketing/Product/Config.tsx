@@ -50,7 +50,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       width: 160,
       options: options
     },
-    { name: 'rangePicker', width: '268px', type: 'rangePicker', label: '创建时间' },
+    { name: 'rangePicker', width: '268px', type: 'rangePicker', label: '上架时间' },
     {
       name: 'status',
       type: 'select',
