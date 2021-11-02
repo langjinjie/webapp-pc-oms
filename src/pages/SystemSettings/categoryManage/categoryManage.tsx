@@ -30,6 +30,7 @@ const categoryManage: React.FC = () => {
   const [parentId, setParentId] = useState('0');
   const [isShowChildrenType, setIsShowChildrenType] = useState('');
   const [popconfirmVisible, setPopconfirmVisible] = useState<string>('');
+  const [isOnDrag, setIsOnDrag] = useState(-1);
 
   const tabs = ['产品库', '文章库', '海报库', '活动库'];
   const addInputNode: MutableRefObject<any> = useRef();
@@ -121,8 +122,10 @@ const categoryManage: React.FC = () => {
     result.splice(endIndex, 0, removed);
     return result;
   };
+  const onDragStart = (result: any) => setIsOnDrag(+result.draggableId.split('draggableId')[0]);
   // 拖拽结束
   const onDragEnd = async (result: any) => {
+    setIsOnDrag(-1);
     try {
       if (!result.destination) {
         return;
@@ -175,7 +178,7 @@ const categoryManage: React.FC = () => {
         ))}
       </div>
       <div className={style.content}>
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
           {/* direction代表拖拽方向  默认垂直方向  水平方向:horizontal */}
           <Droppable droppableId="droppable" type="app">
             {(provided: any) => (
@@ -200,7 +203,7 @@ const categoryManage: React.FC = () => {
                           })}
                         >
                           <div
-                            className={style.typeItem}
+                            className={classNames(style.typeItem, { [style.isOnDrag]: isOnDrag === index })}
                             style={
                               editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
                                 ? {}
@@ -308,6 +311,7 @@ const categoryManage: React.FC = () => {
                                 setTypeName({ ...typeName, name: e.target.value });
                               }}
                               onKeyDown={async (e) => {
+                                if (!typeName?.name) return message.error('分类名称不能为空');
                                 if (typeName?.name === item.name) return;
                                 if (e.keyCode === 13) {
                                   const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
@@ -440,6 +444,7 @@ const categoryManage: React.FC = () => {
                                           setTypeName({ ...typeName, name: e.target.value });
                                         }}
                                         onKeyDown={async (e) => {
+                                          if (!typeName?.name) return message.error('分类名称不能为空');
                                           if (typeName?.name === childrenItem.name) return;
                                           if (e.keyCode === 13) {
                                             const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
