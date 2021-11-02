@@ -1,5 +1,5 @@
 .wrap {
-  min-height: 100vh;
+  min-height: calc(100vh - 80px);
 }
 .tabsWrap {
   height: 64px;
@@ -16,6 +16,7 @@
     color: #111111;
     line-height: 64px;
     text-align: center;
+    cursor: pointer;
     &:not(:last-child) {
       margin-right: 44px;
     }
@@ -65,6 +66,10 @@
       background-size: 16px 16px;
       background-position: 32px center;
       overflow: hidden;
+      font-size: 14px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: #111111;
       &:hover {
         border: 2px solid #318cf5;
       }
@@ -157,6 +162,7 @@
               font-family: PingFangSC-Regular, PingFang SC;
               font-weight: 400;
               color: #318cf5;
+              cursor: pointer;
             }
             span:first-child {
               margin-right: 32px;

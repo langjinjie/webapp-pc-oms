@@ -28,7 +28,17 @@ export interface IStaffList {
 export interface IProductTypeItem {
   typeId: string;
   name: string;
-  children?: IProductTypeItem[];
+  categoryList?: IProductTypeItem[];
+}
+
+// 海报分类列表
+export interface IPosterTypeItem {
+  id: string;
+  name: string;
+  type: string;
+  count: number;
+  sortId: number;
+  categoryList?: IPosterTypeItem[];
 }
 
 // 分类标签列表
