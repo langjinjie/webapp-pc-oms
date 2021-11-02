@@ -51,3 +51,8 @@ export const requestDeletePosterType: HttpFC = (param) => {
 export const requestGetAllTagList: HttpVoid = () => {
   return http.post('/tenacity-admin/api/tag/markettaglist');
 };
+
+// 营销分类排序保存接口
+export const requestSaveSortMarket: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/market/savesort', param);
+};

@@ -9,7 +9,8 @@ import {
   requestDeleteNewType,
   requestGetPosterTypeList,
   requestSavePosterType,
-  requestDeletePosterType
+  requestDeletePosterType,
+  requestSaveSortMarket
 } from 'src/apis/SystemSettings';
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -36,20 +37,19 @@ const categoryManage: React.FC = () => {
   // 获取产品分类列表
   const getProductTypeList = async () => {
     const res = await requestGetProductTypeList();
-
     res && setTypeList(res.typeList as IProductTypeItem[]);
   };
 
   // 获取文章分类
   const getArticleTypeList = async () => {
     const res = await requestGetNewTypeList();
-    setTypeList(res.typeList as IProductTypeItem[]);
+    res && setTypeList(res.typeList as IProductTypeItem[]);
   };
 
   // 获取海报分类
   const getPosterTypeList = async () => {
     const res = await requestGetPosterTypeList();
-    setTypeList(res.categoryList as IPosterTypeItem[]);
+    res && setTypeList(res.categoryList as IPosterTypeItem[]);
   };
 
   // 获取分类列表
@@ -122,14 +122,24 @@ const categoryManage: React.FC = () => {
     return result;
   };
   // 拖拽结束
-  const onDragEnd = (result: any) => {
+  const onDragEnd = async (result: any) => {
     try {
       if (!result.destination) {
         return;
       }
       // 获取拖拽后的数据 重新赋值
       const newData = reorder(typeList, result.source.index, result.destination.index);
-      setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
+      await setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
+      console.log(requestSaveSortMarket);
+      const sortTypeIdList = newData.reverse().map((item: any) => item.typeId || item.id);
+      console.log(sortTypeIdList);
+      const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
+      if (res) {
+        message.success('排序成功');
+      } else {
+        message.error('排序失败');
+      }
+      getTypeList(tabIndex);
     } catch (err) {
       console.error(err);
     }
