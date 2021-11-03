@@ -33,7 +33,7 @@ const categoryManage: React.FC = () => {
   const [isOnDrag, setIsOnDrag] = useState(-1);
   const [isCancel, setIsCancel] = useState(false);
 
-  const tabs = ['产品库', '文章库', '海报库', '活动库'];
+  const tabs = ['产品库', '文章库', '海报库'];
   const addInputNode: MutableRefObject<any> = useRef();
 
   // 获取产品分类列表
@@ -237,11 +237,7 @@ const categoryManage: React.FC = () => {
                               )}
                               {item.name !== '其他' && item.name !== '产品海报' && (
                                 <Popconfirm
-                                  title={
-                                    !item.categoryList?.length
-                                      ? '确认删除该分类吗?'
-                                      : '删除分类后,素材将移至"其他"分类下'
-                                  }
+                                  title={'删除分类后,素材将移至"其他"分类下'}
                                   visible={
                                     popconfirmVisible ===
                                     ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
@@ -273,7 +269,7 @@ const categoryManage: React.FC = () => {
                                   </span>
                                 </Popconfirm>
                               )}
-                              {item.name !== '其他' && (
+                              {item.name !== '其他' && item.categoryList && (
                                 <span
                                   className={style.more}
                                   onClick={() => {
@@ -320,6 +316,7 @@ const categoryManage: React.FC = () => {
                               onKeyDown={async (e) => {
                                 const inputNode = document.querySelector('input[type=text]') as HTMLElement;
                                 if (e.keyCode === 13) {
+                                  if (typeName && typeName?.name.trim().length > 12) { return message.error('最多12个字符,不区分中英文'); }
                                   if (!typeName?.name) return message.error('分类名称不能为空');
                                   if (typeName?.name === item.name) return message.error('该分类名称已存在,请重新输入');
                                   inputNode.blur();
@@ -329,8 +326,17 @@ const categoryManage: React.FC = () => {
                                 }
                               }}
                               onBlur={async () => {
-                                console.log(typeName);
-                                if (editType !== (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id) { return; }
+                                console.log(editType);
+                                console.log((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
+                                if (editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)) {
+                                  return;
+                                }
+                                console.log(1);
+                                if (typeName && typeName?.name.trim().length > 12) {
+                                  message.error('最多12个字符,不区分中英文');
+                                  (document.querySelector('input[type=text]') as HTMLElement).focus();
+                                  return;
+                                }
                                 if (isCancel) {
                                   setIsCancel(false);
                                   return setEditType('');
@@ -338,7 +344,6 @@ const categoryManage: React.FC = () => {
                                 if (!typeName?.name) return message.error('分类名称不能为空');
                                 if (typeName?.name === item.name) return setEditType('');
                                 const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
-                                console.log(res);
                                 if (res) {
                                   await getTypeList(tabIndex);
                                   await setTypeName(undefined);
@@ -472,19 +477,46 @@ const categoryManage: React.FC = () => {
                                         setTypeName({ ...typeName, name: e.target.value.trim().slice(0, 13) });
                                       }}
                                       onKeyDown={async (e) => {
-                                        if (!typeName?.name) return message.error('分类名称不能为空');
-                                        if (typeName?.name === childrenItem.name) return;
+                                        console.log('按下按键');
+                                        const inputNode = document.querySelector('input[type=text]') as HTMLElement;
                                         if (e.keyCode === 13) {
-                                          const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
-                                          if (res) {
-                                            await getTypeList(tabIndex);
-                                            await setTypeName(undefined);
-                                            setChildrenEditType('');
-                                            message.success('修改成功');
-                                          } else {
-                                            message.error('修改失败');
-                                          }
+                                          if (typeName && typeName.name.trim().length > 12) { return message.error('最多12个字符,不区分中英文'); }
+                                          if (!typeName?.name) return message.error('分类名称不能为空');
+                                          if (typeName?.name === childrenItem.name) { return message.error('该分类名称已存在,请重新输入'); }
+                                          inputNode.blur();
+                                        } else if (e.keyCode === 27) {
+                                          console.log('esc');
+                                          setIsCancel(true);
+                                          setChildrenEditType('');
                                         }
+                                      }}
+                                      onBlur={async () => {
+                                        if (
+                                          childrenEditType &&
+                                          childrenEditType !==
+                                            ((childrenItem as IProductTypeItem).typeId ||
+                                              (childrenItem as IPosterTypeItem).id)
+                                        ) {
+                                          return;
+                                        }
+                                        if (typeName && typeName.name.trim().length > 12) {
+                                          message.error('最多12个字符,不区分中英文');
+                                          (document.querySelector('input[type=text]') as HTMLElement).focus();
+                                          return;
+                                        }
+                                        if (isCancel) {
+                                          setIsCancel(false);
+                                          return setChildrenEditType('');
+                                        }
+                                        if (!typeName?.name) return message.error('分类名称不能为空');
+                                        if (typeName?.name === childrenItem.name) return setChildrenEditType('');
+                                        const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
+                                        if (res) {
+                                          await getTypeList(tabIndex);
+                                          await setTypeName(undefined);
+                                          message.success('修改成功');
+                                        }
+                                        setChildrenEditType('');
                                       }}
                                     />
                                     {typeName && (
@@ -500,6 +532,9 @@ const categoryManage: React.FC = () => {
                                         }}
                                       />
                                     )}
+                                    {typeName && typeName?.name.length > 12 && (
+                                      <span className={style.check}>{'最多12个字符,不区分中英文'}</span>
+                                    )}
                                   </div>
                                 </div>
                               ))}
@@ -511,6 +546,7 @@ const categoryManage: React.FC = () => {
                               icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
                               type={'primary'}
                               onClick={async () => {
+                                if (item ? item.categoryList?.length : 0 >= 20) { return message.error('分类总数不得超过20个'); }
                                 setParentId((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
                                 await setIsModalVisible(true);
                                 setModalType('新增分类');
@@ -539,6 +575,7 @@ const categoryManage: React.FC = () => {
         icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
         type={'primary'}
         onClick={async () => {
+          if (typeList.length >= 20) return message.error('分类总数不得超过20个');
           setParentId('0');
           await setIsModalVisible(true);
           setModalType('新增分类');
