@@ -21,23 +21,23 @@ export const routes: RouteProps[] = [
   },
   // 营销平台
   {
-    path: '/marketing/product',
+    path: '/marketingProduct',
     component: lazy(() => import('src/pages/Marketing/Product/List'))
   },
   {
-    path: '/marketing/product/edit',
+    path: '/marketingProduct/edit',
     component: lazy(() => import('src/pages/Marketing/Product/EditGoods'))
   },
   {
-    path: '/marketing/product/edit-choiceness',
+    path: '/marketingProduct/edit-choiceness',
     component: lazy(() => import('src/pages/Marketing/Product/EditChoiceness'))
   },
   {
-    path: '/marketing/activity',
+    path: '/marketingActivity',
     component: lazy(() => import('src/pages/Marketing/Activity/List'))
   },
   {
-    path: '/marketing/activity/Edit',
+    path: '/marketingActivity/Edit',
     component: lazy(() => import('src/pages/Marketing/Activity/Edit'))
   },
   {
@@ -91,6 +91,15 @@ export const routes: RouteProps[] = [
   {
     path: '/station/add',
     component: lazy(() => import('src/pages/Operation/AddStationConfig/AddStationConfig'))
+  },
+  // 系统设置
+  {
+    path: '/categoryManage',
+    component: lazy(() => import('src/pages/SystemSettings/categoryManage/categoryManage'))
+  },
+  {
+    path: '/tagManage',
+    component: lazy(() => import('src/pages/SystemSettings/tagManage/tagManage'))
   }
 ];
 
@@ -114,14 +123,14 @@ export const menus: Menu[] = [
         name: '海报库',
         path: '/marketingPoster'
       },
-      // {
-      //   name: '活动库',
-      //   path: '/marketing/activity'
-      // },
-      // {
-      //   name: '产品库',
-      //   path: '/marketing/product'
-      // },
+      {
+        name: '活动库',
+        path: '/marketingActivity'
+      },
+      {
+        name: '产品库',
+        path: '/marketingProduct'
+      },
       {
         name: '首页配置',
         path: '/marketingIndex'
@@ -139,7 +148,7 @@ export const menus: Menu[] = [
       }
     ]
   },
-  {
+  /* {
     name: '数据统计',
     icon: 'a-bianzu101',
     path: 'statistics',
@@ -148,6 +157,15 @@ export const menus: Menu[] = [
         name: '座席战报',
         path: '/seatReport'
       }
+    ]
+  } */
+  {
+    name: '系统设置',
+    icon: 'a-bianzu101',
+    path: 'systemsettings',
+    children: [
+      { name: '分类管理', path: '/categoryManage' },
+      { name: '标签管理', path: '/tagManage' }
     ]
   }
 ];

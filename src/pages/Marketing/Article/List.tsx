@@ -15,22 +15,15 @@ import style from './style.module.less';
 import { Context } from 'src/store';
 
 import { NgFormSearch, NgTable } from 'src/components';
-import { setSearchCols, SearchParamsProps, columns, Article } from './Config';
+import { setSearchCols, SearchParamsProps, columns, Article, PaginationProps } from './Config';
 import classNames from 'classnames';
 import { PlusOutlined } from '@ant-design/icons';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
 import { useDocumentTitle } from 'src/utils/base';
 
-interface paginationProps {
-  current: number;
-  pageSize: number;
-  total: number;
-  showTotal: (total: any) => string;
-}
-
 const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('文章列表');
-  const [pagination, setPagination] = useState<paginationProps>({
+  const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
     total: 0,
@@ -89,7 +82,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     getList({});
-    if (articleCategoryList.length === 0) {
+    if (articleCategoryList?.length === 0) {
       asyncGetTagsOrCategory('category');
     }
   }, []);
@@ -315,7 +308,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
           }}
         />
         {tableSource.length > 0 && (
-          <div className={style.operationWrap}>
+          <div className={'operationWrap'}>
             <Space size={20}>
               <Button
                 type="primary"

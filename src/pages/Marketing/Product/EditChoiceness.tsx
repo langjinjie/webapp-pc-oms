@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Row, Col, Card, Form, FormProps, Upload, message, Button, Select, Tooltip } from 'antd';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { getProductOnlineList, uploadImg, productChoiceList, productChoiceEdit } from 'src/apis/marketing';
+import { Row, Col, Card, Form, FormProps, message, Button, Select, Tooltip } from 'antd';
+import { getProductOnlineList, productChoiceList, productChoiceEdit } from 'src/apis/marketing';
 import { Icon } from 'src/components';
+import NgUpload from '../Components/Upload/Upload';
 
 const { Option } = Select;
 const getItemStyle = () => ({
@@ -23,7 +23,7 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
     }));
     return newData;
   });
-  const [productList, setPorductList] = useState<any[]>([]);
+  const [productList, setProductList] = useState<any[]>([]);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [form] = Form.useForm();
   // 每一项的样式
@@ -45,7 +45,7 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const getProducts = async () => {
     const res = await getProductOnlineList({});
     if (res) {
-      setPorductList(res);
+      setProductList(res);
     }
   };
   const shareLayout: FormProps = {
@@ -53,13 +53,6 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
     labelCol: { span: 3 },
     wrapperCol: { span: 20 }
   };
-
-  const uploadButton = (loading: boolean) => (
-    <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>上传图片</div>
-    </div>
-  );
 
   const getList = async () => {
     const res = await productChoiceList({});
@@ -119,21 +112,16 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   // 上传图片
-  const uploadFile = async (option: any, index: number) => {
+  const handleChange = async (value: any, index: number) => {
     // 创建一个空对象实例
-    const uploadData = new FormData();
     // 调用append()方法来添加数据
 
-    uploadData.append('file', option.file);
-    const res = await uploadImg(uploadData);
-    if (res) {
-      setData((data) => {
-        const copyData = [...data];
-        copyData[index].loading = false;
-        copyData[index].bannerImgUrl = res;
-        return copyData;
-      });
-    }
+    setData((data) => {
+      const copyData = [...data];
+      copyData[index].loading = false;
+      copyData[index].bannerImgUrl = value;
+      return copyData;
+    });
   };
 
   const onGenderChange = (index: number, value: string) => {
@@ -146,22 +134,6 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
-  };
-  const handleChange = (info: any, index: number) => {
-    if (info.file.status === 'uploading') {
-      setData((data) => {
-        const copyData = [...data];
-        copyData[index].loading = true;
-        return copyData;
-      });
-    }
-    if (info.file.status === 'done') {
-      setData((data) => {
-        const copyData = [...data];
-        copyData[index].loading = false;
-        return copyData;
-      });
-    }
   };
 
   const submitForm = async () => {
@@ -196,7 +168,7 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
     setSubmitting(false);
     if (res) {
       message.success('添加成功');
-      history.replace('/productLibrary');
+      history.goBack();
     }
   };
 
@@ -282,23 +254,13 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
                                 rules={[{ required: true, message: '请上传banner图片：' }]}
                                 extra="为确保最佳展示效果，请上传1136*276像素高清图片，仅支持.jpg格式"
                               >
-                                <Upload
-                                  multiple={false}
-                                  listType="picture-card"
-                                  className="avatar-uploader"
-                                  showUploadList={false}
-                                  customRequest={(option) => uploadFile(option, index)}
+                                <NgUpload
+                                  value={item.bannerImgUrl}
                                   beforeUpload={beforeUpload}
-                                  onChange={(info) => handleChange(info, index)}
-                                >
-                                  {item.bannerImgUrl
-                                    ? (
-                                    <img src={item.bannerImgUrl} alt="avatar" style={{ width: '100%' }} />
-                                      )
-                                    : (
-                                        uploadButton(item.loading)
-                                      )}
-                                </Upload>
+                                  onChange={(value) => {
+                                    handleChange(value, index);
+                                  }}
+                                />
                               </Form.Item>
                             </Col>
                           </Row>

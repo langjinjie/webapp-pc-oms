@@ -8,6 +8,11 @@ body,
   font-family: PingFangSC-Regular, PingFang SC, Microsoft YaHei, Microsoft JhengHei;
 }
 
+body {
+  min-width: 1200px;
+  overflow-x: auto;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -651,82 +656,6 @@ ul {
   }
 }
 
-// 分享预览模块样式
-.sharePreviewWrap {
-  width: 310px;
-  height: 114px;
-  .shareImg {
-    width: 50px;
-    height: 50px;
-    float: right;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-  .shareWrap {
-    position: relative;
-    box-sizing: border-box;
-    padding: 10px;
-    width: 250px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    float: left;
-    // overflow: hidden;
-    &::before {
-      position: absolute;
-      display: block;
-      content: '';
-      border-width: 10px;
-      overflow: hidden;
-      border-style: solid dashed dashed;
-      border-color: transparent #ddd transparent transparent;
-      left: -20px;
-      top: 8px;
-      width: 0;
-      height: 0;
-      font-size: 0;
-    }
-    &::after {
-      position: absolute;
-      width: 0;
-      height: 0;
-      font-size: 0;
-      overflow: hidden;
-      left: -16px;
-      top: 10px;
-      display: block;
-      content: '';
-      border-width: 8px;
-      border-style: solid dashed dashed;
-      border-color: transparent #fff transparent transparent;
-    }
-    .shareInfo {
-      width: 170px;
-      float: left;
-    }
-  }
-  .shareTag {
-    border-top: 1px solid #ddd;
-    font-size: 12px;
-    color: #666;
-    margin-top: 30px;
-    margin-bottom: 0;
-  }
-
-  .userImg {
-    width: 40px;
-    height: 40px;
-    float: left;
-    margin-right: 20px;
-    border: 1px solid #d8d8d8;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-}
-
 // green_tag
 
 .ant-tag.green_tag {
@@ -736,4 +665,42 @@ ul {
   border-radius: 2px;
   border: 1px solid #33cdb8;
   margin-right: 4px;
+}
+
+// 表格底部的批量操作样式
+.operationWrap {
+  float: left;
+  margin-top: -50px;
+}
+
+:global {
+  .ant-modal-content {
+    border-radius: 8px;
+  }
+  .ant-modal-body {
+    padding-bottom: 14px;
+  }
+  .ant-modal-footer,
+  .ant-modal-confirm-btns {
+    .ant-btn {
+      width: 76px;
+      height: 32px;
+      border-radius: 16px;
+      color: #7e8185;
+      &:hover {
+        color: #111;
+      }
+    }
+    .ant-btn-primary {
+      color: #fff;
+      background: #318cf5;
+      border-color: #318cf5;
+    }
+    .ant-btn-primary:hover,
+    .ant-btn-primary:focus {
+      color: #fff;
+      background: #40a9ff;
+      border-color: #40a9ff;
+    }
+  }
 }
