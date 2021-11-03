@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Table, Button, Card, TableColumnType, PaginationProps } from 'antd';
+import { Table, Card, TableColumnType, PaginationProps } from 'antd';
 import moment from 'moment';
 import qs from 'qs';
 import { setTitle } from 'lester-tools';
@@ -106,12 +106,10 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
       dataIndex: 'settingId',
       render: (text: number) => (
         <>
-          <Button type="link" onClick={() => operateHandle(text, 1)}>
-            查看
-          </Button>
-          <Button type="link" onClick={() => operateHandle(text, 0)}>
+          <a onClick={() => operateHandle(text, 1)}>查看</a>
+          <a style={{ marginLeft: 10 }} onClick={() => operateHandle(text, 0)}>
             编辑
-          </Button>
+          </a>
         </>
       )
     }

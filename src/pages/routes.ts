@@ -148,7 +148,7 @@ export const menus: Menu[] = [
       }
     ]
   },
-  /* {
+  {
     name: '数据统计',
     icon: 'a-bianzu101',
     path: 'statistics',
@@ -158,7 +158,7 @@ export const menus: Menu[] = [
         path: '/seatReport'
       }
     ]
-  } */
+  },
   {
     name: '系统设置',
     icon: 'a-bianzu101',
