@@ -412,7 +412,7 @@ const categoryManage: React.FC = () => {
                                       )}
 
                                       <Popconfirm
-                                        title={'确认删除该分类吗?'}
+                                        title={'删除分类后,素材将移至"其他"分类下'}
                                         visible={
                                           popconfirmVisible ===
                                           ((childrenItem as IProductTypeItem).typeId ||
@@ -437,7 +437,9 @@ const categoryManage: React.FC = () => {
                                         {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
                                           <span
                                             onClick={() => {
-                                              if (!isMainCorp && tabIndex !== 0) { return message.error('非主机构不能操作'); }
+                                              if (!isMainCorp && tabIndex !== 0) {
+                                                return message.error('非主机构不能操作');
+                                              }
                                               setPopconfirmVisible(
                                                 (childrenItem as IProductTypeItem).typeId ||
                                                   (childrenItem as IPosterTypeItem).id
