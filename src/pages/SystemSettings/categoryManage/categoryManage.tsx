@@ -23,7 +23,6 @@ const categoryManage: React.FC = () => {
   const { isMainCorp } = useContext(Context);
   const [tabIndex, setTabIndex] = useState(0);
   const [editType, setEditType] = useState('');
-  const [childrenEditType, setChildrenEditType] = useState('');
   const [typeList, setTypeList] = useState<IProductTypeItem[] | IPosterTypeItem[]>([]);
   const [typeName, setTypeName] = useState<IProductTypeItem | IPosterTypeItem>();
   const [modalType, setModalType] = useState('');
@@ -34,6 +33,7 @@ const categoryManage: React.FC = () => {
   const [popconfirmVisible, setPopconfirmVisible] = useState<string>('');
   const [isOnDrag, setIsOnDrag] = useState(-1);
   const [isCancel, setIsCancel] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const tabs = ['产品库', '文章库', '海报库'];
   const addInputNode: MutableRefObject<any> = useRef();
@@ -219,8 +219,8 @@ const categoryManage: React.FC = () => {
                                   className={style.edit}
                                   onClick={async () => {
                                     if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
+                                    if (isEditing) return message.error('请先完成上一次编辑');
                                     setParentId('0');
-                                    setChildrenEditType('');
                                     await setEditType(
                                       (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
                                     );
@@ -309,6 +309,9 @@ const categoryManage: React.FC = () => {
                               onChange={(e) => {
                                 // @ts-ignore
                                 setTypeName({ ...typeName, name: e.target.value.trim() });
+                                if (e.target.value.trim() !== item.name) {
+                                  setIsEditing(true);
+                                }
                               }}
                               onKeyDown={async (e) => {
                                 const inputNode = document.querySelector('input[type=text]') as HTMLElement;
@@ -319,7 +322,9 @@ const categoryManage: React.FC = () => {
                                   if (!typeName?.name) return message.error('分类名称不能为空');
                                   if (typeName?.name === item.name) return message.error('该分类名称已存在,请重新输入');
                                   inputNode.blur();
+                                  setIsEditing(false);
                                 } else if (e.keyCode === 27) {
+                                  setIsEditing(false);
                                   setIsCancel(true);
                                   setEditType('');
                                 }
@@ -335,16 +340,24 @@ const categoryManage: React.FC = () => {
                                 }
                                 if (isCancel) {
                                   setIsCancel(false);
+                                  setIsEditing(false);
                                   return setEditType('');
                                 }
-                                if (!typeName?.name) return message.error('分类名称不能为空');
-                                if (typeName?.name === item.name) return setEditType('');
+                                if (!typeName?.name) {
+                                  (document.querySelector('input[type=text]') as HTMLElement).focus();
+                                  return message.error('分类名称不能为空');
+                                }
+                                if (typeName?.name === item.name) {
+                                  setIsEditing(false);
+                                  return setEditType('');
+                                }
                                 const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
                                 if (res) {
                                   await getTypeList(tabIndex);
                                   await setTypeName(undefined);
-                                  message.success('修改成功');
+                                  message.success('一级分类修改成功');
                                 }
+                                setIsEditing(false);
                                 setEditType('');
                               }}
                             />
@@ -353,7 +366,8 @@ const categoryManage: React.FC = () => {
                                 data-edit={'edit'}
                                 className={style.icon}
                                 onClick={() => {
-                                  setTypeName(undefined);
+                                  setTypeName({ ...typeName, name: '' });
+                                  setIsEditing(true);
                                   const inputNode: HTMLElement = document.querySelector(
                                     'input[type=text]'
                                   ) as HTMLElement;
@@ -373,12 +387,17 @@ const categoryManage: React.FC = () => {
                                   key={
                                     (childrenItem as IProductTypeItem).typeId || (childrenItem as IPosterTypeItem).id
                                   }
-                                  className={style.childrenItemWrap}
+                                  className={classNames(style.childrenItemWrap, {
+                                    [style.active]:
+                                      typeName &&
+                                      // @ts-ignore
+                                      (childrenItem.typeId || childrenItem.id) === (typeName.typeId || typeName.id)
+                                  })}
                                 >
                                   <div
                                     className={style.childrenItem}
                                     style={
-                                      childrenEditType ===
+                                      editType ===
                                       ((childrenItem as IProductTypeItem).typeId ||
                                         (childrenItem as IPosterTypeItem).id)
                                         ? { display: 'none' }
@@ -392,12 +411,13 @@ const categoryManage: React.FC = () => {
                                           data-edit={'edit'}
                                           onClick={async () => {
                                             if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
+                                            if (isEditing) return message.error('请先完成上一次编辑');
                                             setParentId(
                                               (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
                                             );
                                             await setEditType('');
                                             setTypeName(childrenItem);
-                                            setChildrenEditType(
+                                            setEditType(
                                               (childrenItem as IProductTypeItem).typeId ||
                                                 (childrenItem as IPosterTypeItem).id
                                             );
@@ -455,7 +475,7 @@ const categoryManage: React.FC = () => {
                                   <div
                                     className={style.inputChildrenItem}
                                     style={
-                                      childrenEditType ===
+                                      editType ===
                                       ((childrenItem as IProductTypeItem).typeId ||
                                         (childrenItem as IPosterTypeItem).id)
                                         ? {}
@@ -465,7 +485,7 @@ const categoryManage: React.FC = () => {
                                     <input
                                       data-edit={'edit'}
                                       type={
-                                        childrenEditType ===
+                                        editType ===
                                         ((childrenItem as IProductTypeItem).typeId ||
                                           (childrenItem as IPosterTypeItem).id)
                                           ? 'text'
@@ -475,6 +495,9 @@ const categoryManage: React.FC = () => {
                                       onChange={(e) => {
                                         // @ts-ignore
                                         setTypeName({ ...typeName, name: e.target.value.trim() });
+                                        if (e.target.value.trim() !== childrenItem.name) {
+                                          setIsEditing(true);
+                                        }
                                       }}
                                       onKeyDown={async (e) => {
                                         const inputNode = document.querySelector('input[type=text]') as HTMLElement;
@@ -487,38 +510,52 @@ const categoryManage: React.FC = () => {
                                             return message.error('该分类名称已存在,请重新输入');
                                           }
                                           inputNode.blur();
+                                          setIsEditing(false);
                                         } else if (e.keyCode === 27) {
                                           setIsCancel(true);
-                                          setChildrenEditType('');
+                                          setIsEditing(false);
+                                          setEditType('');
                                         }
                                       }}
                                       onBlur={async () => {
                                         if (
-                                          childrenEditType &&
-                                          childrenEditType !==
+                                          editType &&
+                                          editType !==
                                             ((childrenItem as IProductTypeItem).typeId ||
                                               (childrenItem as IPosterTypeItem).id)
                                         ) {
                                           return;
                                         }
-                                        if (typeName && typeName.name.trim().length > 12) {
-                                          message.error('最多12个字符,不区分中英文');
-                                          (document.querySelector('input[type=text]') as HTMLElement).focus();
-                                          return;
+                                        if (typeName) {
+                                          if (typeName && typeName.name.trim().length > 12) {
+                                            message.error('最多12个字符,不区分中英文');
+                                            (document.querySelector('input[type=text]') as HTMLElement).focus();
+                                            return;
+                                          }
                                         }
                                         if (isCancel) {
                                           setIsCancel(false);
-                                          return setChildrenEditType('');
+                                          setIsEditing(false);
+                                          setTypeName(undefined);
+                                          return setEditType('');
                                         }
-                                        if (!typeName?.name) return message.error('分类名称不能为空');
-                                        if (typeName?.name === childrenItem.name) return setChildrenEditType('');
+                                        if (!typeName?.name) {
+                                          (document.querySelector('input[type=text]') as HTMLElement).focus();
+                                          return message.error('分类名称不能为空');
+                                        }
+                                        if (typeName?.name === childrenItem.name) {
+                                          setTypeName(undefined);
+                                          setIsEditing(false);
+                                          return setEditType('');
+                                        }
                                         const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
                                         if (res) {
                                           await getTypeList(tabIndex);
                                           await setTypeName(undefined);
-                                          message.success('修改成功');
+                                          message.success('二级分类修改成功');
                                         }
-                                        setChildrenEditType('');
+                                        setIsEditing(false);
+                                        setEditType('');
                                       }}
                                     />
                                     {typeName && (
@@ -526,7 +563,9 @@ const categoryManage: React.FC = () => {
                                         data-edit={'edit'}
                                         className={style.icon}
                                         onClick={() => {
-                                          setTypeName(undefined);
+                                          console.log('清空了');
+                                          setTypeName({ ...typeName, name: '' });
+                                          setIsEditing(true);
                                           const inputNode: HTMLElement = document.querySelector(
                                             'input[type=text]'
                                           ) as HTMLElement;
@@ -544,10 +583,13 @@ const categoryManage: React.FC = () => {
                           )}
                           {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
                             <Button
-                              className={style.addChilrenType}
+                              className={classNames(style.addChilrenType, {
+                                [style.active]: !item.categoryList?.length
+                              })}
                               icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
                               type={'primary'}
                               onClick={async () => {
+                                if (!typeName?.name && isEditing) return message.error('请先完成上一次编辑');
                                 if (item.categoryList && item.categoryList.length >= 20) {
                                   return message.error('分类总数不得超过20个');
                                 }
@@ -580,6 +622,7 @@ const categoryManage: React.FC = () => {
           icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
           type={'primary'}
           onClick={async () => {
+            if (!typeName?.name && isEditing) return message.error('请先完成上一次编辑');
             if (typeList.length >= 20) return message.error('分类总数不得超过20个');
             setParentId('0');
             await setIsModalVisible(true);
