@@ -54,7 +54,7 @@ interface StatisticsItem {
   markCarNumRate: string;
   dayMarket: number;
   daySmart: number;
-  perCount?: number;
+  percount?: number;
   trialStarDate?: string;
 }
 
@@ -240,7 +240,7 @@ const SeatReport: React.FC = () => {
   const teamColumns: TableColumnType<StatisticsItem>[] = [
     {
       title: '团队人力',
-      dataIndex: 'perCount',
+      dataIndex: 'percount',
       align: 'center'
     },
     {
@@ -466,12 +466,12 @@ const SeatReport: React.FC = () => {
             <img className={style.titleImg} src={require('src/assets/images/statistics/title3.png')} alt="" />
           </div>
           {(reportData.teamDetailResVO || []).map((item, index) => (
-            <div key={item.teamName} className={style.teamItem}>
+            <div key={item.teamShowName} className={style.teamItem}>
               <div className={style.teamName}>{item.teamShowName}</div>
               <div className={style.teamTableWrap}>
                 <Table
                   bordered={false}
-                  rowKey="teamName"
+                  rowKey="staffName"
                   columns={statisticsColumns.map((col, colIndex) => {
                     if (colIndex === 0) {
                       return {
