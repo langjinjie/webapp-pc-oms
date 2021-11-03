@@ -387,10 +387,10 @@ const categoryManage: React.FC = () => {
                                   key={
                                     (childrenItem as IProductTypeItem).typeId || (childrenItem as IPosterTypeItem).id
                                   }
-                                  // @ts-ignore
                                   className={classNames(style.childrenItemWrap, {
                                     [style.active]:
                                       typeName &&
+                                      // @ts-ignore
                                       (childrenItem.typeId || childrenItem.id) === (typeName.typeId || typeName.id)
                                   })}
                                 >
