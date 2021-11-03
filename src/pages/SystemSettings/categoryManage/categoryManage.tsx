@@ -23,7 +23,6 @@ const categoryManage: React.FC = () => {
   const { isMainCorp } = useContext(Context);
   const [tabIndex, setTabIndex] = useState(0);
   const [editType, setEditType] = useState('');
-  // const [childrenEditType, setChildrenEditType] = useState('');
   const [typeList, setTypeList] = useState<IProductTypeItem[] | IPosterTypeItem[]>([]);
   const [typeName, setTypeName] = useState<IProductTypeItem | IPosterTypeItem>();
   const [modalType, setModalType] = useState('');
