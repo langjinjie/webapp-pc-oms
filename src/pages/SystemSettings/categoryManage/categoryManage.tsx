@@ -23,7 +23,7 @@ const categoryManage: React.FC = () => {
   const { isMainCorp } = useContext(Context);
   const [tabIndex, setTabIndex] = useState(0);
   const [editType, setEditType] = useState('');
-  const [childrenEditType, setChildrenEditType] = useState('');
+  // const [childrenEditType, setChildrenEditType] = useState('');
   const [typeList, setTypeList] = useState<IProductTypeItem[] | IPosterTypeItem[]>([]);
   const [typeName, setTypeName] = useState<IProductTypeItem | IPosterTypeItem>();
   const [modalType, setModalType] = useState('');
@@ -220,7 +220,6 @@ const categoryManage: React.FC = () => {
                                   onClick={async () => {
                                     if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
                                     setParentId('0');
-                                    setChildrenEditType('');
                                     await setEditType(
                                       (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
                                     );
@@ -343,7 +342,7 @@ const categoryManage: React.FC = () => {
                                 if (res) {
                                   await getTypeList(tabIndex);
                                   await setTypeName(undefined);
-                                  message.success('修改成功');
+                                  message.success('一级分类修改成功');
                                 }
                                 setEditType('');
                               }}
@@ -378,7 +377,7 @@ const categoryManage: React.FC = () => {
                                   <div
                                     className={style.childrenItem}
                                     style={
-                                      childrenEditType ===
+                                      editType ===
                                       ((childrenItem as IProductTypeItem).typeId ||
                                         (childrenItem as IPosterTypeItem).id)
                                         ? { display: 'none' }
@@ -397,7 +396,7 @@ const categoryManage: React.FC = () => {
                                             );
                                             await setEditType('');
                                             setTypeName(childrenItem);
-                                            setChildrenEditType(
+                                            setEditType(
                                               (childrenItem as IProductTypeItem).typeId ||
                                                 (childrenItem as IPosterTypeItem).id
                                             );
@@ -455,7 +454,7 @@ const categoryManage: React.FC = () => {
                                   <div
                                     className={style.inputChildrenItem}
                                     style={
-                                      childrenEditType ===
+                                      editType ===
                                       ((childrenItem as IProductTypeItem).typeId ||
                                         (childrenItem as IPosterTypeItem).id)
                                         ? {}
@@ -465,7 +464,7 @@ const categoryManage: React.FC = () => {
                                     <input
                                       data-edit={'edit'}
                                       type={
-                                        childrenEditType ===
+                                        editType ===
                                         ((childrenItem as IProductTypeItem).typeId ||
                                           (childrenItem as IPosterTypeItem).id)
                                           ? 'text'
@@ -489,36 +488,38 @@ const categoryManage: React.FC = () => {
                                           inputNode.blur();
                                         } else if (e.keyCode === 27) {
                                           setIsCancel(true);
-                                          setChildrenEditType('');
+                                          setEditType('');
                                         }
                                       }}
                                       onBlur={async () => {
                                         if (
-                                          childrenEditType &&
-                                          childrenEditType !==
+                                          editType &&
+                                          editType !==
                                             ((childrenItem as IProductTypeItem).typeId ||
                                               (childrenItem as IPosterTypeItem).id)
                                         ) {
                                           return;
                                         }
-                                        if (typeName && typeName.name.trim().length > 12) {
-                                          message.error('最多12个字符,不区分中英文');
-                                          (document.querySelector('input[type=text]') as HTMLElement).focus();
-                                          return;
+                                        if (typeName) {
+                                          if (typeName && typeName.name.trim().length > 12) {
+                                            message.error('最多12个字符,不区分中英文');
+                                            (document.querySelector('input[type=text]') as HTMLElement).focus();
+                                            return;
+                                          }
                                         }
                                         if (isCancel) {
                                           setIsCancel(false);
-                                          return setChildrenEditType('');
+                                          return setEditType('');
                                         }
                                         if (!typeName?.name) return message.error('分类名称不能为空');
-                                        if (typeName?.name === childrenItem.name) return setChildrenEditType('');
+                                        if (typeName?.name === childrenItem.name) return setEditType('');
                                         const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
                                         if (res) {
                                           await getTypeList(tabIndex);
                                           await setTypeName(undefined);
-                                          message.success('修改成功');
+                                          message.success('二级分类修改成功');
                                         }
-                                        setChildrenEditType('');
+                                        setEditType('');
                                       }}
                                     />
                                     {typeName && (
