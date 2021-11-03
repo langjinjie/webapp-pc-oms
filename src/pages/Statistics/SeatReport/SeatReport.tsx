@@ -268,7 +268,6 @@ const SeatReport: React.FC = () => {
   const getReportDetail = async (reportId: string) => {
     const res: any = await queryReportDetail({ reportId });
     if (res) {
-      console.log(res);
       setReportData(res);
       Array.from(document.getElementsByTagName('td')).forEach((ele) => {
         ele.contentEditable = 'true';
@@ -284,7 +283,7 @@ const SeatReport: React.FC = () => {
    */
   const getReportList = async () => {
     const res: any = await queryReportList();
-    if (res) {
+    if (Array.isArray(res) && res.length > 0) {
       setReportList(res);
       setCurrentReport(res[0]);
       getReportDetail(res[0].reportId);
@@ -504,6 +503,14 @@ const SeatReport: React.FC = () => {
                           render: (value: number | string) => (
                             <dt className={+value < 80 ? style.red : ''}>{value || 0}%</dt>
                           )
+                        };
+                      } else if (col.dataIndex === 'avgCircleCount') {
+                        return {
+                          ...col,
+                          title: '朋友圈发送',
+                          dataIndex: 'circleSendCount',
+                          render: (value: number | string) =>
+                            tdRender(+value, item.staffOrderList || [], col.dataIndex as string)
                         };
                       } else {
                         return {
