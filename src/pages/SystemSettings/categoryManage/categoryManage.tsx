@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext, MutableRefObject } from 'react';
+import React, { useEffect, useState, useRef, useContext, MutableRefObject, useCallback } from 'react';
 import { Button, Modal, message, Popconfirm } from 'antd';
 import {
   requestGetProductTypeList,
@@ -9,15 +9,64 @@ import {
   requestDeleteNewType,
   requestGetPosterTypeList,
   requestSavePosterType,
-  requestDeletePosterType,
-  requestSaveSortMarket
+  requestDeletePosterType
+  // requestSaveSortMarket
 } from 'src/apis/SystemSettings';
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { Icon } from 'src/components';
 import { Context } from 'src/store';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
+
+export const useDragEnd: (typeList: any, reorder: any) => ({ source, destination, type }: DropResult) => void = (
+  typeList,
+  reorder
+) => {
+  // const { data: kanbans } = useKanbans(useKanbanSearchParams());
+  // const { mutate: reorderKanban } = useReorderKanban(useKanbanQueryKey());
+  // const { mutate: reorderTask } = useReorderTask(useTasksQueryKey());
+  // const { data: allTasks = [] } = useTasks(useTasksSearchParams());
+  return useCallback(
+    ({ source, destination, type }: DropResult) => {
+      console.log({ source, destination, type, typeList });
+      if (!destination) {
+        return;
+      }
+      if (source.droppableId !== destination.droppableId) {
+        return message.warning('不支持跨组拖拽');
+      }
+      // 看板排序
+
+      if (type === 'COLUMN') {
+        const fromKanbanId = +source.droppableId;
+        const toKanbanId = +destination.droppableId;
+        console.log('111', { type, fromKanbanId, toKanbanId });
+        // if (fromKanbanId === toKanbanId) {
+        //   return;
+        // }
+        const fromTask = typeList.filter((task) => task.kanbanId === fromKanbanId)[source.index];
+        const toTask = typeList.filter((task) => task.kanbanId === toKanbanId)[destination.index];
+        if (fromTask?.id === toTask?.id) {
+          return false;
+        }
+        // reorderTask({
+        //   fromId: fromTask?.id,
+        //   referenceId: toTask?.id,
+        //   fromKanbanId,
+        //   toKanbanId,
+        //   type: fromKanbanId === toKanbanId && destination.index > source.index ? 'after' : 'before'
+        // });
+      }
+      if (type === 'ROW') {
+        const type = destination.index > source.index ? 'after' : 'before';
+        reorder(typeList, source.index, destination.index, type);
+      }
+    },
+    [typeList]
+  );
+};
 
 const categoryManage: React.FC = () => {
   const { isMainCorp } = useContext(Context);
@@ -31,7 +80,7 @@ const categoryManage: React.FC = () => {
   const [parentId, setParentId] = useState('0');
   const [isShowChildrenType, setIsShowChildrenType] = useState('');
   const [popconfirmVisible, setPopconfirmVisible] = useState<string>('');
-  const [isOnDrag, setIsOnDrag] = useState(-1);
+  const [isOnDrag] = useState(-1);
   const [isCancel, setIsCancel] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -116,49 +165,50 @@ const categoryManage: React.FC = () => {
     return res;
   };
 
-  // 重新记录数组顺序
-  const reorder = (list: any, startIndex: number, endIndex: number) => {
+  // // 重新记录数组顺序
+  const reorder = (list: any, startIndex: number, endIndex: number, type: string) => {
     const result = Array.from(list);
     // 删除并记录 删除元素
     const [removed] = result.splice(startIndex, 1);
     // 将原来的元素添加进数组
     result.splice(endIndex, 0, removed);
+    console.log({ result, startIndex, endIndex, type });
     return result;
   };
-  const onDragStart = (result: any) => setIsOnDrag(+result.draggableId.split('draggableId')[0]);
+  const onDragEnd = useDragEnd(typeList, reorder);
   // 拖拽结束
-  const onDragEnd = async (result: any) => {
-    setIsOnDrag(-1);
-    if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
-    try {
-      if (!result.destination) {
-        return;
-      }
-      // 获取拖拽后的数据 重新赋值
-      const newData = reorder(typeList, result.source.index, result.destination.index);
-      const otherIndex = newData.findIndex((item: any) => item.name.startsWith('其他'));
-      const productPosterIndex = newData.findIndex((item: any) => item.name === '产品海报');
-      if (otherIndex < newData.length - 1) {
-        getTypeList(tabIndex);
-        return message.error('其他分类不支持拖动排序');
-      }
-      if (productPosterIndex !== -1 && productPosterIndex !== newData.length - 2) {
-        getTypeList(tabIndex);
-        return message.error('产品海报分类不支持拖动排序');
-      }
-      await setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
-      const sortTypeIdList = newData.reverse().map((item: any) => item.typeId || item.id);
-      const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
-      if (res) {
-        message.success('排序成功');
-      } else {
-        message.error('排序失败');
-      }
-      getTypeList(tabIndex);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // const onDragEnd = async (result: any) => {
+  //   setIsOnDrag(-1);
+  //   if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
+  //   try {
+  //     if (!result.destination) {
+  //       return;
+  //     }
+  //     // 获取拖拽后的数据 重新赋值
+  //     const newData = reorder(typeList, result.source.index, result.destination.index);
+  //     const otherIndex = newData.findIndex((item: any) => item.name.startsWith('其他'));
+  //     const productPosterIndex = newData.findIndex((item: any) => item.name === '产品海报');
+  //     if (otherIndex < newData.length - 1) {
+  //       getTypeList(tabIndex);
+  //       return message.error('其他分类不支持拖动排序');
+  //     }
+  //     if (productPosterIndex !== -1 && productPosterIndex !== newData.length - 2) {
+  //       getTypeList(tabIndex);
+  //       return message.error('产品海报分类不支持拖动排序');
+  //     }
+  //     await setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
+  //     const sortTypeIdList = newData.reverse().map((item: any) => item.typeId || item.id);
+  //     const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
+  //     if (res) {
+  //       message.success('排序成功');
+  //     } else {
+  //       message.error('排序失败');
+  //     }
+  //     getTypeList(tabIndex);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
   useEffect(() => {
     getTypeList(tabIndex);
   }, []);
@@ -179,214 +229,194 @@ const categoryManage: React.FC = () => {
         ))}
       </div>
       <div className={style.content}>
-        <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={onDragEnd}>
           {/* direction代表拖拽方向  默认垂直方向  水平方向:horizontal */}
-          <Droppable droppableId="droppable" type="app">
-            {(provided: any) => (
-              // 这里是拖拽容器 在这里设置容器的宽高等等...
-              // <div {...provided.droppableProps} ref={provided.innerRef}>
-              <div ref={provided.innerRef}>
-                {/* 这里放置所需要拖拽的组件,必须要被 Draggable 包裹 */}
-                {typeList.map((item, index) => {
-                  return (
-                    <Draggable index={index} draggableId={index + 'draggableId'} key={'draggableId' + index}>
-                      {(provided: any) => (
-                        // 在这里写你的拖拽组件的样式 dom 等等...
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          key={(item as IProductTypeItem).typeId || (item as IPosterTypeItem).id + index}
-                          className={classNames(style.typeItemWrap, {
-                            [style.active]:
-                              isShowChildrenType ===
-                              ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                          })}
-                        >
-                          <div
-                            className={classNames(style.typeItem, { [style.isOnDrag]: isOnDrag === index })}
-                            style={
-                              editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                                ? {}
-                                : { display: 'none' }
-                            }
+          <Drop type={'ROW'} droppableId={'kanban'}>
+            <DropChild>
+              {typeList.map((item, index) => (
+                <Drag index={index} draggableId={index + 'draggableId'} key={'draggableId' + index}>
+                  <div>
+                    <div
+                      className={classNames(style.typeItem, { [style.isOnDrag]: isOnDrag === index })}
+                      style={
+                        editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
+                          ? {}
+                          : { display: 'none' }
+                      }
+                    >
+                      <div className={style.typeName}>{item.name}</div>
+                      <div className={style.operation}>
+                        {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
+                          <span
+                            data-edit={'edit'}
+                            className={style.edit}
+                            onClick={async () => {
+                              if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
+                              if (isEditing) return message.error('请先完成上一次编辑');
+                              setParentId('0');
+                              await setEditType((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
+                              await setTypeName(item);
+                              (document.querySelector('input[type=text]') as HTMLElement).focus();
+                            }}
                           >
-                            <div className={style.typeName}>{item.name}</div>
-                            <div className={style.operation}>
-                              {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
-                                <span
-                                  data-edit={'edit'}
-                                  className={style.edit}
-                                  onClick={async () => {
-                                    if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
-                                    if (isEditing) return message.error('请先完成上一次编辑');
-                                    setParentId('0');
-                                    await setEditType(
-                                      (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
-                                    );
-                                    await setTypeName(item);
-                                    (document.querySelector('input[type=text]') as HTMLElement).focus();
-                                  }}
-                                >
-                                  编辑
-                                </span>
-                              )}
-                              {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
-                                <Popconfirm
-                                  title={'删除分类后,素材将移至"其他"分类下'}
-                                  visible={
-                                    popconfirmVisible ===
-                                    ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                                  }
-                                  onConfirm={async () => {
-                                    const res = await deleteTypeName(
-                                      tabIndex,
-                                      (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
-                                    );
-                                    if (res) {
-                                      setPopconfirmVisible('');
-                                      getTypeList(tabIndex);
-                                      message.success('删除成功');
-                                    } else {
-                                      message.error('删除失败');
-                                    }
-                                  }}
-                                  onCancel={() => setPopconfirmVisible('')}
-                                >
-                                  <span
-                                    className={style.delete}
-                                    onClick={() => {
-                                      if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
-                                      setPopconfirmVisible(
-                                        (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
-                                      );
-                                    }}
-                                  >
-                                    删除
-                                  </span>
-                                </Popconfirm>
-                              )}
-                              {item.name !== '其他' && item.categoryList && (
-                                <span
-                                  className={style.more}
-                                  onClick={() => {
-                                    setIsShowChildrenType(
-                                      isShowChildrenType ===
-                                        ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                                        ? ''
-                                        : (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
-                                    );
-                                  }}
-                                >
-                                  <Icon
-                                    name={
-                                      isShowChildrenType ===
-                                      ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                                        ? 'icon_common_16_Line_Down'
-                                        : 'shangjiantou'
-                                    }
-                                  />
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div
-                            className={style.inputTypeItem}
-                            style={
-                              editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                                ? { display: 'none' }
-                                : {}
+                            编辑
+                          </span>
+                        )}
+                        {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
+                          <Popconfirm
+                            title={'删除分类后,素材将移至"其他"分类下'}
+                            visible={
+                              popconfirmVisible === ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
                             }
-                          >
-                            <input
-                              data-edit={'edit'}
-                              type={
-                                editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                                  ? 'none'
-                                  : 'text'
+                            onConfirm={async () => {
+                              const res = await deleteTypeName(
+                                tabIndex,
+                                (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
+                              );
+                              if (res) {
+                                setPopconfirmVisible('');
+                                getTypeList(tabIndex);
+                                message.success('删除成功');
+                              } else {
+                                message.error('删除失败');
                               }
-                              value={typeName ? typeName?.name : ''}
-                              onChange={(e) => {
-                                // @ts-ignore
-                                setTypeName({ ...typeName, name: e.target.value.trim() });
-                                if (e.target.value.trim() !== item.name) {
-                                  setIsEditing(true);
-                                }
+                            }}
+                            onCancel={() => setPopconfirmVisible('')}
+                          >
+                            <span
+                              className={style.delete}
+                              onClick={() => {
+                                if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
+                                setPopconfirmVisible((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
                               }}
-                              onKeyDown={async (e) => {
-                                const inputNode = document.querySelector('input[type=text]') as HTMLElement;
-                                if (e.keyCode === 13) {
-                                  if (typeName && typeName?.name.trim().length > 12) {
-                                    return message.error('最多12个字符,不区分中英文');
-                                  }
-                                  if (!typeName?.name) return message.error('分类名称不能为空');
-                                  if (typeName?.name === item.name) return message.error('该分类名称已存在,请重新输入');
-                                  inputNode.blur();
-                                  setIsEditing(false);
-                                } else if (e.keyCode === 27) {
-                                  setIsEditing(false);
-                                  setIsCancel(true);
-                                  setEditType('');
-                                }
-                              }}
-                              onBlur={async () => {
-                                if (editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)) {
-                                  return;
-                                }
-                                if (typeName && typeName?.name.trim().length > 12) {
-                                  message.error('最多12个字符,不区分中英文');
-                                  (document.querySelector('input[type=text]') as HTMLElement).focus();
-                                  return;
-                                }
-                                if (isCancel) {
-                                  setIsCancel(false);
-                                  setIsEditing(false);
-                                  return setEditType('');
-                                }
-                                if (!typeName?.name) {
-                                  (document.querySelector('input[type=text]') as HTMLElement).focus();
-                                  return message.error('分类名称不能为空');
-                                }
-                                if (typeName?.name === item.name) {
-                                  setIsEditing(false);
-                                  return setEditType('');
-                                }
-                                const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
-                                if (res) {
-                                  await getTypeList(tabIndex);
-                                  await setTypeName(undefined);
-                                  message.success('一级分类修改成功');
-                                }
-                                setIsEditing(false);
-                                setEditType('');
-                              }}
+                            >
+                              删除
+                            </span>
+                          </Popconfirm>
+                        )}
+                        {item.name !== '其他' && item.categoryList && (
+                          <span
+                            className={style.more}
+                            onClick={() => {
+                              setIsShowChildrenType(
+                                isShowChildrenType ===
+                                  ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
+                                  ? ''
+                                  : (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
+                              );
+                            }}
+                          >
+                            <Icon
+                              name={
+                                isShowChildrenType ===
+                                ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
+                                  ? 'icon_common_16_Line_Down'
+                                  : 'shangjiantou'
+                              }
                             />
-                            {typeName && (
-                              <span
-                                data-edit={'edit'}
-                                className={style.icon}
-                                onClick={() => {
-                                  setTypeName({ ...typeName, name: '' });
-                                  setIsEditing(true);
-                                  const inputNode: HTMLElement = document.querySelector(
-                                    'input[type=text]'
-                                  ) as HTMLElement;
-                                  inputNode.focus();
-                                }}
-                              />
-                            )}
-                            {typeName && typeName?.name.length > 12 && (
-                              <span className={style.check}>{'最多12个字符,不区分中英文'}</span>
-                            )}
-                          </div>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      className={style.inputTypeItem}
+                      style={
+                        editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
+                          ? { display: 'none' }
+                          : {}
+                      }
+                    >
+                      <input
+                        data-edit={'edit'}
+                        type={
+                          editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
+                            ? 'none'
+                            : 'text'
+                        }
+                        value={typeName ? typeName?.name : ''}
+                        onChange={(e) => {
+                          // @ts-ignore
+                          setTypeName({ ...typeName, name: e.target.value.trim() });
+                          if (e.target.value.trim() !== item.name) {
+                            setIsEditing(true);
+                          }
+                        }}
+                        onKeyDown={async (e) => {
+                          const inputNode = document.querySelector('input[type=text]') as HTMLElement;
+                          if (e.keyCode === 13) {
+                            if (typeName && typeName?.name.trim().length > 12) {
+                              return message.error('最多12个字符,不区分中英文');
+                            }
+                            if (!typeName?.name) return message.error('分类名称不能为空');
+                            if (typeName?.name === item.name) return message.error('该分类名称已存在,请重新输入');
+                            inputNode.blur();
+                            setIsEditing(false);
+                          } else if (e.keyCode === 27) {
+                            setIsEditing(false);
+                            setIsCancel(true);
+                            setEditType('');
+                          }
+                        }}
+                        onBlur={async () => {
+                          if (editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)) {
+                            return;
+                          }
+                          if (typeName && typeName?.name.trim().length > 12) {
+                            message.error('最多12个字符,不区分中英文');
+                            (document.querySelector('input[type=text]') as HTMLElement).focus();
+                            return;
+                          }
+                          if (isCancel) {
+                            setIsCancel(false);
+                            setIsEditing(false);
+                            return setEditType('');
+                          }
+                          if (!typeName?.name) {
+                            (document.querySelector('input[type=text]') as HTMLElement).focus();
+                            return message.error('分类名称不能为空');
+                          }
+                          if (typeName?.name === item.name) {
+                            setIsEditing(false);
+                            return setEditType('');
+                          }
+                          const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
+                          if (res) {
+                            await getTypeList(tabIndex);
+                            await setTypeName(undefined);
+                            message.success('一级分类修改成功');
+                          }
+                          setIsEditing(false);
+                          setEditType('');
+                        }}
+                      />
+                      {typeName && (
+                        <span
+                          data-edit={'edit'}
+                          className={style.icon}
+                          onClick={() => {
+                            setTypeName({ ...typeName, name: '' });
+                            setIsEditing(true);
+                            const inputNode: HTMLElement = document.querySelector('input[type=text]') as HTMLElement;
+                            inputNode.focus();
+                          }}
+                        />
+                      )}
+                      {typeName && typeName?.name.length > 12 && (
+                        <span className={style.check}>{'最多12个字符,不区分中英文'}</span>
+                      )}
+                    </div>
 
-                          {!!item.categoryList?.length && (
-                            <div className={style.childrenWrap}>
-                              {item.categoryList?.map((childrenItem) => (
+                    {!!item.categoryList?.length && (
+                      <div className={style.childrenWrap}>
+                        <Drop type={'COLUMN'} direction={'vertical'} droppableId={String('kanbank' + index)}>
+                          <DropChild>
+                            {item.categoryList?.map((childrenItem: any, childIndex) => (
+                              <Drag
+                                key={(childrenItem as IProductTypeItem).typeId || (childrenItem as IPosterTypeItem).id}
+                                index={childIndex}
+                                draggableId={String(childrenItem.id)}
+                              >
                                 <div
-                                  key={
-                                    (childrenItem as IProductTypeItem).typeId || (childrenItem as IPosterTypeItem).id
-                                  }
                                   className={classNames(style.childrenItemWrap, {
                                     [style.active]:
                                       typeName &&
@@ -578,41 +608,38 @@ const categoryManage: React.FC = () => {
                                     )}
                                   </div>
                                 </div>
-                              ))}
-                            </div>
-                          )}
-                          {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
-                            <Button
-                              className={classNames(style.addChilrenType, {
-                                [style.active]: !item.categoryList?.length
-                              })}
-                              icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
-                              type={'primary'}
-                              onClick={async () => {
-                                if (!typeName?.name && isEditing) return message.error('请先完成上一次编辑');
-                                if (item.categoryList && item.categoryList.length >= 20) {
-                                  return message.error('分类总数不得超过20个');
-                                }
-                                setParentId((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
-                                await setIsModalVisible(true);
-                                setModalType('新增分类');
-                                addInputNode.current.focus();
-                              }}
-                            >
-                              新增
-                            </Button>
-                          )}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Draggable>
-                  );
-                })}
-                {/* 这个不能少 */}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+                              </Drag>
+                            ))}
+                          </DropChild>
+                        </Drop>
+                      </div>
+                    )}
+                    {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
+                      <Button
+                        className={classNames(style.addChilrenType, {
+                          [style.active]: !item.categoryList?.length
+                        })}
+                        icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
+                        type={'primary'}
+                        onClick={async () => {
+                          if (!typeName?.name && isEditing) return message.error('请先完成上一次编辑');
+                          if (item.categoryList && item.categoryList.length >= 20) {
+                            return message.error('分类总数不得超过20个');
+                          }
+                          setParentId((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
+                          await setIsModalVisible(true);
+                          setModalType('新增分类');
+                          addInputNode.current.focus();
+                        }}
+                      >
+                        新增
+                      </Button>
+                    )}
+                  </div>
+                </Drag>
+              ))}
+            </DropChild>
+          </Drop>
         </DragDropContext>
       </div>
 
