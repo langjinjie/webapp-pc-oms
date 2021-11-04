@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext, MutableRefObject, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useContext, MutableRefObject } from 'react';
 import { Button, Modal, message, Popconfirm } from 'antd';
 import {
   requestGetProductTypeList,
@@ -9,7 +9,8 @@ import {
   requestDeleteNewType,
   requestGetPosterTypeList,
   requestSavePosterType,
-  requestDeletePosterType
+  requestDeletePosterType,
+  requestSaveSortMarket
   // requestSaveSortMarket
 } from 'src/apis/SystemSettings';
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
@@ -19,54 +20,6 @@ import { Context } from 'src/store';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
-
-export const useDragEnd: (typeList: any, reorder: any) => ({ source, destination, type }: DropResult) => void = (
-  typeList,
-  reorder
-) => {
-  // const { data: kanbans } = useKanbans(useKanbanSearchParams());
-  // const { mutate: reorderKanban } = useReorderKanban(useKanbanQueryKey());
-  // const { mutate: reorderTask } = useReorderTask(useTasksQueryKey());
-  // const { data: allTasks = [] } = useTasks(useTasksSearchParams());
-  return useCallback(
-    ({ source, destination, type }: DropResult) => {
-      console.log({ source, destination, type, typeList });
-      if (!destination) {
-        return;
-      }
-      if (source.droppableId !== destination.droppableId) {
-        return message.warning('不支持跨组拖拽');
-      }
-      // 看板排序
-
-      if (type === 'COLUMN') {
-        const fromKanbanId = +source.droppableId;
-        const toKanbanId = +destination.droppableId;
-        console.log('111', { type, fromKanbanId, toKanbanId });
-        // if (fromKanbanId === toKanbanId) {
-        //   return;
-        // }
-        const fromTask = typeList.filter((task) => task.kanbanId === fromKanbanId)[source.index];
-        const toTask = typeList.filter((task) => task.kanbanId === toKanbanId)[destination.index];
-        if (fromTask?.id === toTask?.id) {
-          return false;
-        }
-        // reorderTask({
-        //   fromId: fromTask?.id,
-        //   referenceId: toTask?.id,
-        //   fromKanbanId,
-        //   toKanbanId,
-        //   type: fromKanbanId === toKanbanId && destination.index > source.index ? 'after' : 'before'
-        // });
-      }
-      if (type === 'ROW') {
-        const type = destination.index > source.index ? 'after' : 'before';
-        reorder(typeList, source.index, destination.index, type);
-      }
-    },
-    [typeList]
-  );
-};
 
 const categoryManage: React.FC = () => {
   const { isMainCorp } = useContext(Context);
@@ -166,52 +119,82 @@ const categoryManage: React.FC = () => {
   };
 
   // // 重新记录数组顺序
-  const reorder = (list: any, startIndex: number, endIndex: number, type: string) => {
-    const result = Array.from(list);
+  const reorder = (list: (IProductTypeItem | IPosterTypeItem)[], startIndex: number, endIndex: number) => {
+    const result = [...list];
     // 删除并记录 删除元素
     const [removed] = result.splice(startIndex, 1);
     // 将原来的元素添加进数组
     result.splice(endIndex, 0, removed);
-    console.log({ result, startIndex, endIndex, type });
     return result;
   };
-  const onDragEnd = useDragEnd(typeList, reorder);
   // 拖拽结束
-  // const onDragEnd = async (result: any) => {
-  //   setIsOnDrag(-1);
-  //   if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
-  //   try {
-  //     if (!result.destination) {
-  //       return;
-  //     }
-  //     // 获取拖拽后的数据 重新赋值
-  //     const newData = reorder(typeList, result.source.index, result.destination.index);
-  //     const otherIndex = newData.findIndex((item: any) => item.name.startsWith('其他'));
-  //     const productPosterIndex = newData.findIndex((item: any) => item.name === '产品海报');
-  //     if (otherIndex < newData.length - 1) {
-  //       getTypeList(tabIndex);
-  //       return message.error('其他分类不支持拖动排序');
-  //     }
-  //     if (productPosterIndex !== -1 && productPosterIndex !== newData.length - 2) {
-  //       getTypeList(tabIndex);
-  //       return message.error('产品海报分类不支持拖动排序');
-  //     }
-  //     await setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
-  //     const sortTypeIdList = newData.reverse().map((item: any) => item.typeId || item.id);
-  //     const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
-  //     if (res) {
-  //       message.success('排序成功');
-  //     } else {
-  //       message.error('排序失败');
-  //     }
-  //     getTypeList(tabIndex);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+  const onDragEnd = async ({ source, destination, type }: DropResult) => {
+    // setIsOnDrag(-1);
+    console.log(type, { source, destination });
+    if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
+    try {
+      if (!destination) {
+        return;
+      }
+      if (type === 'COLUMN') {
+        if (source.droppableId !== destination.droppableId) {
+          message.warning('不可以跨父类别进行拖拽');
+          return false;
+        }
+        const currentIndex = parseInt(source.droppableId.split('-')[1]);
+        if (currentIndex !== undefined) {
+          const currentItemChildren = typeList[currentIndex].categoryList || [];
+          const copyData = [...typeList];
+          console.log(currentItemChildren);
+          const newCurrentData = reorder(currentItemChildren, source.index, destination.index);
+          // @ts-ignore
+          copyData[currentIndex].categoryList = newCurrentData;
+          // 数据倒序提交
+          console.log(newCurrentData);
+          await setTypeList(copyData as IProductTypeItem[] | IPosterTypeItem[]);
+          const sortTypeIdList = [...newCurrentData].reverse().map((item: any) => item.typeId || item.id);
+          const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
+          console.log(res);
+        }
+      } else {
+        if (destination.index === typeList.length - 1 || source.index === typeList.length - 1) {
+          return message.error('其他分类不支持拖动排序');
+        }
+        if (tabIndex === 2 && (destination.index === typeList.length - 2 || source.index === typeList.length - 2)) {
+          return message.error('产品海报分类不支持拖动排序');
+        }
+        // 获取拖拽后的数据 重新赋值
+        const newData = reorder(typeList, source.index, destination.index);
+
+        setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
+        const sortTypeIdList = [...newData].reverse().map((item: any) => item.typeId || item.id);
+        const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
+        if (res) {
+          message.success('排序成功');
+        } else {
+          message.error('排序失败');
+          getTypeList(tabIndex);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   useEffect(() => {
     getTypeList(tabIndex);
   }, []);
+
+  // 点击编辑按钮
+  const handleEdit = async (item: any, childrenItem: any) => {
+    if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
+    if (isEditing) return message.error('请先完成上一次编辑');
+    setParentId((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
+    await setEditType('');
+    setTypeName(childrenItem);
+    setEditType((childrenItem as IProductTypeItem).typeId || (childrenItem as IPosterTypeItem).id);
+    const inputNode: HTMLElement = document.querySelector('input[type=text]') as HTMLElement;
+    inputNode.focus();
+  };
   return (
     <div className={style.wrap}>
       <div className={style.tabsWrap}>
@@ -235,7 +218,12 @@ const categoryManage: React.FC = () => {
             <DropChild>
               {typeList.map((item, index) => (
                 <Drag index={index} draggableId={index + 'draggableId'} key={'draggableId' + index}>
-                  <div>
+                  <div
+                    className={classNames(style.typeItemWrap, {
+                      [style.active]:
+                        isShowChildrenType === ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
+                    })}
+                  >
                     <div
                       className={classNames(style.typeItem, { [style.isOnDrag]: isOnDrag === index })}
                       style={
@@ -408,7 +396,7 @@ const categoryManage: React.FC = () => {
 
                     {!!item.categoryList?.length && (
                       <div className={style.childrenWrap}>
-                        <Drop type={'COLUMN'} direction={'vertical'} droppableId={String('kanbank' + index)}>
+                        <Drop type={'COLUMN'} direction={'vertical'} droppableId={String('kanbank-' + index)}>
                           <DropChild>
                             {item.categoryList?.map((childrenItem: any, childIndex) => (
                               <Drag
@@ -437,26 +425,7 @@ const categoryManage: React.FC = () => {
                                     {childrenItem.name}
                                     <div className={style.childrenOperation}>
                                       {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
-                                        <span
-                                          data-edit={'edit'}
-                                          onClick={async () => {
-                                            if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
-                                            if (isEditing) return message.error('请先完成上一次编辑');
-                                            setParentId(
-                                              (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
-                                            );
-                                            await setEditType('');
-                                            setTypeName(childrenItem);
-                                            setEditType(
-                                              (childrenItem as IProductTypeItem).typeId ||
-                                                (childrenItem as IPosterTypeItem).id
-                                            );
-                                            const inputNode: HTMLElement = document.querySelector(
-                                              'input[type=text]'
-                                            ) as HTMLElement;
-                                            inputNode.focus();
-                                          }}
-                                        >
+                                        <span data-edit={'edit'} onClick={() => handleEdit(item, childrenItem)}>
                                           编辑
                                         </span>
                                       )}
