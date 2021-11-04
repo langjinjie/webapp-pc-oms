@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { requestGetAllTagList } from 'src/apis/SystemSettings';
 import { IAllTagList } from 'src/utils/interface';
-import { Icon } from 'src/components';
+import { Icon, Empty } from 'src/components';
 import { categoryKey2Name } from 'src/utils/commonData';
 import classNames from 'classnames';
 import style from './style.module.less';
@@ -65,11 +65,17 @@ const tagManage: React.FC = () => {
                   [style.active]: currentTalList === categoryKey2Name[item as keyof IAllTagList]
                 })}
               >
-                {tagList[item as keyof IAllTagList].map((item) => (
-                  <span key={item.tagId} className={style.tagItem}>
-                    {item.tagName}
-                  </span>
-                ))}
+                {tagList[item as keyof IAllTagList]
+                  ? (
+                      tagList[item as keyof IAllTagList].map((item) => (
+                    <span key={item.tagId} className={style.tagItem}>
+                      {item.tagName || '暂无标签'}
+                    </span>
+                      ))
+                    )
+                  : (
+                  <Empty />
+                    )}
               </div>
             </div>
           ))}
