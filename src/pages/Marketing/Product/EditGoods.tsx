@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
-import { Card, Form, Input, Upload, message, Button, Select, Space, Row, Col } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
-import { productEdit, uploadImg, productConfig, productDetail } from 'src/apis/marketing';
+import { Card, Form, Input, message, Button, Select, Space, Row, Col } from 'antd';
+import { productEdit, productConfig, productDetail } from 'src/apis/marketing';
 import NumberInput from 'src/components/NumberInput/NumberInput';
-import { Icon } from 'src/components';
 import { Context } from 'src/store';
 import style from './style.module.less';
 import classNames from 'classnames';
+import NgUpload from '../Components/Upload/Upload';
+import { WechatShare } from '../Components/WechatShare/WechatShare';
 interface productConfigProps {
   id: number;
   type: number;
@@ -18,13 +18,12 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const { userInfo } = useContext(Context);
   const [form] = Form.useForm();
 
-  const [posterImgUrl, setPosterImgUrl] = useState<string>('');
-  const [shareCoverImgUrl, setShareCoverImgUrl] = useState<string>('');
   const [premiumValue, setPremiumValue] = useState('0');
   const [shareInfo, setShareInfo] = useState({
     shareCoverImgUrl: '',
     shareTitle: '',
-    productName: ''
+    productName: '',
+    posterImgUrl: ''
   });
   interface Config {
     areaList: any[];
@@ -43,10 +42,6 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     productTypeList: []
   });
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [shareLoading, setShareLoading] = useState<boolean>(false);
-  const [imageUrl, setImageUrl] = useState<string>();
-  const [shareImageUrl, setShareImageUrl] = useState<string>();
   const [currency, setCurrency] = useState<string>('');
   const [propsState, setPropsState] = useState({
     id: '',
@@ -77,17 +72,14 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         highlights,
         corpProductLink,
         shareCoverImgUrl,
+        posterImgUrl,
         tags = ''
       } = res;
 
-      setShareInfo({ productName, shareTitle, shareCoverImgUrl });
+      setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl });
       const premium = (res.premium as number) / 100;
       setPremiumValue(premium + '');
       setCurrency(res.premiumTypeId);
-      res.posterImgUrl && setImageUrl(res.posterImgUrl);
-      res.posterImgUrl && setPosterImgUrl(res.posterImgUrl);
-      res.shareCoverImgUrl && setShareImageUrl(res.shareCoverImgUrl);
-      res.shareCoverImgUrl && setShareCoverImgUrl(res.shareCoverImgUrl);
       form.setFieldsValue({
         productName,
         corpProductId,
@@ -101,29 +93,11 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         posterName,
         shareTitle,
         highlights,
-        posterImgUrl: [{ url: res.posterImgUrl }],
-        shareCoverImgUrl: [{ url: res.shareCoverImgUrl }],
+        posterImgUrl,
+        shareCoverImgUrl,
         tags: tags?.split(',') || undefined
       });
     }
-  };
-
-  const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <Icon className={style.iconUpload} name="upload" />}
-      <div style={{ marginTop: 8 }}>上传图片</div>
-    </div>
-  );
-  const uploadShareButton = (
-    <div>
-      {shareLoading ? <LoadingOutlined /> : <Icon className={style.iconUpload} name="upload" />}
-      <div style={{ marginTop: 8 }}>上传图片</div>
-    </div>
-  );
-  const getBase64 = (img: any, callback: Function) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
   };
 
   const onNumberChange = (value: string) => {
@@ -132,12 +106,6 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
 
   const onCurrencyChange = (newCurrency: any) => {
     setCurrency(newCurrency);
-  };
-  const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e && e.fileList;
   };
 
   /** 海报图片 */
@@ -152,30 +120,6 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     }
     return isJpgOrPng && isLt2M;
   };
-  const posterUploadFile = async (option: any) => {
-    // 创建一个空对象实例
-    const uploadData = new FormData();
-    // 调用append()方法来添加数据
-    uploadData.append('file', option.file);
-    const res: any = await uploadImg(uploadData);
-    setLoading(false);
-    if (res) {
-      setPosterImgUrl(res);
-      setImageUrl(res);
-    }
-  };
-  const posterHandleChange = (info: any) => {
-    if (info.file.status === 'uploading') {
-      setLoading(true);
-      return;
-    }
-    if (info.file.status === 'done') {
-      getBase64(info.file.originFileObj, (imageUrl: any) => {
-        setLoading(false);
-        console.log(imageUrl);
-      });
-    }
-  };
   /** 分享图片 */
   const shareCoverBeforeUpload = (file: any) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -188,32 +132,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     }
     return isJpgOrPng && isLt2M;
   };
-  const shareCoverUploadFile = async (option: any) => {
-    // 创建一个空对象实例
-    const uploadData = new FormData();
-    // 调用append()方法来添加数据
-    uploadData.append('file', option.file);
-    const res: any = await uploadImg(uploadData);
-    setShareLoading(false);
-    if (res) {
-      setShareCoverImgUrl(res);
-      setShareImageUrl(res);
-    }
-  };
-  const shareCoverHandleChange = (info: any) => {
-    if (info.file.status === 'uploading') {
-      setShareLoading(true);
-      return;
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (imageUrl: any) => {
-        setShareLoading(false);
-        // setImageUrl(imageUrl);
-        console.log(imageUrl);
-      });
-    }
-  };
+
   const onFinish = async (values: any) => {
     const {
       productName,
@@ -227,6 +146,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
       posterName,
       highlights,
       shareTitle,
+      posterImgUrl,
+      shareCoverImgUrl,
       tags
     } = values;
     const editParams = {
@@ -251,7 +172,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     const res = await productEdit(editParams);
     if (res) {
       message.success('编辑成功！');
-      history.replace('/productLibrary?pageNum=1');
+      history.replace('/marketingProduct?pageNum=1');
     }
   };
   // 获取配置列表
@@ -305,8 +226,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     form.setFields([{ name: 'highlights', value: inputValue }]);
   };
   const onFormValuesChange = (values: any) => {
-    const { shareTitle, activityName, productName } = values;
-    setShareInfo((active) => ({ ...active, shareTitle, activityName, productName }));
+    const { shareTitle, activityName, productName, shareCoverImgUrl } = values;
+    setShareInfo((active) => ({ ...active, shareTitle, activityName, productName, shareCoverImgUrl }));
   };
   return (
     <Card title="新增产品" className="edit">
@@ -466,21 +387,9 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         <Form.Item
           label="海报："
           name="posterImgUrl"
-          getValueFromEvent={normFile}
-          valuePropName="fileList"
           extra="为确保最佳展示效果，请上传750*1334像素高清图片，仅支持.jpg格式"
         >
-          <Upload
-            multiple={false}
-            listType="picture-card"
-            className="avatar-uploader"
-            showUploadList={false}
-            customRequest={posterUploadFile}
-            beforeUpload={posterBeforeUpload}
-            onChange={posterHandleChange}
-          >
-            {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-          </Upload>
+          <NgUpload beforeUpload={posterBeforeUpload} />
         </Form.Item>
         <Form.Item
           label="海报名称："
@@ -498,22 +407,10 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             <Form.Item
               label="分享封面图："
               name="shareCoverImgUrl"
-              getValueFromEvent={normFile}
-              valuePropName="fileList"
               rules={[{ required: true, message: '请上传分享封面图' }]}
               extra="为确保最佳展示效果，请上传132*132像素高清图片，仅支持.jpg格式"
             >
-              <Upload
-                multiple={false}
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                customRequest={shareCoverUploadFile}
-                beforeUpload={shareCoverBeforeUpload}
-                onChange={shareCoverHandleChange}
-              >
-                {shareImageUrl ? <img src={shareImageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadShareButton}
-              </Upload>
+              <NgUpload beforeUpload={shareCoverBeforeUpload} />
             </Form.Item>
             <Form.Item
               label="小标题："
@@ -530,23 +427,12 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           <Col span="12">
             <div className="sharePreviewWrap">
               <h3 className="margin-bottom20 font14 bold">分享给客户样例展示</h3>
-              <div className="userImg">
-                <img src={userInfo.avatar} alt="" />
-              </div>
-              <div className="shareWrap">
-                <div style={{ overflow: 'hidden' }}>
-                  <div className="shareInfo">
-                    <h3 className="ellipsis font14 bold">{shareInfo.productName}</h3>
-                    <div className="two-line-ellipsis font12 color-text-regular" style={{ marginTop: '5px' }}>
-                      {shareInfo.shareTitle}
-                    </div>
-                  </div>
-                  <div className="shareImg">
-                    <img src={shareImageUrl} alt="" />
-                  </div>
-                </div>
-                <p className="shareTag">企业微信</p>
-              </div>
+              <WechatShare
+                avatar={userInfo.avatar}
+                desc={shareInfo.shareTitle}
+                shareCoverImgUrl={shareInfo.shareCoverImgUrl}
+                title={shareInfo.productName}
+              />
             </div>
           </Col>
         </Row>

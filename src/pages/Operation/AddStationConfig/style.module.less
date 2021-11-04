@@ -1,0 +1,107 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2021-05-24 12:45
+*/
+
+.btnWrap {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+
+  .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 128px;
+    height: 40px;
+    padding: 0;
+    font-size: 16px;
+    background: #3078db;
+    border-radius: 20px;
+  }
+}
+
+.mainText {
+  font-weight: bold;
+  color: #222222;
+}
+
+.deputyText {
+  margin-left: 20px;
+  font-size: 12px;
+  color: rgba(48, 48, 48, 0.5);
+}
+
+.addBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 92px;
+  height: 32px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #3078db;
+  color: #3078db;
+
+  .addIcon {
+    margin-right: 4px;
+    font-size: 16px;
+    color: #3078db;
+  }
+}
+
+.formWrap {
+  :global {
+    .ant-form-item-label {
+      padding-right: 20px;
+    }
+
+    .ant-form-item-control {
+      .ant-select-selector,
+      .ant-input {
+        border-radius: 18px;
+      }
+    }
+
+    .ant-upload-list-picture-card {
+      display: flex;
+    }
+  }
+}
+
+.formItemWrap {
+  position: relative;
+  margin-bottom: 0;
+
+  .uploadIcon {
+    font-size: 30px;
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .listFormItem {
+    :global {
+      .ant-form-item-label {
+        width: 80px;
+      }
+    }
+  }
+
+  .deleteIcon {
+    position: absolute;
+    right: -50px;
+    top: 6px;
+    font-size: 20px;
+    color: #3078db;
+  }
+
+  .label {
+    display: inline-block;
+    width: 70px;
+  }
+}
+
+.formItemWrap + .formItemWrap {
+  margin-top: 15px;
+}

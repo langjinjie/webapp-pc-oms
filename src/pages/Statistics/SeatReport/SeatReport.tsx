@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import { queryReportList, queryReportDetail } from 'src/apis/seatReport';
 import { downloadImage } from 'src/utils/base';
 import style from './style.module.less';
+import { setTitle } from 'lester-tools';
 
 const { Option } = Select;
 
@@ -35,7 +36,7 @@ interface areaGroupItem {
 
 interface LevelItem {
   leveName: string;
-  perCount: number;
+  percount: number;
   mark: number;
 }
 
@@ -43,8 +44,9 @@ interface StatisticsItem {
   id: string;
   order: number;
   teamName: string;
+  staffName?: string;
   dayUsedMark: number;
-  multiUseMark: number;
+  multiuseMark: number;
   dayAddFriendCount: number;
   totalAddFriendCount: number;
   addFriendRate: string;
@@ -52,7 +54,7 @@ interface StatisticsItem {
   markCarNumRate: string;
   dayMarket: number;
   daySmart: number;
-  perCount?: number;
+  percount?: number;
   trialStarDate?: string;
 }
 
@@ -63,12 +65,14 @@ interface ClientManagerItem {
 }
 
 interface RePort {
-  areaGroupList?: areaGroupItem[];
-  ageGroupList?: LevelItem[];
-  leveGroupList?: LevelItem[];
-  corpGroupList?: LevelItem[];
+  areaGroupList?: {
+    areaReportList?: areaGroupItem[];
+    ageGroupList?: LevelItem[];
+    leveGroupList?: LevelItem[];
+    corpGroupList?: LevelItem[];
+  };
   teamOrderList?: StatisticsItem[];
-  teamDetailList?: ClientManagerItem[];
+  teamDetailResVO?: ClientManagerItem[];
 }
 
 const SeatReport: React.FC = () => {
@@ -85,11 +89,15 @@ const SeatReport: React.FC = () => {
   const isHot = (value: number, type: number) => {
     if (type === 0) {
       return (
-        value ===
-        Math.max(...(reportData.ageGroupList || []).filter((item) => item.leveName !== '合计').map((item) => item.mark))
+        +value ===
+        Math.max(
+          ...(reportData.areaGroupList!.ageGroupList || [])
+            .filter((item) => item.leveName !== '合计')
+            .map((item) => item.mark)
+        )
       );
     } else {
-      const levelData = type === 1 ? reportData.leveGroupList : reportData.corpGroupList;
+      const levelData = type === 1 ? reportData.areaGroupList!.leveGroupList : reportData.areaGroupList!.corpGroupList;
       return (levelData || [])
         .map((item) => item.mark)
         .sort((a, b) => b - a)
@@ -108,14 +116,17 @@ const SeatReport: React.FC = () => {
     if (value === 0) {
       return true;
     }
-    return Math.min(...data.map((item) => +item[key])) === value;
+    return Math.min(...(data || []).map((item) => +item[key])) === value;
   };
 
-  const tdRender = (value: number | string, data: any[], key: string) => (
-    <dt className={showRed(+value, data, key) ? style.red : ''}>
-      {['addFriendRate', 'markCarNumRate'].includes(key) ? `${value}%` : value}
-    </dt>
-  );
+  const tdRender = (val: number | string, data: any[], key: string) => {
+    const value = val || 0;
+    return (
+      <dt className={showRed(+value, data, key) ? style.red : ''}>
+        {['addFriendRate', 'markCarNumRate'].includes(key) ? `${value}%` : value}
+      </dt>
+    );
+  };
 
   const areaGroupColumns: TableColumnType<areaGroupItem>[] = [
     {
@@ -127,43 +138,43 @@ const SeatReport: React.FC = () => {
       title: '当日加好友',
       dataIndex: 'dayAddFriendCount',
       align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList || [], 'dayAddFriendCount')
+      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'dayAddFriendCount')
     },
     {
       title: '累计加好友',
       dataIndex: 'totalAddFriendCount',
       align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList || [], 'totalAddFriendCount')
+      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'totalAddFriendCount')
     },
     {
       title: '好友通过率',
       dataIndex: 'addFriendRate',
       align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList || [], 'addFriendRate')
+      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'addFriendRate')
     },
     {
       title: '人均朋友圈',
       dataIndex: 'avgCircleCount',
       align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList || [], 'avgCircleCount')
+      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'avgCircleCount')
     },
     {
       title: '备注车牌率',
       dataIndex: 'markCarNumRate',
       align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList || [], 'markCarNumRate')
+      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'markCarNumRate')
     },
     {
       title: '营销平台',
       dataIndex: 'market',
       align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList || [], 'market')
+      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'market')
     },
     {
       title: '销售宝典',
       dataIndex: 'smart',
       align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList || [], 'smart')
+      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'smart')
     }
   ];
 
@@ -176,7 +187,8 @@ const SeatReport: React.FC = () => {
     {
       title: '团队经理',
       dataIndex: 'teamName',
-      align: 'center'
+      align: 'center',
+      render: (text: string, record) => text || record.staffName
     },
     {
       title: '当日使用分',
@@ -185,7 +197,7 @@ const SeatReport: React.FC = () => {
     },
     {
       title: '综合使用分',
-      dataIndex: 'multiUseMark',
+      dataIndex: 'multiuseMark',
       align: 'center'
     },
     {
@@ -228,7 +240,7 @@ const SeatReport: React.FC = () => {
   const teamColumns: TableColumnType<StatisticsItem>[] = [
     {
       title: '团队人力',
-      dataIndex: 'perCount',
+      dataIndex: 'percount',
       align: 'center'
     },
     {
@@ -271,7 +283,7 @@ const SeatReport: React.FC = () => {
    */
   const getReportList = async () => {
     const res: any = await queryReportList();
-    if (res) {
+    if (Array.isArray(res) && res.length > 0) {
       setReportList(res);
       setCurrentReport(res[0]);
       getReportDetail(res[0].reportId);
@@ -281,6 +293,7 @@ const SeatReport: React.FC = () => {
 
   useEffect(() => {
     getReportList();
+    setTitle('座席战报');
   }, []);
 
   return (
@@ -334,7 +347,7 @@ const SeatReport: React.FC = () => {
             rowKey="areaName"
             columns={areaGroupColumns}
             pagination={false}
-            dataSource={reportData.areaGroupList || []}
+            dataSource={reportData.areaGroupList?.areaReportList || []}
           />
           <div className={style.levelWrap}>
             <ul className={style.levelList}>
@@ -343,7 +356,7 @@ const SeatReport: React.FC = () => {
                 <span className={style.levelColTwo}>人力</span>
                 <span className={style.levelColThree}>使用分</span>
               </li>
-              {(reportData.ageGroupList || []).map((item) => (
+              {((reportData.areaGroupList || {}).ageGroupList || []).map((item) => (
                 <li key={item.leveName} className={style.levelItem}>
                   <dt className={style.levelColOne}>
                     <div
@@ -354,7 +367,7 @@ const SeatReport: React.FC = () => {
                       {item.leveName}
                     </div>
                   </dt>
-                  <dt className={style.levelColTwo}>{item.perCount}</dt>
+                  <dt className={style.levelColTwo}>{item.percount}</dt>
                   <dt className={style.levelColThree}>{item.mark}</dt>
                 </li>
               ))}
@@ -365,7 +378,7 @@ const SeatReport: React.FC = () => {
                 <span className={style.levelColTwo}>人力</span>
                 <span className={style.levelColThree}>使用分</span>
               </li>
-              {(reportData.leveGroupList || []).map((item) => (
+              {((reportData.areaGroupList || {}).leveGroupList || []).map((item) => (
                 <li key={item.leveName} className={style.levelItem}>
                   <dt className={style.levelColOne}>
                     <div
@@ -376,7 +389,7 @@ const SeatReport: React.FC = () => {
                       {item.leveName}
                     </div>
                   </dt>
-                  <dt className={style.levelColTwo}>{item.perCount}</dt>
+                  <dt className={style.levelColTwo}>{item.percount}</dt>
                   <dt className={style.levelColThree}>{item.mark}</dt>
                 </li>
               ))}
@@ -387,7 +400,7 @@ const SeatReport: React.FC = () => {
                 <span className={style.levelColTwo}>人力</span>
                 <span className={style.levelColThree}>使用分</span>
               </li>
-              {(reportData.corpGroupList || []).map((item) => (
+              {((reportData.areaGroupList || {}).corpGroupList || []).map((item) => (
                 <li key={item.leveName} className={style.levelItem}>
                   <dt className={style.levelColOne}>
                     <div
@@ -398,7 +411,7 @@ const SeatReport: React.FC = () => {
                       {item.leveName}
                     </div>
                   </dt>
-                  <dt className={style.levelColTwo}>{item.perCount}</dt>
+                  <dt className={style.levelColTwo}>{item.percount}</dt>
                   <dt className={style.levelColThree}>{item.mark}</dt>
                 </li>
               ))}
@@ -451,13 +464,13 @@ const SeatReport: React.FC = () => {
             <img className={style.msgImg} src={require('src/assets/images/statistics/message.png')} alt="" />
             <img className={style.titleImg} src={require('src/assets/images/statistics/title3.png')} alt="" />
           </div>
-          {(reportData.teamDetailList || []).map((item, index) => (
-            <div key={item.teamName} className={style.teamItem}>
+          {(reportData.teamDetailResVO || []).map((item, index) => (
+            <div key={item.teamShowName} className={style.teamItem}>
               <div className={style.teamName}>{item.teamShowName}</div>
               <div className={style.teamTableWrap}>
                 <Table
                   bordered={false}
-                  rowKey="teamName"
+                  rowKey="staffName"
                   columns={statisticsColumns.map((col, colIndex) => {
                     if (colIndex === 0) {
                       return {
@@ -481,15 +494,23 @@ const SeatReport: React.FC = () => {
                         return {
                           ...col,
                           render: (value: number | string) => (
-                            <dt className={+value < 50 ? style.red : ''}>{value}%</dt>
+                            <dt className={+value < 50 ? style.red : ''}>{value || 0}%</dt>
                           )
                         };
                       } else if (col.dataIndex === 'markCarNumRate') {
                         return {
                           ...col,
                           render: (value: number | string) => (
-                            <dt className={+value < 80 ? style.red : ''}>{value}%</dt>
+                            <dt className={+value < 80 ? style.red : ''}>{value || 0}%</dt>
                           )
+                        };
+                      } else if (col.dataIndex === 'avgCircleCount') {
+                        return {
+                          ...col,
+                          title: '朋友圈发送',
+                          dataIndex: 'circleSendCount',
+                          render: (value: number | string) =>
+                            tdRender(+value, item.staffOrderList || [], col.dataIndex as string)
                         };
                       } else {
                         return {

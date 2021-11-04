@@ -298,7 +298,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
           }}
         />
         {posterData && posterData.total > 0 && (
-          <div className={style.operationWrap}>
+          <div className={'operationWrap'}>
             <Space size={20}>
               <Button
                 type="primary"

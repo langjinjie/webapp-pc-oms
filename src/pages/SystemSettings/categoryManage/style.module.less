@@ -1,0 +1,327 @@
+.wrap {
+  min-height: calc(100vh - 80px);
+  padding-bottom: 20px;
+}
+.tabsWrap {
+  height: 64px;
+  padding-left: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  .tabItem {
+    position: relative;
+    display: inline-block;
+    height: 64px;
+    width: 68px;
+    font-size: 16px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: #111111;
+    line-height: 64px;
+    text-align: center;
+    cursor: pointer;
+    &:not(:last-child) {
+      margin-right: 44px;
+    }
+    &.active {
+      color: #318cf5;
+      &::after {
+        position: absolute;
+        display: block;
+        content: ' ';
+        bottom: 0;
+        width: 68px;
+        height: 4px;
+        background: #318cf5;
+        border-radius: 2px;
+      }
+    }
+  }
+}
+.content {
+  padding-top: 4px;
+  padding-left: 24px;
+  .typeItemWrap {
+    margin-top: 20px;
+    width: 760px;
+    height: 60px;
+    background: #ffffff;
+    box-shadow: 2px 0px 16px 0px rgba(129, 141, 168, 0.2);
+    // border-radius: 8px;
+    overflow: hidden;
+    &.active {
+      height: auto;
+    }
+    .typeItem,
+    .inputTypeItem {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      // margin-top: 20px;
+      padding-left: 52px !important;
+      width: 760px;
+      height: 60px;
+      // background: #ffffff;
+      // box-shadow: 2px 0px 16px 0px rgba(129, 141, 168, 0.2);
+      border-radius: 8px;
+      line-height: 60px;
+      border: 2px solid #ffffff;
+      background: url('/src/assets/images/icon_systemsettings_typeitem.png') no-repeat;
+      background-size: 16px 16px;
+      background-position: 32px center;
+      overflow: hidden;
+      font-size: 14px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: #111111;
+      &:hover {
+        border: 2px solid #318cf5;
+      }
+      &.isOnDrag {
+        background-color: #e0edff;
+        border: 2px solid #e0edff;
+      }
+      .typeName {
+        font-size: 14px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: #111111;
+        line-height: 56px;
+      }
+      .operation {
+        line-height: 56px;
+        span {
+          display: inline-block;
+          &.edit,
+          &.delete {
+            margin-right: 32px;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #318cf5;
+            cursor: pointer;
+          }
+          &.delete {
+            right: 32px;
+          }
+          &.more {
+            margin-right: 32px;
+            width: 20px;
+            font-size: 20px;
+            text-align: center;
+          }
+        }
+      }
+    }
+    .inputTypeItem {
+      position: relative;
+      border: 2px solid #318cf5 !important;
+      border-radius: 8px !important;
+      input {
+        border: none;
+        width: 640px;
+        outline: none;
+      }
+      span.icon {
+        position: absolute;
+        right: 32px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 20px;
+        height: 20px;
+        background: url('/src/assets/images/icon_common_16_Close-Circle.png') no-repeat;
+        background-size: 20px 20px;
+      }
+      .check {
+        position: absolute;
+        top: 15px;
+        left: 32px;
+        color: red;
+        font-size: 12px;
+      }
+    }
+    .childrenWrap {
+      width: 696px;
+      margin: 0 auto;
+      margin-bottom: 20px;
+      border-top: 1px solid #d8d8d8;
+      border-bottom: 1px solid #d8d8d8;
+      .childrenItemWrap {
+        border: 2px solid #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        &:hover {
+          border: 2px solid #318cf5;
+        }
+        &.active {
+          border: 2px solid #318cf5;
+        }
+        .childrenItem,
+        .inputChildrenItem {
+          display: flex;
+          justify-content: space-between;
+          margin-left: 30px;
+          height: 40px;
+          padding-left: 20px;
+          line-height: 40px;
+          background: url('/src/assets/images/icon_systemsettings_typeitem.png') no-repeat;
+          background-size: 16px 16px;
+          background-position: left center;
+          .childrenOperation {
+            margin-right: 52px;
+            line-height: 40px;
+            span {
+              display: inline-block;
+              height: 40px;
+              font-size: 14px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #318cf5;
+              cursor: pointer;
+            }
+            span:first-child {
+              margin-right: 32px;
+            }
+          }
+        }
+        .inputChildrenItem {
+          position: relative;
+          height: 40px;
+          input {
+            width: 500px;
+            border: none;
+            outline: none;
+          }
+          span.icon {
+            position: absolute;
+            right: 32px;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            width: 20px;
+            height: 20px;
+            background: url('/src/assets/images/icon_common_16_Close-Circle.png') no-repeat;
+            background-size: 20px 20px;
+          }
+          .check {
+            position: absolute;
+            right: 64px;
+            color: red;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+    .addChilrenType {
+      margin: 20px 63px;
+      margin-top: 0px;
+      width: 92px;
+      height: 32px;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #318cf5;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #318cf5;
+      &.active {
+        margin-top: 20px;
+      }
+      .icon {
+        width: 16px;
+        height: 22px;
+        font-size: 16px;
+        line-height: 20px;
+        vertical-align: top;
+        color: #318cf5;
+      }
+    }
+  }
+
+  :global {
+    .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
+      border-right-width: 2px !important;
+    }
+    // 清除图标
+    .ant-input-suffix {
+      .ant-input-clear-icon {
+        margin-right: 32px;
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+.addType {
+  margin-top: 20px;
+  margin-left: 24px;
+  width: 128px;
+  height: 40px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 22px;
+  color: #fff;
+  .icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    vertical-align: top;
+    // color: #fff;
+  }
+}
+.modalWrap {
+  .modalContent {
+    position: relative;
+    margin: 22px auto;
+    .content {
+      text-align: center;
+    }
+    .addTypeName {
+      display: block;
+      margin: 12px auto 0;
+      width: 320px;
+      height: 32px;
+      padding: 0 16px;
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid #e1e2e6;
+      outline: none;
+    }
+    .check {
+      position: absolute;
+      left: 56px;
+      color: red;
+      font-size: 12px;
+    }
+  }
+  :global {
+    // modal框
+    .ant-modal-content {
+      border-radius: 8px;
+      .ant-modal-header {
+        border-radius: 8px 8px 0 0;
+      }
+      .ant-modal-footer {
+        button {
+          border-radius: 18px;
+        }
+      }
+    }
+    .ant-modal-title {
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: #111111;
+      line-height: 22px;
+    }
+    .ant-modal-close-x {
+      background: url('/src/assets/images/icon_modal_close.png') no-repeat;
+      background-size: 16px 16px;
+      background-position: center center;
+    }
+  }
+}

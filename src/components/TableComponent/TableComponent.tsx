@@ -1,13 +1,18 @@
 import React from 'react';
 
 import { Table, TablePaginationConfig, TableProps } from 'antd';
-
+export interface PaginationProps {
+  current: number;
+  pageSize: number;
+  total: number;
+  showTotal: (total: any) => string;
+}
 interface TableComponentProps<T> extends TableProps<T> {
   loading: boolean;
   columns: any;
   pagination: TablePaginationConfig;
   paginationChange: (pageNum: number, pageSize?: number) => void;
-  setRowKey: (record: any) => string;
+  setRowKey?: (record: any) => string;
   rowSelection?: {
     onChange: (selectedRowKeys: React.Key[], selectedRows: T[]) => void;
     getCheckboxProps: (record: T) => { disabled: boolean; name: string };
