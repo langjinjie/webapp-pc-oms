@@ -381,7 +381,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         {/* </Form> */}
 
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
-          <span className="bold margin-right20">分享设置</span>
+          <span className="bold margin-right20">产品海报设置</span>
           <span className="color-text-regular">说明：如无配置，则该模块不展示</span>
         </div>
         <Form.Item
