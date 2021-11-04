@@ -106,7 +106,7 @@ export const routes: RouteProps[] = [
 export const menus: Menu[] = [
   {
     name: '机构管理',
-    icon: 'a-bianzu101',
+    icon: 'icon_daohang_28_jigouguanli',
     path: 'seatManage',
     children: [{ name: '账号管理', path: '/orgManage' }]
   },
@@ -139,7 +139,7 @@ export const menus: Menu[] = [
   },
   {
     name: '运营配置',
-    icon: 'icon_daohang_28_yingxiaopingtai',
+    icon: 'a-icon_daohang_28_yunyingpeizhi1',
     path: 'operation',
     children: [
       {
@@ -150,7 +150,7 @@ export const menus: Menu[] = [
   },
   {
     name: '数据统计',
-    icon: 'a-bianzu101',
+    icon: 'icon_daohang_28_shujutongji',
     path: 'statistics',
     children: [
       {
@@ -161,7 +161,7 @@ export const menus: Menu[] = [
   },
   {
     name: '系统设置',
-    icon: 'a-bianzu101',
+    icon: 'icon_daohang_28_xitongshezhi',
     path: 'systemsettings',
     children: [
       { name: '分类管理', path: '/categoryManage' },
