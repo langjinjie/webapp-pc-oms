@@ -130,7 +130,6 @@ const categoryManage: React.FC = () => {
   // 拖拽结束
   const onDragEnd = async ({ source, destination, type }: DropResult) => {
     // setIsOnDrag(-1);
-    console.log(type, { source, destination });
     if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
     try {
       if (!destination) {
@@ -145,16 +144,13 @@ const categoryManage: React.FC = () => {
         if (currentIndex !== undefined) {
           const currentItemChildren = typeList[currentIndex].categoryList || [];
           const copyData = [...typeList];
-          console.log(currentItemChildren);
           const newCurrentData = reorder(currentItemChildren, source.index, destination.index);
           // @ts-ignore
           copyData[currentIndex].categoryList = newCurrentData;
           // 数据倒序提交
-          console.log(newCurrentData);
-          await setTypeList(copyData as IProductTypeItem[] | IPosterTypeItem[]);
+          setTypeList(copyData as IProductTypeItem[] | IPosterTypeItem[]);
           const sortTypeIdList = [...newCurrentData].reverse().map((item: any) => item.typeId || item.id);
-          const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
-          console.log(res);
+          await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
         }
       } else {
         if (destination.index === typeList.length - 1 || source.index === typeList.length - 1) {
@@ -165,7 +161,6 @@ const categoryManage: React.FC = () => {
         }
         // 获取拖拽后的数据 重新赋值
         const newData = reorder(typeList, source.index, destination.index);
-
         setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
         const sortTypeIdList = [...newData].reverse().map((item: any) => item.typeId || item.id);
         const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
@@ -394,7 +389,7 @@ const categoryManage: React.FC = () => {
                       )}
                     </div>
 
-                    {!!item.categoryList?.length && (
+                    {!!item.categoryList?.length && isShowChildrenType === (item as IPosterTypeItem).id && (
                       <div className={style.childrenWrap}>
                         <Drop type={'COLUMN'} direction={'vertical'} droppableId={String('kanbank-' + index)}>
                           <DropChild>
@@ -562,7 +557,6 @@ const categoryManage: React.FC = () => {
                                         data-edit={'edit'}
                                         className={style.icon}
                                         onClick={() => {
-                                          console.log('清空了');
                                           setTypeName({ ...typeName, name: '' });
                                           setIsEditing(true);
                                           const inputNode: HTMLElement = document.querySelector(
