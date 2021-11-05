@@ -39,8 +39,16 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     }
   };
   const getCategoryList = async () => {
-    const res = (await getPosterCategoryList({})) || [];
-    setCategoryList(res);
+    const res = (await getPosterCategoryList({ queryType: 1 })) || []; // 请求不包含产品海报的海报分类
+    // 禁止选择没有二级分类的一级分类
+    const categoryList = res.map((item: any) => {
+      if (item.name !== '其他' && item.childs.length === 0) {
+        return { ...item, disabled: true };
+      } else {
+        return item;
+      }
+    });
+    setCategoryList(categoryList);
   };
 
   useEffect(() => {
@@ -153,7 +161,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
         {!isView && (
           <Form.Item wrapperCol={{ offset: 3 }}>
             <Button type="primary" shape="round" htmlType="submit">
-              添加
+              保 存
             </Button>
           </Form.Item>
         )}

@@ -1,5 +1,6 @@
 .wrap {
   min-height: calc(100vh - 80px);
+  padding-bottom: 20px;
 }
 .tabsWrap {
   height: 64px;
@@ -51,6 +52,7 @@
     }
     .typeItem,
     .inputTypeItem {
+      position: relative;
       display: flex;
       justify-content: space-between;
       // margin-top: 20px;
@@ -74,7 +76,7 @@
         border: 2px solid #318cf5;
       }
       &.isOnDrag {
-        background: #e0edff;
+        background-color: #e0edff;
         border: 2px solid #e0edff;
       }
       .typeName {
@@ -129,10 +131,18 @@
         background: url('/src/assets/images/icon_common_16_Close-Circle.png') no-repeat;
         background-size: 20px 20px;
       }
+      .check {
+        position: absolute;
+        top: 15px;
+        left: 32px;
+        color: red;
+        font-size: 12px;
+      }
     }
     .childrenWrap {
       width: 696px;
       margin: 0 auto;
+      margin-bottom: 20px;
       border-top: 1px solid #d8d8d8;
       border-bottom: 1px solid #d8d8d8;
       .childrenItemWrap {
@@ -177,6 +187,7 @@
           position: relative;
           height: 40px;
           input {
+            width: 500px;
             border: none;
             outline: none;
           }
@@ -191,11 +202,18 @@
             background: url('/src/assets/images/icon_common_16_Close-Circle.png') no-repeat;
             background-size: 20px 20px;
           }
+          .check {
+            position: absolute;
+            right: 64px;
+            color: red;
+            font-size: 12px;
+          }
         }
       }
     }
     .addChilrenType {
       margin: 20px 63px;
+      margin-top: 0px;
       width: 92px;
       height: 32px;
       background: #ffffff;
@@ -205,6 +223,9 @@
       font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
       color: #318cf5;
+      &.active {
+        margin-top: 20px;
+      }
       .icon {
         width: 16px;
         height: 22px;
@@ -254,6 +275,7 @@
 }
 .modalWrap {
   .modalContent {
+    position: relative;
     margin: 22px auto;
     .content {
       text-align: center;
@@ -268,6 +290,12 @@
       border-radius: 18px;
       border: 1px solid #e1e2e6;
       outline: none;
+    }
+    .check {
+      position: absolute;
+      left: 56px;
+      color: red;
+      font-size: 12px;
     }
   }
   :global {
