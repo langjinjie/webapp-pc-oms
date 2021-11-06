@@ -14,7 +14,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 // 获取系统CPU最大核数 以开启多线程满负荷打包
 const happyThreadPool = HappyPack.ThreadPool({
-  size: os.cpus().length,
+  size: os.cpus().length
 });
 
 const NODE_ENV = process.env.NODE_ENV;
@@ -32,7 +32,7 @@ const lessModuleReg = /\.module\.less$/;
 const envConfig = {
   test: path.resolve(__dirname, './env/.env.test'), // 测试环境配置
   prod: path.resolve(__dirname, './env/.env.prod'), // 测试环境配置
-  local: path.resolve(__dirname, './env/.env.local'), // 本地义环境配置
+  local: path.resolve(__dirname, './env/.env.local') // 本地义环境配置
 };
 
 /**
@@ -46,23 +46,23 @@ const getStyleLoader = (isModule = false, isLess = false) => {
     loader: 'css-loader',
     options: {
       modules: {
-        localIdentName: '[local]_[hash:base64:5]',
-      },
-    },
+        localIdentName: '[local]_[hash:base64:5]'
+      }
+    }
   };
   const loaders = [
     isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
     isModule ? cssModuleLoader : 'css-loader',
-    'postcss-loader',
+    'postcss-loader'
   ];
   if (isLess) {
     loaders.push({
       loader: 'less-loader',
       options: {
         modifyVars: {
-          '@primary-color': 'blue',
-        },
-      },
+          '@primary-color': '#318CF5'
+        }
+      }
     });
   }
   return loaders;
@@ -77,8 +77,8 @@ const getBabelLoader = (isTs = false) => {
   const loader = {
     loader: 'babel-loader',
     options: {
-      plugins: [['import', { libraryName: 'antd', style: 'css' }]],
-    },
+      plugins: [['import', { libraryName: 'antd', style: 'css' }]]
+    }
   };
   if (isTs) {
     loader.options.presets = ['@babel/preset-typescript'];
@@ -91,12 +91,12 @@ module.exports = function () {
 
   return {
     entry: {
-      main: path.resolve(ROOT_PATH, './src/index.tsx'),
+      main: path.resolve(ROOT_PATH, './src/index.tsx')
     },
     output: {
       path: path.resolve(ROOT_PATH, './tenacity-oms'),
       filename: 'js/[name].[chunkhash:8].bundle.js',
-      publicPath: isDev ? '/' : '/tenacity-oms/',
+      publicPath: isDev ? '/' : '/tenacity-oms/'
       // publicPath: isDev ? '/' : './'
     },
     mode: NODE_ENV || 'production',
@@ -105,24 +105,24 @@ module.exports = function () {
         {
           test: cssReg,
           exclude: cssModuleReg,
-          use: getStyleLoader(false, false),
+          use: getStyleLoader(false, false)
         },
         {
           test: cssModuleReg,
           exclude: /node_modules/,
-          use: getStyleLoader(true, false),
+          use: getStyleLoader(true, false)
         },
         {
           test: lessReg,
           exclude: lessModuleReg,
           // use: 'happypack/loader?id=less',
-          use: getStyleLoader(false, true),
+          use: getStyleLoader(false, true)
         },
         {
           test: lessModuleReg,
           exclude: /node_modules/,
           // use: 'happypack/loader?id=lessModule',
-          use: getStyleLoader(true, true),
+          use: getStyleLoader(true, true)
         },
         {
           test: /\.(js|jsx|ts|tsx)$/,
@@ -132,20 +132,20 @@ module.exports = function () {
             {
               loader: 'eslint-loader',
               options: {
-                fix: true,
-              },
-            },
-          ],
+                fix: true
+              }
+            }
+          ]
         },
         {
           test: /\.(ts|tsx)$/,
           exclude: /node_modules/,
-          use: 'happypack/loader?id=ts',
+          use: 'happypack/loader?id=ts'
         },
         {
           test: /\.(js|jsx)$/,
           exclude: /node_modules/,
-          use: 'happypack/loader?id=js',
+          use: 'happypack/loader?id=js'
         },
         {
           test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ico$/],
@@ -153,38 +153,38 @@ module.exports = function () {
           options: {
             esModule: false,
             limit: 10000,
-            name: 'images/[name].[contenthash:8].[ext]',
-          },
+            name: 'images/[name].[contenthash:8].[ext]'
+          }
         },
         {
           test: /\.(woff|svg|eot|ttf)\??.*$/,
           loader: 'url-loader',
           options: {
             limit: 10000,
-            name: 'font/[name].[contenthash:8].[ext]',
-          },
-        },
-      ],
+            name: 'font/[name].[contenthash:8].[ext]'
+          }
+        }
+      ]
     },
     resolve: {
       alias: {
         src: path.resolve(ROOT_PATH, './src'),
-        '@': path.resolve(ROOT_PATH, './src'),
+        '@': path.resolve(ROOT_PATH, './src')
       },
-      extensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.less', '.css'],
+      extensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.less', '.css']
     },
     plugins: [
       new DotEnvWebpack({
-        path: envConfig[argv.env || 'local'],
+        path: envConfig[argv.env || 'local']
       }),
       new CopyPlugin({
         patterns: [
           // Copy glob results (with dot files) to /absolute/path/
           {
             from: path.resolve(ROOT_PATH, './static/'),
-            to: path.resolve(ROOT_PATH, './tenacity-oms/static'),
-          },
-        ],
+            to: path.resolve(ROOT_PATH, './tenacity-oms/static')
+          }
+        ]
       }),
       new HtmlPlugin({
         template: path.resolve(ROOT_PATH, './public/index.html'),
@@ -192,34 +192,34 @@ module.exports = function () {
         // html压缩
         minify: {
           collapseWhitespace: true,
-          preserveLineBreaks: true,
-        },
+          preserveLineBreaks: true
+        }
       }),
       new MiniCssExtractPlugin({
         filename: isDev ? 'css/[name][hash:8].css' : 'css/[name].[chunkhash:8].css',
         chunkFilename: isDev ? 'css/[id][hash:8].css' : 'css/[id].[chunkhash:8].css',
-        ignoreOrder: true,
+        ignoreOrder: true
       }),
       new HappyPack({
         id: 'less',
         threadPool: happyThreadPool,
-        use: getStyleLoader(false, true),
+        use: getStyleLoader(false, true)
       }),
       new HappyPack({
         id: 'lessModule',
         threadPool: happyThreadPool,
-        use: getStyleLoader(true, true),
+        use: getStyleLoader(true, true)
       }),
       new HappyPack({
         id: 'js',
         threadPool: happyThreadPool,
-        use: ['cache-loader', getBabelLoader(false)],
+        use: ['cache-loader', getBabelLoader(false)]
       }),
       new HappyPack({
         id: 'ts',
         threadPool: happyThreadPool,
-        use: ['cache-loader', getBabelLoader(true)],
-      }),
-    ],
+        use: ['cache-loader', getBabelLoader(true)]
+      })
+    ]
   };
 };
