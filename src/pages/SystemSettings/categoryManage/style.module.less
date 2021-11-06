@@ -45,22 +45,28 @@
     height: 60px;
     background: #ffffff;
     box-shadow: 2px 0px 16px 0px rgba(129, 141, 168, 0.2);
-    // border-radius: 8px;
+    border-radius: 8px;
     overflow: hidden;
     &.active {
       height: auto;
+    }
+    &.isOnDrag {
+      background-color: #e0edff;
+      div:not(.childrenWrap) {
+        border-color: #e0edff !important;
+      }
+      .addChilrenType {
+        background-color: #e0edff;
+      }
     }
     .typeItem,
     .inputTypeItem {
       position: relative;
       display: flex;
       justify-content: space-between;
-      // margin-top: 20px;
       padding-left: 52px !important;
       width: 760px;
       height: 60px;
-      // background: #ffffff;
-      // box-shadow: 2px 0px 16px 0px rgba(129, 141, 168, 0.2);
       border-radius: 8px;
       line-height: 60px;
       border: 2px solid #ffffff;
@@ -74,10 +80,6 @@
       color: #111111;
       &:hover {
         border: 2px solid #318cf5;
-      }
-      &.isOnDrag {
-        background-color: #e0edff;
-        border: 2px solid #e0edff;
       }
       .typeName {
         font-size: 14px;
@@ -140,9 +142,9 @@
       }
     }
     .childrenWrap {
-      width: 696px;
       margin: 0 auto;
       margin-bottom: 20px;
+      width: 696px;
       border-top: 1px solid #d8d8d8;
       border-bottom: 1px solid #d8d8d8;
       .childrenItemWrap {
@@ -154,6 +156,9 @@
         }
         &.active {
           border: 2px solid #318cf5;
+        }
+        &.isOnDrag {
+          background-color: #e0edff;
         }
         .childrenItem,
         .inputChildrenItem {
