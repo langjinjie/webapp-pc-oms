@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useContext, MutableRefObject } from 'react';
 import { Button, Modal, message, Popconfirm } from 'antd';
 import {
+  HttpFC,
   requestGetProductTypeList,
   requestSaveProducType,
   requestDeleteProductType,
@@ -11,19 +12,19 @@ import {
   requestSavePosterType,
   requestDeletePosterType,
   requestSaveSortMarket
-  // requestSaveSortMarket
 } from 'src/apis/SystemSettings';
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { Icon } from 'src/components';
 import { Context } from 'src/store';
+import { Tabs, ChildrenCategory } from 'src/pages/SystemSettings/component/index';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
 
 const categoryManage: React.FC = () => {
   const { isMainCorp } = useContext(Context);
-  const [tabIndex, setTabIndex] = useState(0);
+  const [tabIndex, setTabIndex] = useState<number>(0);
   const [editType, setEditType] = useState('');
   const [typeList, setTypeList] = useState<IProductTypeItem[] | IPosterTypeItem[]>([]);
   const [typeName, setTypeName] = useState<IProductTypeItem | IPosterTypeItem>();
@@ -33,7 +34,7 @@ const categoryManage: React.FC = () => {
   const [parentId, setParentId] = useState('0');
   const [isShowChildrenType, setIsShowChildrenType] = useState('');
   const [popconfirmVisible, setPopconfirmVisible] = useState<string>('');
-  const [isOnDrag] = useState(-1);
+  const [isOnDrag, setIsOnDrag] = useState('');
   const [isCancel, setIsCancel] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -45,13 +46,11 @@ const categoryManage: React.FC = () => {
     const res = await requestGetProductTypeList();
     res && setTypeList(res.typeList as IProductTypeItem[]);
   };
-
   // 获取文章分类
   const getArticleTypeList = async () => {
     const res = await requestGetNewTypeList();
     res && setTypeList(res.typeList as IProductTypeItem[]);
   };
-
   // 获取海报分类
   const getPosterTypeList = async () => {
     const res = await requestGetPosterTypeList();
@@ -59,66 +58,13 @@ const categoryManage: React.FC = () => {
   };
 
   // 获取分类列表
-  const getTypeList = async (index: number) => {
-    switch (index) {
-      case 0:
-        await getProductTypeList();
-        break;
-      case 1:
-        await getArticleTypeList();
-        break;
-      case 2:
-        await getPosterTypeList();
-        break;
-      case 3:
-        await setTypeList([]);
-        break;
-
-      default:
-        await setTypeList([]);
-        break;
-    }
-  };
-
+  const getTypeList: (() => Promise<void>)[] = [getProductTypeList, getArticleTypeList, getPosterTypeList];
   // 添加/修改分类名称
-  const modifyTypeName = async (index: number, param: object) => {
-    let res: any;
-    switch (index) {
-      case 0:
-        res = await requestSaveProducType(param);
-        break;
-      case 1:
-        res = await requestSaveNewType(param);
-        break;
-      case 2:
-        res = await requestSavePosterType(param);
-        break;
-      default:
-        break;
-    }
-    return res;
-  };
-
+  const modifyTypeName: HttpFC[] = [requestSaveProducType, requestSaveNewType, requestSavePosterType];
   // 删除分类
-  const deleteTypeName = async (index: number, id: string) => {
-    let res: any;
-    switch (index) {
-      case 0:
-        res = await requestDeleteProductType({ typeId: id });
-        break;
-      case 1:
-        res = await requestDeleteNewType({ typeId: id });
-        break;
-      case 2:
-        res = await requestDeletePosterType({ id });
-        break;
-      default:
-        break;
-    }
-    return res;
-  };
+  const deleteTypeName: HttpFC[] = [requestDeleteProductType, requestDeleteNewType, requestDeletePosterType];
 
-  // // 重新记录数组顺序
+  // 重新记录数组顺序
   const reorder = (list: (IProductTypeItem | IPosterTypeItem)[], startIndex: number, endIndex: number) => {
     const result = [...list];
     // 删除并记录 删除元素
@@ -127,19 +73,20 @@ const categoryManage: React.FC = () => {
     result.splice(endIndex, 0, removed);
     return result;
   };
+
+  // 开始拖拽
+  const onDragStart = ({ source, type }: DropResult) => setIsOnDrag(type + source.index);
+
   // 拖拽结束
   const onDragEnd = async ({ source, destination, type }: DropResult) => {
-    // setIsOnDrag(-1);
+    setIsOnDrag('');
+    if (source.index === destination?.index) return;
     if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
     try {
-      if (!destination) {
-        return;
-      }
+      if (!destination || source.droppableId !== destination.droppableId) { return message.warning('不可以跨父类别进行拖拽'); }
       if (type === 'COLUMN') {
-        if (source.droppableId !== destination.droppableId) {
-          message.warning('不可以跨父类别进行拖拽');
-          return false;
-        }
+        // 子分类
+        if (source.droppableId !== destination.droppableId) return message.warning('不可以跨父类别进行拖拽');
         const currentIndex = parseInt(source.droppableId.split('-')[1]);
         if (currentIndex !== undefined) {
           const currentItemChildren = typeList[currentIndex].categoryList || [];
@@ -150,9 +97,16 @@ const categoryManage: React.FC = () => {
           // 数据倒序提交
           setTypeList(copyData as IProductTypeItem[] | IPosterTypeItem[]);
           const sortTypeIdList = [...newCurrentData].reverse().map((item: any) => item.typeId || item.id);
-          await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
+          const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
+          if (res) {
+            message.success('排序成功');
+          } else {
+            message.error('排序失败');
+            getTypeList[tabIndex]();
+          }
         }
       } else {
+        // 父分类
         if (destination.index === typeList.length - 1 || source.index === typeList.length - 1) {
           return message.error('其他分类不支持拖动排序');
         }
@@ -168,59 +122,163 @@ const categoryManage: React.FC = () => {
           message.success('排序成功');
         } else {
           message.error('排序失败');
-          getTypeList(tabIndex);
+          getTypeList[tabIndex]();
         }
       }
     } catch (err) {
       console.error(err);
     }
   };
-  useEffect(() => {
-    getTypeList(tabIndex);
-  }, []);
 
   // 点击编辑按钮
   const handleEdit = async (item: any, childrenItem: any) => {
-    if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
     if (isEditing) return message.error('请先完成上一次编辑');
-    setParentId((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
-    await setEditType('');
-    setTypeName(childrenItem);
-    setEditType((childrenItem as IProductTypeItem).typeId || (childrenItem as IPosterTypeItem).id);
+    childrenItem ? setParentId((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id) : setParentId('0');
+    setEditType((childrenItem || (item as IProductTypeItem)).typeId || (childrenItem || (item as IPosterTypeItem)).id);
+    // 此处使用await可以获取到 input[type=text] 的node
+    await setTypeName(childrenItem || item);
+    (document.querySelector('input[type=text]') as HTMLElement).focus();
+  };
+
+  // 点击删除
+  const clickDeleteHandle = (item: IProductTypeItem | IPosterTypeItem) => {
+    setPopconfirmVisible((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
+  };
+
+  // 删除的二确confirm
+  const onConfirmHandle = async (item: IProductTypeItem | IPosterTypeItem) => {
+    const res = await deleteTypeName[tabIndex]({
+      typeId: (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
+    });
+    if (res) {
+      setPopconfirmVisible('');
+      getTypeList[tabIndex]();
+    }
+    res ? message.success('删除成功') : message.error('删除失败');
+  };
+
+  // 点击查看子类
+  const showChildrenTypeHandle = (item: IProductTypeItem | IPosterTypeItem) => {
+    setIsShowChildrenType(
+      isShowChildrenType === ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
+        ? ''
+        : (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
+    );
+  };
+
+  const inputOnChangeHandle = (e: React.ChangeEvent<HTMLInputElement>, item: IProductTypeItem | IPosterTypeItem) => {
+    // @ts-ignore
+    setTypeName({ ...typeName, name: e.target.value.trim() });
+    if (e.target.value.trim() !== item.name) {
+      setIsEditing(true);
+    }
+  };
+
+  const inputOnKeyDownHandle = async (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    item: IProductTypeItem | IPosterTypeItem
+  ) => {
+    if (e.keyCode === 13) {
+      if (!typeName?.name || (typeName && typeName?.name.trim().length > 12)) {
+        return message.error('请输入有效的分类名称');
+      }
+      if (typeName?.name === item.name) return message.error('该分类名称已存在,请重新输入');
+      (document.querySelector('input[type=text]') as HTMLElement).blur();
+      // setIsEditing(false);
+    } else if (e.keyCode === 27) {
+      await setIsCancel(true); // await 可以在触发失去焦点的时候获取到最新的isCancel的值
+      (document.querySelector('input[type=text]') as HTMLElement).blur();
+    }
+  };
+
+  const modalOnKeyDownHandle = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.keyCode === 13) {
+      if (!addTypeName || addTypeName.trim().length > 12) return message.error('请输入有效的分类名称');
+      const res = await modifyTypeName[tabIndex]({ parentId, name: addTypeName });
+      if (res) {
+        await getTypeList[tabIndex]();
+        message.success('添加成功');
+        setIsModalVisible(false);
+        setAddTypeName('');
+      }
+    }
+  };
+
+  const inputOnBlurHandle = async (item: IProductTypeItem | IPosterTypeItem) => {
+    if (!isCancel) {
+      // 解决在上一次编辑未做修改的情况,切换到下一个编辑之后,上一个编辑会发送请求的情况
+      if (editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)) return;
+      if (!typeName?.name || (typeName && typeName?.name.trim().length > 12)) {
+        message.warning('请输入有效的分类名称');
+        return (document.querySelector('input[type=text]') as HTMLElement).focus();
+      }
+      if (!(typeName?.name === item.name)) {
+        const res = await modifyTypeName[tabIndex]({ ...typeName, parentId });
+        if (res) {
+          await getTypeList[tabIndex]();
+          setTypeName(undefined);
+          message.success('一级分类修改成功');
+        }
+      }
+    }
+    setIsCancel(false);
+    setIsEditing(false);
+    setEditType('');
+  };
+
+  const clearInputTextHandle = () => {
+    typeName && setTypeName({ ...typeName, name: '' });
+    setIsEditing(true);
     const inputNode: HTMLElement = document.querySelector('input[type=text]') as HTMLElement;
     inputNode.focus();
   };
+
+  const addTypeHandle = async (item: any = null) => {
+    if (!typeName?.name && isEditing) return message.error('请先完成上一次编辑');
+    if (item ? item.categoryList && item.categoryList.length >= 20 : typeList.length >= 20) { return message.error('分类总数不得超过20个'); }
+    setParentId(item ? item.typeId || item.id : '');
+    await setIsModalVisible(true); // await 可以获取 addInputNode 节点
+    setModalType('新增分类');
+    addInputNode.current.focus();
+  };
+
+  const modalOnOk = async () => {
+    if (!addTypeName) return message.error('请输入有效的分类名称');
+    const res = await modifyTypeName[tabIndex]({ parentId, name: addTypeName });
+    if (res) {
+      await getTypeList[tabIndex]();
+      message.success('添加成功');
+      setIsModalVisible(false);
+      setAddTypeName('');
+    }
+  };
+
+  useEffect(() => {
+    getTypeList[tabIndex]();
+  }, []);
+
   return (
     <div className={style.wrap}>
-      <div className={style.tabsWrap}>
-        {tabs.map((item, index) => (
-          <span
-            key={item}
-            className={classNames(style.tabItem, { [style.active]: index === tabIndex })}
-            onClick={() => {
-              setTabIndex(index);
-              getTypeList(index);
-            }}
-          >
-            {item}
-          </span>
-        ))}
-      </div>
+      <Tabs tabs={tabs} showCurrentTabContent={getTypeList} tabIndex={tabIndex} setTabIndex={setTabIndex} />
       <div className={style.content}>
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
           {/* direction代表拖拽方向  默认垂直方向  水平方向:horizontal */}
           <Drop type={'ROW'} droppableId={'kanban'}>
             <DropChild>
               {typeList.map((item, index) => (
                 <Drag index={index} draggableId={index + 'draggableId'} key={'draggableId' + index}>
                   <div
-                    className={classNames(style.typeItemWrap, {
-                      [style.active]:
-                        isShowChildrenType === ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                    })}
+                    className={classNames(
+                      style.typeItemWrap,
+                      {
+                        [style.active]:
+                          isShowChildrenType === ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
+                      },
+                      { [style.isOnDrag]: isOnDrag === 'ROW' + index }
+                    )}
                   >
                     <div
-                      className={classNames(style.typeItem, { [style.isOnDrag]: isOnDrag === index })}
+                      className={classNames(style.typeItem)}
                       style={
                         editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
                           ? {}
@@ -230,18 +288,7 @@ const categoryManage: React.FC = () => {
                       <div className={style.typeName}>{item.name}</div>
                       <div className={style.operation}>
                         {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
-                          <span
-                            data-edit={'edit'}
-                            className={style.edit}
-                            onClick={async () => {
-                              if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
-                              if (isEditing) return message.error('请先完成上一次编辑');
-                              setParentId('0');
-                              await setEditType((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
-                              await setTypeName(item);
-                              (document.querySelector('input[type=text]') as HTMLElement).focus();
-                            }}
-                          >
+                          <span data-edit={'edit'} className={style.edit} onClick={async () => handleEdit(item, null)}>
                             编辑
                           </span>
                         )}
@@ -251,44 +298,16 @@ const categoryManage: React.FC = () => {
                             visible={
                               popconfirmVisible === ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
                             }
-                            onConfirm={async () => {
-                              const res = await deleteTypeName(
-                                tabIndex,
-                                (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
-                              );
-                              if (res) {
-                                setPopconfirmVisible('');
-                                getTypeList(tabIndex);
-                                message.success('删除成功');
-                              } else {
-                                message.error('删除失败');
-                              }
-                            }}
+                            onConfirm={() => onConfirmHandle(item)}
                             onCancel={() => setPopconfirmVisible('')}
                           >
-                            <span
-                              className={style.delete}
-                              onClick={() => {
-                                if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
-                                setPopconfirmVisible((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
-                              }}
-                            >
+                            <span className={style.delete} onClick={() => clickDeleteHandle(item)}>
                               删除
                             </span>
                           </Popconfirm>
                         )}
                         {item.name !== '其他' && item.categoryList && (
-                          <span
-                            className={style.more}
-                            onClick={() => {
-                              setIsShowChildrenType(
-                                isShowChildrenType ===
-                                  ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                                  ? ''
-                                  : (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
-                              );
-                            }}
-                          >
+                          <span className={style.more} onClick={() => showChildrenTypeHandle(item)}>
                             <Icon
                               name={
                                 isShowChildrenType ===
@@ -310,272 +329,39 @@ const categoryManage: React.FC = () => {
                       }
                     >
                       <input
-                        data-edit={'edit'}
                         type={
                           editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
                             ? 'none'
                             : 'text'
                         }
                         value={typeName ? typeName?.name : ''}
-                        onChange={(e) => {
-                          // @ts-ignore
-                          setTypeName({ ...typeName, name: e.target.value.trim() });
-                          if (e.target.value.trim() !== item.name) {
-                            setIsEditing(true);
-                          }
-                        }}
-                        onKeyDown={async (e) => {
-                          const inputNode = document.querySelector('input[type=text]') as HTMLElement;
-                          if (e.keyCode === 13) {
-                            if (typeName && typeName?.name.trim().length > 12) {
-                              return message.error('最多12个字符,不区分中英文');
-                            }
-                            if (!typeName?.name) return message.error('分类名称不能为空');
-                            if (typeName?.name === item.name) return message.error('该分类名称已存在,请重新输入');
-                            inputNode.blur();
-                            setIsEditing(false);
-                          } else if (e.keyCode === 27) {
-                            setIsEditing(false);
-                            setIsCancel(true);
-                            setEditType('');
-                          }
-                        }}
-                        onBlur={async () => {
-                          if (editType !== ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)) {
-                            return;
-                          }
-                          if (typeName && typeName?.name.trim().length > 12) {
-                            message.error('最多12个字符,不区分中英文');
-                            (document.querySelector('input[type=text]') as HTMLElement).focus();
-                            return;
-                          }
-                          if (isCancel) {
-                            setIsCancel(false);
-                            setIsEditing(false);
-                            return setEditType('');
-                          }
-                          if (!typeName?.name) {
-                            (document.querySelector('input[type=text]') as HTMLElement).focus();
-                            return message.error('分类名称不能为空');
-                          }
-                          if (typeName?.name === item.name) {
-                            setIsEditing(false);
-                            return setEditType('');
-                          }
-                          const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
-                          if (res) {
-                            await getTypeList(tabIndex);
-                            await setTypeName(undefined);
-                            message.success('一级分类修改成功');
-                          }
-                          setIsEditing(false);
-                          setEditType('');
-                        }}
+                        onChange={(e) => inputOnChangeHandle(e, item)}
+                        onKeyDown={async (e) => inputOnKeyDownHandle(e, item)}
+                        onBlur={() => inputOnBlurHandle(item)}
                       />
-                      {typeName && (
-                        <span
-                          data-edit={'edit'}
-                          className={style.icon}
-                          onClick={() => {
-                            setTypeName({ ...typeName, name: '' });
-                            setIsEditing(true);
-                            const inputNode: HTMLElement = document.querySelector('input[type=text]') as HTMLElement;
-                            inputNode.focus();
-                          }}
-                        />
-                      )}
+                      {typeName && <span className={style.icon} onClick={clearInputTextHandle} />}
                       {typeName && typeName?.name.length > 12 && (
                         <span className={style.check}>{'最多12个字符,不区分中英文'}</span>
                       )}
                     </div>
 
                     {!!item.categoryList?.length && isShowChildrenType === (item as IPosterTypeItem).id && (
-                      <div className={style.childrenWrap}>
-                        <Drop type={'COLUMN'} direction={'vertical'} droppableId={String('kanbank-' + index)}>
-                          <DropChild>
-                            {item.categoryList?.map((childrenItem: any, childIndex) => (
-                              <Drag
-                                key={(childrenItem as IProductTypeItem).typeId || (childrenItem as IPosterTypeItem).id}
-                                index={childIndex}
-                                draggableId={String(childrenItem.id)}
-                              >
-                                <div
-                                  className={classNames(style.childrenItemWrap, {
-                                    [style.active]:
-                                      typeName &&
-                                      // @ts-ignore
-                                      (childrenItem.typeId || childrenItem.id) === (typeName.typeId || typeName.id)
-                                  })}
-                                >
-                                  <div
-                                    className={style.childrenItem}
-                                    style={
-                                      editType ===
-                                      ((childrenItem as IProductTypeItem).typeId ||
-                                        (childrenItem as IPosterTypeItem).id)
-                                        ? { display: 'none' }
-                                        : {}
-                                    }
-                                  >
-                                    {childrenItem.name}
-                                    <div className={style.childrenOperation}>
-                                      {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
-                                        <span data-edit={'edit'} onClick={() => handleEdit(item, childrenItem)}>
-                                          编辑
-                                        </span>
-                                      )}
-
-                                      <Popconfirm
-                                        title={'删除分类后,素材将移至"其他"分类下'}
-                                        visible={
-                                          popconfirmVisible ===
-                                          ((childrenItem as IProductTypeItem).typeId ||
-                                            (childrenItem as IPosterTypeItem).id)
-                                        }
-                                        onConfirm={async () => {
-                                          const res = await deleteTypeName(
-                                            tabIndex,
-                                            (childrenItem as IProductTypeItem).typeId ||
-                                              (childrenItem as IPosterTypeItem).id
-                                          );
-                                          if (res) {
-                                            setPopconfirmVisible('');
-                                            getTypeList(tabIndex);
-                                            message.success('删除成功');
-                                          } else {
-                                            message.error('删除失败');
-                                          }
-                                        }}
-                                        onCancel={() => setPopconfirmVisible('')}
-                                      >
-                                        {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
-                                          <span
-                                            onClick={() => {
-                                              if (!isMainCorp && tabIndex !== 0) {
-                                                return message.error('非主机构不能操作');
-                                              }
-                                              setPopconfirmVisible(
-                                                (childrenItem as IProductTypeItem).typeId ||
-                                                  (childrenItem as IPosterTypeItem).id
-                                              );
-                                            }}
-                                          >
-                                            删除
-                                          </span>
-                                        )}
-                                      </Popconfirm>
-                                    </div>
-                                  </div>
-                                  <div
-                                    className={style.inputChildrenItem}
-                                    style={
-                                      editType ===
-                                      ((childrenItem as IProductTypeItem).typeId ||
-                                        (childrenItem as IPosterTypeItem).id)
-                                        ? {}
-                                        : { display: 'none' }
-                                    }
-                                  >
-                                    <input
-                                      data-edit={'edit'}
-                                      type={
-                                        editType ===
-                                        ((childrenItem as IProductTypeItem).typeId ||
-                                          (childrenItem as IPosterTypeItem).id)
-                                          ? 'text'
-                                          : 'none'
-                                      }
-                                      value={typeName ? typeName?.name : ''}
-                                      onChange={(e) => {
-                                        // @ts-ignore
-                                        setTypeName({ ...typeName, name: e.target.value.trim() });
-                                        if (e.target.value.trim() !== childrenItem.name) {
-                                          setIsEditing(true);
-                                        }
-                                      }}
-                                      onKeyDown={async (e) => {
-                                        const inputNode = document.querySelector('input[type=text]') as HTMLElement;
-                                        if (e.keyCode === 13) {
-                                          if (typeName && typeName.name.trim().length > 12) {
-                                            return message.error('最多12个字符,不区分中英文');
-                                          }
-                                          if (!typeName?.name) return message.error('分类名称不能为空');
-                                          if (typeName?.name === childrenItem.name) {
-                                            return message.error('该分类名称已存在,请重新输入');
-                                          }
-                                          inputNode.blur();
-                                          setIsEditing(false);
-                                        } else if (e.keyCode === 27) {
-                                          setIsCancel(true);
-                                          setIsEditing(false);
-                                          setEditType('');
-                                        }
-                                      }}
-                                      onBlur={async () => {
-                                        if (
-                                          editType &&
-                                          editType !==
-                                            ((childrenItem as IProductTypeItem).typeId ||
-                                              (childrenItem as IPosterTypeItem).id)
-                                        ) {
-                                          return;
-                                        }
-                                        if (typeName) {
-                                          if (typeName && typeName.name.trim().length > 12) {
-                                            message.error('最多12个字符,不区分中英文');
-                                            (document.querySelector('input[type=text]') as HTMLElement).focus();
-                                            return;
-                                          }
-                                        }
-                                        if (isCancel) {
-                                          setIsCancel(false);
-                                          setIsEditing(false);
-                                          setTypeName(undefined);
-                                          return setEditType('');
-                                        }
-                                        if (!typeName?.name) {
-                                          (document.querySelector('input[type=text]') as HTMLElement).focus();
-                                          return message.error('分类名称不能为空');
-                                        }
-                                        if (typeName?.name === childrenItem.name) {
-                                          setTypeName(undefined);
-                                          setIsEditing(false);
-                                          return setEditType('');
-                                        }
-                                        const res = await modifyTypeName(tabIndex, { ...typeName, parentId });
-                                        if (res) {
-                                          await getTypeList(tabIndex);
-                                          await setTypeName(undefined);
-                                          message.success('二级分类修改成功');
-                                        }
-                                        setIsEditing(false);
-                                        setEditType('');
-                                      }}
-                                    />
-                                    {typeName && (
-                                      <span
-                                        data-edit={'edit'}
-                                        className={style.icon}
-                                        onClick={() => {
-                                          setTypeName({ ...typeName, name: '' });
-                                          setIsEditing(true);
-                                          const inputNode: HTMLElement = document.querySelector(
-                                            'input[type=text]'
-                                          ) as HTMLElement;
-                                          inputNode.focus();
-                                        }}
-                                      />
-                                    )}
-                                    {typeName && typeName?.name.length > 12 && (
-                                      <span className={style.check}>{'最多12个字符,不区分中英文'}</span>
-                                    )}
-                                  </div>
-                                </div>
-                              </Drag>
-                            ))}
-                          </DropChild>
-                        </Drop>
-                      </div>
+                      <ChildrenCategory
+                        parentIndex={index}
+                        parentCategory={item}
+                        typeName={typeName}
+                        isOnDrag={isOnDrag}
+                        editType={editType}
+                        tabIndex={tabIndex}
+                        popconfirmVisible={popconfirmVisible}
+                        setPopconfirmVisible={setPopconfirmVisible}
+                        handleEdit={handleEdit}
+                        onConfirmHandle={onConfirmHandle}
+                        inputOnChangeHandle={inputOnChangeHandle}
+                        inputOnKeyDownHandle={inputOnKeyDownHandle}
+                        inputOnBlurHandle={inputOnBlurHandle}
+                        clearInputTextHandle={clearInputTextHandle}
+                      />
                     )}
                     {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
                       <Button
@@ -584,16 +370,7 @@ const categoryManage: React.FC = () => {
                         })}
                         icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
                         type={'primary'}
-                        onClick={async () => {
-                          if (!typeName?.name && isEditing) return message.error('请先完成上一次编辑');
-                          if (item.categoryList && item.categoryList.length >= 20) {
-                            return message.error('分类总数不得超过20个');
-                          }
-                          setParentId((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
-                          await setIsModalVisible(true);
-                          setModalType('新增分类');
-                          addInputNode.current.focus();
-                        }}
+                        onClick={() => addTypeHandle(item)}
                       >
                         新增
                       </Button>
@@ -611,14 +388,7 @@ const categoryManage: React.FC = () => {
           className={style.addType}
           icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
           type={'primary'}
-          onClick={async () => {
-            if (!typeName?.name && isEditing) return message.error('请先完成上一次编辑');
-            if (typeList.length >= 20) return message.error('分类总数不得超过20个');
-            setParentId('0');
-            await setIsModalVisible(true);
-            setModalType('新增分类');
-            addInputNode.current.focus();
-          }}
+          onClick={() => addTypeHandle()}
         >
           新增
         </Button>
@@ -633,16 +403,7 @@ const categoryManage: React.FC = () => {
         okText={'确认'}
         okButtonProps={{ disabled: addTypeName.length > 12 }}
         onCancel={() => setIsModalVisible(false)}
-        onOk={async () => {
-          if (!addTypeName) return message.error('请输入有效的分类名称');
-          const res = await modifyTypeName(tabIndex, { parentId, name: addTypeName });
-          if (res) {
-            await getTypeList(tabIndex);
-            message.success('添加成功');
-            setIsModalVisible(false);
-            setAddTypeName('');
-          }
-        }}
+        onOk={modalOnOk}
       >
         <div className={style.modalContent}>
           <p className={style.content}>请输入分类名称</p>
@@ -652,24 +413,8 @@ const categoryManage: React.FC = () => {
             value={addTypeName}
             type="text"
             placeholder="请输入分类名称"
-            onChange={(e) => {
-              setAddTypeName(e.target.value.trim());
-            }}
-            onKeyDown={async (e) => {
-              if (e.keyCode === 13) {
-                if (addTypeName.trim().length > 12) {
-                  return message.error('最多12个字符,不区分中英文');
-                }
-                if (!addTypeName) return message.error('请输入有效的分类名称');
-                const res = await modifyTypeName(tabIndex, { parentId, name: addTypeName });
-                if (res) {
-                  await getTypeList(tabIndex);
-                  message.success('添加成功');
-                  setIsModalVisible(false);
-                  setAddTypeName('');
-                }
-              }
-            }}
+            onChange={(e) => setAddTypeName(e.target.value.trim())}
+            onKeyDown={(e) => modalOnKeyDownHandle(e)}
           />
           {addTypeName.length > 12 && <span className={style.check}>{'最多12个字符,不区分中英文'}</span>}
         </div>
