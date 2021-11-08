@@ -52,8 +52,8 @@
     }
     &.isOnDrag {
       background-color: #e0edff;
-      div:not(.childrenWrap) {
-        border-color: #e0edff !important;
+      div {
+        border-color: #e0edff;
       }
       .addChilrenType {
         background-color: #e0edff;
@@ -139,81 +139,6 @@
         left: 32px;
         color: red;
         font-size: 12px;
-      }
-    }
-    .childrenWrap {
-      margin: 0 auto;
-      margin-bottom: 20px;
-      width: 696px;
-      border-top: 1px solid #d8d8d8;
-      border-bottom: 1px solid #d8d8d8;
-      .childrenItemWrap {
-        border: 2px solid #fff;
-        border-radius: 8px;
-        overflow: hidden;
-        &:hover {
-          border: 2px solid #318cf5;
-        }
-        &.active {
-          border: 2px solid #318cf5;
-        }
-        &.isOnDrag {
-          background-color: #e0edff;
-        }
-        .childrenItem,
-        .inputChildrenItem {
-          display: flex;
-          justify-content: space-between;
-          margin-left: 30px;
-          height: 40px;
-          padding-left: 20px;
-          line-height: 40px;
-          background: url('/src/assets/images/icon_systemsettings_typeitem.png') no-repeat;
-          background-size: 16px 16px;
-          background-position: left center;
-          .childrenOperation {
-            margin-right: 52px;
-            line-height: 40px;
-            span {
-              display: inline-block;
-              height: 40px;
-              font-size: 14px;
-              font-family: PingFangSC-Regular, PingFang SC;
-              font-weight: 400;
-              color: #318cf5;
-              cursor: pointer;
-            }
-            span:first-child {
-              margin-right: 32px;
-            }
-          }
-        }
-        .inputChildrenItem {
-          position: relative;
-          height: 40px;
-          input {
-            width: 500px;
-            border: none;
-            outline: none;
-          }
-          span.icon {
-            position: absolute;
-            right: 32px;
-            top: 0;
-            bottom: 0;
-            margin: auto;
-            width: 20px;
-            height: 20px;
-            background: url('/src/assets/images/icon_common_16_Close-Circle.png') no-repeat;
-            background-size: 20px 20px;
-          }
-          .check {
-            position: absolute;
-            right: 64px;
-            color: red;
-            font-size: 12px;
-          }
-        }
       }
     }
     .addChilrenType {
