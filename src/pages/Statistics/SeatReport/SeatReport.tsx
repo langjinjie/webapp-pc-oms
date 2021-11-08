@@ -238,6 +238,31 @@ const SeatReport: React.FC = () => {
   ];
 
   const teamColumns: TableColumnType<StatisticsItem>[] = [
+    ...statisticsColumns.map((col, index) => {
+      if (index === 0) {
+        return {
+          ...col,
+          render: (value: number, record: any, tableIndex: number) => (
+            <div className={style.hotImgWrap}>
+              <div
+                className={classNames(style.hotWrap, {
+                  [style.hotImg]: tableIndex === 0
+                })}
+              >
+                {value}
+              </div>
+            </div>
+          )
+        };
+      } else if (index === 1) {
+        return col;
+      } else {
+        return {
+          ...col,
+          render: (value: number | string) => tdRender(+value, reportData.teamOrderList || [], col.dataIndex as string)
+        };
+      }
+    }),
     {
       title: '团队人力',
       dataIndex: 'percount',
@@ -249,6 +274,52 @@ const SeatReport: React.FC = () => {
       align: 'center'
     }
   ];
+
+  const getStaffColumns = (staffOrderList: StatisticsItem[]): TableColumnType<StatisticsItem>[] =>
+    statisticsColumns.map((col, colIndex) => {
+      if (colIndex === 0) {
+        return {
+          ...col,
+          render: (value: number, record: any, tableIndex: number) => (
+            <div className={style.hotImgWrap}>
+              <div
+                className={classNames(style.hotWrap, {
+                  [style.hotImg]: tableIndex < 3
+                })}
+              >
+                {value}
+              </div>
+            </div>
+          )
+        };
+      } else if (colIndex === 1) {
+        return col;
+      } else {
+        if (col.dataIndex === 'addFriendRate') {
+          return {
+            ...col,
+            render: (value: number | string) => <dt className={+value < 50 ? style.red : ''}>{value || 0}%</dt>
+          };
+        } else if (col.dataIndex === 'markCarNumRate') {
+          return {
+            ...col,
+            render: (value: number | string) => <dt className={+value < 80 ? style.red : ''}>{value || 0}%</dt>
+          };
+        } else if (col.dataIndex === 'avgCircleCount') {
+          return {
+            ...col,
+            title: '朋友圈发送',
+            dataIndex: 'circleSendCount',
+            render: (value: number | string) => tdRender(+value, staffOrderList || [], col.dataIndex as string)
+          };
+        } else {
+          return {
+            ...col,
+            render: (value: number | string) => tdRender(+value, staffOrderList, col.dataIndex as string)
+          };
+        }
+      }
+    });
 
   const imgNames: string[] = ['rocket', 'target', 'earth'];
 
@@ -426,35 +497,7 @@ const SeatReport: React.FC = () => {
           <Table
             bordered={false}
             rowKey="teamName"
-            columns={[
-              ...statisticsColumns.map((col, index) => {
-                if (index === 0) {
-                  return {
-                    ...col,
-                    render: (value: number, record: any, tableIndex: number) => (
-                      <div className={style.hotImgWrap}>
-                        <div
-                          className={classNames(style.hotWrap, {
-                            [style.hotImg]: tableIndex === 0
-                          })}
-                        >
-                          {value}
-                        </div>
-                      </div>
-                    )
-                  };
-                } else if (index === 1) {
-                  return col;
-                } else {
-                  return {
-                    ...col,
-                    render: (value: number | string) =>
-                      tdRender(+value, reportData.teamOrderList || [], col.dataIndex as string)
-                  };
-                }
-              }),
-              ...teamColumns
-            ]}
+            columns={teamColumns}
             pagination={false}
             dataSource={reportData.teamOrderList || []}
           />
@@ -471,56 +514,7 @@ const SeatReport: React.FC = () => {
                 <Table
                   bordered={false}
                   rowKey="staffName"
-                  columns={statisticsColumns.map((col, colIndex) => {
-                    if (colIndex === 0) {
-                      return {
-                        ...col,
-                        render: (value: number, record: any, tableIndex: number) => (
-                          <div className={style.hotImgWrap}>
-                            <div
-                              className={classNames(style.hotWrap, {
-                                [style.hotImg]: tableIndex < 3
-                              })}
-                            >
-                              {value}
-                            </div>
-                          </div>
-                        )
-                      };
-                    } else if (colIndex === 1) {
-                      return col;
-                    } else {
-                      if (col.dataIndex === 'addFriendRate') {
-                        return {
-                          ...col,
-                          render: (value: number | string) => (
-                            <dt className={+value < 50 ? style.red : ''}>{value || 0}%</dt>
-                          )
-                        };
-                      } else if (col.dataIndex === 'markCarNumRate') {
-                        return {
-                          ...col,
-                          render: (value: number | string) => (
-                            <dt className={+value < 80 ? style.red : ''}>{value || 0}%</dt>
-                          )
-                        };
-                      } else if (col.dataIndex === 'avgCircleCount') {
-                        return {
-                          ...col,
-                          title: '朋友圈发送',
-                          dataIndex: 'circleSendCount',
-                          render: (value: number | string) =>
-                            tdRender(+value, item.staffOrderList || [], col.dataIndex as string)
-                        };
-                      } else {
-                        return {
-                          ...col,
-                          render: (value: number | string) =>
-                            tdRender(+value, item.staffOrderList || [], col.dataIndex as string)
-                        };
-                      }
-                    }
-                  })}
+                  columns={getStaffColumns(item.staffOrderList || [])}
                   pagination={false}
                   dataSource={item.staffOrderList || []}
                 />

@@ -161,7 +161,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
         {!isView && (
           <Form.Item wrapperCol={{ offset: 3 }}>
             <Button type="primary" shape="round" htmlType="submit">
-              添加
+              保 存
             </Button>
           </Form.Item>
         )}
