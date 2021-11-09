@@ -3,49 +3,115 @@
  * @author Lester
  * @date 2021-11-06 13:49
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Card, Button, Form, FormProps, Input, Select, Upload, DatePicker, message } from 'antd';
+import { Card, Button, Form, FormProps, Input, Select, Upload, DatePicker, Radio, message } from 'antd';
 import { getQueryParam } from 'lester-tools';
-import { Icon } from 'src/components';
+import moment from 'moment';
+import { Context } from 'src/store';
+import { Icon, Modal } from 'src/components';
+import { queryColors } from 'src/apis/weekly';
+import { DataItem } from 'src/utils/interface';
 import style from './style.module.less';
+
+interface ColorItem {
+  colorCode: string;
+  colorName: string;
+}
+
+interface UserItem {
+  userId: string;
+  name: string;
+}
 
 const { Item, List, useForm } = Form;
 const { Option } = Select;
 const { TextArea } = Input;
+const { Group } = Radio;
 
-const AddWeeklyConfig: React.FC<RouteComponentProps> = () => {
+const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
+  const {
+    userInfo: { corpId }
+  } = useContext(Context);
   const [articleList, setArticle] = useState([]);
   const [editFields, setEditFields] = useState<string[]>([]);
   const [editFieldValue, setEditFieldValues] = useState<any>({});
   const [categoryMessage, setCategoryMessage] = useState<string[]>([]);
+  const [colors, setColors] = useState<ColorItem[]>([]);
+  const [userList, setUserList] = useState<UserItem[]>([]);
+  const [receiver, setReceiver] = useState<string[]>([]);
+  const [userVisible, setUserVisible] = useState<boolean>(false);
 
   const [form] = useForm();
   const type: string = getQueryParam('type');
 
   const formLayout: FormProps = {
     labelAlign: 'right',
-    labelCol: { span: 4 },
+    labelCol: { span: 3 },
     wrapperCol: { span: 8 }
   };
 
   const chineseNumbers = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+  const materialTypes: DataItem[] = [
+    {
+      id: '3',
+      name: '文章'
+    },
+    {
+      id: '2',
+      name: '产品'
+    },
+    {
+      id: '1',
+      name: '活动'
+    }
+  ];
+
+  const getColors = async () => {
+    const res: any = await queryColors();
+    if (Array.isArray(res)) {
+      setColors(res);
+    }
+  };
 
   const getWeeklyDetail = async () => {
     const id: string = getQueryParam('id');
     console.log(id);
     form.setFieldsValue({
-      thisWeek: '本周快讯',
-      newsList: [{}, {}, {}, {}, {}, {}],
-      categoryList: [{}]
+      expressName: '本周快讯',
+      expressId: 'expressId1',
+      expressList: [{ repcontentId: 'repcontentId1' }, {}, {}, {}, {}, {}],
+      marketCateList: [
+        {
+          cateId: '123',
+          cateName: '热点速递',
+          marketContentList: [{}, {}]
+        },
+        {
+          cateId: '123222',
+          cateName: '分类2',
+          marketContentList: [{}, {}]
+        }
+      ]
     });
     setEditFieldValues({
-      thisWeek: '本周快讯'
+      expressName: '本周快讯',
+      cateName0: ['热点速递']
     });
   };
 
   const onSubmit = (values: any) => {
     console.log(values);
+    const { paperUrl, startTime, ...otherValue } = values;
+    const params = {
+      corpId,
+      paperUrl: paperUrl[0]?.response?.retdata?.filePath,
+      ...otherValue
+    };
+    if (startTime) {
+      params.startTime = moment(startTime).valueOf();
+    }
+    console.log(params);
   };
 
   const normFile = (e: any) => {
@@ -72,7 +138,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = () => {
    * @param filed
    * @param type 0-编辑 1-取消编辑
    */
-  const editHandle = (filed: string, type: number) => {
+  const editVisibleHandle = (filed: string, type: number) => {
     if (type === 0) {
       setEditFields([...editFields, filed]);
     } else {
@@ -80,25 +146,59 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = () => {
     }
   };
 
+  /**
+   * 资讯分类名称编辑
+   * @param filed
+   * @param index
+   */
+  const editHandle = (filed: string, index = 0) => {
+    let value = '';
+    let filedName = filed;
+    if (filed === 'cateName') {
+      filedName = `cateName${index}`;
+      value = (form.getFieldValue('marketCateList')[index] || {}).cateName;
+    } else {
+      value = form.getFieldValue(filed);
+    }
+    if (value) {
+      editVisibleHandle(filedName, 1);
+      setEditFieldValues({
+        ...editFieldValue,
+        [filedName]: value
+      });
+    }
+  };
+
   const isEdit = (filed: string) => editFields.includes(filed);
 
   useEffect(() => {
     getWeeklyDetail();
-    console.log(setArticle, articleList, Option, categoryMessage);
+    console.log(setArticle, articleList, categoryMessage);
     setCategoryMessage([]);
+    getColors();
+    setUserList([
+      {
+        userId: '123',
+        name: 'lester'
+      },
+      {
+        userId: '456',
+        name: '龙春表'
+      }
+    ]);
   }, []);
 
   return (
     <Card title="新增周报配置">
       <Form className={style.formWrap} form={form} onFinish={onSubmit} {...formLayout}>
-        <Item name="title" label="周报标题">
+        <Item name="paperTitle" label="周报标题">
           <Input disabled={+type === 1} placeholder="如不填则采用机构名称+为您精选" maxLength={32} allowClear />
         </Item>
-        <Item name="title" label="分享副标题">
+        <Item name="shareTitle" label="分享副标题">
           <Input disabled={+type === 1} placeholder="如无则默认为“查看更多" allowClear />
         </Item>
         <Item
-          name="shareImg"
+          name="paperUrl"
           label="分享主图"
           rules={[{ required: true, message: '请上传图片' }]}
           getValueFromEvent={normFile}
@@ -121,53 +221,47 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = () => {
             </div>
           </Upload>
         </Item>
-        <Item name="publishTime" label="推送时间">
+        <Item name="startTime" label="推送时间">
           <DatePicker showTime placeholder="请选择推送时间" allowClear />
         </Item>
         <section className={style.sectionWrap}>
           <div className={style.titleWrap}>
-            {isEdit('thisWeek')
-              ? (
-              <Item name="thisWeek">
-                <Input
-                  placeholder="请输入"
-                  maxLength={12}
-                  allowClear
-                  onKeyDown={({ keyCode }) => {
-                    if (keyCode === 13) {
-                      editHandle('thisWeek', 1);
-                      setEditFieldValues({
-                        ...editFieldValue,
-                        thisWeek: form.getFieldValue('thisWeek')
-                      });
-                    }
-                  }}
-                  onBlur={() => {
-                    editHandle('thisWeek', 1);
-                    setEditFieldValues({
-                      ...editFieldValue,
-                      thisWeek: form.getFieldValue('thisWeek')
-                    });
-                  }}
-                />
-              </Item>
-                )
-              : (
-              <>
-                <strong>{editFieldValue.thisWeek}</strong>
-                <div className={style.editBtn} onClick={() => editHandle('thisWeek', 0)}>
-                  <Icon name="bianji" />
-                  编辑
-                </div>
-              </>
-                )}
+            <Item
+              style={{ display: isEdit('expressName') ? 'block' : 'none' }}
+              name="expressName"
+              rules={[{ required: true, message: '请输入' }]}
+            >
+              <Input
+                placeholder="请输入"
+                maxLength={12}
+                allowClear
+                onKeyDown={({ keyCode }) => keyCode === 13 && editHandle('expressName')}
+                onBlur={() => editHandle('expressName')}
+              />
+            </Item>
+            <div style={{ display: !isEdit('expressName') ? 'inline-flex' : 'none' }}>
+              <strong>{editFieldValue.expressName}</strong>
+              <div className={style.editBtn} onClick={() => editVisibleHandle('expressName', 0)}>
+                <Icon name="bianji" />
+                编辑
+              </div>
+            </div>
           </div>
-          <List name="newsList">
+          <Item hidden name="expressId">
+            <Input />
+          </Item>
+          <List name="expressList">
             {(fields, { add, remove }) => (
               <>
                 {fields.map((field, index) => (
                   <Item key={field.key} className={style.formItemWrap} wrapperCol={{ span: 10 }}>
-                    <Item noStyle shouldUpdate={(prevValues, curValues) => prevValues.newsList !== curValues.newsList}>
+                    <Item
+                      noStyle
+                      shouldUpdate={(prevValues, curValues) => prevValues.expressList !== curValues.expressList}
+                    >
+                      <Item hidden name={[field.name, 'repcontentId']}>
+                        <Input />
+                      </Item>
                       <Item
                         {...field}
                         labelCol={{ span: 7 }}
@@ -191,8 +285,8 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = () => {
                       labelCol={{ span: 7 }}
                       wrapperCol={{ span: 15 }}
                       label={`解读${chineseNumbers[index]}`}
-                      name={[field.name, 'desc']}
-                      fieldKey={[field.fieldKey, 'desc']}
+                      name={[field.name, 'content']}
+                      fieldKey={[field.fieldKey, 'content']}
                       rules={[{ required: true, message: '请输入' }]}
                       className={style.listFormItem}
                     >
@@ -212,7 +306,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = () => {
                     <Button
                       className={style.addBtn}
                       onClick={() => {
-                        const value = form.getFieldValue('newsList');
+                        const value = form.getFieldValue('expressList');
                         if (value && value.length >= 10) {
                           message.warn('最多可配置10个快讯！');
                         } else {
@@ -228,89 +322,217 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = () => {
               </>
             )}
           </List>
-          <List name="categoryList">
+          <List name="marketCateList">
             {(fields, { add, remove }) => (
               <>
                 {fields.map((field, index) => (
                   <section key={field.key} className={style.sectionWrap}>
-                    <div className={style.titleWrap}></div>
-                    <Item className={style.formItemWrap} wrapperCol={{ span: 10 }}>
+                    <Item className={style.formItemWrap} wrapperCol={{ span: 24 }}>
                       <Item
                         noStyle
-                        shouldUpdate={(prevValues, curValues) => prevValues.newsList !== curValues.newsList}
+                        shouldUpdate={(prevValues, curValues) => prevValues.marketCateList !== curValues.marketCateList}
                       >
+                        <Item hidden name={[field.name, 'cateId']}>
+                          <Input />
+                        </Item>
+                        <div className={style.titleWrap}>
+                          <Item
+                            style={{ display: isEdit(`cateName${index}`) ? 'block' : 'none' }}
+                            {...field}
+                            name={[field.name, 'cateName']}
+                            fieldKey={[field.fieldKey, 'cateName']}
+                            rules={[{ required: true, message: '请输入' }]}
+                            initialValue={`分类名称${chineseNumbers[index]}`}
+                          >
+                            <Input
+                              placeholder="请输入"
+                              maxLength={12}
+                              allowClear
+                              onKeyDown={({ keyCode }) => keyCode === 13 && editHandle('cateName', index)}
+                              onBlur={() => editHandle('cateName', index)}
+                            />
+                          </Item>
+                          <div style={{ display: !isEdit(`cateName${index}`) ? 'inline-flex' : 'none' }}>
+                            <strong>{editFieldValue[`cateName${index}`] || `分类名称${chineseNumbers[index]}`}</strong>
+                            <div className={style.editBtn} onClick={() => editVisibleHandle(`cateName${index}`, 0)}>
+                              <Icon className={style.editIcon} name="bianji" />
+                              编辑
+                            </div>
+                          </div>
+                          {index === 0 && (
+                            <div
+                              className={style.editBtn}
+                              onClick={() => {
+                                const value = form.getFieldValue('marketCateList');
+                                if (value && value.length >= 6) {
+                                  message.warn('最多可配置6个分类！');
+                                } else {
+                                  add({
+                                    marketContentList: [{}, {}]
+                                  });
+                                }
+                              }}
+                            >
+                              <Icon className={style.editIcon} name="icon_daohang_28_jiahaoyou" />
+                              创建
+                            </div>
+                          )}
+                          {index > 0 && (
+                            <div className={style.editBtn} onClick={() => remove(field.name)}>
+                              <Icon className={style.editIcon} name="cangpeitubiao_shanchu" />
+                              删除
+                            </div>
+                          )}
+                        </div>
+                        <Item
+                          style={{ marginTop: 15 }}
+                          name={[field.name, 'colorCode']}
+                          label="标题颜色"
+                          labelCol={{ span: 3 }}
+                          wrapperCol={{ span: 6 }}
+                          rules={[{ required: true, message: '请选择' }]}
+                        >
+                          <Select placeholder="请选择颜色">
+                            {colors.map((item) => (
+                              <Option key={item.colorCode} value={item.colorCode}>
+                                <div className={style.colorItem}>
+                                  <span>{item.colorName}</span>
+                                  <span
+                                    className={style.colorArea}
+                                    style={{
+                                      background: `linear-gradient(135deg, ${item.colorCode.split(',')[0]} 0%,  ${
+                                        item.colorCode.split(',')[1]
+                                      } 100%)`
+                                    }}
+                                  />
+                                </div>
+                              </Option>
+                            ))}
+                          </Select>
+                        </Item>
                         <Item
                           {...field}
-                          labelCol={{ span: 7 }}
-                          wrapperCol={{ span: 15 }}
-                          label={`新闻${chineseNumbers[index]}`}
-                          name={[field.name, 'title']}
-                          fieldKey={[field.fieldKey, 'title']}
-                          rules={[{ required: true, message: '请输入' }]}
-                          className={style.listFormItem}
+                          name={[field.name, 'cateType']}
+                          fieldKey={[field.fieldKey, 'cateType']}
+                          rules={[{ required: true, message: '请选择' }]}
+                          wrapperCol={{ offset: 3 }}
+                          initialValue="3"
                         >
-                          <TextArea
-                            placeholder="请输入"
-                            showCount
-                            maxLength={100}
-                            autoSize={{ minRows: 3, maxRows: 4 }}
-                          />
+                          <Group>
+                            {materialTypes.map((item) => (
+                              <Radio key={item.id} value={item.id}>
+                                {item.name}
+                              </Radio>
+                            ))}
+                          </Group>
                         </Item>
+                        <List name={[field.name, 'marketContentList']}>
+                          {(fields, { add, remove }) => (
+                            <>
+                              {fields.map((field, materialIndex) => (
+                                <Item key={field.key} className={style.formItemWrap} wrapperCol={{ span: 10 }}>
+                                  <Item
+                                    noStyle
+                                    shouldUpdate={(prevValues, curValues) =>
+                                      prevValues.marketContentList !== curValues.marketContentList
+                                    }
+                                  >
+                                    <Item
+                                      {...field}
+                                      labelCol={{ span: 7 }}
+                                      wrapperCol={{ span: 15 }}
+                                      label={`素材${chineseNumbers[materialIndex]}`}
+                                      name={[field.name, 'repcontentId']}
+                                      fieldKey={[field.fieldKey, 'repcontentId']}
+                                      rules={[{ required: true, message: '请选择' }]}
+                                      className={style.listFormItem}
+                                    >
+                                      <Select
+                                        placeholder="搜索对应素材标题在下拉框进行选择"
+                                        allowClear
+                                        showSearch
+                                        filterOption={(input, option) =>
+                                          option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        }
+                                      >
+                                        {materialTypes.map((item) => (
+                                          <Option key={item.id} value={item.id}>
+                                            {item.name}
+                                          </Option>
+                                        ))}
+                                      </Select>
+                                    </Item>
+                                  </Item>
+                                  {+type === 0 && materialIndex > 1 && (
+                                    <Icon
+                                      className={style.deleteIcon}
+                                      name="cangpeitubiao_shanchu"
+                                      onClick={() => remove(field.name)}
+                                    />
+                                  )}
+                                </Item>
+                              ))}
+                              {+type === 0 && (
+                                <Item wrapperCol={{ offset: 3 }}>
+                                  <Button
+                                    className={style.addBtn}
+                                    onClick={() => {
+                                      const value = form.getFieldValue('marketCateList')[index]!.marketContentList;
+                                      if (value && value.length >= 6) {
+                                        message.warn('最多可配置6个营销素材！');
+                                      } else {
+                                        add();
+                                      }
+                                    }}
+                                  >
+                                    <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" />
+                                    新建
+                                  </Button>
+                                </Item>
+                              )}
+                            </>
+                          )}
+                        </List>
                       </Item>
-                      <Item
-                        {...field}
-                        labelCol={{ span: 7 }}
-                        wrapperCol={{ span: 15 }}
-                        label={`解读${chineseNumbers[index]}`}
-                        name={[field.name, 'desc']}
-                        fieldKey={[field.fieldKey, 'desc']}
-                        rules={[{ required: true, message: '请输入' }]}
-                        className={style.listFormItem}
-                      >
-                        <TextArea
-                          placeholder="请输入"
-                          showCount
-                          maxLength={200}
-                          autoSize={{ minRows: 4, maxRows: 6 }}
-                        />
-                      </Item>
-                      {+type === 0 && index > 5 && (
-                        <Icon
-                          className={style.deleteIcon}
-                          name="cangpeitubiao_shanchu"
-                          onClick={() => remove(field.name)}
-                        />
-                      )}
                     </Item>
                   </section>
                 ))}
-                {+type === 0 && (
-                  <Item wrapperCol={{ offset: 3 }}>
-                    <Button
-                      className={style.addBtn}
-                      onClick={() => {
-                        const value = form.getFieldValue('categoryList');
-                        if (value && value.length >= 6) {
-                          message.warn('最多可配置6个分类！');
-                        } else {
-                          add();
-                        }
-                      }}
-                    >
-                      <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" />
-                      新建
-                    </Button>
-                  </Item>
-                )}
               </>
             )}
           </List>
         </section>
         <div className={style.btnWrap}>
-          <Button type="primary">保存</Button>
-          <Button>预览</Button>
+          <Button type="primary" htmlType="submit">
+            保存
+          </Button>
+          <Button onClick={() => setUserVisible(true)}>预览</Button>
+          <Button onClick={() => history.goBack()}>返回</Button>
         </div>
       </Form>
+      <Modal
+        title="选择接收人员"
+        visible={userVisible}
+        onClose={() => setUserVisible(false)}
+        onOk={() => {
+          console.log(receiver);
+        }}
+      >
+        <Select
+          style={{ width: '80%' }}
+          placeholder="请选择"
+          allowClear
+          showSearch
+          mode="multiple"
+          filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          onChange={(val: string[]) => setReceiver(val)}
+        >
+          {userList.map((item) => (
+            <Option key={item.userId} value={item.userId}>
+              {item.name}
+            </Option>
+          ))}
+        </Select>
+      </Modal>
     </Card>
   );
 };

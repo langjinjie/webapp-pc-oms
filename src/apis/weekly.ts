@@ -3,7 +3,7 @@
  * @author Lester
  * @date 2021-11-06 10:55
  */
-import http, { HttpFunction } from 'src/utils/http';
+import http, { HttpFunction, Void2Promise } from 'src/utils/http';
 
 /**
  * 查询小站配置列表
@@ -60,4 +60,21 @@ export const publishConfig: HttpFunction = (param: Object) => {
  */
 export const deleteConfig: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/weekly/edit', param);
+};
+
+/**
+ * 查询分类配置颜色列表
+ */
+export const queryColors: Void2Promise = () => {
+  return Promise.resolve([
+    {
+      colorName: '红色',
+      colorCode: '#F29087,#E0574F'
+    },
+    {
+      colorName: '蓝色',
+      colorCode: '#B1DBF5,#6884BD'
+    }
+  ]);
+  return http.post('/tenacity-admin/api/weekly/edit');
 };
