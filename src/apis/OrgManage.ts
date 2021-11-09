@@ -21,3 +21,8 @@ export const requestSetStaffOpstatus: HttpFC = (param) => {
 export const requestSyncSpcontentdel: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/collect/spcontentdel', param);
 };
+
+// 导出表格
+export const requestLeadingOutExcel: HttpFC = () => {
+  return http.post('/tenacity-admin/api/staff/download');
+};

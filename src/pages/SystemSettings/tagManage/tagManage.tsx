@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { requestGetAllTagList } from 'src/apis/SystemSettings';
+import { requestGetAllTagList } from 'src/apis/systemSettings';
 import { IAllTagList } from 'src/utils/interface';
 import { Icon, Empty } from 'src/components';
 import { categoryKey2Name } from 'src/utils/commonData';

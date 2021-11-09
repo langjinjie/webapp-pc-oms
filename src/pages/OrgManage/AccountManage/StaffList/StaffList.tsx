@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
-import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm } from 'antd';
-import { requestGetStaffList, requestSetStaffOpstatus, requestSyncSpcontentdel } from 'src/apis/OrgManage';
+import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm, message } from 'antd';
+import {
+  requestGetStaffList,
+  requestSetStaffOpstatus,
+  requestSyncSpcontentdel,
+  requestLeadingOutExcel
+} from 'src/apis/orgManage';
 import { IStaffList, ICurrentSearchParam, IMoalParam, IStaffListInfo } from 'src/utils/interface';
 import { Icon } from 'src/components/index';
 import {
@@ -202,7 +207,6 @@ const StaffList: React.FC = () => {
   };
   // 查询
   const onFinish = async () => {
-    console.log(paginationParam.pageSize);
     setSelectedRowKeys([]);
     const { accountStatus } = form.getFieldsValue();
     setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
@@ -252,11 +256,17 @@ const StaffList: React.FC = () => {
       setSelectedRowKeys([]);
     }
   };
+  // 导出表格
+  const leadingOutExcelHandle = async () => {
+    const { corpId } = location.state as { [key: string]: unknown };
+    const res = await requestLeadingOutExcel({ corpId });
+    res ? message.success('导出成功') : message.error('导出失败');
+  };
   useEffect(() => {
-    console.log(111);
-    if (!(location.state as { [key: string]: string }) || !(location.state as { [key: string]: string }).corpId) { return history.push('/orgManage'); }
+    if (!(location.state as { [key: string]: string }) || !(location.state as { [key: string]: string }).corpId) {
+      return history.push('/orgManage');
+    }
     getStaffList();
-    setPaginationParam({ ...paginationParam, current: 10 });
   }, []);
   return (
     <div className={style.wrap}>
@@ -353,6 +363,7 @@ const StaffList: React.FC = () => {
               {'批量激活' +
                 (disabledColumnType !== '1' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
             </Button>
+            <Button onClick={leadingOutExcelHandle}>导出表格</Button>
           </div>
         )}
       </Card>
