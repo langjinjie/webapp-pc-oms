@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
-import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm, message } from 'antd';
+import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm /* , message */ } from 'antd';
 import {
   requestGetStaffList,
   requestSetStaffOpstatus,
@@ -257,10 +257,21 @@ const StaffList: React.FC = () => {
     }
   };
   // 导出表格
-  const leadingOutExcelHandle = async () => {
-    const { corpId } = location.state as { [key: string]: unknown };
-    const res = await requestLeadingOutExcel({ corpId });
-    res ? message.success('导出成功') : message.error('导出失败');
+  const downLoad = async () => {
+    const res = await requestLeadingOutExcel({ corpId: (location.state as { [key: string]: unknown }).corpId });
+    console.log(res);
+    if (res) {
+      const blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', '员工列表.xlsx');
+      document.body.appendChild(link);
+      link.click(); // 点击下载
+      link.remove(); // 下载完成移除元素
+      window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
+    }
   };
   useEffect(() => {
     if (!(location.state as { [key: string]: string }) || !(location.state as { [key: string]: string }).corpId) {
@@ -363,7 +374,7 @@ const StaffList: React.FC = () => {
               {'批量激活' +
                 (disabledColumnType !== '1' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
             </Button>
-            <Button onClick={leadingOutExcelHandle}>导出表格</Button>
+            <Button onClick={downLoad}>导出表格</Button>
           </div>
         )}
       </Card>

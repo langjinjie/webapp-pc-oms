@@ -23,6 +23,8 @@ export const requestSyncSpcontentdel: HttpFC = (param) => {
 };
 
 // 导出表格
-export const requestLeadingOutExcel: HttpFC = () => {
-  return http.post('/tenacity-admin/api/staff/download');
+export const requestLeadingOutExcel: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/staff/download', param, {
+    responseType: 'blob'
+  });
 };
