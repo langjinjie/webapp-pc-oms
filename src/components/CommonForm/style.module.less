@@ -1,0 +1,29 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2021-11-05 16:22
+*/
+.formWrap {
+  :global {
+    .ant-select {
+      min-width: 160px;
+    }
+
+    .ant-btn {
+      width: 88px;
+      height: 36px;
+      border-radius: 18px;
+      border: 1px solid @primary-color;
+      color: @primary-color;
+
+      &.ant-btn-primary {
+        background-color: @primary-color;
+        color: white;
+      }
+    }
+
+    .ant-btn + .ant-btn {
+      margin-left: 10px;
+    }
+  }
+}
