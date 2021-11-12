@@ -87,6 +87,9 @@ const categoryManage: React.FC = () => {
         return message.warning('不可以跨父类别进行拖拽');
       }
       if (type === 'COLUMN') {
+        if (+destination.droppableId.split('-')[1] === typeList.length - 2) {
+          return message.error('产品海报分类不支持拖动排序');
+        }
         // 子分类
         if (source.droppableId !== destination.droppableId) return message.warning('不可以跨父类别进行拖拽');
         const currentIndex = parseInt(source.droppableId.split('-')[1]);
@@ -149,9 +152,8 @@ const categoryManage: React.FC = () => {
 
   // 删除的二确confirm
   const onConfirmHandle = async (item: IProductTypeItem | IPosterTypeItem) => {
-    const res = await deleteTypeName[tabIndex]({
-      typeId: (item as IProductTypeItem).typeId || (item as IPosterTypeItem).id
-    });
+    const param = tabIndex === 2 ? { id: (item as IPosterTypeItem).id } : { typeId: (item as IProductTypeItem).typeId };
+    const res = await deleteTypeName[tabIndex](param);
     if (res) {
       setPopconfirmVisible('');
       getTypeList[tabIndex]();
