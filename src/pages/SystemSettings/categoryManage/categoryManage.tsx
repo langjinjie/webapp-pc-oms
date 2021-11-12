@@ -221,13 +221,14 @@ const categoryManage: React.FC = () => {
         if (res) {
           await getTypeList[tabIndex]();
           setTypeName(undefined);
-          message.success('一级分类修改成功');
+          message.success('分类名称修改成功');
         }
       }
     }
     setIsCancel(false);
     setIsEditing(false);
     setEditType('');
+    setTypeName(undefined);
   };
 
   const clearInputTextHandle = () => {
