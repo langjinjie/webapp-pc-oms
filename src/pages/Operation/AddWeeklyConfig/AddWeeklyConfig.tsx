@@ -385,7 +385,13 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
           </Upload>
         </Item>
         <Item name="startTime" label="推送时间">
-          <DatePicker disabled={+type === 1} showTime placeholder="请选择推送时间" allowClear />
+          <DatePicker
+            disabled={+type === 1}
+            disabledDate={(date) => date.valueOf() < moment().startOf('day').valueOf()}
+            showTime
+            placeholder="请选择推送时间"
+            allowClear
+          />
         </Item>
         <section className={style.sectionWrap}>
           <div className={style.titleWrap}>
