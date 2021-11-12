@@ -96,7 +96,18 @@ const AddOrEditWords: React.FC = () => {
           返回
         </Button>
       </div>
-      <Modal closable={false} visible={isVisible} onCancel={() => setIsVisible(false)} onOk={modalOnOkHandle}></Modal>
+      <Modal
+        width={320}
+        centered
+        wrapClassName={style.modalWrap}
+        closable={false}
+        visible={isVisible}
+        onCancel={() => setIsVisible(false)}
+        onOk={modalOnOkHandle}
+      >
+        <div className={style.title}>添加敏感词</div>
+        <input className={style.input} type="text" placeholder="输入目录名称（限制4个字）" maxLength={4} />
+      </Modal>
     </div>
   );
 };
