@@ -3,14 +3,14 @@
  * @author Lester
  * @date 2021-11-06 13:49
  */
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Card, Button, Form, FormProps, Input, Select, Upload, DatePicker, Radio, message } from 'antd';
 import { getQueryParam } from 'lester-tools';
 import moment from 'moment';
-import { Context } from 'src/store';
 import { Icon, Modal } from 'src/components';
-import { queryColors } from 'src/apis/weekly';
+import { queryActivityList, queryArticleList, queryProductList } from 'src/apis/marketing';
+import { queryColors, queryWeeklyDetail, saveConfig, queryUserList, publishConfig } from 'src/apis/weekly';
 import { DataItem } from 'src/utils/interface';
 import style from './style.module.less';
 
@@ -24,23 +24,53 @@ interface UserItem {
   name: string;
 }
 
+interface Article {
+  id: string;
+  name: string;
+  newsId: string;
+  articleId: string;
+  title: string;
+  status: number;
+  syncBank?: number;
+}
+
+interface Activity {
+  id: string;
+  name: string;
+  activityId: string;
+  activityName: string;
+  status: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  productId: string;
+  productName: string;
+  status: number;
+}
+
 const { Item, List, useForm } = Form;
 const { Option } = Select;
 const { TextArea } = Input;
 const { Group } = Radio;
 
 const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
-  const {
-    userInfo: { corpId }
-  } = useContext(Context);
-  const [articleList, setArticle] = useState([]);
   const [editFields, setEditFields] = useState<string[]>([]);
   const [editFieldValue, setEditFieldValues] = useState<any>({});
-  const [categoryMessage, setCategoryMessage] = useState<string[]>([]);
+  const [categoryMessage, setCategoryMessage] = useState<any>({});
   const [colors, setColors] = useState<ColorItem[]>([]);
   const [userList, setUserList] = useState<UserItem[]>([]);
   const [receiver, setReceiver] = useState<string[]>([]);
   const [userVisible, setUserVisible] = useState<boolean>(false);
+  const [articleList, setArticleList] = useState<Article[]>([]);
+  const [productList, setProductList] = useState<Product[]>([]);
+  const [activityList, setActivityList] = useState<Activity[]>([]);
+  const [materialList, setMaterialList] = useState<any>({});
+  const [choosedMaterial, setChoosedMaterial] = useState<any>({});
+  const [paperId, setPaperId] = useState<string>('');
+
+  const matetailMapRef: MutableRefObject<any> = useRef({});
 
   const [form] = useForm();
   const type: string = getQueryParam('type');
@@ -69,49 +99,188 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   const getColors = async () => {
     const res: any = await queryColors();
-    if (Array.isArray(res)) {
-      setColors(res);
+    if (res) {
+      setColors(res.colorList || []);
     }
   };
 
-  const getWeeklyDetail = async () => {
-    const id: string = getQueryParam('id');
-    console.log(id);
-    form.setFieldsValue({
-      expressName: '本周快讯',
-      expressId: 'expressId1',
-      expressList: [{ repcontentId: 'repcontentId1' }, {}, {}, {}, {}, {}],
-      marketCateList: [
-        {
-          cateId: '123',
-          cateName: '热点速递',
-          marketContentList: [{}, {}]
-        },
-        {
-          cateId: '123222',
-          cateName: '分类2',
-          marketContentList: [{}, {}]
-        }
-      ]
-    });
-    setEditFieldValues({
-      expressName: '本周快讯',
-      cateName0: ['热点速递']
-    });
+  const getArticleList = async () => {
+    const res: any = await queryArticleList({ pageSize: 2000, syncBank: 1 });
+    if (res) {
+      setArticleList(
+        (res.newsList || []).map((item: Article) => ({
+          ...item,
+          id: item.newsId,
+          name: item.title
+        }))
+      );
+    }
   };
 
-  const onSubmit = (values: any) => {
+  const getProductList = async () => {
+    const res: any = await queryProductList({ pageSize: 1000, status: 2 });
+    if (res) {
+      setProductList(
+        (res.list || []).map((item: Product) => ({
+          ...item,
+          id: item.productId,
+          name: item.productName
+        }))
+      );
+    }
+  };
+
+  const getActivityList = async () => {
+    const res: any = await queryActivityList({ pageSize: 1000, status: 2 });
+    if (res) {
+      setActivityList(
+        (res.list || []).map((item: Activity) => ({
+          ...item,
+          id: item.activityId,
+          name: item.activityName
+        }))
+      );
+    }
+  };
+
+  const getUserList = async () => {
+    const res: any = await queryUserList();
+    if (res) {
+      setUserList(res.oprationList || []);
+    }
+  };
+
+  const publishWeeklyConfig = async () => {
+    const res: any = await publishConfig({ paperId, sendType: 2, userIds: receiver });
+    if (res) {
+      message.success('推送成功，可在企业微信消息里查看！');
+    }
+  };
+
+  const getMaterialData = (type: string) => {
+    if (type === 'activity') {
+      return activityList;
+    } else if (type === 'product') {
+      return productList;
+    } else {
+      return articleList;
+    }
+  };
+
+  const getMaterialMap = (index: number, value: number) => {
+    if (value === 1) {
+      matetailMapRef.current = {
+        ...matetailMapRef.current,
+        [index]: 'activity'
+      };
+    } else if (value === 2) {
+      matetailMapRef.current = {
+        ...matetailMapRef.current,
+        [index]: 'product'
+      };
+    } else {
+      matetailMapRef.current = {
+        ...matetailMapRef.current,
+        [index]: 'article'
+      };
+    }
+    setMaterialList(matetailMapRef.current);
+  };
+
+  /**
+   * 获取周报详情
+   */
+  const getWeeklyDetail = async (weeklyId: string) => {
+    if (weeklyId) {
+      const res = await queryWeeklyDetail({ paperId: weeklyId });
+      if (res && res.paperInfo) {
+        const { paperUrl, sendTime, expressName, marketCateList, ...otherInfo } = res.paperInfo;
+        form.setFieldsValue({
+          ...otherInfo,
+          expressName,
+          startTime: sendTime ? moment(sendTime) : undefined,
+          paperUrl: [
+            {
+              uid: '00',
+              status: 'done',
+              thumbUrl: paperUrl,
+              response: {
+                retdata: {
+                  filePath: paperUrl
+                }
+              }
+            }
+          ],
+          marketCateList: marketCateList.map((marketCate: any) => ({
+            ...marketCate,
+            marketContentList: marketCate.marketContentList.map((market: any) => ({
+              ...market,
+              marketId: market.status === 3 ? undefined : market.marketId
+            }))
+          }))
+        });
+        const cateNames: any = {};
+        const marketMsg: any = {};
+        const chooseMaterial: any = {};
+        (marketCateList || []).forEach((item: any, index: number) => {
+          cateNames[`cateName${index}`] = item.cateName;
+          getMaterialMap(index, item.cateType);
+          chooseMaterial[index] = item.marketContentList.map((item: any) => item.marketId).filter(Boolean);
+          const marketMessages: string[] = [];
+          item.marketContentList.forEach((market: any) => {
+            if (market.status === 3) {
+              marketMessages.push(`${market.marketTitle || market.marketId}已过期，请重新选择`);
+            } else {
+              marketMessages.push('搜索对应素材标题在下拉框进行选择');
+            }
+          });
+          marketMsg[index] = marketMessages;
+        });
+        setCategoryMessage(marketMsg);
+        setEditFieldValues({
+          expressName,
+          ...cateNames
+        });
+        setChoosedMaterial(chooseMaterial);
+      }
+      form.validateFields();
+    } else {
+      form.setFieldsValue({
+        expressName: '本周快讯',
+        expressList: [{}, {}, {}, {}, {}, {}],
+        marketCateList: [
+          {
+            cateName: '热点速递',
+            marketContentList: [{}, {}]
+          }
+        ]
+      });
+      setEditFieldValues({
+        expressName: '本周快讯',
+        cateName0: '热点速递'
+      });
+    }
+  };
+
+  const onSubmit = async (values: any) => {
     console.log(values);
     const { paperUrl, startTime, ...otherValue } = values;
     const params = {
-      corpId,
       paperUrl: paperUrl[0]?.response?.retdata?.filePath,
       ...otherValue
     };
     if (startTime) {
-      params.startTime = moment(startTime).valueOf();
+      params.startTime = moment(startTime).format('YYYY-MM-DD HH:mm:ss');
+    }
+    if (paperId) {
+      params.paperId = paperId;
     }
     console.log(params);
+    const res: any = await saveConfig(params);
+    if (res) {
+      message.success('保存成功！');
+      setPaperId(res);
+    }
   };
 
   const normFile = (e: any) => {
@@ -172,20 +341,14 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const isEdit = (filed: string) => editFields.includes(filed);
 
   useEffect(() => {
-    getWeeklyDetail();
-    console.log(setArticle, articleList, categoryMessage);
-    setCategoryMessage([]);
+    const paperId: string = getQueryParam('paperId');
+    setPaperId(paperId);
+    getWeeklyDetail(paperId);
     getColors();
-    setUserList([
-      {
-        userId: '123',
-        name: 'lester'
-      },
-      {
-        userId: '456',
-        name: '龙春表'
-      }
-    ]);
+    getArticleList();
+    getProductList();
+    getActivityList();
+    getUserList();
   }, []);
 
   return (
@@ -222,7 +385,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
           </Upload>
         </Item>
         <Item name="startTime" label="推送时间">
-          <DatePicker showTime placeholder="请选择推送时间" allowClear />
+          <DatePicker disabled={+type === 1} showTime placeholder="请选择推送时间" allowClear />
         </Item>
         <section className={style.sectionWrap}>
           <div className={style.titleWrap}>
@@ -241,10 +404,12 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
             </Item>
             <div style={{ display: !isEdit('expressName') ? 'inline-flex' : 'none' }}>
               <strong>{editFieldValue.expressName}</strong>
-              <div className={style.editBtn} onClick={() => editVisibleHandle('expressName', 0)}>
-                <Icon name="bianji" />
-                编辑
-              </div>
+              {+type === 0 && (
+                <div className={style.editBtn} onClick={() => editVisibleHandle('expressName', 0)}>
+                  <Icon name="bianji" />
+                  编辑
+                </div>
+              )}
             </div>
           </div>
           <Item hidden name="expressId">
@@ -273,6 +438,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                         className={style.listFormItem}
                       >
                         <TextArea
+                          disabled={+type === 1}
                           placeholder="请输入"
                           showCount
                           maxLength={100}
@@ -290,7 +456,13 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                       rules={[{ required: true, message: '请输入' }]}
                       className={style.listFormItem}
                     >
-                      <TextArea placeholder="请输入" showCount maxLength={200} autoSize={{ minRows: 4, maxRows: 6 }} />
+                      <TextArea
+                        disabled={+type === 1}
+                        placeholder="请输入"
+                        showCount
+                        maxLength={200}
+                        autoSize={{ minRows: 4, maxRows: 6 }}
+                      />
                     </Item>
                     {+type === 0 && index > 5 && (
                       <Icon
@@ -354,34 +526,40 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                           </Item>
                           <div style={{ display: !isEdit(`cateName${index}`) ? 'inline-flex' : 'none' }}>
                             <strong>{editFieldValue[`cateName${index}`] || `分类名称${chineseNumbers[index]}`}</strong>
-                            <div className={style.editBtn} onClick={() => editVisibleHandle(`cateName${index}`, 0)}>
-                              <Icon className={style.editIcon} name="bianji" />
-                              编辑
-                            </div>
+                            {+type === 0 && (
+                              <div className={style.editBtn} onClick={() => editVisibleHandle(`cateName${index}`, 0)}>
+                                <Icon className={style.editIcon} name="bianji" />
+                                编辑
+                              </div>
+                            )}
                           </div>
-                          {index === 0 && (
-                            <div
-                              className={style.editBtn}
-                              onClick={() => {
-                                const value = form.getFieldValue('marketCateList');
-                                if (value && value.length >= 6) {
-                                  message.warn('最多可配置6个分类！');
-                                } else {
-                                  add({
-                                    marketContentList: [{}, {}]
-                                  });
-                                }
-                              }}
-                            >
-                              <Icon className={style.editIcon} name="icon_daohang_28_jiahaoyou" />
-                              创建
-                            </div>
-                          )}
-                          {index > 0 && (
-                            <div className={style.editBtn} onClick={() => remove(field.name)}>
-                              <Icon className={style.editIcon} name="cangpeitubiao_shanchu" />
-                              删除
-                            </div>
+                          {+type === 0 && (
+                            <>
+                              {index === 0 && (
+                                <div
+                                  className={style.editBtn}
+                                  onClick={() => {
+                                    const value = form.getFieldValue('marketCateList');
+                                    if (value && value.length >= 6) {
+                                      message.warn('最多可配置6个分类！');
+                                    } else {
+                                      add({
+                                        marketContentList: [{}, {}]
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <Icon className={style.editIcon} name="icon_daohang_28_jiahaoyou" />
+                                  创建
+                                </div>
+                              )}
+                              {index > 0 && (
+                                <div className={style.editBtn} onClick={() => remove(field.name)}>
+                                  <Icon className={style.editIcon} name="cangpeitubiao_shanchu" />
+                                  删除
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                         <Item
@@ -392,7 +570,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                           wrapperCol={{ span: 6 }}
                           rules={[{ required: true, message: '请选择' }]}
                         >
-                          <Select placeholder="请选择颜色">
+                          <Select disabled={+type === 1} placeholder="请选择颜色">
                             {colors.map((item) => (
                               <Option key={item.colorCode} value={item.colorCode}>
                                 <div className={style.colorItem}>
@@ -416,11 +594,30 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                           fieldKey={[field.fieldKey, 'cateType']}
                           rules={[{ required: true, message: '请选择' }]}
                           wrapperCol={{ offset: 3 }}
-                          initialValue="3"
+                          initialValue={3}
                         >
-                          <Group>
+                          <Group
+                            disabled={+type === 1}
+                            onChange={(e) => {
+                              getMaterialMap(index, e.target.value);
+                              const marketCateListValues = form.getFieldValue('marketCateList');
+                              form.setFieldsValue({
+                                marketCateList: marketCateListValues.map((marketItem: any, marketIndex: number) => ({
+                                  ...marketItem,
+                                  marketContentList:
+                                    marketIndex === index
+                                      ? marketItem.marketContentList.map(() => ({}))
+                                      : marketItem.marketContentList
+                                }))
+                              });
+                              setChoosedMaterial({
+                                ...choosedMaterial,
+                                [index]: []
+                              });
+                            }}
+                          >
                             {materialTypes.map((item) => (
-                              <Radio key={item.id} value={item.id}>
+                              <Radio key={item.id} value={+item.id}>
                                 {item.name}
                               </Radio>
                             ))}
@@ -437,29 +634,55 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                                       prevValues.marketContentList !== curValues.marketContentList
                                     }
                                   >
+                                    <Item hidden name={[field.name, 'repcontentId']}>
+                                      <Input />
+                                    </Item>
                                     <Item
                                       {...field}
                                       labelCol={{ span: 7 }}
                                       wrapperCol={{ span: 15 }}
                                       label={`素材${chineseNumbers[materialIndex]}`}
-                                      name={[field.name, 'repcontentId']}
-                                      fieldKey={[field.fieldKey, 'repcontentId']}
-                                      rules={[{ required: true, message: '请选择' }]}
+                                      name={[field.name, 'marketId']}
+                                      fieldKey={[field.fieldKey, 'marketId']}
+                                      rules={[
+                                        {
+                                          required: true,
+                                          message: (categoryMessage[index] || [])[materialIndex] || '请选择'
+                                        }
+                                      ]}
                                       className={style.listFormItem}
                                     >
                                       <Select
-                                        placeholder="搜索对应素材标题在下拉框进行选择"
+                                        disabled={+type === 1}
+                                        placeholder={
+                                          (categoryMessage[index] || [])[materialIndex] ||
+                                          '搜索对应素材标题在下拉框进行选择'
+                                        }
                                         allowClear
                                         showSearch
                                         filterOption={(input, option) =>
                                           option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                         }
+                                        onChange={() => {
+                                          const value =
+                                            form.getFieldValue('marketCateList')[index]?.marketContentList || [];
+                                          setChoosedMaterial({
+                                            ...choosedMaterial,
+                                            [index]: value.map((item: any) => item && item.marketId).filter(Boolean)
+                                          });
+                                        }}
                                       >
-                                        {materialTypes.map((item) => (
-                                          <Option key={item.id} value={item.id}>
-                                            {item.name}
-                                          </Option>
-                                        ))}
+                                        {getMaterialData(materialList[index] || 'article').map(
+                                          (item: Activity | Product | Article) => (
+                                            <Option
+                                              key={item.id}
+                                              value={item.id}
+                                              disabled={(choosedMaterial[index] || []).includes(item.id)}
+                                            >
+                                              {item.name}
+                                            </Option>
+                                          )
+                                        )}
                                       </Select>
                                     </Item>
                                   </Item>
@@ -502,10 +725,12 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
           </List>
         </section>
         <div className={style.btnWrap}>
-          <Button type="primary" htmlType="submit">
-            保存
-          </Button>
-          <Button onClick={() => setUserVisible(true)}>预览</Button>
+          {+type === 0 && (
+            <Button disabled={+type === 1} type="primary" htmlType="submit">
+              保存
+            </Button>
+          )}
+          {paperId && <Button onClick={() => setUserVisible(true)}>预览</Button>}
           <Button onClick={() => history.goBack()}>返回</Button>
         </div>
       </Form>
@@ -514,7 +739,12 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
         visible={userVisible}
         onClose={() => setUserVisible(false)}
         onOk={() => {
-          console.log(receiver);
+          if (receiver.length > 0) {
+            setUserVisible(false);
+            publishWeeklyConfig();
+          } else {
+            message.error('请选择预览人员');
+          }
         }}
       >
         <Select

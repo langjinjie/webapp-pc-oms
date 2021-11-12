@@ -21,10 +21,10 @@ interface SearchParam {
 }
 
 interface WeeklyItem {
-  id: string;
-  title: string;
-  status: number;
-  publishTime: string;
+  paperId: string;
+  paperTitle: string;
+  paperStatus: number;
+  sendTime: string;
 }
 
 const { confirm } = Modal;
@@ -41,7 +41,7 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   const formItemData: ItemProps[] = [
     {
-      name: 'publishTime',
+      name: 'sendTime',
       label: '发布时间',
       type: 'rangePicker'
     },
@@ -51,11 +51,11 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
       type: 'select',
       dataSource: [
         {
-          id: '0',
+          id: '1',
           name: '未发布'
         },
         {
-          id: '1',
+          id: '2',
           name: '已发布'
         }
       ]
@@ -89,19 +89,19 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   /**
    * 操作处理
-   * @param id
+   * @param paperId
    * @param type 0-修改 1-查看
    */
-  const operateHandle = (id: string, type: number) => {
-    history.push(`/weekly/add?${qs.stringify({ id, type })}`);
+  const operateHandle = (paperId: string, type: number) => {
+    history.push(`/weekly/add?${qs.stringify({ paperId, type })}`);
   };
 
-  const deleteWeekly = (id: string) => {
+  const deleteWeekly = (paperId: string) => {
     confirm({
       title: '提示',
       content: '确定要删除？',
       async onOk () {
-        const res: any = await deleteConfig({ id });
+        const res: any = await deleteConfig({ paperId });
         if (res) {
           message.success('删除成功!');
           getWeeklyList();
@@ -112,20 +112,20 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   /**
    * 发布周报
-   * @param id
+   * @param paperId
    */
-  const publishWeekly = (id: string) => {
+  const publishWeekly = (paperId: string) => {
     confirm({
       title: '提示',
       content: '确定要发布？',
       async onOk () {
-        const res: any = await publishConfig({ id });
+        const res: any = await publishConfig({ paperId, sendType: 1 });
         if (res) {
           message.success('发布成功!');
           setWeeklyList(
             weeklyList.map((item) => ({
               ...item,
-              status: item.id === id ? 1 : item.status
+              paperStatus: item.paperId === paperId ? 2 : item.paperStatus
             }))
           );
         }
@@ -136,46 +136,48 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const columns: TableColumnType<WeeklyItem>[] = [
     {
       title: '标题',
-      dataIndex: 'title',
+      dataIndex: 'paperTitle',
       align: 'center'
     },
     {
       title: '发布时间',
-      dataIndex: 'publishTime',
+      dataIndex: 'sendTime',
       align: 'center'
     },
     {
       title: '发布状态',
-      dataIndex: 'status',
+      dataIndex: 'paperStatus',
       align: 'center',
       render: (text: number) => (
         <div>
           <span
             className={classNames(style.circle, {
-              [style.active]: text === 1
+              [style.active]: text === 2
             })}
           />
-          {['未发布', '已发布'][text]}
+          {['未发布', '已发布'][text - 1]}
         </div>
       )
     },
     {
       title: '操作',
-      dataIndex: 'id',
+      dataIndex: 'paperId',
       align: 'center',
       render: (text: string, record: WeeklyItem) => (
         <>
-          {record.status === 0 && (
+          {record.paperStatus === 1 && (
             <>
-              <Button type="link" onClick={() => publishWeekly(text)}>
-                发布
-              </Button>
+              {!record.sendTime && (
+                <Button type="link" onClick={() => publishWeekly(text)}>
+                  发布
+                </Button>
+              )}
               <Button type="link" onClick={() => operateHandle(text, 0)}>
                 编辑
               </Button>
             </>
           )}
-          {record.status === 1 && (
+          {record.paperStatus === 2 && (
             <Button type="link" onClick={() => deleteWeekly(text)}>
               删除
             </Button>
@@ -202,14 +204,17 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   const onSubmit = (values: any) => {
     console.log(values);
+    const { sendTime, status } = values;
+    const params: any = {
+      status,
+      pageNum: 1
+    };
+    if (sendTime && sendTime.length > 0) {
+      params.startTime = sendTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      params.endTime = sendTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+    }
     setSearchParam(values);
-    getWeeklyList(
-      {
-        ...values,
-        pageNum: 1
-      },
-      true
-    );
+    getWeeklyList(params, true);
   };
 
   useEffect(() => {
@@ -226,7 +231,7 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
       <Form itemData={formItemData} onSubmit={onSubmit} />
       <Table
         style={{ marginTop: 20 }}
-        rowKey="id"
+        rowKey="paperId"
         columns={columns}
         dataSource={weeklyList}
         pagination={{
