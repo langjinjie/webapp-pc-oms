@@ -323,7 +323,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
           <Input disabled={+type === 1} placeholder="如不填则采用机构名称+为您精选" maxLength={32} allowClear />
         </Item>
         <Item name="shareTitle" label="分享副标题">
-          <Input disabled={+type === 1} placeholder="如无则默认为“查看更多" allowClear />
+          <Input disabled={+type === 1} placeholder="如无则默认为“查看更多，100个字符以内" maxLength={100} allowClear />
         </Item>
         <Item
           name="paperUrl"

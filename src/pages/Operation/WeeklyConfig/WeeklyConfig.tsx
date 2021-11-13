@@ -136,18 +136,15 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const columns: TableColumnType<WeeklyItem>[] = [
     {
       title: '标题',
-      dataIndex: 'paperTitle',
-      align: 'center'
+      dataIndex: 'paperTitle'
     },
     {
       title: '发布时间',
-      dataIndex: 'sendTime',
-      align: 'center'
+      dataIndex: 'sendTime'
     },
     {
       title: '发布状态',
       dataIndex: 'paperStatus',
-      align: 'center',
       render: (text: number) => (
         <div>
           <span
@@ -162,7 +159,6 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
     {
       title: '操作',
       dataIndex: 'paperId',
-      align: 'center',
       render: (text: string, record: WeeklyItem) => (
         <>
           {record.paperStatus === 1 && (
