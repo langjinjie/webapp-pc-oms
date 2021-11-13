@@ -56,7 +56,7 @@ const { TextArea } = Input;
 const { Group } = Radio;
 
 const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
-  const [editFields, setEditFields] = useState<string[]>([]);
+  const [editField, setEditField] = useState<string>('');
   const [editFieldValue, setEditFieldValues] = useState<any>({});
   const [categoryMessage, setCategoryMessage] = useState<any>({});
   const [colors, setColors] = useState<ColorItem[]>([]);
@@ -194,7 +194,8 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
     if (weeklyId) {
       const res = await queryWeeklyDetail({ paperId: weeklyId });
       if (res && res.paperInfo) {
-        const { sendTime, expressName, marketCateList, ...otherInfo } = res.paperInfo;
+        const { sendTime, expressName, marketCateList, status, ...otherInfo } = res.paperInfo;
+        status === 1 && setPaperId(weeklyId);
         form.setFieldsValue({
           ...otherInfo,
           expressName,
@@ -272,13 +273,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
    * @param filed
    * @param type 0-编辑 1-取消编辑
    */
-  const editVisibleHandle = (filed: string, type: number) => {
-    if (type === 0) {
-      setEditFields([...editFields, filed]);
-    } else {
-      setEditFields(editFields.filter((val) => val !== filed));
-    }
-  };
+  const editVisibleHandle = (filed: string, type: number) => setEditField(type === 0 ? filed : '');
 
   /**
    * 资讯分类名称编辑
@@ -303,11 +298,10 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const isEdit = (filed: string) => editFields.includes(filed);
+  const isEdit = (filed: string) => editField === filed;
 
   useEffect(() => {
     const paperId: string = getQueryParam('paperId');
-    setPaperId(paperId);
     getWeeklyDetail(paperId);
     getColors();
     getArticleList();
@@ -494,6 +488,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                                 <div
                                   className={style.editBtn}
                                   onClick={() => {
+                                    setEditField('');
                                     const value = form.getFieldValue('marketCateList');
                                     if (value && value.length >= 6) {
                                       message.warn('最多可配置6个分类！');
@@ -509,7 +504,28 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                                 </div>
                               )}
                               {index > 0 && (
-                                <div className={style.editBtn} onClick={() => remove(field.name)}>
+                                <div
+                                  className={style.editBtn}
+                                  onClick={() => {
+                                    const newValue: any = {};
+                                    const marketCateListValues = form.getFieldValue('marketCateList');
+                                    for (let i = index + 1; i < marketCateListValues.length; i++) {
+                                      newValue[`cateName${i - 1}`] = `分类名称${chineseNumbers[i]}`;
+                                    }
+                                    Object.entries(editFieldValue).forEach(([key, val]) => {
+                                      const keyRes = key.match(/(?<=cateName)\d+/);
+                                      if (keyRes && +keyRes[0] >= index) {
+                                        if (+keyRes[0] > index) {
+                                          newValue[`cateName${+keyRes[0] - 1}`] = val;
+                                        }
+                                      } else {
+                                        newValue[key] = val;
+                                      }
+                                    });
+                                    setEditFieldValues(newValue);
+                                    remove(field.name);
+                                  }}
+                                >
                                   <Icon className={style.editIcon} name="cangpeitubiao_shanchu" />
                                   删除
                                 </div>
