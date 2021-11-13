@@ -5,10 +5,10 @@
  */
 import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Card, Button, Form, FormProps, Input, Select, Upload, DatePicker, Radio, message } from 'antd';
+import { Card, Button, Form, FormProps, Input, Select, DatePicker, Radio, message } from 'antd';
 import { getQueryParam } from 'lester-tools';
 import moment from 'moment';
-import { Icon, Modal } from 'src/components';
+import { Icon, Modal, ImageUpload } from 'src/components';
 import { queryActivityList, queryArticleList, queryProductList } from 'src/apis/marketing';
 import { queryColors, queryWeeklyDetail, saveConfig, queryUserList, publishConfig } from 'src/apis/weekly';
 import { DataItem } from 'src/utils/interface';
@@ -194,23 +194,11 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
     if (weeklyId) {
       const res = await queryWeeklyDetail({ paperId: weeklyId });
       if (res && res.paperInfo) {
-        const { paperUrl, sendTime, expressName, marketCateList, ...otherInfo } = res.paperInfo;
+        const { sendTime, expressName, marketCateList, ...otherInfo } = res.paperInfo;
         form.setFieldsValue({
           ...otherInfo,
           expressName,
           startTime: sendTime ? moment(sendTime) : undefined,
-          paperUrl: [
-            {
-              uid: '00',
-              status: 'done',
-              thumbUrl: paperUrl,
-              response: {
-                retdata: {
-                  filePath: paperUrl
-                }
-              }
-            }
-          ],
           marketCateList: marketCateList.map((marketCate: any) => ({
             ...marketCate,
             marketContentList: marketCate.marketContentList.map((market: any) => ({
@@ -263,12 +251,8 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSubmit = async (values: any) => {
-    console.log(values);
-    const { paperUrl, startTime, ...otherValue } = values;
-    const params = {
-      paperUrl: paperUrl[0]?.response?.retdata?.filePath,
-      ...otherValue
-    };
+    const { startTime, ...otherValue } = values;
+    const params = { ...otherValue };
     if (startTime) {
       params.startTime = moment(startTime).format('YYYY-MM-DD HH:mm:ss');
     }
@@ -281,25 +265,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
       message.success('保存成功！');
       setPaperId(res);
     }
-  };
-
-  const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-      return e.slice(e.length - 1);
-    }
-    return e && e.fileList.slice(e.fileList.length - 1);
-  };
-
-  const beforeUpload = (file: any) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error('只允许上传JPG/PNG文件!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('图片大小不能超过2MB!');
-    }
-    return isJpgOrPng && isLt2M;
   };
 
   /**
@@ -364,25 +329,9 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
           name="paperUrl"
           label="分享主图"
           rules={[{ required: true, message: '请上传图片' }]}
-          getValueFromEvent={normFile}
-          valuePropName="fileList"
           extra="为确保最佳展示效果，请上传154*154像素高清图片，仅支持.jpg和.png格式"
         >
-          <Upload
-            accept="image/*"
-            disabled={+type === 1}
-            listType="picture-card"
-            action="/tenacity-admin/api/file/upload"
-            data={{ bizKey: 'news' }}
-            beforeUpload={beforeUpload}
-          >
-            <div className={style.uploadBtn}>
-              <div className={style.uploadCircle}>
-                <Icon className={style.uploadIcon} name="icon_daohang_28_jiahaoyou" />
-              </div>
-              <div className={style.gray}>上传图片</div>
-            </div>
-          </Upload>
+          <ImageUpload disabled={+type === 1} />
         </Item>
         <Item name="startTime" label="推送时间">
           <DatePicker
