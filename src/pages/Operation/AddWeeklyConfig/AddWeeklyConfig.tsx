@@ -218,7 +218,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
           const marketMessages: string[] = [];
           item.marketContentList.forEach((market: any) => {
             if (market.status === 3) {
-              marketMessages.push(`${market.marketTitle || market.marketId}已过期，请重新选择`);
+              marketMessages.push(`${market.marketTitle || market.marketId}已下架，请重新选择`);
             } else {
               marketMessages.push('搜索对应素材标题在下拉框进行选择');
             }
