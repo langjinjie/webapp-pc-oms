@@ -513,17 +513,23 @@ ul {
 }
 
 // input 宽带
-.width400 {
-  width: 400px !important;
-}
-.width320 {
-  width: 320px !important;
+.width240 {
+  width: 240px !important;
 }
 .width280 {
   width: 280px;
 }
-.width240 {
-  width: 240px !important;
+.width320 {
+  width: 320px !important;
+}
+.width360 {
+  width: 360px !important;
+}
+.width400 {
+  width: 400px !important;
+}
+.width420 {
+  width: 420px !important;
 }
 
 .inline-block {
@@ -673,34 +679,32 @@ ul {
   margin-top: -50px;
 }
 
-:global {
-  .ant-modal-content {
-    border-radius: 8px;
+.ant-modal-content {
+  border-radius: 8px !important;
+}
+.ant-modal-body {
+  padding-bottom: 14px;
+}
+.ant-modal-footer,
+.ant-modal-confirm-btns {
+  .ant-btn {
+    width: 76px;
+    height: 32px;
+    border-radius: 16px;
+    color: #7e8185;
+    &:hover {
+      color: #111;
+    }
   }
-  .ant-modal-body {
-    padding-bottom: 14px;
+  .ant-btn-primary {
+    color: #fff;
+    background: #318cf5;
+    border-color: #318cf5;
   }
-  .ant-modal-footer,
-  .ant-modal-confirm-btns {
-    .ant-btn {
-      width: 76px;
-      height: 32px;
-      border-radius: 16px;
-      color: #7e8185;
-      &:hover {
-        color: #111;
-      }
-    }
-    .ant-btn-primary {
-      color: #fff;
-      background: #318cf5;
-      border-color: #318cf5;
-    }
-    .ant-btn-primary:hover,
-    .ant-btn-primary:focus {
-      color: #fff;
-      background: #40a9ff;
-      border-color: #40a9ff;
-    }
+  .ant-btn-primary:hover,
+  .ant-btn-primary:focus {
+    color: #fff;
+    background: #40a9ff;
+    border-color: #40a9ff;
   }
 }

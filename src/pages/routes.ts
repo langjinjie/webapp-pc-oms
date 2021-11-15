@@ -104,7 +104,11 @@ export const routes: RouteProps[] = [
   },
   {
     path: '/speechManage',
-    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/SpeechManage'))
+    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/List'))
+  },
+  {
+    path: '/speechManage/edit',
+    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
   },
   {
     path: '/contentsManage',
