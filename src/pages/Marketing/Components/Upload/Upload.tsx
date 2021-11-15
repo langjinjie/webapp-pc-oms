@@ -12,6 +12,7 @@ interface NgUploadProps {
   onChange?: (imgUrl: string) => void;
   value?: string;
   beforeUpload?: (file: RcFile) => void;
+  btnText?: string;
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -19,7 +20,7 @@ const getBase64 = (img: any, callback: (str: any) => void) => {
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 };
-const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) => {
+const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnText = '上传图片' }) => {
   const [states, setStates] = useState({
     loading: false,
     imageUrl: ''
@@ -33,7 +34,7 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) =>
     <div>
       {states.loading ? <LoadingOutlined /> : <Icon className={'font36'} name="upload" />}
       <div style={{ marginTop: 8 }} className={'color-text-regular'}>
-        上传图片
+        {btnText}
       </div>
     </div>
   );

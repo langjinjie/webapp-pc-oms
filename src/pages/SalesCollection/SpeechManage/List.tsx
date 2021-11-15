@@ -21,6 +21,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   });
   const [operationType, setOperationType] = useState<number | null>(null);
   const [visibleExport, setVisibleExport] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [visiblePreview, setVisiblePreview] = useState(false);
   const [loading] = useState(false);
@@ -84,6 +85,13 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const handleAdd = () => {
     history.push('/speechManage/edit');
   };
+
+  const handleChecked = () => {
+    setChecking(true);
+    setTimeout(() => {
+      setChecking(false);
+    }, 3000);
+  };
   return (
     <div className="container">
       <div className="flex justify-between">
@@ -113,12 +121,13 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
           <Button
             className={style.btnAdd}
             type="primary"
-            onClick={handleAdd}
+            onClick={() => handleChecked()}
             shape="round"
             size="large"
             style={{ width: 128 }}
+            loading={checking}
           >
-            敏感词校验
+            {!checking ? '敏感词校验' : '正在校验'}
           </Button>
         </Space>
         <Button
@@ -137,7 +146,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       </div>
 
       <NgTable
-        dataSource={[{}, {}]}
+        dataSource={[{ activityId: 'SAL1' }, { activityId: 'SA12' }]}
         columns={columns({ handleEdit, handleSort })}
         setRowKey={(record: SpeechProps) => {
           return record.activityId;
@@ -207,7 +216,13 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       />
 
       {/* 话术预览 */}
-      <PreviewSpeech visible={visiblePreview} onClose={() => setVisiblePreview(false)}></PreviewSpeech>
+      <PreviewSpeech
+        visible={visiblePreview}
+        onClose={() => {
+          console.log('aaaa111');
+          setVisiblePreview(false);
+        }}
+      ></PreviewSpeech>
     </div>
   );
 };

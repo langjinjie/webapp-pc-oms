@@ -10,7 +10,15 @@ interface PreviewProps {
 
 const PreviewSpeech: React.FC<PreviewProps> = ({ visible, onClose }) => {
   return (
-    <Drawer title="预览" placement="right" width={600} onClose={() => onClose} visible={visible}>
+    <Drawer
+      title="预览"
+      placement="right"
+      width={600}
+      onClose={() => {
+        onClose?.();
+      }}
+      visible={visible}
+    >
       <iframe
         className={styles.iframeWrap}
         src="http://localhost:8088/tenacity-webapp-sidebar/salesCollection/"

@@ -4,6 +4,7 @@ import { Button, Card, Form, Input, Select, Space } from 'antd';
 import styles from './style.module.less';
 import CustomTextArea from './Components/CustomTextArea';
 import { useForm } from 'antd/lib/form/Form';
+import NgUpload from 'src/pages/Marketing/Components/Upload/Upload';
 
 const SpeechEdit: React.FC = () => {
   const [speechForm] = useForm();
@@ -24,7 +25,9 @@ const SpeechEdit: React.FC = () => {
             <Select.Option value="1">名片</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item label="样式" name="key1" rules={[{ required: true }]} />
+        <Form.Item label="样式" name="key1" rules={[{ required: true }]}>
+          <NgUpload></NgUpload>
+        </Form.Item>
         <Form.Item label="话术内容" name="key2" rules={[{ required: true }]}>
           <CustomTextArea />
         </Form.Item>
