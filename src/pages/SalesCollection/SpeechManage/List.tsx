@@ -99,6 +99,9 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       setDataSource([]);
     }
   };
+  const operateStatus = (operateType: number) => {
+    console.log('sa', operateType);
+  };
   return (
     <div className="container">
       <div className="flex justify-between">
@@ -174,7 +177,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
               shape={'round'}
               ghost
               disabled={operationType !== 1}
-              onClick={() => handleToggleOnlineState(1)}
+              onClick={() => operateStatus(1)}
             >
               上架
             </Button>
@@ -183,7 +186,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
               shape={'round'}
               ghost
               disabled={operationType !== 1}
-              onClick={() => handleToggleOnlineState(1)}
+              onClick={() => operateStatus(1)}
             >
               待上架
             </Button>
@@ -192,7 +195,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
               shape={'round'}
               ghost
               disabled={operationType !== 1}
-              onClick={() => handleToggleOnlineState(1)}
+              onClick={() => operateStatus(1)}
             >
               下架
             </Button>
@@ -201,7 +204,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
               shape={'round'}
               ghost
               disabled={operationType !== 2}
-              onClick={() => handleToggleOnlineState(2)}
+              onClick={() => operateStatus(2)}
             >
               删除
             </Button>
