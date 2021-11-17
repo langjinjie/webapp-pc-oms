@@ -107,6 +107,10 @@ export const routes: RouteProps[] = [
     path: '/categoryManage',
     component: lazy(() => import('src/pages/SystemSettings/categoryManage/categoryManage'))
   },
+  {
+    path: '/tagManage',
+    component: lazy(() => import('src/pages/SystemSettings/tagManage/tagManage'))
+  },
   // 销售宝典
   {
     path: '/speechManage',
