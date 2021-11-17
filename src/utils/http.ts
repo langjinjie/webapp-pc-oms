@@ -52,6 +52,11 @@ const handleError = (err: AxiosError) => {
  */
 const handleRes = (res: AxiosResponse, resolve: Function) => {
   if (res.status === 200) {
+    // @ts-ignore
+    if (res.config.responseType === 'blob') {
+      resolve(res);
+      return false;
+    }
     if (res.data.ret === 0) {
       resolve(res.data.retdata || typeof res.data.retdata === 'boolean' ? res.data.retdata : {});
     } else {
@@ -138,6 +143,10 @@ const request: HttpMethod = (url: string, params?: any, type: Method = 'get', co
      */
     const handleRes = (res: AxiosResponse) => {
       if (res.status === 200) {
+        // @ts-ignore
+        if (res.config.responseType === 'bold') {
+          return resolve(res.data);
+        }
         if (res.data.ret === 0) {
           resolve(res.data.retdata || typeof res.data.retdata === 'boolean' ? res.data.retdata : {});
         } else {

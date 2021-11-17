@@ -1,5 +1,5 @@
 import http from 'src/utils/http';
-type HttpFC<T = { [key: string]: any }> = (param: T) => Promise<any>;
+export type HttpFC<T = { [key: string]: any }> = (param: T) => Promise<any>;
 type HttpVoid = () => Promise<any>;
 
 // 获取产品分类列表
