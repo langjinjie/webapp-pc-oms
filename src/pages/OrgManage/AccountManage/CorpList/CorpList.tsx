@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Table } from 'antd';
-import { requestGetCorpList } from 'src/apis/OrgManage';
+import { requestGetCorpList } from 'src/apis/orgManage';
 import { ICorpList } from 'src/utils/interface';
 import { Context } from 'src/store';
 import classNames from 'classnames';

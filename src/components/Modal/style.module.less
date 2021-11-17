@@ -1,0 +1,63 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2021-07-06 13:56
+*/
+.modalWrap {
+  .closeIcon {
+    font-size: 20px;
+  }
+  :global {
+    .ant-modal-content {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .ant-picker {
+      width: 100%;
+    }
+  }
+
+  .baseTitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: #111111;
+    line-height: 16px;
+
+    .titleTips {
+      margin-left: 16px;
+      font-size: 12px;
+      color: #999aa1;
+      line-height: 12px;
+    }
+  }
+
+  .footerBtn {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 36px;
+
+    .cancel {
+      width: 100px;
+      border-radius: 18px;
+      border: 1px solid #ccccd0;
+      color: #606366;
+      cursor: pointer;
+      background-color: white;
+    }
+
+    .ok {
+      margin-left: 10px;
+      width: 100px;
+      height: 36px;
+      background: #318cf5;
+      border-radius: 18px;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+  }
+}

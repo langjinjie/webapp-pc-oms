@@ -241,7 +241,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   return (
-    <Card title="新增配置">
+    <Card title="新增小站配置">
       <Form className={style.formWrap} form={form} onFinish={onSubmit} {...formLayout}>
         <Item name="settingName" label="配置名称" rules={[{ required: true, message: '请输入' }]}>
           <Input disabled={+type === 1} placeholder="示例：XX保险华南地区坐席小站" maxLength={32} />

@@ -1,81 +1,98 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
-import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm } from 'antd';
-import { requestGetStaffList, requestSetStaffOpstatus, requestSyncSpcontentdel } from 'src/apis/OrgManage';
-import { IStaffList } from 'src/utils/interface';
+import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm /* , message */ } from 'antd';
+import {
+  requestGetStaffList,
+  requestSetStaffOpstatus,
+  requestSyncSpcontentdel,
+  requestLeadingOutExcel
+} from 'src/apis/orgManage';
+import { IStaffList, ICurrentSearchParam, IMoalParam, IStaffListInfo } from 'src/utils/interface';
 import { Icon } from 'src/components/index';
-import { serviceType2Name, accountStatus2Name, accountStatusEdit2Name, staffStatus2Name } from 'src/utils/commonData';
+import {
+  /* serviceType2Name, */ accountStatus2Name,
+  accountStatusEdit2Name,
+  staffStatus2Name
+} from 'src/utils/commonData';
 import classNames from 'classnames';
 import style from './style.module.less';
 
-interface ICurrentSearchFlag {
-  staffName?: string;
-  mangerName?: string;
-  serviceType?: string;
-  staffStatus?: string;
-  accountStatus?: string;
-}
-
 const StaffList: React.FC = () => {
   const [form] = Form.useForm();
-  const [current, setCurrent] = useState<number>(1);
-  const [total, setTotal] = useState<number>(0);
-  const [usedCount, setUsedCount] = useState<number>(0);
-  const [licenseCount, setLlicenseCount] = useState<number>(0);
-  const [staffList, setStaffList] = useState<IStaffList[]>();
+  const [paginationParam, setPaginationParam] = useState({ current: 1, pageSize: 10 });
+  const [staffListInfo, setStaffListInfo] = useState<IStaffListInfo>({
+    usedCount: 0,
+    licenseCount: 0,
+    staffList: [],
+    total: 0
+  });
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [modalType, setModalType] = useState<string>('');
-  const [modalContentTitle, setModalContentTitle] = useState<string>('');
-  const [modalContent, setModalContent] = useState<string>('');
-  const [disabledColumnType, setDisabledColumnType] = useState<string>('2');
-  const [currentSearchFlag, setCurrentSearchFlag] = useState<ICurrentSearchFlag>({});
-  const [popconfirmVisible, setPopconfirmVisible] = useState<string>('');
-  const [isCommitEdit, setIsCommitEdit] = useState<boolean>(false);
-  const [opType, setOpType] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [modalParam, setModalParam] = useState<IMoalParam>({
+    isModalVisible: false,
+    modalType: '',
+    modalContentTitle: '',
+    modalContent: ''
+  });
+  const [disabledColumnType, setDisabledColumnType] = useState('2');
+  const [currentSearchParam, setCurrentSearchParam] = useState<ICurrentSearchParam>({});
+  const [popconfirmVisible, setPopconfirmVisible] = useState('');
+  const [opType, setOpType] = useState(0);
+
   const history = useHistory();
   const location = useLocation();
 
   // 获取员工列表
-  const getStaffList = async (pageNum = 1, params = {}) => {
-    console.log(location);
-
+  const getStaffList = async (pageNum = paginationParam.current, pageSize = paginationParam.pageSize, params = {}) => {
     setIsLoading(true);
     const { corpId } = location.state as { [key: string]: unknown };
-    const res = await requestGetStaffList({ corpId, pageNum, ...params });
+    const res = await requestGetStaffList({ corpId, pageNum, pageSize, ...params });
     if (res.list) {
-      setTotal(res.total);
-      setUsedCount(res.usedCount);
-      setLlicenseCount(res.licenseCount || 1000);
-      setStaffList(res.list);
+      setStaffListInfo({
+        total: res.total,
+        usedCount: res.usedCount,
+        licenseCount: res.licenseCount || 1000,
+        staffList: res.list
+      });
     }
     setIsLoading(false);
   };
 
-  const onSelectChange = (newSelectedRowKeys: unknown[]) => {
-    if (newSelectedRowKeys.length) {
-      !selectedRowKeys.length &&
-        setDisabledColumnType(
-          staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId)?.accountStatus === '1' ? '4' : '1'
-        );
-      setSelectedRowKeys(newSelectedRowKeys as string[]);
-    } else {
-      setSelectedRowKeys([]);
-      setDisabledColumnType('2');
+  // 激活/停用账号请求
+  const updateStaffPpstatus = async (userIds: string[]) => {
+    if (opType) {
+      // 前端校验激活上限
+      if (staffListInfo.usedCount + userIds.length > staffListInfo.licenseCount) {
+        return setModalParam({
+          isModalVisible: true,
+          modalType: '容量通知',
+          modalContentTitle: '账号告罄',
+          modalContent: '当前启用账号已超出系统设定账号，请联系管理员修改后台账号容量'
+        });
+      }
     }
+    const { corpId } = location.state as { [key: string]: unknown };
+    const params = {
+      opType,
+      corpId,
+      userIds: userIds
+    };
+    await requestSetStaffOpstatus(params);
+    await getStaffList(paginationParam.current, paginationParam.pageSize, currentSearchParam);
   };
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-    columnTitle: ' ', // 去掉全选
-    hideDefaultSelections: true, // 去掉全选
-    getCheckboxProps: (record: IStaffList) => ({
-      disabled: record.accountStatus === '2' || record.accountStatus === disabledColumnType
-    })
+  // 点击单行操作
+  const clickCurrentRowHandle = (row: IStaffList) => {
+    // 停用操作不可逆
+    if (row.accountStatus === '2') return;
+    setOpType(row.accountStatus === '4' ? 1 : 0);
+    setPopconfirmVisible(row.staffId);
   };
-
+  // 定义单个激活/停用onfirem
+  const popOnconfirmHandle = async (row: IStaffList) => {
+    setPopconfirmVisible('');
+    const { staffId } = row;
+    updateStaffPpstatus([staffId]);
+  };
   // 定义columns
   const columns: any = [
     {
@@ -88,15 +105,13 @@ const StaffList: React.FC = () => {
       align: 'center'
     },
     {
-      title: '团队经理',
-      dataIndex: 'mangerName',
+      title: '企微账号',
+      dataIndex: 'userId',
       align: 'center'
     },
     {
-      title: '业务类型',
-      render (row: IStaffList) {
-        return serviceType2Name[row.serviceType];
-      },
+      title: '团队经理',
+      dataIndex: 'mangerName',
       align: 'center'
     },
     {
@@ -128,37 +143,13 @@ const StaffList: React.FC = () => {
           <Popconfirm
             title={'确认' + (row.accountStatus === '1' ? '停用' : '激活') + '该账号吗'}
             visible={popconfirmVisible === row.staffId}
-            onConfirm={async () => {
-              setPopconfirmVisible('');
-              const { corpId, staffId, accountStatus } = row;
-              if (accountStatus === '2') return;
-              // 判断执行的是停用操作还是执行的激活操作
-              if (accountStatus === '4') {
-                if (usedCount >= licenseCount) {
-                  setModalType('容量通知');
-                  setModalContentTitle('账号告罄');
-                  setModalContent('当前启用账号已超出系统设定账号，请联系管理员修改后台账号容量');
-                  return setIsModalVisible(true);
-                }
-              }
-              // 判断是否超过最大
-              const params = {
-                opType: accountStatus !== '1' ? 1 : 0,
-                corpId,
-                userIds: [staffId]
-              };
-              await requestSetStaffOpstatus(params);
-              getStaffList(current, currentSearchFlag);
-            }}
+            onConfirm={async () => popOnconfirmHandle(row)}
             onCancel={() => setPopconfirmVisible('')}
           >
             <span
               key={row.staffId}
               className={classNames(style.edit, { [style.disabled]: row.accountStatus === '2' })}
-              onClick={async () => {
-                if (row.accountStatus === '2') return;
-                setPopconfirmVisible(row.staffId);
-              }}
+              onClick={() => clickCurrentRowHandle(row)}
             >
               {accountStatusEdit2Name[row.accountStatus]}
             </span>
@@ -167,12 +158,30 @@ const StaffList: React.FC = () => {
       }
     }
   ];
-
-  const serviceTypeList = [
-    { value: '1', label: '对公业务' },
-    { value: '2', label: '零售业务' },
-    { value: '3', label: '对公+零售业务' }
-  ];
+  // 点击选择框
+  const onSelectChange = (newSelectedRowKeys: unknown[]) => {
+    if (newSelectedRowKeys.length) {
+      !selectedRowKeys.length &&
+        setDisabledColumnType(
+          staffListInfo.staffList?.find((staffItem) => newSelectedRowKeys[0] === staffItem.staffId)?.accountStatus ===
+            '1'
+            ? '4'
+            : '1'
+        );
+      setSelectedRowKeys(newSelectedRowKeys as string[]);
+    } else {
+      setSelectedRowKeys([]);
+      setDisabledColumnType('2');
+    }
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+    hideSelectAll: currentSearchParam.accountStatus === '2' || currentSearchParam.accountStatus === undefined, // 是否显示全选
+    getCheckboxProps: (record: IStaffList) => ({
+      disabled: record.accountStatus === '2' || record.accountStatus === disabledColumnType
+    })
+  };
   const staffStatusList = [
     { value: '0', label: '在职' },
     { value: '1', label: '离职' }
@@ -182,30 +191,41 @@ const StaffList: React.FC = () => {
     { value: '2', label: '停用' },
     { value: '4', label: '未激活' }
   ];
-
+  // 分页器参数
+  const tablePaginationConfig = {
+    total: staffListInfo.total,
+    current: paginationParam.current,
+    showQuickJumper: true,
+    showSizeChanger: true,
+    onChange (value: number, pageSize?: number) {
+      getStaffList(value, pageSize, currentSearchParam);
+      setPaginationParam({ current: value, pageSize: pageSize as number });
+      setSelectedRowKeys([]);
+      const { accountStatus } = currentSearchParam;
+      setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
+    }
+  };
   // 查询
   const onFinish = async () => {
     setSelectedRowKeys([]);
     const { accountStatus } = form.getFieldsValue();
     setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
-    await getStaffList(1, form.getFieldsValue());
-    setCurrentSearchFlag(form.getFieldsValue());
-    setCurrent(1);
+    await getStaffList(1, paginationParam.pageSize, form.getFieldsValue());
+    setCurrentSearchParam(form.getFieldsValue());
+    setPaginationParam({ ...paginationParam, current: 1 });
   };
-
   // 重置
   const onReset = async () => {
     setSelectedRowKeys([]);
     setDisabledColumnType('2');
     form.resetFields();
     await getStaffList(1);
-    setCurrentSearchFlag({});
-    setCurrent(1);
+    setCurrentSearchParam({});
+    setPaginationParam({ ...paginationParam, current: 1 });
   };
-
   // 手动同步通讯录
   const syncAccount = async () => {
-    setCurrent(1);
+    setPaginationParam({ ...paginationParam, current: 1 });
     setSelectedRowKeys([]);
     setDisabledColumnType('2');
     setIsLoading(true);
@@ -213,64 +233,68 @@ const StaffList: React.FC = () => {
     if (res) {
       form.resetFields();
       getStaffList(1);
-      setCurrentSearchFlag({});
+      setCurrentSearchParam({});
     } else {
       setIsLoading(false);
     }
   };
-
-  // 批量激活/停用
-  const staffPpstatus = async (opType: number) => {
-    if (opType) {
-      if (usedCount + selectedRowKeys.length > licenseCount) {
-        setModalType('容量通知');
-        setModalContentTitle('账号告罄');
-        setModalContent('当前启用账号已超出系统设定账号，请联系管理员修改后台账号容量');
-        setIsCommitEdit(false);
-        return setIsModalVisible(true);
-      }
-    }
-    const { corpId } = staffList![0];
-    const params = {
-      opType,
-      corpId,
-      userIds: selectedRowKeys
-    };
-    await requestSetStaffOpstatus(params);
-    await getStaffList(current, currentSearchFlag);
-    setSelectedRowKeys([]);
-    setIsCommitEdit(false);
+  // 点击批量激活/停用 按钮
+  const buttonClickHandle = (opType: number) => {
+    setModalParam({
+      isModalVisible: true,
+      modalType: '操作通知',
+      modalContentTitle: `确认批量${opType ? '激活' : '停用'}账号吗`,
+      modalContent: ''
+    });
+    setOpType(opType);
   };
-  const beforeunloadHandle = () => {
-    history.push('/orgManage/detail', {}); // 清空state参数
+  // modal的onOk
+  const modalOnOkHandle = () => {
+    setModalParam({ ...modalParam, isModalVisible: false });
+    if (modalParam.modalType === '操作通知') {
+      updateStaffPpstatus(selectedRowKeys);
+      setSelectedRowKeys([]);
+    }
+  };
+  // 导出表格
+  const downLoad = async () => {
+    const res = await requestLeadingOutExcel({ corpId: (location.state as { [key: string]: unknown }).corpId });
+    console.log(res);
+    if (res) {
+      const blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', '员工列表.xlsx');
+      document.body.appendChild(link);
+      link.click(); // 点击下载
+      link.remove(); // 下载完成移除元素
+      window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
+    }
   };
   useEffect(() => {
-    if (!(location.state as { [key: string]: string }).corpId) return history.push('/orgManage');
+    if (!(location.state as { [key: string]: string }) || !(location.state as { [key: string]: string }).corpId) {
+      return history.push('/orgManage');
+    }
     getStaffList();
-    window.addEventListener('beforeunload', beforeunloadHandle);
-    return () => {
-      window.removeEventListener('beforeunload', beforeunloadHandle);
-    };
   }, []);
   return (
-    <>
+    <div className={style.wrap}>
       <Modal
-        title={modalType}
+        title={modalParam.modalType}
         closeIcon={<span />}
-        visible={isModalVisible}
+        visible={modalParam.isModalVisible}
         centered
-        onCancel={() => setIsModalVisible(false)}
-        onOk={() => {
-          setIsModalVisible(false);
-          isCommitEdit && staffPpstatus(opType);
-        }}
+        onCancel={() => setModalParam({ ...modalParam, isModalVisible: false })}
+        onOk={modalOnOkHandle}
       >
         <div className={style.modalContent}>
           <p className={style.title}>
             <span className={style.icon} />
-            {modalContentTitle}
+            {modalParam.modalContentTitle}
           </p>
-          <p className={style.content}>{modalContent}</p>
+          <p className={style.content}>{modalParam.modalContent}</p>
         </div>
       </Modal>
       <Card bordered={false}>
@@ -284,15 +308,6 @@ const StaffList: React.FC = () => {
             </Form.Item>
           </Space>
           <Space className={style.antSpace}>
-            <Form.Item name="serviceType" label="业务类型">
-              <Select placeholder="待选择" className={style.inputBox} allowClear>
-                {serviceTypeList.map((item) => (
-                  <Select.Option key={item.label} value={item.value}>
-                    {item.label}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
             <Form.Item name="staffStatus" label="员工状态">
               <Select placeholder="待选择" className={style.inputBox} allowClear>
                 {staffStatusList.map((item) => (
@@ -326,7 +341,7 @@ const StaffList: React.FC = () => {
         <div className={style.accountSituation}>
           <span className={style.text}>*机构使用情况: </span>
           <span>
-            {usedCount}/{licenseCount}
+            {staffListInfo.usedCount}/{staffListInfo.licenseCount}
           </span>
           <Icon className={style.icon} name="shuaxin" />
           <span className={style.refresh} onClick={syncAccount}>
@@ -335,57 +350,35 @@ const StaffList: React.FC = () => {
         </div>
         <Table
           rowKey="staffId"
-          dataSource={staffList}
+          dataSource={staffListInfo.staffList}
           columns={columns}
           rowSelection={rowSelection}
           loading={isLoading}
-          pagination={{
-            style: { marginTop: 20 },
-            total,
-            current,
-            showQuickJumper: true,
-            onChange (value: number) {
-              getStaffList(value, currentSearchFlag);
-              setCurrent(value);
-              setSelectedRowKeys([]);
-              const { accountStatus } = currentSearchFlag;
-              setDisabledColumnType(accountStatus === undefined ? '2' : accountStatus === '1' ? '4' : '1');
-            }
-          }}
+          pagination={tablePaginationConfig}
+          scroll={{ x: 'max-content' }}
         />
 
-        {!!staffList?.length && (
+        {!!staffListInfo.staffList?.length && (
           <div className={style.btnWrap}>
             <Button
               disabled={disabledColumnType !== '4' || !selectedRowKeys.length}
-              onClick={() => {
-                setModalType('操作通知');
-                setModalContentTitle('确认批量停用账号吗');
-                setModalContent('');
-                setIsModalVisible(true);
-                setIsCommitEdit(true);
-                setOpType(0);
-              }}
+              onClick={() => buttonClickHandle(0)}
             >
-              批量停用
+              {'批量停用' +
+                (disabledColumnType !== '4' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
             </Button>
             <Button
               disabled={disabledColumnType !== '1' || !selectedRowKeys.length}
-              onClick={() => {
-                setModalType('操作通知');
-                setModalContentTitle('确认批量激活账号吗');
-                setModalContent('');
-                setIsModalVisible(true);
-                setIsCommitEdit(true);
-                setOpType(1);
-              }}
+              onClick={() => buttonClickHandle(1)}
             >
-              批量激活
+              {'批量激活' +
+                (disabledColumnType !== '1' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
             </Button>
+            <Button onClick={downLoad}>导出表格</Button>
           </div>
         )}
       </Card>
-    </>
+    </div>
   );
 };
 export default StaffList;

@@ -4,10 +4,7 @@
  * @date 2021-06-07 11:38
  */
 
-import http from 'src/utils/http';
-
-type HttpFunction = (param: Object) => Promise<any>;
-type VoidFC = () => Promise<any>;
+import http, { HttpFunction, Void2Promise } from 'src/utils/http';
 
 /**
  * 查询小站配置列表
@@ -43,13 +40,13 @@ export const queryCorpOrg: HttpFunction = (param: Object) => {
 /**
  * 查询活动列表
  */
-export const queryActivityList: VoidFC = () => {
+export const queryActivityList: Void2Promise = () => {
   return http.post('/tenacity-admin/api/activity/select', {});
 };
 
 /**
  * 查询产品列表
  */
-export const queryProductList: VoidFC = () => {
+export const queryProductList: Void2Promise = () => {
   return http.post('/tenacity-admin/api/product/select', {});
 };

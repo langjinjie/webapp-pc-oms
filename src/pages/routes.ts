@@ -100,6 +100,16 @@ export const routes: RouteProps[] = [
   {
     path: '/tagManage',
     component: lazy(() => import('src/pages/SystemSettings/tagManage/tagManage'))
+  },
+  // 周报配置
+  {
+    path: '/weekly',
+    component: lazy(() => import('src/pages/Operation/WeeklyConfig/WeeklyConfig'))
+  },
+  // 新增周报配置
+  {
+    path: '/weekly/add',
+    component: lazy(() => import('src/pages/Operation/AddWeeklyConfig/AddWeeklyConfig'))
   }
 ];
 
@@ -145,6 +155,10 @@ export const menus: Menu[] = [
       {
         name: '小站配置',
         path: '/station'
+      },
+      {
+        name: '周报配置',
+        path: '/weekly'
       }
     ]
   },
