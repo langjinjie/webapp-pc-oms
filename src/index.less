@@ -74,6 +74,14 @@ ul {
   .pb((@i + 5));
 }
 .pb(5);
+// 左边距 5->40px
+.ml(@i) when(@i<=40) {
+  .ml@{i} {
+    margin-left: @i + 0px;
+  }
+  .ml((@i + 5));
+}
+.ml(5);
 
 @bgColor_3078DB: #3078db;
 @color_fff: #fff;

@@ -21,7 +21,7 @@ const PreviewSpeech: React.FC<PreviewProps> = ({ visible, onClose }) => {
     >
       <iframe
         className={styles.iframeWrap}
-        src="http://localhost:8088/tenacity-webapp-sidebar/salesCollection/"
+        src="http://localhost:8088/tenacity-webapp-sidebar/salesCollection/?token=1211121ss121"
         frameBorder="0"
       ></iframe>
     </Drawer>

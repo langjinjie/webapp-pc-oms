@@ -2,7 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Space } from 'antd';
 import React, { useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { NgFormSearch, NgTable } from 'src/components';
+import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import ExportModal from './Components/ExportModal/ExportModal';
 import PreviewSpeech from './Components/PreviewSpeech/PreviewSpeech';
@@ -24,6 +24,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const [checking, setChecking] = useState(false);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [visiblePreview, setVisiblePreview] = useState(false);
+  const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [loading] = useState(false);
   const onValuesChange = () => {
     console.log('a');
@@ -70,7 +71,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     getCheckboxProps: (record: SpeechProps) => {
       return {
         disabled: isDisabled(operationType, record.status),
-        name: record.activityName
+        name: record.content
       };
     }
   };
@@ -91,6 +92,12 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     setTimeout(() => {
       setChecking(false);
     }, 3000);
+  };
+  const handleExport = () => {
+    if (dataSource.length > 0) {
+      console.log(dataSource);
+      setDataSource([]);
+    }
   };
   return (
     <div className="container">
@@ -136,9 +143,9 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
           onClick={() => setVisiblePreview(true)}
           shape="round"
           size="large"
-          style={{ width: 128 }}
         >
-          预览
+          <Icon className="font16" name="yulan" />
+          <span className="ml10">预览</span>
         </Button>
       </div>
       <div className="form-inline pt20">
@@ -146,26 +153,20 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       </div>
 
       <NgTable
-        dataSource={[{ activityId: 'SAL1' }, { activityId: 'SA12' }]}
+        dataSource={dataSource}
         columns={columns({ handleEdit, handleSort })}
         setRowKey={(record: SpeechProps) => {
-          return record.activityId;
+          return record.contentId;
         }}
         loading={loading}
         rowSelection={rowSelection}
         pagination={pagination}
         paginationChange={paginationChange}
       ></NgTable>
-      {[{}, {}].length > 0 && (
+      {dataSource.length > 0 && (
         <div className={'operationWrap'}>
           <Space size={20}>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={operationType !== 1}
-              onClick={() => handleToggleOnlineState(1)}
-            >
+            <Button type="primary" shape={'round'} ghost onClick={() => handleExport()}>
               导出
             </Button>
             <Button
