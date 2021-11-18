@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
-import { Card, Form, Input, message, Button, Select, Space, Row, Col } from 'antd';
+import { Card, Form, Input, message, Button, Select, Space, Row, Col, Radio } from 'antd';
 import { productEdit, productConfig, productDetail } from 'src/apis/marketing';
 import NumberInput from 'src/components/NumberInput/NumberInput';
 import { Context } from 'src/store';
@@ -7,13 +7,26 @@ import style from './style.module.less';
 import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
+
 interface productConfigProps {
   id: number;
   type: number;
   location: any;
   history: any;
 }
+
+interface Config {
+  areaList: any[];
+  objectList: any[];
+  premiumTypeList: any[];
+  tagList: any[];
+  sceneList: any[];
+  productTypeList: any[];
+}
+
 const { Option } = Select;
+const { Group } = Radio;
+
 const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const { userInfo } = useContext(Context);
   const [form] = Form.useForm();
@@ -25,14 +38,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     productName: '',
     posterImgUrl: ''
   });
-  interface Config {
-    areaList: any[];
-    objectList: any[];
-    premiumTypeList: any[];
-    tagList: any[];
-    sceneList: any[];
-    productTypeList: any[];
-  }
+
   const [config, setConfig] = useState<Config>({
     areaList: [],
     objectList: [],
@@ -47,6 +53,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     id: '',
     type: '0'
   });
+  const [displayType, setDisplayType] = useState<number>(1);
 
   useMemo(() => {
     const state = location.state || {};
@@ -261,16 +268,34 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         >
           <Input placeholder="请输入产品ID" className="width320" maxLength={40} />
         </Form.Item>
-        <Form.Item
-          label="产品链接："
-          name="corpProductLink"
-          rules={[
-            { required: true, message: '请输入产品链接' },
-            { type: 'url', message: '请输入正确的链接' }
-          ]}
-        >
-          <Input className="width320" placeholder="待添加" />
+        <Form.Item label="展示类型" name="displayType" required initialValue={1}>
+          <Group onChange={(e) => setDisplayType(e.target.value)}>
+            <Radio value={1}>链接</Radio>
+            <Radio value={2}>小程序</Radio>
+          </Group>
         </Form.Item>
+        {displayType === 1 && (
+          <Form.Item
+            label="产品链接"
+            name="corpProductLink"
+            rules={[
+              { required: true, message: '请输入产品链接' },
+              { type: 'url', message: '请输入正确的链接' }
+            ]}
+          >
+            <Input className="width320" placeholder="待添加" />
+          </Form.Item>
+        )}
+        {displayType === 2 && (
+          <>
+            <Form.Item label="小程序ID" name="userName" rules={[{ required: true, message: '请输入小程序ID' }]}>
+              <Input className="width320" placeholder="待添加" />
+            </Form.Item>
+            <Form.Item label="页面路径" name="path">
+              <Input className="width320" placeholder="待输入，不填默认跳转小程序首页" />
+            </Form.Item>
+          </>
+        )}
         <Form.Item name="categoryId" label="产品分类：" rules={[{ required: true, message: '请选择产品分类' }]}>
           <Select placeholder="请选择" allowClear className="width320">
             {config.productTypeList.map((item, index) => {
