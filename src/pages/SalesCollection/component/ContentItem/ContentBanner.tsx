@@ -18,9 +18,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({ isFirstContents = false,
     setIsShowIcon(!isShowIcon);
     setISShowChildren(!isShowChildren);
   };
-  const editClickHandle = () => {
-    console.log('点击编辑');
-  };
+
   return (
     <>
       <div
