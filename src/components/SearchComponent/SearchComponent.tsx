@@ -26,7 +26,7 @@ interface SearchComponentProps {
   searchCols?: SearchCol[];
   isInline?: boolean;
   onSearch: (params: any) => void;
-  onValuesChange: (changeValues: any, values: any) => void;
+  onValuesChange?: (changeValues: any, values: any) => void;
 }
 const { RangePicker } = DatePicker;
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
