@@ -62,6 +62,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       setCurrentContents('');
     };
   }, []);
+
   return (
     <>
       <div

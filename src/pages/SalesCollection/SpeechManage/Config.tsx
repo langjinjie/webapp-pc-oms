@@ -4,6 +4,7 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { Button, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
+import classNames from 'classnames';
 
 export const sensitiveOptions = [
   { id: 0, name: '未知' },
@@ -20,6 +21,12 @@ export const speechContentTypes = [
   { id: 7, name: '单视频' },
   { id: 8, name: '第三方链接' },
   { id: 9, name: '小程序链接' }
+];
+
+export const statusOptions = [
+  { id: 0, name: '待上架' },
+  { id: 1, name: '已上架' },
+  { id: 2, name: '已下架' }
 ];
 
 export const searchCols: SearchCol[] = [
@@ -56,11 +63,7 @@ export const searchCols: SearchCol[] = [
     type: 'select',
     width: 160,
     label: '上架状态',
-    options: [
-      { id: 0, name: '待上架' },
-      { id: 1, name: '已上架' },
-      { id: 2, name: '已下架' }
-    ]
+    options: statusOptions
   },
   {
     name: 'sensitive',
@@ -78,9 +81,19 @@ export const searchCols: SearchCol[] = [
 ];
 
 interface OperateProps {
-  handleEdit: (id: string) => void;
+  handleEdit: (record: SpeechProps) => void;
   handleSort: (record: SpeechProps) => void;
 }
+export const genderTypeOptions = [
+  { id: 1, name: '男' },
+  { id: 2, name: '女' }
+];
+
+export const ageTypeOptions = [
+  { id: 1, name: '-老年' },
+  { id: 2, name: '-中年' },
+  { id: 3, name: '-青年' }
+];
 export interface SpeechProps {
   sceneId: number; // 业务场景ID，1-车险流程，2-非车流程，3-异议处理，4-场景话术，5-问答知识，6-智能教练。
   contentId: string; // 话术id
@@ -118,7 +131,9 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       title: '话术格式',
       dataIndex: 'contentType',
       width: 200,
-      render: (name) => <span>{name || UNKNOWN}</span>
+      render: (contentType) => (
+        <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0].name || UNKNOWN}</span>
+      )
     },
     {
       title: '话术内容',
@@ -136,7 +151,15 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '客户分类',
       dataIndex: 'genderType',
-      width: 200
+      width: 200,
+      render: (value, record) => {
+        return (
+          <span>
+            {(genderTypeOptions.filter((item) => item.id === value)?.[0].name || '') +
+              (ageTypeOptions.filter((ageType) => ageType.id === record.ageType)?.[0]?.name || '') || UNKNOWN}
+          </span>
+        );
+      }
     },
     {
       title: '话术小贴士',
@@ -156,17 +179,15 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       ellipsis: {
         showTitle: false
       },
-      render: (name) => {
-        return <span>{name || UNKNOWN}</span>;
+      render: (value) => {
+        return <span>{sensitiveOptions.filter((sensitive) => sensitive.id === value)?.[0].name || UNKNOWN}</span>;
       }
     },
     {
       title: '创建时间',
       dataIndex: 'dateCreated',
-      width: 160,
-      ellipsis: {
-        showTitle: false
-      },
+      width: 180,
+
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
       }
@@ -174,12 +195,33 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '更新时间',
       dataIndex: 'lastUpdated',
-      width: 160,
-      ellipsis: {
-        showTitle: false
-      },
+      width: 180,
+
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      width: 100,
+      align: 'left',
+      fixed: 'right',
+      render: (value) => {
+        return (
+          <span>
+            <i
+              className={classNames('status-point', [
+                {
+                  'status-point-gray': value === 0,
+                  'status-point-green': value === 1,
+                  'status-point-red': value === 2
+                }
+              ])}
+            ></i>
+            {statusOptions.filter((status) => status.id === value)?.[0].name}
+          </span>
+        );
       }
     },
     {
@@ -190,14 +232,14 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       render: (record: SpeechProps) => {
         return (
           <Space className="spaceWrap">
-            <Button type="link" onClick={() => handleEdit(record.activityId)}>
+            <Button type="link" onClick={() => handleEdit(record)}>
               编辑
             </Button>
             <Button type="link" onClick={() => handleSort(record)}>
-              上架
+              上移
             </Button>
             <Button type="link" onClick={() => handleSort(record)}>
-              下架
+              下移
             </Button>
           </Space>
         );

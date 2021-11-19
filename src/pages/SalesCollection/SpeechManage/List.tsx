@@ -1,7 +1,8 @@
+import React, { useState, useEffect, useContext } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Space } from 'antd';
-import React, { useState } from 'react';
+import { Button, Modal, Space } from 'antd';
 import { RouteComponentProps } from 'react-router';
+import { getSpeechList, operateSpeechStatus } from 'src/apis/salesCollection';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import ExportModal from './Components/ExportModal/ExportModal';
@@ -9,9 +10,11 @@ import PreviewSpeech from './Components/PreviewSpeech/PreviewSpeech';
 import { columns, searchCols, SpeechProps } from './Config';
 
 import style from './style.module.less';
+import { Context } from 'src/store';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
-  const [pagination] = useState<PaginationProps>({
+  const { currentCorpId } = useContext(Context);
+  const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
     total: 0,
@@ -19,10 +22,11 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
-  const [operationType, setOperationType] = useState<number | null>(null);
+  const [currentType, setCurrentType] = useState<number | null>(null);
   const [visibleExport, setVisibleExport] = useState(false);
   const [checking, setChecking] = useState(false);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
+  const [selectedRows, setSelectedRows] = useState<SpeechProps[]>([]);
   const [visiblePreview, setVisiblePreview] = useState(false);
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [loading] = useState(false);
@@ -32,33 +36,38 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const onSearch = () => {
     console.log('onSearch');
   };
+
+  const getList = async () => {
+    const { list, total } = await getSpeechList({});
+    setDataSource(list || []);
+    setPagination((pagination) => ({ ...pagination, total: total || 0 }));
+  };
+
+  useEffect(() => {
+    getList();
+  }, []);
+
   const paginationChange = () => {
     console.log('');
   };
 
-  const isDisabled = (operationType: number | null, status: number) => {
+  const isDisabled = (currentType: number | null, status: number) => {
     let _isDisabled = false;
-    if (operationType) {
-      if (operationType === 1 && status === 2) {
-        _isDisabled = true;
-      } else if (operationType === 2 && (status === 1 || status === 3)) {
-        _isDisabled = true;
-      }
+
+    if (currentType !== null && currentType !== status) {
+      _isDisabled = true;
     }
     return _isDisabled;
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: SpeechProps[]) => {
     setSelectRowKeys(selectedRowKeys);
+    setSelectedRows(selectedRows);
     const current = selectedRows[0];
     if (current) {
-      if (current.status === 1 || current.status === 3) {
-        setOperationType(1);
-      } else {
-        setOperationType(2);
-      }
+      setCurrentType(current.status);
     } else {
-      setOperationType(null);
+      setCurrentType(null);
     }
   };
 
@@ -70,14 +79,14 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     },
     getCheckboxProps: (record: SpeechProps) => {
       return {
-        disabled: isDisabled(operationType, record.status),
+        disabled: isDisabled(currentType, record.status),
         name: record.content
       };
     }
   };
 
-  const handleEdit: (id: string) => void = (id) => {
-    console.log(id);
+  const handleEdit: (scored: SpeechProps) => void = (scored) => {
+    console.log(scored);
   };
   const handleSort: (record: SpeechProps) => void = (record) => {
     console.log(record);
@@ -96,11 +105,37 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const handleExport = () => {
     if (dataSource.length > 0) {
       console.log(dataSource);
-      setDataSource([]);
     }
   };
   const operateStatus = (operateType: number) => {
-    console.log('sa', operateType);
+    console.log('sa', operateType, selectedRows);
+    Modal.confirm({
+      title:
+        operateType === 0 ? '待上架提醒' : operateType === 1 ? '上架提醒' : operateType === 2 ? '下架提醒' : '删除提醒',
+      content:
+        operateType === 0
+          ? '确认将选中的话术改为待上架？'
+          : operateType === 1
+            ? '确定上架选中的话术吗？'
+            : operateType === 2
+              ? '确定下架选中的话术？'
+              : '确定删除选中的话术？',
+      cancelText: '取消',
+      okText: '确定',
+      onOk: async () => {
+        const res = await operateSpeechStatus({
+          corpId: currentCorpId,
+          type: operateType,
+          list: selectedRows.map((row) => ({ sceneId: row.sceneId, contentId: row.contentId }))
+        });
+        console.log(res);
+      }
+    });
+    console.log({
+      corpId: currentCorpId,
+      type: operateType,
+      list: selectedRows.map((row) => ({ sceneId: row.sceneId, contentId: row.contentId }))
+    });
   };
   return (
     <div className="container">
@@ -176,7 +211,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
               type="primary"
               shape={'round'}
               ghost
-              disabled={operationType !== 1}
+              disabled={currentType === 1 || selectedRowKeys.length === 0}
               onClick={() => operateStatus(1)}
             >
               上架
@@ -185,8 +220,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
               type="primary"
               shape={'round'}
               ghost
-              disabled={operationType !== 1}
-              onClick={() => operateStatus(1)}
+              disabled={currentType === 0 || selectedRowKeys.length === 0}
+              onClick={() => operateStatus(0)}
             >
               待上架
             </Button>
@@ -194,8 +229,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
               type="primary"
               shape={'round'}
               ghost
-              disabled={operationType !== 1}
-              onClick={() => operateStatus(1)}
+              disabled={currentType === 2 || selectedRowKeys.length === 0}
+              onClick={() => operateStatus(2)}
             >
               下架
             </Button>
@@ -203,8 +238,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
               type="primary"
               shape={'round'}
               ghost
-              disabled={operationType !== 2}
-              onClick={() => operateStatus(2)}
+              disabled={currentType === 1 || selectedRowKeys.length === 0}
+              onClick={() => operateStatus(3)}
             >
               删除
             </Button>
