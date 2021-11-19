@@ -77,3 +77,14 @@ export interface IAllTagList {
   posterTagList: ITagItem[];
   activityTagList: ITagItem[];
 }
+
+// 目录管理
+export interface IAddOrEditModalParam {
+  visible: boolean;
+  type: number; // 0 新增 1 编辑
+  islastlevel: boolean;
+}
+export interface IBannerInfo {
+  name: string;
+  catoryId: string;
+}

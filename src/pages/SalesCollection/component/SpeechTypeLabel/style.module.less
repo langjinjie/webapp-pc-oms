@@ -1,0 +1,116 @@
+// 输入或者选择模块样式
+.formItem {
+  line-height: 36px;
+  // Form中的Input
+  .input {
+    margin-left: 20px;
+    width: 480px;
+    height: 36px;
+    border-radius: 18px;
+  }
+  .limitLength {
+    position: relative;
+    left: -46px;
+    font-size: 14px;
+    color: #cccdd0;
+  }
+  // Form中的Select
+  .modalContentSelect {
+    display: flex;
+    margin-left: 20px;
+    width: 160px;
+    height: 36px;
+    line-height: 30px;
+    border-radius: 18px;
+  }
+  // 名片样式
+  .card {
+    margin-left: 20px;
+    width: 320px;
+    height: 200px;
+    background: #ffffff;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+  // 小站样式
+  .station {
+    margin-left: 20px;
+    width: 240px;
+    height: 100px;
+    padding: 14px;
+    background: #ffffff;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    .name {
+      margin-bottom: 10px;
+      width: 180px;
+      height: 14px;
+      font-size: 14px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: #111111;
+      line-height: 14px;
+    }
+    .stationContent {
+      display: flex;
+      justify-content: space-between;
+      height: 48px;
+      .content {
+        height: 12px;
+        font-size: 12px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #999aa1;
+        line-height: 12px;
+      }
+      .img {
+        width: 48px;
+        height: 48px;
+        vertical-align: middle; // 幽灵节点
+        overflow: hidden;
+      }
+    }
+  }
+  :global {
+    .ant-select-selector {
+      height: 36px;
+    }
+    .ant-form-item-extra {
+      margin-top: 10px;
+      margin-left: 20px;
+    }
+  }
+}
+
+// 上传图片(海报)模块样式
+.imgformItem {
+  font-size: 0; // 幽灵节点
+  .upload {
+    margin-left: 20px;
+    width: 104px;
+    height: 104px;
+    .iconWrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 102px;
+      height: 102px;
+      .uploadIcon {
+        width: 36px;
+        height: 36px;
+      }
+      .uploadTip {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #606366;
+      }
+    }
+  }
+  :global {
+    .ant-form-item-extra {
+      margin-top: 10px;
+      margin-left: 20px;
+    }
+  }
+}
