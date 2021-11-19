@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Avatar, Button, Popconfirm, Select } from 'antd';
+import { Avatar, Button, Popconfirm, Select, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 export const searchCols: SearchCol[] = [
@@ -7,12 +7,14 @@ export const searchCols: SearchCol[] = [
     name: 'staffName',
     type: 'input',
     label: '员工姓名',
-    width: '268px',
+    width: '120px',
+    maxLength: 10,
     placeholder: '请输入'
   },
   {
     name: 'externalUserid',
     type: 'input',
+    maxLength: 40,
     label: '外部联系人ID',
     width: '268px',
     placeholder: '请输入'
@@ -21,7 +23,8 @@ export const searchCols: SearchCol[] = [
     name: 'nickName',
     type: 'input',
     label: '客户昵称',
-    width: '268px',
+    maxLength: 30,
+    width: '120px',
     placeholder: '请输入'
   }
 ];
@@ -54,13 +57,15 @@ interface OperateProps {
 
 export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
   const { onChange, onConfirm, tableCols, dataSource } = args;
-  const cols = useMemo(() => {
+  // 动态table header
+  const cols: ColumnsType<UserTagProps> = useMemo(() => {
     if (tableCols.length > 0) {
-      return tableCols.map((col) => {
+      return tableCols.map((col: { label: string; groupId: string; [propKey: string]: any }) => {
         return {
-          title: col.groupName,
+          title: col.label,
           dataIndex: col.groupId,
-          width: 200,
+          width: 120,
+          align: 'center',
           render: (text: number, scored: any, index: number) => {
             const dataList = [...scored.tagLists];
             const current = dataList.filter((item) => item.groupId === col.groupId)[0] || {};
@@ -103,17 +108,20 @@ export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
     {
       title: '员工姓名',
       dataIndex: 'staffName',
-      width: 120
+      width: 100
     },
     {
       title: '客户昵称',
       dataIndex: 'avatar',
-      width: 250,
-      render: (value, scored) => (
-        <div>
+      width: 130,
+      ellipsis: {
+        showTitle: false
+      },
+      render: (value, scored: any) => (
+        <Tooltip placement="topLeft" title={scored.nickName}>
           <Avatar src={value} />
           <span className="ml5">{scored.nickName}</span>
-        </div>
+        </Tooltip>
       )
     },
     {
@@ -123,7 +131,6 @@ export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
       render: (text) => <span>{text || '无'}</span>
     },
     ...cols,
-
     {
       title: '操作',
       dataIndex: 'status',

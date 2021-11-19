@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, message } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { columns, searchCols, UserTagProps } from './Config';
-import { changeClientTag, changeClientTagOfCar, getClientList, searchTagGroupOptions } from 'src/apis/tagConfig';
+import {
+  changeClientTag,
+  changeClientTagOfCar,
+  getClientList,
+  getTagGroupList,
+  searchTagGroupOptions
+} from 'src/apis/tagConfig';
+import style from './style.module.less';
 
 const TagConfig: React.FC = () => {
   const [dataSource, setDataSource] = useState<UserTagProps[]>([]);
@@ -10,13 +17,7 @@ const TagConfig: React.FC = () => {
   const [params, setParams] = useState<any>({});
   const [carTags, setCarTags] = useState<any[]>([]);
   const [manTags, setManTags] = useState<any[]>([]);
-  const sortsFun = (key: string) => {
-    return (a: any, b: any) => {
-      const v1 = a[key];
-      const v2 = b[key];
-      return v1 === v2 ? 0 : v1 > v2 ? 1 : -1;
-    };
-  };
+
   // 获取
   const getOptions = async (list: any[]) => {
     const tagOptions = JSON.parse(sessionStorage.getItem('tagOptions') || '{}');
@@ -27,13 +28,45 @@ const TagConfig: React.FC = () => {
       const resList = await Promise.all(promiseArr);
       if (resList) {
         resList.forEach((res, index) => {
+          list[index].label = res.groupName.replace('销售概率', '');
           list[index].options = res.tagList;
         });
+
         sessionStorage.setItem('tagOptions', JSON.stringify(list));
         setTableCols(list);
       }
     }
   };
+
+  const getTagList = async () => {
+    const tagOptions = JSON.parse(sessionStorage.getItem('tagOptions') || '{}');
+    if (Object.keys(tagOptions).length > 0) {
+      setTableCols(tagOptions);
+      const cols1 = tagOptions.filter((tag: any) => tag.category === 1);
+      setCarTags(cols1);
+      const cols2 = tagOptions.filter((tag: any) => tag.category === 0);
+      setManTags(cols2);
+    } else {
+      const res = await getTagGroupList({});
+      if (res) {
+        const list = res.list || [];
+        await getOptions(list);
+        const cols1 = list.filter((tag: any) => tag.category === 1);
+        setCarTags(cols1);
+        const cols2 = list.filter((tag: any) => tag.category === 0);
+        setManTags(cols2);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const tagOptions = JSON.parse(sessionStorage.getItem('tagOptions') || '{}');
+    if (Object.keys(tagOptions).length > 0) {
+      setTableCols(tagOptions);
+    } else {
+      getTagList();
+    }
+  }, []);
 
   // 对请求的数据进行表格话处理
   const dataMap = (list: any[]) => {
@@ -50,25 +83,26 @@ const TagConfig: React.FC = () => {
             externalUserid,
             ...car,
             isMoreCar: index > 0,
-            tagLists: index === 0 ? [...item.tagList, ...car.carTagList] : [...car.carTagList]
+            tagLists: index === 0 ? [...item?.tagList, ...car?.carTagList] : [...car?.carTagList]
           });
         });
       } else {
+        item.tagList = item.tagList || [];
         res.push({
           avatar,
           nickName,
           staffId,
           staffName,
           externalUserid,
-          tagLists: [...item.tagList]
+          tagLists: [...item?.tagList]
         });
       }
-      const cols1 = res[0]?.carTagList?.sort(sortsFun('groupName')) || [];
-      setCarTags(cols1);
-      const cols2 = item.tagList.sort(sortsFun('groupName')) || [];
-      setManTags(cols2);
-      const cols = [...cols1, ...cols2];
-      getOptions(cols);
+      // const cols1 = res[0]?.carTagList?.sort(sortsFun('groupName')) || [];
+      // setCarTags(cols1);
+      // const cols2 = item.tagList.sort(sortsFun('groupName')) || [];
+      // setManTags(cols2);
+      // const cols = [...cols1, ...cols2];
+      // getOptions(cols);
     });
     return res;
   };
@@ -190,7 +224,12 @@ const TagConfig: React.FC = () => {
   };
 
   return (
-    <Card title={'标签配置'} extra="标签修改成功后，直接应用于促成任务生成及消息推送" bordered={false}>
+    <Card
+      className={style.tagConfig}
+      title={'标签配置'}
+      extra="标签修改成功后，直接应用于促成任务生成及消息推送"
+      bordered={false}
+    >
       <NgFormSearch searchCols={searchCols} onSearch={handleSearch} onReset={onReset} />
       <div className="pt20">
         <NgTable

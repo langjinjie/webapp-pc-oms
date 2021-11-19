@@ -30,3 +30,11 @@ export const changeClientTagOfCar: HttpFunction<Object> = (param) => {
 export const searchTagGroupOptions: HttpFunction<Object> = (param) => {
   return http.post('/tenacity-admin/api/tag/group/info', param);
 };
+
+/**
+ * 获取Tag 属性
+ * @param param
+ */
+export const getTagGroupList: HttpFunction<Object> = (param) => {
+  return http.post('/tenacity-admin/api/tag/forecast/list', param);
+};
