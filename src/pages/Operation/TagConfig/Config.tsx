@@ -34,13 +34,26 @@ export interface UserTagProps {
   [prop: string]: any;
 }
 interface OperateProps {
-  onChange: ({ col, value, scored, index }: { col: any; value: string; scored: any; index: number }) => void;
+  onChange: ({
+    col,
+    value,
+    scored,
+    index,
+    data
+  }: {
+    col: any;
+    value: string;
+    scored: any;
+    index: number;
+    data: any[];
+  }) => void;
   onConfirm: (scored: UserTagProps, index: number) => void;
   tableCols: any[];
+  dataSource: any[];
 }
 
 export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
-  const { onChange, onConfirm, tableCols } = args;
+  const { onChange, onConfirm, tableCols, dataSource } = args;
   const cols = useMemo(() => {
     if (tableCols.length > 0) {
       return tableCols.map((col) => {
@@ -52,24 +65,32 @@ export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
             const dataList = [...scored.tagLists];
             const current = dataList.filter((item) => item.groupId === col.groupId)[0] || {};
             return (
-              <Select
-                style={{ width: '120px' }}
-                value={current.preTagId || current.tagId}
-                onChange={(value) => onChange({ col, value, scored, index })}
-                disabled={current.tagName === '高'}
-              >
-                {col.options?.map((option: any) => {
-                  return (
-                    <Select.Option
-                      key={option.tagId}
-                      value={option.tagId}
-                      disabled={current.tagName === '中' && option.tagName === '低'}
-                    >
-                      {option.tagName}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
+              <div>
+                {current.tagId
+                  ? (
+                  <Select
+                    style={{ width: '80px' }}
+                    value={current.preTagId || current.tagId}
+                    onChange={(value) => onChange({ col, value, scored, index, data: dataSource })}
+                    disabled={current.tagName === '高'}
+                  >
+                    {col.options?.map((option: any) => {
+                      return (
+                        <Select.Option
+                          key={option.tagId}
+                          value={option.tagId}
+                          disabled={current.tagName === '中' && option.tagName === '低'}
+                        >
+                          {option.tagName}
+                        </Select.Option>
+                      );
+                    })}
+                  </Select>
+                    )
+                  : (
+                      '/'
+                    )}
+              </div>
             );
           }
         };
@@ -77,17 +98,17 @@ export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
     } else {
       return [];
     }
-  }, [tableCols]);
+  }, [tableCols, dataSource]);
   return [
     {
       title: '员工姓名',
       dataIndex: 'staffName',
-      width: 200
+      width: 120
     },
     {
       title: '客户昵称',
       dataIndex: 'avatar',
-      width: 200,
+      width: 250,
       render: (value, scored) => (
         <div>
           <Avatar src={value} />
@@ -98,7 +119,8 @@ export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
     {
       title: '车牌号',
       width: 120,
-      dataIndex: 'carNumber'
+      dataIndex: 'carNumber',
+      render: (text) => <span>{text || '无'}</span>
     },
     ...cols,
 

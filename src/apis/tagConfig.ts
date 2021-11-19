@@ -14,7 +14,7 @@ export const getClientList: HttpFunction<Object> = (param) => {
  * @param param
  */
 export const changeClientTag: HttpFunction<Object> = (param) => {
-  return http.post('/tenacity-adminapi/tag/client/tag/modify', param);
+  return http.post('/tenacity-admin/api/tag/client/tag/modify', param);
 };
 /**
  * 修改车标签
