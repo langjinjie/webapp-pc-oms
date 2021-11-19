@@ -185,9 +185,13 @@ const TagConfig: React.FC = () => {
     setDataSource(copyData);
   };
 
+  const onReset = () => {
+    setDataSource([]);
+  };
+
   return (
     <Card title={'标签配置'} extra="标签修改成功后，直接应用于促成任务生成及消息推送" bordered={false}>
-      <NgFormSearch searchCols={searchCols} onSearch={handleSearch}></NgFormSearch>
+      <NgFormSearch searchCols={searchCols} onSearch={handleSearch} onReset={onReset} />
       <div className="pt20">
         <NgTable
           loading={false}
