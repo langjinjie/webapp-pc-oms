@@ -60,12 +60,7 @@ const TagConfig: React.FC = () => {
   };
 
   useEffect(() => {
-    const tagOptions = JSON.parse(sessionStorage.getItem('tagOptions') || '{}');
-    if (Object.keys(tagOptions).length > 0) {
-      setTableCols(tagOptions);
-    } else {
-      getTagList();
-    }
+    getTagList();
   }, []);
 
   // 对请求的数据进行表格话处理
@@ -97,12 +92,6 @@ const TagConfig: React.FC = () => {
           tagLists: [...item?.tagList]
         });
       }
-      // const cols1 = res[0]?.carTagList?.sort(sortsFun('groupName')) || [];
-      // setCarTags(cols1);
-      // const cols2 = item.tagList.sort(sortsFun('groupName')) || [];
-      // setManTags(cols2);
-      // const cols = [...cols1, ...cols2];
-      // getOptions(cols);
     });
     return res;
   };
