@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Card, message } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { columns, searchCols, UserTagProps } from './Config';
@@ -10,17 +10,19 @@ import {
   searchTagGroupOptions
 } from 'src/apis/tagConfig';
 import style from './style.module.less';
+import { Context } from 'src/store';
 
 const TagConfig: React.FC = () => {
   const [dataSource, setDataSource] = useState<UserTagProps[]>([]);
   const [tableCols, setTableCols] = useState<any[]>([]);
+  const { currentCorpId } = useContext(Context);
   const [params, setParams] = useState<any>({});
   const [carTags, setCarTags] = useState<any[]>([]);
   const [manTags, setManTags] = useState<any[]>([]);
 
   // 获取
   const getOptions = async (list: any[]) => {
-    const tagOptions = JSON.parse(sessionStorage.getItem('tagOptions') || '{}');
+    const tagOptions = JSON.parse(sessionStorage.getItem('tagOptions') || '{}')[currentCorpId] || [];
     if (Object.keys(tagOptions).length > 0) {
       setTableCols(tagOptions);
     } else {
@@ -32,14 +34,14 @@ const TagConfig: React.FC = () => {
           list[index].options = res.tagList;
         });
 
-        sessionStorage.setItem('tagOptions', JSON.stringify(list));
+        sessionStorage.setItem('tagOptions', JSON.stringify({ [currentCorpId]: list }));
         setTableCols(list);
       }
     }
   };
 
   const getTagList = async () => {
-    const tagOptions = JSON.parse(sessionStorage.getItem('tagOptions') || '{}');
+    const tagOptions = JSON.parse(sessionStorage.getItem('tagOptions') || '{}')[currentCorpId] || [];
     if (Object.keys(tagOptions).length > 0) {
       setTableCols(tagOptions);
       const cols1 = tagOptions.filter((tag: any) => tag.category === 1);
