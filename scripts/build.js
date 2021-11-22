@@ -8,7 +8,7 @@
 process.env.NODE_ENV = 'production';
 
 // 当Promise 被 reject 且没有 reject 处理器的时候，会触发 unhandledrejection 事件
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   throw err;
 });
 
@@ -20,13 +20,10 @@ const TerserWebpackPlugin = require('terser-webpack-plugin'); // js压缩
 const webpackConfig = require('./webpack.config');
 
 const buildConfig = {
-  devtool: 'source-map',
-  plugins: [
-    new CleanWebpackPlugin(),
-    new SimpleProgressWebpackPlugin()
-  ],
+  // devtool: 'source-map',
+  plugins: [new CleanWebpackPlugin(), new SimpleProgressWebpackPlugin()],
   performance: {
-    hints: false
+    hints: false,
   },
   optimization: {
     splitChunks: {
@@ -41,24 +38,23 @@ const buildConfig = {
         // 基础库
         baseChunks: {
           name: 'base.chunks', // 要分隔出来的 chunk 名称
-          test: (module) =>
-            /react|react-dom|react-router-dom|axios|moment/.test(module.context),
-          priority: 20 // 打包优先级
+          test: (module) => /react|react-dom|react-router-dom|axios|moment/.test(module.context),
+          priority: 20, // 打包优先级
         },
         // UI、icon、图表、表情等库
         uiChunks: {
           name: 'ui.chunks', // 要分隔出来的 chunk 名称
           test: (module) => /antd|@ant-design\/icons|echarts|emoji-mart/.test(module.context),
-          priority: 10 // 打包优先级
+          priority: 10, // 打包优先级
         },
         // 打包其余的的公共代码
         default: {
           name: 'common.chunks', // 要分隔出来的 chunk 名称
           minChunks: 2, // 引入两次及以上被打包
           priority: 5,
-          reuseExistingChunk: true // 可设置是否重用已用chunk 不再创建新的chunk
-        }
-      }
+          reuseExistingChunk: true, // 可设置是否重用已用chunk 不再创建新的chunk
+        },
+      },
     },
     minimizer: [
       new TerserWebpackPlugin({
@@ -66,19 +62,19 @@ const buildConfig = {
         terserOptions: {
           output: {
             comments: false,
-            ascii_only: true
+            ascii_only: true,
           },
           compress: {
             drop_console: false,
             drop_debugger: true,
-            comparisons: false
+            comparisons: false,
           },
-          safari10: true
-        }
+          safari10: true,
+        },
       }),
-      new OptimizeCSSAssetsPlugin({})
-    ]
-  }
+      new OptimizeCSSAssetsPlugin({}),
+    ],
+  },
 };
 
 module.exports = merge(webpackConfig(), buildConfig);
