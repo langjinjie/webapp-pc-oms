@@ -9,13 +9,22 @@ interface CustomTextAreaProps {
   onChange?: (value: string) => void;
   maxLength?: number;
   visible?: boolean;
+  sensitive?: number;
+  sensitiveWord?: string;
 }
-const CustomTextArea: React.FC<CustomTextAreaProps> = ({ onChange, value, maxLength, visible }) => {
+const CustomTextArea: React.FC<CustomTextAreaProps> = ({
+  onChange,
+  value,
+  maxLength,
+  visible,
+  sensitive,
+  sensitiveWord
+}) => {
   const textareaRef: React.LegacyRef<HTMLTextAreaElement> = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [customBtns, setCustomBtns] = useState<string[]>([]);
   const [count, setCount] = useState(0);
-  const [error, setError] = useState(false);
+  // const [error, setError] = useState(false);
 
   useEffect(() => {
     const params = {
@@ -86,48 +95,54 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({ onChange, value, maxLen
   };
 
   return (
-    <div className={classNames(style.textAreaWrap, { [style.error]: error })}>
-      <div className={classNames(style.btnGroup, { [style.open]: isOpen })}>
-        <div className={classNames(style.btnArrow)} onClick={() => setIsOpen(!isOpen)}>
-          {isOpen
-            ? (
-            <span>
-              收起 <Icon name="shangjiantou" />
-            </span>
-              )
-            : (
-            <span>
-              展开 <Icon name="icon_common_16_Line_Down" />
-            </span>
-              )}
+    <div>
+      <div className={classNames(style.textAreaWrap, 'isError')}>
+        <div className={classNames(style.btnGroup, { [style.open]: isOpen })}>
+          <div className={classNames(style.btnArrow)} onClick={() => setIsOpen(!isOpen)}>
+            {isOpen
+              ? (
+              <span>
+                收起 <Icon name="shangjiantou" />
+              </span>
+                )
+              : (
+              <span>
+                展开 <Icon name="icon_common_16_Line_Down" />
+              </span>
+                )}
+          </div>
+          <div className={style.btnsWrap}>
+            {customBtns.map((btnText) => (
+              <Button
+                type="link"
+                className={style.mr10}
+                key={btnText}
+                color="primary"
+                onClick={() => handlePushName(btnText)}
+              >
+                [插入{btnText}]
+              </Button>
+            ))}
+          </div>
         </div>
-        <div className={style.btnsWrap}>
-          {customBtns.map((btnText) => (
-            <Button
-              type="link"
-              className={style.mr10}
-              key={btnText}
-              color="primary"
-              onClick={() => handlePushName(btnText)}
-            >
-              [插入{btnText}]
-            </Button>
-          ))}
+        <div className={style.textAreaBox}>
+          <textarea
+            rows={4}
+            placeholder="请输入"
+            className={style.textarea}
+            ref={textareaRef}
+            value={value}
+            maxLength={maxLength || 300}
+            onChange={handleTextareaChange}
+          />
         </div>
+        <div className={classNames(style.count, 'flex justify-end')}>{count}/300</div>
       </div>
-      <div className={style.textAreaBox}>
-        <textarea
-          rows={4}
-          placeholder="请输入"
-          className={style.textarea}
-          ref={textareaRef}
-          value={value}
-          maxLength={maxLength || 300}
-          onFocus={() => setError(false)}
-          onChange={handleTextareaChange}
-        />
-      </div>
-      <div className={classNames(style.count, 'flex justify-end')}>{count}/300</div>
+      {sensitive === 1 && (
+        <div className={style.sensitiveWrap}>
+          触发敏感词：<span className={style.errorText}>{sensitiveWord}</span>
+        </div>
+      )}
     </div>
   );
 };

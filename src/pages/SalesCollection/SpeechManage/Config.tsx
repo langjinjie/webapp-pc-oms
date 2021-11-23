@@ -110,6 +110,7 @@ export interface SpeechProps {
   createBy?: string; // 创建人;
   lastUpdated?: string; // 更新时间;
   updateBy?: string; // 更新人;
+  [propKey: string]: any;
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
   const { handleEdit, handleSort } = args;
@@ -155,7 +156,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       render: (value, record) => {
         return (
           <span>
-            {(genderTypeOptions.filter((item) => item.id === value)?.[0].name || '') +
+            {(genderTypeOptions.filter((item) => item.id === value)?.[0]?.name || '') +
               (ageTypeOptions.filter((ageType) => ageType.id === record.ageType)?.[0]?.name || '') || UNKNOWN}
           </span>
         );

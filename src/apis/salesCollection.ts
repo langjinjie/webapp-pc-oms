@@ -7,7 +7,7 @@ type HttpFunction<T = Object> = (param: T, fn?: Function) => Promise<any>;
  */
 export const getSpeechList: HttpFunction = (params) => {
   // return http.post('/tenacity-admin/api/smart/content/list', params);
-  return http.post('http://rap2api.taobao.org/app/mock/294104/tenacity-admin/api/smart/content/list', params);
+  return http.post('/tenacity-admin/api/smart/content/list', params);
 };
 // 查询话术详情
 export const getSpeechDetail: HttpFunction = (params) => {
