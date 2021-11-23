@@ -1,77 +1,48 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Form, Select, Space, Button, Input, Card } from 'antd';
 import { NgTable } from 'src/components/index';
+import { ISensitiveType } from 'src/utils/interface';
+import { requestGetSensitiveTypeList, requestGetSensitiveList } from 'src/apis/orgManage';
+import { Context } from 'src/store';
+import { sensitiveStatusList } from 'src/utils/commonData';
 import style from './style.module.less';
 
 const WordsList: React.FC = () => {
+  const { currentCorpId } = useContext(Context);
   const [form] = Form.useForm();
   const [searchParam, setSearchParam] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsloading] = useState(true);
-  const [wordsList, setWrodsList] = useState<any>([]);
+  const [sensitiveList, setSensitiveList] = useState<any>([]);
   const [paginationParam, setPaginationParam] = useState({ current: 1, pageSize: 10 });
   const [disabledColumnType, setDisabledColumnType] = useState('2');
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [sensitiveType, setSensitiveType] = useState<ISensitiveType[]>([]);
 
   const history = useHistory();
+
+  // 获取敏感词类型列表
+  const getSensitiveTypeList = async () => {
+    const res = await requestGetSensitiveTypeList({ corpId: currentCorpId });
+    console.log(res);
+    setSensitiveType(res);
+  };
+
+  // 获取敏感词列表
+  const getSensitiveList = async () => {
+    const res = await requestGetSensitiveList({ corpId: currentCorpId });
+    console.log(res);
+    setSensitiveList(res.list);
+  };
 
   // 单个新增/编辑
   const singleAdd = (type: string) => {
     history.push('/wordsManage/editWords?type=' + type);
   };
 
-  const wordsTypeList = [
-    { value: '**A', label: '**A' },
-    { value: '**B', label: '**B' },
-    { value: '**C', label: '**C' }
-  ];
-  const statusList = [
-    { value: '1', label: '未上架' },
-    { value: '2', label: '已上架' },
-    { value: '4', label: '已下架' }
-  ];
-  const columns: any[] = [
-    { title: '敏感词类型', dataIndex: 'wrodsType' },
-    { title: '敏感词内容', dataIndex: 'wordsContent' },
-    { title: '创建时间', dataIndex: 'createdTime' },
-    { title: '创建人', dataIndex: 'creater' },
-    { title: '更新时间', dataIndex: 'updateTime' },
-    { title: '更新人', dataIndex: 'updater' },
-    { title: '状态', dataIndex: 'status' },
-    {
-      title: '操作',
-      fixed: 'right',
-      render () {
-        return (
-          <span className={style.edit} onClick={() => singleAdd('edit')}>
-            编辑
-          </span>
-        );
-      }
-    }
-  ];
-  // 获取敏感词列表
-  const getWordsList = (current: number, pageSize: number) => {
-    console.log(current, pageSize, '获取敏感词列表');
-    setSearchParam(form.getFieldsValue());
-    const wordsListItem = {
-      wrodsType: '监管合规',
-      wordsContent: '免费',
-      createdTime: '2021-11-11',
-      creater: 'jeff',
-      updateTime: '2021-11-11',
-      updater: 'jeff',
-      status: '未上架'
-    };
-    const wordsList = new Array(51);
-    wordsList.fill(wordsListItem);
-    setWrodsList(wordsList);
-    setIsloading(false);
-  };
   // 切换分页
   const paginationChange = (value: number, pageSize?: number) => {
-    console.log('切换分页');
-    getWordsList(value, pageSize as number);
+    getSensitiveList();
     setPaginationParam({ current: value, pageSize: pageSize as number });
     setSelectedRowKeys([]);
     const { accountStatus } = searchParam;
@@ -79,7 +50,7 @@ const WordsList: React.FC = () => {
   };
   // 分页器参数
   const pagination = {
-    total: wordsList.length,
+    total: sensitiveList.total,
     current: paginationParam.current
   };
   // 点击选择框
@@ -112,6 +83,7 @@ const WordsList: React.FC = () => {
     console.log('重置了');
   };
   useEffect(() => {
+    getSensitiveTypeList();
     getWordsList(paginationParam.current, paginationParam.pageSize);
   }, []);
   return (
@@ -121,9 +93,9 @@ const WordsList: React.FC = () => {
           <Space className={style.antSpace}>
             <Form.Item className={style.label} name="wordsType" label="敏感词类型：">
               <Select placeholder="待选择" className={style.selectBox} allowClear>
-                {wordsTypeList.map((item) => (
-                  <Select.Option key={item.label} value={item.value}>
-                    {item.label}
+                {sensitiveType.map((item) => (
+                  <Select.Option key={item.typeId} value={item.typeId}>
+                    {item.name}
                   </Select.Option>
                 ))}
               </Select>
@@ -133,7 +105,7 @@ const WordsList: React.FC = () => {
             </Form.Item>
             <Form.Item className={style.label} name="status" label="状态：">
               <Select placeholder="待选择" className={style.selectBox} allowClear>
-                {statusList.map((item) => (
+                {sensitiveStatusList.map((item) => (
                   <Select.Option key={item.label} value={item.value}>
                     {item.label}
                   </Select.Option>
@@ -153,7 +125,7 @@ const WordsList: React.FC = () => {
           </Space>
         </Form>
         <NgTable
-          dataSource={wordsList}
+          dataSource={sensitiveList.list}
           columns={columns}
           loading={isLoading}
           pagination={pagination}

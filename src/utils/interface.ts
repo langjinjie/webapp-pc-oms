@@ -90,3 +90,10 @@ export interface IBannerInfo {
   name: string;
   catoryId: string;
 }
+
+/* 敏感词管理 */
+// 敏感词列表
+export interface ISensitiveType {
+  typeId: string;
+  name: string;
+}
