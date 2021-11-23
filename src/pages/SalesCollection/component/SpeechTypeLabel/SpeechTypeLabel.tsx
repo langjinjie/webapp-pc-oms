@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Select, Input, Upload, message } from 'antd';
+import { Form, Select, Input, Upload, message, Button } from 'antd';
 import { Icon } from 'src/components';
 import style from './style.module.less';
 
@@ -8,17 +8,23 @@ interface ISpeechTypeLabelProps {
 }
 
 interface IInputCurrentLength {
-  titleLength: number;
-  summaryLength: number;
-  voiceLength: number;
+  articleTitleLength: number;
+  articleSummaryLength: number;
+  voiceTitleLength: number;
+  videoTitleLength: number;
+  miniProgramTitleLength: number;
+  miniProgramSummaryLength: number;
 }
 
 const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
   const [posterImg, setPosterImg] = useState('');
-  const [articleParam, setArticleParam] = useState<IInputCurrentLength>({
-    titleLength: 0,
-    summaryLength: 0,
-    voiceLength: 0
+  const [maxLengthParam, setMaxLengthParam] = useState<IInputCurrentLength>({
+    articleTitleLength: 0, //
+    articleSummaryLength: 0,
+    voiceTitleLength: 0,
+    videoTitleLength: 0,
+    miniProgramTitleLength: 0,
+    miniProgramSummaryLength: 0
   });
   // updaload beforeUpload
   const beforeUploadHandle = (file: File): Promise<boolean> => {
@@ -54,7 +60,6 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
     });
   };
   const normFile = (e: any) => {
-    console.log(e);
     if (e.file.status === 'uploading') {
       return;
     }
@@ -65,7 +70,29 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
   };
   // input onChange
   const inputOnChangeHandle = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
-    setArticleParam({ ...articleParam, ...{ [type]: e.target.value.length } });
+    setMaxLengthParam({ ...maxLengthParam, ...{ [type]: e.target.value.length } });
+  };
+  // voice onChange
+  const voiceOnChangeHandle = (info: any) => {
+    if (info.file.status !== 'uploading') {
+      console.log(info.file, info.fileList);
+    }
+    if (info.file.status === 'done') {
+      message.success(`${info.file.name} file uploaded successfully`);
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} file upload failed.`);
+    }
+  };
+  // video onChange
+  const vidoeOnChangeHandle = (info: any) => {
+    if (info.file.status !== 'uploading') {
+      console.log(info.file, info.fileList);
+    }
+    if (info.file.status === 'done') {
+      message.success(`${info.file.name} 视频上传成功`);
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} 视频上传失败.`);
+    }
   };
   return (
     <>
@@ -165,10 +192,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
                 className={style.input}
                 placeholder={'请输入'}
                 maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
+                onChange={(e) => inputOnChangeHandle(e, 'articleTitleLength')}
               />
             </Form.Item>
-            <span className={style.limitLength}>{articleParam.titleLength}/30</span>
+            <span className={style.limitLength}>{maxLengthParam.articleTitleLength}/30</span>
           </Form.Item>
           <Form.Item className={style.formItem} label="图文摘要:" required>
             <Form.Item name="aricleSummary" rules={[{ required: true, message: '请输入图文摘要' }]} noStyle>
@@ -176,10 +203,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
                 className={style.input}
                 placeholder={'请输入'}
                 maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
+                onChange={(e) => inputOnChangeHandle(e, 'articleSummaryLength')}
               />
             </Form.Item>
-            <span className={style.limitLength}>{articleParam.summaryLength}/30</span>
+            <span className={style.limitLength}>{maxLengthParam.articleSummaryLength}/30</span>
           </Form.Item>
           <Form.Item
             className={style.formItem}
@@ -194,32 +221,24 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
       {type === 6 && ( // 单语音
         <>
           <Form.Item
-            className={style.imgformItem}
-            label="上传图片:"
+            className={style.voiceFormItem}
+            label="上传语音:"
             name={'voiceFile'}
             valuePropName="file"
             getValueFromEvent={normFile}
-            rules={[{ required: true, message: '请上传图片' }]}
+            rules={[{ required: true, message: '请上传语音图片' }]}
           >
             <Upload
-              accept="image/*"
-              // listType="picture-card"
+              className={style.uploadVoice}
+              name="file"
               action="/tenacity-admin/api/file/upload"
               data={{ bizKey: 'news' }}
-              className={style.upload}
-              showUploadList={false}
-              // beforeUpload={beforeUploadHandle}
+              onChange={voiceOnChangeHandle}
             >
-              {posterImg
-                ? (
-                <img src={posterImg} alt="icon" style={{ width: '100%' }} />
-                  )
-                : (
-                <div className={style.iconWrap}>
-                  <Icon className={style.uploadIcon} name="upload" />
-                  <div className={style.uploadTip}>点击上传</div>
-                </div>
-                  )}
+              <Button className={style.btn}>
+                <Icon name="icon_daohang_28_jiahaoyou" />
+                将文件拖拽至此区域，或<span className={style.uploadText}>点此上传</span>{' '}
+              </Button>
             </Upload>
           </Form.Item>
           <Form.Item className={style.formItem} label="语音标题:" required>
@@ -228,61 +247,117 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
                 className={style.input}
                 placeholder={'请输入'}
                 maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'voiceLength')}
+                onChange={(e) => inputOnChangeHandle(e, 'voiceTitleLength')}
               />
             </Form.Item>
-            <span className={style.limitLength}>{articleParam.summaryLength}/30</span>
+            <span className={style.limitLength}>{maxLengthParam.voiceTitleLength}/30</span>
           </Form.Item>
         </>
       )}
-      {type === 7 && (
+      {type === 7 && ( // 上传视频
         <>
-          <Form.Item className={style.formItem} label="海报ID:" name="posterId">
-            <Select className={style.modalContentSelect} placeholder={'请选择'}>
-              <Select.Option value="demo">Demo</Select.Option>
-            </Select>
-          </Form.Item>
           <Form.Item
-            className={style.formItem}
-            label="上传图片:"
-            name="img"
-            rules={[{ required: true, message: '请上传图片' }]}
+            className={style.videoFormItem}
+            label="上传视频:"
+            name="videoFile"
+            valuePropName="file"
+            getValueFromEvent={normFile}
+            rules={[{ required: true, message: '请上传视频' }]}
           >
-            <Input className={style.modalContentInput} placeholder={'请输入'} />
+            <Upload
+              className={style.uploadVideo}
+              name="file"
+              action="/tenacity-admin/api/file/upload"
+              data={{ bizKey: 'news' }}
+              onChange={vidoeOnChangeHandle}
+              beforeUpload={(e) => console.log(e)}
+            >
+              <Button className={style.btn}>
+                <Icon name="icon_daohang_28_jiahaoyou" />
+                将文件拖拽至此区域，或<span className={style.uploadText}>点此上传</span>{' '}
+              </Button>
+            </Upload>
+          </Form.Item>
+          <Form.Item className={style.formItem} label="视频标题:" required>
+            <Form.Item name="video" rules={[{ required: true, message: '请输入视频标题' }]} noStyle>
+              <Input
+                className={style.input}
+                placeholder={'请输入'}
+                maxLength={30}
+                onChange={(e) => inputOnChangeHandle(e, 'videoTitleLength')}
+              />
+            </Form.Item>
+            <span className={style.limitLength}>{maxLengthParam.videoTitleLength}/30</span>
           </Form.Item>
         </>
       )}
-      {type === 8 && (
+      {type === 8 && ( // 第三方链接
         <>
-          <Form.Item className={style.formItem} label="海报ID:" name="posterId">
-            <Select className={style.modalContentSelect} placeholder={'请选择'}>
-              <Select.Option value="demo">Demo</Select.Option>
-            </Select>
-          </Form.Item>
           <Form.Item
             className={style.formItem}
-            label="上传图片:"
-            name="img"
-            rules={[{ required: true, message: '请上传图片' }]}
+            label="链接地址:"
+            name="link"
+            rules={[{ required: true, message: '请输入第三方链接' }]}
           >
-            <Input className={style.modalContentInput} placeholder={'请输入'} />
+            <Input className={style.input} placeholder={'请输入'} />
           </Form.Item>
         </>
       )}
       {type === 9 && (
         <>
-          <Form.Item className={style.formItem} label="海报ID:" name="posterId">
+          <Form.Item className={style.formItem} label="小程序ID:" name="miniProgramId">
             <Select className={style.modalContentSelect} placeholder={'请选择'}>
               <Select.Option value="demo">Demo</Select.Option>
             </Select>
           </Form.Item>
+          <Form.Item className={style.formItem} label="路径:" name="miniProgramLink">
+            <Input className={style.input} placeholder={'请输入'} />
+          </Form.Item>
           <Form.Item
-            className={style.formItem}
+            className={style.imgformItem}
             label="上传图片:"
-            name="img"
+            name={'miniProgramImg'}
+            valuePropName="file"
+            getValueFromEvent={normFile}
             rules={[{ required: true, message: '请上传图片' }]}
+            extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           >
-            <Input className={style.modalContentInput} placeholder={'请输入'} />
+            <Upload
+              accept="image/*"
+              listType="picture-card"
+              action="/tenacity-admin/api/file/upload"
+              data={{ bizKey: 'news' }}
+              className={style.upload}
+              showUploadList={false}
+              beforeUpload={beforeUploadHandle}
+            >
+              <div className={style.iconWrap}>
+                <Icon className={style.uploadIcon} name="upload" />
+                <div className={style.uploadTip}>点击上传</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item className={style.formItem} label="小程序标题:" required>
+            <Form.Item name="miniProgramTitle" rules={[{ required: true, message: '请输入小程序标题' }]} noStyle>
+              <Input
+                className={style.input}
+                placeholder={'请输入'}
+                maxLength={30}
+                onChange={(e) => inputOnChangeHandle(e, 'miniProgramTitleLength')}
+              />
+            </Form.Item>
+            <span className={style.limitLength}>{maxLengthParam.miniProgramTitleLength}/30</span>
+          </Form.Item>
+          <Form.Item className={style.formItem} label="小程序摘要:" required>
+            <Form.Item name="miniProgramSummary" rules={[{ required: true, message: '请输入小程序摘要' }]} noStyle>
+              <Input
+                className={style.input}
+                placeholder={'请输入'}
+                maxLength={30}
+                onChange={(e) => inputOnChangeHandle(e, 'miniProgramSummaryLength')}
+              />
+            </Form.Item>
+            <span className={style.limitLength}>{maxLengthParam.miniProgramSummaryLength}/30</span>
           </Form.Item>
         </>
       )}

@@ -39,22 +39,37 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   // 编辑
   const editClickHandle = (e: MouseEvent) => {
     console.log('点击编辑');
-    setModalParam({ visible: true, type: 1, islastlevel: isLastLevelContents });
+    setModalParam({ visible: true, type: 1, islastlevel: isLastLevelContents, title: '编辑目录', content: '' });
     e.stopPropagation();
   };
   // 上/下移 -1上移 1下移
-  const moveClickHandle = (e: React.MouseEvent, type: number) => {
+  const moveClickHandle = (e: React.MouseEvent, type: number, contentName: string) => {
     console.log(type === -1 ? '上移' : '下移');
+    setModalParam({
+      visible: true,
+      type: 3,
+      islastlevel: false,
+      title: '移动提醒',
+      content: type === -1 ? `确定上移目录"${contentName}"吗` : `确定下移目录"${contentName}"吗`
+    });
     e.stopPropagation();
   };
   // 删除
-  const delClickHandle = () => {
+  const delClickHandle = (e: React.MouseEvent, contentName: string) => {
     console.log('删除');
+    setModalParam({
+      visible: true,
+      type: 3,
+      islastlevel: false,
+      title: '删除提醒',
+      content: `确定删除目录"${contentName}"吗`
+    });
+    e.stopPropagation();
   };
   // 新增
   const addClickHandle = (islastlevel: boolean) => {
     console.log('新增');
-    setModalParam({ visible: true, type: 0, islastlevel });
+    setModalParam({ visible: true, type: 0, islastlevel, title: '新增目录', content: '' });
   };
   useEffect(() => {
     setChildrenList(new Array(5).fill(bannerInfo.name));
@@ -90,19 +105,19 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
             </span>
           )}
           {isHiddenMoveUp || (
-            <span onClick={(e) => moveClickHandle(e, -1)}>
+            <span onClick={(e) => moveClickHandle(e, -1, bannerInfo.name)}>
               <Icon className={style.svgIcon} name="shangsheng" />
               上移
             </span>
           )}
           {isHiddenMoveDown || (
-            <span onClick={(e) => moveClickHandle(e, 1)}>
+            <span onClick={(e) => moveClickHandle(e, 1, bannerInfo.name)}>
               <Icon className={style.svgIcon} name="xiajiang" />
               下移
             </span>
           )}
           {isFirstLevelContents || isHiddenDelete || (
-            <span onClick={delClickHandle}>
+            <span onClick={(e) => delClickHandle(e, bannerInfo.name)}>
               <Icon className={style.svgIcon} name="shanchu" />
               删除
             </span>
@@ -116,7 +131,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
               <div key={index}>
                 <ChildrenContentBanner
                   bannerInfo={{ name: item, catoryId: `${index}` }}
-                  isLastLevelContents={true}
+                  isLastLevelContents={false}
                   isHiddenMoveUp={childrenList.length === 1 || index === 0}
                   isHiddenMoveDown={childrenList.length === 1 || index === childrenList.length - 1}
                   isHiddenDelete={childrenList.length === 1}
@@ -126,8 +141,8 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
                 />
                 {index === childrenList.length - 1 && (
                   <span
-                    className={classNames(style.add, { [style.isLastContents]: true })}
-                    onClick={() => addClickHandle(true)}
+                    className={classNames(style.add, { [style.isLastContents]: false })}
+                    onClick={() => addClickHandle(false)}
                   >
                     <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" />
                     新增

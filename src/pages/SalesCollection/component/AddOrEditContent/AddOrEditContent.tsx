@@ -94,19 +94,25 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ modalParam, setMod
   };
   return (
     <Modal
-      width={modalParam.islastlevel ? 720 : 320}
+      width={modalParam.type === 3 ? 300 : modalParam.islastlevel ? 720 : 320}
       centered
-      wrapClassName={classNames(style.modalWrap, { [style.noBorderWrap]: !modalParam.islastlevel })}
+      wrapClassName={classNames(style.modalWrap, {
+        [style.noBorderWrap]: !modalParam.islastlevel || modalParam.type === 3
+      })}
       closable={false}
       visible={modalParam.visible}
-      title={`${modalParam.type ? '编辑' : '新增'}目录`}
+      title={modalParam.title}
       onCancel={onCancelHandle}
       onOk={modalOnOkHandle}
       destroyOnClose
     >
       <Form form={form}>
-        {modalParam.islastlevel
+        {modalParam.type === 3
           ? (
+          <div className={style.moadlContent}>{modalParam.content}</div>
+            )
+          : modalParam.islastlevel
+            ? (
           <>
             <Form.Item className={style.modalContentFormItem} label="目录名称:" required>
               <Form.Item name="speechName" rules={[{ required: true, message: '请输入话术名称' }]} noStyle>
@@ -135,8 +141,8 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ modalParam, setMod
             </Form.Item>
             <SpeechTypeLabel type={speechParam.type} />
           </>
-            )
-          : (
+              )
+            : (
           <>
             <Form.Item
               className={style.noLastFormItem}
@@ -156,6 +162,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ modalParam, setMod
               >
                 <Upload
                   accept="image/*"
+                  maxCount={1}
                   listType="picture-card"
                   action="/tenacity-admin/api/file/upload"
                   data={{ bizKey: 'news' }}
@@ -177,7 +184,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ modalParam, setMod
               </Form.Item>
             </Form.Item>
           </>
-            )}
+              )}
       </Form>
     </Modal>
   );

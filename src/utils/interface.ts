@@ -81,8 +81,10 @@ export interface IAllTagList {
 // 目录管理
 export interface IAddOrEditModalParam {
   visible: boolean;
-  type: number; // 0 新增 1 编辑
+  type: number; // 0 新增 1 编辑 3 操作(删除-上移-下移)
   islastlevel: boolean;
+  title: string;
+  content: string;
 }
 export interface IBannerInfo {
   name: string;

@@ -6,7 +6,13 @@ import style from './style.module.less';
 const ContentsManage: React.FC = () => {
   const contentsList = ['车险流程', '非车流程', '异议处理', '场景话术', '问答知识'];
   const [currentContents, setCurrentContents] = useState<string>('');
-  const [modalParam, setModalParam] = useState<IAddOrEditModalParam>({ visible: false, type: 0, islastlevel: false });
+  const [modalParam, setModalParam] = useState<IAddOrEditModalParam>({
+    visible: false,
+    type: 0,
+    islastlevel: false,
+    title: '',
+    content: ''
+  });
 
   return (
     <>
@@ -25,6 +31,7 @@ const ContentsManage: React.FC = () => {
           </div>
         ))}
       </div>
+
       <AddOrEditContent modalParam={modalParam} setModalParam={setModalParam} />
     </>
   );
