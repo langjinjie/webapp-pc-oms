@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Modal, Space } from 'antd';
+import { Button, message, Modal, Space } from 'antd';
 import { RouteComponentProps } from 'react-router';
 import { getSpeechList, operateSpeechStatus } from 'src/apis/salesCollection';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
@@ -14,6 +14,16 @@ import { Context } from 'src/store';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const { currentCorpId } = useContext(Context);
+  const [formParams, setFormParams] = useState({
+    catalogId: '',
+    content: '',
+    contentType: '',
+    sensitive: '',
+    status: '',
+    tip: '',
+    updateBeginTime: '',
+    updateEndTime: ''
+  });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -30,25 +40,95 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const [visiblePreview, setVisiblePreview] = useState(false);
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [loading] = useState(false);
-  const onValuesChange = () => {
-    console.log('a');
-  };
-  const onSearch = () => {
-    console.log('onSearch');
+  const onValuesChange = (values: any) => {
+    const {
+      catalogId = '',
+      content = '',
+      contentType = '',
+      sensitive = '',
+      status = '',
+      times = undefined,
+      tip = ''
+    } = values;
+    let updateBeginTime = '';
+    let updateEndTime = '';
+    if (times) {
+      updateBeginTime = times[0].startOf('day').valueOf();
+      updateEndTime = times[1].endOf('day')?.valueOf();
+    }
+    setFormParams((formParams) => ({
+      ...formParams,
+      catalogId,
+      content,
+      contentType,
+      sensitive,
+      status,
+      tip,
+      updateBeginTime,
+      updateEndTime
+    }));
   };
 
-  const getList = async () => {
-    const { list, total } = await getSpeechList({});
+  // 查询话术列表
+  const getList = async (params?: any) => {
+    // 清空选中的列表
+    setSelectRowKeys([]);
+    // 重置当前操作状态
+    setCurrentType(null);
+    const { list, total } = await getSpeechList({ ...formParams, ...params });
     setDataSource(list || []);
     setPagination((pagination) => ({ ...pagination, total: total || 0 }));
+  };
+  // 点击查询按钮
+  const onSearch = async (values: any) => {
+    // 将页面重置为第一页
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
+    const {
+      catalogId = '',
+      content = '',
+      contentType = '',
+      sensitive = '',
+      status = '',
+      times = undefined,
+      tip = ''
+    } = values;
+    let updateBeginTime = '';
+    let updateEndTime = '';
+    if (times) {
+      updateBeginTime = times[0].startOf('day').valueOf();
+      updateEndTime = times[1].endOf('day')?.valueOf();
+    }
+    setFormParams((formParams) => ({
+      ...formParams,
+      catalogId,
+      content,
+      contentType,
+      sensitive,
+      status,
+      tip,
+      updateBeginTime,
+      updateEndTime
+    }));
+    await getList({
+      catalogId,
+      content,
+      contentType,
+      sensitive,
+      status,
+      tip,
+      updateBeginTime,
+      updateEndTime
+    });
   };
 
   useEffect(() => {
     getList();
   }, []);
 
-  const paginationChange = () => {
-    console.log('');
+  // 分页改变
+  const paginationChange = (pageNum: number, pageSize?: number) => {
+    setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize: pageSize || pagination.pageSize }));
+    getList({ pageNum, pageSize });
   };
 
   const isDisabled = (currentType: number | null, status: number) => {
@@ -85,8 +165,9 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  // 编辑话术
   const handleEdit: (scored: SpeechProps) => void = (scored) => {
-    console.log(scored);
+    history.push(`/speechManage/edit?sceneId=${scored.sceneId}&contentId=${scored.contentId}`);
   };
   const handleSort: (record: SpeechProps) => void = (record) => {
     console.log(record);
@@ -108,7 +189,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const operateStatus = (operateType: number) => {
-    console.log('sa', operateType, selectedRows);
     Modal.confirm({
       title:
         operateType === 0 ? '待上架提醒' : operateType === 1 ? '上架提醒' : operateType === 2 ? '下架提醒' : '删除提醒',
@@ -128,13 +208,19 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
           type: operateType,
           list: selectedRows.map((row) => ({ sceneId: row.sceneId, contentId: row.contentId }))
         });
-        console.log(res);
+        if (res) {
+          // 清空选中的列表
+          setSelectRowKeys([]);
+          // 重置当前操作状态
+          setCurrentType(null);
+
+          const { successNum, failNum } = res;
+          message.success(`已完成！操作成功${successNum}条，操作失败${failNum}条`);
+          // 重新更新列表
+          setPagination((pagination) => ({ ...pagination, current: 1 }));
+          getList({ pageNum: 1 });
+        }
       }
-    });
-    console.log({
-      corpId: currentCorpId,
-      type: operateType,
-      list: selectedRows.map((row) => ({ sceneId: row.sceneId, contentId: row.contentId }))
     });
   };
   return (
@@ -187,7 +273,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
         </Button>
       </div>
       <div className="form-inline pt20">
-        <NgFormSearch searchCols={searchCols} onSearch={onSearch} onValuesChange={onValuesChange}></NgFormSearch>
+        <NgFormSearch searchCols={searchCols} onSearch={onSearch} onValuesChange={onValuesChange} />
       </div>
 
       <NgTable
