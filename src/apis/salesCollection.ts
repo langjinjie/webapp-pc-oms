@@ -67,3 +67,30 @@ export const operateSpeechStatus: HttpFunction = (params) => {
 export const checkSensitive: HttpFunction = (params) => {
   return http.post('/tenacity-admin/api/smart/sensitive/check', params);
 };
+
+/* 目录管理 */
+
+// 目录列表接口
+export const requestGetCatalogList: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/smart/catalog/list', param);
+};
+
+// 目录上移/下移
+export const requestSaveSortCatalog: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/smart/catalog/savesort', param);
+};
+
+// 目录删除
+export const requestDeleteCatalog: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/smart/catalog/delete', param);
+};
+
+// 目录详情
+export const requestGetCatalogDetail: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/smart/catalog/detail', param);
+};
+
+// 目录新增/编辑接口
+export const requestEditCatalog: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/smart/catalog/edit', param);
+};

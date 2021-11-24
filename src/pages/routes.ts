@@ -79,13 +79,13 @@ export const routes: RouteProps[] = [
   },
   // 敏感词管理
   {
-    path: '/wordsManage',
-    component: lazy(() => import('src/pages/OrgManage/WordsManage/WordsList/WordsList'))
+    path: '/sensitiveManage',
+    component: lazy(() => import('src/pages/OrgManage/SensitiveManage/SensitiveList/SensitiveList'))
   },
   // 添加敏感词
   {
-    path: '/wordsManage/editWords',
-    component: lazy(() => import('src/pages/OrgManage/WordsManage/EditWords/EditWords'))
+    path: '/sensitiveManage/editWords',
+    component: lazy(() => import('src/pages/OrgManage/SensitiveManage/EditWords/EditWords'))
   },
   // 座席战报
   {
@@ -133,7 +133,7 @@ export const menus: Menu[] = [
     path: 'seatManage',
     children: [
       { name: '账号管理', path: '/orgManage' },
-      { name: '敏感词管理', path: '/wordsManage' }
+      { name: '敏感词管理', path: '/sensitiveManage' }
     ]
   },
   {
