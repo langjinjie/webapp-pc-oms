@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
-import { Card, Form, Input, message, Button, Select, Space, Row, Col, Radio } from 'antd';
+import { Card, Form, Input, message, Button, Select, Space, Row, Col } from 'antd';
 import { productEdit, productConfig, productDetail } from 'src/apis/marketing';
 import NumberInput from 'src/components/NumberInput/NumberInput';
 import { Context } from 'src/store';
@@ -25,7 +25,7 @@ interface Config {
 }
 
 const { Option } = Select;
-const { Group } = Radio;
+// const { Group } = Radio;
 
 const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const { userInfo } = useContext(Context);
@@ -53,7 +53,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     id: '',
     type: '0'
   });
-  const [displayType, setDisplayType] = useState<number>(1);
+  const [displayType] = useState<number>(1); // setDisplayType
 
   useMemo(() => {
     const state = location.state || {};
@@ -268,12 +268,12 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         >
           <Input placeholder="请输入产品ID" className="width320" maxLength={40} />
         </Form.Item>
-        <Form.Item label="展示类型" name="displayType" required initialValue={1}>
+        {/* <Form.Item label="展示类型" name="displayType" required initialValue={1}>
           <Group onChange={(e) => setDisplayType(e.target.value)}>
             <Radio value={1}>链接</Radio>
             <Radio value={2}>小程序</Radio>
           </Group>
-        </Form.Item>
+        </Form.Item> */}
         {displayType === 1 && (
           <Form.Item
             label="产品链接"
