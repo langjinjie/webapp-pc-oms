@@ -67,3 +67,8 @@ export const operateSpeechStatus: HttpFunction = (params) => {
 export const checkSensitive: HttpFunction = (params) => {
   return http.post('/tenacity-admin/api/smart/sensitive/check', params);
 };
+
+// 获取目录列表
+export const getCategoryList: HttpFunction = (params) => {
+  return http.post('/tenacity-admin/api/smart/catalog/list', params);
+};

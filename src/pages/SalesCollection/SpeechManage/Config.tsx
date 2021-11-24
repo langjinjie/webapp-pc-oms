@@ -29,60 +29,65 @@ export const statusOptions = [
   { id: 2, name: '已下架' }
 ];
 
-export const searchCols: SearchCol[] = [
-  {
-    name: 'catalogId',
-    type: 'input',
-    label: '选择目录',
-    width: '268px',
-    placeholder: '请输入'
-  },
-  {
-    name: 'content',
-    type: 'input',
-    label: '话术内容',
-    width: '268px',
-    placeholder: '请输入'
-  },
-  {
-    name: 'tip',
-    type: 'input',
-    label: '话术小贴士',
-    width: '268px',
-    placeholder: '请输入'
-  },
-  {
-    name: 'contentType',
-    type: 'select',
-    width: 160,
-    label: '话术格式',
-    options: speechContentTypes
-  },
-  {
-    name: 'status',
-    type: 'select',
-    width: 160,
-    label: '上架状态',
-    options: statusOptions
-  },
-  {
-    name: 'sensitive',
-    type: 'select',
-    width: 160,
-    label: '是否出发敏感词',
-    options: sensitiveOptions
-  },
-  {
-    name: 'times',
-    type: 'rangePicker',
-    width: 160,
-    label: '更新时间'
-  }
-];
+export const setSearchCols = (options: any[]): SearchCol[] => {
+  return [
+    {
+      name: 'catalogIds',
+      type: 'cascader',
+      label: '选择目录',
+      width: '268px',
+      placeholder: '请输入',
+      fieldNames: { label: 'name', value: 'catalogId', children: 'children' },
+      cascaderOptions: options
+    },
+    {
+      name: 'content',
+      type: 'input',
+      label: '话术内容',
+      width: '268px',
+      placeholder: '请输入'
+    },
+    {
+      name: 'tip',
+      type: 'input',
+      label: '话术小贴士',
+      width: '268px',
+      placeholder: '请输入'
+    },
+    {
+      name: 'contentType',
+      type: 'select',
+      width: 160,
+      label: '话术格式',
+      options: speechContentTypes
+    },
+    {
+      name: 'status',
+      type: 'select',
+      width: 160,
+      label: '上架状态',
+      options: statusOptions
+    },
+    {
+      name: 'sensitive',
+      type: 'select',
+      width: 160,
+      label: '是否出发敏感词',
+      options: sensitiveOptions
+    },
+    {
+      name: 'times',
+      type: 'rangePicker',
+      width: 160,
+      label: '更新时间'
+    }
+  ];
+};
 
 interface OperateProps {
   handleEdit: (record: SpeechProps) => void;
   handleSort: (record: SpeechProps) => void;
+  lastCategory: any;
 }
 export const genderTypeOptions = [
   { id: 1, name: '男' },
@@ -113,7 +118,7 @@ export interface SpeechProps {
   [propKey: string]: any;
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
-  const { handleEdit, handleSort } = args;
+  const { handleEdit, handleSort, lastCategory } = args;
   return [
     {
       title: '来源',
@@ -233,13 +238,14 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       render: (record: SpeechProps) => {
         return (
           <Space className="spaceWrap">
-            <Button type="link" onClick={() => handleEdit(record)}>
+            <Button disabled={record.status !== 2} type="link" onClick={() => handleEdit(record)}>
               编辑
             </Button>
-            <Button type="link" onClick={() => handleSort(record)}>
+
+            <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record)}>
               上移
             </Button>
-            <Button type="link" onClick={() => handleSort(record)}>
+            <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record)}>
               下移
             </Button>
           </Space>

@@ -2,12 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
 import { RouteComponentProps } from 'react-router';
-import { getSpeechList, operateSpeechStatus } from 'src/apis/salesCollection';
+import { getSpeechList, operateSpeechStatus, getCategoryList } from 'src/apis/salesCollection';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import ExportModal from './Components/ExportModal/ExportModal';
 import PreviewSpeech from './Components/PreviewSpeech/PreviewSpeech';
-import { columns, searchCols, SpeechProps } from './Config';
+import { columns, setSearchCols, SpeechProps } from './Config';
 
 import style from './style.module.less';
 import { Context } from 'src/store';
@@ -39,10 +39,12 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const [selectedRows, setSelectedRows] = useState<SpeechProps[]>([]);
   const [visiblePreview, setVisiblePreview] = useState(false);
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [lastCategory, setLastCategory] = useState<any>();
   const [loading] = useState(false);
   const onValuesChange = (values: any) => {
     const {
-      catalogId = '',
+      catalogIds,
       content = '',
       contentType = '',
       sensitive = '',
@@ -55,6 +57,10 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     if (times) {
       updateBeginTime = times[0].startOf('day').valueOf();
       updateEndTime = times[1].endOf('day')?.valueOf();
+    }
+    let catalogId = '';
+    if (catalogIds) {
+      catalogId = catalogIds[catalogIds.length - 1];
     }
     setFormParams((formParams) => ({
       ...formParams,
@@ -75,7 +81,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     setSelectRowKeys([]);
     // 重置当前操作状态
     setCurrentType(null);
-    const { list, total } = await getSpeechList({ ...formParams, ...params });
+    const { list, total } = await getSpeechList({ ...formParams, sceneId: lastCategory?.sceneId || '', ...params });
     setDataSource(list || []);
     setPagination((pagination) => ({ ...pagination, total: total || 0 }));
   };
@@ -84,7 +90,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     // 将页面重置为第一页
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     const {
-      catalogId = '',
+      catalogIds,
       content = '',
       contentType = '',
       sensitive = '',
@@ -97,6 +103,10 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     if (times) {
       updateBeginTime = times[0].startOf('day').valueOf();
       updateEndTime = times[1].endOf('day')?.valueOf();
+    }
+    let catalogId = '';
+    if (catalogIds) {
+      catalogId = catalogIds[catalogIds.length - 1];
     }
     setFormParams((formParams) => ({
       ...formParams,
@@ -121,8 +131,21 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     });
   };
 
+  const getCategory = async (params?: any) => {
+    const res = await getCategoryList({ ...params });
+    if (res) {
+      res.forEach((item: any) => {
+        if (item.lastLevel === 0) {
+          item.isLeaf = false;
+        }
+      });
+      setCategories(res);
+    }
+  };
+
   useEffect(() => {
     getList();
+    getCategory();
   }, []);
 
   // 分页改变
@@ -223,6 +246,32 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       }
     });
   };
+  const loadData = async (selectedOptions: any) => {
+    const targetOption = selectedOptions[selectedOptions.length - 1];
+    targetOption.loading = true;
+
+    // 异步加载子类目
+    const res = await getCategoryList({ sceneId: targetOption.sceneId, catalogId: targetOption.catalogId });
+
+    targetOption.loading = false;
+    if (res) {
+      res.forEach((item: any) => {
+        if (item.lastLevel === 0) {
+          item.isLeaf = false;
+        }
+      });
+      targetOption.children = res;
+    }
+    setCategories([...categories]);
+  };
+  const onCascaderChange = (value: any, selectedOptions: any) => {
+    console.log(value, selectedOptions);
+    const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
+    setLastCategory(lastSelectedOptions);
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
+    getList({ pageNum: 1, sceneId: lastSelectedOptions?.sceneId, catalogId: lastSelectedOptions?.catalogId });
+  };
+
   return (
     <div className="container">
       <div className="flex justify-between">
@@ -273,12 +322,19 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
         </Button>
       </div>
       <div className="form-inline pt20">
-        <NgFormSearch searchCols={searchCols} onSearch={onSearch} onValuesChange={onValuesChange} />
+        <NgFormSearch
+          searchCols={setSearchCols(categories)}
+          loadData={loadData}
+          onSearch={onSearch}
+          onChangeOfCascader={onCascaderChange}
+          onValuesChange={onValuesChange}
+          disabled={lastCategory?.lastLevel === 1}
+        />
       </div>
 
       <NgTable
         dataSource={dataSource}
-        columns={columns({ handleEdit, handleSort })}
+        columns={columns({ handleEdit, handleSort, lastCategory })}
         setRowKey={(record: SpeechProps) => {
           return record.contentId;
         }}
@@ -344,7 +400,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       <PreviewSpeech
         visible={visiblePreview}
         onClose={() => {
-          console.log('aaaa111');
           setVisiblePreview(false);
         }}
       ></PreviewSpeech>
