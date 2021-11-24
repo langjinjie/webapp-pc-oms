@@ -69,12 +69,6 @@ export const checkSensitive: HttpFunction = (params) => {
 };
 
 /* 目录管理 */
-
-// 目录列表接口
-export const requestGetCatalogList: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/smart/catalog/list', param);
-};
-
 // 目录上移/下移
 export const requestSaveSortCatalog: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/smart/catalog/savesort', param);
@@ -93,4 +87,9 @@ export const requestGetCatalogDetail: HttpFunction = (param) => {
 // 目录新增/编辑接口
 export const requestEditCatalog: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/smart/catalog/edit', param);
+};
+
+// 获取目录列表
+export const getCategoryList: HttpFunction = (params) => {
+  return http.post('/tenacity-admin/api/smart/catalog/list', params);
 };
