@@ -51,10 +51,13 @@
       margin-right: 10px;
       margin-bottom: 10px;
       height: 32px;
-      background: #ffffff;
       border-radius: 18px;
       border: 1px solid #318cf5;
       color: #318cf5;
+      &[disabled] {
+        border-color: #d9d9d9;
+        color: rgba(0, 0, 0, 0.25);
+      }
     }
     .paginationWrap {
       width: 650px;

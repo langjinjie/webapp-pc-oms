@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Form, Button, message, Upload } from 'antd';
 
 import styles from './style.module.less';
@@ -8,10 +8,11 @@ import classNames from 'classnames';
 const { Dragger } = Upload;
 interface ExportModalProps {
   visible: boolean;
-  onOK: () => void;
+  onOK: (file: File) => void;
   onCancel: () => void;
+  onDownLoad?: () => void;
 }
-const ExportModal: React.FC<ExportModalProps> = ({ visible, onOK, onCancel }) => {
+const ExportModal: React.FC<ExportModalProps> = ({ visible, onOK, onCancel, onDownLoad }) => {
   const [fileList, setFileList] = useState<any[]>([]);
   const props = {
     multiple: false,
@@ -34,19 +35,22 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onOK, onCancel }) =>
     },
     fileList
   };
+  useEffect(() => {
+    visible || setFileList([]);
+  }, [visible]);
   return (
     <Modal
       title="批量新增"
       centered
       visible={visible}
-      onOk={() => onOK()}
+      onOk={() => onOK(fileList[0])}
       onCancel={() => onCancel()}
       width={640}
       className={styles.exportWrap}
     >
       <Form>
         <Form.Item label="下载模板">
-          <Button type="primary" className={styles.uploadBtn} shape="round" ghost>
+          <Button type="primary" className={styles.uploadBtn} shape="round" ghost onClick={() => onDownLoad?.()}>
             下载
           </Button>
         </Form.Item>

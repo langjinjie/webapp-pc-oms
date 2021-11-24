@@ -1,16 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Form, Select, Space, Button, Input, Card, DatePicker } from 'antd';
+import { Form, Select, Space, Button, Input, Card, DatePicker, message } from 'antd';
 import { NgTable } from 'src/components/index';
 import { ISensitiveType, ISensitiveSearchParam, ISensitiveList } from 'src/utils/interface';
-import { requestGetSensitiveTypeList, requestGetSensitiveList } from 'src/apis/orgManage';
+import {
+  requestGetSensitiveTypeList,
+  requestGetSensitiveList,
+  requestDownLoadSensitiveList,
+  requestAddSensitiveList,
+  requestManageSensitiveWord
+} from 'src/apis/orgManage';
 import { Context } from 'src/store';
 import { sensitiveStatusList } from 'src/utils/commonData';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import style from './style.module.less';
 
 const SensitiveList: React.FC = () => {
-  const { currentCorpId } = useContext(Context);
+  const { currentCorpId: corpId } = useContext(Context);
   const [form] = Form.useForm();
   const [searchParam, setSearchParam] = useState<ISensitiveSearchParam>({
     typeId: '',
@@ -22,7 +28,7 @@ const SensitiveList: React.FC = () => {
   const [isLoading, setIsloading] = useState(true);
   const [sensitiveList, setSensitiveList] = useState<{ total: number; list: ISensitiveList[] }>({ total: 0, list: [] });
   const [paginationParam, setPaginationParam] = useState({ current: 1, pageSize: 10 });
-  // const [disabledColumnType, setDisabledColumnType] = useState(2);
+  const [disabledColumnType, setDisabledColumnType] = useState(-1);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [sensitiveType, setSensitiveType] = useState<ISensitiveType[]>([]);
   const [visible, setVisible] = useState(false);
@@ -33,7 +39,7 @@ const SensitiveList: React.FC = () => {
   // 获取敏感词类型列表
   const getSensitiveTypeList = async () => {
     const res = await requestGetSensitiveTypeList({
-      corpId: currentCorpId
+      corpId
     });
     setSensitiveType(res.list);
   };
@@ -44,7 +50,7 @@ const SensitiveList: React.FC = () => {
     const { current, pageSize } = paginationParam;
     setIsloading(true);
     const res = await requestGetSensitiveList({
-      corpId: currentCorpId,
+      corpId,
       typeId,
       word,
       status: status === -1 ? undefined : status, // status要么传,要么不传
@@ -53,8 +59,12 @@ const SensitiveList: React.FC = () => {
       pageNum: current,
       pageSize
     });
-    setSensitiveList(res);
-    setIsloading(false);
+    if (res) {
+      setSensitiveList(res);
+      setIsloading(false);
+      setSelectedRowKeys([]);
+      setDisabledColumnType(-1);
+    }
   };
 
   // 单个新增/编辑
@@ -103,8 +113,7 @@ const SensitiveList: React.FC = () => {
     console.log('点击分页器');
     setPaginationParam({ current: value, pageSize: pageSize as number });
     setSelectedRowKeys([]);
-    // const { status } = searchParam;
-    // setDisabledColumnType(2);
+    setDisabledColumnType(-1);
   };
   // 分页器参数
   const pagination = {
@@ -112,23 +121,37 @@ const SensitiveList: React.FC = () => {
     current: paginationParam.current
   };
   // 点击选择框
-  const onSelectChange = (newSelectedRowKeys: unknown[]) => {
-    console.log('点击选择框');
+  const onSelectChange = async (newSelectedRowKeys: any[]) => {
+    // 判断是取消选择还是开始选择
     if (newSelectedRowKeys.length) {
-      // !selectedRowKeys.length && setDisabledColumnType(0);
-      setSelectedRowKeys(newSelectedRowKeys as string[]);
+      let filterRowKeys: string[] = newSelectedRowKeys;
+      // 判断是否是首次选择
+      if (disabledColumnType === -1) {
+        // 获取第一个的状态作为全选筛选条件
+        const disabledColumnType = sensitiveList.list.find((item) => item.sensitiveId === newSelectedRowKeys[0])
+          ?.status as number;
+        setDisabledColumnType(disabledColumnType);
+        // 判断是否是点击的全选
+        if (newSelectedRowKeys.length > 1) {
+          // 过滤得到需要被全选的
+          filterRowKeys = sensitiveList.list
+            .filter((item) => item.status === disabledColumnType)
+            .map((item) => item.sensitiveId);
+        }
+      }
+      setSelectedRowKeys(filterRowKeys as string[]);
     } else {
       setSelectedRowKeys([]);
-      // setDisabledColumnType(2);
+      setDisabledColumnType(-1);
     }
   };
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
     hideSelectAll: false, // 是否隐藏全选
-    getCheckboxProps: (/* record: any */) => ({
-      disabled: false,
-      name: ''
+    getCheckboxProps: (record: ISensitiveList) => ({
+      disabled: disabledColumnType === -1 ? false : record.status !== disabledColumnType,
+      name: record.name
     })
   };
   // 查询
@@ -151,6 +174,41 @@ const SensitiveList: React.FC = () => {
     form.resetFields();
     setSearchParam({ typeId: '', word: '', status: -1, updateBeginTime: '', updateEndTime: '' });
     setPaginationParam({ current: 1, pageSize: 10 });
+  };
+  // 敏感词全量导出接口、下载敏感词模板
+  const onDownLoadExcel = async (interfaceType: number, fileName: string) => {
+    const res = await requestDownLoadSensitiveList({ corpId, interfaceType });
+    if (res) {
+      const blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', fileName + '.xlsx');
+      document.body.appendChild(link);
+      link.click(); // 点击下载
+      link.remove(); // 下载完成移除元素
+      window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
+    }
+  };
+  // 批量上传
+  const mulitiUpload = async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('corpId', corpId);
+    const res = await requestAddSensitiveList(formData);
+    if (res) {
+      message.success('上传成功');
+      setVisible(false);
+    }
+  };
+  // 敏感词(上架/下架/删除)
+  const batchSensitive = async (type: number) => {
+    const res = await requestManageSensitiveWord({ corpId, sensitiveIds: selectedRowKeys, type });
+    if (res) {
+      message.success(`${type === 1 ? '上架' : type === 2 ? '下架' : '删除'}成功`);
+      getSensitiveList();
+    }
   };
   useEffect(() => {
     getSensitiveTypeList();
@@ -218,15 +276,26 @@ const SensitiveList: React.FC = () => {
             <Button htmlType="button" onClick={() => setVisible(true)}>
               批量新增
             </Button>
-            <Button htmlType="button">全量导出</Button>
-            <Button htmlType="button">上架</Button>
-            <Button htmlType="button">下架</Button>
-            <Button htmlType="button">删除</Button>
+            <Button onClick={() => onDownLoadExcel(1, '敏感词列表')}>全量导出</Button>
+            <Button disabled={disabledColumnType !== 0 && disabledColumnType !== 2} onClick={() => batchSensitive(1)}>
+              上架
+            </Button>
+            <Button disabled={disabledColumnType !== 0 && disabledColumnType !== 1} onClick={() => batchSensitive(2)}>
+              下架
+            </Button>
+            <Button disabled={disabledColumnType !== 0 && disabledColumnType === -1} onClick={() => batchSensitive(3)}>
+              删除
+            </Button>
           </div>
           <div className={style.paginationWrap} />
         </div>
       </Card>
-      <ExportModal visible={visible} onOK={() => setVisible(false)} onCancel={() => setVisible(false)} />
+      <ExportModal
+        visible={visible}
+        onOK={mulitiUpload}
+        onCancel={() => setVisible(false)}
+        onDownLoad={() => onDownLoadExcel(2, '敏感词列表模板')}
+      />
     </div>
   );
 };
