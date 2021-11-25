@@ -91,6 +91,10 @@ export const routes: RouteProps[] = [
     path: '/station',
     component: lazy(() => import('src/pages/Operation/StationConfig/StationConfig'))
   },
+  {
+    path: '/tagConfig',
+    component: lazy(() => import('src/pages/Operation/TagConfig/List'))
+  },
   // 新增小站配置
   {
     path: '/station/add',
@@ -167,6 +171,10 @@ export const menus: Menu[] = [
       {
         name: '周报配置',
         path: '/weekly'
+      },
+      {
+        name: '标签配置',
+        path: '/tagConfig'
       }
     ]
   },
