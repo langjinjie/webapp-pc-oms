@@ -78,6 +78,7 @@ export interface IAllTagList {
   activityTagList: ITagItem[];
 }
 
+/* 销售宝典 */
 // 目录管理
 export interface IAddOrEditModalParam {
   visible: boolean;
@@ -89,6 +90,18 @@ export interface IAddOrEditModalParam {
 export interface IBannerInfo {
   name: string;
   catoryId: string;
+}
+// 目录列表
+export interface ICatalogItem {
+  sceneId: number;
+  catalogNum: number;
+  catalogId: string;
+  name: string;
+  logoUrl: string;
+  level: number;
+  lastLevel: number;
+  onlineContentNum: number;
+  contentNum: number;
 }
 
 /* 敏感词管理 */

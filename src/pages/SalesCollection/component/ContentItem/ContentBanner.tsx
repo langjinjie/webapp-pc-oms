@@ -1,15 +1,13 @@
 import React, { MouseEvent, useEffect, useState } from 'react';
 import { Icon } from 'src/components/index';
 import { ContentBanner as ChildrenContentBanner } from 'src/pages/SalesCollection/component/index';
-import { IAddOrEditModalParam, IBannerInfo } from 'src/utils/interface';
+import { IAddOrEditModalParam, ICatalogItem } from 'src/utils/interface';
 import classNames from 'classnames';
 import style from './style.module.less';
 
 interface IContentBannerProps {
-  bannerInfo: IBannerInfo;
+  bannerInfo: ICatalogItem;
   currentContents: string;
-  isFirstLevelContents?: boolean;
-  isLastLevelContents?: boolean;
   isHiddenMoveUp: boolean;
   isHiddenMoveDown: boolean;
   isHiddenDelete?: boolean;
@@ -19,8 +17,6 @@ interface IContentBannerProps {
 
 const ContentBanner: React.FC<IContentBannerProps> = ({
   bannerInfo,
-  isFirstLevelContents = false,
-  isLastLevelContents = false,
   isHiddenMoveUp,
   isHiddenMoveDown,
   isHiddenDelete = false,
@@ -28,18 +24,18 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   currentContents,
   setModalParam
 }) => {
-  const [childrenList, setChildrenList] = useState<any[]>([]);
+  const [childrenList, setChildrenList] = useState<ICatalogItem[]>([]);
   const [currentContent, setCurrentContent] = useState('');
 
   // 点击目录
   const contentsClickHandle = () => {
-    if (isLastLevelContents) return;
-    setCurrentContents(currentContents === bannerInfo.catoryId ? '' : bannerInfo.catoryId);
+    if (bannerInfo.lastLevel) return;
+    setCurrentContents(currentContents === bannerInfo.catalogId ? '' : bannerInfo.catalogId);
   };
   // 编辑
   const editClickHandle = (e: MouseEvent) => {
     console.log('点击编辑');
-    setModalParam({ visible: true, type: 1, islastlevel: isLastLevelContents, title: '编辑目录', content: '' });
+    setModalParam({ visible: true, type: 1, islastlevel: !!bannerInfo.lastLevel, title: '编辑目录', content: '' });
     e.stopPropagation();
   };
   // 上/下移 -1上移 1下移
@@ -83,27 +79,25 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       <div
         className={classNames(
           style.bannerWrap,
-          { [style.isChildrenContents]: !isFirstLevelContents },
-          { [style.isLastContents]: isLastLevelContents }
+          { [style.isChildrenContents]: !!bannerInfo.level },
+          { [style.isLastContents]: !!bannerInfo.level }
         )}
         onClick={contentsClickHandle}
       >
-        {isLastLevelContents || (
+        {!!bannerInfo.lastLevel || (
           <div
             className={classNames(style.icon, {
-              [style.active]: currentContents === bannerInfo.catoryId
+              [style.active]: currentContents === bannerInfo.catalogId
             })}
           />
         )}
         <div className={style.name}>{bannerInfo.name}</div>
-        <div className={style.info}>{`（上架${489}/全部${690}）`}</div>
+        <div className={style.info}>{`（上架${bannerInfo.onlineContentNum}/全部${bannerInfo.contentNum}）`}</div>
         <div className={style.edit}>
-          {isFirstLevelContents || (
-            <span onClick={editClickHandle}>
-              <Icon className={style.svgIcon} name="bianji" />
-              编辑
-            </span>
-          )}
+          <span onClick={editClickHandle}>
+            <Icon className={style.svgIcon} name="bianji" />
+            编辑
+          </span>
           {isHiddenMoveUp || (
             <span onClick={(e) => moveClickHandle(e, -1, bannerInfo.name)}>
               <Icon className={style.svgIcon} name="shangsheng" />
@@ -116,7 +110,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
               下移
             </span>
           )}
-          {isFirstLevelContents || isHiddenDelete || (
+          {!!bannerInfo.lastLevel || isHiddenDelete || (
             <span onClick={(e) => delClickHandle(e, bannerInfo.name)}>
               <Icon className={style.svgIcon} name="shanchu" />
               删除
@@ -125,13 +119,12 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
         </div>
       </div>
       <div className={style.children}>
-        {currentContents === bannerInfo.catoryId && (
+        {currentContents === bannerInfo.catalogId && (
           <>
             {childrenList.map((item, index) => (
               <div key={index}>
                 <ChildrenContentBanner
-                  bannerInfo={{ name: item, catoryId: `${index}` }}
-                  isLastLevelContents={false}
+                  bannerInfo={item}
                   isHiddenMoveUp={childrenList.length === 1 || index === 0}
                   isHiddenMoveDown={childrenList.length === 1 || index === childrenList.length - 1}
                   isHiddenDelete={childrenList.length === 1}
@@ -141,7 +134,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
                 />
                 {index === childrenList.length - 1 && (
                   <span
-                    className={classNames(style.add, { [style.isLastContents]: false })}
+                    className={classNames(style.add, { [style.isLastContents]: !!item.lastLevel })}
                     onClick={() => addClickHandle(false)}
                   >
                     <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" />
