@@ -14,6 +14,7 @@ const AddOrEditWords: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [addSensitiveType, setAddSensitiveType] = useState('');
   const [sensitiveType, setSensitiveType] = useState<ISensitiveType[]>([]);
+  const [addedType, setAddedType] = useState(false);
   const [form] = Form.useForm();
   const history = useHistory();
   const location = useLocation();
@@ -26,6 +27,8 @@ const AddOrEditWords: React.FC = () => {
       corpId
     });
     setSensitiveType(res.list);
+    addedType && (await form.setFieldsValue({ typeId: res.list[0].typeId }));
+    setAddedType(false);
   };
   // 敏感词内容
   const inputOnChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +37,7 @@ const AddOrEditWords: React.FC = () => {
   };
   // 保存/返回 1 保存 0 返回
   const btnClickHandle = async (type: number) => {
-    console.log(getQueryParam().type === 'edit');
+    type && (await form.validateFields());
     const res =
       type &&
       (await requestEditSensitiveWord({
@@ -52,10 +55,10 @@ const AddOrEditWords: React.FC = () => {
   };
   // 请求添加敏感词类型
   const modalOnOkHandle = async () => {
-    console.log('提交数据');
     const res = await requestAddSensitiveType({ name: addSensitiveType });
     if (res) {
       message.success('敏感词类型添加成功');
+      setAddedType(true);
       setIsVisible(false);
     }
   };
@@ -65,6 +68,7 @@ const AddOrEditWords: React.FC = () => {
   };
   useEffect(() => {
     getSensitiveTypeList();
+    setWordLengtg((form.getFieldsValue().word || '').length);
   }, [isVisible]);
   return (
     <div className={style.wrap}>
@@ -125,14 +129,20 @@ const AddOrEditWords: React.FC = () => {
         visible={isVisible}
         onCancel={() => setIsVisible(false)}
         onOk={modalOnOkHandle}
+        maskClosable={false}
+        okButtonProps={{
+          disabled: !addSensitiveType,
+          htmlType: 'submit'
+        }}
+        destroyOnClose
       >
-        <div className={style.title}>添加敏感词</div>
+        <div className={style.title}>添加敏感词类型</div>
         <input
           className={style.input}
           value={addSensitiveType}
           type="text"
-          placeholder="输入目录名称（限制4个字）"
-          maxLength={4}
+          placeholder="输入敏感词类型名称（限制10个字）"
+          maxLength={10}
           onChange={addSensitiveTypeInputHandle}
         />
       </Modal>
