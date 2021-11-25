@@ -27,7 +27,6 @@ const Notice: React.FC = () => {
   const onSubmit = async (values: any) => {
     const { time, ...others } = values;
     const params: any = { ...others };
-    console.log(values);
     if (time && time.length > 0) {
       if (time[0].valueOf() < moment().add(1, 'hours').valueOf()) {
         return message.error('生效时间请选择一小时以后');

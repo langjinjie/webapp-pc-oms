@@ -50,6 +50,10 @@ interface Product {
   status: number;
 }
 
+interface KeyMapVal {
+  [key: string]: string;
+}
+
 const { Item, List, useForm } = Form;
 const { Option } = Select;
 const { TextArea } = Input;
@@ -57,8 +61,8 @@ const { Group } = Radio;
 
 const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [editField, setEditField] = useState<string>('');
-  const [editFieldValue, setEditFieldValues] = useState<any>({});
-  const [categoryMessage, setCategoryMessage] = useState<any>({});
+  const [editFieldValue, setEditFieldValues] = useState<KeyMapVal>({});
+  const [categoryMessage, setCategoryMessage] = useState<KeyMapVal>({});
   const [colors, setColors] = useState<ColorItem[]>([]);
   const [userList, setUserList] = useState<UserItem[]>([]);
   const [receiver, setReceiver] = useState<string[]>([]);
