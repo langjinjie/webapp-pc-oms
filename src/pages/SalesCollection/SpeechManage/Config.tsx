@@ -137,7 +137,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '话术格式',
       dataIndex: 'contentType',
-      width: 200,
+      width: 100,
       render: (contentType) => (
         <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0].name || UNKNOWN}</span>
       )
@@ -158,7 +158,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '客户分类',
       dataIndex: 'genderType',
-      width: 200,
+      width: 100,
       render: (value, record) => {
         return (
           <span>
@@ -182,7 +182,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '触发敏感词',
       dataIndex: 'sensitive',
-      width: 180,
+      width: 120,
       ellipsis: {
         showTitle: false
       },
