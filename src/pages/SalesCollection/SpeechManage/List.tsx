@@ -2,7 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
 import { RouteComponentProps } from 'react-router';
-import { getSpeechList, operateSpeechStatus, getCategoryList } from 'src/apis/salesCollection';
+import {
+  getSpeechList,
+  operateSpeechStatus,
+  getCategoryList,
+  exportSpeech,
+  batchExportSpeech,
+  sortSpeech
+} from 'src/apis/salesCollection';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import ExportModal from './Components/ExportModal/ExportModal';
@@ -192,8 +199,14 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const handleEdit: (scored: SpeechProps) => void = (scored) => {
     history.push(`/speechManage/edit?sceneId=${scored.sceneId}&contentId=${scored.contentId}`);
   };
-  const handleSort: (record: SpeechProps) => void = (record) => {
-    console.log(record);
+  const handleSort: (record: SpeechProps, sortType: number) => void = async (record, sortType) => {
+    const { sceneId, catalogId, contentId } = record;
+    const res = await sortSpeech({ sort: sortType, sceneId, catalogId, contentId });
+    if (res) {
+      message.success('移动成功');
+      getList();
+    }
+    console.log(res);
   };
 
   const handleAdd = () => {
@@ -206,9 +219,41 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       setChecking(false);
     }, 3000);
   };
-  const handleExport = () => {
+  const handleExport = async () => {
     if (dataSource.length > 0) {
-      console.log(dataSource);
+      let res: any;
+      // 单条导出
+      if (selectedRowKeys.length > 0) {
+        const list = selectedRows.map((row: SpeechProps) => ({ sceneId: row.sceneId, contentId: row.contentId }));
+        res = await exportSpeech({ list });
+      } else {
+        // 批量导出
+        const { status, sensitive, updateBeginTime, updateEndTime, content, tip, contentType } = formParams;
+        const params = {
+          sceneId: lastCategory.sceneId || '',
+          catalogId: lastCategory.catalogId || '',
+          content,
+          tip,
+          contentType,
+          status,
+          sensitive,
+          updateBeginTime,
+          updateEndTime
+        };
+        res = await batchExportSpeech(params);
+      }
+      if (res) {
+        const blob = new Blob([res.data]);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = url;
+        link.setAttribute('download', '话术列表' + '.xlsx');
+        document.body.appendChild(link);
+        link.click(); // 点击下载
+        link.remove(); // 下载完成移除元素
+        window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
+      }
     }
   };
   const operateStatus = (operateType: number) => {
@@ -265,11 +310,15 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     setCategories([...categories]);
   };
   const onCascaderChange = (value: any, selectedOptions: any) => {
-    console.log(value, selectedOptions);
     const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
     setLastCategory(lastSelectedOptions);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     getList({ pageNum: 1, sceneId: lastSelectedOptions?.sceneId, catalogId: lastSelectedOptions?.catalogId });
+  };
+
+  const handleDownload = () => {
+    window.location.href =
+      'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/smart_content_export_template.xlsx';
   };
 
   return (
@@ -334,7 +383,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
 
       <NgTable
         dataSource={dataSource}
-        columns={columns({ handleEdit, handleSort, lastCategory })}
+        columns={columns({ handleEdit, handleSort, lastCategory, pagination })}
         setRowKey={(record: SpeechProps) => {
           return record.contentId;
         }}
@@ -394,6 +443,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
         visible={visibleExport}
         onOK={() => setVisibleExport(false)}
         onCancel={() => setVisibleExport(false)}
+        onDownLoad={handleDownload}
       />
 
       {/* 话术预览 */}

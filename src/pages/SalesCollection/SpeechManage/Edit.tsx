@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, Card, Form, Input, message, Select, Space } from 'antd';
+import { Button, Card, Cascader, Form, Input, message, Modal, Select, Space } from 'antd';
 import styles from './style.module.less';
 import CustomTextArea from './Components/CustomTextArea';
 import { useForm } from 'antd/lib/form/Form';
@@ -8,12 +8,13 @@ import { speechContentTypes, SpeechProps } from './Config';
 import SpeechItem from './Components/SpeechTypeItem/SpeechItem';
 import { RouteComponentProps } from 'react-router';
 import { URLSearchParams } from 'src/utils/base';
-import { getSpeechDetail, editSpeech } from 'src/apis/salesCollection';
+import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
 
 const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
   const [speechForm] = useForm();
   const [speech, setSpeech] = useState<SpeechProps>();
   const [originSpeech, setOriginSpeech] = useState<SpeechProps>();
+  const [categories, setCategories] = useState<any[]>([]);
   const getDetail = async () => {
     const params = URLSearchParams(location.search);
     if (params.contentId) {
@@ -72,21 +73,26 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
     }
   };
 
+  const getCategory = async (params?: any) => {
+    const res = await getCategoryList({ ...params });
+    if (res) {
+      res.forEach((item: any) => {
+        if (item.lastLevel === 0) {
+          item.isLeaf = false;
+        }
+      });
+      setCategories(res);
+    }
+  };
+
   useEffect(() => {
     getDetail();
+    getCategory();
   }, []);
-  const onFinish = async (values: any) => {
-    console.log(values, originSpeech);
-    const { content, contentType, tip, ageType, genderType } = values;
+
+  const onSubmit = async (params: any) => {
     const res = await editSpeech({
-      sceneId: speech?.sceneId,
-      catalogId: speech?.catalogId,
-      contentId: speech?.contentId,
-      content,
-      contentType,
-      ageType,
-      tip,
-      genderType
+      ...params
     });
     if (res) {
       const { code, sensitiveWord } = res;
@@ -94,7 +100,53 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
       if (code === 0) {
         message.success('保存成功');
         history.back();
+      } else if (code === 1) {
+        message.error('触发了敏感词,请修改后再提交');
+        setSpeech((speech) => ({ ...speech!, sensitiveWord, sensitive: 1 }));
       }
+    }
+  };
+
+  const onFinish = async (values: any) => {
+    const { content, contentType, tip, ageType, genderType, contentUrl, title, summary } = values;
+    if (
+      (originSpeech?.contentType === 2 && contentUrl !== originSpeech.contentUrl) ||
+      (originSpeech?.contentType === 7 && (title !== originSpeech?.title || originSpeech.contentUrl !== contentUrl))
+    ) {
+      Modal.confirm({
+        content: '修改目录会对已上架话术产生影响，企微前端能实时看到变化',
+        cancelText: '取消',
+        okText: '确定',
+        onOk: async () => {
+          await onSubmit({
+            sceneId: originSpeech?.sceneId,
+            catalogId: originSpeech?.catalogId,
+            contentId: speech?.contentId || '',
+            content,
+            contentType,
+            ageType,
+            tip,
+            genderType,
+            contentUrl,
+            title,
+            summary: summary || originSpeech?.summary
+          });
+        }
+      });
+    } else {
+      await onSubmit({
+        sceneId: originSpeech?.sceneId,
+        catalogId: originSpeech?.catalogId,
+        contentId: speech?.contentId || '',
+        content,
+        contentType,
+        ageType,
+        tip,
+        genderType,
+        contentUrl,
+        title,
+        summary: summary || originSpeech?.summary
+      });
     }
   };
 
@@ -104,6 +156,39 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
     setSpeech((speech) => ({ ...speech!, contentType }));
     console.log(values);
   };
+
+  const loadData = async (selectedOptions: any) => {
+    const targetOption = selectedOptions[selectedOptions.length - 1];
+    targetOption.loading = true;
+
+    // 异步加载子类目
+    const res = await getCategoryList({ sceneId: targetOption.sceneId, catalogId: targetOption.catalogId });
+
+    targetOption.loading = false;
+    if (res) {
+      res.forEach((item: any) => {
+        if (item.lastLevel === 0) {
+          item.isLeaf = false;
+        }
+      });
+      targetOption.children = res;
+    }
+    setCategories([...categories]);
+  };
+
+  const onCascaderChange = async (value: any, selectedOptions: any) => {
+    const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
+    if (lastSelectedOptions) {
+      const { sceneId, catalogId } = lastSelectedOptions;
+      const res = await requestGetCatalogDetail({ sceneId, catalogId });
+      if (res) {
+        setOriginSpeech(res);
+        const { contentType } = res;
+        speechForm.setFieldsValue({ contentType });
+      }
+    }
+  };
+
   return (
     <Card title="新增话术" bordered={false} className="edit">
       <Form
@@ -113,14 +198,26 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           onValuesChange(values);
         }}
       >
-        <Form.Item label="选择目录" name="key1" rules={[{ required: true }]}>
-          <Select placeholder="请选择" className="width420">
-            <Select.Option value="1">名片</Select.Option>
-          </Select>
+        <Form.Item label="选择目录" rules={[{ required: true }]}>
+          {originSpeech?.contentId
+            ? (
+            <Input type="text" value={originSpeech.fullName} className="width420" readOnly />
+              )
+            : (
+            <Cascader
+              placeholder="请选择"
+              className="width420"
+              fieldNames={{ label: 'name', value: 'catalogId', children: 'children' }}
+              options={categories}
+              loadData={loadData}
+              onChange={onCascaderChange}
+            ></Cascader>
+              )}
         </Form.Item>
-        {true && (
+
+        {originSpeech?.contentType && (
           <Form.Item label="话术格式" name="contentType" rules={[{ required: true }]}>
-            <Select placeholder="请选择" className="width240">
+            <Select placeholder="请选择" className="width240" disabled>
               {speechContentTypes.map((contentType) => (
                 <Select.Option key={contentType.id} value={contentType.id}>
                   {contentType.name}
@@ -129,7 +226,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
             </Select>
           </Form.Item>
         )}
-        {true && <SpeechItem type={speech?.contentType}></SpeechItem>}
+        {originSpeech?.contentType && <SpeechItem type={speech?.contentType}></SpeechItem>}
 
         <Form.Item label="话术内容" name="content" rules={[{ required: true }]}>
           <CustomTextArea sensitiveWord={speech?.sensitiveWord} sensitive={speech?.sensitive} />

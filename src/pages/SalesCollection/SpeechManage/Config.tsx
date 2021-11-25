@@ -86,8 +86,9 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
 
 interface OperateProps {
   handleEdit: (record: SpeechProps) => void;
-  handleSort: (record: SpeechProps) => void;
+  handleSort: (record: SpeechProps, sortType: number) => void;
   lastCategory: any;
+  pagination: any;
 }
 export const genderTypeOptions = [
   { id: 1, name: '男' },
@@ -118,7 +119,7 @@ export interface SpeechProps {
   [propKey: string]: any;
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
-  const { handleEdit, handleSort, lastCategory } = args;
+  const { handleEdit, handleSort, lastCategory, pagination } = args;
   return [
     {
       title: '来源',
@@ -235,19 +236,22 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       align: 'left',
       fixed: 'right',
       width: 140,
-      render: (record: SpeechProps) => {
+      render: (value, record: SpeechProps, index: number) => {
         return (
           <Space className="spaceWrap">
-            <Button disabled={record.status !== 2} type="link" onClick={() => handleEdit(record)}>
+            <Button disabled={record.status === 1} type="link" onClick={() => handleEdit(record)}>
               编辑
             </Button>
-
-            <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record)}>
-              上移
-            </Button>
-            <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record)}>
-              下移
-            </Button>
+            {(index !== 0 || (pagination.current === 1 && index !== 0) || pagination.current !== 1) && (
+              <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record, -1)}>
+                上移
+              </Button>
+            )}
+            {(pagination.current - 1) * pagination.pageSize + index + 1 !== pagination.total && (
+              <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record, 1)}>
+                下移
+              </Button>
+            )}
           </Space>
         );
       }
