@@ -13,6 +13,7 @@ import {
 import { Context } from 'src/store';
 import { sensitiveStatusList } from 'src/utils/commonData';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
+import classNames from 'classnames';
 import style from './style.module.less';
 
 interface IDeleteTipsParam {
@@ -76,7 +77,8 @@ const SensitiveList: React.FC = () => {
   };
 
   // 单个新增/编辑
-  const singleAdd = (type: string, row = {}) => {
+  const singleAdd = (type: string, row: ISensitiveList | {} = {}) => {
+    if ((row as ISensitiveList).status === 1) return;
     history.push('/sensitiveManage/editWords?type=' + type, {
       sensitiveType,
       sensitiveItem: type === 'edit' ? row : {}
@@ -108,7 +110,10 @@ const SensitiveList: React.FC = () => {
       width: 70,
       render (row: ISensitiveList) {
         return (
-          <span className={style.edit} onClick={() => singleAdd('edit', row)}>
+          <span
+            className={classNames(style.edit, { [style.disabled]: row.status === 1 })}
+            onClick={() => singleAdd('edit', row)}
+          >
             编辑
           </span>
         );
@@ -273,7 +278,7 @@ const SensitiveList: React.FC = () => {
           rowSelection={rowSelection}
           paginationChange={paginationChange}
         />
-        <div className={style.multiOperation}>
+        <div className={classNames(style.multiOperation, { [style.empty]: !sensitiveList.total })}>
           <div className={style.btnWrap}>
             <Button htmlType="button" onClick={() => singleAdd('add')}>
               新增
@@ -286,25 +291,19 @@ const SensitiveList: React.FC = () => {
               <>
                 <Button
                   disabled={disabledColumnType !== 0 && disabledColumnType !== 2}
-                  onClick={() =>
-                    setDeleteTip({ title: '上架提醒', content: '您确定要上架该敏感词吗?', visible: true, type: 1 })
-                  }
+                  onClick={() => setDeleteTip({ title: '上架', content: '上架', visible: true, type: 1 })}
                 >
                   上架
                 </Button>
                 <Button
                   disabled={disabledColumnType !== 0 && disabledColumnType !== 1}
-                  onClick={() =>
-                    setDeleteTip({ title: '下架提醒', content: '您确定要下架该敏感词吗?', visible: true, type: 2 })
-                  }
+                  onClick={() => setDeleteTip({ title: '下架', content: '下架?', visible: true, type: 2 })}
                 >
                   下架
                 </Button>
                 <Button
                   disabled={disabledColumnType !== 0 && disabledColumnType === -1}
-                  onClick={() =>
-                    setDeleteTip({ title: '删除提醒', content: '您确定要删除该敏感词吗?', visible: true, type: 3 })
-                  }
+                  onClick={() => setDeleteTip({ title: '删除', content: '删除?', visible: true, type: 3 })}
                 >
                   删除
                 </Button>
@@ -323,12 +322,13 @@ const SensitiveList: React.FC = () => {
       <Modal
         className={style.modalWrap}
         centered
+        visible={deleteTips.visible}
         width={300}
-        {...deleteTips}
+        title={`${deleteTips.title}提醒`}
         onOk={() => batchSensitive(deleteTips.type)}
         onCancel={() => setDeleteTip({ ...deleteTips, visible: false })}
       >
-        <div className={style.content}>{deleteTips.content}</div>
+        <div className={style.content}>{`您确定要批量${deleteTips.content}敏感词吗?`}</div>
       </Modal>
     </div>
   );
