@@ -70,8 +70,9 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   const addClickHandle = (parentCatalog: ICatalogItem, parentId: string) => {
     const catalog = { ...parentCatalog, level: parentCatalog.level + 1 };
     // 该级目录是否是最后一级目录
-    if (catalog.level === catalogLastLeve[parentCatalog.sceneId - 1]) {
+    if (catalog.level >= catalogLastLeve[parentCatalog.sceneId - 1]) {
       catalog.lastLevel = 1;
+      catalog.level = catalogLastLeve[parentCatalog.sceneId - 1]; // 修正目录
       setEditOrAddLastCatalogParam({ title: '新增', catalog, parentId, visible: true });
     } else {
       setEditOrAddCatalogVisible(true);

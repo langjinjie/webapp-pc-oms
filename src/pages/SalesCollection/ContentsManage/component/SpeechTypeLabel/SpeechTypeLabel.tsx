@@ -99,9 +99,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
       {type === 2 && ( // 海报
         <>
           <Form.Item className={style.formItem} label="海报ID:" name="posterId">
-            <Select className={style.modalContentSelect} placeholder={'请选择'}>
+            {/* <Select className={style.modalContentSelect} placeholder={'请选择'}>
               <Select.Option value="demo">Demo</Select.Option>
-            </Select>
+            </Select> */}
+            <Input className={style.modalContentSelect} placeholder="请输入海报ID" />
           </Form.Item>
           <Form.Item
             className={style.imgformItem}

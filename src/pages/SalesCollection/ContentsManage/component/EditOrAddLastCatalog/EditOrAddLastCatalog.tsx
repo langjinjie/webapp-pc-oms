@@ -12,9 +12,9 @@ interface IAddOrEditContentProps {
   setEditOrAddLastCatalogParam: (param: IEditOrAddLastCatalogParam) => void;
 }
 
-interface ISpeechParam {
+interface IContentParam {
   name: string;
-  type: number;
+  contentType: number;
 }
 
 const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
@@ -22,7 +22,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   setEditOrAddLastCatalogParam
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
-  const [speechParam, setSpeechParam] = useState<ISpeechParam>({ name: '', type: 1 });
+  const [catalogParam, setCatalogParam] = useState<IContentParam>({ name: '', contentType: 0 });
   const [catalogDetail, setCatalogDetail] = useState<ICatalogDetail>({
     sceneId: '',
     catalogId: '',
@@ -33,7 +33,9 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     lastLevel: 0,
     contentType: 0
   });
+  const [submitDisabled, setSubmitDisabled] = useState(true);
   const [form] = Form.useForm();
+  let initialValue = catalogDetail;
   const speechTypeList = [
     { value: 1, label: '话术' },
     { value: 2, label: '海报' },
@@ -55,19 +57,23 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     if (res) {
       setCatalogDetail(res);
       form.setFieldsValue(res);
+      initialValue = res;
       console.log(catalogDetail);
+      console.log(initialValue);
+      setCatalogParam({ name: res.name, contentType: res.contentType });
     }
   };
   // inputOnchang
   const inputOnChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSpeechParam({ ...speechParam, name: e.target.value.trim() });
+    setCatalogParam({ ...catalogParam, name: e.target.value.trim() });
   };
   // selectOnchange
   const selectOnchangeHandle = (e: any) => {
-    setSpeechParam({ ...speechParam, type: e });
+    setCatalogParam({ ...catalogParam, contentType: e });
   };
   // modal确认
   const modalOnOkHandle = async () => {
+    console.log(form.getFieldsValue());
     await form.validateFields();
     setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false, title: '' });
     form.resetFields();
@@ -95,9 +101,12 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         title={editOrAddLastCatalogParam.title}
         onCancel={onCancelHandle}
         onOk={modalOnOkHandle}
+        okButtonProps={{
+          disabled: submitDisabled
+        }}
         destroyOnClose
       >
-        <Form form={form}>
+        <Form form={form} onValuesChange={() => setSubmitDisabled(false)}>
           <Form.Item className={style.modalContentFormItem} label="目录名称:" required>
             <Form.Item name="name" rules={[{ required: true, message: '请输入话术名称' }]} noStyle>
               <Input
@@ -107,7 +116,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
                 onChange={inputOnChangeHandle}
               />
             </Form.Item>
-            <span className={style.limitLength}>{speechParam.name.length}/10</span>
+            <span className={style.limitLength}>{catalogParam.name.length}/10</span>
           </Form.Item>
           <Form.Item
             className={style.modalContentFormItem}
@@ -123,7 +132,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
               ))}
             </Select>
           </Form.Item>
-          <SpeechTypeLabel type={speechParam.type} />
+          <SpeechTypeLabel type={catalogParam.contentType} />
         </Form>
       </Modal>
     );

@@ -135,7 +135,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       maskClosable={false}
       destroyOnClose
       okButtonProps={{
-        // 判断必填项目为空或者是未发送修改则状态为:disabled
+        // 判断必填项目为空或者是未发生修改则状态为:disabled
         disabled:
           catalogName.length < catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0] ||
           catalogName.length > catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1] ||
