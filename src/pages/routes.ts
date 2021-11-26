@@ -81,6 +81,16 @@ export const routes: RouteProps[] = [
     path: '/orgManage/detail',
     component: lazy(() => import('src/pages/OrgManage/AccountManage/StaffList/StaffList'))
   },
+  // 敏感词管理
+  {
+    path: '/sensitiveManage',
+    component: lazy(() => import('src/pages/OrgManage/SensitiveManage/SensitiveList/SensitiveList'))
+  },
+  // 添加敏感词
+  {
+    path: '/sensitiveManage/editWords',
+    component: lazy(() => import('src/pages/OrgManage/SensitiveManage/EditWords/EditWords'))
+  },
   // 座席战报
   {
     path: '/seatReport',
@@ -118,6 +128,19 @@ export const routes: RouteProps[] = [
   {
     path: '/weekly/add',
     component: lazy(() => import('src/pages/Operation/AddWeeklyConfig/AddWeeklyConfig'))
+  },
+  // 销售宝典
+  {
+    path: '/speechManage',
+    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/List'))
+  },
+  {
+    path: '/speechManage/edit',
+    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
+  },
+  {
+    path: '/contentsManage',
+    component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
   }
 ];
 
@@ -126,7 +149,10 @@ export const menus: Menu[] = [
     name: '机构管理',
     icon: 'icon_daohang_28_jigouguanli',
     path: 'seatManage',
-    children: [{ name: '账号管理', path: '/orgManage' }]
+    children: [
+      { name: '账号管理', path: '/orgManage' },
+      { name: '敏感词管理', path: '/sensitiveManage' }
+    ]
   },
   {
     name: '营销素材',
@@ -196,6 +222,15 @@ export const menus: Menu[] = [
     children: [
       { name: '分类管理', path: '/categoryManage' },
       { name: '标签管理', path: '/tagManage' }
+    ]
+  },
+  {
+    name: '销售宝典',
+    icon: 'icon_daohang_28_xitongshezhi',
+    path: 'salesCollection',
+    children: [
+      { name: '话术管理', path: '/speechManage' },
+      { name: '目录管理', path: '/contentsManage' }
     ]
   }
 ];

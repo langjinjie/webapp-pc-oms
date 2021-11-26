@@ -1,0 +1,77 @@
+.btnGroup {
+  height: 42px;
+  line-height: 42px;
+  overflow: hidden;
+  position: relative;
+  border-bottom: 1px solid #e1e2e6;
+  margin-right: 16px;
+  &.open {
+    height: auto;
+  }
+  .btnArrow {
+    position: absolute;
+    right: 0;
+    top: 0px;
+    color: #606366;
+    font-size: 12px;
+    cursor: pointer;
+  }
+}
+
+.textAreaWrap {
+  margin: 0.2rem 0 0.2rem;
+  padding: 0px 0 10px 16px;
+  width: 640px;
+  height: auto;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #e1e2e6;
+
+  .textAreaBox {
+    overflow: hidden;
+  }
+  .textarea {
+    border: none;
+    padding-top: 10px;
+    line-height: 1.333;
+    font-size: 14px;
+    outline: none;
+    color: #111;
+    line-height: 20px;
+    width: 630px;
+    padding-right: 16px;
+  }
+  .count {
+    margin-right: 16px;
+    color: #cccdd0;
+  }
+
+  .btnsWrap {
+    :global {
+      .ant-btn {
+        padding: 0;
+        margin: 0;
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
+.mr10 {
+  margin-right: 10px;
+}
+:global {
+  .ant-form-item-has-error {
+    .isError {
+      border-color: #ff4d4f !important;
+    }
+  }
+}
+
+.sensitiveWrap {
+  margin-top: 10px;
+
+  .errorText {
+    color: #f25555;
+  }
+}

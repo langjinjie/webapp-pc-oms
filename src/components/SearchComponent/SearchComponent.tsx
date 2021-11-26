@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'antd';
 import style from './style.module.less';
+import { CascaderOptionType, CascaderValueType } from 'antd/lib/cascader';
+import { NamePath } from 'rc-field-form/lib/interface';
 
 export interface OptionProps {
   id: string | number;
@@ -16,6 +18,7 @@ export interface SearchCol {
   placeholder?: string;
   options?: OptionProps[] | null;
   cascaderOptions?: any[];
+
   fieldNames?: {
     label: string;
     value: string;
@@ -24,16 +27,44 @@ export interface SearchCol {
 }
 
 interface SearchComponentProps {
-  searchCols?: SearchCol[];
+  searchCols: SearchCol[];
   isInline?: boolean;
   onSearch: (params: any) => void;
   onReset?: () => void;
   onValuesChange?: (changeValues: any, values: any) => void;
+  loadData?: ((selectedOptions?: CascaderOptionType[] | undefined) => void) | undefined;
+  onChangeOfCascader?:
+    | ((value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => void)
+    | undefined;
+  disabled?: boolean;
 }
 const { RangePicker } = DatePicker;
+
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
-  const { searchCols, onSearch, onValuesChange, isInline = true, onReset } = props;
+  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader, disabled } = props;
   const [from] = Form.useForm();
+  const onReset = () => {
+    console.log('sss');
+    onChangeOfCascader?.([''], []);
+    onSearch({});
+  };
+  // 对数据进行处理
+  const onChange = (value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => {
+    if (selectedOptions) {
+      const lastOption = selectedOptions[selectedOptions?.length - 1];
+      const fields: NamePath[] = [];
+      searchCols.forEach((item: { name: string }) => {
+        if (item.name !== 'catalogIds') {
+          fields.push(item.name);
+        }
+      });
+      if (lastOption?.lastLevel === 1) {
+        console.log({ lastOption });
+        from.resetFields(fields);
+      }
+    }
+    onChangeOfCascader?.(value, selectedOptions);
+  };
   return (
     <>
       {isInline
@@ -57,7 +88,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               )) ||
               (col.type === 'select' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Select placeholder="请选择" allowClear style={{ width: col.width }}>
+                  <Select placeholder="请选择" disabled={disabled} allowClear style={{ width: col.width }}>
                     {col.options &&
                       col.options.map((option) => (
                         <Select.Option key={option.id} value={option.id}>
@@ -69,12 +100,20 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               )) ||
               (col.type === 'rangePicker' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <RangePicker format="YYYY-MM-DD" style={{ width: '320px' }} />
+                  <RangePicker disabled={disabled} format="YYYY-MM-DD" style={{ width: '320px' }} />
                 </Form.Item>
               )) ||
               (col.type === 'cascader' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Cascader changeOnSelect options={col.cascaderOptions} fieldNames={{ ...col.fieldNames }}></Cascader>
+                  <Cascader
+                    changeOnSelect
+                    options={col.cascaderOptions}
+                    fieldNames={{ ...col.fieldNames }}
+                    loadData={(data) => {
+                      loadData?.(data);
+                    }}
+                    onChange={onChange}
+                  />
                 </Form.Item>
               ))
             );
@@ -96,7 +135,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         <Form
           form={from}
           onFinish={onSearch}
-          onReset={onSearch}
+          onReset={onReset}
           className={style.customLayout}
           onValuesChange={onValuesChange}
         >

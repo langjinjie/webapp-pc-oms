@@ -96,3 +96,70 @@ export interface ItemProps extends ItemDataProps {
   name: string;
   label: string;
 }
+/* 销售宝典 */
+// 目录管理
+export interface IAddOrEditModalParam {
+  type: number; // 0 新增 1 编辑 3 操作(删除-上移-下移)
+  islastlevel: boolean;
+  title: string;
+  content: string;
+  isNeedIcon?: boolean;
+}
+export interface IBannerInfo {
+  name: string;
+  catoryId: string;
+}
+// 目录列表
+export interface ICatalogItem {
+  sceneId: number;
+  catalogNum: number;
+  catalogId: string;
+  name: string;
+  logoUrl: string;
+  level: number;
+  lastLevel: number;
+  onlineContentNum: number;
+  contentNum: number;
+}
+
+// 添加/编辑目录参数
+export interface IEditOrAddCatalogParam {
+  title: string;
+  catalog: ICatalogItem;
+  parentId: string;
+}
+
+// 二确param
+export interface IFirmModalParam {
+  visible: boolean;
+  title: string;
+  content: string;
+  onOk?: () => void;
+}
+
+/* 敏感词管理 */
+// 敏感词列表
+export interface ISensitiveList {
+  createBy: string;
+  dateCreated: string;
+  lastUpdated: string;
+  name: string;
+  sensitiveId: string;
+  status: number;
+  typeId: string;
+  updateBy: string;
+  word: string;
+}
+// 敏感词类型列表
+export interface ISensitiveType {
+  typeId: string;
+  name: string;
+}
+// 敏感词列表搜索条件
+export interface ISensitiveSearchParam {
+  typeId: string;
+  word: string;
+  status: number;
+  updateBeginTime: string;
+  updateEndTime: string;
+}
