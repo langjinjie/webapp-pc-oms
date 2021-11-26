@@ -93,3 +93,8 @@ export const requestEditCatalog: HttpFunction = (param) => {
 export const getCategoryList: HttpFunction = (params) => {
   return http.post('/tenacity-admin/api/smart/catalog/list', params);
 };
+
+// 获取敏感词状态
+export const getSensitiveStatus: HttpFunction = (params) => {
+  return http.post('/tenacity-admin/api/sensitive/change', params);
+};

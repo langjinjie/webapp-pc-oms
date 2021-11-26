@@ -8,7 +8,10 @@ import {
   getCategoryList,
   exportSpeech,
   batchExportSpeech,
-  sortSpeech
+  sortSpeech,
+  getSensitiveStatus,
+  checkSensitive,
+  addBatchSpeech
 } from 'src/apis/salesCollection';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
@@ -18,6 +21,7 @@ import { columns, setSearchCols, SpeechProps } from './Config';
 
 import style from './style.module.less';
 import { Context } from 'src/store';
+import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const { currentCorpId } = useContext(Context);
@@ -41,13 +45,18 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   });
   const [currentType, setCurrentType] = useState<number | null>(null);
   const [visibleExport, setVisibleExport] = useState(false);
-  const [checking, setChecking] = useState(false);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<SpeechProps[]>([]);
   const [visiblePreview, setVisiblePreview] = useState(false);
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [lastCategory, setLastCategory] = useState<any>();
+  const [visibleChecked, setVisibleChecked] = useState(false);
+  const [checkedInfo, setCheckedInfo] = useState({
+    change: 0,
+    checking: 0,
+    checkTime: ''
+  });
   const [loading] = useState(false);
   const onValuesChange = (values: any) => {
     const {
@@ -150,9 +159,19 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  const getSensitiveCheckedInfo = async () => {
+    const res = await getSensitiveStatus({});
+    if (res) {
+      setCheckedInfo(res);
+      if (res.change === 1) {
+        setVisibleChecked(true);
+      }
+    }
+  };
   useEffect(() => {
     getList();
     getCategory();
+    getSensitiveCheckedInfo();
   }, []);
 
   // 分页改变
@@ -206,18 +225,18 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       message.success('移动成功');
       getList();
     }
-    console.log(res);
   };
 
   const handleAdd = () => {
     history.push('/speechManage/edit');
   };
 
-  const handleChecked = () => {
-    setChecking(true);
-    setTimeout(() => {
-      setChecking(false);
-    }, 3000);
+  const handleChecked = async () => {
+    setCheckedInfo((checkedInfo) => ({ ...checkedInfo!, checking: 1 }));
+    const res = await checkSensitive({});
+    if (res) {
+      message.success('正在校验中......');
+    }
   };
   const handleExport = async () => {
     if (dataSource.length > 0) {
@@ -316,11 +335,27 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     getList({ pageNum: 1, sceneId: lastSelectedOptions?.sceneId, catalogId: lastSelectedOptions?.catalogId });
   };
 
+  const doCheck = () => {
+    setVisibleChecked(false);
+    handleChecked();
+  };
+
   const handleDownload = () => {
     window.location.href =
       'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/smart_content_export_template.xlsx';
   };
 
+  // 导入表格
+  const updata = async (file: any) => {
+    setVisibleExport(false);
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await addBatchSpeech(formData);
+    console.log(res);
+    if (res) {
+      message.success(res);
+    }
+  };
   return (
     <div className="container">
       <div className="flex justify-between">
@@ -354,10 +389,11 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
             shape="round"
             size="large"
             style={{ width: 128 }}
-            loading={checking}
+            loading={!!checkedInfo.checking}
           >
-            {!checking ? '敏感词校验' : '正在校验'}
+            {!checkedInfo.checking ? '敏感词校验' : '正在校验'}
           </Button>
+          {checkedInfo.checkTime && <span className="color-text-placeholder">{checkedInfo.checkTime}检测过</span>}
         </Space>
         <Button
           className={style.btnAdd}
@@ -441,7 +477,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       {/* 批量新增 */}
       <ExportModal
         visible={visibleExport}
-        onOK={() => setVisibleExport(false)}
+        onOK={updata}
         onCancel={() => setVisibleExport(false)}
         onDownLoad={handleDownload}
       />
@@ -453,6 +489,9 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
           setVisiblePreview(false);
         }}
       ></PreviewSpeech>
+
+      {/* modal */}
+      <ConfirmModal visible={visibleChecked} title={'温馨提醒'} onOk={doCheck} />
     </div>
   );
 };
