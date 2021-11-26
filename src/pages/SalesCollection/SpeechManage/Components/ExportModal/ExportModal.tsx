@@ -23,7 +23,6 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onOK, onCancel, onDo
       setFileList([...newFileList]);
     },
     beforeUpload: (file: any) => {
-      console.log(file);
       const { type, name } = file;
       if (type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' && name.indexOf('.xlsx') > 0) {
         setFileList([file]);

@@ -10,7 +10,8 @@ import {
   batchExportSpeech,
   sortSpeech,
   getSensitiveStatus,
-  checkSensitive
+  checkSensitive,
+  addBatchSpeech
 } from 'src/apis/salesCollection';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
@@ -20,6 +21,7 @@ import { columns, setSearchCols, SpeechProps } from './Config';
 
 import style from './style.module.less';
 import { Context } from 'src/store';
+import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const { currentCorpId } = useContext(Context);
@@ -49,6 +51,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [lastCategory, setLastCategory] = useState<any>();
+  const [visibleChecked, setVisibleChecked] = useState(false);
   const [checkedInfo, setCheckedInfo] = useState({
     change: 0,
     checking: 0,
@@ -160,6 +163,9 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     const res = await getSensitiveStatus({});
     if (res) {
       setCheckedInfo(res);
+      if (res.change === 1) {
+        setVisibleChecked(true);
+      }
     }
   };
   useEffect(() => {
@@ -329,11 +335,27 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     getList({ pageNum: 1, sceneId: lastSelectedOptions?.sceneId, catalogId: lastSelectedOptions?.catalogId });
   };
 
+  const doCheck = () => {
+    setVisibleChecked(false);
+    handleChecked();
+  };
+
   const handleDownload = () => {
     window.location.href =
       'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/smart_content_export_template.xlsx';
   };
 
+  // 导入表格
+  const updata = async (file: any) => {
+    setVisibleExport(false);
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await addBatchSpeech(formData);
+    console.log(res);
+    if (res) {
+      message.success(res);
+    }
+  };
   return (
     <div className="container">
       <div className="flex justify-between">
@@ -455,7 +477,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       {/* 批量新增 */}
       <ExportModal
         visible={visibleExport}
-        onOK={() => setVisibleExport(false)}
+        onOK={updata}
         onCancel={() => setVisibleExport(false)}
         onDownLoad={handleDownload}
       />
@@ -467,6 +489,9 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
           setVisiblePreview(false);
         }}
       ></PreviewSpeech>
+
+      {/* modal */}
+      <ConfirmModal visible={visibleChecked} title={'温馨提醒'} onOk={doCheck} />
     </div>
   );
 };
