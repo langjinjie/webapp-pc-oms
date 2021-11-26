@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, Select, Upload, message } from 'antd';
 import { IAddOrEditModalParam } from 'src/utils/interface';
 import { Icon } from 'src/components';
-import { SpeechTypeLabel } from 'src/pages/SalesCollection/component';
+import { SpeechTypeLabel } from 'src/pages/SalesCollection/ContentsManage/component';
 import style from './style.module.less';
 import classNames from 'classnames';
 
 interface IAddOrEditContentProps {
+  visible: boolean;
   modalParam: IAddOrEditModalParam;
+  setVisible: (param: boolean) => void;
   setModalParam: (param: IAddOrEditModalParam) => void;
 }
 
@@ -16,9 +18,12 @@ interface ISpeechParam {
   type: number;
 }
 
-const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ modalParam, setModalParam }) => {
+const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ visible, setVisible, modalParam, setModalParam }) => {
+  console.log('modal更新');
+  console.log(modalParam.content);
   const [iconImg, setIconImg] = useState('');
   const [speechParam, setSpeechParam] = useState<ISpeechParam>({ name: '', type: 1 });
+  const [initInputVal, setInitInputVal] = useState('');
   const [form] = Form.useForm();
   const speechTypeList = [
     { value: 1, label: '话术' },
@@ -41,11 +46,9 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ modalParam, setMod
   };
   // modal确认
   const modalOnOkHandle = async () => {
-    console.log('确认Modal');
-    console.log(form.getFieldsValue());
-    const fieldsValue = await form.validateFields();
-    console.log(fieldsValue);
-    setModalParam({ ...modalParam, visible: false });
+    await form.validateFields();
+    setVisible(false);
+    setModalParam({ ...modalParam });
   };
   // updaload beforeUpload
   const beforeUploadHandle = (file: File): Promise<boolean> => {
@@ -89,9 +92,16 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ modalParam, setMod
     }
   };
   const onCancelHandle = () => {
-    setModalParam({ ...modalParam, visible: false });
-    form.setFieldsValue({});
+    form.resetFields();
+    setVisible(false);
+    setModalParam({ ...modalParam, content: '取消', type: 0 });
   };
+  useEffect(() => {
+    visible && setInitInputVal(modalParam.content);
+    return () => {
+      setInitInputVal('');
+    };
+  }, [visible]);
   return (
     <Modal
       width={modalParam.type === 3 ? 300 : modalParam.islastlevel ? 720 : 320}
@@ -100,11 +110,11 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ modalParam, setMod
         [style.noBorderWrap]: !modalParam.islastlevel || modalParam.type === 3
       })}
       closable={false}
-      visible={modalParam.visible}
+      visible={visible}
       title={modalParam.title}
       onCancel={onCancelHandle}
       onOk={modalOnOkHandle}
-      destroyOnClose
+      // destroyOnClose
     >
       <Form form={form}>
         {modalParam.type === 3
@@ -147,42 +157,45 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ modalParam, setMod
             <Form.Item
               className={style.noLastFormItem}
               name="speechName"
+              initialValue={initInputVal}
               rules={[{ required: true, message: '请输入目录名称' }]}
             >
               <Input className={style.noLastLevelInput} placeholder={'输入目录名称（文字不超过4个字）'} />
             </Form.Item>
-            <Form.Item className={style.noLastFormItem}>
-              <div className={style.tip}>该目录需上传icon，请上传40x40像素的图片</div>
-              <Form.Item
-                name={'contentIcon'}
-                valuePropName="file"
-                getValueFromEvent={normFile}
-                rules={[{ required: true, message: '请上传图片' }]}
-                noStyle
-              >
-                <Upload
-                  accept="image/*"
-                  maxCount={1}
-                  listType="picture-card"
-                  action="/tenacity-admin/api/file/upload"
-                  data={{ bizKey: 'news' }}
-                  className={style.upload}
-                  showUploadList={false}
-                  beforeUpload={beforeUploadHandle}
+            {modalParam.isNeedIcon && (
+              <Form.Item className={style.noLastFormItem}>
+                <div className={style.tip}>该目录需上传icon，请上传40x40像素的图片</div>
+                <Form.Item
+                  name={'contentIcon'}
+                  valuePropName="file"
+                  getValueFromEvent={normFile}
+                  rules={[{ required: true, message: '请上传图片' }]}
+                  noStyle
                 >
-                  {iconImg
-                    ? (
-                    <img src={iconImg} alt="icon" style={{ width: '100%' }} />
-                      )
-                    : (
-                    <div className={style.iconWrap}>
-                      <Icon className={style.uploadIcon} name="upload" />
-                      <div className={style.uploadTip}>点击上传</div>
-                    </div>
-                      )}
-                </Upload>
+                  <Upload
+                    accept="image/*"
+                    maxCount={1}
+                    listType="picture-card"
+                    action="/tenacity-admin/api/file/upload"
+                    data={{ bizKey: 'news' }}
+                    className={style.upload}
+                    showUploadList={false}
+                    beforeUpload={beforeUploadHandle}
+                  >
+                    {iconImg
+                      ? (
+                      <img src={iconImg} alt="icon" style={{ width: '100%' }} />
+                        )
+                      : (
+                      <div className={style.iconWrap}>
+                        <Icon className={style.uploadIcon} name="upload" />
+                        <div className={style.uploadTip}>点击上传</div>
+                      </div>
+                        )}
+                  </Upload>
+                </Form.Item>
               </Form.Item>
-            </Form.Item>
+            )}
           </>
               )}
       </Form>

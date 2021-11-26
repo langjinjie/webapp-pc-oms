@@ -47,6 +47,9 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onOK, onCancel, onDo
       onCancel={() => onCancel()}
       width={640}
       className={styles.exportWrap}
+      okButtonProps={{
+        disabled: !fileList.length
+      }}
     >
       <Form>
         <Form.Item label="下载模板">

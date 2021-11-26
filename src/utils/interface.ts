@@ -81,11 +81,11 @@ export interface IAllTagList {
 /* 销售宝典 */
 // 目录管理
 export interface IAddOrEditModalParam {
-  visible: boolean;
   type: number; // 0 新增 1 编辑 3 操作(删除-上移-下移)
   islastlevel: boolean;
   title: string;
   content: string;
+  isNeedIcon?: boolean;
 }
 export interface IBannerInfo {
   name: string;
@@ -102,6 +102,21 @@ export interface ICatalogItem {
   lastLevel: number;
   onlineContentNum: number;
   contentNum: number;
+}
+
+// 添加/编辑目录参数
+export interface IEditOrAddCatalogParam {
+  title: string;
+  catalog: ICatalogItem;
+  parentId: string;
+}
+
+// 二确param
+export interface IFirmModalParam {
+  visible: boolean;
+  title: string;
+  content: string;
+  onOk?: () => void;
 }
 
 /* 敏感词管理 */

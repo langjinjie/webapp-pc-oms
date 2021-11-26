@@ -172,8 +172,8 @@ const SensitiveList: React.FC = () => {
     let updateBeginTime = '';
     let updateEndTime = '';
     if (updateTime) {
-      updateBeginTime = updateTime[0].format('YYYY-MM-DD hh:mm:ss');
-      updateEndTime = updateTime[1].format('YYYY-MM-DD hh:mm:ss');
+      updateBeginTime = updateTime[0].format('YYYY-MM-DD') + ' 00:00:00';
+      updateEndTime = updateTime[1].format('YYYY-MM-DD') + ' 23:59:59';
     }
     setSearchParam({ typeId, word, status, updateBeginTime, updateEndTime });
     setPaginationParam({ ...paginationParam, current: 1 });
@@ -186,7 +186,16 @@ const SensitiveList: React.FC = () => {
   };
   // 敏感词全量导出接口、下载敏感词模板
   const onDownLoadExcel = async (interfaceType: number, fileName: string) => {
-    const res = await requestDownLoadSensitiveList({ corpId, interfaceType });
+    const { status, word, updateBeginTime, updateEndTime, typeId } = searchParam;
+    const res = await requestDownLoadSensitiveList({
+      corpId,
+      interfaceType,
+      status: status === -1 ? undefined : status,
+      word: word || undefined,
+      updateBeginTime,
+      updateEndTime,
+      typeId: typeId || undefined
+    });
     if (res) {
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
@@ -220,12 +229,21 @@ const SensitiveList: React.FC = () => {
       setDeleteTip({ ...deleteTips, visible: false });
     }
   };
+  // 删除/上架/下架
+  const buttonHandle = (title: string, type: number) => {
+    setDeleteTip({
+      title,
+      content: `${selectedRowKeys.length === 1 ? '' : '批量'}${title}${selectedRowKeys.length === 1 ? '该' : ''}`,
+      visible: true,
+      type
+    });
+  };
   useEffect(() => {
     getSensitiveTypeList();
   }, []);
   useEffect(() => {
     getSensitiveList();
-  }, [searchParam, paginationParam]);
+  }, [searchParam, paginationParam, visible]);
   return (
     <div className={style.wrap}>
       <Card bordered={false}>
@@ -291,19 +309,16 @@ const SensitiveList: React.FC = () => {
               <>
                 <Button
                   disabled={disabledColumnType !== 0 && disabledColumnType !== 2}
-                  onClick={() => setDeleteTip({ title: '上架', content: '上架', visible: true, type: 1 })}
+                  onClick={() => buttonHandle('上架', 1)}
                 >
                   上架
                 </Button>
-                <Button
-                  disabled={disabledColumnType !== 0 && disabledColumnType !== 1}
-                  onClick={() => setDeleteTip({ title: '下架', content: '下架?', visible: true, type: 2 })}
-                >
+                <Button disabled={disabledColumnType !== 1} onClick={() => buttonHandle('下架', 2)}>
                   下架
                 </Button>
                 <Button
-                  disabled={disabledColumnType !== 0 && disabledColumnType === -1}
-                  onClick={() => setDeleteTip({ title: '删除', content: '删除?', visible: true, type: 3 })}
+                  disabled={disabledColumnType === 1 || disabledColumnType === -1}
+                  onClick={() => buttonHandle('删除', 3)}
                 >
                   删除
                 </Button>
@@ -327,8 +342,10 @@ const SensitiveList: React.FC = () => {
         title={`${deleteTips.title}提醒`}
         onOk={() => batchSensitive(deleteTips.type)}
         onCancel={() => setDeleteTip({ ...deleteTips, visible: false })}
+        maskClosable={false}
+        destroyOnClose
       >
-        <div className={style.content}>{`您确定要批量${deleteTips.content}敏感词吗?`}</div>
+        <div className={style.content}>{`您确定要${deleteTips.content}敏感词吗?`}</div>
       </Modal>
     </div>
   );

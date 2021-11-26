@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   height: 48px;
+  line-height: 48px;
   background-color: #f7f7f8;
   & > div {
     cursor: pointer;
@@ -9,6 +10,7 @@
   &.isChildrenContents {
     background-color: #fff;
     height: 36px;
+    line-height: 36px;
   }
   &.isLastContents {
     padding-left: 23px;
@@ -16,7 +18,7 @@
   &:hover {
     background-color: #eaf3fe;
     .edit {
-      display: block;
+      display: flex;
     }
   }
   .icon {
@@ -39,10 +41,12 @@
     }
   }
   .name {
+    height: 100%;
     font-size: 14px;
     color: #111111;
   }
   .info {
+    height: 100%;
     margin: 0 5px;
     font-size: 12px;
     color: #606366;
@@ -50,15 +54,24 @@
   .edit {
     display: none;
     margin-left: 30px;
+    height: 100%;
     font-size: 12px;
     color: #318cf5;
     span {
-      margin-right: 20px;
+      width: 60px;
+      height: 100%;
       cursor: pointer;
       .svgIcon {
         margin-right: 4px;
         width: 12px;
         height: 12px;
+      }
+      &.hidden {
+        color: #d9d9d9;
+        cursor: not-allowed;
+        .svgIcon {
+          cursor: not-allowed;
+        }
       }
     }
   }
@@ -68,13 +81,10 @@
   .add {
     display: flex;
     align-items: center;
-    margin-left: 52px;
+    margin-left: 20px;
     font-weight: 400;
     color: #318cf5;
     cursor: pointer;
-    &.isLastContents {
-      margin-left: 20px;
-    }
     .addIcon {
       margin-right: 4px;
       font-size: 18px;
