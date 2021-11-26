@@ -8,7 +8,9 @@ import {
   getCategoryList,
   exportSpeech,
   batchExportSpeech,
-  sortSpeech
+  sortSpeech,
+  getSensitiveStatus,
+  checkSensitive
 } from 'src/apis/salesCollection';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
@@ -41,13 +43,17 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   });
   const [currentType, setCurrentType] = useState<number | null>(null);
   const [visibleExport, setVisibleExport] = useState(false);
-  const [checking, setChecking] = useState(false);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<SpeechProps[]>([]);
   const [visiblePreview, setVisiblePreview] = useState(false);
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [lastCategory, setLastCategory] = useState<any>();
+  const [checkedInfo, setCheckedInfo] = useState({
+    change: 0,
+    checking: 0,
+    checkTime: ''
+  });
   const [loading] = useState(false);
   const onValuesChange = (values: any) => {
     const {
@@ -150,9 +156,16 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  const getSensitiveCheckedInfo = async () => {
+    const res = await getSensitiveStatus({});
+    if (res) {
+      setCheckedInfo(res);
+    }
+  };
   useEffect(() => {
     getList();
     getCategory();
+    getSensitiveCheckedInfo();
   }, []);
 
   // 分页改变
@@ -206,18 +219,18 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       message.success('移动成功');
       getList();
     }
-    console.log(res);
   };
 
   const handleAdd = () => {
     history.push('/speechManage/edit');
   };
 
-  const handleChecked = () => {
-    setChecking(true);
-    setTimeout(() => {
-      setChecking(false);
-    }, 3000);
+  const handleChecked = async () => {
+    setCheckedInfo((checkedInfo) => ({ ...checkedInfo!, checking: 1 }));
+    const res = await checkSensitive({});
+    if (res) {
+      message.success('正在校验中......');
+    }
   };
   const handleExport = async () => {
     if (dataSource.length > 0) {
@@ -354,10 +367,11 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
             shape="round"
             size="large"
             style={{ width: 128 }}
-            loading={checking}
+            loading={!!checkedInfo.checking}
           >
-            {!checking ? '敏感词校验' : '正在校验'}
+            {!checkedInfo.checking ? '敏感词校验' : '正在校验'}
           </Button>
+          {checkedInfo.checkTime && <span className="color-text-placeholder">{checkedInfo.checkTime}检测过</span>}
         </Space>
         <Button
           className={style.btnAdd}
