@@ -3,6 +3,7 @@ import { Modal, Upload, message } from 'antd';
 import { IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils/interface';
 import { Icon } from 'src/components';
 import { requestEditCatalog } from 'src/apis/salesCollection';
+import { catalogLmitLengtg, catalogLmitLengtgTip } from 'src/utils/commonData';
 import style from './style.module.less';
 import { Context } from 'src/store';
 
@@ -13,6 +14,11 @@ interface IAddOrEditContentProps {
   setFirmModalParam: (param: IFirmModalParam) => void;
 }
 
+interface ICatalogSenceAndLevel {
+  sence: number;
+  level: number;
+}
+
 const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   editOrAddCatalogVisible,
   setEditOrAddCatalogVisible,
@@ -21,27 +27,42 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [iconImg, setIconImg] = useState('');
-  console.log(setIconImg);
-  const [catalog, setCatalog] = useState('');
+  const [catalogName, setCatalogName] = useState('');
+  const [catalogSenceAndLevel, setCatalogSenceAndLevel] = useState<ICatalogSenceAndLevel>({ sence: 0, level: 0 });
 
   const inputOnChangHangle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCatalog(e.target.value.trim());
+    setCatalogName(e.target.value.trim());
   };
 
   // 确认修改/增加目录handle
   const firmModalOnOk = async () => {
     const { parentId, catalog } = editOrAddCatalogParam;
-    const { sceneId, catalogId, name, level, lastLevel } = catalog;
-    const param = { corpId, parentId, sceneId, catalogId, name, level, lastLevel };
-    const res = await requestEditCatalog(param);
-    return res;
+    const { sceneId, catalogId, level, lastLevel } = catalog;
+    const res = await requestEditCatalog({
+      corpId,
+      parentId,
+      sceneId,
+      name: catalogName,
+      level,
+      lastLevel,
+      catalogId: editOrAddCatalogParam.title === '新增' ? undefined : catalogId,
+      logoUrl: iconImg
+    });
+    if (res) {
+      setFirmModalParam({ title: '成功', content: '', visible: false });
+      message.success(`目录${editOrAddCatalogParam.title}成功`);
+    }
   };
   // modal确认
   const modalOnOkHandle = async () => {
     setEditOrAddCatalogVisible(false);
+    let title = '修改提醒';
+    let content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
+    editOrAddCatalogParam.title === '新增' && (title = '新增提醒');
+    editOrAddCatalogParam.title === '新增' && (content = '您确定要新增目录吗?');
     setFirmModalParam({
-      title: '修改提醒',
-      content: '修改目录会对已上架话术产生影响，企微前端能实时看到变化',
+      title,
+      content,
       visible: true,
       onOk: firmModalOnOk
     });
@@ -68,22 +89,37 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
         image.src = data;
         image.onload = function () {
           const width = image.width;
-          if (!(width === 750)) {
-            message.error('海报宽度必须为 750px');
+          const height = image.width;
+          if (!(width === 80) && !(height === 80)) {
+            message.error('icon尺寸为80x80');
           }
-          resolve(width === 750 && isJpgOrPng && isLt2M);
-          resolve(true);
+          resolve(width === 80 && height === 80 && isJpgOrPng && isLt2M);
         };
       };
       reader.readAsDataURL(file);
     });
   };
+  const handleChange = (info: any) => {
+    if (info.file.status === 'done') {
+      setIconImg(info.file.response.retdata.filePath);
+    }
+  };
   const onCancelHandle = () => {
+    setIconImg('');
     setEditOrAddCatalogVisible(false);
   };
   useEffect(() => {
     if (editOrAddCatalogVisible) {
-      setCatalog(editOrAddCatalogParam.catalog.name || '');
+      if (editOrAddCatalogParam.title === '编辑') {
+        setCatalogName(editOrAddCatalogParam.catalog.name || '');
+        setIconImg(editOrAddCatalogParam.catalog.logoUrl);
+      } else {
+        setCatalogName('');
+      }
+      setCatalogSenceAndLevel({
+        sence: editOrAddCatalogParam.catalog.sceneId - 1,
+        level: editOrAddCatalogParam.catalog.level
+      });
     }
   }, [editOrAddCatalogVisible]);
   return (
@@ -98,19 +134,34 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       onOk={modalOnOkHandle}
       maskClosable={false}
       destroyOnClose
+      okButtonProps={{
+        // 判断必填项目为空或者是未发送修改则状态为:disabled
+        disabled:
+          catalogName.length < catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0] ||
+          catalogName.length > catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1] ||
+          (editOrAddCatalogParam.title === '编辑' &&
+            editOrAddCatalogParam.catalog.name === catalogName &&
+            iconImg === editOrAddCatalogParam.catalog.logoUrl) ||
+          ([4, 5].includes(editOrAddCatalogParam.catalog.sceneId) &&
+            editOrAddCatalogParam.catalog.level === 2 &&
+            !iconImg)
+      }}
     >
       {editOrAddCatalogParam && (
         <>
           <input
-            value={catalog}
+            value={catalogName}
             className={style.input}
-            maxLength={4}
+            minLength={catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0]}
+            maxLength={catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1]}
             onChange={(e) => inputOnChangHangle(e)}
-            placeholder={'输入目录名称（文字不超过4个字）'}
+            placeholder={`输入目录名称（${
+              catalogLmitLengtgTip[catalogSenceAndLevel.sence][catalogSenceAndLevel.level]
+            }）`}
           />
           {[4, 5].includes(editOrAddCatalogParam.catalog.sceneId) && editOrAddCatalogParam.catalog.level === 2 && (
             <div className={style.uploadWrap}>
-              <div className={style.tip}>该目录需上传icon，请上传40x40像素的图片</div>
+              <div className={style.tip}>该目录需上传icon，请上传80x80像素的图片</div>
               <Upload
                 accept="image/*"
                 maxCount={1}
@@ -120,6 +171,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
                 className={style.upload}
                 showUploadList={false}
                 beforeUpload={beforeUploadHandle}
+                onChange={handleChange}
               >
                 {iconImg
                   ? (

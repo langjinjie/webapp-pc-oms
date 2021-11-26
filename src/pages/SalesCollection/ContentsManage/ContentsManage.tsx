@@ -21,13 +21,19 @@ const ContentsManage: React.FC = () => {
   useEffect(() => {
     getCatalogList();
   }, []);
+
+  useEffect(() => {
+    if (firmModalParam.title === '成功' && !firmModalParam.visible) {
+      getCatalogList();
+    }
+  }, [firmModalParam]);
   return (
     <>
       <div className={style.wrap}>
         {contentsList.map((item, index) => (
           <div className={style.contentBannerWrap} key={item.catalogId}>
             <ContentBanner
-              parentId=""
+              parentId="0"
               catalog={item}
               setCurrentContents={setCurrentContents}
               currentContents={currentContents}
@@ -35,6 +41,8 @@ const ContentsManage: React.FC = () => {
               isHiddenMoveDown={contentsList.length === 1 || index === contentsList.length - 1}
               setEditOrAddCatalogParam={setEditOrAddCatalogParam}
               setEditOrAddCatalogVisible={setEditOrAddCatalogVisible}
+              setFirmModalParam={setFirmModalParam}
+              firmModalParam={firmModalParam}
             />
           </div>
         ))}
@@ -46,12 +54,6 @@ const ContentsManage: React.FC = () => {
         setFirmModalParam={setFirmModalParam}
       />
       <ConfirmModal firmModalParam={firmModalParam} setFirmModalParam={setFirmModalParam} />
-      {/* <AddOrEditContent
-        visible={visible}
-        setVisible={setVisible}
-        modalParam={modalParam}
-        setModalParam={setModalParam}
-      /> */}
     </>
   );
 };

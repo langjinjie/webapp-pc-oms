@@ -116,7 +116,7 @@ export interface IFirmModalParam {
   visible: boolean;
   title: string;
   content: string;
-  onOk?: (param: any) => void;
+  onOk?: () => void;
 }
 
 /* 敏感词管理 */

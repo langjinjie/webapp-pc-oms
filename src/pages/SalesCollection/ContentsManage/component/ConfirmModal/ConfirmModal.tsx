@@ -10,14 +10,6 @@ interface IConfirmModalProps {
 
 const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam, setFirmModalParam }) => {
   const { visible, title, content, onOk } = firmModalParam;
-  // modal确认
-  const modalOnOkHandle = async () => {
-    const res = await onOk?.({});
-    console.log(res);
-    if (res) {
-      setFirmModalParam({ ...firmModalParam, visible: false });
-    }
-  };
   const onCancelHandle = () => {
     setFirmModalParam({ ...firmModalParam, visible: false });
   };
@@ -30,11 +22,11 @@ const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam, setFirmMod
       visible={visible}
       title={title}
       onCancel={onCancelHandle}
-      onOk={modalOnOkHandle}
+      onOk={() => onOk?.()}
       maskClosable={false}
       destroyOnClose
     >
-      <div className={style.content}>{content}</div>
+      <span className={style.content}>{content}</span>
     </Modal>
   );
 };

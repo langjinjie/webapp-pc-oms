@@ -186,7 +186,16 @@ const SensitiveList: React.FC = () => {
   };
   // 敏感词全量导出接口、下载敏感词模板
   const onDownLoadExcel = async (interfaceType: number, fileName: string) => {
-    const res = await requestDownLoadSensitiveList({ corpId, interfaceType, ...searchParam });
+    const { status, word, updateBeginTime, updateEndTime, typeId } = searchParam;
+    const res = await requestDownLoadSensitiveList({
+      corpId,
+      interfaceType,
+      status: status === -1 ? undefined : status,
+      word: word || undefined,
+      updateBeginTime,
+      updateEndTime,
+      typeId: typeId || undefined
+    });
     if (res) {
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
