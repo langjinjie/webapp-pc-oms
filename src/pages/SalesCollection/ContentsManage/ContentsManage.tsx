@@ -1,6 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ContentBanner, EditOrAddCatalog, ConfirmModal } from 'src/pages/SalesCollection/ContentsManage/component';
-import { /* IAddOrEditModalParam, */ ICatalogItem, IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils/interface';
+import {
+  ContentBanner,
+  EditOrAddCatalog,
+  AddOrEditLastCatalog,
+  ConfirmModal
+} from 'src/pages/SalesCollection/ContentsManage/component';
+import { ICatalogItem, IFirmModalParam, IEditOrAddCatalogParam, IEditOrAddLastCatalogParam } from 'src/utils/interface';
 import { getCategoryList } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
 import style from './style.module.less';
@@ -11,6 +16,7 @@ const ContentsManage: React.FC = () => {
   const [currentContents, setCurrentContents] = useState<string>(''); // 当前展开的目录
   const [editOrAddCatalogVisible, setEditOrAddCatalogVisible] = useState(false);
   const [editOrAddCatalogParam, setEditOrAddCatalogParam] = useState<IEditOrAddCatalogParam>();
+  const [editOrAddLastCatalogParam, setEditOrAddLastCatalogParam] = useState<IEditOrAddLastCatalogParam>();
   const [firmModalParam, setFirmModalParam] = useState<IFirmModalParam>({ visible: false, title: '', content: '' });
   // 获取一级目录列表
   const getCatalogList = async () => {
@@ -43,6 +49,8 @@ const ContentsManage: React.FC = () => {
               setEditOrAddCatalogVisible={setEditOrAddCatalogVisible}
               setFirmModalParam={setFirmModalParam}
               firmModalParam={firmModalParam}
+              editOrAddLastCatalogParam={editOrAddLastCatalogParam as IEditOrAddLastCatalogParam}
+              setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
             />
           </div>
         ))}
@@ -52,6 +60,10 @@ const ContentsManage: React.FC = () => {
         setEditOrAddCatalogVisible={setEditOrAddCatalogVisible}
         editOrAddCatalogParam={editOrAddCatalogParam as IEditOrAddCatalogParam}
         setFirmModalParam={setFirmModalParam}
+      />
+      <AddOrEditLastCatalog
+        editOrAddLastCatalogParam={editOrAddLastCatalogParam as IEditOrAddLastCatalogParam}
+        setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
       />
       <ConfirmModal firmModalParam={firmModalParam} setFirmModalParam={setFirmModalParam} />
     </>

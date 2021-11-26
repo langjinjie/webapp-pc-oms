@@ -111,12 +111,38 @@ export interface IEditOrAddCatalogParam {
   parentId: string;
 }
 
+// 添加/编辑最后一级目录参数
+export interface IEditOrAddLastCatalogParam extends IEditOrAddCatalogParam {
+  visible: boolean;
+}
+
 // 二确param
 export interface IFirmModalParam {
   visible: boolean;
   title: string;
   content: string;
   onOk?: () => void;
+}
+// 最后一级目录详情
+export interface ICatalogDetail {
+  sceneId: string;
+  catalogId: string;
+  name: string;
+  fullName: string;
+  fullCatalogId: string;
+  logoUrl?: string;
+  level: number;
+  lastLevel: number;
+  contentType: number;
+  thumbnail?: string;
+  title?: string;
+  summary?: string;
+  contentUrl?: string;
+  audioText?: string;
+  audioDuration?: number;
+  videoSize?: string;
+  videoDuration?: number;
+  audioVideoId?: string;
 }
 
 /* 敏感词管理 */
