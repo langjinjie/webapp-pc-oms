@@ -65,6 +65,10 @@ export const routes: RouteProps[] = [
     path: '/marketingIndex',
     component: lazy(() => import('src/pages/Marketing/Index/Index'))
   },
+  {
+    path: '/notice',
+    component: lazy(() => import('src/pages/Marketing/Notice/Notice'))
+  },
   /**
    * 机构管理->账号管理
    */
@@ -148,6 +152,10 @@ export const menus: Menu[] = [
       {
         name: '首页配置',
         path: '/marketingIndex'
+      },
+      {
+        name: '上新通知',
+        path: '/notice'
       }
     ]
   },
