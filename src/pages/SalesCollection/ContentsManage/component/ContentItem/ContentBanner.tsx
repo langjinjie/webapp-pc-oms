@@ -54,6 +54,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   // 点击目录
   const contentsClickHandle = async () => {
     if (catalog.lastLevel) return;
+    getCurrentChildrenList();
     setCurrentContents(currentContents === catalog.catalogId ? '' : catalog.catalogId);
   };
   // 编辑
@@ -101,6 +102,9 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       visible: true,
       onOk () {
         firmModalOnOk(type);
+      },
+      onCancel: () => {
+        setFirmModalParam({ title: '', content: '', visible: false });
       }
     });
   };
@@ -121,7 +125,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
     });
   };
   useEffect(() => {
-    getCurrentChildrenList();
+    console.log('更新');
     return () => {
       setCurrentContents('');
     };

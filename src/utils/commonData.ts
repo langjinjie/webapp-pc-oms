@@ -23,6 +23,19 @@ export const sensitiveStatusList = [
   { value: 2, label: '已下架' }
 ];
 
+// 目录类型对照
+export const catalogType2Name = [
+  { value: 1, label: '文本' },
+  { value: 2, label: '长图' },
+  { value: 3, label: '名片' },
+  { value: 4, label: '小站' },
+  { value: 5, label: '单图文' },
+  { value: 6, label: '单语音' },
+  { value: 7, label: '单视频' },
+  { value: 8, label: '第三方链接' },
+  { value: 9, label: '小程序' }
+];
+
 // 销售宝典目录字数限制 一维数组代表目录类型,二维数组代表目录级数
 export const catalogLmitLengtg = [
   [

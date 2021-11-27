@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Modal, Form, Input, Select /* , message */, message } from 'antd';
-import { IEditOrAddLastCatalogParam, /* ICatalogDetail, */ IFirmModalParam } from 'src/utils/interface';
+import { IEditOrAddLastCatalogParam, ICatalogDetail, IFirmModalParam } from 'src/utils/interface';
 import { SpeechTypeLabel } from 'src/pages/SalesCollection/ContentsManage/component';
 import { requestGetCatalogDetail, requestEditCatalog } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
-
+import { catalogType2Name } from 'src/utils/commonData';
 import style from './style.module.less';
 // import classNames from 'classnames';
 
@@ -27,29 +27,36 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   const { currentCorpId: corpId } = useContext(Context);
   const [catalogParam, setCatalogParam] = useState<IContentParam>({ name: '', contentType: 0 });
   const [posterImg, setPosterImg] = useState('');
-  // const [catalogDetail, setCatalogDetail] = useState<ICatalogDetail>({
-  //   sceneId: '',
-  //   catalogId: '',
-  //   name: '',
-  //   fullName: '',
-  //   fullCatalogId: '',
-  //   level: 0,
-  //   lastLevel: 0,
-  //   contentType: 0
-  // });
+  const [catalogDetail, setCatalogDetail] = useState<ICatalogDetail>({
+    sceneId: '',
+    catalogId: '',
+    name: '',
+    fullName: '',
+    fullCatalogId: '',
+    level: 0,
+    lastLevel: 0,
+    contentType: 0
+  });
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [form] = Form.useForm();
-  const speechTypeList = [
-    { value: 1, label: '话术' },
-    { value: 2, label: '海报' },
-    { value: 3, label: '名片' },
-    { value: 4, label: '小站' },
-    { value: 5, label: '单图文' },
-    { value: 6, label: '单语音' },
-    { value: 7, label: '单视频' },
-    { value: 8, label: '第三方链接' },
-    { value: 9, label: '小程序' }
-  ];
+
+  // 重置
+  const resetHandle = () => {
+    form.resetFields();
+    setPosterImg('');
+    setCatalogDetail({
+      sceneId: '',
+      catalogId: '',
+      name: '',
+      fullName: '',
+      fullCatalogId: '',
+      level: 0,
+      lastLevel: 0,
+      contentType: 0
+    });
+    setCatalogParam({ name: '', contentType: 0 });
+    setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false, title: '' });
+  };
   // 获取最后一级目录详情
   const getLastCatalogDetail = async () => {
     const res = await requestGetCatalogDetail({
@@ -58,7 +65,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       catalogId: editOrAddLastCatalogParam.catalog.catalogId
     });
     if (res) {
-      // setCatalogDetail(res);
+      setCatalogDetail(res);
       form.setFieldsValue(res);
       setCatalogParam({ name: res.name, contentType: res.contentType });
       setPosterImg(res.contentUrl);
@@ -68,16 +75,28 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   const inputOnChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCatalogParam({ ...catalogParam, name: e.target.value.trim() });
   };
-  // selectOnchange
+  // 选择目录类型
   const selectOnchangeHandle = (e: any) => {
+    const name = form.getFieldValue('name');
     setCatalogParam({ ...catalogParam, contentType: e });
+    if (e === catalogDetail.contentType) {
+      form.setFieldsValue({ ...catalogDetail });
+      setPosterImg(catalogDetail.contentUrl as string);
+    } else {
+      form.resetFields();
+      form.setFieldsValue({ name, contentType: e });
+      setPosterImg('');
+    }
   };
   // modal确认
   const modalOnOkHandle = async () => {
     await form.validateFields();
+    setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false });
     const updataCatalog = form.getFieldsValue();
+    if (updataCatalog.contentType === 9) {
+      updataCatalog.contentUrl = { appId: updataCatalog.appId, appPath: updataCatalog.appPath };
+    }
     console.log(updataCatalog);
-    setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false, title: '' });
     let title = '修改提醒';
     let content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
     editOrAddLastCatalogParam.title === '新增' && (title = '新增提醒');
@@ -97,19 +116,19 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         });
         if (res) {
           message.success(`目录${editOrAddLastCatalogParam.title}成功`);
-          form.resetFields();
-          setCatalogParam({ name: '', contentType: 0 });
           setFirmModalParam({ title: '成功', content: '', visible: false });
+          resetHandle();
         }
+      },
+      onCancel: () => {
+        setFirmModalParam({ title: '', content: '', visible: false });
+        setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: true });
       }
     });
-    form.resetFields();
   };
+  // modal取消
   const onCancelHandle = () => {
-    console.log('');
-    form.resetFields();
-    setCatalogParam({ name: '', contentType: 0 });
-    setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false, title: '' });
+    resetHandle();
   };
   useEffect(() => {
     if (editOrAddLastCatalogParam) {
@@ -152,7 +171,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
             rules={[{ required: true, message: '请选择话术格式' }]}
           >
             <Select className={style.modalContentSelect} placeholder={'请选择'} onChange={selectOnchangeHandle}>
-              {speechTypeList.map((item) => (
+              {catalogType2Name.map((item) => (
                 <Select.Option key={item.value} value={item.value}>
                   {item.label}
                 </Select.Option>
