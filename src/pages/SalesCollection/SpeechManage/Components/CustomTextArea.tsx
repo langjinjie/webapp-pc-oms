@@ -3,11 +3,12 @@ import classNames from 'classnames';
 import style from './style.module.less';
 import { Icon } from 'src/components';
 import { Button, message } from 'antd';
+import { getAutoParams } from 'src/apis/salesCollection';
 
 interface CustomTextAreaProps {
   value?: string | undefined;
   onChange?: (value: string) => void;
-  maxLength?: number;
+  maxLength: number;
   visible?: boolean;
   sensitive?: number;
   sensitiveWord?: string;
@@ -25,21 +26,16 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   const [customBtns, setCustomBtns] = useState<string[]>([]);
   const [count, setCount] = useState(0);
   // const [error, setError] = useState(false);
+  const getAutoParamList = async () => {
+    const res: string[] = await getAutoParams({});
+    console.log(res);
+    if (res) {
+      setCustomBtns(res);
+    }
+  };
 
   useEffect(() => {
-    const params = {
-      公司全称: '上海年高科技服务有限公司',
-      公司简称: '年高科技',
-      '客户称呼-亲和': '哥',
-      '客户称呼-专业': '先生',
-      客户经理姓名: '余亚东',
-      客户经理姓氏: '余',
-      客户经理工号: null,
-      客户经理职位: '高级客户经理',
-      备注名: 'YuYD',
-      用户昵称: 'YuYD'
-    };
-    setCustomBtns(Object.keys(params));
+    getAutoParamList();
   }, []);
   useEffect(() => {
     if (value) setCount(value.length);
@@ -132,11 +128,13 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
             className={style.textarea}
             ref={textareaRef}
             value={value}
-            maxLength={maxLength || 300}
+            maxLength={maxLength}
             onChange={handleTextareaChange}
           />
         </div>
-        <div className={classNames(style.count, 'flex justify-end')}>{count}/300</div>
+        <div className={classNames(style.count, 'flex justify-end')}>
+          {count}/{maxLength}
+        </div>
       </div>
       {sensitive === 1 && (
         <div className={style.sensitiveWrap}>

@@ -114,7 +114,6 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({ visible, setVisibl
       title={modalParam.title}
       onCancel={onCancelHandle}
       onOk={modalOnOkHandle}
-      // destroyOnClose
     >
       <Form form={form}>
         {modalParam.type === 3

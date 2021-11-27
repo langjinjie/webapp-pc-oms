@@ -46,7 +46,7 @@ const AddOrEditWords: React.FC = () => {
         ...form.getFieldsValue()
       }));
     if (res !== null) {
-      type && message.success(`话术${getQueryParam().type === 'edit' ? '编辑' : '增加'}成功`);
+      type && message.success(`敏感词${getQueryParam().type === 'edit' ? '编辑' : '增加'}成功`);
       history.replace('/sensitiveManage');
     }
   };
@@ -134,7 +134,6 @@ const AddOrEditWords: React.FC = () => {
           disabled: !addSensitiveType,
           htmlType: 'submit'
         }}
-        destroyOnClose
       >
         <div className={style.title}>添加敏感词类型</div>
         <input

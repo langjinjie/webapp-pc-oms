@@ -61,7 +61,6 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
       setStates((states) => ({ ...states, loading: true }));
       return;
     }
-    console.log(info.file.status);
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       getBase64(info.file.originFileObj, (imageUrl: string) => {
@@ -81,7 +80,6 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
     uploadData.append('bizKey', type ? 'media' : 'news');
     const res: any = await uploadImage(uploadData);
     if (res) {
-      console.log(res);
       onChange?.(res.filePath);
       setStates((states) => ({ ...states, loading: false, imageUrl: res.filePath || '' }));
     } else {
@@ -91,26 +89,50 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
 
   return (
     <>
-      <Upload
-        onChange={handleChange}
-        listType="picture-card"
-        beforeUpload={beforeUpload}
-        showUploadList={false}
-        className={classNames({ 'avatar-uploader': !type })}
-        customRequest={posterUploadFile}
-      >
-        {states.imageUrl && !type
-          ? (
-          <img src={states.imageUrl} alt="avatar" style={{ width: '100%' }} />
-            )
-          : states.imageUrl && type === 'video'
-            ? (
-          <video autoPlay controls className={styles.video} src={states.imageUrl}></video>
-              )
-            : (
-                uploadButton
-              )}
-      </Upload>
+      {!type && (
+        <Upload
+          onChange={handleChange}
+          listType="picture-card"
+          beforeUpload={beforeUpload}
+          showUploadList={false}
+          className={classNames({ 'avatar-uploader': !type })}
+          customRequest={posterUploadFile}
+        >
+          {states.imageUrl ? <img src={states.imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+        </Upload>
+      )}
+      {type === 'audio' && (
+        <>
+          {states.imageUrl && <audio autoPlay controls className={styles.audio} src={states.imageUrl}></audio>}
+
+          <Upload
+            onChange={handleChange}
+            listType="picture-card"
+            beforeUpload={beforeUpload}
+            showUploadList={false}
+            className={classNames({ 'avatar-uploader': !type })}
+            customRequest={posterUploadFile}
+          >
+            {uploadButton}
+          </Upload>
+        </>
+      )}
+      {type === 'video' && (
+        <>
+          {states.imageUrl && <video autoPlay controls className={styles.video} src={states.imageUrl}></video>}
+
+          <Upload
+            onChange={handleChange}
+            listType="picture-card"
+            beforeUpload={beforeUpload}
+            showUploadList={false}
+            className={classNames({ 'avatar-uploader': !type })}
+            customRequest={posterUploadFile}
+          >
+            {uploadButton}
+          </Upload>
+        </>
+      )}
     </>
   );
 };

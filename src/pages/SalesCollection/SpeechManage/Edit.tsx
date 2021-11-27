@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 
 import { Button, Card, Cascader, Form, Input, message, Modal, Select, Space } from 'antd';
 import styles from './style.module.less';
@@ -9,12 +9,38 @@ import SpeechItem from './Components/SpeechTypeItem/SpeechItem';
 import { RouteComponentProps } from 'react-router';
 import { URLSearchParams } from 'src/utils/base';
 import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
+import InputShowLength from './Components/InputShowLength/InputShowLength';
 
+const scenesStates = [
+  { sceneId: 1, name: '车险流程', needGenderType: 1, needAgeType: 0 },
+  { sceneId: 2, name: '非车流程', needGenderType: 1, needAgeType: 0 },
+  { sceneId: 3, name: '异议处理', needGenderType: 0, needAgeType: 0 },
+  { sceneId: 4, name: '场景话术', needGenderType: 1, needAgeType: 1 },
+  { sceneId: 5, name: '问答知识', needGenderType: 0, needAgeType: 0 }
+];
 const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
   const [speechForm] = useForm();
   const [speech, setSpeech] = useState<SpeechProps>();
   const [originSpeech, setOriginSpeech] = useState<SpeechProps>();
   const [categories, setCategories] = useState<any[]>([]);
+  const [currentScenesState, setCurrentScenesState] = useState({
+    sceneId: 0,
+    name: '',
+    needGenderType: 0,
+    needAgeType: 0
+  });
+
+  const getCategory = async (params?: any) => {
+    const res = await getCategoryList({ ...params });
+    if (res) {
+      res.forEach((item: any) => {
+        if (item.lastLevel === 0) {
+          item.isLeaf = false;
+        }
+      });
+      setCategories(res);
+    }
+  };
   const getDetail = async () => {
     const params = URLSearchParams(location.search);
     if (params.contentId) {
@@ -44,6 +70,8 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           videoDuration,
           videoSize
         } = res;
+        const currentScenes = scenesStates.filter((scenes) => scenes.sceneId === sceneId)[0];
+        setCurrentScenesState(currentScenes);
         speechForm.setFieldsValue({
           ageType,
           catalogId,
@@ -67,27 +95,13 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           videoSize
         });
       }
-      console.log(res, speech);
     } else {
-      console.log('isADD');
-    }
-  };
-
-  const getCategory = async (params?: any) => {
-    const res = await getCategoryList({ ...params });
-    if (res) {
-      res.forEach((item: any) => {
-        if (item.lastLevel === 0) {
-          item.isLeaf = false;
-        }
-      });
-      setCategories(res);
+      await getCategory();
     }
   };
 
   useEffect(() => {
     getDetail();
-    getCategory();
   }, []);
 
   const onSubmit = async (params: any) => {
@@ -96,7 +110,6 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
     });
     if (res) {
       const { code, sensitiveWord } = res;
-      console.log(code, sensitiveWord);
       if (code === 0) {
         message.success('保存成功');
         history.back();
@@ -108,10 +121,17 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
   };
 
   const onFinish = async (values: any) => {
-    const { content, contentType, tip, ageType, genderType, contentUrl, title, summary } = values;
+    const { content, contentType, tip, ageType, genderType, contentUrl, title, summary, thumbnail } = values;
     if (
       (originSpeech?.contentType === 2 && contentUrl !== originSpeech.contentUrl) ||
-      (originSpeech?.contentType === 7 && (title !== originSpeech?.title || originSpeech.contentUrl !== contentUrl))
+      ((originSpeech?.contentType === 7 || originSpeech?.contentType === 6) &&
+        (title !== originSpeech?.title || originSpeech.contentUrl !== contentUrl)) ||
+      ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8 || originSpeech?.contentType === 9) &&
+        (title !== originSpeech?.title ||
+          title !== originSpeech.title ||
+          thumbnail !== originSpeech.thumbnail ||
+          summary !== originSpeech.summary ||
+          contentUrl !== originSpeech.contentUrl))
     ) {
       Modal.confirm({
         content: '修改目录会对已上架话术产生影响，企微前端能实时看到变化',
@@ -129,6 +149,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
             genderType,
             contentUrl,
             title,
+            thumbnail,
             summary: summary || originSpeech?.summary
           });
         }
@@ -144,6 +165,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
         tip,
         genderType,
         contentUrl,
+        thumbnail,
         title,
         summary: summary || originSpeech?.summary
       });
@@ -154,7 +176,6 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
     const { contentType = 1 } = values;
 
     setSpeech((speech) => ({ ...speech!, contentType }));
-    console.log(values);
   };
 
   const loadData = async (selectedOptions: any) => {
@@ -176,17 +197,29 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
     setCategories([...categories]);
   };
 
+  useMemo(() => {
+    if (originSpeech) {
+      const { contentType, contentUrl, title, summary, thumbnail } = originSpeech;
+      speechForm.setFieldsValue({ contentType, contentUrl, title, summary, thumbnail });
+    }
+  }, [originSpeech]);
+
   const onCascaderChange = async (value: any, selectedOptions: any) => {
     const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
+    const sceneId = lastSelectedOptions.sceneId;
+    const currentScenes = scenesStates.filter((scenes) => scenes.sceneId === sceneId)[0];
+    setCurrentScenesState(currentScenes);
     if (lastSelectedOptions) {
       const { sceneId, catalogId } = lastSelectedOptions;
       const res = await requestGetCatalogDetail({ sceneId, catalogId });
       if (res) {
         setOriginSpeech(res);
-        const { contentType } = res;
-        speechForm.setFieldsValue({ contentType });
       }
     }
+  };
+
+  const handleBack = () => {
+    history.back();
   };
 
   return (
@@ -198,12 +231,14 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           onValuesChange(values);
         }}
       >
-        <Form.Item label="选择目录" rules={[{ required: true }]}>
-          {originSpeech?.contentId
-            ? (
-            <Input type="text" value={originSpeech.fullName} className="width420" readOnly />
-              )
-            : (
+        {originSpeech?.contentId
+          ? (
+          <Form.Item label="选择目录" required>
+            <Input type="text" value={originSpeech?.fullName || ''} className="width420" readOnly />
+          </Form.Item>
+            )
+          : (
+          <Form.Item label="选择目录" rules={[{ required: true }]} name="categoryId">
             <Cascader
               placeholder="请选择"
               className="width420"
@@ -212,8 +247,8 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
               loadData={loadData}
               onChange={onCascaderChange}
             ></Cascader>
-              )}
-        </Form.Item>
+          </Form.Item>
+            )}
 
         {originSpeech?.contentType && (
           <Form.Item label="话术格式" name="contentType" rules={[{ required: true }]}>
@@ -226,34 +261,40 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
             </Select>
           </Form.Item>
         )}
-        {originSpeech?.contentType && <SpeechItem type={speech?.contentType}></SpeechItem>}
+        {originSpeech?.contentType && <SpeechItem type={originSpeech?.contentType}></SpeechItem>}
 
         <Form.Item label="话术内容" name="content" rules={[{ required: true }]}>
-          <CustomTextArea sensitiveWord={speech?.sensitiveWord} sensitive={speech?.sensitive} />
+          <CustomTextArea sensitiveWord={speech?.sensitiveWord} sensitive={speech?.sensitive} maxLength={1200} />
         </Form.Item>
-        <Form.Item label="客户大类" className={styles.formItem__selectGroup}>
-          <Form.Item name="genderType">
-            <Select placeholder="请选择" allowClear>
-              <Select.Option value={0}>全部性别</Select.Option>
-              <Select.Option value={1}>男性</Select.Option>
-              <Select.Option value={2}>女性</Select.Option>
-            </Select>
+        {currentScenesState.sceneId !== 3 && currentScenesState.sceneId !== 5 && currentScenesState.sceneId !== 0 && (
+          <Form.Item label="客户大类" required={true} className={styles.formItem__selectGroup}>
+            {currentScenesState.needGenderType === 1 && (
+              <Form.Item name="genderType" rules={[{ required: true, message: '请选择性别' }]}>
+                <Select placeholder="请选择" allowClear>
+                  <Select.Option value={0}>全部性别</Select.Option>
+                  <Select.Option value={1}>男性</Select.Option>
+                  <Select.Option value={2}>女性</Select.Option>
+                </Select>
+              </Form.Item>
+            )}
+            {currentScenesState.needAgeType === 1 && (
+              <Form.Item name={'ageType'} rules={[{ required: true, message: '请选择年龄' }]}>
+                <Select placeholder="请选择" allowClear>
+                  <Select.Option value={0}>全部年龄</Select.Option>
+                  <Select.Option value={1}>老</Select.Option>
+                  <Select.Option value={2}>中</Select.Option>
+                  <Select.Option value={3}>青</Select.Option>
+                </Select>
+              </Form.Item>
+            )}
           </Form.Item>
-          <Form.Item name={'ageType'}>
-            <Select placeholder="请选择" allowClear>
-              <Select.Option value={0}>全部年龄</Select.Option>
-              <Select.Option value={1}>老</Select.Option>
-              <Select.Option value={2}>中</Select.Option>
-              <Select.Option value={3}>青</Select.Option>
-            </Select>
-          </Form.Item>
-        </Form.Item>
+        )}
         <Form.Item label="话术小贴士" name="tip">
-          <Input placeholder={'请输入'} className="width360" />
+          <InputShowLength className="width360" maxLength={20} placeholder={'请输入'} />
         </Form.Item>
         <Form.Item className={styles.formItem__footerBtnWrap}>
           <Space>
-            <Button type="default" shape="round">
+            <Button type="default" shape="round" onClick={() => handleBack()}>
               返回
             </Button>
             <Button type="primary" htmlType="submit" shape="round">

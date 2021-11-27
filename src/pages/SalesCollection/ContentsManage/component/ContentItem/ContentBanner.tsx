@@ -1,7 +1,7 @@
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 import { Icon } from 'src/components/index';
 import { ContentBanner as ChildrenContentBanner } from 'src/pages/SalesCollection/ContentsManage/component/index';
-import { ICatalogItem, IEditOrAddCatalogParam, IFirmModalParam } from 'src/utils/interface';
+import { ICatalogItem, IEditOrAddCatalogParam, IFirmModalParam, IEditOrAddLastCatalogParam } from 'src/utils/interface';
 import { getCategoryList, requestSaveSortCatalog, requestDeleteCatalog } from 'src/apis/salesCollection';
 import { catalogLastLeve } from 'src/utils/commonData';
 import { Context } from 'src/store';
@@ -22,6 +22,8 @@ interface IContentBannerProps {
   setEditOrAddCatalogVisible: (param: boolean) => void;
   firmModalParam: IFirmModalParam;
   setFirmModalParam: (param: IFirmModalParam) => void;
+  editOrAddLastCatalogParam: IEditOrAddLastCatalogParam;
+  setEditOrAddLastCatalogParam: (param: IEditOrAddLastCatalogParam) => void;
 }
 
 const ContentBanner: React.FC<IContentBannerProps> = ({
@@ -35,7 +37,9 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   setEditOrAddCatalogParam,
   setEditOrAddCatalogVisible,
   firmModalParam,
-  setFirmModalParam
+  setFirmModalParam,
+  editOrAddLastCatalogParam,
+  setEditOrAddLastCatalogParam
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [childrenList, setChildrenList] = useState<ICatalogItem[]>([]);
@@ -45,30 +49,36 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   const getCurrentChildrenList = async () => {
     const res = await getCategoryList({ corpId, sceneId: catalog.sceneId, catalogId: catalog.catalogId });
     setChildrenList(res);
-    setFirmModalParam({ title: '', content: '', visible: false });
+    setFirmModalParam({ title: '', content: '', visible: false }); // 防止新展开的目录列表多次请求子目录
   };
   // 点击目录
   const contentsClickHandle = async () => {
     if (catalog.lastLevel) return;
+    getCurrentChildrenList();
     setCurrentContents(currentContents === catalog.catalogId ? '' : catalog.catalogId);
   };
   // 编辑
   const editClickHandle = async (e: MouseEvent) => {
-    console.log(catalog.name, parentId);
     e.stopPropagation();
-    setEditOrAddCatalogVisible(true);
-    setEditOrAddCatalogParam({ title: '编辑', catalog: catalog, parentId });
+    if (catalog.lastLevel) {
+      setEditOrAddLastCatalogParam({ title: '编辑', catalog, parentId, visible: true });
+    } else {
+      setEditOrAddCatalogVisible(true);
+      setEditOrAddCatalogParam({ title: '编辑', catalog, parentId });
+    }
   };
   // 新增
   const addClickHandle = (parentCatalog: ICatalogItem, parentId: string) => {
-    console.log('新增');
     const catalog = { ...parentCatalog, level: parentCatalog.level + 1 };
     // 该级目录是否是最后一级目录
-    if (catalog.level === catalogLastLeve[parentCatalog.sceneId - 1]) {
+    if (catalog.level >= catalogLastLeve[parentCatalog.sceneId - 1]) {
       catalog.lastLevel = 1;
+      catalog.level = catalogLastLeve[parentCatalog.sceneId - 1]; // 修正目录
+      setEditOrAddLastCatalogParam({ title: '新增', catalog, parentId, visible: true });
+    } else {
+      setEditOrAddCatalogVisible(true);
+      setEditOrAddCatalogParam({ title: '新增', catalog, parentId });
     }
-    setEditOrAddCatalogVisible(true);
-    setEditOrAddCatalogParam({ title: '新增', catalog, parentId });
   };
   const firmModalOnOk = async (type: number) => {
     const res = await requestSaveSortCatalog({
@@ -92,6 +102,9 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       visible: true,
       onOk () {
         firmModalOnOk(type);
+      },
+      onCancel: () => {
+        setFirmModalParam({ title: '', content: '', visible: false });
       }
     });
   };
@@ -112,7 +125,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
     });
   };
   useEffect(() => {
-    getCurrentChildrenList();
+    console.log('更新');
     return () => {
       setCurrentContents('');
     };
@@ -186,6 +199,8 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
                   setEditOrAddCatalogVisible={setEditOrAddCatalogVisible}
                   firmModalParam={firmModalParam}
                   setFirmModalParam={setFirmModalParam}
+                  editOrAddLastCatalogParam={editOrAddLastCatalogParam}
+                  setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
                 />
               </div>
             ))}

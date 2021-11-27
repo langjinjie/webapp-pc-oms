@@ -5,14 +5,10 @@ import style from './style.module.less';
 
 interface IConfirmModalProps {
   firmModalParam: IFirmModalParam;
-  setFirmModalParam: (param: IFirmModalParam) => void;
 }
 
-const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam, setFirmModalParam }) => {
-  const { visible, title, content, onOk } = firmModalParam;
-  const onCancelHandle = () => {
-    setFirmModalParam({ ...firmModalParam, visible: false });
-  };
+const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam }) => {
+  const { visible, title, content, onOk, onCancel } = firmModalParam;
   return (
     <Modal
       width={300}
@@ -21,10 +17,9 @@ const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam, setFirmMod
       closable={false}
       visible={visible}
       title={title}
-      onCancel={onCancelHandle}
+      onCancel={() => onCancel?.()}
       onOk={() => onOk?.()}
       maskClosable={false}
-      destroyOnClose
     >
       <span className={style.content}>{content}</span>
     </Modal>

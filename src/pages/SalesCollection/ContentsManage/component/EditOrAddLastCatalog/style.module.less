@@ -1,0 +1,77 @@
+// modal样式
+.modalWrap {
+  // 移动删除modal内容
+  .moadlContent {
+    margin: 10px 0 30px;
+    text-align: center;
+  }
+  // 最后一级目录的Modal.Body样式
+  .modalContentFormItem {
+    line-height: 36px;
+    .modalContentInput {
+      margin-left: 20px;
+      width: 280px;
+      height: 36px;
+      border-radius: 18px;
+    }
+    .limitLength {
+      position: relative;
+      left: -46px;
+      font-size: 14px;
+      color: #cccdd0;
+    }
+    .modalContentSelect {
+      display: flex;
+      margin-left: 20px;
+      width: 160px;
+      height: 36px;
+      line-height: 30px;
+      border-radius: 18px;
+      :global {
+        .ant-select-selector {
+          height: 36px;
+        }
+      }
+    }
+  }
+  :global {
+    .ant-modal-header {
+      margin: 0 40px;
+      height: 54px;
+      padding-top: 20px;
+      border-color: #e6e7eb;
+      font-size: 14px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: #111111;
+      text-align: center;
+    }
+    .ant-modal-body {
+      padding: 20px 40px 0;
+      .ant-form-item-label {
+        width: 82px;
+        text-align: right;
+      }
+      .ant-form-item-explain-error {
+        margin-left: 20px;
+      }
+    }
+    .ant-modal-footer {
+      margin: 0 40px;
+      padding: 20px 0px;
+      border-color: #e6e7eb;
+      text-align: center;
+      button {
+        margin: 0 10px;
+        width: 128px;
+        height: 40px;
+        border-radius: 20px;
+        &:disabled {
+          color: rgba(0, 0, 0, 0.25);
+          border-color: #d9d9d9;
+          background-color: #f5f5f5;
+        }
+      }
+    }
+  }
+}
