@@ -68,7 +68,11 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       setCatalogDetail(res);
       form.setFieldsValue(res);
       setCatalogParam({ name: res.name, contentType: res.contentType });
-      setPosterImg(res.contentUrl);
+      if (res.contentType === 3) {
+        setPosterImg(res.contentUrl);
+      } else {
+        setPosterImg(res.thumbnail);
+      }
     }
   };
   // inputOnchang
@@ -82,6 +86,11 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     if (e === catalogDetail.contentType) {
       form.setFieldsValue({ ...catalogDetail });
       setPosterImg(catalogDetail.contentUrl as string);
+      if (e === 3) {
+        setPosterImg(catalogDetail.contentUrl as string);
+      } else {
+        setPosterImg(catalogDetail.thumbnail as string);
+      }
     } else {
       form.resetFields();
       form.setFieldsValue({ name, contentType: e });
@@ -94,7 +103,11 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false });
     const updataCatalog = form.getFieldsValue();
     if (updataCatalog.contentType === 9) {
-      updataCatalog.contentUrl = { appId: updataCatalog.appId, appPath: updataCatalog.appPath };
+      updataCatalog.contentUrl = JSON.stringify({ appId: updataCatalog.appId, appPath: updataCatalog.appPath || '' });
+    }
+    if (updataCatalog.contentType === 2) {
+      updataCatalog.contentUrl = updataCatalog.thumbnail;
+      delete updataCatalog.thumbnail;
     }
     console.log(updataCatalog);
     let title = '修改提醒';
@@ -106,14 +119,18 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       title,
       content,
       onOk: async () => {
+        const { parentId, catalog, title } = editOrAddLastCatalogParam;
+        const { sceneId, catalogId, level, lastLevel } = catalog;
         const res = await requestEditCatalog({
           corpId,
-          ...editOrAddLastCatalogParam.catalog,
-          ...updataCatalog,
-          parentId: editOrAddLastCatalogParam.parentId,
-          catalogId:
-            editOrAddLastCatalogParam.title === '新增' ? undefined : editOrAddLastCatalogParam.catalog.catalogId
+          parentId,
+          sceneId,
+          level,
+          lastLevel,
+          catalogId: title === '新增' ? undefined : catalogId,
+          ...updataCatalog
         });
+        console.log(res);
         if (res) {
           message.success(`目录${editOrAddLastCatalogParam.title}成功`);
           setFirmModalParam({ title: '成功', content: '', visible: false });
