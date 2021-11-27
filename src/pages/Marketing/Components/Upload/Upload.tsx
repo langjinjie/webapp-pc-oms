@@ -91,26 +91,50 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
 
   return (
     <>
-      <Upload
-        onChange={handleChange}
-        listType="picture-card"
-        beforeUpload={beforeUpload}
-        showUploadList={false}
-        className={classNames({ 'avatar-uploader': !type })}
-        customRequest={posterUploadFile}
-      >
-        {states.imageUrl && !type
-          ? (
-          <img src={states.imageUrl} alt="avatar" style={{ width: '100%' }} />
-            )
-          : states.imageUrl && type === 'video'
-            ? (
-          <video autoPlay controls className={styles.video} src={states.imageUrl}></video>
-              )
-            : (
-                uploadButton
-              )}
-      </Upload>
+      {!type && (
+        <Upload
+          onChange={handleChange}
+          listType="picture-card"
+          beforeUpload={beforeUpload}
+          showUploadList={false}
+          className={classNames({ 'avatar-uploader': !type })}
+          customRequest={posterUploadFile}
+        >
+          {states.imageUrl ? <img src={states.imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+        </Upload>
+      )}
+      {type === 'audio' && (
+        <>
+          {states.imageUrl && <audio autoPlay controls className={styles.audio} src={states.imageUrl}></audio>}
+
+          <Upload
+            onChange={handleChange}
+            listType="picture-card"
+            beforeUpload={beforeUpload}
+            showUploadList={false}
+            className={classNames({ 'avatar-uploader': !type })}
+            customRequest={posterUploadFile}
+          >
+            {uploadButton}
+          </Upload>
+        </>
+      )}
+      {type === 'video' && (
+        <>
+          {states.imageUrl && <video autoPlay controls className={styles.video} src={states.imageUrl}></video>}
+
+          <Upload
+            onChange={handleChange}
+            listType="picture-card"
+            beforeUpload={beforeUpload}
+            showUploadList={false}
+            className={classNames({ 'avatar-uploader': !type })}
+            customRequest={posterUploadFile}
+          >
+            {uploadButton}
+          </Upload>
+        </>
+      )}
     </>
   );
 };
