@@ -122,6 +122,7 @@ export interface IFirmModalParam {
   title: string;
   content: string;
   onOk?: () => void;
+  onCancel?: () => void;
 }
 // 最后一级目录详情
 export interface ICatalogDetail {
