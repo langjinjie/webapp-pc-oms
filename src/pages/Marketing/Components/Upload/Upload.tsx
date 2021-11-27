@@ -61,7 +61,6 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
       setStates((states) => ({ ...states, loading: true }));
       return;
     }
-    console.log(info.file.status);
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       getBase64(info.file.originFileObj, (imageUrl: string) => {
@@ -81,7 +80,6 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
     uploadData.append('bizKey', type ? 'media' : 'news');
     const res: any = await uploadImage(uploadData);
     if (res) {
-      console.log(res);
       onChange?.(res.filePath);
       setStates((states) => ({ ...states, loading: false, imageUrl: res.filePath || '' }));
     } else {

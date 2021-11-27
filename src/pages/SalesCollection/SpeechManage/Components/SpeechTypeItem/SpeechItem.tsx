@@ -1,13 +1,91 @@
 import React from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, message } from 'antd';
 import NgUpload from 'src/pages/Marketing/Components/Upload/Upload';
 
 import styles from './styles.module.less';
+import InputShowLength from '../InputShowLength/InputShowLength';
+import { RcFile } from 'antd/lib/upload';
 
 interface SpeechItemProps {
   type?: number;
 }
 const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
+  // 图片校验
+  const beforeUpload = (file: RcFile): Promise<boolean> => {
+    const isJpg = file.type === 'image/jpeg';
+
+    if (!isJpg) {
+      message.error('你只可以上传 JPG 文件!');
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error('图片大小不能超过 5MB!');
+    }
+    let isW750 = false;
+    // 读取图片数据
+
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          // const height = image.height;
+          isW750 = width === 750;
+          if (!isW750) {
+            message.error('海报宽度必须为 750px');
+          }
+          resolve(isJpg && isLt5M && isW750);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+  const beforeUploadSmallPic = (file: RcFile) => {
+    const isJpg = file.type === 'image/jpeg';
+
+    if (!isJpg) {
+      message.error('你只可以上传 JPG 文件!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不能超过 2MB!');
+    }
+    return isJpg && isLt2M;
+  };
+  const beforeUploadMedia = (file: RcFile, type: number) => {
+    console.log(file.type, type);
+    if (type === 6) {
+      const isAudio = file.type === 'audio/*';
+
+      if (!isAudio) {
+        message.error('你只可以上传 MP3 文件!');
+      }
+
+      const isLt50M = file.size / 1024 / 1024 < 50;
+      if (!isLt50M) {
+        message.error('音频大小不能超过 50MB!');
+      }
+      return isAudio && isLt50M;
+    } else {
+      const isMp4 = file.type === 'video/mp4';
+
+      if (!isMp4) {
+        message.error('你只可以上传 MP4 视频文件!');
+      }
+
+      const isLt100M = file.size / 1024 / 1024 < 100;
+      if (!isLt100M) {
+        message.error('视频大小不能超过 100MB!');
+      }
+      return isMp4 && isLt100M;
+    }
+  };
   return (
     <>
       {/* type = 2 长图 */}
@@ -18,7 +96,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
           rules={[{ required: true }]}
           extra="图片宽度750px，高度不限，仅支持.jpg格式"
         >
-          <NgUpload></NgUpload>
+          <NgUpload beforeUpload={beforeUpload}></NgUpload>
         </Form.Item>
       )}
 
@@ -48,13 +126,13 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
             rules={[{ required: true }]}
             extra="图片宽度750px，高度不限，仅支持.jpg格式"
           >
-            <NgUpload></NgUpload>
+            <NgUpload beforeUpload={beforeUpload}></NgUpload>
           </Form.Item>
           <Form.Item label="图文标题" name="title" rules={[{ required: true }, { max: 30 }]}>
-            <Input className={'width480'}></Input>
+            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
           <Form.Item label="图文摘要" name="summary" rules={[{ required: true }, { max: 30 }]}>
-            <Input className={'width480'}></Input>
+            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
           <Form.Item label="图文链接" name="contentUrl" rules={[{ required: true }]}>
             <Input className={'width480'}></Input>
@@ -70,14 +148,18 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
             rules={[{ required: true }]}
             extra={type === 6 ? '仅支持MP3格式，最大20M' : '仅支持MP4格式，最大100M'}
           >
-            <NgUpload type={type === 6 ? 'audio' : 'video'} btnText={type === 6 ? '上传音频' : '上传视频'} />
+            <NgUpload
+              beforeUpload={(file) => beforeUploadMedia(file, type)}
+              type={type === 6 ? 'audio' : 'video'}
+              btnText={type === 6 ? '上传音频' : '上传视频'}
+            />
           </Form.Item>
           <Form.Item
             name="title"
             label={type === 6 ? '音频标题' : '视频标题'}
             rules={[{ required: true }, { max: 30 }]}
           >
-            <Input className={'width480'}></Input>
+            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
           <Form.Item
             label={'上传封面'}
@@ -85,7 +167,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
             rules={[{ required: true }]}
             extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
           >
-            <NgUpload></NgUpload>
+            <NgUpload beforeUpload={beforeUploadSmallPic}></NgUpload>
           </Form.Item>
         </>
       )}
@@ -94,17 +176,20 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
         <>
           <Form.Item
             label={'上传图片'}
-            name="pic"
+            name="thumbnail"
             rules={[{ required: true }]}
             extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
           >
-            <NgUpload></NgUpload>
+            <NgUpload beforeUpload={beforeUploadSmallPic}></NgUpload>
           </Form.Item>
-          <Form.Item label="图文标题" rules={[{ required: true }, { max: 30 }]}>
-            <Input></Input>
+          <Form.Item name="title" label="图文标题" rules={[{ required: true }, { max: 30 }]}>
+            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
-          <Form.Item label="图文摘要" rules={[{ required: true }, { max: 30 }]}>
-            <Input></Input>
+          <Form.Item name="summary" label="图文摘要" rules={[{ required: true }, { max: 30 }]}>
+            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
+          </Form.Item>
+          <Form.Item name="contentUrl" label="跳转链接" rules={[{ required: true }, { max: 200 }]}>
+            <Input className="width480" placeholder={'请输入'} />
           </Form.Item>
         </>
       )}
