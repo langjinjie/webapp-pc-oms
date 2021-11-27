@@ -133,7 +133,6 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       onCancel={onCancelHandle}
       onOk={modalOnOkHandle}
       maskClosable={false}
-      destroyOnClose
       okButtonProps={{
         // 判断必填项目为空或者是未发生修改则状态为:disabled
         disabled:

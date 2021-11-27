@@ -5,6 +5,8 @@ import style from './style.module.less';
 
 interface ISpeechTypeLabelProps {
   type: number;
+  posterImg: string;
+  setPosterImg: (param: string) => void;
 }
 
 interface IInputCurrentLength {
@@ -16,8 +18,7 @@ interface IInputCurrentLength {
   miniProgramSummaryLength: number;
 }
 
-const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
-  const [posterImg, setPosterImg] = useState('');
+const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, setPosterImg }) => {
   const [maxLengthParam, setMaxLengthParam] = useState<IInputCurrentLength>({
     articleTitleLength: 0, //
     articleSummaryLength: 0,
@@ -28,9 +29,9 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
   });
   // updaload beforeUpload
   const beforeUploadHandle = (file: File): Promise<boolean> => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    const isJpgOrPng = file.type === 'image/jpeg';
     if (!isJpgOrPng) {
-      message.error('只允许上传JPG/PNG文件!');
+      message.error('只允许上传JPG!');
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
@@ -48,11 +49,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
         image.src = data;
         image.onload = function () {
           const width = image.width;
-          const height = image.height;
-          if (!(width === 40 && height === 40)) {
-            message.error('图标尺寸必须为');
+          if (!(width === 750)) {
+            message.error('图标宽度必须为750');
           }
-          resolve(width === 40 && height === 40 && isJpgOrPng && isLt2M);
+          resolve(width === 750 && isJpgOrPng && isLt2M);
           resolve(true);
         };
       };
@@ -107,7 +107,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type }) => {
           <Form.Item
             className={style.imgformItem}
             label="上传海报:"
-            name={'posterImg'}
+            name={'contentUrl'}
             valuePropName="file"
             getValueFromEvent={normFile}
             rules={[{ required: true, message: '请上传图片' }]}

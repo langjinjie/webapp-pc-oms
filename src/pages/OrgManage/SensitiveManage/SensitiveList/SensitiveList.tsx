@@ -343,7 +343,6 @@ const SensitiveList: React.FC = () => {
         onOk={() => batchSensitive(deleteTips.type)}
         onCancel={() => setDeleteTip({ ...deleteTips, visible: false })}
         maskClosable={false}
-        destroyOnClose
       >
         <div className={style.content}>{`您确定要${deleteTips.content}敏感词吗?`}</div>
       </Modal>

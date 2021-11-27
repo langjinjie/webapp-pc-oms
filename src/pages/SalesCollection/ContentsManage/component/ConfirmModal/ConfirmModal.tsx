@@ -24,7 +24,6 @@ const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam, setFirmMod
       onCancel={onCancelHandle}
       onOk={() => onOk?.()}
       maskClosable={false}
-      destroyOnClose
     >
       <span className={style.content}>{content}</span>
     </Modal>

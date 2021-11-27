@@ -134,7 +134,6 @@ const AddOrEditWords: React.FC = () => {
           disabled: !addSensitiveType,
           htmlType: 'submit'
         }}
-        destroyOnClose
       >
         <div className={style.title}>添加敏感词类型</div>
         <input

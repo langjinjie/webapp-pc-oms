@@ -64,6 +64,7 @@ const ContentsManage: React.FC = () => {
       <AddOrEditLastCatalog
         editOrAddLastCatalogParam={editOrAddLastCatalogParam as IEditOrAddLastCatalogParam}
         setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
+        setFirmModalParam={setFirmModalParam}
       />
       <ConfirmModal firmModalParam={firmModalParam} setFirmModalParam={setFirmModalParam} />
     </>
