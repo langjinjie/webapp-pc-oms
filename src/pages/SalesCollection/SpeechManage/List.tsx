@@ -97,7 +97,14 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     setSelectRowKeys([]);
     // 重置当前操作状态
     setCurrentType(null);
-    const { list, total } = await getSpeechList({ ...formParams, sceneId: lastCategory?.sceneId || '', ...params });
+    const { pageSize, current: pageNum } = pagination;
+    const { list, total } = await getSpeechList({
+      ...formParams,
+      pageNum,
+      pageSize,
+      sceneId: lastCategory?.sceneId || '',
+      ...params
+    });
     setDataSource(list || []);
     setPagination((pagination) => ({ ...pagination, total: total || 0 }));
   };
