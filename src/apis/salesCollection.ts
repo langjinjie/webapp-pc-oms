@@ -98,3 +98,7 @@ export const getCategoryList: HttpFunction = (params) => {
 export const getSensitiveStatus: HttpFunction = (params) => {
   return http.post('/tenacity-admin/api/sensitive/change', params);
 };
+// 获取敏感词状态
+export const getAutoParams: HttpFunction = (params) => {
+  return http.post('/tenacity-admin/api/smart/param/value', params);
+};
