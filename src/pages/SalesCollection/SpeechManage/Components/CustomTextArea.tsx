@@ -7,7 +7,7 @@ import { Button, message } from 'antd';
 interface CustomTextAreaProps {
   value?: string | undefined;
   onChange?: (value: string) => void;
-  maxLength?: number;
+  maxLength: number;
   visible?: boolean;
   sensitive?: number;
   sensitiveWord?: string;
@@ -132,11 +132,13 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
             className={style.textarea}
             ref={textareaRef}
             value={value}
-            maxLength={maxLength || 300}
+            maxLength={maxLength}
             onChange={handleTextareaChange}
           />
         </div>
-        <div className={classNames(style.count, 'flex justify-end')}>{count}/300</div>
+        <div className={classNames(style.count, 'flex justify-end')}>
+          {count}/{maxLength}
+        </div>
       </div>
       {sensitive === 1 && (
         <div className={style.sensitiveWrap}>

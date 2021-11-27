@@ -9,6 +9,7 @@ import SpeechItem from './Components/SpeechTypeItem/SpeechItem';
 import { RouteComponentProps } from 'react-router';
 import { URLSearchParams } from 'src/utils/base';
 import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
+import InputShowLength from './Components/InputShowLength/InputShowLength';
 
 const scenesStates = [
   { sceneId: 1, name: '车险流程', needGenderType: 1, needAgeType: 0 },
@@ -125,7 +126,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
       (originSpeech?.contentType === 2 && contentUrl !== originSpeech.contentUrl) ||
       ((originSpeech?.contentType === 7 || originSpeech?.contentType === 6) &&
         (title !== originSpeech?.title || originSpeech.contentUrl !== contentUrl)) ||
-      ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8) &&
+      ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8 || originSpeech?.contentType === 9) &&
         (title !== originSpeech?.title ||
           title !== originSpeech.title ||
           thumbnail !== originSpeech.thumbnail ||
@@ -175,7 +176,6 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
     const { contentType = 1 } = values;
 
     setSpeech((speech) => ({ ...speech!, contentType }));
-    console.log(values);
   };
 
   const loadData = async (selectedOptions: any) => {
@@ -290,7 +290,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           </Form.Item>
         )}
         <Form.Item label="话术小贴士" name="tip">
-          <Input placeholder={'请输入'} className="width360" />
+          <InputShowLength className="width360" maxLength={20} placeholder={'请输入'} />
         </Form.Item>
         <Form.Item className={styles.formItem__footerBtnWrap}>
           <Space>
