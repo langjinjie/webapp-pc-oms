@@ -216,8 +216,8 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
 
   useMemo(() => {
     if (originSpeech) {
-      const { contentType, contentUrl, title, summary, thumbnail } = originSpeech;
-      speechForm.setFieldsValue({ contentType, contentUrl, title, summary, thumbnail });
+      const { contentType, contentUrl, title, summary, thumbnail, appId, appPath } = originSpeech;
+      speechForm.setFieldsValue({ contentType, contentUrl, title, summary, thumbnail, appId, appPath });
     }
   }, [originSpeech]);
 
@@ -230,6 +230,11 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
       const { sceneId, catalogId } = lastSelectedOptions;
       const res = await requestGetCatalogDetail({ sceneId, catalogId });
       if (res) {
+        if (res.contentType === 9) {
+          const { appId, appPath } = JSON.parse(res.contentUrl || '{}');
+          setOriginSpeech(() => ({ ...res, appId, appPath }));
+        }
+      } else {
         setOriginSpeech(res);
       }
     }

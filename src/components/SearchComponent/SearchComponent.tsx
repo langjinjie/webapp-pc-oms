@@ -112,6 +112,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     loadData={(data) => {
                       loadData?.(data);
                     }}
+                    style={{ width: col.width }}
                     onChange={onChange}
                   />
                 </Form.Item>

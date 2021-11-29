@@ -25,14 +25,13 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [customBtns, setCustomBtns] = useState<string[]>([]);
   const [count, setCount] = useState(0);
-  // const [error, setError] = useState(false);
+
   const getAutoParamList = async () => {
     const autoParamsOfSpeech: string[] = JSON.parse(sessionStorage.getItem('autoParamsOfSpeech') || '[]');
     if (autoParamsOfSpeech.length > 0) {
       return setCustomBtns(autoParamsOfSpeech);
     }
     const res: string[] = await getAutoParams({});
-
     if (res) {
       sessionStorage.setItem('autoParamsOfSpeech', JSON.stringify(res));
       setCustomBtns(res);

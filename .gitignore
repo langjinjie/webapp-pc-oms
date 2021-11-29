@@ -7,5 +7,5 @@
 
 # idea
 /.idea
-
+/.vscode
 yarn-error.log

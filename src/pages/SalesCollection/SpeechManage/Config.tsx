@@ -35,7 +35,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       name: 'catalogIds',
       type: 'cascader',
       label: '选择目录',
-      width: '268px',
+      width: '320px',
       placeholder: '请输入',
       fieldNames: { label: 'name', value: 'catalogId', children: 'children' },
       cascaderOptions: options
@@ -44,34 +44,34 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       name: 'content',
       type: 'input',
       label: '话术内容',
-      width: '268px',
+      width: '280px',
       placeholder: '请输入'
     },
     {
       name: 'tip',
       type: 'input',
       label: '话术小贴士',
-      width: '268px',
+      width: '280px',
       placeholder: '请输入'
     },
     {
       name: 'contentType',
       type: 'select',
-      width: 160,
+      width: 140,
       label: '话术格式',
       options: speechContentTypes
     },
     {
       name: 'status',
       type: 'select',
-      width: 160,
+      width: 140,
       label: '上架状态',
       options: statusOptions
     },
     {
       name: 'sensitive',
       type: 'select',
-      width: 160,
+      width: 140,
       label: '是否出发敏感词',
       options: sensitiveOptions
     },
@@ -137,7 +137,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '话术格式',
       dataIndex: 'contentType',
-      width: 100,
+      width: 120,
       render: (contentType) => (
         <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0].name || UNKNOWN}</span>
       )
