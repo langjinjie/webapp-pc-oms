@@ -9,7 +9,7 @@ import { message } from 'antd';
 type HttpMethod = (...args: any) => Promise<any>;
 
 const instance: AxiosInstance = Axios.create({
-  timeout: 20000
+  timeout: 60000
 });
 
 /**
