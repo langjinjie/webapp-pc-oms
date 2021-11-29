@@ -159,7 +159,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
             <Radio value={2}>小程序</Radio>
           </Group>
         </Form.Item> */}
-        {displayType === 1 && (
+        {/* {displayType === 1 && (
           <Form.Item
             label="产品链接"
             name="corpProductLink"
@@ -170,7 +170,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
           >
             <Input className="width320" placeholder="待添加" />
           </Form.Item>
-        )}
+        )} */}
         {displayType === 2 && (
           <>
             <Form.Item label="小程序ID" name="userName" rules={[{ required: true, message: '请输入小程序ID' }]}>
