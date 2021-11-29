@@ -233,9 +233,9 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
         if (res.contentType === 9) {
           const { appId, appPath } = JSON.parse(res.contentUrl || '{}');
           setOriginSpeech(() => ({ ...res, appId, appPath }));
+        } else {
+          setOriginSpeech(res);
         }
-      } else {
-        setOriginSpeech(res);
       }
     }
   };
