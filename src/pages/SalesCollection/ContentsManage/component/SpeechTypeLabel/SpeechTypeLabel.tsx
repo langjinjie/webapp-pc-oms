@@ -148,7 +148,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               data={{ bizKey: 'news' }}
               className={style.upload}
               showUploadList={false}
-              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg,image/png'], 2, 750, 0)}
+              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg', 'image/png'], 5, 750, 0)}
             >
               {posterImg
                 ? (
@@ -187,9 +187,6 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       {type === 5 && ( // 图文/文章
         <>
           <Form.Item className={style.formItem} label="文章ID:" name="articleId">
-            {/* <Select className={style.modalContentSelect} placeholder={'请选择'}>
-              <Select.Option value="demo">Demo</Select.Option>
-            </Select> */}
             <Input className={style.modalContentSelect} placeholder="请输入文章ID" />
           </Form.Item>
           <Form.Item
@@ -208,7 +205,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               data={{ bizKey: 'news' }}
               className={style.upload}
               showUploadList={false}
-              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 2, 200, 200)}
+              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 5, 200, 200)}
             >
               {posterImg
                 ? (
@@ -271,7 +268,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               data={{ bizKey: 'news' }}
               className={style.upload}
               showUploadList={false}
-              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 2, 200, 200)}
+              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 5, 200, 200)}
             >
               {posterImg
                 ? (
@@ -300,7 +297,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               action="/tenacity-admin/api/file/upload"
               data={{ bizKey: 'media' }}
               onChange={voiceOnChangeHandle}
-              beforeUpload={(file) => beforeUploadFileHandle(file, ['audio/mpeg'], 10)}
+              beforeUpload={(file) => beforeUploadFileHandle(file, ['audio/mpeg'], 20)}
             >
               <Button className={style.btn}>
                 <Icon name="icon_daohang_28_jiahaoyou" />
@@ -341,7 +338,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name={'thumbnail'}
             valuePropName="file"
             getValueFromEvent={normFile}
-            rules={[{ required: true, message: '请上传图片' }]}
+            // rules={[{ required: true, message: '请上传图片' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           >
             <Upload
@@ -351,7 +348,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               data={{ bizKey: 'news' }}
               className={style.upload}
               showUploadList={false}
-              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 2, 200, 200)}
+              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 5, 200, 200)}
             >
               {posterImg
                 ? (
@@ -380,7 +377,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               action="/tenacity-admin/api/file/upload"
               data={{ bizKey: 'media' }}
               onChange={vidoeOnChangeHandle}
-              beforeUpload={(file) => beforeUploadFileHandle(file, ['video/mp4'], 200)}
+              beforeUpload={(file) => beforeUploadFileHandle(file, ['video/mp4'], 100)}
             >
               <Button className={style.btn}>
                 <Icon name="icon_daohang_28_jiahaoyou" />
@@ -420,7 +417,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name={'thumbnail'}
             valuePropName="file"
             getValueFromEvent={normFile}
-            rules={[{ required: true, message: '请上传图片' }]}
+            // rules={[{ required: true, message: '请上传图片' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           >
             <Upload
@@ -430,7 +427,8 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               data={{ bizKey: 'news' }}
               className={style.upload}
               showUploadList={false}
-              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 2, 200, 200)}
+              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 5, 200, 200)}
+              onRemove={() => console.log(1)}
             >
               {posterImg
                 ? (

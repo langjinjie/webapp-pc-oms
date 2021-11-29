@@ -1,7 +1,7 @@
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 import { Icon } from 'src/components/index';
 import { ContentBanner as ChildrenContentBanner } from 'src/pages/SalesCollection/ContentsManage/component/index';
-import { ICatalogItem, IEditOrAddCatalogParam, IFirmModalParam, IEditOrAddLastCatalogParam } from 'src/utils/interface';
+import { ICatalogItem, IEditOrAddCatalogParam, IFirmModalParam } from 'src/utils/interface';
 import { getCategoryList, requestSaveSortCatalog, requestDeleteCatalog } from 'src/apis/salesCollection';
 import { catalogLastLeve } from 'src/utils/commonData';
 import { Context } from 'src/store';
@@ -19,11 +19,9 @@ interface IContentBannerProps {
   isHiddenDelete?: boolean;
   setCurrentContents: (param: string) => void;
   setEditOrAddCatalogParam: (param: IEditOrAddCatalogParam) => void;
-  setEditOrAddCatalogVisible: (param: boolean) => void;
-  firmModalParam: IFirmModalParam;
   setFirmModalParam: (param: IFirmModalParam) => void;
-  editOrAddLastCatalogParam: IEditOrAddLastCatalogParam;
-  setEditOrAddLastCatalogParam: (param: IEditOrAddLastCatalogParam) => void;
+  setEditOrAddLastCatalogParam: (param: IEditOrAddCatalogParam) => void;
+  setParentChildrenList: (param: ICatalogItem[]) => void;
 }
 
 const ContentBanner: React.FC<IContentBannerProps> = ({
@@ -35,11 +33,9 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   setCurrentContents,
   currentContents,
   setEditOrAddCatalogParam,
-  setEditOrAddCatalogVisible,
-  firmModalParam,
   setFirmModalParam,
-  editOrAddLastCatalogParam,
-  setEditOrAddLastCatalogParam
+  setEditOrAddLastCatalogParam,
+  setParentChildrenList
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [childrenList, setChildrenList] = useState<ICatalogItem[]>([]);
@@ -49,22 +45,31 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   const getCurrentChildrenList = async () => {
     const res = await getCategoryList({ corpId, sceneId: catalog.sceneId, catalogId: catalog.catalogId });
     setChildrenList(res);
-    setFirmModalParam({ title: '', content: '', visible: false }); // 防止新展开的目录列表多次请求子目录
   };
+
+  // 获取父级的子目录
+  const getParentChildrenList = async () => {
+    const res = await getCategoryList({
+      corpId,
+      sceneId: parentId === '0' ? 0 : catalog.sceneId,
+      catalogId: parentId === '0' ? undefined : parentId
+    });
+    setParentChildrenList(res);
+  };
+
   // 点击目录
   const contentsClickHandle = async () => {
     if (catalog.lastLevel) return;
-    getCurrentChildrenList();
     setCurrentContents(currentContents === catalog.catalogId ? '' : catalog.catalogId);
+    currentContents !== catalog.catalogId && getCurrentChildrenList();
   };
   // 编辑
   const editClickHandle = async (e: MouseEvent) => {
     e.stopPropagation();
     if (catalog.lastLevel) {
-      setEditOrAddLastCatalogParam({ title: '编辑', catalog, parentId, visible: true });
+      setEditOrAddLastCatalogParam({ title: '编辑', catalog, parentId, visible: true, getParentChildrenList });
     } else {
-      setEditOrAddCatalogVisible(true);
-      setEditOrAddCatalogParam({ title: '编辑', catalog, parentId });
+      setEditOrAddCatalogParam({ visible: true, title: '编辑', catalog, parentId, getParentChildrenList });
     }
   };
   // 新增
@@ -74,10 +79,21 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
     if (catalog.level >= catalogLastLeve[parentCatalog.sceneId - 1]) {
       catalog.lastLevel = 1;
       catalog.level = catalogLastLeve[parentCatalog.sceneId - 1]; // 修正目录
-      setEditOrAddLastCatalogParam({ title: '新增', catalog, parentId, visible: true });
+      setEditOrAddLastCatalogParam({
+        title: '新增',
+        catalog,
+        parentId,
+        visible: true,
+        getParentChildrenList: getCurrentChildrenList
+      });
     } else {
-      setEditOrAddCatalogVisible(true);
-      setEditOrAddCatalogParam({ title: '新增', catalog, parentId });
+      setEditOrAddCatalogParam({
+        visible: true,
+        title: '新增',
+        catalog,
+        parentId,
+        getParentChildrenList: getCurrentChildrenList
+      });
     }
   };
   const firmModalOnOk = async (type: number) => {
@@ -89,11 +105,13 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
     });
     if (res) {
       message.success(`目录${type === -1 ? '上移' : '下移'}成功`);
-      setFirmModalParam({ visible: false, title: '成功', content: '' });
+      await setFirmModalParam({ visible: false, title: '', content: '' });
+      getParentChildrenList();
     }
   };
   // 上/下移 -1上移 1下移
   const moveClickHandle = (e: React.MouseEvent, type: number, hidden: boolean) => {
+    console.log({ corpId, sceneId: catalog.sceneId, catalogId: parentId });
     e.stopPropagation();
     if (hidden) return;
     setFirmModalParam({
@@ -118,24 +136,21 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       onOk: async () => {
         const res = await requestDeleteCatalog({ corpId, sceneId: catalog.sceneId, catalogId: catalog.catalogId });
         if (res) {
-          setFirmModalParam({ title: '成功', content: '', visible: false });
+          setFirmModalParam({ title: '', content: '', visible: false });
           message.success('删除成功');
+          getParentChildrenList();
         }
+      },
+      onCancel: () => {
+        setFirmModalParam({ title: '', content: '', visible: false });
       }
     });
   };
   useEffect(() => {
-    console.log('更新');
     return () => {
       setCurrentContents('');
     };
   }, []);
-  useEffect(() => {
-    if (firmModalParam.title === '成功' && !firmModalParam.visible) {
-      getCurrentChildrenList();
-    }
-  }, [firmModalParam]);
-
   return (
     <>
       <div
@@ -153,8 +168,10 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
             })}
           />
         )}
-        <div className={style.name}>{catalog.name}</div>
-        <div className={style.info}>{`（上架${catalog.onlineContentNum}/全部${catalog.contentNum}）`}</div>
+        <div className={classNames(style.name, { [style.empty]: !catalog.onlineContentNum })}>{catalog.name}</div>
+        <div
+          className={classNames(style.info, { [style.empty]: !catalog.onlineContentNum })}
+        >{`（上架${catalog.onlineContentNum}/全部${catalog.contentNum}）`}</div>
         <div className={style.edit}>
           <span onClick={editClickHandle}>
             <Icon className={style.svgIcon} name="bianji" />
@@ -186,7 +203,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
         {currentContents === catalog.catalogId && (
           <>
             {childrenList.map((item, index) => (
-              <div key={index}>
+              <div key={item.catalogId}>
                 <ChildrenContentBanner
                   parentId={catalog.catalogId}
                   catalog={item}
@@ -196,11 +213,9 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
                   currentContents={currentContent}
                   setCurrentContents={setCurrentContent}
                   setEditOrAddCatalogParam={setEditOrAddCatalogParam}
-                  setEditOrAddCatalogVisible={setEditOrAddCatalogVisible}
-                  firmModalParam={firmModalParam}
                   setFirmModalParam={setFirmModalParam}
-                  editOrAddLastCatalogParam={editOrAddLastCatalogParam}
                   setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
+                  setParentChildrenList={setChildrenList}
                 />
               </div>
             ))}

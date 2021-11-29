@@ -8,9 +8,8 @@ import style from './style.module.less';
 import { Context } from 'src/store';
 
 interface IAddOrEditContentProps {
-  editOrAddCatalogVisible: boolean;
-  setEditOrAddCatalogVisible: (param: boolean) => void;
   editOrAddCatalogParam: IEditOrAddCatalogParam;
+  setEditOrAddCatalogParam: (param: IEditOrAddCatalogParam) => void;
   setFirmModalParam: (param: IFirmModalParam) => void;
 }
 
@@ -20,15 +19,20 @@ interface ICatalogSenceAndLevel {
 }
 
 const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
-  editOrAddCatalogVisible,
-  setEditOrAddCatalogVisible,
   editOrAddCatalogParam,
+  setEditOrAddCatalogParam,
   setFirmModalParam
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [iconImg, setIconImg] = useState('');
   const [catalogName, setCatalogName] = useState('');
   const [catalogSenceAndLevel, setCatalogSenceAndLevel] = useState<ICatalogSenceAndLevel>({ sence: 0, level: 0 });
+
+  const resetHandle = () => {
+    setIconImg('');
+    setCatalogName('');
+    setCatalogSenceAndLevel({ sence: 0, level: 0 });
+  };
 
   const inputOnChangHangle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCatalogName(e.target.value.trim());
@@ -49,23 +53,31 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       logoUrl: iconImg
     });
     if (res) {
-      setFirmModalParam({ title: '成功', content: '', visible: false });
+      setFirmModalParam({ title: '', content: '', visible: false });
       message.success(`目录${editOrAddCatalogParam.title}成功`);
+      editOrAddCatalogParam.getParentChildrenList();
+      resetHandle();
     }
   };
   // modal确认
   const modalOnOkHandle = async () => {
-    setEditOrAddCatalogVisible(false);
-    let title = '修改提醒';
-    let content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
-    editOrAddCatalogParam.title === '新增' && (title = '新增提醒');
-    editOrAddCatalogParam.title === '新增' && (content = '您确定要新增目录吗?');
-    setFirmModalParam({
-      title,
-      content,
-      visible: true,
-      onOk: firmModalOnOk
-    });
+    setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
+    const title = '修改提醒';
+    const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
+    if (editOrAddCatalogParam.title === '新增') {
+      firmModalOnOk();
+    } else {
+      setFirmModalParam({
+        title,
+        content,
+        visible: true,
+        onOk: firmModalOnOk,
+        onCancel () {
+          setFirmModalParam({ title: '', content: '', visible: false });
+          setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: true });
+        }
+      });
+    }
   };
   // updaload beforeUpload
   const beforeUploadHandle = (file: File): Promise<boolean> => {
@@ -105,14 +117,14 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
     }
   };
   const onCancelHandle = () => {
-    setIconImg('');
-    setEditOrAddCatalogVisible(false);
+    resetHandle();
+    setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
   };
   useEffect(() => {
-    if (editOrAddCatalogVisible) {
+    if (editOrAddCatalogParam?.visible) {
       if (editOrAddCatalogParam.title === '编辑') {
-        setCatalogName(editOrAddCatalogParam.catalog.name || '');
-        setIconImg(editOrAddCatalogParam.catalog.logoUrl);
+        catalogName || setCatalogName(editOrAddCatalogParam.catalog.name || '');
+        iconImg || setIconImg(editOrAddCatalogParam.catalog.logoUrl);
       } else {
         setCatalogName('');
       }
@@ -121,14 +133,14 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
         level: editOrAddCatalogParam.catalog.level
       });
     }
-  }, [editOrAddCatalogVisible]);
+  }, [editOrAddCatalogParam]);
   return (
     <Modal
       width={320}
       centered
       wrapClassName={style.modalWrap}
       closable={false}
-      visible={editOrAddCatalogVisible}
+      visible={editOrAddCatalogParam?.visible}
       title={editOrAddCatalogParam?.title + '目录'}
       onCancel={onCancelHandle}
       onOk={modalOnOkHandle}
