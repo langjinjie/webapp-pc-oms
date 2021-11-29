@@ -35,7 +35,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       name: 'catalogIds',
       type: 'cascader',
       label: '选择目录',
-      width: '268px',
+      width: '320px',
       placeholder: '请输入',
       fieldNames: { label: 'name', value: 'catalogId', children: 'children' },
       cascaderOptions: options
@@ -44,34 +44,34 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       name: 'content',
       type: 'input',
       label: '话术内容',
-      width: '268px',
+      width: '280px',
       placeholder: '请输入'
     },
     {
       name: 'tip',
       type: 'input',
       label: '话术小贴士',
-      width: '268px',
+      width: '280px',
       placeholder: '请输入'
     },
     {
       name: 'contentType',
       type: 'select',
-      width: 160,
+      width: 140,
       label: '话术格式',
       options: speechContentTypes
     },
     {
       name: 'status',
       type: 'select',
-      width: 160,
+      width: 140,
       label: '上架状态',
       options: statusOptions
     },
     {
       name: 'sensitive',
       type: 'select',
-      width: 160,
+      width: 140,
       label: '是否出发敏感词',
       options: sensitiveOptions
     },
@@ -91,14 +91,14 @@ interface OperateProps {
   pagination: any;
 }
 export const genderTypeOptions = [
-  { id: 1, name: '男' },
-  { id: 2, name: '女' }
+  { id: 1, name: '男性' },
+  { id: 2, name: '女性' }
 ];
 
 export const ageTypeOptions = [
-  { id: 1, name: '-老年' },
-  { id: 2, name: '-中年' },
-  { id: 3, name: '-青年' }
+  { id: 1, name: '老年' },
+  { id: 2, name: '中年' },
+  { id: 3, name: '青年' }
 ];
 export interface SpeechProps {
   sceneId: number; // 业务场景ID，1-车险流程，2-非车流程，3-异议处理，4-场景话术，5-问答知识，6-智能教练。
@@ -137,7 +137,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '话术格式',
       dataIndex: 'contentType',
-      width: 100,
+      width: 120,
       render: (contentType) => (
         <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0].name || UNKNOWN}</span>
       )
@@ -163,7 +163,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
         return (
           <span>
             {(genderTypeOptions.filter((item) => item.id === value)?.[0]?.name || '') +
-              (ageTypeOptions.filter((ageType) => ageType.id === record.ageType)?.[0]?.name || '') || UNKNOWN}
+              (ageTypeOptions.filter((ageType) => ageType.id === record.ageType)?.[0]?.name || '') || '全部'}
           </span>
         );
       }

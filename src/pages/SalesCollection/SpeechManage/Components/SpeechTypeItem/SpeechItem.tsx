@@ -67,11 +67,11 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
         message.error('你只可以上传 MP3 文件!');
       }
 
-      const isLt50M = file.size / 1024 / 1024 < 50;
-      if (!isLt50M) {
-        message.error('音频大小不能超过 50MB!');
+      const isLt5M = file.size / 1024 / 1024 < 5;
+      if (!isLt5M) {
+        message.error('音频大小不能超过 5MB!');
       }
-      return isAudio && isLt50M;
+      return isAudio && isLt5M;
     } else {
       const isMp4 = file.type === 'video/mp4';
 
@@ -188,7 +188,10 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
           <Form.Item name="summary" label="图文摘要" rules={[{ required: true }, { max: 30 }]}>
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
-          <Form.Item name="contentUrl" label="跳转链接" rules={[{ required: true }, { max: 200 }]}>
+          <Form.Item name="appId" label="小程序Id" rules={[{ required: true }, { max: 200 }]}>
+            <Input className="width480" placeholder={'请输入'} />
+          </Form.Item>
+          <Form.Item name="appPath" label="路径">
             <Input className="width480" placeholder={'请输入'} />
           </Form.Item>
         </>
