@@ -118,6 +118,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       catalogId: title === '新增' ? undefined : catalogId,
       ...updataCatalog
     });
+    console.log(res);
     if (res) {
       message.success(`目录${editOrAddLastCatalogParam.title}成功`);
       setFirmModalParam({ title: '', content: '', visible: false });
@@ -129,7 +130,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   // modal确认
   const modalOnOkHandle = async () => {
     await form.validateFields();
-    setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false });
     const updataCatalog = form.getFieldsValue();
     // 小程序请求参数
     if (updataCatalog.contentType !== 9 && updataCatalog.contentUrl && !updataCatalog.contentUrl.startsWith('http')) {
@@ -157,6 +157,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
           setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: true });
         }
       });
+      setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false });
     }
   };
   // modal取消

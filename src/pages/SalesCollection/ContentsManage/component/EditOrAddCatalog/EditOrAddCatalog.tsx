@@ -61,7 +61,6 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   };
   // modal确认
   const modalOnOkHandle = async () => {
-    setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
     const title = '修改提醒';
     const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
     if (editOrAddCatalogParam.title === '新增') {
@@ -78,6 +77,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
         }
       });
     }
+    setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
   };
   // updaload beforeUpload
   const beforeUploadHandle = (file: File): Promise<boolean> => {

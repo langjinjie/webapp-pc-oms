@@ -27,7 +27,17 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
     limitWidth: number,
     limitHeight?: number
   ): Promise<boolean> => {
-    const imgType = type.includes(file.type);
+    const suffix: string[] = type.map((item) => {
+      if (item === 'image/jpeg') {
+        return 'jpg';
+      } else if (item === 'image/png') {
+        return 'png';
+      } else {
+        return '';
+      }
+    });
+    const suffixType = suffix.includes(file.name.split('.')[1]);
+    const imgType = type.includes(file.type) && suffixType;
     if (!imgType) {
       message.error('请上传正确的图片格式');
     }
@@ -63,9 +73,19 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
   };
   const beforeUploadFileHandle = (file: File, type: string[], size: number) => {
     console.log(file.type, type);
-    const fileType = type.includes(file.type);
+    const suffix: string[] = type.map((item) => {
+      if (item === 'audio/mpeg') {
+        return 'mp3';
+      } else if (item === 'video/mp4') {
+        return 'mp4';
+      } else {
+        return '';
+      }
+    });
+    const suffixType = suffix.includes(file.name.split('.')[1]);
+    const fileType = type.includes(file.type) && suffixType;
     if (!fileType) {
-      message.error('请上传正确的图片格式');
+      message.error(`请上传${suffix[0]}格式的文件`);
     }
     const isSize = file.size / 1024 / 1024 < size;
     if (!isSize) {
@@ -138,7 +158,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name={'thumbnail'}
             valuePropName="file"
             getValueFromEvent={normFile}
-            rules={[{ required: true, message: '请上传图片' }]}
+            rules={[{ required: true, message: '请上传宽度为750像素的图片，仅支持.jpg格式' }]}
             extra={'图片宽度750px，高度不限，仅支持.jpg格式'}
           >
             <Upload
@@ -148,7 +168,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               data={{ bizKey: 'news' }}
               className={style.upload}
               showUploadList={false}
-              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg', 'image/png'], 5, 750, 0)}
+              beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 5, 750, 0)}
             >
               {posterImg
                 ? (
@@ -195,7 +215,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name={'thumbnail'}
             valuePropName="file"
             getValueFromEvent={normFile}
-            rules={[{ required: true, message: '请上传图片' }]}
+            rules={[{ required: true, message: '请上传200*200像素的图片，仅支持.jpg格式' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           >
             <Upload
@@ -288,7 +308,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name={'contentUrl'}
             valuePropName="file"
             getValueFromEvent={normFiles}
-            rules={[{ required: true, message: '请上传语音' }]}
+            rules={[{ required: true, message: '请上传大小不超过20M的MP3语音文件' }]}
           >
             <Upload
               className={style.uploadVoice}
@@ -338,7 +358,6 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name={'thumbnail'}
             valuePropName="file"
             getValueFromEvent={normFile}
-            // rules={[{ required: true, message: '请上传图片' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           >
             <Upload
@@ -368,7 +387,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name="contentUrl"
             valuePropName="file"
             getValueFromEvent={normFiles}
-            rules={[{ required: true, message: '请上传视频' }]}
+            rules={[{ required: true, message: '请上传大小不超过100M的MP4视频文件' }]}
           >
             <Upload
               className={style.uploadVideo}
@@ -493,7 +512,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name={'thumbnail'}
             valuePropName="file"
             getValueFromEvent={normFile}
-            rules={[{ required: true, message: '请上传图片' }]}
+            rules={[{ required: true, message: '请上传200*200像素高清图片，仅支持.jpg格式' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           >
             <Upload
