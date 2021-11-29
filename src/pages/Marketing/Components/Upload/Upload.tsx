@@ -8,10 +8,14 @@ import { RcFile } from 'antd/es/upload/interface';
 import { Icon } from 'src/components';
 import { uploadImage } from 'src/apis/marketing';
 
+import styles from './style.module.less';
+import classNames from 'classnames';
 interface NgUploadProps {
   onChange?: (imgUrl: string) => void;
   value?: string;
   beforeUpload?: (file: RcFile) => void;
+  btnText?: string;
+  type?: 'video' | 'audio';
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -19,7 +23,7 @@ const getBase64 = (img: any, callback: (str: any) => void) => {
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 };
-const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) => {
+const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnText = '上传图片', type }) => {
   const [states, setStates] = useState({
     loading: false,
     imageUrl: ''
@@ -33,7 +37,7 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) =>
     <div>
       {states.loading ? <LoadingOutlined /> : <Icon className={'font36'} name="upload" />}
       <div style={{ marginTop: 8 }} className={'color-text-regular'}>
-        上传图片
+        {btnText}
       </div>
     </div>
   );
@@ -57,7 +61,6 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) =>
       setStates((states) => ({ ...states, loading: true }));
       return;
     }
-    console.log(info.file.status);
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       getBase64(info.file.originFileObj, (imageUrl: string) => {
@@ -74,7 +77,7 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) =>
     const uploadData = new FormData();
     // 调用append()方法来添加数据
     uploadData.append('file', options.file);
-    uploadData.append('bizKey', 'news');
+    uploadData.append('bizKey', type ? 'media' : 'news');
     const res: any = await uploadImage(uploadData);
     if (res) {
       onChange?.(res.filePath);
@@ -85,16 +88,52 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) =>
   };
 
   return (
-    <Upload
-      onChange={handleChange}
-      listType="picture-card"
-      beforeUpload={beforeUpload}
-      showUploadList={false}
-      className="avatar-uploader"
-      customRequest={posterUploadFile}
-    >
-      {states.imageUrl ? <img src={states.imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-    </Upload>
+    <>
+      {!type && (
+        <Upload
+          onChange={handleChange}
+          listType="picture-card"
+          beforeUpload={beforeUpload}
+          showUploadList={false}
+          className={classNames({ 'avatar-uploader': !type })}
+          customRequest={posterUploadFile}
+        >
+          {states.imageUrl ? <img src={states.imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+        </Upload>
+      )}
+      {type === 'audio' && (
+        <>
+          {states.imageUrl && <audio autoPlay controls className={styles.audio} src={states.imageUrl}></audio>}
+
+          <Upload
+            onChange={handleChange}
+            listType="picture-card"
+            beforeUpload={beforeUpload}
+            showUploadList={false}
+            className={classNames({ 'avatar-uploader': !type })}
+            customRequest={posterUploadFile}
+          >
+            {uploadButton}
+          </Upload>
+        </>
+      )}
+      {type === 'video' && (
+        <>
+          {states.imageUrl && <video autoPlay controls className={styles.video} src={states.imageUrl}></video>}
+
+          <Upload
+            onChange={handleChange}
+            listType="picture-card"
+            beforeUpload={beforeUpload}
+            showUploadList={false}
+            className={classNames({ 'avatar-uploader': !type })}
+            customRequest={posterUploadFile}
+          >
+            {uploadButton}
+          </Upload>
+        </>
+      )}
+    </>
   );
 };
 

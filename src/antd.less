@@ -181,7 +181,36 @@
     border-radius: 12px;
   }
 }
-
+.form-inline {
+  .ant-form-inline .ant-form-item {
+    margin-bottom: 20px;
+  }
+}
 .ant-btn-link {
   padding: 0 5px;
+  .form-inline {
+    .ant-form-inline .ant-form-item {
+      margin-bottom: 20px;
+    }
+  }
+  // Table组件
+  .ant-table-pagination {
+    align-items: center;
+    .ant-pagination-item {
+      border-radius: 8px;
+    }
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      .ant-pagination-item-link {
+        border-radius: 8px;
+      }
+    }
+    .ant-pagination-options {
+      display: flex;
+      align-items: center;
+      input {
+        border-radius: 8px;
+      }
+    }
+  }
 }
