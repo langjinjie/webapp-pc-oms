@@ -300,7 +300,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               beforeUpload={(file) => beforeUploadFileHandle(file, ['audio/mpeg'], 20)}
             >
               <Button className={style.btn}>
-                <Icon name="icon_daohang_28_jiahaoyou" />
+                <Icon className={style.uploadIcon} name="shangchuanwenjian" />
                 将文件拖拽至此区域，或<span className={style.uploadText}>点此上传</span>{' '}
               </Button>
             </Upload>
@@ -380,7 +380,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               beforeUpload={(file) => beforeUploadFileHandle(file, ['video/mp4'], 100)}
             >
               <Button className={style.btn}>
-                <Icon name="icon_daohang_28_jiahaoyou" />
+                <Icon className={style.uploadIcon} name="shangchuanwenjian" />
                 将文件拖拽至此区域，或<span className={style.uploadText}>点此上传</span>{' '}
               </Button>
             </Upload>
