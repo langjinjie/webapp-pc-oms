@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Modal, Form, Input, Select /* , message */, message } from 'antd';
-import { IEditOrAddLastCatalogParam, ICatalogDetail, IFirmModalParam } from 'src/utils/interface';
+import { ICatalogDetail, IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils/interface';
 import { SpeechTypeLabel } from 'src/pages/SalesCollection/ContentsManage/component';
 import { requestGetCatalogDetail, requestEditCatalog } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
@@ -9,8 +9,8 @@ import style from './style.module.less';
 // import classNames from 'classnames';
 
 interface IAddOrEditContentProps {
-  editOrAddLastCatalogParam: IEditOrAddLastCatalogParam;
-  setEditOrAddLastCatalogParam: (param: IEditOrAddLastCatalogParam) => void;
+  editOrAddLastCatalogParam: IEditOrAddCatalogParam;
+  setEditOrAddLastCatalogParam: (param: IEditOrAddCatalogParam) => void;
   setFirmModalParam: (param: IFirmModalParam) => void;
 }
 
@@ -56,6 +56,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     });
     setCatalogParam({ name: '', contentType: 0 });
     setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false, title: '' });
+    setSubmitDisabled(true);
   };
   // 获取最后一级目录详情
   const getLastCatalogDetail = async () => {
@@ -68,10 +69,17 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       setCatalogDetail(res);
       form.setFieldsValue(res);
       setCatalogParam({ name: res.name, contentType: res.contentType });
+      // 处理长图回写
       if (res.contentType === 3) {
         setPosterImg(res.contentUrl);
       } else {
         setPosterImg(res.thumbnail);
+      }
+      // 处理小程序数据回写
+      if (res.contentType === 9) {
+        console.log(JSON.parse(res.contentUrl));
+        form.setFieldsValue({ appId: JSON.parse(res.contentUrl).appId });
+        form.setFieldsValue({ appPath: JSON.parse(res.contentUrl).appPath });
       }
     }
   };
@@ -97,51 +105,59 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       setPosterImg('');
     }
   };
+
+  const onOk = async (updataCatalog: any) => {
+    const { parentId, catalog, title } = editOrAddLastCatalogParam;
+    const { sceneId, catalogId, level, lastLevel } = catalog;
+    const res = await requestEditCatalog({
+      corpId,
+      parentId,
+      sceneId,
+      level,
+      lastLevel,
+      catalogId: title === '新增' ? undefined : catalogId,
+      ...updataCatalog
+    });
+    if (res) {
+      message.success(`目录${editOrAddLastCatalogParam.title}成功`);
+      setFirmModalParam({ title: '', content: '', visible: false });
+      editOrAddLastCatalogParam.getParentChildrenList();
+      resetHandle();
+    }
+  };
+
   // modal确认
   const modalOnOkHandle = async () => {
     await form.validateFields();
     setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false });
     const updataCatalog = form.getFieldsValue();
-    if (updataCatalog.contentType === 9) {
+    // 小程序请求参数
+    if (updataCatalog.contentType !== 9 && updataCatalog.contentUrl && !updataCatalog.contentUrl.startsWith('http')) {
+      updataCatalog.contentUrl = 'http://' + updataCatalog.contentUrl;
+    } else {
       updataCatalog.contentUrl = JSON.stringify({ appId: updataCatalog.appId, appPath: updataCatalog.appPath || '' });
     }
+    // 长图请求参数
     if (updataCatalog.contentType === 2) {
       updataCatalog.contentUrl = updataCatalog.thumbnail;
       delete updataCatalog.thumbnail;
     }
-    console.log(updataCatalog);
-    let title = '修改提醒';
-    let content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
-    editOrAddLastCatalogParam.title === '新增' && (title = '新增提醒');
-    editOrAddLastCatalogParam.title === '新增' && (content = '您确定要新增目录吗');
-    setFirmModalParam({
-      visible: true,
-      title,
-      content,
-      onOk: async () => {
-        const { parentId, catalog, title } = editOrAddLastCatalogParam;
-        const { sceneId, catalogId, level, lastLevel } = catalog;
-        const res = await requestEditCatalog({
-          corpId,
-          parentId,
-          sceneId,
-          level,
-          lastLevel,
-          catalogId: title === '新增' ? undefined : catalogId,
-          ...updataCatalog
-        });
-        console.log(res);
-        if (res) {
-          message.success(`目录${editOrAddLastCatalogParam.title}成功`);
-          setFirmModalParam({ title: '成功', content: '', visible: false });
-          resetHandle();
+    const title = '修改提醒';
+    const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
+    if (editOrAddLastCatalogParam.title === '新增') {
+      onOk(updataCatalog);
+    } else {
+      setFirmModalParam({
+        visible: true,
+        title,
+        content,
+        onOk: () => onOk(updataCatalog),
+        onCancel: () => {
+          setFirmModalParam({ title: '', content: '', visible: false });
+          setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: true });
         }
-      },
-      onCancel: () => {
-        setFirmModalParam({ title: '', content: '', visible: false });
-        setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: true });
-      }
-    });
+      });
+    }
   };
   // modal取消
   const onCancelHandle = () => {
@@ -150,7 +166,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   useEffect(() => {
     if (editOrAddLastCatalogParam) {
       if (editOrAddLastCatalogParam.title === '编辑') {
-        getLastCatalogDetail();
+        catalogDetail.catalogId || getLastCatalogDetail();
       }
     }
   }, [editOrAddLastCatalogParam]);
