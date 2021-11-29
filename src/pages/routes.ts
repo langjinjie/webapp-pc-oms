@@ -226,7 +226,7 @@ export const menus: Menu[] = [
   },
   {
     name: '销售宝典',
-    icon: 'icon_daohang_28_xitongshezhi',
+    icon: 'xiaoshoubaodian',
     path: 'salesCollection',
     children: [
       { name: '话术管理', path: '/speechManage' },

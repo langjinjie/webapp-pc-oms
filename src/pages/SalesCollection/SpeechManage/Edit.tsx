@@ -72,7 +72,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
         } = res;
         const currentScenes = scenesStates.filter((scenes) => scenes.sceneId === sceneId)[0];
         setCurrentScenesState(currentScenes);
-        speechForm.setFieldsValue({
+        const formData = {
           ageType,
           catalogId,
           content,
@@ -93,7 +93,18 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           title,
           videoDuration,
           videoSize
-        });
+        };
+        if (contentType === 9) {
+          const { appId, appPath } = JSON.parse(contentUrl || '{}');
+          speechForm.setFieldsValue({
+            ...formData,
+            appId,
+            appPath
+          });
+          setOriginSpeech((originSpeech) => ({ ...originSpeech!, appId, appPath }));
+        } else {
+          speechForm.setFieldsValue(formData);
+        }
       }
     } else {
       await getCategory();
@@ -121,54 +132,60 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
   };
 
   const onFinish = async (values: any) => {
-    const { content, contentType, tip, ageType, genderType, contentUrl, title, summary, thumbnail } = values;
+    const {
+      content,
+      contentType,
+      tip,
+      ageType,
+      genderType,
+      contentUrl,
+      title,
+      summary,
+      thumbnail,
+      appId,
+      appPath = ''
+    } = values;
+
+    const submitData = {
+      sceneId: originSpeech?.sceneId,
+      catalogId: originSpeech?.catalogId,
+      contentId: speech?.contentId || '',
+      content,
+      contentType,
+      ageType,
+      tip,
+      genderType,
+      contentUrl: contentType === 9 ? JSON.stringify({ appId, appPath }) : contentUrl,
+      thumbnail,
+      title,
+      summary: summary || originSpeech?.summary
+    };
     if (
       (originSpeech?.contentType === 2 && contentUrl !== originSpeech.contentUrl) ||
       ((originSpeech?.contentType === 7 || originSpeech?.contentType === 6) &&
         (title !== originSpeech?.title || originSpeech.contentUrl !== contentUrl)) ||
-      ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8 || originSpeech?.contentType === 9) &&
+      ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8) &&
         (title !== originSpeech?.title ||
-          title !== originSpeech.title ||
           thumbnail !== originSpeech.thumbnail ||
           summary !== originSpeech.summary ||
-          contentUrl !== originSpeech.contentUrl))
+          contentUrl !== originSpeech.contentUrl)) ||
+      (originSpeech?.contentType === 9 &&
+        (title !== originSpeech?.title ||
+          thumbnail !== originSpeech.thumbnail ||
+          appId !== originSpeech.appId ||
+          appPath !== originSpeech.appPath ||
+          summary !== originSpeech.summary))
     ) {
       Modal.confirm({
         content: '修改目录会对已上架话术产生影响，企微前端能实时看到变化',
         cancelText: '取消',
         okText: '确定',
         onOk: async () => {
-          await onSubmit({
-            sceneId: originSpeech?.sceneId,
-            catalogId: originSpeech?.catalogId,
-            contentId: speech?.contentId || '',
-            content,
-            contentType,
-            ageType,
-            tip,
-            genderType,
-            contentUrl,
-            title,
-            thumbnail,
-            summary: summary || originSpeech?.summary
-          });
+          await onSubmit(submitData);
         }
       });
     } else {
-      await onSubmit({
-        sceneId: originSpeech?.sceneId,
-        catalogId: originSpeech?.catalogId,
-        contentId: speech?.contentId || '',
-        content,
-        contentType,
-        ageType,
-        tip,
-        genderType,
-        contentUrl,
-        thumbnail,
-        title,
-        summary: summary || originSpeech?.summary
-      });
+      await onSubmit(submitData);
     }
   };
 

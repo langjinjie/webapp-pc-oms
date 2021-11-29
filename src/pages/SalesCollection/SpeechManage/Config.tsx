@@ -91,14 +91,14 @@ interface OperateProps {
   pagination: any;
 }
 export const genderTypeOptions = [
-  { id: 1, name: '男' },
-  { id: 2, name: '女' }
+  { id: 1, name: '男性' },
+  { id: 2, name: '女性' }
 ];
 
 export const ageTypeOptions = [
-  { id: 1, name: '-老年' },
-  { id: 2, name: '-中年' },
-  { id: 3, name: '-青年' }
+  { id: 1, name: '老年' },
+  { id: 2, name: '中年' },
+  { id: 3, name: '青年' }
 ];
 export interface SpeechProps {
   sceneId: number; // 业务场景ID，1-车险流程，2-非车流程，3-异议处理，4-场景话术，5-问答知识，6-智能教练。
@@ -163,7 +163,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
         return (
           <span>
             {(genderTypeOptions.filter((item) => item.id === value)?.[0]?.name || '') +
-              (ageTypeOptions.filter((ageType) => ageType.id === record.ageType)?.[0]?.name || '') || UNKNOWN}
+              (ageTypeOptions.filter((ageType) => ageType.id === record.ageType)?.[0]?.name || '') || '全部'}
           </span>
         );
       }
