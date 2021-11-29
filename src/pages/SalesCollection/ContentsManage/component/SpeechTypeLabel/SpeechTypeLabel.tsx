@@ -74,7 +74,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
   const beforeUploadFileHandle = (file: File, type: string[], size: number) => {
     console.log(file.type, type);
     const suffix: string[] = type.map((item) => {
-      if (item === 'audio/mpeg') {
+      if (item === 'audio/mpeg' || item === 'audio/mp3') {
         return 'mp3';
       } else if (item === 'video/mp4') {
         return 'mp4';
@@ -83,6 +83,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       }
     });
     const suffixType = suffix.includes(file.name.split('.')[1]);
+    console.log(suffixType);
     const fileType = type.includes(file.type) && suffixType;
     if (!fileType) {
       message.error(`请上传${suffix[0]}格式的文件`);
@@ -107,8 +108,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       return;
     }
     if (e.file.status === 'done') {
-      console.log(e.file);
-      return e.file.response.retdata.filePath;
+      return { uid: e.file.uid, name: e.file.name, status: e.file.status, url: e.file.response.retdata.filePath };
     }
   };
   // input onChange
@@ -121,9 +121,9 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       console.log(info.file, info.fileList);
     }
     if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
+      message.success(`${info.file.name} 上传成功`);
     } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
+      message.error(`${info.file.name} 上传失败`);
     }
   };
   // video onChange
@@ -243,7 +243,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="title" rules={[{ required: true, message: '请输入图文标题' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入图文标题'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
               />
@@ -254,7 +254,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="summary" rules={[{ required: true, message: '请输入图文摘要' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入图文摘要'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'summary')}
               />
@@ -267,7 +267,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             label="图文链接:"
             rules={[{ required: true, message: '请输入图文链接' }]}
           >
-            <Input className={style.input} placeholder={'请输入'} />
+            <Input className={style.input} placeholder={'请输入图文链接'} />
           </Form.Item>
         </>
       )}
@@ -317,7 +317,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               action="/tenacity-admin/api/file/upload"
               data={{ bizKey: 'media' }}
               onChange={voiceOnChangeHandle}
-              beforeUpload={(file) => beforeUploadFileHandle(file, ['audio/mpeg'], 20)}
+              beforeUpload={(file) => beforeUploadFileHandle(file, ['audio/mpeg', 'audio/mp3'], 20)}
             >
               <Button className={style.btn}>
                 <Icon className={style.uploadIcon} name="shangchuanwenjian" />
@@ -330,7 +330,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="title" rules={[{ required: true, message: '请输入语音标题' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入语音标题'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
               />
@@ -341,7 +341,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="summary" rules={[{ required: true, message: '请输入语音摘要' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入语音摘要'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
               />
@@ -408,7 +408,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="title" rules={[{ required: true, message: '请输入视频标题' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入视频标题'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
               />
@@ -419,7 +419,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="summary" rules={[{ required: true, message: '请输入视频摘要' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入视频摘要'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
               />
@@ -465,7 +465,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="title" rules={[{ required: true, message: '请输入标题' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入标题'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
               />
@@ -476,7 +476,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="summary" rules={[{ required: true, message: '请输入摘要' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入摘要'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
               />
@@ -489,7 +489,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name="contentUrl"
             rules={[{ required: true, message: '请输入第三方链接' }]}
           >
-            <Input className={style.input} placeholder={'请输入'} />
+            <Input className={style.input} placeholder={'请输入第三方链接'} />
           </Form.Item>
         </>
       )}
@@ -501,10 +501,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name="appId"
             rules={[{ required: true, message: '请输入小程序ID' }]}
           >
-            <Input className={style.modalContentSelect} placeholder="请输入文章ID" />
+            <Input className={style.modalContentSelect} placeholder="请输入小程序ID" />
           </Form.Item>
-          <Form.Item className={style.formItem} label="路径:" name="appPath">
-            <Input className={style.input} placeholder={'请输入'} />
+          <Form.Item className={style.formItem} label="小程序路径:" name="appPath">
+            <Input className={style.input} placeholder={'请输入小程序路径'} />
           </Form.Item>
           <Form.Item
             className={style.imgformItem}
@@ -540,7 +540,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="title" rules={[{ required: true, message: '请输入小程序标题' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入小程序标题'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
               />
@@ -551,7 +551,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Form.Item name="summary" rules={[{ required: true, message: '请输入小程序摘要' }]} noStyle>
               <Input
                 className={style.input}
-                placeholder={'请输入'}
+                placeholder={'请输入小程序摘要'}
                 maxLength={30}
                 onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
               />

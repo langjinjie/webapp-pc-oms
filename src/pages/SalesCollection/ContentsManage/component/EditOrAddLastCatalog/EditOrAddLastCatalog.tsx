@@ -81,6 +81,18 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         form.setFieldsValue({ appId: JSON.parse(res.contentUrl).appId });
         form.setFieldsValue({ appPath: JSON.parse(res.contentUrl).appPath });
       }
+      // 处理音视频的会写
+      if (res.contentType === 7 || res.contentType === 6) {
+        // setDefaultFileList([{ uid: '1', name: res.contentType === 7 ? 'video.mp4' : 'audio.mp3', status: 'done', url: res.contentUrl }]);
+        form.setFieldsValue({
+          contentUrl: {
+            uid: '1',
+            name: res.contentType === 7 ? 'video.mp4' : 'audio.mp3',
+            status: 'done',
+            url: res.contentUrl
+          }
+        });
+      }
     }
   };
   // inputOnchang
@@ -118,7 +130,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       catalogId: title === '新增' ? undefined : catalogId,
       ...updataCatalog
     });
-    console.log(res);
     if (res) {
       message.success(`目录${editOrAddLastCatalogParam.title}成功`);
       setFirmModalParam({ title: '', content: '', visible: false });
@@ -132,9 +143,11 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     await form.validateFields();
     const updataCatalog = form.getFieldsValue();
     // 小程序请求参数
-    if (updataCatalog.contentType !== 9 && updataCatalog.contentUrl && !updataCatalog.contentUrl.startsWith('http')) {
+    console.log(updataCatalog.contentUrl);
+    updataCatalog.contentUrl = updataCatalog.contentUrl.url;
+    if (updataCatalog.contentUrl && updataCatalog.contentType !== 9 && !updataCatalog.contentUrl.startsWith('http')) {
       updataCatalog.contentUrl = 'http://' + updataCatalog.contentUrl;
-    } else {
+    } else if (updataCatalog.contentType === 9) {
       updataCatalog.contentUrl = JSON.stringify({ appId: updataCatalog.appId, appPath: updataCatalog.appPath || '' });
     }
     // 长图请求参数
@@ -142,6 +155,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       updataCatalog.contentUrl = updataCatalog.thumbnail;
       delete updataCatalog.thumbnail;
     }
+    console.log(updataCatalog);
     const title = '修改提醒';
     const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
     if (editOrAddLastCatalogParam.title === '新增') {
@@ -178,6 +192,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         centered
         wrapClassName={style.modalWrap}
         closable={false}
+        maskClosable={false}
         visible={editOrAddLastCatalogParam.visible}
         title={editOrAddLastCatalogParam.title + '目录'}
         onCancel={onCancelHandle}
@@ -188,10 +203,10 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       >
         <Form form={form} onValuesChange={() => setSubmitDisabled(false)}>
           <Form.Item className={style.modalContentFormItem} label="目录名称:" required>
-            <Form.Item name="name" rules={[{ required: true, message: '请输入话术名称' }]} noStyle>
+            <Form.Item name="name" rules={[{ required: true, message: '请输入目录名称' }]} noStyle>
               <Input
                 className={style.modalContentInput}
-                placeholder={'请输入'}
+                placeholder={'请输入目录名称'}
                 maxLength={20}
                 onChange={inputOnChangeHandle}
               />
