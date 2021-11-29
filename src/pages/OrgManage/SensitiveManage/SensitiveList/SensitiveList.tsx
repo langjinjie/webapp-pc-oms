@@ -130,7 +130,8 @@ const SensitiveList: React.FC = () => {
   // 分页器参数
   const pagination = {
     total: sensitiveList.total,
-    current: paginationParam.current
+    current: paginationParam.current,
+    showTotal: (total: number) => `共 ${total} 条`
   };
   // 点击选择框
   const onSelectChange = async (newSelectedRowKeys: any[]) => {

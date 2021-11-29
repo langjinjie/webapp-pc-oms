@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal } from 'antd';
 import { IFirmModalParam } from 'src/utils/interface';
 import style from './style.module.less';
@@ -9,6 +9,7 @@ interface IConfirmModalProps {
 
 const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam }) => {
   const { visible, title, content, onOk, onCancel } = firmModalParam;
+  const [okBtnDisabled, setOnBtnDsiabled] = useState(false);
   return (
     <Modal
       width={300}
@@ -18,8 +19,19 @@ const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam }) => {
       visible={visible}
       title={title}
       onCancel={() => onCancel?.()}
-      onOk={() => onOk?.()}
+      onOk={async () => {
+        setOnBtnDsiabled(true);
+        await onOk?.();
+        setOnBtnDsiabled(false);
+      }}
       maskClosable={false}
+      okButtonProps={{
+        disabled: okBtnDisabled,
+        loading: okBtnDisabled
+      }}
+      cancelButtonProps={{
+        disabled: okBtnDisabled
+      }}
     >
       <span className={style.content}>{content}</span>
     </Modal>

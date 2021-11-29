@@ -124,14 +124,11 @@ export interface ICatalogItem {
 
 // 添加/编辑目录参数
 export interface IEditOrAddCatalogParam {
+  visible: boolean;
   title: string;
   catalog: ICatalogItem;
   parentId: string;
-}
-
-// 添加/编辑最后一级目录参数
-export interface IEditOrAddLastCatalogParam extends IEditOrAddCatalogParam {
-  visible: boolean;
+  getParentChildrenList: () => void;
 }
 
 // 二确param
