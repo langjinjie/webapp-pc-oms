@@ -65,6 +65,10 @@ export const routes: RouteProps[] = [
     path: '/marketingIndex',
     component: lazy(() => import('src/pages/Marketing/Index/Index'))
   },
+  {
+    path: '/notice',
+    component: lazy(() => import('src/pages/Marketing/Notice/Notice'))
+  },
   /**
    * 机构管理->账号管理
    */
@@ -97,6 +101,10 @@ export const routes: RouteProps[] = [
     path: '/station',
     component: lazy(() => import('src/pages/Operation/StationConfig/StationConfig'))
   },
+  {
+    path: '/tagConfig',
+    component: lazy(() => import('src/pages/Operation/TagConfig/List'))
+  },
   // 新增小站配置
   {
     path: '/station/add',
@@ -110,6 +118,16 @@ export const routes: RouteProps[] = [
   {
     path: '/tagManage',
     component: lazy(() => import('src/pages/SystemSettings/tagManage/tagManage'))
+  },
+  // 周报配置
+  {
+    path: '/weekly',
+    component: lazy(() => import('src/pages/Operation/WeeklyConfig/WeeklyConfig'))
+  },
+  // 新增周报配置
+  {
+    path: '/weekly/add',
+    component: lazy(() => import('src/pages/Operation/AddWeeklyConfig/AddWeeklyConfig'))
   },
   // 销售宝典
   {
@@ -160,6 +178,10 @@ export const menus: Menu[] = [
       {
         name: '首页配置',
         path: '/marketingIndex'
+      },
+      {
+        name: '上新通知',
+        path: '/notice'
       }
     ]
   },
@@ -171,6 +193,14 @@ export const menus: Menu[] = [
       {
         name: '小站配置',
         path: '/station'
+      },
+      {
+        name: '周报配置',
+        path: '/weekly'
+      },
+      {
+        name: '标签配置',
+        path: '/tagConfig'
       }
     ]
   },

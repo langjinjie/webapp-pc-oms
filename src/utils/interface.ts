@@ -78,6 +78,24 @@ export interface IAllTagList {
   activityTagList: ITagItem[];
 }
 
+// 表单相关
+type FormItemType = 'input' | 'select' | 'datePicker' | 'rangePicker';
+
+export interface DataItem {
+  id: string;
+  name: string;
+}
+
+export interface ItemDataProps {
+  type: FormItemType;
+  placeholder?: string;
+  dataSource?: DataItem[];
+}
+
+export interface ItemProps extends ItemDataProps {
+  name: string;
+  label: string;
+}
 /* 销售宝典 */
 // 目录管理
 export interface IAddOrEditModalParam {

@@ -38,6 +38,7 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
 
   const handleChooseInst = async (corpId: string) => {
     const res: any = await chooseInst({ corpId });
+    sessionStorage.removeItem('tagOptions');
     if (res) {
       // window.location.reload();
       window.location.href = window.location.origin + '/tenacity-oms/orgManage'; // 切换机构强行跳转到机构列表

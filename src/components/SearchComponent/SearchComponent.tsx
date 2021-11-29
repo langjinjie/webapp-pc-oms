@@ -14,6 +14,7 @@ export interface SearchCol {
   name: string;
   label: string;
   width?: number | string;
+  maxLength?: number;
   placeholder?: string;
   options?: OptionProps[] | null;
   cascaderOptions?: any[];
@@ -29,7 +30,8 @@ interface SearchComponentProps {
   searchCols: SearchCol[];
   isInline?: boolean;
   onSearch: (params: any) => void;
-  onValuesChange: (changeValues: any, values: any) => void;
+  onReset?: () => void;
+  onValuesChange?: (changeValues: any, values: any) => void;
   loadData?: ((selectedOptions?: CascaderOptionType[] | undefined) => void) | undefined;
   onChangeOfCascader?:
     | ((value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => void)
@@ -37,6 +39,7 @@ interface SearchComponentProps {
   disabled?: boolean;
 }
 const { RangePicker } = DatePicker;
+
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
   const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader, disabled } = props;
   const [from] = Form.useForm();
@@ -70,7 +73,9 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           form={from}
           layout="inline"
           onFinish={onSearch}
-          onReset={() => onReset()}
+          onReset={() => {
+            onReset ? onReset() : onSearch({});
+          }}
           className={style['search-wrap']}
           onValuesChange={onValuesChange}
         >
@@ -78,7 +83,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             return (
               (col.type === 'input' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Input placeholder={col.placeholder} disabled={disabled} width={col.width} />
+                  <Input maxLength={col.maxLength || 50} placeholder={col.placeholder} style={{ width: col.width }} />
                 </Form.Item>
               )) ||
               (col.type === 'select' && (

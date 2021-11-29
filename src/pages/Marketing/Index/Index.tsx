@@ -131,7 +131,7 @@ const MarketIndex: React.FC = () => {
   };
 
   const getArticleList = async () => {
-    const res: any = await queryArticleList({ pageSize: 1000, syncBank: 1 });
+    const res: any = await queryArticleList({ pageSize: 2000, syncBank: 1 });
     if (res) {
       setArticleList(res.newsList || []);
     }

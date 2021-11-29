@@ -1,0 +1,191 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2021-11-06 14:15
+*/
+
+.formWrap {
+  width: 100%;
+
+  .uploadBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .uploadCircle {
+      margin-bottom: 8px;
+      width: 36px;
+      height: 36px;
+      background: rgba(107, 151, 255, 0.08);
+      border-radius: 50%;
+    }
+
+    .uploadIcon {
+      font-size: 30px;
+      color: @primary-color;
+    }
+
+    .gray {
+      color: #7e8185;
+    }
+  }
+
+  :global {
+    .ant-upload-select {
+      width: 104px;
+      height: 104px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e1e2e6;
+    }
+
+    .ant-form-item-label > label {
+      margin-right: 20px;
+    }
+
+    .ant-input-affix-wrapper {
+      width: 320px;
+      height: 36px;
+    }
+
+    .ant-picker {
+      width: 280px;
+    }
+
+    .ant-upload-list-picture-card {
+      display: flex;
+    }
+  }
+
+  .btnWrap {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+
+    :global {
+      .ant-btn {
+        width: 128px;
+        height: 40px;
+        font-size: 16px;
+        border-radius: 20px;
+        border: 1px solid @primary-color;
+        color: @primary-color;
+
+        &.ant-btn-primary {
+          background-color: @primary-color;
+          color: white;
+        }
+      }
+
+      .ant-btn + .ant-btn {
+        margin-left: 30px;
+      }
+    }
+  }
+
+  .sectionWrap {
+    margin-top: 40px;
+    width: 100%;
+
+    .titleWrap {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 44px;
+      padding: 0 20px;
+      background: rgba(107, 151, 255, 0.08);
+      border-radius: 8px;
+
+      .editBtn {
+        margin-left: 20px;
+        cursor: pointer;
+        color: @primary-color;
+
+        .editIcon {
+          font-size: 16px;
+        }
+      }
+
+      :global {
+        .ant-form-item {
+          margin-bottom: 0;
+        }
+
+        .ant-form-item-has-error {
+          position: relative;
+
+          .ant-form-item-explain-error {
+            position: absolute;
+            bottom: -24px;
+          }
+        }
+      }
+    }
+  }
+
+  .addBtn {
+    padding: 0;
+    width: 94px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    background-color: white;
+    border-radius: 18px;
+    border: 2px solid @primary-color;
+    color: @primary-color;
+
+    .addIcon {
+      margin-right: 4px;
+      font-size: 16px;
+      color: @primary-color;
+    }
+  }
+}
+
+.formItemWrap {
+  position: relative;
+  margin: 15px 0 0;
+
+  .listFormItem {
+    :global {
+      .ant-form-item-label {
+        width: 80px;
+      }
+
+      .ant-input-textarea-show-count {
+        position: relative;
+
+        &::after {
+          position: absolute;
+          bottom: 24px;
+          right: 10px;
+        }
+      }
+    }
+  }
+
+  .deleteIcon {
+    position: absolute;
+    right: -50px;
+    top: 6px;
+    font-size: 20px;
+    color: #3078db;
+  }
+
+  .label {
+    display: inline-block;
+    width: 70px;
+  }
+}
+
+.colorItem {
+  display: flex;
+  align-items: center;
+
+  .colorArea {
+    margin-left: 10px;
+    display: inline-block;
+    flex: 1;
+    height: 20px;
+  }
+}

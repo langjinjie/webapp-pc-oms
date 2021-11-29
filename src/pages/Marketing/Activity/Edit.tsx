@@ -30,6 +30,9 @@ interface Tag {
   id: string;
   name: string;
 }
+
+// const { Group } = Radio;
+
 const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
   const { userInfo } = useContext(Context);
   const [active, setActive] = useState<ActivityProps>({
@@ -41,6 +44,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
   });
   const [tags, setTags] = useState<Tag[]>([]);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [displayType] = useState<number>(1); // setDisplayType
   const [form] = Form.useForm();
 
   const getDetail = async (activityId: string) => {
@@ -149,6 +153,34 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
             maxLength={40}
           />
         </Form.Item>
+        {/* <Form.Item label="展示类型" name="displayType" required initialValue={1}>
+          <Group onChange={(e) => setDisplayType(e.target.value)}>
+            <Radio value={1}>链接</Radio>
+            <Radio value={2}>小程序</Radio>
+          </Group>
+        </Form.Item> */}
+        {/* {displayType === 1 && (
+          <Form.Item
+            label="产品链接"
+            name="corpProductLink"
+            rules={[
+              { required: true, message: '请输入产品链接' },
+              { type: 'url', message: '请输入正确的链接' }
+            ]}
+          >
+            <Input className="width320" placeholder="待添加" />
+          </Form.Item>
+        )} */}
+        {displayType === 2 && (
+          <>
+            <Form.Item label="小程序ID" name="userName" rules={[{ required: true, message: '请输入小程序ID' }]}>
+              <Input className="width320" placeholder="待添加" />
+            </Form.Item>
+            <Form.Item label="页面路径" name="path">
+              <Input className="width320" placeholder="待输入，不填默认跳转小程序首页" />
+            </Form.Item>
+          </>
+        )}
         <Form.Item
           className={style.selectTagWrap}
           name="tags"

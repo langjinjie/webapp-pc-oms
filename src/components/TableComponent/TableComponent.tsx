@@ -10,8 +10,8 @@ export interface PaginationProps {
 interface TableComponentProps<T> extends TableProps<T> {
   loading: boolean;
   columns: any;
-  pagination: TablePaginationConfig;
-  paginationChange: (pageNum: number, pageSize?: number) => void;
+  pagination?: TablePaginationConfig;
+  paginationChange?: (pageNum: number, pageSize?: number) => void;
   setRowKey?: (record: any) => string;
   rowSelection?: {
     onChange: (selectedRowKeys: React.Key[], selectedRows: T[]) => void;
@@ -30,16 +30,24 @@ const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.El
       scroll={{ x: 1300 }}
       rowKey={setRowKey}
       loading={loading}
-      rowSelection={{
-        type: 'checkbox',
-        ...rowSelection
-      }}
-      pagination={{
-        ...pagination,
-        showQuickJumper: true,
-        showSizeChanger: true,
-        onChange: paginationChange
-      }}
+      rowSelection={
+        rowSelection
+          ? {
+              type: 'checkbox',
+              ...rowSelection
+            }
+          : undefined
+      }
+      pagination={
+        pagination
+          ? {
+              ...pagination,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              onChange: paginationChange
+            }
+          : false
+      }
     />
   );
 };
