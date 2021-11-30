@@ -80,7 +80,6 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
     });
   };
   const beforeUploadFileHandle = (file: File, type: string[], size: number) => {
-    console.log(file.type, type);
     const suffix: string[] = type.map((item) => {
       if (item === 'audio/mpeg' || item === 'audio/mp3') {
         return 'mp3';
@@ -135,7 +134,6 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
   };
   // video onChange
   const vidoeOnChangeHandle = (info: any) => {
-    console.log(info.file);
     if (info.file.status !== 'uploading') {
       console.log(info.file, info.fileList);
     }

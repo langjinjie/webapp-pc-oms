@@ -146,6 +146,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
 
   // 提交新增/修改请求
   const onOk = async (updataCatalog: any) => {
+    setSubmitDisabled(true);
     const { parentId, catalog, title } = editOrAddLastCatalogParam;
     const { sceneId, catalogId, level, lastLevel } = catalog;
     const res = await requestEditCatalog({
@@ -157,6 +158,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       catalogId: title === '新增' ? undefined : catalogId,
       ...updataCatalog
     });
+    setSubmitDisabled(false);
     if (res) {
       message.success(`目录${editOrAddLastCatalogParam.title}成功`);
       setFirmModalParam({ title: '', content: '', visible: false });
@@ -167,7 +169,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
 
   // modal确认
   const modalOnOkHandle = async () => {
-    console.log(form.getFieldsValue());
     await form.validateFields();
     const updataCatalog = form.getFieldsValue();
     // 小程序请求参数
