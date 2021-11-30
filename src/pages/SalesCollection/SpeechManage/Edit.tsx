@@ -7,7 +7,7 @@ import { useForm } from 'antd/lib/form/Form';
 import { speechContentTypes, SpeechProps } from './Config';
 import SpeechItem from './Components/SpeechTypeItem/SpeechItem';
 import { RouteComponentProps } from 'react-router';
-import { URLSearchParams } from 'src/utils/base';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
 import InputShowLength from './Components/InputShowLength/InputShowLength';
 
@@ -19,6 +19,7 @@ const scenesStates = [
   { sceneId: 5, name: '问答知识', needGenderType: 0, needAgeType: 0 }
 ];
 const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
+  useDocumentTitle('话术编辑');
   const [speechForm] = useForm();
   const [speech, setSpeech] = useState<SpeechProps>();
   const [originSpeech, setOriginSpeech] = useState<SpeechProps>();
@@ -163,7 +164,9 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
     if (
       (originSpeech?.contentType === 2 && contentUrl !== originSpeech.contentUrl) ||
       ((originSpeech?.contentType === 7 || originSpeech?.contentType === 6) &&
-        (title !== originSpeech?.title || originSpeech.contentUrl !== contentUrl)) ||
+        (title !== originSpeech?.title ||
+          originSpeech.contentUrl !== contentUrl ||
+          summary !== originSpeech.summary)) ||
       ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8) &&
         (title !== originSpeech?.title ||
           thumbnail !== originSpeech.thumbnail ||

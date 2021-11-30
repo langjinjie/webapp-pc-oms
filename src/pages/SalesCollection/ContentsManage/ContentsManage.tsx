@@ -9,8 +9,10 @@ import { ICatalogItem, IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils
 import { getCategoryList } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
 import style from './style.module.less';
+import { useDocumentTitle } from 'src/utils/base';
 
 const ContentsManage: React.FC = () => {
+  useDocumentTitle('销售宝典-目录管理');
   const { currentCorpId: corpId } = useContext(Context);
   const [contentsList, setContentList] = useState<ICatalogItem[]>([]);
   const [currentContents, setCurrentContents] = useState<string>(''); // 当前展开的目录
