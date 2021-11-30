@@ -192,20 +192,14 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       {type === 3 && ( // 名片
         <>
           <Form.Item className={style.formItem} label="名片样式:">
-            <div className={style.card}></div>
+            <div className={style.card} />
           </Form.Item>
         </>
       )}
       {type === 4 && (
         <>
           <Form.Item className={style.formItem} label="小站样式:">
-            <div className={style.station}>
-              <div className={style.name}>我的小站</div>
-              <div className={style.stationContent}>
-                <div className={style.content}>小站介绍文字描述</div>
-                <img className={style.img} src={require('src/assets/images/artImg.png')} alt="station" />
-              </div>
-            </div>
+            <div className={style.station} />
           </Form.Item>
         </>
       )}
