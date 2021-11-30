@@ -148,9 +148,6 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
     <>
       {type === 2 && ( // 长图
         <>
-          <Form.Item className={style.formItem} label="图片ID:" name="posterId">
-            <Input className={style.modalContentSelect} placeholder="请输入图片ID" />
-          </Form.Item>
           <Form.Item
             className={style.imgformItem}
             label="上传图片:"
@@ -199,9 +196,6 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
       )}
       {type === 5 && ( // 图文/文章
         <>
-          <Form.Item className={style.formItem} label="文章ID:" name="articleId">
-            <Input className={style.modalContentSelect} placeholder="请输入文章ID" />
-          </Form.Item>
           <Form.Item
             className={style.imgformItem}
             label="上传图片:"
@@ -498,7 +492,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
           >
             <Input className={style.modalContentSelect} placeholder="请输入小程序ID" />
           </Form.Item>
-          <Form.Item className={style.formItem} label="小程序路径:" name="appPath">
+          <Form.Item className={style.formItem} label="路径:" name="appPath">
             <Input className={style.input} placeholder={'请输入小程序路径'} />
           </Form.Item>
           <Form.Item
