@@ -27,19 +27,35 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   const [iconImg, setIconImg] = useState('');
   const [catalogName, setCatalogName] = useState('');
   const [catalogSenceAndLevel, setCatalogSenceAndLevel] = useState<ICatalogSenceAndLevel>({ sence: 0, level: 0 });
-
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [btnIsLoading, setBtnIsLoading] = useState(false);
   const resetHandle = () => {
     setIconImg('');
     setCatalogName('');
     setCatalogSenceAndLevel({ sence: 0, level: 0 });
+    setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
+    setSubmitDisabled(true);
+    setBtnIsLoading(false);
   };
 
   const inputOnChangHangle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCatalogName(e.target.value.trim());
+    setSubmitDisabled(
+      e.target.value.trim().length < catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0] ||
+        e.target.value.trim().length > catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1] ||
+        (editOrAddCatalogParam.title === '编辑' &&
+          editOrAddCatalogParam.catalog.name === e.target.value.trim() &&
+          iconImg === editOrAddCatalogParam.catalog.logoUrl) ||
+        ([4, 5].includes(editOrAddCatalogParam.catalog.sceneId) &&
+          editOrAddCatalogParam.catalog.level === 2 &&
+          !iconImg)
+    );
   };
 
   // 确认修改/增加目录handle
   const firmModalOnOk = async () => {
+    setSubmitDisabled(true);
+    setBtnIsLoading(true);
     const { parentId, catalog } = editOrAddCatalogParam;
     const { sceneId, catalogId, level, lastLevel } = catalog;
     const res = await requestEditCatalog({
@@ -52,6 +68,8 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       catalogId: editOrAddCatalogParam.title === '新增' ? undefined : catalogId,
       logoUrl: iconImg
     });
+    setSubmitDisabled(false);
+    setBtnIsLoading(false);
     if (res) {
       setFirmModalParam({ title: '', content: '', visible: false });
       message.success(`目录${editOrAddCatalogParam.title}成功`);
@@ -64,7 +82,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
     const title = '修改提醒';
     const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
     if (editOrAddCatalogParam.title === '新增') {
-      firmModalOnOk();
+      await firmModalOnOk();
     } else {
       setFirmModalParam({
         title,
@@ -76,8 +94,8 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
           setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: true });
         }
       });
+      setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
     }
-    setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
   };
   // updaload beforeUpload
   const beforeUploadHandle = (file: File): Promise<boolean> => {
@@ -147,15 +165,8 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       maskClosable={false}
       okButtonProps={{
         // 判断必填项目为空或者是未发生修改则状态为:disabled
-        disabled:
-          catalogName.length < catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0] ||
-          catalogName.length > catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1] ||
-          (editOrAddCatalogParam.title === '编辑' &&
-            editOrAddCatalogParam.catalog.name === catalogName &&
-            iconImg === editOrAddCatalogParam.catalog.logoUrl) ||
-          ([4, 5].includes(editOrAddCatalogParam.catalog.sceneId) &&
-            editOrAddCatalogParam.catalog.level === 2 &&
-            !iconImg)
+        disabled: submitDisabled,
+        loading: btnIsLoading
       }}
     >
       {editOrAddCatalogParam && (

@@ -26,7 +26,7 @@ export const sensitiveStatusList = [
 // 目录类型对照
 export const catalogType2Name = [
   { value: 1, label: '文本' },
-  { value: 2, label: '长图' },
+  { value: 2, label: '图片' },
   { value: 3, label: '名片' },
   { value: 4, label: '小站' },
   { value: 5, label: '单图文' },
