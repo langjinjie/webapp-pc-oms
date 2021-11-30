@@ -5,7 +5,7 @@ import { Button, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
-
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 export const sensitiveOptions = [
   { id: 0, name: '未知' },
   { id: 1, name: '是' },
@@ -72,7 +72,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       name: 'sensitive',
       type: 'select',
       width: 140,
-      label: '是否出发敏感词',
+      label: '是否触发敏感词',
       options: sensitiveOptions
     },
     {
@@ -186,8 +186,17 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       ellipsis: {
         showTitle: false
       },
-      render: (value) => {
-        return <span>{sensitiveOptions.filter((sensitive) => sensitive.id === value)?.[0].name || UNKNOWN}</span>;
+      render: (value, record: SpeechProps) => {
+        return (
+          <span>
+            {sensitiveOptions.filter((sensitive) => sensitive.id === value)?.[0].name}
+            {value === 1 && (
+              <Tooltip title={record.sensitiveWord} className="ml10">
+                <ExclamationCircleOutlined />
+              </Tooltip>
+            )}
+          </span>
+        );
       }
     },
     {
@@ -203,6 +212,24 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       title: '更新时间',
       dataIndex: 'lastUpdated',
       width: 180,
+
+      render: (name) => {
+        return <span>{name || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '创建人',
+      dataIndex: 'createBy',
+      width: 130,
+
+      render: (name) => {
+        return <span>{name || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '更新人',
+      dataIndex: 'updateBy',
+      width: 130,
 
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
