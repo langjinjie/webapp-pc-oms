@@ -160,12 +160,12 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       catalogId: title === '新增' ? undefined : catalogId,
       ...updataCatalog
     });
+    setSubmitDisabled(false);
+    setBtnIsLoading(false);
     if (res) {
       message.success(`目录${editOrAddLastCatalogParam.title}成功`);
       setFirmModalParam({ title: '', content: '', visible: false });
       editOrAddLastCatalogParam.getParentChildrenList();
-      setSubmitDisabled(false);
-      setBtnIsLoading(false);
       resetHandle();
     }
   };

@@ -66,12 +66,12 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       catalogId: editOrAddCatalogParam.title === '新增' ? undefined : catalogId,
       logoUrl: iconImg
     });
+    setSubmitDisabled(false);
+    setBtnIsLoading(false);
     if (res) {
       setFirmModalParam({ title: '', content: '', visible: false });
       message.success(`目录${editOrAddCatalogParam.title}成功`);
       editOrAddCatalogParam.getParentChildrenList();
-      setSubmitDisabled(false);
-      setBtnIsLoading(false);
       resetHandle();
     }
   };
