@@ -258,8 +258,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
         // 批量导出
         const { status, sensitive, updateBeginTime, updateEndTime, content, tip, contentType } = formParams;
         const params = {
-          sceneId: lastCategory.sceneId || '',
-          catalogId: lastCategory.catalogId || '',
+          sceneId: lastCategory?.sceneId || '',
+          catalogId: lastCategory?.catalogId || '',
           content,
           tip,
           contentType,
