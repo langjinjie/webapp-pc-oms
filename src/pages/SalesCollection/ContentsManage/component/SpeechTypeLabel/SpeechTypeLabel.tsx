@@ -7,6 +7,8 @@ interface ISpeechTypeLabelProps {
   type: number;
   posterImg: string;
   setPosterImg: (param: string) => void;
+  fileList: any[];
+  setFileList: (param: any[]) => void;
 }
 
 interface IInputCurrentLength {
@@ -14,7 +16,7 @@ interface IInputCurrentLength {
   summaryLength: number;
 }
 
-const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, setPosterImg }) => {
+const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, setPosterImg, fileList, setFileList }) => {
   const [maxLengthParam, setMaxLengthParam] = useState<IInputCurrentLength>({
     titleLength: 0,
     summaryLength: 0
@@ -108,7 +110,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       return;
     }
     if (e.file.status === 'done') {
-      return { uid: e.file.uid, name: e.file.name, status: e.file.status, url: e.file.response.retdata.filePath };
+      setFileList([
+        { uid: e.file.uid, name: e.file.name, status: e.file.status, url: e.file.response.retdata.filePath }
+      ]);
+      return e.file.response.retdata.filePath;
     }
   };
   // input onChange
@@ -316,6 +321,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               maxCount={1}
               action="/tenacity-admin/api/file/upload"
               data={{ bizKey: 'media' }}
+              fileList={fileList}
               onChange={voiceOnChangeHandle}
               beforeUpload={(file) => beforeUploadFileHandle(file, ['audio/mpeg', 'audio/mp3'], 20)}
             >
@@ -395,6 +401,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               maxCount={1}
               action="/tenacity-admin/api/file/upload"
               data={{ bizKey: 'media' }}
+              fileList={fileList}
               onChange={vidoeOnChangeHandle}
               beforeUpload={(file) => beforeUploadFileHandle(file, ['video/mp4'], 100)}
             >
