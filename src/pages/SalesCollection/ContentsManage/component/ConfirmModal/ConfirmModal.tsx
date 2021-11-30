@@ -29,9 +29,6 @@ const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam }) => {
         disabled: okBtnDisabled,
         loading: okBtnDisabled
       }}
-      cancelButtonProps={{
-        disabled: okBtnDisabled
-      }}
     >
       <span className={style.content}>{content}</span>
     </Modal>

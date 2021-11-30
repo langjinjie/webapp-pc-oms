@@ -28,6 +28,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   const [catalogParam, setCatalogParam] = useState<IContentParam>({ name: '', contentType: 0 });
   const [posterImg, setPosterImg] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [btnIsLoading, setBtnIsLoading] = useState(false);
   const [fileList, setFileList] = useState<{ name: string; uid: string; status: string; url: string }[]>([]);
   const [form] = Form.useForm();
   const [maxLengthParam, setMaxLengthParam] = useState({
@@ -91,7 +92,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       }
       form.setFieldsValue(res);
       setCatalogParam({ name: res.name, contentType: res.contentType });
-      setMaxLengthParam({ titleLength: res.title.length, summaryLength: res.summary.length });
+      setMaxLengthParam({ titleLength: (res.title || '').length, summaryLength: (res.summary || '').length });
       // 处理长图回写
       if (res.contentType === 3) {
         setPosterImg(res.contentUrl);
@@ -147,6 +148,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   // 提交新增/修改请求
   const onOk = async (updataCatalog: any) => {
     setSubmitDisabled(true);
+    setBtnIsLoading(true);
     const { parentId, catalog, title } = editOrAddLastCatalogParam;
     const { sceneId, catalogId, level, lastLevel } = catalog;
     const res = await requestEditCatalog({
@@ -158,11 +160,12 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       catalogId: title === '新增' ? undefined : catalogId,
       ...updataCatalog
     });
-    setSubmitDisabled(false);
     if (res) {
       message.success(`目录${editOrAddLastCatalogParam.title}成功`);
       setFirmModalParam({ title: '', content: '', visible: false });
       editOrAddLastCatalogParam.getParentChildrenList();
+      setSubmitDisabled(false);
+      setBtnIsLoading(false);
       resetHandle();
     }
   };
@@ -224,7 +227,8 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         onCancel={onCancelHandle}
         onOk={modalOnOkHandle}
         okButtonProps={{
-          disabled: submitDisabled
+          disabled: submitDisabled,
+          loading: btnIsLoading
         }}
       >
         <Form form={form} onValuesChange={() => setSubmitDisabled(false)}>

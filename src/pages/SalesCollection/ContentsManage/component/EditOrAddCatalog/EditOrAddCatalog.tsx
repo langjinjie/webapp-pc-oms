@@ -28,7 +28,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   const [catalogName, setCatalogName] = useState('');
   const [catalogSenceAndLevel, setCatalogSenceAndLevel] = useState<ICatalogSenceAndLevel>({ sence: 0, level: 0 });
   const [submitDisabled, setSubmitDisabled] = useState(true);
-
+  const [btnIsLoading, setBtnIsLoading] = useState(false);
   const resetHandle = () => {
     setIconImg('');
     setCatalogName('');
@@ -53,6 +53,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   // 确认修改/增加目录handle
   const firmModalOnOk = async () => {
     setSubmitDisabled(true);
+    setBtnIsLoading(true);
     const { parentId, catalog } = editOrAddCatalogParam;
     const { sceneId, catalogId, level, lastLevel } = catalog;
     const res = await requestEditCatalog({
@@ -70,6 +71,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       message.success(`目录${editOrAddCatalogParam.title}成功`);
       editOrAddCatalogParam.getParentChildrenList();
       setSubmitDisabled(false);
+      setBtnIsLoading(false);
       resetHandle();
     }
   };
@@ -161,7 +163,8 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       maskClosable={false}
       okButtonProps={{
         // 判断必填项目为空或者是未发生修改则状态为:disabled
-        disabled: submitDisabled
+        disabled: submitDisabled,
+        loading: btnIsLoading
       }}
     >
       {editOrAddCatalogParam && (
