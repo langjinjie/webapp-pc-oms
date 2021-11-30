@@ -30,6 +30,10 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [fileList, setFileList] = useState<{ name: string; uid: string; status: string; url: string }[]>([]);
   const [form] = Form.useForm();
+  const [maxLengthParam, setMaxLengthParam] = useState({
+    titleLength: 0,
+    summaryLength: 0
+  });
   const [catalogDetail, setCatalogDetail] = useState<ICatalogDetail>({
     sceneId: '',
     catalogId: '',
@@ -58,6 +62,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     setCatalogParam({ name: '', contentType: 0 });
     setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false, title: '' });
     setSubmitDisabled(true);
+    setMaxLengthParam({ titleLength: 0, summaryLength: 0 });
   };
   // 切换目录类型重置部分表单
   const resetOnchange = (name: string, contentType: number) => {
@@ -65,6 +70,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     form.setFieldsValue({ name, contentType });
     setPosterImg('');
     setFileList([]);
+    setMaxLengthParam({ titleLength: 0, summaryLength: 0 });
   };
   // 获取最后一级目录详情
   const getLastCatalogDetail = async () => {
@@ -74,9 +80,18 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       catalogId: editOrAddLastCatalogParam.catalog.catalogId
     });
     if (res) {
+      // 处理音视频的回写
       setCatalogDetail(res);
+      if (res.contentType === 6 || res.contentType === 7) {
+        setFileList([
+          { uid: '1', name: `media.${res.contentType === 6 ? 'mp3' : 'mp4'}`, url: res.contentUrl, status: 'done' }
+        ]);
+        // delete res.contentUrl;
+        // res.contentUrl = [{ uid: '1', name: `media.${res.contentType === 6 ? 'mp3' : 'mp4'}`, url: res.contentUrl, status: 'done' }];
+      }
       form.setFieldsValue(res);
       setCatalogParam({ name: res.name, contentType: res.contentType });
+      setMaxLengthParam({ titleLength: res.title.length, summaryLength: res.summary.length });
       // 处理长图回写
       if (res.contentType === 3) {
         setPosterImg(res.contentUrl);
@@ -88,17 +103,15 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         form.setFieldsValue({ appId: JSON.parse(res.contentUrl).appId });
         form.setFieldsValue({ appPath: JSON.parse(res.contentUrl).appPath });
       }
-      // 处理音视频的回写
-      if (res.contentType === 7 || res.contentType === 6) {
-        setFileList([
-          { uid: '1', name: res.contentType === 7 ? 'video.mp4' : 'audio.mp3', status: 'done', url: res.contentUrl }
-        ]);
-      }
     }
   };
   // 输入框input事件
   const inputOnChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCatalogParam({ ...catalogParam, name: e.target.value.trim() });
+    setMaxLengthParam({
+      titleLength: catalogDetail.title?.length || 0,
+      summaryLength: catalogDetail.summary?.length || 0
+    });
   };
   // 选择目录类型
   const selectOnchangeHandle = (e: any) => {
@@ -107,20 +120,24 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     if (e === catalogDetail.contentType) {
       form.setFieldsValue({ ...catalogDetail });
       setPosterImg(catalogDetail.contentUrl as string);
+      setMaxLengthParam({
+        titleLength: catalogDetail.title?.length || 0,
+        summaryLength: catalogDetail.summary?.length || 0
+      });
+      if (catalogDetail.contentType === 6 || catalogDetail.contentType === 7) {
+        setFileList([
+          {
+            uid: '1',
+            name: `media.${catalogDetail.contentType === 6 ? 'mp3' : 'mp4'}`,
+            url: catalogDetail.contentUrl as string,
+            status: 'done'
+          }
+        ]);
+      }
       if (e === 3) {
         setPosterImg(catalogDetail.contentUrl as string);
       } else {
         setPosterImg(catalogDetail.thumbnail as string);
-      }
-      if (e === 6 || e === 7) {
-        setFileList([
-          {
-            uid: '1',
-            name: catalogDetail.contentType === 7 ? 'video.mp4' : 'audio.mp3',
-            status: 'done',
-            url: catalogDetail.contentUrl || ''
-          }
-        ]);
       }
     } else {
       resetOnchange(name, e);
@@ -150,6 +167,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
 
   // modal确认
   const modalOnOkHandle = async () => {
+    console.log(form.getFieldsValue());
     await form.validateFields();
     const updataCatalog = form.getFieldsValue();
     // 小程序请求参数
@@ -240,6 +258,8 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
             setPosterImg={setPosterImg}
             fileList={fileList}
             setFileList={setFileList}
+            maxLengthParam={maxLengthParam}
+            setMaxLengthParam={setMaxLengthParam}
           />
         </Form>
       </Modal>

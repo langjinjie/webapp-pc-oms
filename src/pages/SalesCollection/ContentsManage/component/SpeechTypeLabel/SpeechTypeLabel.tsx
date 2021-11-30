@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Form, Input, Upload, message, Button } from 'antd';
 import { Icon } from 'src/components';
 import style from './style.module.less';
@@ -9,6 +9,8 @@ interface ISpeechTypeLabelProps {
   setPosterImg: (param: string) => void;
   fileList: any[];
   setFileList: (param: any[]) => void;
+  maxLengthParam: IInputCurrentLength;
+  setMaxLengthParam: (param: IInputCurrentLength) => void;
 }
 
 interface IInputCurrentLength {
@@ -16,11 +18,15 @@ interface IInputCurrentLength {
   summaryLength: number;
 }
 
-const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, setPosterImg, fileList, setFileList }) => {
-  const [maxLengthParam, setMaxLengthParam] = useState<IInputCurrentLength>({
-    titleLength: 0,
-    summaryLength: 0
-  });
+const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
+  type,
+  posterImg,
+  setPosterImg,
+  fileList,
+  setFileList,
+  maxLengthParam,
+  setMaxLengthParam
+}) => {
   // updaload beforeUpload
   const beforeUploadImgHandle = (
     file: File,
@@ -91,6 +97,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       message.error(`请上传${suffix[0]}格式的文件`);
     }
     const isSize = file.size / 1024 / 1024 < size;
+    console.log(isSize);
     if (!isSize) {
       message.error(`文件大小不能超过${size}MB!`);
     }
@@ -110,9 +117,6 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       return;
     }
     if (e.file.status === 'done') {
-      setFileList([
-        { uid: e.file.uid, name: e.file.name, status: e.file.status, url: e.file.response.retdata.filePath }
-      ]);
       return e.file.response.retdata.filePath;
     }
   };
@@ -122,39 +126,31 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
   };
   // voice onChange
   const voiceOnChangeHandle = (info: any) => {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
     if (info.file.status === 'done') {
       message.success(`${info.file.name} 上传成功`);
+      setFileList(info.fileList);
     } else if (info.file.status === 'error') {
       message.error(`${info.file.name} 上传失败`);
     }
   };
   // video onChange
   const vidoeOnChangeHandle = (info: any) => {
+    console.log(info.file);
     if (info.file.status !== 'uploading') {
       console.log(info.file, info.fileList);
     }
     if (info.file.status === 'done') {
       message.success(`${info.file.name} 视频上传成功`);
+      return info.fileList;
     } else if (info.file.status === 'error') {
       message.error(`${info.file.name} 视频上传失败.`);
     }
   };
-  useEffect(() => {
-    return () => {
-      setMaxLengthParam({ titleLength: 0, summaryLength: 0 });
-    };
-  }, []);
   return (
     <>
       {type === 2 && ( // 长图
         <>
           <Form.Item className={style.formItem} label="图片ID:" name="posterId">
-            {/* <Select className={style.modalContentSelect} placeholder={'请选择'}>
-              <Select.Option value="demo">Demo</Select.Option>
-            </Select> */}
             <Input className={style.modalContentSelect} placeholder="请输入图片ID" />
           </Form.Item>
           <Form.Item
@@ -315,7 +311,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
               maxCount={1}
               action="/tenacity-admin/api/file/upload"
               data={{ bizKey: 'media' }}
-              fileList={fileList}
+              defaultFileList={fileList}
               onChange={voiceOnChangeHandle}
               beforeUpload={(file) => beforeUploadFileHandle(file, ['audio/mpeg', 'audio/mp3'], 20)}
             >
@@ -384,24 +380,24 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <Form.Item
             className={style.videoFormItem}
             label="上传视频:"
-            name="contentUrl"
+            name={'contentUrl'}
             valuePropName="file"
             getValueFromEvent={normFiles}
             rules={[{ required: true, message: '请上传大小不超过100M的MP4视频文件' }]}
           >
             <Upload
               className={style.uploadVideo}
-              name="file"
+              name={'file'}
               maxCount={1}
               action="/tenacity-admin/api/file/upload"
               data={{ bizKey: 'media' }}
-              fileList={fileList}
+              defaultFileList={fileList}
               onChange={vidoeOnChangeHandle}
               beforeUpload={(file) => beforeUploadFileHandle(file, ['video/mp4'], 100)}
             >
               <Button className={style.btn}>
                 <Icon className={style.uploadIcon} name="shangchuanwenjian" />
-                将文件拖拽至此区域，或<span className={style.uploadText}>点此上传</span>{' '}
+                将文件拖拽至此区域，或<span className={style.uploadText}>点此上传</span>
               </Button>
             </Upload>
           </Form.Item>
