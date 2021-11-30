@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Input, Upload, message, Button } from 'antd';
 import { Icon } from 'src/components';
+import { UploadImg } from 'src/pages/SalesCollection/ContentsManage/component';
 import style from './style.module.less';
 
 interface ISpeechTypeLabelProps {
@@ -148,7 +149,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
     <>
       {type === 2 && ( // 长图
         <>
-          <Form.Item
+          {/* <Form.Item
             className={style.imgformItem}
             label="上传图片:"
             name={'thumbnail'}
@@ -156,8 +157,8 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             getValueFromEvent={normFile}
             rules={[{ required: true, message: '请上传宽度为750像素的图片，仅支持.jpg格式' }]}
             extra={'图片宽度750px，高度不限，仅支持.jpg格式'}
-          >
-            <Upload
+          > */}
+          {/* <Upload
               accept="image/*"
               listType="picture-card"
               action="/tenacity-admin/api/file/upload"
@@ -166,18 +167,21 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
               showUploadList={false}
               beforeUpload={(file) => beforeUploadImgHandle(file, ['image/jpeg'], 5, 750, 0)}
             >
-              {posterImg
-                ? (
+              {posterImg ? (
                 <img src={posterImg} alt="icon" style={{ width: '100%' }} />
-                  )
-                : (
+              ) : (
                 <div className={style.iconWrap}>
                   <Icon className={style.uploadIcon} name="upload" />
                   <div className={style.uploadTip}>点击上传</div>
                 </div>
-                  )}
-            </Upload>
-          </Form.Item>
+              )}
+            </Upload> */}
+          <UploadImg
+            posterImg={posterImg}
+            setPosterImg={setPosterImg}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 750, limitHeight: 0 }}
+          />
+          {/* </Form.Item> */}
         </>
       )}
       {type === 3 && ( // 名片
