@@ -118,8 +118,8 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       title: type === -1 ? '上移' : '下移' + '提醒',
       content: `确定${type === -1 ? '上移' : '下移'}目录“${catalog.name}”吗？`,
       visible: true,
-      onOk () {
-        firmModalOnOk(type);
+      onOk: async () => {
+        await firmModalOnOk(type);
       },
       onCancel: () => {
         setFirmModalParam({ title: '', content: '', visible: false });
