@@ -34,6 +34,8 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
     setCatalogName('');
     setCatalogSenceAndLevel({ sence: 0, level: 0 });
     setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
+    setSubmitDisabled(true);
+    setBtnIsLoading(false);
   };
 
   const inputOnChangHangle = (e: React.ChangeEvent<HTMLInputElement>) => {

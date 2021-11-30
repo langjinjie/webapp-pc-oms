@@ -63,6 +63,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     setCatalogParam({ name: '', contentType: 0 });
     setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false, title: '' });
     setSubmitDisabled(true);
+    setBtnIsLoading(false);
     setMaxLengthParam({ titleLength: 0, summaryLength: 0 });
   };
   // 切换目录类型重置部分表单
