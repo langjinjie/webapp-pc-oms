@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Input } from 'antd';
 import { UploadImg, UploadFile } from 'src/pages/SalesCollection/ContentsManage/component';
+import InputShowLength from 'src/pages/SalesCollection/SpeechManage/Components/InputShowLength/InputShowLength';
 import style from './style.module.less';
 
 interface ISpeechTypeLabelProps {
@@ -8,27 +9,9 @@ interface ISpeechTypeLabelProps {
   posterImg: string;
   setPosterImg: (param: string) => void;
   fileList: any[];
-  maxLengthParam: IInputCurrentLength;
-  setMaxLengthParam: (param: IInputCurrentLength) => void;
 }
 
-interface IInputCurrentLength {
-  titleLength: number;
-  summaryLength: number;
-}
-
-const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
-  type,
-  posterImg,
-  setPosterImg,
-  fileList,
-  maxLengthParam,
-  setMaxLengthParam
-}) => {
-  // input onChange
-  const inputOnChangeHandle = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
-    setMaxLengthParam({ ...maxLengthParam, ...{ [type]: e.target.value.length } });
-  };
+const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, setPosterImg, fileList }) => {
   return (
     <>
       {type === 2 && ( // 长图
@@ -56,7 +39,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
           </Form.Item>
         </>
       )}
-      {type === 5 && ( // 图文/文章
+      {type === 5 && ( // 图文
         <>
           <UploadImg
             uploadImg={posterImg}
@@ -65,27 +48,21 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             rules={[{ required: true, message: '请上传200*200像素的图片，仅支持.jpg格式' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
-          <Form.Item className={style.formItem} label="图文标题:" required>
-            <Form.Item name="title" rules={[{ required: true, message: '请输入图文标题' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入图文标题'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.titleLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            name="title"
+            label="图文标题:"
+            rules={[{ required: true, message: '请输入图文标题' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入图文摘要'} maxLength={30} />
           </Form.Item>
-          <Form.Item className={style.formItem} label="图文摘要:" required>
-            <Form.Item name="summary" rules={[{ required: true, message: '请输入图文摘要' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入图文摘要'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.summaryLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            name="summary"
+            label="图文摘要:"
+            rules={[{ required: true, message: '请输入图文摘要' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入图文摘要'} maxLength={30} />
           </Form.Item>
           <Form.Item
             className={style.formItem}
@@ -112,31 +89,25 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             extra={'请上传大小不超过20M的MP3语音文件'}
           />
 
-          <Form.Item className={style.formItem} label="语音标题:" required>
-            <Form.Item name="title" rules={[{ required: true, message: '请输入语音标题' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入语音标题'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.titleLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            label="语音标题:"
+            name="title"
+            rules={[{ required: true, message: '请输入语音标题' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入语音标题'} maxLength={30} />
           </Form.Item>
-          <Form.Item className={style.formItem} label="语音摘要:" required>
-            <Form.Item name="summary" rules={[{ required: true, message: '请输入语音摘要' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入语音摘要'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.summaryLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            label="语音摘要:"
+            name="summary"
+            rules={[{ required: true, message: '请输入语音摘要' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入语音摘要'} maxLength={30} />
           </Form.Item>
         </>
       )}
-      {type === 7 && ( // 上传视频
+      {type === 7 && ( // 单视频
         <>
           <UploadImg
             uploadImg={posterImg}
@@ -150,27 +121,21 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             rules={[{ required: true, message: '请上传大小不超过100M的MP4视频文件' }]}
             extra={'请上传大小不超过100M的MP4视频文件'}
           />
-          <Form.Item className={style.formItem} label="视频标题:" required>
-            <Form.Item name="title" rules={[{ required: true, message: '请输入视频标题' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入视频标题'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.titleLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            label="视频标题:"
+            name="title"
+            rules={[{ required: true, message: '请输入视频标题' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入视频标题'} maxLength={30} />
           </Form.Item>
-          <Form.Item className={style.formItem} label="视频摘要:" required>
-            <Form.Item name="summary" rules={[{ required: true, message: '请输入视频摘要' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入视频摘要'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.summaryLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            label="视频摘要:"
+            name="summary"
+            rules={[{ required: true, message: '请输入视频摘要' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入视频摘要'} maxLength={30} />
           </Form.Item>
         </>
       )}
@@ -182,27 +147,21 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 200, limitHeight: 200 }}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
-          <Form.Item className={style.formItem} label="标题:" required>
-            <Form.Item name="title" rules={[{ required: true, message: '请输入标题' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入标题'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.titleLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            label="标题:"
+            name="title"
+            rules={[{ required: true, message: '请输入标题' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入标题'} maxLength={30} />
           </Form.Item>
-          <Form.Item className={style.formItem} label="摘要:" required>
-            <Form.Item name="summary" rules={[{ required: true, message: '请输入摘要' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入摘要'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.summaryLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            label="摘要:"
+            name="summary"
+            rules={[{ required: true, message: '请输入摘要' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入摘要'} maxLength={30} />
           </Form.Item>
           <Form.Item
             className={style.formItem}
@@ -214,7 +173,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
           </Form.Item>
         </>
       )}
-      {type === 9 && (
+      {type === 9 && ( // 小程序
         <>
           <Form.Item
             className={style.formItem}
@@ -234,27 +193,21 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             rules={[{ required: true, message: '请上传200*200像素高清图片，仅支持.jpg格式' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
-          <Form.Item className={style.formItem} label="小程序标题:" required>
-            <Form.Item name="title" rules={[{ required: true, message: '请输入小程序标题' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入小程序标题'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'titleLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.titleLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            label="小程序标题:"
+            name="title"
+            rules={[{ required: true, message: '请输入小程序标题' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入小程序标题'} maxLength={30} />
           </Form.Item>
-          <Form.Item className={style.formItem} label="小程序摘要:" required>
-            <Form.Item name="summary" rules={[{ required: true, message: '请输入小程序摘要' }]} noStyle>
-              <Input
-                className={style.input}
-                placeholder={'请输入小程序摘要'}
-                maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{maxLengthParam.summaryLength}/30</span>
+          <Form.Item
+            className={style.formItem}
+            label="小程序摘要:"
+            name="summary"
+            rules={[{ required: true, message: '请输入小程序摘要' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入小程序摘要'} maxLength={30} />
           </Form.Item>
         </>
       )}
