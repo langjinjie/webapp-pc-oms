@@ -22,8 +22,10 @@ import { columns, setSearchCols, SpeechProps } from './Config';
 import style from './style.module.less';
 import { Context } from 'src/store';
 import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
+import { useDocumentTitle } from 'src/utils/base';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
+  useDocumentTitle('销售宝典-话术管理');
   const { currentCorpId } = useContext(Context);
   const [formParams, setFormParams] = useState({
     catalogId: '',
@@ -256,8 +258,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
         // 批量导出
         const { status, sensitive, updateBeginTime, updateEndTime, content, tip, contentType } = formParams;
         const params = {
-          sceneId: lastCategory.sceneId || '',
-          catalogId: lastCategory.catalogId || '',
+          sceneId: lastCategory?.sceneId || '',
+          catalogId: lastCategory?.catalogId || '',
           content,
           tip,
           contentType,

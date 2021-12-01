@@ -247,7 +247,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
                 className={style.input}
                 placeholder={'请输入图文摘要'}
                 maxLength={30}
-                onChange={(e) => inputOnChangeHandle(e, 'summary')}
+                onChange={(e) => inputOnChangeHandle(e, 'summaryLength')}
               />
             </Form.Item>
             <span className={style.limitLength}>{maxLengthParam.summaryLength}/30</span>
