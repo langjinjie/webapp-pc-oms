@@ -31,10 +31,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   const [btnIsLoading, setBtnIsLoading] = useState(false);
   const [fileList, setFileList] = useState<{ name: string; uid: string; status: string; url: string }[]>([]);
   const [form] = Form.useForm();
-  const [maxLengthParam, setMaxLengthParam] = useState({
-    titleLength: 0,
-    summaryLength: 0
-  });
   const [catalogDetail, setCatalogDetail] = useState<ICatalogDetail>({
     sceneId: '',
     catalogId: '',
@@ -64,7 +60,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     setEditOrAddLastCatalogParam({ ...editOrAddLastCatalogParam, visible: false, title: '' });
     setSubmitDisabled(true);
     setBtnIsLoading(false);
-    setMaxLengthParam({ titleLength: 0, summaryLength: 0 });
   };
   // 切换目录类型重置部分表单
   const resetOnchange = (name: string, contentType: number) => {
@@ -72,7 +67,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     form.setFieldsValue({ name, contentType });
     setPosterImg('');
     setFileList([]);
-    setMaxLengthParam({ titleLength: 0, summaryLength: 0 });
   };
   // 获取最后一级目录详情
   const getLastCatalogDetail = async () => {
@@ -88,12 +82,9 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         setFileList([
           { uid: '1', name: `media.${res.contentType === 6 ? 'mp3' : 'mp4'}`, url: res.contentUrl, status: 'done' }
         ]);
-        // delete res.contentUrl;
-        // res.contentUrl = [{ uid: '1', name: `media.${res.contentType === 6 ? 'mp3' : 'mp4'}`, url: res.contentUrl, status: 'done' }];
       }
       form.setFieldsValue(res);
       setCatalogParam({ name: res.name, contentType: res.contentType });
-      setMaxLengthParam({ titleLength: (res.title || '').length, summaryLength: (res.summary || '').length });
       // 处理长图回写
       if (res.contentType === 3) {
         setPosterImg(res.contentUrl);
@@ -110,10 +101,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   // 输入框input事件
   const inputOnChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCatalogParam({ ...catalogParam, name: e.target.value.trim() });
-    setMaxLengthParam({
-      titleLength: catalogDetail.title?.length || 0,
-      summaryLength: catalogDetail.summary?.length || 0
-    });
   };
   // 选择目录类型
   const selectOnchangeHandle = (e: any) => {
@@ -122,10 +109,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     if (e === catalogDetail.contentType) {
       form.setFieldsValue({ ...catalogDetail });
       setPosterImg(catalogDetail.contentUrl as string);
-      setMaxLengthParam({
-        titleLength: catalogDetail.title?.length || 0,
-        summaryLength: catalogDetail.summary?.length || 0
-      });
       if (catalogDetail.contentType === 6 || catalogDetail.contentType === 7) {
         setFileList([
           {
@@ -263,9 +246,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
             posterImg={posterImg}
             setPosterImg={setPosterImg}
             fileList={fileList}
-            setFileList={setFileList}
-            maxLengthParam={maxLengthParam}
-            setMaxLengthParam={setMaxLengthParam}
           />
         </Form>
       </Modal>
