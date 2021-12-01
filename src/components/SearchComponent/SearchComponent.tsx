@@ -36,15 +36,13 @@ interface SearchComponentProps {
   onChangeOfCascader?:
     | ((value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => void)
     | undefined;
-  disabled?: boolean;
 }
 const { RangePicker } = DatePicker;
 
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
-  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader, disabled } = props;
+  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader } = props;
   const [from] = Form.useForm();
   const onReset = () => {
-    console.log('sss');
     onChangeOfCascader?.([''], []);
     onSearch({});
   };
@@ -59,7 +57,6 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         }
       });
       if (lastOption?.lastLevel === 1) {
-        console.log({ lastOption });
         from.resetFields(fields);
       }
     }
@@ -83,17 +80,12 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             return (
               (col.type === 'input' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Input
-                    maxLength={col.maxLength || 50}
-                    placeholder={col.placeholder}
-                    disabled={disabled}
-                    style={{ width: col.width }}
-                  />
+                  <Input maxLength={col.maxLength || 50} placeholder={col.placeholder} style={{ width: col.width }} />
                 </Form.Item>
               )) ||
               (col.type === 'select' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Select placeholder="请选择" disabled={disabled} allowClear style={{ width: col.width }}>
+                  <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                     {col.options &&
                       col.options.map((option) => (
                         <Select.Option key={option.id} value={option.id}>
@@ -105,7 +97,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               )) ||
               (col.type === 'rangePicker' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <RangePicker disabled={disabled} format="YYYY-MM-DD" style={{ width: '320px' }} />
+                  <RangePicker format="YYYY-MM-DD" style={{ width: '320px' }} />
                 </Form.Item>
               )) ||
               (col.type === 'cascader' && (

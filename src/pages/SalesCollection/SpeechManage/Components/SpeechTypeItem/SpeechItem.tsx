@@ -61,18 +61,17 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
   };
   const beforeUploadMedia = (file: RcFile, type: number) => {
     if (type === 6) {
-      console.log(file.type);
       const isAudio = file.type === 'audio/mpeg';
 
       if (!isAudio) {
         message.error('你只可以上传 MP3 文件!');
       }
 
-      const isLt5M = file.size / 1024 / 1024 < 5;
-      if (!isLt5M) {
+      const isLt20M = file.size / 1024 / 1024 < 20;
+      if (!isLt20M) {
         message.error('音频大小不能超过 5MB!');
       }
-      return isAudio && isLt5M;
+      return isAudio && isLt20M;
     } else {
       const isMp4 = file.type === 'video/mp4';
 
@@ -147,7 +146,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
             label={type === 6 ? '上传语音' : '上传视频'}
             name="contentUrl"
             rules={[{ required: true }]}
-            extra={type === 6 ? '仅支持MP3格式，最大5M' : '仅支持MP4格式，最大100M'}
+            extra={type === 6 ? '仅支持MP3格式，最大20M' : '仅支持MP4格式，最大100M'}
           >
             <NgUpload
               beforeUpload={(file) => beforeUploadMedia(file, type)}

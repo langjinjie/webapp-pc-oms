@@ -89,6 +89,8 @@ interface OperateProps {
   handleSort: (record: SpeechProps, sortType: number) => void;
   lastCategory: any;
   pagination: any;
+  formParams: any;
+  isNew: boolean;
 }
 export const genderTypeOptions = [
   { id: 1, name: '男性' },
@@ -119,7 +121,9 @@ export interface SpeechProps {
   [propKey: string]: any;
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
-  const { handleEdit, handleSort, lastCategory, pagination } = args;
+  const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew } = args;
+  const { content = '', contentType = '', sensitive = '', status = '', times = '', tip = '' } = formParams;
+  console.log(formParams);
   return [
     {
       title: '来源',
@@ -270,12 +274,38 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
               编辑
             </Button>
             {(index !== 0 || (pagination.current === 1 && index !== 0) || pagination.current !== 1) && (
-              <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record, -1)}>
+              <Button
+                disabled={
+                  !isNew ||
+                  lastCategory?.lastLevel !== 1 ||
+                  content !== '' ||
+                  contentType !== '' ||
+                  sensitive !== '' ||
+                  status !== '' ||
+                  times !== '' ||
+                  tip !== ''
+                }
+                type="link"
+                onClick={() => handleSort(record, -1)}
+              >
                 上移
               </Button>
             )}
             {(pagination.current - 1) * pagination.pageSize + index + 1 !== pagination.total && (
-              <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record, 1)}>
+              <Button
+                disabled={
+                  !isNew ||
+                  lastCategory?.lastLevel !== 1 ||
+                  content !== '' ||
+                  contentType !== '' ||
+                  sensitive !== '' ||
+                  status !== '' ||
+                  times !== '' ||
+                  tip !== ''
+                }
+                type="link"
+                onClick={() => handleSort(record, 1)}
+              >
                 下移
               </Button>
             )}

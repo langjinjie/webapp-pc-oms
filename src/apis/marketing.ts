@@ -85,7 +85,8 @@ export const getNewsDetail: HttpFunction = (params) => {
  */
 export const uploadImage: HttpFunction = (params: any) => {
   return http.post('/tenacity-admin/api/file/upload', params, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 100000
   });
 };
 export const uploadImage2: HttpFunction2 = (params: any, config: any) => {

@@ -54,13 +54,35 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const [categories, setCategories] = useState<any[]>([]);
   const [lastCategory, setLastCategory] = useState<any>();
   const [visibleChecked, setVisibleChecked] = useState(false);
+  const [isNew, setIsNew] = useState(false);
   const [checkedInfo, setCheckedInfo] = useState({
     change: 0,
     checking: 0,
     checkTime: ''
   });
   const [loading] = useState(false);
-  const onValuesChange = (values: any) => {
+
+  // 查询话术列表
+  const getList = async (params?: any) => {
+    // 清空选中的列表
+    setSelectRowKeys([]);
+    // 重置当前操作状态
+    setCurrentType(null);
+    const { pageSize, current: pageNum } = pagination;
+    const { list, total } = await getSpeechList({
+      ...formParams,
+      pageNum,
+      pageSize,
+      sceneId: lastCategory?.sceneId || '',
+      ...params
+    });
+    setDataSource(list || []);
+    setIsNew(true);
+    setPagination((pagination) => ({ ...pagination, total: total || 0 }));
+  };
+
+  const onValuesChange = (changeValues: any, values: any) => {
+    setIsNew(false);
     const {
       catalogIds,
       content = '',
@@ -91,24 +113,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       updateBeginTime,
       updateEndTime
     }));
-  };
-
-  // 查询话术列表
-  const getList = async (params?: any) => {
-    // 清空选中的列表
-    setSelectRowKeys([]);
-    // 重置当前操作状态
-    setCurrentType(null);
-    const { pageSize, current: pageNum } = pagination;
-    const { list, total } = await getSpeechList({
-      ...formParams,
-      pageNum,
-      pageSize,
-      sceneId: lastCategory?.sceneId || '',
-      ...params
-    });
-    setDataSource(list || []);
-    setPagination((pagination) => ({ ...pagination, total: total || 0 }));
   };
   // 点击查询按钮
   const onSearch = async (values: any) => {
@@ -341,7 +345,19 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
     setLastCategory(lastSelectedOptions);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    getList({ pageNum: 1, sceneId: lastSelectedOptions?.sceneId, catalogId: lastSelectedOptions?.catalogId });
+    let params = {};
+    if (lastSelectedOptions.lastLevel === 1) {
+      params = {
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: ''
+      };
+      setFormParams((formParams) => ({ ...formParams, ...params }));
+    }
   };
 
   const doCheck = () => {
@@ -422,13 +438,12 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
           onSearch={onSearch}
           onChangeOfCascader={onCascaderChange}
           onValuesChange={onValuesChange}
-          disabled={lastCategory?.lastLevel === 1}
         />
       </div>
 
       <NgTable
         dataSource={dataSource}
-        columns={columns({ handleEdit, handleSort, lastCategory, pagination })}
+        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew })}
         setRowKey={(record: SpeechProps) => {
           return record.contentId;
         }}
