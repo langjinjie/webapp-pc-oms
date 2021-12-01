@@ -181,33 +181,34 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
               catalogLmitLengtgTip[catalogSenceAndLevel.sence][catalogSenceAndLevel.level]
             }）`}
           />
-          {[4, 5].includes(editOrAddCatalogParam.catalog.sceneId) && editOrAddCatalogParam.catalog.level === 2 && (
-            <div className={style.uploadWrap}>
-              <div className={style.tip}>该目录需上传icon，请上传80x80像素的图片</div>
-              <Upload
-                accept="image/*"
-                maxCount={1}
-                listType="picture-card"
-                action="/tenacity-admin/api/file/upload"
-                data={{ bizKey: 'news' }}
-                className={style.upload}
-                showUploadList={false}
-                beforeUpload={beforeUploadHandle}
-                onChange={handleChange}
-              >
-                {iconImg
-                  ? (
-                  <img src={iconImg} alt="icon" style={{ width: '100%' }} />
-                    )
-                  : (
-                  <div className={style.iconWrap}>
-                    <Icon className={style.uploadIcon} name="upload" />
-                    <div className={style.uploadTip}>点击上传</div>
-                  </div>
-                    )}
-              </Upload>
-            </div>
-          )}
+          {(editOrAddCatalogParam.catalog.sceneId === 4 && editOrAddCatalogParam.catalog.level === 2) ||
+            (editOrAddCatalogParam.catalog.sceneId === 5 && editOrAddCatalogParam.catalog.level === 1 && (
+              <div className={style.uploadWrap}>
+                <div className={style.tip}>该目录需上传icon，请上传80x80像素的图片</div>
+                <Upload
+                  accept="image/*"
+                  maxCount={1}
+                  listType="picture-card"
+                  action="/tenacity-admin/api/file/upload"
+                  data={{ bizKey: 'news' }}
+                  className={style.upload}
+                  showUploadList={false}
+                  beforeUpload={beforeUploadHandle}
+                  onChange={handleChange}
+                >
+                  {iconImg
+                    ? (
+                    <img src={iconImg} alt="icon" style={{ width: '100%' }} />
+                      )
+                    : (
+                    <div className={style.iconWrap}>
+                      <Icon className={style.uploadIcon} name="upload" />
+                      <div className={style.uploadTip}>点击上传</div>
+                    </div>
+                      )}
+                </Upload>
+              </div>
+            ))}
         </>
       )}
     </Modal>
