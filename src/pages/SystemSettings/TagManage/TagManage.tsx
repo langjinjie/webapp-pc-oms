@@ -20,6 +20,7 @@ const TagManage: React.FC = () => {
     const tabs = Object.keys(tagList as IAllTagList).map((item) => categoryKey2Name[item as keyof IAllTagList]);
     setTabs(tabs);
   };
+
   useEffect(() => {
     getAllTagList();
   }, []);

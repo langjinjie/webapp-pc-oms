@@ -13,6 +13,7 @@ import {
   requestDeletePosterType,
   requestSaveSortMarket
 } from 'src/apis/systemSettings';
+
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { Icon } from 'src/components';
