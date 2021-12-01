@@ -147,7 +147,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
             label={type === 6 ? '上传语音' : '上传视频'}
             name="contentUrl"
             rules={[{ required: true }]}
-            extra={type === 6 ? '仅支持MP3格式，最大20M' : '仅支持MP4格式，最大100M'}
+            extra={type === 6 ? '仅支持MP3格式，最大5M' : '仅支持MP4格式，最大100M'}
           >
             <NgUpload
               beforeUpload={(file) => beforeUploadMedia(file, type)}
