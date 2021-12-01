@@ -7,7 +7,7 @@ export const requestGetCorpList: HttpVoid = () => {
   return http.post('/tenacity-admin/api/corp/list');
 };
 
-// 获取机构员工列表
+// 获取机构员工列表1
 export const requestGetStaffList: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/staff/list', param);
 };
