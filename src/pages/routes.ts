@@ -113,11 +113,11 @@ export const routes: RouteProps[] = [
   // 系统设置
   {
     path: '/categoryManage',
-    component: lazy(() => import('src/pages/SystemSettings/categoryManage/categoryManage'))
+    component: lazy(() => import('src/pages/SystemSettings/CategoryManage/CategoryManage'))
   },
   {
     path: '/tagManage',
-    component: lazy(() => import('src/pages/SystemSettings/tagManage/tagManage'))
+    component: lazy(() => import('src/pages/SystemSettings/TagManage/TagManage'))
   },
   // 周报配置
   {

@@ -38,18 +38,25 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
     setBtnIsLoading(false);
   };
 
+  // 更新Modal确定的disabled状态
+  const updateOkBtnStatus = (catalogName: string, iconImg: string) => {
+    const isShowIcon =
+      (editOrAddCatalogParam.catalog.sceneId === 4 && editOrAddCatalogParam.catalog.level === 2) ||
+      (editOrAddCatalogParam.catalog.sceneId === 5 && editOrAddCatalogParam.catalog.level === 1);
+    setSubmitDisabled(
+      catalogName.length < catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0] ||
+        catalogName.length > catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1] ||
+        (editOrAddCatalogParam.title === '编辑' &&
+          editOrAddCatalogParam.catalog.name === catalogName &&
+          iconImg === editOrAddCatalogParam.catalog.logoUrl) ||
+        (isShowIcon && !iconImg)
+    );
+  };
+
+  // 输入目录名称的onChange
   const inputOnChangHangle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCatalogName(e.target.value.trim());
-    setSubmitDisabled(
-      e.target.value.trim().length < catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0] ||
-        e.target.value.trim().length > catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1] ||
-        (editOrAddCatalogParam.title === '编辑' &&
-          editOrAddCatalogParam.catalog.name === e.target.value.trim() &&
-          iconImg === editOrAddCatalogParam.catalog.logoUrl) ||
-        ([4, 5].includes(editOrAddCatalogParam.catalog.sceneId) &&
-          editOrAddCatalogParam.catalog.level === 2 &&
-          !iconImg)
-    );
+    updateOkBtnStatus(e.target.value.trim(), iconImg);
   };
 
   // 确认修改/增加目录handle
@@ -132,6 +139,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   const handleChange = (info: any) => {
     if (info.file.status === 'done') {
       setIconImg(info.file.response.retdata.filePath);
+      updateOkBtnStatus(catalogName, info.file.response.retdata.filePath);
     }
   };
   const onCancelHandle = () => {
