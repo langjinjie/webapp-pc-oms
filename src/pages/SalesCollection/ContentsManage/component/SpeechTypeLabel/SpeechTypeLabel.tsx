@@ -19,8 +19,8 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadImg
             uploadImg={posterImg}
             setUploadImg={setPosterImg}
-            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 750, limitHeight: 0 }}
-            rules={[{ required: true, message: '请上传宽度为750像素的图片，仅支持.jpg格式' }]}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
+            rules={[{ required: true, message: '图片仅支持.jpg格式' }]}
             extra={'图片宽度750px，高度不限，仅支持.jpg格式'}
           />
         </>
@@ -44,8 +44,8 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadImg
             uploadImg={posterImg}
             setUploadImg={setPosterImg}
-            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 200, limitHeight: 200 }}
-            rules={[{ required: true, message: '请上传200*200像素的图片，仅支持.jpg格式' }]}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
+            rules={[{ required: true, message: '图片仅支持.jpg格式' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
           <Form.Item
@@ -79,7 +79,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadImg
             uploadImg={posterImg}
             setUploadImg={setPosterImg}
-            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 200, limitHeight: 200 }}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
           <UploadFile
@@ -112,7 +112,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadImg
             uploadImg={posterImg}
             setUploadImg={setPosterImg}
-            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 200, limitHeight: 200 }}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
           <UploadFile
@@ -144,7 +144,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadImg
             uploadImg={posterImg}
             setUploadImg={setPosterImg}
-            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 200, limitHeight: 200 }}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
           <Form.Item
@@ -189,8 +189,8 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadImg
             uploadImg={posterImg}
             setUploadImg={setPosterImg}
-            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 200, limitHeight: 200 }}
-            rules={[{ required: true, message: '请上传200*200像素高清图片，仅支持.jpg格式' }]}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
+            rules={[{ required: true, message: '图片仅支持.jpg格式' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
           <Form.Item

@@ -22,7 +22,7 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
     }
   };
   // updaload beforeUpload
-  const beforeUploadImgHandle = (file: File): Promise<boolean> => {
+  const beforeUploadImgHandle = (file: File): Promise<boolean> | boolean => {
     const { type, size, limitWidth, limitHeight } = imgLimitParam;
     const suffix: string[] = type.map((item) => {
       if (item === 'image/jpeg') {
@@ -42,34 +42,38 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
     if (!isSize) {
       message.error(`图片大小不能超过${size}MB!`);
     }
-    // 获取图片的真实尺寸
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        // @ts-ignore
-        const data = e.target.result;
-        // 加载图片获取图片真实宽度和高度
-        const image = new Image();
-        // @ts-ignore
-        image.src = data;
-        image.onload = function () {
-          const width = image.width;
-          if (limitHeight) {
-            const height = image.height;
-            if (!(width === limitWidth && height === limitHeight)) {
-              message.error('请上传正确的图片尺寸');
+    if (limitWidth) {
+      // 获取图片的真实尺寸
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          // @ts-ignore
+          const data = e.target.result;
+          // 加载图片获取图片真实宽度和高度
+          const image = new Image();
+          // @ts-ignore
+          image.src = data;
+          image.onload = function () {
+            const width = image.width;
+            if (limitHeight) {
+              const height = image.height;
+              if (!(width === limitWidth && height === limitHeight)) {
+                message.error('请上传正确的图片尺寸');
+              }
+              resolve(width === limitWidth && height === limitHeight && imgType && isSize);
+            } else {
+              if (!(width === limitWidth)) {
+                message.error('请上传正确的图片尺寸');
+              }
+              resolve(width === limitWidth && imgType && isSize);
             }
-            resolve(width === limitWidth && height === limitHeight && imgType && isSize);
-          } else {
-            if (!(width === limitWidth)) {
-              message.error('请上传正确的图片尺寸');
-            }
-            resolve(width === limitWidth && imgType && isSize);
-          }
+          };
         };
-      };
-      reader.readAsDataURL(file);
-    });
+        reader.readAsDataURL(file);
+      });
+    } else {
+      return imgType && isSize;
+    }
   };
   return (
     <>
