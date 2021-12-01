@@ -12,15 +12,15 @@ export const sensitiveOptions = [
   { id: 2, name: '否' }
 ];
 export const speechContentTypes = [
-  { id: 1, name: '文本' },
-  { id: 2, name: '长图' },
+  { id: 1, name: '纯文字' },
+  { id: 2, name: '图片' },
   { id: 3, name: '名片' },
   { id: 4, name: '小站' },
-  { id: 5, name: '单图文' },
-  { id: 6, name: '单语音' },
-  { id: 7, name: '单视频' },
+  { id: 5, name: '图文链接' },
+  { id: 6, name: '音频' },
+  { id: 7, name: '视频' },
   { id: 8, name: '第三方链接' },
-  { id: 9, name: '小程序链接' }
+  { id: 9, name: '小程序' }
 ];
 
 export const statusOptions = [

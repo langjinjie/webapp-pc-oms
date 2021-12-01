@@ -103,7 +103,7 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
       )}
       {type === 'audio' && (
         <>
-          {states.imageUrl && <audio autoPlay controls className={styles.audio} src={states.imageUrl}></audio>}
+          {states.imageUrl && <audio controls className={styles.audio} src={states.imageUrl}></audio>}
 
           <Upload
             onChange={handleChange}
@@ -119,7 +119,7 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
       )}
       {type === 'video' && (
         <>
-          {states.imageUrl && <video autoPlay controls className={styles.video} src={states.imageUrl}></video>}
+          {states.imageUrl && <video controls className={styles.video} src={states.imageUrl}></video>}
 
           <Upload
             onChange={handleChange}
