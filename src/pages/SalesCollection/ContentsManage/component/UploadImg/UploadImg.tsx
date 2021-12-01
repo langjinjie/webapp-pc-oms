@@ -4,18 +4,20 @@ import { Icon } from 'src/components/index';
 import style from './style.module.less';
 
 interface IUploadImgProps {
-  posterImg: string;
-  setPosterImg: (param: string) => void;
+  uploadImg: string;
+  setUploadImg: (param: string) => void;
   imgLimitParam: { type: string[]; size: number; limitWidth: number; limitHeight?: number };
+  rules?: [{ required: boolean; message: string }];
+  extra?: string;
 }
 
-const UploadImg: React.FC<IUploadImgProps> = ({ posterImg, setPosterImg, imgLimitParam }) => {
+const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimitParam, rules, extra }) => {
   const normFile = (e: any) => {
     if (e.file.status === 'uploading') {
       return;
     }
     if (e.file.status === 'done') {
-      setPosterImg(e.file.response.retdata.filePath);
+      setUploadImg(e.file.response.retdata.filePath);
       return e.file.response.retdata.filePath;
     }
   };
@@ -59,6 +61,9 @@ const UploadImg: React.FC<IUploadImgProps> = ({ posterImg, setPosterImg, imgLimi
             }
             resolve(width === limitWidth && height === limitHeight && imgType && isSize);
           } else {
+            if (!(width === limitWidth)) {
+              message.error('请上传正确的图片尺寸');
+            }
             resolve(width === limitWidth && imgType && isSize);
           }
         };
@@ -74,8 +79,8 @@ const UploadImg: React.FC<IUploadImgProps> = ({ posterImg, setPosterImg, imgLimi
         name={'thumbnail'}
         valuePropName="file"
         getValueFromEvent={normFile}
-        rules={[{ required: true, message: '请上传宽度为750像素的图片，仅支持.jpg格式' }]}
-        extra={'图片宽度750px，高度不限，仅支持.jpg格式'}
+        rules={rules}
+        extra={extra}
       >
         <Upload
           accept="image/*"
@@ -86,9 +91,9 @@ const UploadImg: React.FC<IUploadImgProps> = ({ posterImg, setPosterImg, imgLimi
           showUploadList={false}
           beforeUpload={(file) => beforeUploadImgHandle(file)}
         >
-          {posterImg
+          {uploadImg
             ? (
-            <img src={posterImg} alt="icon" style={{ width: '100%' }} />
+            <img src={uploadImg} alt="icon" style={{ width: '100%' }} />
               )
             : (
             <div className={style.iconWrap}>

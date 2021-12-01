@@ -13,6 +13,15 @@ const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam }) => {
   useEffect(() => {
     console.log('ConfirmModal加载了');
   }, []);
+  const cancel = () => {
+    onCancel?.();
+    setOnBtnDsiabled(false);
+  };
+  const ok = async () => {
+    setOnBtnDsiabled(true);
+    await onOk?.();
+    setOnBtnDsiabled(false);
+  };
   return (
     <Modal
       width={300}
@@ -21,12 +30,8 @@ const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam }) => {
       closable={false}
       visible={visible}
       title={title}
-      onCancel={() => onCancel?.()}
-      onOk={async () => {
-        setOnBtnDsiabled(true);
-        await onOk?.();
-        setOnBtnDsiabled(false);
-      }}
+      onCancel={cancel}
+      onOk={ok}
       maskClosable={false}
       okButtonProps={{
         disabled: okBtnDisabled,

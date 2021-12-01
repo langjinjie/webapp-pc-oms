@@ -88,8 +88,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         setFileList([
           { uid: '1', name: `media.${res.contentType === 6 ? 'mp3' : 'mp4'}`, url: res.contentUrl, status: 'done' }
         ]);
-        // delete res.contentUrl;
-        // res.contentUrl = [{ uid: '1', name: `media.${res.contentType === 6 ? 'mp3' : 'mp4'}`, url: res.contentUrl, status: 'done' }];
       }
       form.setFieldsValue(res);
       setCatalogParam({ name: res.name, contentType: res.contentType });
@@ -263,7 +261,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
             posterImg={posterImg}
             setPosterImg={setPosterImg}
             fileList={fileList}
-            setFileList={setFileList}
             maxLengthParam={maxLengthParam}
             setMaxLengthParam={setMaxLengthParam}
           />
