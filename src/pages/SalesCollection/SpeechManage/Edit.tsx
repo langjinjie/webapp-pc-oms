@@ -318,7 +318,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           <InputShowLength className="width360" maxLength={20} placeholder={'请输入'} />
         </Form.Item>
         <Form.Item className={styles.formItem__footerBtnWrap}>
-          <Space>
+          <Space size={20}>
             <Button type="default" shape="round" onClick={() => handleBack()}>
               返回
             </Button>
