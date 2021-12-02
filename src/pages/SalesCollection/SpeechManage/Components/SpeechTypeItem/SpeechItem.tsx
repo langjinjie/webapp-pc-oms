@@ -123,15 +123,14 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
           <Form.Item
             label={'上传图片'}
             name="thumbnail"
-            rules={[{ required: true }]}
             extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
           >
             <NgUpload beforeUpload={beforeUploadSmallPic}></NgUpload>
           </Form.Item>
-          <Form.Item label="图文标题" name="title" rules={[{ required: true }, { max: 30 }]}>
+          <Form.Item label="图文标题" name="title">
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
-          <Form.Item label="图文摘要" name="summary" rules={[{ required: true }, { max: 30 }]}>
+          <Form.Item label="图文摘要" name="summary">
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
           <Form.Item label="图文链接" name="contentUrl" rules={[{ required: true }]}>
