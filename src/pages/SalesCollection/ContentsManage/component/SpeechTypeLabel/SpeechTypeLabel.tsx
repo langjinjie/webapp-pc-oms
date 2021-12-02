@@ -21,7 +21,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             setUploadImg={setPosterImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 750, limitHeight: 0 }}
             rules={[{ required: true, message: '请上传宽度为750像素，格式为.jpg的图片' }]}
-            extra={'图片宽度750px，高度不限，仅支持.jpg格式'}
+            extra={'图片宽度750像素，高度不限，仅支持.jpg格式'}
           />
         </>
       )}
@@ -181,7 +181,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name="appId"
             rules={[{ required: true, message: '请输入小程序ID' }]}
           >
-            <Input className={style.modalContentSelect} placeholder="请输入小程序ID" />
+            <Input className={style.miniProgressInput} placeholder="请输入小程序ID" />
           </Form.Item>
           <Form.Item className={style.formItem} label="路径:" name="appPath">
             <Input className={style.input} placeholder={'请输入小程序路径'} />
