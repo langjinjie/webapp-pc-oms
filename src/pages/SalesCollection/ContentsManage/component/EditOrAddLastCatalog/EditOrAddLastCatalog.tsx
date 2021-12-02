@@ -221,11 +221,11 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
               <Input
                 className={style.modalContentInput}
                 placeholder={'请输入目录名称'}
-                maxLength={20}
+                maxLength={50}
                 onChange={inputOnChangeHandle}
               />
             </Form.Item>
-            <span className={style.limitLength}>{catalogParam.name.length}/20</span>
+            <span className={style.limitLength}>{catalogParam.name.length}/50</span>
           </Form.Item>
           <Form.Item
             className={style.modalContentFormItem}

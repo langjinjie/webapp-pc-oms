@@ -181,14 +181,14 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
             className={classNames({ [style.hidden]: isHiddenMoveUp })}
             onClick={(e) => moveClickHandle(e, -1, isHiddenMoveUp)}
           >
-            <Icon className={style.svgIcon} name="shangsheng" />
+            <Icon className={style.svgIcon} name="shangyi" />
             上移
           </span>
           <span
             className={classNames({ [style.hidden]: isHiddenMoveDown })}
             onClick={(e) => moveClickHandle(e, 1, isHiddenMoveDown)}
           >
-            <Icon className={style.svgIcon} name="xiajiang" />
+            <Icon className={style.svgIcon} name="xiayi" />
             下移
           </span>
           {!catalog.level || isHiddenDelete || (

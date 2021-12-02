@@ -110,9 +110,9 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
     if (!isJpgOrPng) {
       message.error('只允许上传JPG/PNG文件!');
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
+    const isLt2M = file.size / 1024 / 1024 < 5;
     if (!isLt2M) {
-      message.error('图片大小不能超过2MB!');
+      message.error('图片大小不能超过5MB!');
     }
     // 获取图片的真实尺寸
     return new Promise((resolve) => {

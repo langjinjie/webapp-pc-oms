@@ -38,7 +38,8 @@ const UploadFile: React.FC<IUploadFileProps> = ({ fileList, imgLimitParam, rules
         return '';
       }
     });
-    const suffixType = suffix.includes(file.name.split('.')[1]);
+    const suffixType = suffix.includes(file.name.split('.')[file.name.split('.').length - 1]);
+    console.log(file.type, suffixType);
     const fileType = type.includes(file.type) && suffixType;
     if (!fileType) {
       message.error(`请上传${suffix[0]}格式的文件`);
@@ -52,7 +53,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ fileList, imgLimitParam, rules
   return (
     <>
       <Form.Item
-        className={style.voiceFormItem}
+        className={style.fileFormItem}
         label="上传语音:"
         name={'contentUrl'}
         valuePropName="file"
@@ -61,7 +62,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ fileList, imgLimitParam, rules
         extra={extra}
       >
         <Upload
-          className={style.uploadVoice}
+          className={style.uploadFile}
           name="file"
           maxCount={1}
           action="/tenacity-admin/api/file/upload"
@@ -70,7 +71,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ fileList, imgLimitParam, rules
           onChange={upLoadOnChangeHandle}
           beforeUpload={(file) => beforeUploadFileHandle(file)}
         >
-          <Button className={style.btn}>
+          <Button className={style.uploadBtn}>
             <Icon className={style.uploadIcon} name="shangchuanwenjian" />
             将文件拖拽至此区域，或<span className={style.uploadText}>点此上传</span>{' '}
           </Button>

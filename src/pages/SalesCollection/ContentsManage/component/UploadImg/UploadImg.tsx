@@ -33,7 +33,7 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
         return '';
       }
     });
-    const suffixType = suffix.includes(file.name.split('.')[1]);
+    const suffixType = suffix.includes(file.name.split('.')[file.name.split('.').length - 1]);
     const imgType = type.includes(file.type) && suffixType;
     if (!imgType) {
       message.error('请上传正确的图片格式');
@@ -42,21 +42,21 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
     if (!isSize) {
       message.error(`图片大小不能超过${size}MB!`);
     }
-    if (limitWidth) {
-      // 获取图片的真实尺寸
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          // @ts-ignore
-          const data = e.target.result;
-          // 加载图片获取图片真实宽度和高度
-          const image = new Image();
-          // @ts-ignore
-          image.src = data;
-          image.onload = function () {
-            const width = image.width;
+    // 获取图片的真实尺寸
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          const height = image.height;
+          if (limitWidth) {
             if (limitHeight) {
-              const height = image.height;
               if (!(width === limitWidth && height === limitHeight)) {
                 message.error('请上传正确的图片尺寸');
               }
@@ -67,13 +67,16 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
               }
               resolve(width === limitWidth && imgType && isSize);
             }
-          };
+          } else {
+            if (!(width === height)) {
+              message.error('请上传正方形的图片');
+            }
+            resolve(width === height && imgType && isSize);
+          }
         };
-        reader.readAsDataURL(file);
-      });
-    } else {
-      return imgType && isSize;
-    }
+      };
+      reader.readAsDataURL(file);
+    });
   };
   return (
     <>
@@ -91,7 +94,7 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
           listType="picture-card"
           action="/tenacity-admin/api/file/upload"
           data={{ bizKey: 'news' }}
-          className={style.upload}
+          className={style.uploadWrap}
           showUploadList={false}
           beforeUpload={(file) => beforeUploadImgHandle(file)}
         >

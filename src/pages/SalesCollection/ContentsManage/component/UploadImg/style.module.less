@@ -1,17 +1,29 @@
-.iconWrap {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 102px;
-  height: 102px;
-  .uploadIcon {
-    width: 36px;
-    height: 36px;
+.imgformItem {
+  .uploadWrap {
+    img {
+      border-radius: 8px;
+    }
+    .iconWrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 102px;
+      height: 102px;
+      .uploadIcon {
+        width: 36px;
+        height: 36px;
+      }
+      .uploadTip {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #606366;
+      }
+    }
   }
-  .uploadTip {
-    margin-top: 8px;
-    font-size: 14px;
-    color: #606366;
+  :global {
+    .ant-form-item-control {
+      margin-left: 20px;
+    }
   }
 }
