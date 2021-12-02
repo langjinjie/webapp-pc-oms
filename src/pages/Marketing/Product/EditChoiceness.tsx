@@ -56,7 +56,6 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   const getList = async () => {
     const res = await productChoiceList({});
-    console.log(res);
     try {
       if (res) {
         const { productList } = res;

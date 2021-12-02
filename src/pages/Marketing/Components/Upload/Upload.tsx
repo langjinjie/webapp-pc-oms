@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Upload } from 'antd';
+import { message, Upload } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -83,6 +83,7 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
       onChange?.(res.filePath);
       setStates((states) => ({ ...states, loading: false, imageUrl: res.filePath || '' }));
     } else {
+      message.error('长传失败');
       setStates((states) => ({ ...states, loading: false }));
     }
   };
