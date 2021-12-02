@@ -101,6 +101,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   // 输入框input事件
   const inputOnChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCatalogParam({ ...catalogParam, name: e.target.value.trim() });
+    form.setFieldsValue({ name: e.target.value.trim() });
   };
   // 选择目录类型
   const selectOnchangeHandle = (e: any) => {
@@ -170,7 +171,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       delete updataCatalog.thumbnail;
     }
     const title = '修改提醒';
-    const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
+    const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化';
     if (editOrAddLastCatalogParam.title === '新增') {
       onOk(updataCatalog);
     } else {
