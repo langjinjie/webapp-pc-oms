@@ -69,7 +69,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
 
       const isLt20M = file.size / 1024 / 1024 < 20;
       if (!isLt20M) {
-        message.error('音频大小不能超过 5MB!');
+        message.error('音频大小不能超过 20MB!');
       }
       return isAudio && isLt20M;
     } else {
