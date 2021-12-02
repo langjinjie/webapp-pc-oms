@@ -19,8 +19,8 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadImg
             uploadImg={posterImg}
             setUploadImg={setPosterImg}
-            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
-            rules={[{ required: true, message: '图片仅支持.jpg格式' }]}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 750, limitHeight: 0 }}
+            rules={[{ required: true, message: '请上传宽度为750像素，格式为.jpg的图片' }]}
             extra={'图片宽度750px，高度不限，仅支持.jpg格式'}
           />
         </>
