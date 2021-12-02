@@ -21,6 +21,8 @@ export const speechContentTypes = [
   { id: 7, name: '视频' },
   { id: 9, name: '小程序' }
 ];
+export const excelDemoUrl =
+  'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/smart_content_import_template.xlsx';
 
 export const statusOptions = [
   { id: 0, name: '待上架' },
