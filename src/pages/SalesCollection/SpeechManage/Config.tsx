@@ -19,7 +19,6 @@ export const speechContentTypes = [
   { id: 5, name: '图文链接' },
   { id: 6, name: '音频' },
   { id: 7, name: '视频' },
-  { id: 8, name: '第三方链接' },
   { id: 9, name: '小程序' }
 ];
 
@@ -151,7 +150,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       dataIndex: 'contentType',
       width: 120,
       render: (contentType) => (
-        <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0].name || UNKNOWN}</span>
+        <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0]?.name || UNKNOWN}</span>
       )
     },
     {
