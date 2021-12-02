@@ -122,7 +122,15 @@ export interface SpeechProps {
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
   const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew } = args;
-  const { content = '', contentType = '', sensitive = '', status = '', times = '', tip = '' } = formParams;
+  const {
+    content = '',
+    contentType = '',
+    sensitive = '',
+    status = '',
+    updateBeginTime = '',
+    updateEndTime = '',
+    tip = ''
+  } = formParams;
   console.log(formParams);
   return [
     {
@@ -282,7 +290,8 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
                   contentType !== '' ||
                   sensitive !== '' ||
                   status !== '' ||
-                  times !== '' ||
+                  updateBeginTime !== '' ||
+                  updateEndTime !== '' ||
                   tip !== ''
                 }
                 type="link"
@@ -300,7 +309,8 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
                   contentType !== '' ||
                   sensitive !== '' ||
                   status !== '' ||
-                  times !== '' ||
+                  updateBeginTime !== '' ||
+                  updateEndTime !== '' ||
                   tip !== ''
                 }
                 type="link"
