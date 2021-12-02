@@ -54,7 +54,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ fileList, imgLimitParam, rules
     <>
       <Form.Item
         className={style.fileFormItem}
-        label="上传语音:"
+        label={`上传${imgLimitParam.type.includes('video/mp4') ? '视频' : '音频'}:`}
         name={'contentUrl'}
         valuePropName="file"
         getValueFromEvent={normFiles}

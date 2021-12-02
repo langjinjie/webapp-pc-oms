@@ -19,9 +19,9 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadImg
             uploadImg={posterImg}
             setUploadImg={setPosterImg}
-            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
-            rules={[{ required: true, message: '图片仅支持.jpg格式' }]}
-            extra={'图片宽度750px，高度不限，仅支持.jpg格式'}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 750, limitHeight: 0 }}
+            rules={[{ required: true, message: '请上传宽度为750像素，格式为.jpg的图片' }]}
+            extra={'图片宽度750像素，高度不限，仅支持.jpg格式'}
           />
         </>
       )}
@@ -85,25 +85,25 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadFile
             fileList={fileList}
             imgLimitParam={{ type: ['audio/mpeg', 'audio/mp3'], size: 20 }}
-            rules={[{ required: true, message: '请上传大小不超过20M的MP3语音文件' }]}
-            extra={'请上传大小不超过20M的MP3语音文件'}
+            rules={[{ required: true, message: '请上传大小不超过20M的MP3音频文件' }]}
+            extra={'仅支持MP3格式，最大20M'}
           />
 
           <Form.Item
             className={style.formItem}
-            label="语音标题:"
+            label="音频标题:"
             name="title"
-            rules={[{ required: true, message: '请输入语音标题' }]}
+            rules={[{ required: true, message: '请输入音频标题' }]}
           >
-            <InputShowLength className={style.input} placeholder={'请输入语音标题'} maxLength={30} />
+            <InputShowLength className={style.input} placeholder={'请输入音频标题'} maxLength={30} />
           </Form.Item>
           <Form.Item
             className={style.formItem}
-            label="语音摘要:"
+            label="音频摘要:"
             name="summary"
-            rules={[{ required: true, message: '请输入语音摘要' }]}
+            rules={[{ required: true, message: '请输入音频摘要' }]}
           >
-            <InputShowLength className={style.input} placeholder={'请输入语音摘要'} maxLength={30} />
+            <InputShowLength className={style.input} placeholder={'请输入音频摘要'} maxLength={30} />
           </Form.Item>
         </>
       )}
@@ -119,7 +119,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             fileList={fileList}
             imgLimitParam={{ type: ['video/mp4'], size: 100 }}
             rules={[{ required: true, message: '请上传大小不超过100M的MP4视频文件' }]}
-            extra={'请上传大小不超过100M的MP4视频文件'}
+            extra={'仅支持MP4格式，最大100M'}
           />
           <Form.Item
             className={style.formItem}
@@ -181,7 +181,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             name="appId"
             rules={[{ required: true, message: '请输入小程序ID' }]}
           >
-            <Input className={style.modalContentSelect} placeholder="请输入小程序ID" />
+            <Input className={style.miniProgressInput} placeholder="请输入小程序ID" />
           </Form.Item>
           <Form.Item className={style.formItem} label="路径:" name="appPath">
             <Input className={style.input} placeholder={'请输入小程序路径'} />
