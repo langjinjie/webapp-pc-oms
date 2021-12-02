@@ -87,7 +87,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   // modal确认
   const modalOnOkHandle = async () => {
     const title = '修改提醒';
-    const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
+    const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化。';
     if (editOrAddCatalogParam.title === '新增') {
       await firmModalOnOk();
     } else {

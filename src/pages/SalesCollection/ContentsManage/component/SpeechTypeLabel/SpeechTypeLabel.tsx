@@ -14,7 +14,7 @@ interface ISpeechTypeLabelProps {
 const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, setPosterImg, fileList }) => {
   return (
     <>
-      {type === 2 && ( // 长图
+      {type === 2 && ( // 图片
         <>
           <UploadImg
             uploadImg={posterImg}
@@ -39,20 +39,20 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           </Form.Item>
         </>
       )}
-      {type === 5 && ( // 图文
+      {type === 5 && ( // 图文链接
         <>
           <UploadImg
             uploadImg={posterImg}
             setUploadImg={setPosterImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
-            rules={[{ required: true, message: '图片仅支持.jpg格式' }]}
+            // rules={[{ required: true, message: '图片仅支持.jpg格式' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
           <Form.Item
             className={style.formItem}
             name="title"
             label="图文标题:"
-            rules={[{ required: true, message: '请输入图文标题' }]}
+            // rules={[{ required: true, message: '请输入图文标题' }]}
           >
             <InputShowLength className={style.input} placeholder={'请输入图文摘要'} maxLength={30} />
           </Form.Item>
@@ -60,7 +60,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             className={style.formItem}
             name="summary"
             label="图文摘要:"
-            rules={[{ required: true, message: '请输入图文摘要' }]}
+            // rules={[{ required: true, message: '请输入图文摘要' }]}
           >
             <InputShowLength className={style.input} placeholder={'请输入图文摘要'} maxLength={30} />
           </Form.Item>
@@ -74,7 +74,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           </Form.Item>
         </>
       )}
-      {type === 6 && ( // 单语音
+      {type === 6 && ( // 音频
         <>
           <UploadImg
             uploadImg={posterImg}
@@ -107,7 +107,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           </Form.Item>
         </>
       )}
-      {type === 7 && ( // 单视频
+      {type === 7 && ( // 视频
         <>
           <UploadImg
             uploadImg={posterImg}

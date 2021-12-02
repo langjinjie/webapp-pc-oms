@@ -25,14 +25,14 @@ export const sensitiveStatusList = [
 
 // 目录类型对照
 export const catalogType2Name = [
-  { value: 1, label: '文本' },
+  { value: 1, label: '纯文字' },
   { value: 2, label: '图片' },
   { value: 3, label: '名片' },
   { value: 4, label: '小站' },
-  { value: 5, label: '单图文' },
-  { value: 6, label: '单语音' },
-  { value: 7, label: '单视频' },
-  { value: 8, label: '第三方链接' },
+  { value: 5, label: '图文链接' },
+  { value: 6, label: '音频' },
+  { value: 7, label: '视频' },
+  // { value: 8, label: '第三方链接' },
   { value: 9, label: '小程序' }
 ];
 
