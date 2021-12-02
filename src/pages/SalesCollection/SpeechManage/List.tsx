@@ -17,7 +17,7 @@ import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import ExportModal from './Components/ExportModal/ExportModal';
 import PreviewSpeech from './Components/PreviewSpeech/PreviewSpeech';
-import { columns, setSearchCols, SpeechProps } from './Config';
+import { columns, excelDemoUrl, setSearchCols, SpeechProps } from './Config';
 
 import style from './style.module.less';
 import { Context } from 'src/store';
@@ -366,8 +366,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const handleDownload = () => {
-    window.location.href =
-      'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/smart_content_export_template.xlsx';
+    window.location.href = excelDemoUrl;
   };
 
   // 导入表格
