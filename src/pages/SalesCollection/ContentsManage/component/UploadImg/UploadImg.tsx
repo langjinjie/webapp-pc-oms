@@ -35,13 +35,11 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
     });
     const suffixType = suffix.includes(file.name.split('.')[file.name.split('.').length - 1]);
     const imgType = type.includes(file.type) && suffixType;
-    if (!imgType) {
-      message.error('请上传正确的图片格式');
-    }
+    if (!imgType) message.error('请上传正确的图片格式');
     const isSize = file.size / 1024 / 1024 < size;
-    if (!isSize) {
-      message.error(`图片大小不能超过${size}MB!`);
-    }
+    if (!isSize) message.error(`图片大小不能超过${size}MB!`);
+    // 不限制等宽高
+    if (!limitWidth) return imgType && isSize;
     // 获取图片的真实尺寸
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -55,24 +53,25 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
         image.onload = function () {
           const width = image.width;
           const height = image.height;
-          if (limitWidth) {
-            if (limitHeight) {
-              if (!(width === limitWidth && height === limitHeight)) {
-                message.error('请上传正确的图片尺寸');
-              }
-              resolve(width === limitWidth && height === limitHeight && imgType && isSize);
-            } else {
-              if (!(width === limitWidth)) {
-                message.error('请上传正确的图片尺寸');
-              }
-              resolve(width === limitWidth && imgType && isSize);
+          // if (limitWidth) {
+          if (limitHeight) {
+            if (!(width === limitWidth && height === limitHeight)) {
+              message.error('请上传正确的图片尺寸');
             }
+            resolve(width === limitWidth && height === limitHeight && imgType && isSize);
           } else {
-            if (!(width === height)) {
-              message.error('请上传正方形的图片');
+            if (!(width === limitWidth)) {
+              message.error('请上传正确的图片尺寸');
             }
-            resolve(width === height && imgType && isSize);
+            resolve(width === limitWidth && imgType && isSize);
           }
+          // } else {
+          // 限制等宽高
+          //   if (!(width === height)) {
+          //     message.error('请上传正方形的图片');
+          //   }
+          //   resolve(width === height && imgType && isSize);
+          // }
         };
       };
       reader.readAsDataURL(file);
