@@ -292,7 +292,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           <CustomTextArea sensitiveWord={speech?.sensitiveWord} sensitive={speech?.sensitive} maxLength={1200} />
         </Form.Item>
         {currentScenesState.sceneId !== 3 && currentScenesState.sceneId !== 5 && currentScenesState.sceneId !== 0 && (
-          <Form.Item label="客户大类" required={true} className={styles.formItem__selectGroup}>
+          <Form.Item label="客户分类" required={true} className={styles.formItem__selectGroup}>
             {currentScenesState.needGenderType === 1 && (
               <Form.Item name="genderType" rules={[{ required: true, message: '请选择性别' }]}>
                 <Select placeholder="请选择" allowClear>
