@@ -86,7 +86,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             fileList={fileList}
             imgLimitParam={{ type: ['audio/mpeg', 'audio/mp3'], size: 20 }}
             rules={[{ required: true, message: '请上传大小不超过20M的MP3语音文件' }]}
-            extra={'请上传大小不超过20M的MP3语音文件'}
+            extra={'仅支持MP3格式，最大20M'}
           />
 
           <Form.Item
@@ -119,7 +119,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             fileList={fileList}
             imgLimitParam={{ type: ['video/mp4'], size: 100 }}
             rules={[{ required: true, message: '请上传大小不超过100M的MP4视频文件' }]}
-            extra={'请上传大小不超过100M的MP4视频文件'}
+            extra={'仅支持MP4格式，最大100M'}
           />
           <Form.Item
             className={style.formItem}
