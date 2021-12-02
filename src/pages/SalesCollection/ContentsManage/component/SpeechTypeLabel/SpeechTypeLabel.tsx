@@ -85,25 +85,25 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
           <UploadFile
             fileList={fileList}
             imgLimitParam={{ type: ['audio/mpeg', 'audio/mp3'], size: 20 }}
-            rules={[{ required: true, message: '请上传大小不超过20M的MP3语音文件' }]}
+            rules={[{ required: true, message: '请上传大小不超过20M的MP3音频文件' }]}
             extra={'仅支持MP3格式，最大20M'}
           />
 
           <Form.Item
             className={style.formItem}
-            label="语音标题:"
+            label="音频标题:"
             name="title"
-            rules={[{ required: true, message: '请输入语音标题' }]}
+            rules={[{ required: true, message: '请输入音频标题' }]}
           >
-            <InputShowLength className={style.input} placeholder={'请输入语音标题'} maxLength={30} />
+            <InputShowLength className={style.input} placeholder={'请输入音频标题'} maxLength={30} />
           </Form.Item>
           <Form.Item
             className={style.formItem}
-            label="语音摘要:"
+            label="音频摘要:"
             name="summary"
-            rules={[{ required: true, message: '请输入语音摘要' }]}
+            rules={[{ required: true, message: '请输入音频摘要' }]}
           >
-            <InputShowLength className={style.input} placeholder={'请输入语音摘要'} maxLength={30} />
+            <InputShowLength className={style.input} placeholder={'请输入音频摘要'} maxLength={30} />
           </Form.Item>
         </>
       )}
