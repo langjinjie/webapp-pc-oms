@@ -11,7 +11,7 @@ interface SpeechItemProps {
 }
 const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
   // 图片校验
-  const beforeUpload = (file: RcFile) => {
+  const beforeUpload = (file: RcFile): Promise<any> => {
     const isJpg = file.type === 'image/jpeg';
 
     if (!isJpg) {
@@ -21,31 +21,31 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
     if (!isLt5M) {
       message.error('图片大小不能超过 5MB!');
     }
-    return isLt5M && isJpg;
-    // let isW750 = false;
+    // return isLt5M && isJpg;
+    let isW750 = false;
     // 读取图片数据
 
-    // return new Promise((resolve) => {
-    //   const reader = new FileReader();
-    //   reader.onload = function (e) {
-    //     // @ts-ignore
-    //     const data = e.target.result;
-    //     // 加载图片获取图片真实宽度和高度
-    //     const image = new Image();
-    //     // @ts-ignore
-    //     image.src = data;
-    //     image.onload = function () {
-    //       const width = image.width;
-    //       // const height = image.height;
-    //       isW750 = width === 750;
-    //       if (!isW750) {
-    //         message.error('海报宽度必须为 750px');
-    //       }
-    //       resolve(isJpg && isLt5M && isW750);
-    //     };
-    //   };
-    //   reader.readAsDataURL(file);
-    // });
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          // const height = image.height;
+          isW750 = width === 750;
+          if (!isW750) {
+            message.error('海报宽度必须为 750px');
+          }
+          resolve(isJpg && isLt5M && isW750);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
   };
   const beforeUploadSmallPic = (file: RcFile) => {
     const isJpg = file.type === 'image/jpeg';
