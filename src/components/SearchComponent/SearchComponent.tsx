@@ -40,11 +40,15 @@ interface SearchComponentProps {
 const { RangePicker } = DatePicker;
 
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
-  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader } = props;
+  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader, onReset } = props;
   const [from] = Form.useForm();
-  const onReset = () => {
-    onChangeOfCascader?.([''], []);
-    onSearch({});
+  const handleReset = () => {
+    if (onReset) {
+      onReset();
+    } else {
+      onChangeOfCascader?.([''], []);
+      onSearch({});
+    }
   };
   // 对数据进行处理
   const onChange = (value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => {
@@ -71,7 +75,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           layout="inline"
           onFinish={onSearch}
           onReset={() => {
-            onReset ? onReset() : onSearch({});
+            handleReset();
           }}
           className={style['search-wrap']}
           onValuesChange={onValuesChange}
@@ -133,7 +137,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         <Form
           form={from}
           onFinish={onSearch}
-          onReset={onReset}
+          onReset={handleReset}
           className={style.customLayout}
           onValuesChange={onValuesChange}
         >
