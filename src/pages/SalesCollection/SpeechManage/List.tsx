@@ -134,8 +134,12 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       updateEndTime = times[1].endOf('day')?.valueOf();
     }
     let catalogId = '';
+    let sceneId = '';
     if (catalogIds) {
       catalogId = catalogIds[catalogIds.length - 1];
+      sceneId = lastCategory.sceneId;
+    } else {
+      setLastCategory(null);
     }
     setFormParams((formParams) => ({
       ...formParams,
@@ -148,6 +152,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       updateBeginTime,
       updateEndTime
     }));
+
     await getList({
       catalogId,
       content,
@@ -156,7 +161,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       status,
       tip,
       updateBeginTime,
-      updateEndTime
+      updateEndTime,
+      sceneId
     });
   };
 
