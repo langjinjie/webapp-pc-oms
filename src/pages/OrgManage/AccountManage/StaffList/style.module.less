@@ -93,6 +93,11 @@
     background: #ffffff;
     border-radius: 18px;
     border: 1px solid #318cf5;
+    &[disabled] {
+      span {
+        color: rgba(0, 0, 0, 0.25) !important;
+      }
+    }
     span {
       font-size: 14px;
       font-family: PingFangSC-Regular, PingFang SC;
@@ -143,22 +148,6 @@
     background: url('/src/assets/images/icon_modal_close.png') no-repeat;
     background-size: 16px 16px;
     background-position: center center;
-  }
-
-  // Table组件
-
-  .ant-table-pagination {
-    .ant-pagination-item {
-      border-radius: 8px;
-    }
-    .ant-pagination-item-link {
-      border-radius: 8px;
-    }
-    .ant-pagination-options {
-      input {
-        border-radius: 8px;
-      }
-    }
   }
 }
 input:-webkit-autofill {

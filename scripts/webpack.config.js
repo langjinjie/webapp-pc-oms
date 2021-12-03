@@ -94,7 +94,7 @@ module.exports = function () {
       main: path.resolve(ROOT_PATH, './src/index.tsx')
     },
     output: {
-      path: path.resolve(ROOT_PATH, './tenacity-oms'),
+      path: path.resolve(ROOT_PATH, './dist'),
       filename: 'js/[name].[chunkhash:8].bundle.js',
       publicPath: isDev ? '/' : '/tenacity-oms/'
       // publicPath: isDev ? '/' : './'
@@ -182,7 +182,7 @@ module.exports = function () {
           // Copy glob results (with dot files) to /absolute/path/
           {
             from: path.resolve(ROOT_PATH, './static/'),
-            to: path.resolve(ROOT_PATH, './tenacity-oms/static')
+            to: path.resolve(ROOT_PATH, './dist/static')
           }
         ]
       }),

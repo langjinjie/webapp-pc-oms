@@ -7,7 +7,7 @@ import { Tabs } from 'src/pages/SystemSettings/component/index';
 import classNames from 'classnames';
 import style from './style.module.less';
 
-const tagManage: React.FC = () => {
+const TagManage: React.FC = () => {
   const [tagList, setTagList] = useState<IAllTagList>();
   const [tabs, setTabs] = useState<any[]>();
   const [tabIndex, setTabIndex] = useState(0);
@@ -20,6 +20,7 @@ const tagManage: React.FC = () => {
     const tabs = Object.keys(tagList as IAllTagList).map((item) => categoryKey2Name[item as keyof IAllTagList]);
     setTabs(tabs);
   };
+
   useEffect(() => {
     getAllTagList();
   }, []);
@@ -62,4 +63,4 @@ const tagManage: React.FC = () => {
     </div>
   );
 };
-export default tagManage;
+export default TagManage;

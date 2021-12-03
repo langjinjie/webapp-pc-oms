@@ -13,7 +13,6 @@ interface NumberInputProps {
 const NumberInput: React.FC<NumberInputProps> = (props) => {
   const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.target;
-    console.log(value);
     // const reg = /^-?\d*(\.\d*)?$/;
     const reg = /^\d+(\.\d{0,2})?$/; // 两位小数的正则
     if (reg.test(value) || value === '') {

@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'antd';
 import style from './style.module.less';
+import { CascaderOptionType, CascaderValueType } from 'antd/lib/cascader';
+import { NamePath } from 'rc-field-form/lib/interface';
 
 export interface OptionProps {
   id: string | number;
@@ -16,6 +18,7 @@ export interface SearchCol {
   placeholder?: string;
   options?: OptionProps[] | null;
   cascaderOptions?: any[];
+
   fieldNames?: {
     label: string;
     value: string;
@@ -24,16 +27,45 @@ export interface SearchCol {
 }
 
 interface SearchComponentProps {
-  searchCols?: SearchCol[];
+  searchCols: SearchCol[];
   isInline?: boolean;
   onSearch: (params: any) => void;
   onReset?: () => void;
   onValuesChange?: (changeValues: any, values: any) => void;
+  loadData?: ((selectedOptions?: CascaderOptionType[] | undefined) => void) | undefined;
+  onChangeOfCascader?:
+    | ((value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => void)
+    | undefined;
 }
 const { RangePicker } = DatePicker;
+
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
-  const { searchCols, onSearch, onValuesChange, isInline = true, onReset } = props;
+  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader, onReset } = props;
   const [from] = Form.useForm();
+  const handleReset = () => {
+    if (onReset) {
+      onReset();
+    } else {
+      onChangeOfCascader?.([''], []);
+      onSearch({});
+    }
+  };
+  // 对数据进行处理
+  const onChange = (value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => {
+    if (selectedOptions) {
+      const lastOption = selectedOptions[selectedOptions?.length - 1];
+      const fields: NamePath[] = [];
+      searchCols.forEach((item: { name: string }) => {
+        if (item.name !== 'catalogIds') {
+          fields.push(item.name);
+        }
+      });
+      if (lastOption?.lastLevel === 1) {
+        from.resetFields(fields);
+      }
+    }
+    onChangeOfCascader?.(value, selectedOptions);
+  };
   return (
     <>
       {isInline
@@ -43,7 +75,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           layout="inline"
           onFinish={onSearch}
           onReset={() => {
-            onReset ? onReset() : onSearch({});
+            handleReset();
           }}
           className={style['search-wrap']}
           onValuesChange={onValuesChange}
@@ -74,7 +106,16 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               )) ||
               (col.type === 'cascader' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Cascader changeOnSelect options={col.cascaderOptions} fieldNames={{ ...col.fieldNames }}></Cascader>
+                  <Cascader
+                    changeOnSelect
+                    options={col.cascaderOptions}
+                    fieldNames={{ ...col.fieldNames }}
+                    loadData={(data) => {
+                      loadData?.(data);
+                    }}
+                    style={{ width: col.width }}
+                    onChange={onChange}
+                  />
                 </Form.Item>
               ))
             );
@@ -96,7 +137,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         <Form
           form={from}
           onFinish={onSearch}
-          onReset={onSearch}
+          onReset={handleReset}
           className={style.customLayout}
           onValuesChange={onValuesChange}
         >

@@ -74,7 +74,7 @@ ul {
   .pb((@i + 5));
 }
 .pb(5);
-// 下边距 5->40px
+// 左边距 5->40px
 .ml(@i) when(@i<=40) {
   .ml@{i} {
     margin-left: @i + 0px;
@@ -521,17 +521,26 @@ ul {
 }
 
 // input 宽带
-.width400 {
-  width: 400px !important;
-}
-.width320 {
-  width: 320px !important;
+.width240 {
+  width: 240px !important;
 }
 .width280 {
   width: 280px;
 }
-.width240 {
-  width: 240px !important;
+.width320 {
+  width: 320px !important;
+}
+.width360 {
+  width: 360px !important;
+}
+.width400 {
+  width: 400px !important;
+}
+.width420 {
+  width: 420px !important;
+}
+.width480 {
+  width: 480px !important;
 }
 
 .inline-block {
@@ -677,38 +686,43 @@ ul {
 
 // 表格底部的批量操作样式
 .operationWrap {
-  float: left;
+  // float: left;
   margin-top: -50px;
+  width: 100%;
+  padding-right: 680px;
+
+  .ant-space {
+    flex-wrap: wrap;
+  }
 }
 
-:global {
-  .ant-modal-content {
-    border-radius: 8px;
+.ant-modal-content {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+.ant-modal-body {
+  padding-bottom: 14px;
+}
+.ant-modal-footer,
+.ant-modal-confirm-btns {
+  .ant-btn {
+    width: 76px;
+    height: 32px;
+    border-radius: 16px;
+    color: #7e8185;
+    &:hover {
+      color: #111;
+    }
   }
-  .ant-modal-body {
-    padding-bottom: 14px;
+  .ant-btn-primary {
+    color: #fff;
+    background: #318cf5;
+    border-color: #318cf5;
   }
-  .ant-modal-footer,
-  .ant-modal-confirm-btns {
-    .ant-btn {
-      width: 76px;
-      height: 32px;
-      border-radius: 16px;
-      color: #7e8185;
-      &:hover {
-        color: #111;
-      }
-    }
-    .ant-btn-primary {
-      color: #fff;
-      background: #318cf5;
-      border-color: #318cf5;
-    }
-    .ant-btn-primary:hover,
-    .ant-btn-primary:focus {
-      color: #fff;
-      background: #40a9ff;
-      border-color: #40a9ff;
-    }
+  .ant-btn-primary:hover,
+  .ant-btn-primary:focus {
+    color: #fff;
+    background: #40a9ff;
+    border-color: #40a9ff;
   }
 }

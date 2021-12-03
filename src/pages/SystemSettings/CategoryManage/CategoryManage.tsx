@@ -13,6 +13,7 @@ import {
   requestDeletePosterType,
   requestSaveSortMarket
 } from 'src/apis/systemSettings';
+
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { Icon } from 'src/components';
@@ -22,7 +23,7 @@ import classNames from 'classnames';
 import style from './style.module.less';
 import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
 
-const categoryManage: React.FC = () => {
+const CategoryManage: React.FC = () => {
   const { isMainCorp } = useContext(Context);
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [editType, setEditType] = useState('');
@@ -429,4 +430,4 @@ const categoryManage: React.FC = () => {
     </div>
   );
 };
-export default categoryManage;
+export default CategoryManage;

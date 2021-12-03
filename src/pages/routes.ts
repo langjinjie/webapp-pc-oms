@@ -65,6 +65,10 @@ export const routes: RouteProps[] = [
     path: '/marketingIndex',
     component: lazy(() => import('src/pages/Marketing/Index/Index'))
   },
+  {
+    path: '/notice',
+    component: lazy(() => import('src/pages/Marketing/Notice/Notice'))
+  },
   /**
    * 机构管理->账号管理
    */
@@ -76,6 +80,16 @@ export const routes: RouteProps[] = [
   {
     path: '/orgManage/detail',
     component: lazy(() => import('src/pages/OrgManage/AccountManage/StaffList/StaffList'))
+  },
+  // 敏感词管理
+  {
+    path: '/sensitiveManage',
+    component: lazy(() => import('src/pages/OrgManage/SensitiveManage/SensitiveList/SensitiveList'))
+  },
+  // 添加敏感词
+  {
+    path: '/sensitiveManage/editWords',
+    component: lazy(() => import('src/pages/OrgManage/SensitiveManage/EditWords/EditWords'))
   },
   // 座席战报
   {
@@ -99,11 +113,11 @@ export const routes: RouteProps[] = [
   // 系统设置
   {
     path: '/categoryManage',
-    component: lazy(() => import('src/pages/SystemSettings/categoryManage/categoryManage'))
+    component: lazy(() => import('src/pages/SystemSettings/CategoryManage/CategoryManage'))
   },
   {
     path: '/tagManage',
-    component: lazy(() => import('src/pages/SystemSettings/tagManage/tagManage'))
+    component: lazy(() => import('src/pages/SystemSettings/TagManage/TagManage'))
   },
   // 周报配置
   {
@@ -114,6 +128,19 @@ export const routes: RouteProps[] = [
   {
     path: '/weekly/add',
     component: lazy(() => import('src/pages/Operation/AddWeeklyConfig/AddWeeklyConfig'))
+  },
+  // 销售宝典
+  {
+    path: '/speechManage',
+    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/List'))
+  },
+  {
+    path: '/speechManage/edit',
+    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
+  },
+  {
+    path: '/contentsManage',
+    component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
   }
 ];
 
@@ -122,7 +149,10 @@ export const menus: Menu[] = [
     name: '机构管理',
     icon: 'icon_daohang_28_jigouguanli',
     path: 'seatManage',
-    children: [{ name: '账号管理', path: '/orgManage' }]
+    children: [
+      { name: '账号管理', path: '/orgManage' },
+      { name: '敏感词管理', path: '/sensitiveManage' }
+    ]
   },
   {
     name: '营销素材',
@@ -148,6 +178,10 @@ export const menus: Menu[] = [
       {
         name: '首页配置',
         path: '/marketingIndex'
+      },
+      {
+        name: '上新通知',
+        path: '/notice'
       }
     ]
   },
@@ -188,6 +222,15 @@ export const menus: Menu[] = [
     children: [
       { name: '分类管理', path: '/categoryManage' },
       { name: '标签管理', path: '/tagManage' }
+    ]
+  },
+  {
+    name: '销售宝典',
+    icon: 'xiaoshoubaodian',
+    path: 'salesCollection',
+    children: [
+      { name: '话术管理', path: '/speechManage' },
+      { name: '目录管理', path: '/contentsManage' }
     ]
   }
 ];
