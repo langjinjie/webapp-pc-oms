@@ -182,7 +182,7 @@ module.exports = function () {
           // Copy glob results (with dot files) to /absolute/path/
           {
             from: path.resolve(ROOT_PATH, './static/'),
-            to: path.resolve(ROOT_PATH, './tenacity-oms/static')
+            to: path.resolve(ROOT_PATH, './dist/static')
           }
         ]
       }),
