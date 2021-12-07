@@ -19,3 +19,19 @@ export const saveNotice: HttpFunction = (param: Object) => {
 export const queryNotice: Void2Promise = () => {
   return http.post('/tenacity-admin/api/notice/detail');
 };
+
+/**
+ * 查询周报配置列表
+ * @param param
+ */
+export const queryNoticeList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/paperreport/paperlist', param);
+};
+
+/**
+ * 删除配置
+ * @param param
+ */
+export const delNotice: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin//api/paperreport/paperdel', param);
+};

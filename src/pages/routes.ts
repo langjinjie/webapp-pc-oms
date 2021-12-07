@@ -67,6 +67,10 @@ export const routes: RouteProps[] = [
   },
   {
     path: '/notice',
+    component: lazy(() => import('src/pages/Marketing/Notice/NoticeList'))
+  },
+  {
+    path: '/notice/edit',
     component: lazy(() => import('src/pages/Marketing/Notice/Notice'))
   },
   /**
@@ -180,7 +184,7 @@ export const menus: Menu[] = [
         path: '/marketingIndex'
       },
       {
-        name: '上新通知',
+        name: '公告配置',
         path: '/notice'
       }
     ]
