@@ -16,6 +16,7 @@ import { Context } from 'src/store';
 
 const HistoryList: React.FC = () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
+  const [logDataSource, setLogDataSource] = useState<any[]>([]);
   const [tableCols, setTableCols] = useState<any[]>([]);
   const [tabActiveKey, setTabActiveKey] = useState('1');
   const [pagination, setPagination] = useState({
@@ -132,7 +133,7 @@ const HistoryList: React.FC = () => {
     if (res) {
       const { total, list } = res;
       const data = dataMap(list);
-      setDataSource(data);
+      setLogDataSource(data);
       setPagination((pagination) => ({ ...pagination, total }));
     }
   };
@@ -245,7 +246,6 @@ const HistoryList: React.FC = () => {
     }
   };
   const paginationChange = (pageNum: number, pageSize = 10) => {
-    console.log(pageNum, pageSize);
     setPagination((pagination) => ({ ...pagination, pageSize, current: pageNum }));
     if (tabActiveKey === '1') {
       getList({ pageNum, pageSize });
@@ -295,8 +295,8 @@ const HistoryList: React.FC = () => {
             }}
             pagination={pagination}
             paginationChange={paginationChange}
-            dataSource={dataSource}
-            columns={columns({ onConfirm, onChange, tableCols, dataSource, tableType: 3 })}
+            dataSource={logDataSource}
+            columns={columns({ onConfirm, onChange, tableCols, dataSource: logDataSource, tableType: 3 })}
           />
         </Tabs.TabPane>
       </Tabs>
