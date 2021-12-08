@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Card, message } from 'antd';
+import { Button, message } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { columns, searchCols, UserTagProps } from './Config';
 import {
@@ -7,12 +7,15 @@ import {
   changeClientTagOfCar,
   getClientList,
   getTagGroupList,
-  searchTagGroupOptions
+  searchTagGroupOptions,
+  saveToBuffer
 } from 'src/apis/tagConfig';
 import style from './style.module.less';
 import { Context } from 'src/store';
+import classNames from 'classnames';
+import { RouteComponentProps } from 'react-router';
 
-const TagConfig: React.FC = () => {
+const TagConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [dataSource, setDataSource] = useState<UserTagProps[]>([]);
   const [tableCols, setTableCols] = useState<any[]>([]);
   const { currentCorpId } = useContext(Context);
@@ -214,13 +217,28 @@ const TagConfig: React.FC = () => {
     setDataSource([]);
   };
 
+  const navigatorToHistory = () => {
+    history.push('/tagConfig/history');
+  };
+
+  const saveBuffer = async (scored: UserTagProps) => {
+    const res = await saveToBuffer({ staffId: scored.staffId, externalUserid: scored.externalUserid });
+    if (res) {
+      message.success('保存成功！');
+    }
+  };
+
   return (
-    <Card
-      className={style.tagConfig}
-      title={'标签配置'}
-      extra="标签修改成功后，直接应用于促成任务生成及消息推送"
-      bordered={false}
-    >
+    <div className={style.tagConfig}>
+      <header className={classNames(style.header, 'flex justify-between align-center')}>
+        <div className={classNames('flex', style.headerLeft)}>
+          <span className="font16 bold margin-right20">标签配置</span>
+          <span className="font12 color-text-placeholder">标签修改成功后，直接应用于促成任务生成及消息推送</span>
+        </div>
+        <Button type="primary" className={style.headerRightBtn} ghost shape="round" onClick={navigatorToHistory}>
+          保存与推送记录
+        </Button>
+      </header>
       <NgFormSearch searchCols={searchCols} onSearch={handleSearch} onReset={onReset} />
       <div className="pt20">
         <NgTable
@@ -229,10 +247,10 @@ const TagConfig: React.FC = () => {
             return record?.carNumber + record?.externalUserid;
           }}
           dataSource={dataSource}
-          columns={columns({ onConfirm, onChange, tableCols, dataSource })}
+          columns={columns({ onConfirm, onChange, tableCols, dataSource, tableType: 1, saveBuffer })}
         ></NgTable>
       </div>
-    </Card>
+    </div>
   );
 };
 

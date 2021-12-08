@@ -53,10 +53,12 @@ interface OperateProps {
   onConfirm: (scored: UserTagProps, index: number) => void;
   tableCols: any[];
   dataSource: any[];
+  tableType: number;
+  saveBuffer?: (scored: UserTagProps) => void;
 }
 
 export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
-  const { onChange, onConfirm, tableCols, dataSource } = args;
+  const { onChange, onConfirm, tableCols, dataSource, tableType, saveBuffer } = args;
   // 动态table header
   const cols: ColumnsType<UserTagProps> = useMemo(() => {
     if (tableCols.length > 0) {
@@ -71,7 +73,7 @@ export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
             const current = dataList.filter((item) => item.groupId === col.groupId)[0] || {};
             return (
               <div>
-                {current.tagId
+                {current.tagId && tableType !== 3
                   ? (
                   <Select
                     style={{ width: '80px' }}
@@ -92,9 +94,13 @@ export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
                     })}
                   </Select>
                     )
-                  : (
-                      '/'
-                    )}
+                  : tableType === 3
+                    ? (
+                  <span>{current.tagName || '/'}</span>
+                      )
+                    : (
+                        '/'
+                      )}
               </div>
             );
           }
@@ -132,19 +138,29 @@ export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
     },
     ...cols,
     {
-      title: '操作',
+      title: tableType === 3 ? '操作时间' : '操作',
       dataIndex: 'status',
-      width: 80,
+      width: 120,
       align: 'left',
       fixed: 'right',
       render: (value: any, scored: any, index: number) => (
-        <Popconfirm
-          placement="bottomLeft"
-          title="标签值修改为高后系统将会推送促成任务消息给员工?"
-          onConfirm={() => onConfirm(scored, index)}
-        >
-          <Button type="link">推送</Button>
-        </Popconfirm>
+        <>
+          {tableType === 1 && (
+            <Button type="link" onClick={() => saveBuffer?.(scored)}>
+              保存
+            </Button>
+          )}
+          {tableType !== 3 && (
+            <Popconfirm
+              placement="bottomLeft"
+              title="标签值修改为高后系统将会推送促成任务消息给员工?"
+              onConfirm={() => onConfirm(scored, index)}
+            >
+              <Button type="link">推送</Button>
+            </Popconfirm>
+          )}
+          {<span>{scored.pushTime}</span>}
+        </>
       )
     }
   ];
