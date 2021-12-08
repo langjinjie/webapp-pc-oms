@@ -269,7 +269,7 @@ const HistoryList: React.FC = () => {
         <span>当前位置：</span>
         <Breadcrumb>
           <a href="/tagConfig">
-            <Breadcrumb.Item>便签配置</Breadcrumb.Item>
+            <Breadcrumb.Item>标签配置</Breadcrumb.Item>
           </a>
           <Breadcrumb.Item>保存与推送记录</Breadcrumb.Item>
         </Breadcrumb>
