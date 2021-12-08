@@ -6,11 +6,14 @@ import { categoryKey2Name } from 'src/utils/commonData';
 import { Tabs } from 'src/pages/SystemSettings/component/index';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { useDocumentTitle } from 'src/utils/base';
 
 const TagManage: React.FC = () => {
   const [tagList, setTagList] = useState<IAllTagList>();
   const [tabs, setTabs] = useState<any[]>();
   const [tabIndex, setTabIndex] = useState(0);
+
+  useDocumentTitle('系统设置-标签管理');
 
   const getAllTagList = async () => {
     const res = await requestGetAllTagList();

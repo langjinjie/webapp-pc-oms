@@ -13,8 +13,10 @@ import {
   searchTagGroupOptions
 } from 'src/apis/tagConfig';
 import { Context } from 'src/store';
+import { useDocumentTitle } from 'src/utils/base';
 
 const HistoryList: React.FC = () => {
+  useDocumentTitle('标签配置-保存与推送记录');
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [logDataSource, setLogDataSource] = useState<any[]>([]);
   const [tableCols, setTableCols] = useState<any[]>([]);

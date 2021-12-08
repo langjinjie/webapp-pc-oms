@@ -14,6 +14,7 @@ import style from './style.module.less';
 import { Context } from 'src/store';
 import classNames from 'classnames';
 import { RouteComponentProps } from 'react-router';
+import { useDocumentTitle } from 'src/utils/base';
 
 const TagConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [dataSource, setDataSource] = useState<UserTagProps[]>([]);
@@ -67,6 +68,7 @@ const TagConfig: React.FC<RouteComponentProps> = ({ history }) => {
   useEffect(() => {
     getTagList();
   }, []);
+  useDocumentTitle('运营配置-标签配置');
 
   // 对请求的数据进行表格话处理
   const dataMap = (list: any[]) => {

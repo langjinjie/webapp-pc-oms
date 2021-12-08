@@ -214,7 +214,7 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   useEffect(() => {
-    setTitle('周报列表');
+    setTitle('运营配置-周报配置');
     getWeeklyList();
   }, []);
 

@@ -22,7 +22,7 @@ import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
 import { useDocumentTitle } from 'src/utils/base';
 
 const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
-  useDocumentTitle('文章列表');
+  useDocumentTitle('营销素材-文章库');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,

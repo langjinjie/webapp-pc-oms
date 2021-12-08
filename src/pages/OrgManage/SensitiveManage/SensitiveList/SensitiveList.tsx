@@ -15,6 +15,7 @@ import { sensitiveStatusList } from 'src/utils/commonData';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { useDocumentTitle } from 'src/utils/base';
 
 interface IDeleteTipsParam {
   visible: boolean;
@@ -41,7 +42,7 @@ const SensitiveList: React.FC = () => {
   const [sensitiveType, setSensitiveType] = useState<ISensitiveType[]>([]);
   const [visible, setVisible] = useState(false);
   const [deleteTips, setDeleteTip] = useState<IDeleteTipsParam>({ visible: false, title: '', content: '', type: 0 });
-
+  useDocumentTitle('机构管理-敏感词管理');
   const history = useHistory();
   const { RangePicker } = DatePicker;
 

@@ -22,6 +22,7 @@ import { Tabs, ChildrenCategory } from 'src/pages/SystemSettings/component/index
 import classNames from 'classnames';
 import style from './style.module.less';
 import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
+import { useDocumentTitle } from 'src/utils/base';
 
 const CategoryManage: React.FC = () => {
   const { isMainCorp } = useContext(Context);
@@ -38,6 +39,7 @@ const CategoryManage: React.FC = () => {
   const [isOnDrag, setIsOnDrag] = useState('');
   const [isCancel, setIsCancel] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  useDocumentTitle('系统设置-分类管理');
 
   const tabs = ['产品库', '文章库', '海报库'];
   const addInputNode: MutableRefObject<any> = useRef();
