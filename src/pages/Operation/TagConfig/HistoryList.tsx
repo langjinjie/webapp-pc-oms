@@ -268,7 +268,9 @@ const HistoryList: React.FC = () => {
       <div className={style.breadcrumbWrap}>
         <span>当前位置：</span>
         <Breadcrumb>
-          <Breadcrumb.Item>便签配置</Breadcrumb.Item>
+          <a href="/tagConfig">
+            <Breadcrumb.Item>便签配置</Breadcrumb.Item>
+          </a>
           <Breadcrumb.Item>保存与推送记录</Breadcrumb.Item>
         </Breadcrumb>
       </div>
