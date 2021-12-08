@@ -293,7 +293,7 @@ const HistoryList: React.FC = () => {
           <NgTable
             loading={false}
             setRowKey={(record: UserTagProps) => {
-              return record?.carNumber + record?.externalUserid;
+              return record?.pushTime + record?.externalUserid;
             }}
             pagination={pagination}
             paginationChange={paginationChange}
