@@ -101,9 +101,14 @@ export const routes: RouteProps[] = [
     path: '/station',
     component: lazy(() => import('src/pages/Operation/StationConfig/StationConfig'))
   },
+  // 标签配置
   {
     path: '/tagConfig',
     component: lazy(() => import('src/pages/Operation/TagConfig/List'))
+  },
+  {
+    path: '/tagConfig/history',
+    component: lazy(() => import('src/pages/Operation/TagConfig/HistoryList'))
   },
   // 新增小站配置
   {

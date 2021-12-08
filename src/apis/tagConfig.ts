@@ -38,3 +38,19 @@ export const searchTagGroupOptions: HttpFunction<Object> = (param) => {
 export const getTagGroupList: HttpFunction<Object> = (param) => {
   return http.post('/tenacity-admin/api/tag/forecast/list', param);
 };
+/**
+ * 保存待推送的客户
+ * @param param
+ */
+export const saveToBuffer: HttpFunction<Object> = (param) => {
+  return http.post('/tenacity-admin/api/tag/push/client/save', param);
+};
+
+// 查询待推送的客户列表
+export const getBufferList: HttpFunction<Object> = (param) => {
+  return http.post('/tenacity-admin/api/tag/unpush/client/list', param);
+};
+// 已推送列表
+export const getChangedList: HttpFunction<Object> = (param) => {
+  return http.post('/tenacity-admin/api/tag/pushed/client/list', param);
+};
