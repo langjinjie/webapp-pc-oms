@@ -14,8 +14,9 @@ import {
 } from 'src/apis/tagConfig';
 import { Context } from 'src/store';
 import { useDocumentTitle } from 'src/utils/base';
+import { RouteComponentProps } from 'react-router';
 
-const HistoryList: React.FC = () => {
+const HistoryList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('标签配置-保存与推送记录');
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [logDataSource, setLogDataSource] = useState<any[]>([]);
@@ -265,12 +266,20 @@ const HistoryList: React.FC = () => {
       getChangeList({ pageNum: 1 });
     }
   };
+  const navigatorToList = () => {
+    history.push('/tagConfig');
+  };
   return (
     <div className="container">
       <div className={style.breadcrumbWrap}>
         <span>当前位置：</span>
         <Breadcrumb>
-          <a href="/tagConfig">
+          <a
+            href="javascript:void(0);"
+            onClick={() => {
+              navigatorToList();
+            }}
+          >
             <Breadcrumb.Item>标签配置</Breadcrumb.Item>
           </a>
           <Breadcrumb.Item>保存与推送记录</Breadcrumb.Item>
