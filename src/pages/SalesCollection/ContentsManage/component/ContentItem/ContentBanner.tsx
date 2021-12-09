@@ -1,6 +1,5 @@
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 import { Icon } from 'src/components/index';
-import { ContentBanner as ChildrenContentBanner } from 'src/pages/SalesCollection/ContentsManage/component/index';
 import { ICatalogItem, IEditOrAddCatalogParam, IFirmModalParam } from 'src/utils/interface';
 import { getCategoryList, requestSaveSortCatalog, requestDeleteCatalog } from 'src/apis/salesCollection';
 import { catalogLastLeve } from 'src/utils/commonData';
@@ -9,6 +8,7 @@ import { Context } from 'src/store';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { message } from 'antd';
+import { EyeOutlined } from '@ant-design/icons';
 
 interface IContentBannerProps {
   parentId: string;
@@ -22,6 +22,7 @@ interface IContentBannerProps {
   setFirmModalParam: (param: IFirmModalParam) => void;
   setEditOrAddLastCatalogParam: (param: IEditOrAddCatalogParam) => void;
   setParentChildrenList: (param: ICatalogItem[]) => void;
+  parentCatalog?: any;
 }
 
 const ContentBanner: React.FC<IContentBannerProps> = ({
@@ -35,12 +36,15 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   setEditOrAddCatalogParam,
   setFirmModalParam,
   setEditOrAddLastCatalogParam,
-  setParentChildrenList
+  setParentChildrenList,
+  parentCatalog
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [childrenList, setChildrenList] = useState<ICatalogItem[]>([]);
   const [currentContent, setCurrentContent] = useState('');
-
+  // useMemo(() => {
+  //   setParents((parents) => [...parents, parentCatalog]);
+  // }, [parentCatalog]);
   // 获取当前目录的子目录
   const getCurrentChildrenList = async () => {
     const res = await getCategoryList({ corpId, sceneId: catalog.sceneId, catalogId: catalog.catalogId });
@@ -151,6 +155,10 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       setCurrentContents('');
     };
   }, []);
+  // 查看话术
+  const viewSpeed = (catalog: any) => {
+    console.log(catalog, { parentCatalog });
+  };
   return (
     <>
       <div
@@ -173,6 +181,19 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
           className={classNames(style.info, { [style.empty]: !catalog.onlineContentNum })}
         >{`（上架${catalog.onlineContentNum}/全部${catalog.contentNum}）`}</div>
         <div className={style.edit}>
+          {catalog.lastLevel === 1 && (
+            <>
+              <span onClick={() => viewSpeed(catalog)}>
+                <EyeOutlined className={style.svgIcon} />
+                查看话术
+              </span>
+              <span onClick={editClickHandle}>
+                <Icon className={style.svgIcon} name="tianjiafenzu" />
+                新增话术
+              </span>
+            </>
+          )}
+
           <span onClick={editClickHandle}>
             <Icon className={style.svgIcon} name="bianji" />
             编辑
@@ -204,8 +225,9 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
           <>
             {childrenList.map((item, index) => (
               <div key={item.catalogId}>
-                <ChildrenContentBanner
+                <ContentBanner
                   parentId={catalog.catalogId}
+                  parentCatalog={[...parentCatalog, item]}
                   catalog={item}
                   isHiddenMoveUp={childrenList.length === 1 || index === 0}
                   isHiddenMoveDown={childrenList.length === 1 || index === childrenList.length - 1}
