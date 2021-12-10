@@ -1,9 +1,11 @@
 import React from 'react';
-import { Upload, message, Form } from 'antd';
+import { Upload, message, Form, FormInstance } from 'antd';
 import { Icon } from 'src/components/index';
+
 import style from './style.module.less';
 
 interface IUploadImgProps {
+  form?: FormInstance<any>;
   uploadImg: string;
   setUploadImg: (param: string) => void;
   imgLimitParam: { type: string[]; size: number; limitWidth: number; limitHeight?: number };
@@ -11,7 +13,7 @@ interface IUploadImgProps {
   extra?: string;
 }
 
-const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimitParam, rules, extra }) => {
+const UploadImg: React.FC<IUploadImgProps> = ({ form, uploadImg, setUploadImg, imgLimitParam, rules, extra }) => {
   const normFile = (e: any) => {
     if (e.file.status === 'uploading') {
       return;
@@ -77,6 +79,13 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
       reader.readAsDataURL(file);
     });
   };
+  // 点击删除图片icon
+  const delIconHandle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    form?.setFieldsValue({ thumbnail: '' });
+    form?.validateFields();
+    setUploadImg('');
+  };
   return (
     <>
       <Form.Item
@@ -99,7 +108,12 @@ const UploadImg: React.FC<IUploadImgProps> = ({ uploadImg, setUploadImg, imgLimi
         >
           {uploadImg
             ? (
-            <img src={uploadImg} alt="icon" style={{ width: '100%' }} />
+            <div className={style.imgWrap}>
+              <div className={style.iconWrap}>
+                <Icon className={style.delIcon} name="shanchu" onClick={(e) => delIconHandle(e)} />
+              </div>
+              <img src={uploadImg} alt="icon" />
+            </div>
               )
             : (
             <div className={style.iconWrap}>
