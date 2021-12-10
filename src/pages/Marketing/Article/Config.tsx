@@ -49,7 +49,7 @@ const setSearchCols = (options: any[]): SearchCol[] => {
 enum StatusEnum {
   '未上架' = 0,
   '已上架',
-  '已下架',
+  '已下架'
 }
 export interface Article {
   newsId: string;
@@ -105,6 +105,12 @@ const columns = (args: colargsType): ColumnsType<Article> => {
         key: 'categoryName',
         align: 'center',
         render: (categoryName: string) => categoryName || UNKNOWN
+      },
+      {
+        title: '渠道来源',
+        dataIndex: 'tagNameList',
+        width: 260,
+        align: 'center'
       },
       {
         title: '标签',

@@ -176,6 +176,16 @@ const TabView3: React.FC<TabView3Props> = (props) => {
           <Input maxLength={15} placeholder={'请输入原创作者名称，限15个字符以内。'} />
         </Form.Item>
         <Form.Item
+          label="渠道来源"
+          rules={[
+            { type: 'string', required: true, message: '请输入渠道来源' },
+            { message: '渠道来源最多12个字符', max: 12 }
+          ]}
+          name="originalCreator"
+        >
+          <Input maxLength={15} placeholder={'请输入渠道来源，限12个字符以内。'} />
+        </Form.Item>
+        <Form.Item
           label="文章封面"
           labelCol={{ span: 3 }}
           wrapperCol={{ span: 12 }}
