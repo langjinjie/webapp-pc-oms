@@ -6,6 +6,7 @@ import style from './style.module.less';
 
 interface IUploadImgProps {
   form?: FormInstance<any>;
+  setSubmitDisabled: (param: boolean) => void;
   uploadImg: string;
   setUploadImg: (param: string) => void;
   imgLimitParam: { type: string[]; size: number; limitWidth: number; limitHeight?: number };
@@ -13,7 +14,15 @@ interface IUploadImgProps {
   extra?: string;
 }
 
-const UploadImg: React.FC<IUploadImgProps> = ({ form, uploadImg, setUploadImg, imgLimitParam, rules, extra }) => {
+const UploadImg: React.FC<IUploadImgProps> = ({
+  form,
+  setSubmitDisabled,
+  uploadImg,
+  setUploadImg,
+  imgLimitParam,
+  rules,
+  extra
+}) => {
   const normFile = (e: any) => {
     if (e.file.status === 'uploading') {
       return;
@@ -80,11 +89,12 @@ const UploadImg: React.FC<IUploadImgProps> = ({ form, uploadImg, setUploadImg, i
     });
   };
   // 点击删除图片icon
-  const delIconHandle = (e: React.MouseEvent) => {
+  const delIconHandle = async (e: React.MouseEvent) => {
     e.stopPropagation();
     form?.setFieldsValue({ thumbnail: '' });
-    form?.validateFields();
     setUploadImg('');
+    await form?.validateFields();
+    setSubmitDisabled(false);
   };
   return (
     <>

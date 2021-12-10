@@ -10,15 +10,24 @@ interface ISpeechTypeLabelProps {
   uploadImg: string;
   setUploadImg: (param: string) => void;
   fileList: any[];
+  setSubmitDisabled: (param: boolean) => void;
 }
 
-const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ form, type, uploadImg, setUploadImg, fileList }) => {
+const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
+  form,
+  type,
+  uploadImg,
+  setUploadImg,
+  fileList,
+  setSubmitDisabled
+}) => {
   return (
     <>
       {type === 2 && ( // 图片
         <>
           <UploadImg
             form={form}
+            setSubmitDisabled={setSubmitDisabled}
             uploadImg={uploadImg}
             setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 750, limitHeight: 0 }}
@@ -45,6 +54,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ form, type, uploadIm
         <>
           <UploadImg
             form={form}
+            setSubmitDisabled={setSubmitDisabled}
             uploadImg={uploadImg}
             setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
@@ -81,6 +91,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ form, type, uploadIm
         <>
           <UploadImg
             form={form}
+            setSubmitDisabled={setSubmitDisabled}
             uploadImg={uploadImg}
             setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
@@ -115,6 +126,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ form, type, uploadIm
         <>
           <UploadImg
             form={form}
+            setSubmitDisabled={setSubmitDisabled}
             uploadImg={uploadImg}
             setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
@@ -148,6 +160,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ form, type, uploadIm
         <>
           <UploadImg
             form={form}
+            setSubmitDisabled={setSubmitDisabled}
             uploadImg={uploadImg}
             setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
@@ -194,6 +207,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ form, type, uploadIm
           </Form.Item>
           <UploadImg
             form={form}
+            setSubmitDisabled={setSubmitDisabled}
             uploadImg={uploadImg}
             setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
