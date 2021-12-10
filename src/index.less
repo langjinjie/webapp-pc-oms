@@ -20,6 +20,34 @@ body {
   touch-action: pan-y pan-x;
   word-break: break-word;
 }
+
+.scroll-strip {
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: rgb(239, 239, 239);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #bfbfbf;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #318cf5;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: #e6e7eb;
+  }
+}
+
 h1,
 h2,
 h3,

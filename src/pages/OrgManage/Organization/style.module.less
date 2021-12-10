@@ -3,3 +3,103 @@
 * @author Lester
 * @date 2021-12-10 10:36
 */
+.wrap {
+  height: calc(100vh - 80px);
+  padding: 24px;
+  display: flex;
+
+  .left {
+    width: 360px;
+    height: 100%;
+    border-radius: 8px;
+    border: 1px solid #E5E5E7;
+
+    .inputWrap {
+      width: 100%;
+      padding: 10px 20px;
+      border-bottom: 1px solid #E5E5E7;
+
+      :global {
+        .ant-input-search-button {
+          position: absolute;
+          left: -48px;
+          top: 2px;
+          background: none;
+          border: none;
+          box-shadow: none;
+          outline: none;
+          z-index: 999;
+        }
+      }
+
+      .searchIcon {
+        margin-right: 2px;
+        color: #A9AAB0;
+        font-size: 16px;
+      }
+    }
+
+    .treeWrap {
+      padding: 10px 20px;
+
+      .nodeItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .dotIcon {
+          display: none;
+          width: 24px;
+          font-size: 16px;
+        }
+      }
+
+      :global {
+        .ant-tree-treenode {
+          padding: 5px 0;
+
+          .ant-tree-node-content-wrapper {
+            background: none;
+            padding: 0;
+          }
+
+          &.ant-tree-treenode-selected {
+            background: rgba(48, 120, 219, 0.2);
+            border-radius: 8px;
+
+            .ant-tree-node-selected {
+              background: none;
+
+              :local {
+                .nodeItem {
+                  color: @primary-color;
+
+                  .dotIcon {
+                    color: gray;
+                    display: inline-block;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .right {
+    margin-left: 18px;
+    flex: 1;
+  }
+
+  .departmentOperation {
+    position: fixed;
+    width: 170px;
+    height: 232px;
+    padding: 10px 20px;
+    box-shadow: 2px 0 16px 0 rgba(129, 141, 168, 0.2);
+    z-index: 999;
+    border-radius: 8px;
+    background-color: white;
+  }
+}
