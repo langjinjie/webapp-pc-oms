@@ -146,6 +146,10 @@ export const routes: RouteProps[] = [
   {
     path: '/contentsManage',
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
+  },
+  {
+    path: '/organization',
+    component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
   }
 ];
 
@@ -155,8 +159,18 @@ export const menus: Menu[] = [
     icon: 'icon_daohang_28_jigouguanli',
     path: 'seatManage',
     children: [
-      { name: '账号管理', path: '/orgManage' },
-      { name: '敏感词管理', path: '/sensitiveManage' }
+      {
+        name: '账号管理',
+        path: '/orgManage'
+      },
+      {
+        name: '敏感词管理',
+        path: '/sensitiveManage'
+      },
+      {
+        name: '组织架构管理',
+        path: '/organization'
+      }
     ]
   },
   {
