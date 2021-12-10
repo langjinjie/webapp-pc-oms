@@ -1,6 +1,7 @@
 .bannerWrap {
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;
   height: 48px;
   line-height: 48px;
   background-color: #f7f7f8;
@@ -44,6 +45,9 @@
     height: 100%;
     font-size: 14px;
     color: #111111;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
     &.empty {
       color: #ccccd0;
     }
@@ -53,6 +57,7 @@
     margin: 0 5px;
     font-size: 12px;
     color: #606366;
+    white-space: nowrap;
     &.empty {
       color: #ccccd0;
     }
