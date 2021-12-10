@@ -16,6 +16,7 @@ interface NgUploadProps {
   beforeUpload?: (file: RcFile) => void;
   btnText?: string;
   type?: 'video' | 'audio';
+  showDeleteBtn?: boolean;
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -23,7 +24,14 @@ const getBase64 = (img: any, callback: (str: any) => void) => {
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 };
-const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnText = '上传图片', type }) => {
+const NgUpload: React.FC<NgUploadProps> = ({
+  onChange,
+  value,
+  beforeUpload,
+  btnText = '上传图片',
+  type,
+  showDeleteBtn
+}) => {
   const [states, setStates] = useState({
     loading: false,
     imageUrl: ''
@@ -88,6 +96,12 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
     }
   };
 
+  const deletePic: React.MouseEventHandler<Element> = (e) => {
+    e.stopPropagation();
+    onChange?.('');
+    setStates((states) => ({ ...states, imageUrl: '' }));
+  };
+
   return (
     <>
       {!type && (
@@ -96,10 +110,15 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
           listType="picture-card"
           beforeUpload={beforeUpload}
           showUploadList={false}
-          className={classNames({ 'avatar-uploader': !type })}
+          className={classNames({ 'avatar-uploader': !type }, styles.uploadWrap)}
           customRequest={posterUploadFile}
         >
           {states.imageUrl ? <img src={states.imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+          {states.imageUrl && showDeleteBtn
+            ? (
+            <Icon className={styles.delete} onClick={deletePic} name="guanbi" />
+              )
+            : null}
         </Upload>
       )}
       {type === 'audio' && (

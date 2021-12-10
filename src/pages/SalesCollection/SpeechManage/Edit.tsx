@@ -166,7 +166,8 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
       ((originSpeech?.contentType === 7 || originSpeech?.contentType === 6) &&
         (title !== originSpeech?.title ||
           originSpeech.contentUrl !== contentUrl ||
-          summary !== originSpeech.summary)) ||
+          summary !== originSpeech.summary ||
+          thumbnail !== originSpeech.thumbnail)) ||
       ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8) &&
         (title !== originSpeech?.title ||
           thumbnail !== originSpeech.thumbnail ||
