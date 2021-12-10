@@ -22,9 +22,9 @@ import { columns, excelDemoUrl, setSearchCols, SpeechProps } from './Config';
 import style from './style.module.less';
 import { Context } from 'src/store';
 import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
-import { useDocumentTitle } from 'src/utils/base';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 
-const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
+const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   useDocumentTitle('销售宝典-话术管理');
   const { currentCorpId } = useContext(Context);
   const [formParams, setFormParams] = useState({
@@ -52,6 +52,9 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const [visiblePreview, setVisiblePreview] = useState(false);
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [formDefaultValue, setFormDefaultValue] = useState<{ catalogIds: string[] }>({
+    catalogIds: []
+  });
   const [lastCategory, setLastCategory] = useState<any>();
   const [visibleChecked, setVisibleChecked] = useState(false);
   const [isNew, setIsNew] = useState(false);
@@ -129,6 +132,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     } = values;
     let updateBeginTime = '';
     let updateEndTime = '';
+    console.log(catalogIds);
     if (times) {
       updateBeginTime = times[0].startOf('day').valueOf();
       updateEndTime = times[1].endOf('day')?.valueOf();
@@ -174,7 +178,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
           item.isLeaf = false;
         }
       });
-      setCategories(res);
+      return res;
+      // setCategories(res);
     }
   };
 
@@ -187,9 +192,39 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       }
     }
   };
+  const initSetFormQuery = async () => {
+    const { catalog } = URLSearchParams(location.search) as { [key: string]: string };
+    if (catalog) {
+      const catalogs = catalog.split(',');
+      setFormDefaultValue((formDefaultValue) => ({ ...formDefaultValue, catalogIds: catalogs }));
+      const tree = JSON.parse(localStorage.getItem('catalogTree') || '[]') as any[];
+      const res = await getCategory();
+      const copyData = [...res];
+      res?.forEach((item: any, index: number) => {
+        if (item.catalogId === tree[0].catalogId) {
+          copyData[index] = tree[0];
+        }
+      });
+      setCategories(copyData);
+      const catalogId = catalogs[catalogs.length - 1];
+      getList({
+        sceneId: tree[0].sceneId,
+        catalogId
+      });
+      setLastCategory({
+        sceneId: tree[0].sceneId,
+        catalogId,
+        lastLevel: 1
+      });
+      setFormParams((formParams) => ({ ...formParams, catalogId }));
+    } else {
+      const res = await getCategory();
+      setCategories(res);
+      getList();
+    }
+  };
   useEffect(() => {
-    getList();
-    getCategory();
+    initSetFormQuery();
     getSensitiveCheckedInfo();
   }, []);
 
@@ -381,7 +416,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     const formData = new FormData();
     formData.append('file', file);
     const res = await addBatchSpeech(formData);
-    console.log(res);
     if (res) {
       message.success(res);
     }
@@ -438,6 +472,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       </div>
       <div className="form-inline pt20">
         <NgFormSearch
+          defaultValues={formDefaultValue}
           searchCols={setSearchCols(categories)}
           loadData={loadData}
           onSearch={onSearch}

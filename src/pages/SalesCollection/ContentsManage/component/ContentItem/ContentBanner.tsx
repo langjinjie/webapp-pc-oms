@@ -2,6 +2,7 @@ import React, { MouseEvent, useContext, useEffect, useState } from 'react';
 import { Icon } from 'src/components/index';
 import { ICatalogItem, IEditOrAddCatalogParam, IFirmModalParam } from 'src/utils/interface';
 import { getCategoryList, requestSaveSortCatalog, requestDeleteCatalog } from 'src/apis/salesCollection';
+import { useHistory } from 'react-router';
 import { catalogLastLeve } from 'src/utils/commonData';
 import { Context } from 'src/store';
 
@@ -42,9 +43,8 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   const { currentCorpId: corpId } = useContext(Context);
   const [childrenList, setChildrenList] = useState<ICatalogItem[]>([]);
   const [currentContent, setCurrentContent] = useState('');
-  // useMemo(() => {
-  //   setParents((parents) => [...parents, parentCatalog]);
-  // }, [parentCatalog]);
+  const history = useHistory();
+
   // 获取当前目录的子目录
   const getCurrentChildrenList = async () => {
     const res = await getCategoryList({ corpId, sceneId: catalog.sceneId, catalogId: catalog.catalogId });
@@ -155,9 +155,70 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       setCurrentContents('');
     };
   }, []);
-  // 查看话术
-  const viewSpeed = (catalog: any) => {
-    console.log(catalog, { parentCatalog });
+  const transTree = (data: any[]) => {
+    const result: any[] = [];
+    const map = {};
+    if (!Array.isArray(data)) {
+      // 验证data是不是数组类型
+      return [];
+    }
+    data.forEach((item: any) => {
+      // 建立每个数组元素id和该对象的关系
+      // @ts-ignore
+      map[item.id] = item; // 这里可以理解为浅拷贝，共享引用
+    });
+    data.forEach((item) => {
+      // @ts-ignore
+      const parent = map[item.parentId]; // 找到data中每一项item的爸爸
+      if (parent) {
+        // 说明元素有爸爸，把元素放在爸爸的children下面
+        (parent.children || (parent.children = [])).unshift(item);
+      } else {
+        // 说明元素没有爸爸，是根节点，把节点push到最终结果中
+        result.push(item); // item是对象的引用
+      }
+    });
+    return result; // 数组里的对象和data是共享的
+  };
+
+  // 查看&新增话术
+  const navigateToSpeech = async (PageType: 'list' | 'edit') => {
+    // TODO 针对树形结构类目回显数据处理
+    const map = await Promise.all(
+      parentCatalog.map(async (item: any, index: number) => {
+        const children = await getCategoryList({ sceneId: item.sceneId, catalogId: item.catalogId });
+        const filterChildren: any[] = [];
+        if (children.length > 0) {
+          children.forEach((item: any) => {
+            if (item.lastLevel === 0) {
+              item.isLeaf = false;
+            }
+            if (item.catalogId !== parentCatalog[index + 1].catalogId) {
+              filterChildren.push(item);
+            }
+          });
+        }
+        return Promise.resolve({
+          ...item,
+          id: index + 1,
+          parentId: index,
+          isLeaf: false,
+          children: filterChildren
+        });
+      })
+    );
+    const treeData = transTree(map);
+    localStorage.setItem('catalogTree', JSON.stringify(treeData));
+    const res = parentCatalog.reduce((pre: any, next: any) => {
+      pre.push(next.catalogId);
+      return pre;
+    }, []);
+    if (PageType === 'list') {
+      history.push(`/speechManage?catalog=${res.join(',')}`);
+    } else {
+      sessionStorage.setItem('backRoute', '/contentsManage');
+      history.push(`/speechManage/edit?catalog=${res.join(',')}`);
+    }
   };
   return (
     <>
@@ -183,11 +244,11 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
         <div className={style.edit}>
           {catalog.lastLevel === 1 && (
             <>
-              <span onClick={() => viewSpeed(catalog)}>
+              <span onClick={() => navigateToSpeech('list')}>
                 <EyeOutlined className={style.svgIcon} />
                 查看话术
               </span>
-              <span onClick={editClickHandle}>
+              <span onClick={() => navigateToSpeech('edit')}>
                 <Icon className={style.svgIcon} name="tianjiafenzu" />
                 新增话术
               </span>
