@@ -9,7 +9,8 @@ import { ICatalogItem, IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils
 import { getCategoryList } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
 import style from './style.module.less';
-import { useDocumentTitle } from 'src/utils/base';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { useDidRecover } from 'react-router-cache-route';
 // import NgTree from './component/NgTree/NgTree';
 
 const ContentsManage: React.FC = () => {
@@ -29,6 +30,14 @@ const ContentsManage: React.FC = () => {
   useEffect(() => {
     getCatalogList();
   }, []);
+
+  useDidRecover(() => {
+    const { isCatch } = URLSearchParams(location.search);
+    // 判断页面是否需要更新
+    if (!isCatch) {
+      getCatalogList();
+    }
+  });
   return (
     <>
       {/* <NgTree

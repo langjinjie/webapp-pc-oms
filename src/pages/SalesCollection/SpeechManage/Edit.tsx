@@ -18,7 +18,7 @@ const scenesStates = [
   { sceneId: 4, name: '场景话术', needGenderType: 1, needAgeType: 1 },
   { sceneId: 5, name: '问答知识', needGenderType: 0, needAgeType: 0 }
 ];
-const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
+const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   useDocumentTitle('话术编辑');
   const [speechForm] = useForm();
   const [speech, setSpeech] = useState<SpeechProps>();
@@ -156,6 +156,15 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
     initSetFormQuery();
   }, []);
 
+  const handleBack = () => {
+    const backRoutePath = sessionStorage.getItem('backRoute');
+    if (backRoutePath) {
+      history.replace(`${backRoutePath}?isCatch=1`);
+    } else {
+      history.goBack();
+    }
+  };
+
   const onSubmit = async (params: any) => {
     const res = await editSpeech({
       ...params
@@ -164,7 +173,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
       const { code, sensitiveWord } = res;
       if (code === 0) {
         message.success('保存成功');
-        history.back();
+        handleBack();
       } else if (code === 1) {
         message.error('触发了敏感词,请修改后再提交');
         setSpeech((speech) => ({ ...speech!, sensitiveWord, sensitive: 1 }));
@@ -281,10 +290,6 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
         setOriginSpeech(undefined);
       }
     }
-  };
-
-  const handleBack = () => {
-    history.back();
   };
 
   return (

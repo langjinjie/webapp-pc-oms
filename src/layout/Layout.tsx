@@ -5,24 +5,28 @@
  */
 
 import React, { useState, useEffect, useContext, Suspense } from 'react';
-import { Redirect, Route, withRouter, RouteProps, RouteComponentProps, Switch } from 'react-router-dom';
+import { Redirect, Route, withRouter, RouteProps, RouteComponentProps } from 'react-router-dom';
 import classNames from 'classnames';
 import { Icon } from 'src/components';
 import { Context } from 'src/store';
-import { routes, menus, Menu } from 'src/pages/routes';
+import { routes, menus, Menu, cacheRoutes } from 'src/pages/routes';
 import { queryUserInfo } from 'src/apis';
 import { getCookie } from 'src/utils/base';
 import Header from './Header';
 import './style.less';
+import CacheRoute, { CacheSwitch } from 'react-router-cache-route';
 
 const Routes = withRouter(({ location }) => (
   <Suspense fallback={null}>
-    <Switch location={location}>
+    <CacheSwitch location={location}>
       {routes.map((item: RouteProps) => (
         <Route key={`rt${item.path}`} {...item} exact />
       ))}
+      {cacheRoutes.map((item: RouteProps) => (
+        <CacheRoute key={`rt${item.path}`} {...item} exact />
+      ))}
       <Redirect from="/*" to="/index" />
-    </Switch>
+    </CacheSwitch>
   </Suspense>
 ));
 

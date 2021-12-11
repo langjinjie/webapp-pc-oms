@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
 import { RouteComponentProps } from 'react-router';
@@ -132,14 +132,13 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     } = values;
     let updateBeginTime = '';
     let updateEndTime = '';
-    console.log(catalogIds);
     if (times) {
       updateBeginTime = times[0].startOf('day').valueOf();
       updateEndTime = times[1].endOf('day')?.valueOf();
     }
     let catalogId = '';
     let sceneId = '';
-    if (catalogIds) {
+    if (catalogIds.length > 0) {
       catalogId = catalogIds[catalogIds.length - 1];
       sceneId = lastCategory.sceneId;
     } else {
@@ -255,7 +254,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
 
   const rowSelection = {
-    hideSelectAll: true,
+    hideSelectAll: false,
     selectedRowKeys: selectedRowKeys,
     onChange: (selectedRowKeys: React.Key[], selectedRows: SpeechProps[]) => {
       onSelectChange(selectedRowKeys, selectedRows);
@@ -267,6 +266,14 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       };
     }
   };
+
+  // 动态计算是否显示全选框
+  const hideSelectAll = useMemo(() => {
+    if (formParams.status !== '' && isNew) {
+      return false;
+    }
+    return true;
+  }, [formParams.status, isNew]);
 
   // 编辑话术
   const handleEdit: (scored: SpeechProps) => void = (scored) => {
@@ -488,7 +495,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
           return record.contentId;
         }}
         loading={loading}
-        rowSelection={rowSelection}
+        rowSelection={{ ...rowSelection, hideSelectAll }}
         pagination={pagination}
         paginationChange={paginationChange}
       ></NgTable>
