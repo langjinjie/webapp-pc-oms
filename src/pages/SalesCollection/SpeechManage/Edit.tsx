@@ -159,6 +159,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const handleBack = () => {
     const backRoutePath = sessionStorage.getItem('backRoute');
     if (backRoutePath) {
+      sessionStorage.removeItem('backRoute');
       history.replace(`${backRoutePath}?isCatch=1`);
     } else {
       history.goBack();
