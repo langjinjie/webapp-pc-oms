@@ -8,7 +8,7 @@ import { Context } from 'src/store';
 
 import classNames from 'classnames';
 import style from './style.module.less';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 
 interface IContentBannerProps {
@@ -244,40 +244,42 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
         <div className={style.edit}>
           {catalog.lastLevel === 1 && (
             <>
-              <span onClick={() => navigateToSpeech('list')}>
-                <EyeOutlined className={style.svgIcon} />
+              <Button type="link" onClick={() => navigateToSpeech('list')}>
+                <EyeOutlined />
                 查看话术
-              </span>
-              <span onClick={() => navigateToSpeech('edit')}>
-                <Icon className={style.svgIcon} name="tianjiafenzu" />
+              </Button>
+              <Button type="link" onClick={() => navigateToSpeech('edit')}>
+                <Icon className={'svgIcon'} name="tianjiafenzu" />
                 新增话术
-              </span>
+              </Button>
             </>
           )}
 
-          <span onClick={editClickHandle}>
-            <Icon className={style.svgIcon} name="bianji" />
+          <Button type="link" onClick={editClickHandle}>
+            <Icon className={'svgIcon'} name="bianji" />
             编辑
-          </span>
-          <span
-            className={classNames({ [style.hidden]: isHiddenMoveUp })}
+          </Button>
+          <Button
+            type="link"
+            className={classNames({ is_disabled: isHiddenMoveUp })}
             onClick={(e) => moveClickHandle(e, -1, isHiddenMoveUp)}
           >
-            <Icon className={style.svgIcon} name="shangyi" />
+            <Icon className={'svgIcon'} name="shangyi" />
             上移
-          </span>
-          <span
-            className={classNames({ [style.hidden]: isHiddenMoveDown })}
+          </Button>
+          <Button
+            type="link"
+            className={classNames({ is_disabled: isHiddenMoveDown })}
             onClick={(e) => moveClickHandle(e, 1, isHiddenMoveDown)}
           >
-            <Icon className={style.svgIcon} name="xiayi" />
+            <Icon className={'svgIcon'} name="xiayi" />
             下移
-          </span>
+          </Button>
           {!catalog.level || isHiddenDelete || (
-            <span onClick={delClickHandle}>
-              <Icon className={style.svgIcon} name="shanchu" />
+            <Button type="link" onClick={delClickHandle}>
+              <Icon className={'svgIcon'} name="shanchu" />
               删除
-            </span>
+            </Button>
           )}
         </div>
       </div>
