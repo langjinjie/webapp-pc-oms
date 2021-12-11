@@ -181,7 +181,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
             { type: 'string', required: true, message: '请输入渠道来源' },
             { message: '渠道来源最多12个字符', max: 12 }
           ]}
-          name="originalCreator"
+          name="fromSource"
         >
           <Input maxLength={15} placeholder={'请输入渠道来源，限12个字符以内。'} />
         </Form.Item>

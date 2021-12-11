@@ -130,7 +130,7 @@ const TabView2: React.FC = () => {
           { type: 'string', required: true, message: '请输入渠道来源' },
           { message: '渠道来源最多12个字符', max: 12 }
         ]}
-        name="originalCreator"
+        name="fromSource"
       >
         <Input maxLength={12} placeholder={'请输入渠道来源，限12个字符以内。'} />
       </Form.Item>

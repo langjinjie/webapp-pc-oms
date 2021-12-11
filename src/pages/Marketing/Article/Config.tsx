@@ -108,7 +108,7 @@ const columns = (args: colargsType): ColumnsType<Article> => {
       },
       {
         title: '渠道来源',
-        dataIndex: 'tagNameList',
+        dataIndex: 'fromSource',
         width: 260,
         align: 'center'
       },
