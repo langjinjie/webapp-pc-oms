@@ -5,6 +5,7 @@
  */
 
 import { lazy } from 'react';
+import { CacheRouteProps } from 'react-router-cache-route';
 import { RouteProps } from 'react-router-dom';
 
 export interface Menu {
@@ -142,13 +143,14 @@ export const routes: RouteProps[] = [
   {
     path: '/speechManage/edit',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
-  },
+  }
+];
+export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/contentsManage',
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
   }
 ];
-
 export const menus: Menu[] = [
   {
     name: '机构管理',

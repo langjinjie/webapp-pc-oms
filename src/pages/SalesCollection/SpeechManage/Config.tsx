@@ -132,7 +132,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     updateEndTime = '',
     tip = ''
   } = formParams;
-  console.log(formParams);
   return [
     {
       title: '来源',
