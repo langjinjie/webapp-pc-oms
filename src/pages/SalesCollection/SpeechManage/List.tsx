@@ -138,7 +138,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     }
     let catalogId = '';
     let sceneId = '';
-    if (catalogIds.length > 0) {
+    if (catalogIds && catalogIds.length > 0) {
       catalogId = catalogIds[catalogIds.length - 1];
       sceneId = lastCategory.sceneId;
     } else {
