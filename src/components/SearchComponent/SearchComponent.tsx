@@ -174,7 +174,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder} width={col.width} />
+                    <Input placeholder={col.placeholder} style={{ width: col.width }} />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (
