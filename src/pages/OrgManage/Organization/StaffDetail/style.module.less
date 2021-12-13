@@ -1,2 +1,126 @@
-.wrap {
+.staff_container {
+  .header {
+    height: 308px;
+    background: url('~@/assets/images/orgmanage/bg.png') no-repeat;
+    background-size: cover;
+  }
+
+  .staff_content {
+    background-color: transparent;
+    margin-top: -156px;
+    padding: 0 24px;
+    position: relative;
+
+    .editBtn {
+      position: absolute;
+      top: -56px;
+      right: 24px;
+      width: 102px;
+      height: 36px;
+      background: #fff;
+      color: #318cf5;
+    }
+  }
+  .colBox {
+    min-height: 100px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e5e5e7;
+  }
+
+  .staffMainInfo {
+    .avatar {
+      margin-top: 50px;
+      margin-bottom: 12px;
+      width: 114px;
+      height: 114px;
+      overflow: hidden;
+      background: #e5e5e7;
+      border-radius: 50%;
+    }
+    .staffName {
+      height: 22px;
+      line-height: 22px;
+      color: #111;
+    }
+    .staffTag {
+      margin-top: 20px;
+      margin-bottom: 48px;
+      &_primary {
+        display: inline-block;
+        width: 56px;
+        height: 24px;
+        line-height: 24px;
+        font-weight: bold;
+        color: #3b6ecf;
+        text-align: center;
+        background: rgba(166, 197, 237, 0.2);
+        border-radius: 12px;
+      }
+      &_warning {
+        display: inline-block;
+        margin-left: 12px;
+        width: 56px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        font-weight: bold;
+        background: rgba(255, 195, 56, 0.2);
+        color: #ab7800;
+        border-radius: 120px;
+      }
+    }
+  }
+
+  .infoList {
+    padding-left: 30px;
+    color: #111;
+    line-height: 20px;
+
+    .infoItem {
+      margin-bottom: 32px;
+    }
+  }
+}
+.breadcrumbWrap {
+  padding: 20px 24px;
+  color: #fff;
+  :global {
+    .ant-breadcrumb {
+      color: #fff;
+      display: inline-block;
+    }
+    .ant-breadcrumb > span:last-child {
+      color: #fff;
+    }
+  }
+}
+
+.cardTitle {
+  position: relative;
+  height: 76px;
+  font-size: 16px;
+
+  font-weight: bold;
+  line-height: 22px;
+  padding-top: 30px;
+  margin-left: 30px;
+  margin-bottom: 24px;
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 122px;
+    height: 4px;
+    background: #3b6fce;
+    border-radius: 2px;
+    background: #3b6fce;
+  }
+  &_extra {
+    font-size: 12px;
+    font-weight: normal;
+    margin-left: 4px;
+  }
 }

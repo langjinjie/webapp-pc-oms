@@ -1,18 +1,24 @@
 /**
 * @name style.module
 * @author Lester
-* @date 2021-12-10 10:36
+* @date 2021-12-13 15:36
 */
-.wrap {
-  height: calc(100vh - 80px);
-  padding: 24px;
+.setLeaderWrap {
+  width: 572px;
+  height: 386px;
+  border-radius: 8px;
+  outline: 1px solid #e5e5e7;
   display: flex;
+
+  .scrollWrap {
+    flex: 1;
+  }
 
   .left {
     width: 360px;
     height: 100%;
-    border-radius: 8px;
-    border: 1px solid #e5e5e7;
+    display: flex;
+    flex-direction: column;
 
     .inputWrap {
       width: 100%;
@@ -20,9 +26,22 @@
       border-bottom: 1px solid #e5e5e7;
 
       :global {
+        .ant-input {
+          border-radius: 18px;
+          padding: 6px 11px;
+
+          &::placeholder {
+            font-size: 12px;
+          }
+        }
+
+        .ant-input-group-addon {
+          left: 1px !important;
+        }
+
         .ant-input-search-button {
           position: absolute;
-          left: -48px;
+          left: -50px;
           top: 2px;
           background: none;
           border: none;
@@ -85,76 +104,46 @@
         }
       }
     }
-  }
 
-  .right {
-    margin-left: 18px;
-    flex: 1;
-  }
+    .searchList {
+      padding: 10px 20px;
 
-  .departmentOperation {
-    position: fixed;
-    width: 170px;
-    height: 232px;
-    padding: 4px;
-    box-shadow: 2px 0 16px 0 rgba(129, 141, 168, 0.2);
-    z-index: 999;
-    border-radius: 8px;
-    background-color: white;
-
-    .operationItem {
-      padding: 7px 16px;
-      font-size: 12px;
-      color: #111111;
-      line-height: 18px;
-      cursor: pointer;
-
-      &.disabled {
-        color: #999aa1;
-        cursor: no-drop;
-
-        &:hover {
-          background: unset;
-          border-radius: unset;
-          color: #999aa1;
-        }
-      }
-
-      &:hover {
-        background: rgba(48, 120, 219, 0.2);
+      .searchItem {
+        padding: 0 16px;
+        width: 100%;
+        height: 36px;
         border-radius: 8px;
-        color: #318cf5;
+        font-size: 14px;
+        line-height: 36px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        cursor: pointer;
+
+        &.active {
+          background: rgba(48, 120, 219, 0.2);
+          color: #318cf5;
+        }
       }
     }
   }
-}
 
-.inputRadius {
-  padding: 6px 10px;
-  border-radius: 18px;
-}
-
-.textCenter {
-  text-align: center;
-}
-
-.searchList {
-  padding: 10px 20px;
-
-  .searchItem {
-    padding: 0 16px;
-    width: 100%;
-    height: 36px;
-    border-radius: 8px;
+  .right {
+    flex: 1;
+    border-left: 1px solid #e5e5e7;
     font-size: 14px;
-    line-height: 36px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    cursor: pointer;
+    line-height: 20px;
 
-    &.active {
-      background: rgba(48, 120, 219, 0.2);
+    .chooseHeader {
+      padding: 18px 19px;
+
+      color: #111111;
+      line-height: 20px;
+      border-bottom: 1px solid #e5e5e7;
+    }
+
+    .leaderName {
+      padding: 10px 19px;
       color: #318cf5;
     }
   }

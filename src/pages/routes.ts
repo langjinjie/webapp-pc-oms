@@ -150,6 +150,15 @@ export const routes: RouteProps[] = [
   {
     path: '/organization',
     component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
+  },
+  {
+    path: '/organization/staff-detail',
+    component: lazy(() => import('src/pages/OrgManage/Organization/StaffDetail/StaffDetail'))
+  },
+  // 免统计
+  {
+    path: '/statistics-free',
+    component: lazy(() => import('src/pages/OrgManage/StatisticsFree/List'))
   }
 ];
 
@@ -170,6 +179,14 @@ export const menus: Menu[] = [
       {
         name: '组织架构管理',
         path: '/organization'
+      },
+      {
+        name: '数据免统计名单',
+        path: '/statistics-free'
+      },
+      {
+        name: '坐席详情（测试入口）',
+        path: '/organization/staff-detail'
       }
     ]
   },

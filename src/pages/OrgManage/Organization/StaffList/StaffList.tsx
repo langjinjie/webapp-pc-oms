@@ -5,7 +5,11 @@ import { TableColumns, TablePagination } from './Config';
 import { MultiSetting } from './component';
 import style from './style.module.less';
 
-const StaffList: React.FC = () => {
+interface StaffListProps {
+  departmentId: string;
+}
+
+const StaffList: React.FC<StaffListProps> = ({ departmentId }) => {
   const [staffList, setStaffList] = useState<{ total: number; list: any[] }>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [paginationParam, setPaginationParam] = useState({ current: 1, pageSize: 10 });
@@ -45,6 +49,7 @@ const StaffList: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log(departmentId);
     setIsLoading(true);
     getStaffList();
     setIsLoading(false);
@@ -85,5 +90,4 @@ const StaffList: React.FC = () => {
     </div>
   );
 };
-
 export default StaffList;

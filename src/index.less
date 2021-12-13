@@ -74,6 +74,19 @@ ul {
 .container {
   padding: 24px;
   background: #fff;
+
+  /** 列表头部操作按钮样式
+  ------------------------------------------- */
+  .header {
+    .btn_wrap {
+      .ant-btn {
+        padding: 0 40px;
+        & + .ant-btn {
+          margin-left: 40px;
+        }
+      }
+    }
+  }
 }
 
 // fontSize 12-28px
@@ -110,6 +123,14 @@ ul {
   .ml((@i + 5));
 }
 .ml(5);
+// 上外边距 5->40px
+.mt(@i) when(@i<=40) {
+  .mt@{i} {
+    margin-top: @i + 0px;
+  }
+  .mt((@i + 2));
+}
+.mt(6);
 
 @bgColor_3078DB: #3078db;
 @color_fff: #fff;
