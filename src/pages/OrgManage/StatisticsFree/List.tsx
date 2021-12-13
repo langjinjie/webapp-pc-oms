@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Button } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
+import { AddStatisticsFreeModal } from './ExportStaff/addStatisticsFreeModal';
 
 const StatisticsFreeList: React.FC = () => {
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
+  const [visible, setVisible] = useState(false);
+
   const handleSearch = (params: any) => {
     console.log(params);
   };
@@ -34,7 +37,7 @@ const StatisticsFreeList: React.FC = () => {
           <Button
             type="primary"
             onClick={() => {
-              console.log('添加');
+              setVisible(true);
             }}
             shape="round"
             size="large"
@@ -66,6 +69,13 @@ const StatisticsFreeList: React.FC = () => {
           }}
         />
       </div>
+      <AddStatisticsFreeModal
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        onConfirm={() => {
+          console.log('确定');
+        }}
+      />
     </div>
   );
 };
