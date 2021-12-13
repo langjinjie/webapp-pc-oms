@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
+import { MultiSetting } from './component';
 import style from './style.module.less';
 
 const StaffList: React.FC = () => {
-  const [staffList, setStaffList] = useState<{ [key: string]: any }[]>([]);
+  const [staffList, setStaffList] = useState<{ total: number; list: any[] }>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [paginationParam, setPaginationParam] = useState({ current: 1, pageSize: 10 });
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [disabledColumnType, setDisabledColumnType] = useState(-1);
+  const [multiVisible, setMultiVisible] = useState<boolean>(false);
 
   // 获取员工列表
   const getStaffList = () => {
@@ -34,8 +36,14 @@ const StaffList: React.FC = () => {
       i % 2 === 0 ? (initalStaffItem.status = 0) : (initalStaffItem.status = 1);
       staffLsit.push(initalStaffItem);
     }
-    setStaffList(staffLsit);
+    setStaffList({ total: staffLsit.length, list: staffLsit });
   };
+
+  // 批量设置信息
+  const multiSettingHandle = () => {
+    setMultiVisible((visible) => !visible);
+  };
+
   useEffect(() => {
     setIsLoading(true);
     getStaffList();
@@ -44,7 +52,7 @@ const StaffList: React.FC = () => {
   return (
     <div className={style.wrap}>
       <div className={style.operation}>
-        <Button type="primary" className={style.btn}>
+        <Button type="primary" className={style.btn} onClick={multiSettingHandle}>
           批量设置信息
         </Button>
         <Button type="primary" className={style.btn}>
@@ -60,21 +68,20 @@ const StaffList: React.FC = () => {
       <NgTable
         className={style.tableWrap}
         setRowKey={(record: any) => record.number}
-        dataSource={staffList}
+        dataSource={staffList.list}
         columns={TableColumns()}
         loading={isLoading}
         {...TablePagination({
           staffList,
           paginationParam,
           setPaginationParam,
+          selectedRowKeys,
           setSelectedRowKeys,
           disabledColumnType,
           setDisabledColumnType
         })}
-        // pagination={pagination}
-        // rowSelection={rowSelection}
-        // paginationChange={paginationChange}
       />
+      <MultiSetting visible={multiVisible} setVisible={setMultiVisible} />
     </div>
   );
 };

@@ -1,0 +1,82 @@
+.modalWrap {
+  // 添加按钮的公共样式
+  .add {
+    font-size: 14px;
+    color: #318cf5;
+    cursor: pointer;
+    .addIcon {
+      margin-right: 2px;
+    }
+  }
+
+  font-size: 16px;
+  .closeIcon {
+    width: 16px;
+    height: 16px;
+  }
+  .chooseStaff {
+    padding-bottom: 54px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    .title {
+      font-size: 16px;
+    }
+    .staffList {
+      margin-top: 20px;
+      width: 572px;
+      height: 100px;
+      padding: 10px 16px;
+      background: #f8f8f8;
+      border-radius: 8px;
+    }
+  }
+  .otherInfo {
+    padding: 28px 0;
+    .infoTitle {
+      font-size: 16px;
+    }
+    .infoItem {
+      margin-top: 20px;
+      .title {
+        color: #7e8185;
+      }
+      .value {
+        margin-top: 8px;
+        padding: 0 16px;
+        width: 572px;
+        height: 40px;
+        line-height: 40px;
+        background: #f8f8f8;
+        border-radius: 8px;
+        .input {
+          width: 100%;
+          border: none;
+          background-color: transparent;
+          outline: none;
+          &::placeholder {
+            color: #cccdd0;
+          }
+        }
+      }
+      &:last-child {
+        .value {
+          min-height: 40px;
+          height: auto;
+          .input {
+            width: 170px;
+          }
+        }
+      }
+    }
+  }
+  :global {
+    .ant-modal-header {
+      .ant-modal-title {
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: #111111;
+      }
+    }
+  }
+}
