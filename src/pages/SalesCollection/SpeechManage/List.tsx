@@ -363,7 +363,11 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
           setCurrentType(null);
 
           const { successNum, failNum } = res;
-          message.success(`已完成！操作成功${successNum}条，操作失败${failNum}条`);
+          message.success(
+            failNum > 0
+              ? `已完成！操作成功${successNum}条，操作失败${failNum}条，敏感词检测异常和未知会导致上架失败！`
+              : '已完成！操作成功'
+          );
           // 重新更新列表
           setPagination((pagination) => ({ ...pagination, current: 1 }));
           getList({ pageNum: 1 });
