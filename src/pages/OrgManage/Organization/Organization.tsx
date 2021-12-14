@@ -223,7 +223,7 @@ const Organization: React.FC = () => {
         }
       </div>
       <ul
-        style={{ ...position, display: showDepart ? 'block' : 'none' }}
+        style={{ ...position, transform: `scale(${showDepart ? 1 : 0})` }}
         className={style.departmentOperation}
         onClick={(e) => e.stopPropagation()}
       >
