@@ -10,6 +10,7 @@ import { setTitle } from 'lester-tools';
 import { Icon, Modal } from 'src/components';
 import { queryCorpOrg } from 'src/apis/stationConfig';
 import StaffList from './StaffList/StaffList';
+import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
 import style from './style.module.less';
 
@@ -213,7 +214,13 @@ const Organization: React.FC = () => {
         </ul>
       </section>
       <div className={style.right}>
-        <StaffList departmentId={currentDepartment.id!} />
+        {
+          displayType === 0
+            ? <StaffList departmentId={currentDepartment.id!} />
+            : (
+            <StaffDetail />
+              )
+        }
       </div>
       <ul
         style={{ ...position, display: showDepart ? 'block' : 'none' }}

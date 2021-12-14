@@ -6,6 +6,7 @@
 
 import { lazy } from 'react';
 import { RouteProps } from 'react-router-dom';
+import { CacheRouteProps } from 'react-router-cache-route';
 
 export interface Menu {
   name: string;
@@ -148,10 +149,6 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
   },
   {
-    path: '/organization',
-    component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
-  },
-  {
     path: '/organization/staff-detail',
     component: lazy(() => import('src/pages/OrgManage/Organization/StaffDetail/StaffDetail'))
   },
@@ -159,6 +156,14 @@ export const routes: RouteProps[] = [
   {
     path: '/statistics-free',
     component: lazy(() => import('src/pages/OrgManage/StatisticsFree/List'))
+  }
+];
+
+// 缓存路由
+export const cacheRoutes: CacheRouteProps[] = [
+  {
+    path: '/organization',
+    component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
   }
 ];
 

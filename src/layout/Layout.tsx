@@ -5,11 +5,12 @@
  */
 
 import React, { useState, useEffect, useContext, Suspense } from 'react';
-import { Redirect, Route, withRouter, RouteProps, RouteComponentProps, Switch } from 'react-router-dom';
+import { Redirect, Route, withRouter, RouteProps, RouteComponentProps } from 'react-router-dom';
+import { CacheRoute, CacheSwitch, CacheRouteProps } from 'react-router-cache-route';
 import classNames from 'classnames';
 import { Icon } from 'src/components';
 import { Context } from 'src/store';
-import { routes, menus, Menu } from 'src/pages/routes';
+import { routes, cacheRoutes, menus, Menu } from 'src/pages/routes';
 import { queryUserInfo } from 'src/apis';
 import { getCookie } from 'src/utils/base';
 import Header from './Header';
@@ -17,12 +18,15 @@ import './style.less';
 
 const Routes = withRouter(({ location }) => (
   <Suspense fallback={null}>
-    <Switch location={location}>
-      {routes.map((item: RouteProps) => (
-        <Route key={`rt${item.path}`} {...item} exact />
+    <CacheSwitch location={location}>
+      {routes.map(({ path, ...props }: RouteProps) => (
+        <Route key={`rt${path}`} path={path} {...props} exact />
+      ))}
+      {cacheRoutes.map(({ path, ...props }: CacheRouteProps) => (
+        <CacheRoute saveScrollPosition className="cache-route" key={`rt${path}`} path={path} {...props} exact />
       ))}
       <Redirect from="/*" to="/index" />
-    </Switch>
+    </CacheSwitch>
   </Suspense>
 ));
 
