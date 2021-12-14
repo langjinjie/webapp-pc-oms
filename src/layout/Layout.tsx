@@ -30,7 +30,7 @@ const Routes = withRouter(({ location }) => (
   </Suspense>
 ));
 
-const Layout: React.FC<RouteComponentProps> = ({ history }) => {
+const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const { setUserInfo, setIsMainCorp, setCurrentCorpId } = useContext(Context);
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
   const [subMenus, setSubMenus] = useState<Menu[]>([]);
@@ -67,6 +67,10 @@ const Layout: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   useEffect(() => {
+    initMenu();
+  }, [location]);
+
+  useEffect(() => {
     const token = getCookie('b2632ff42e4a58b67f37c8c1f322b213');
     if (token) {
       initMenu();
@@ -99,7 +103,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history }) => {
                 setSubMenuIndex(null);
                 setSubMenus(menu.children || []);
                 if (menu.children && menu.children.length > 0) {
-                  setSubMenuIndex(0);
                   history.push(menu.children[0].path);
                 }
               }}
@@ -117,7 +120,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history }) => {
               })}
               key={subMenu.path}
               onClick={() => {
-                setSubMenuIndex(index);
                 history.push(subMenu.path);
               }}
             >
