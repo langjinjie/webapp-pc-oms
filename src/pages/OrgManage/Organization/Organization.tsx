@@ -4,9 +4,9 @@
  * @date 2021-12-10 10:36
  */
 import React, { useEffect, useState } from 'react';
-import { Input, Tree, Modal as AntdModal } from 'antd';
+import { Input, Tree, Modal as AntdModal, message } from 'antd';
 import classNames from 'classnames';
-import { setTitle } from 'lester-tools';
+import { setTitle, copy } from 'lester-tools';
 import { Icon, Modal } from 'src/components';
 import { queryCorpOrg } from 'src/apis/stationConfig';
 import StaffList from './StaffList/StaffList';
@@ -69,47 +69,113 @@ const Organization: React.FC = () => {
   };
 
   /**
+   * 上下移动
+   * @param data
+   * @param key
+   * @param type
+   */
+  const moveData = (data: OrganizationItem[], key: string, type: string): OrganizationItem[] => {
+    const index: number = data.findIndex((item) => item.id === key);
+    if (index > -1) {
+      const copyData = data.slice(0);
+      const temp = copyData[index];
+      const nextIndex = type === 'up' ? index - 1 : index + 1;
+      copyData[index] = {
+        ...copyData[nextIndex],
+        index
+      };
+      copyData[nextIndex] = {
+        ...temp,
+        index: nextIndex
+      };
+      setCurrentNode({
+        ...temp,
+        index: nextIndex
+      });
+      return copyData;
+    } else {
+      return data.map((item) => {
+        if (item.children && item.children.length > 0) {
+          return {
+            ...item,
+            children: moveData(item.children, key, type)
+          };
+        }
+        return item;
+      });
+    }
+  };
+
+  /**
    * 格式化数据源
    * @param data
    * @param isRoot
    */
   const formatData = (data: OrganizationItem[], isRoot?: boolean) => {
-    const resData: OrganizationItem[] = [];
-    data.forEach((item, index) => {
-      const resItem = {
-        ...item,
-        index,
-        total: data.length,
-        isRoot
-      };
-
-      if (resItem.children && resItem.children.length > 0) {
-        resItem.children = formatData(resItem.children);
-      }
-      resData.push(resItem);
-    });
-    return resData;
+    return data.map((item, index) => ({
+      ...item,
+      isLeaf: !item.isParent,
+      index,
+      total: data.length,
+      isRoot
+    }));
+    /* if (resItem.children && resItem.children.length > 0) {
+      resItem.children = formatData(resItem.children);
+    } */
   };
 
   /**
-   * 获取组织架构
-   * @param parentId
+   * 更新数据
+   * @param list
+   * @param key
+   * @param children
    */
-  const getCorpOrgData = async (parentId?: string) => {
-    return await queryCorpOrg({ parentId });
+  const updateData = (list: OrganizationItem[], key: string, children: OrganizationItem[]): OrganizationItem[] => {
+    return list.map((item) => {
+      if (item.id === key) {
+        return {
+          ...item,
+          children: formatData(children)
+        };
+      }
+      if (item.children && item.children.length > 0) {
+        return {
+          ...item,
+          children: updateData(item.children, key, children)
+        };
+      }
+      return item;
+    });
+  };
+
+  /**
+   * 异步加载数据
+   * @param key
+   * @param children
+   */
+  const onLoadData = async ({ key, children }: any) : Promise<void> => {
+    if (!children || children?.length === 0) {
+      const res: any = await queryCorpOrg({ parentId: key });
+      if (res) {
+        setOrganization((data) => updateData(data, key, res));
+      }
+    }
   };
 
   /**
    * 获取组织架构初始数据
    */
   const initCorpOrgData = async () => {
-    const res: any = await getCorpOrgData();
+    const res: any = await queryCorpOrg({});
     if (res && res.length > 0) {
+      res[0].children = [];
       setOrganization(formatData(res, true));
-      setExpandIds([res[0].id]);
     }
   };
 
+  /**
+   * 删除部门
+   */
   const delDepartment = () => {
     if (!currentNode.isParent) {
       AntdModal.confirm({
@@ -122,6 +188,10 @@ const Organization: React.FC = () => {
     }
   };
 
+  /**
+   * 搜索
+   * @param val
+   */
   const onSearch = (val: string) => {
     if (val) {
       setDisplayType(1);
@@ -144,6 +214,9 @@ const Organization: React.FC = () => {
     }
   };
 
+  /**
+   * 隐藏部门操作浮窗
+   */
   const hideDepart = () => setShowDepart(false);
 
   useEffect(() => {
@@ -175,6 +248,7 @@ const Organization: React.FC = () => {
             expandedKeys={expandIds}
             onExpand={(keys) => setExpandIds(keys)}
             treeData={organization}
+            loadData={onLoadData}
             titleRender={(node) => (
               <div className={style.nodeItem}>
                 {node.name}({node.isRoot ? '78/80' : '60'})
@@ -227,7 +301,14 @@ const Organization: React.FC = () => {
         className={style.departmentOperation}
         onClick={(e) => e.stopPropagation()}
       >
-        <li className={style.operationItem}>部门ID：123</li>
+        <li
+          className={style.operationItem}
+          title={currentNode.id}
+          onClick={() => {
+            copy(currentNode.id!, false);
+            message.success('部门id已复制');
+          }}
+        >部门ID：{currentNode.id}</li>
         <li className={style.operationItem} onClick={() => setDepartmentVisible(true)}>
           添加子部门
         </li>
@@ -255,6 +336,7 @@ const Organization: React.FC = () => {
           className={classNames(style.operationItem, {
             [style.disabled]: currentNode.index === 0
           })}
+          onClick={() => currentNode.index! > 0 && setOrganization(moveData(organization, currentNode.id!, 'up'))}
         >
           上移
         </li>
@@ -262,6 +344,7 @@ const Organization: React.FC = () => {
           className={classNames(style.operationItem, {
             [style.disabled]: currentNode.index! === (currentNode.total || 0) - 1
           })}
+          onClick={() => currentNode.index! < (currentNode.total || 0) - 1 && setOrganization(moveData(organization, currentNode.id!, 'down'))}
         >
           下移
         </li>

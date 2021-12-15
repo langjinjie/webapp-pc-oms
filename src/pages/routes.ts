@@ -164,6 +164,10 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/statistics-free',
     component: lazy(() => import('src/pages/OrgManage/StatisticsFree/List'))
+  },
+  {
+    path: '/test/video',
+    component: lazy(() => import('src/pages/Test/Video/Video'))
   }
 ];
 export const menus: Menu[] = [
@@ -274,3 +278,17 @@ export const menus: Menu[] = [
     ]
   }
 ];
+
+if (process.env.NODE_ENV === 'development') {
+  menus.push({
+    name: '调试',
+    icon: 'icon_daohang_28_xitongshezhi',
+    path: 'test',
+    children: [
+      {
+        name: '视频',
+        path: '/test/video'
+      }
+    ]
+  });
+}
