@@ -1,63 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import { message, Modal, /* Form, */ Tag } from 'antd';
 import { Icon } from 'src/components';
+import { ChooseTreeModal } from 'src/pages/OrgManage/Organization/StaffList/component';
 import style from './style.module.less';
 
 interface IMultiSettingProps {
   visible: boolean;
-  setVisible: (param: boolean) => void;
+  setMultiVisible: (param: boolean) => void;
 }
 
-const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setVisible }) => {
+const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }) => {
   const [staffList, setStaffList] = useState<any[]>([]);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [chooseTreeParam, setChooseTreeParam] = useState<{ title: string; visible: boolean; isShowStaff: boolean }>({
+    title: '',
+    visible: false,
+    isShowStaff: true
+  });
   const [staffInfo, setStaffInfo] = useState<{ [key: string]: any }>({});
-  const [tagList, setTagList] = useState(['标签1']);
+  const [tagList, setTagList] = useState<string[]>([]);
   // const [form] = Form.useForm();
   // modal取消
   const onCancelHandle = () => {
-    if (visible) {
-      setVisible(false);
-    } else {
-      setModalVisible(false);
-      setVisible(true);
-    }
+    setMultiVisible(false);
   };
   // modal确认
   const onOkHandle = () => {
-    if (visible) {
-      console.log('tagList', tagList);
-      setVisible(false);
-    } else {
-      setStaffInfo({ department: '研发部' });
-      setModalVisible(false);
-      setVisible(true);
-    }
+    console.log('tagList', tagList);
+    setMultiVisible(false);
   };
   // 点击添加员工
   const addStaffHandle = () => {
-    setVisible(false);
-    setModalVisible(true);
+    setMultiVisible(false);
+    setChooseTreeParam({ title: '选择员工', visible: true, isShowStaff: true });
   };
   // 点击添加部门
   const addDepartmentHandle = () => {
-    setVisible(false);
-    setModalVisible(true);
+    setMultiVisible(false);
+    setChooseTreeParam({ title: '选择部门', visible: true, isShowStaff: false });
   };
   // onChange
   const onChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let addTags = e.target.value;
-    // 判断是否一次性添加多个标签
-    if (addTags.includes('；')) {
-      if (addTags.split('；').some((item) => item.length > 12)) {
-        return message.warning('单个标签最长不能超过12个字');
-      }
-      if (tagList.length + addTags.split('；').length >= 4) return message.warning('最多能添加4个标签');
-    } else {
-      if (addTags.length >= 12) message.warning('单个标签最多12个字符');
-      addTags = addTags.slice(0, 12);
-    }
-    setStaffInfo({ ...staffInfo, tag: addTags });
+    setStaffInfo({ ...staffInfo, tag: e.target.value });
   };
   // 失去焦点
   const onBlurHandle = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -75,12 +58,22 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setVisible }) => 
     const filterTagList = tagList.filter((item) => item !== tag);
     setTagList(filterTagList);
   };
+  // 输入框按下回车键
+  const inputOnKeyDownHandle = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      // 判断标签数量
+      if (tagList.length + (e.target as HTMLInputElement).value.split('；').length >= 4) {
+        message.warning('最多能添加4个标签');
+      }
+      setTagList([...tagList, ...(e.target as HTMLInputElement).value.split('；')].splice(0, 4));
+      setStaffInfo({ ...staffInfo, tag: '' });
+    }
+  };
   useEffect(() => {
     setStaffList([{ name: '李斯' }]);
   }, []);
   return (
     <>
-      {/* 批量设置员工信息 */}
       <Modal
         className={style.modalWrap}
         title={'批量设置信息'}
@@ -143,19 +136,23 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setVisible }) => 
           <div className={style.infoItem}>
             <div className={style.title}>标签</div>
             <div className={style.value}>
+              {/* <div className={style.tagWrap}> */}
               {tagList?.map((tag: string) => (
-                <Tag key={tag} closable onClose={() => closeTagHandle(tag)}>
+                <Tag key={tag} className={style.tagItem} closable onClose={() => closeTagHandle(tag)}>
                   {tag}
                 </Tag>
               ))}
+              {/* </div> */}
               {tagList.length !== 4 && (
                 <input
                   className={style.input}
-                  value={staffInfo.tag}
+                  value={staffInfo.tag || ''}
                   type="text"
+                  maxLength={12}
                   placeholder="请输入标签(最多12个字)"
                   onChange={(e) => onChangeHandle(e)}
                   onBlur={(e) => onBlurHandle(e)}
+                  onKeyDown={(e) => inputOnKeyDownHandle(e)}
                 />
               )}
             </div>
@@ -163,17 +160,12 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setVisible }) => 
           {/* </Form> */}
         </div>
       </Modal>
-      {/* 添加员工或者选择部门 */}
-      <Modal
-        title="选择员工"
-        visible={modalVisible}
-        centered={true}
-        closeIcon={<Icon className={style.closeIcon} name={'biaoqian_quxiao'} />}
-        onCancel={onCancelHandle}
-        onOk={onOkHandle}
-      >
-        添加员工
-      </Modal>
+      <ChooseTreeModal
+        chooseTreeParam={chooseTreeParam}
+        setStaffList={setStaffList}
+        setMultiVisible={setMultiVisible}
+        setChooseTreeParam={setChooseTreeParam}
+      />
     </>
   );
 };

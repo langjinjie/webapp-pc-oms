@@ -187,3 +187,18 @@ export interface ISensitiveSearchParam {
   updateBeginTime: string;
   updateEndTime: string;
 }
+
+// 组织架构
+export interface IOrganizationItem {
+  id?: string;
+  name?: string;
+  key?: string;
+  title?: string;
+  isParent?: boolean;
+  isLeaf?: boolean;
+  index?: number;
+  total?: number;
+  leaderId?: string;
+  isRoot?: boolean;
+  children?: IOrganizationItem[];
+}

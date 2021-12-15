@@ -61,10 +61,21 @@
       }
       &:last-child {
         .value {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          align-items: center;
           min-height: 40px;
+          line-height: 40px;
           height: auto;
+          .tagItem {
+            margin-top: 9px;
+            margin-bottom: 9px;
+          }
           .input {
-            width: 170px;
+            flex: 1;
+            width: auto;
+            min-width: 170px;
           }
         }
       }
