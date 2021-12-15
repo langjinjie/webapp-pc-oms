@@ -10,6 +10,7 @@ import { Context } from 'src/store';
 export interface SearchParamsProps {
   rangePicker: undefined | Moment[];
   title: string;
+  fromSource: string;
   categoryId: string;
   syncBank: string;
   corpId: string;
@@ -31,6 +32,13 @@ const setSearchCols = (options: any[]): SearchCol[] => {
       width: 160,
       options: options
     },
+    {
+      name: 'fromSource',
+      type: 'input',
+      label: '渠道来源',
+      width: '268px',
+      placeholder: '请输入'
+    },
     { name: 'rangePicker', width: '268px', type: 'rangePicker', label: '创建时间' },
     {
       name: 'syncBank',
@@ -49,7 +57,7 @@ const setSearchCols = (options: any[]): SearchCol[] => {
 enum StatusEnum {
   '未上架' = 0,
   '已上架',
-  '已下架',
+  '已下架'
 }
 export interface Article {
   newsId: string;
@@ -105,6 +113,12 @@ const columns = (args: colargsType): ColumnsType<Article> => {
         key: 'categoryName',
         align: 'center',
         render: (categoryName: string) => categoryName || UNKNOWN
+      },
+      {
+        title: '渠道来源',
+        dataIndex: 'fromSource',
+        width: 260,
+        align: 'center'
       },
       {
         title: '标签',
@@ -241,6 +255,12 @@ const columns = (args: colargsType): ColumnsType<Article> => {
         key: 'categoryName',
         align: 'center',
         render: (categoryName: string) => categoryName || UNKNOWN
+      },
+      {
+        title: '渠道来源',
+        dataIndex: 'fromSource',
+        width: 260,
+        align: 'center'
       },
       {
         title: '标签',

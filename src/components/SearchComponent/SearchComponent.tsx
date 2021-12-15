@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'antd';
 import style from './style.module.less';
@@ -36,6 +36,7 @@ interface SearchComponentProps {
   onChangeOfCascader?:
     | ((value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => void)
     | undefined;
+  defaultValues?: any;
 }
 const { RangePicker } = DatePicker;
 
@@ -66,6 +67,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     }
     onChangeOfCascader?.(value, selectedOptions);
   };
+  useEffect(() => {
+    if (props.defaultValues?.catalogIds) {
+      from.setFieldsValue({ catalogIds: props.defaultValues.catalogIds });
+    }
+  }, [props.defaultValues]);
   return (
     <>
       {isInline
@@ -174,7 +180,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder} width={col.width} />
+                    <Input placeholder={col.placeholder} style={{ width: col.width }} />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (

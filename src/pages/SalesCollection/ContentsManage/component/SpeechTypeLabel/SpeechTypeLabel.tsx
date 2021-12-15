@@ -1,24 +1,35 @@
 import React from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, FormInstance } from 'antd';
 import { UploadImg, UploadFile } from 'src/pages/SalesCollection/ContentsManage/component';
 import InputShowLength from 'src/pages/SalesCollection/SpeechManage/Components/InputShowLength/InputShowLength';
 import style from './style.module.less';
 
 interface ISpeechTypeLabelProps {
+  form: FormInstance<any>;
   type: number;
-  posterImg: string;
-  setPosterImg: (param: string) => void;
+  uploadImg: string;
+  setUploadImg: (param: string) => void;
   fileList: any[];
+  setSubmitDisabled: (param: boolean) => void;
 }
 
-const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, setPosterImg, fileList }) => {
+const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
+  form,
+  type,
+  uploadImg,
+  setUploadImg,
+  fileList,
+  setSubmitDisabled
+}) => {
   return (
     <>
       {type === 2 && ( // 图片
         <>
           <UploadImg
-            uploadImg={posterImg}
-            setUploadImg={setPosterImg}
+            form={form}
+            setSubmitDisabled={setSubmitDisabled}
+            uploadImg={uploadImg}
+            setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 750, limitHeight: 0 }}
             rules={[{ required: true, message: '请上传宽度为750像素，格式为.jpg的图片' }]}
             extra={'图片宽度750像素，高度不限，仅支持.jpg格式'}
@@ -42,8 +53,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       {type === 5 && ( // 图文链接
         <>
           <UploadImg
-            uploadImg={posterImg}
-            setUploadImg={setPosterImg}
+            form={form}
+            setSubmitDisabled={setSubmitDisabled}
+            uploadImg={uploadImg}
+            setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
             // rules={[{ required: true, message: '图片仅支持.jpg格式' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
@@ -77,8 +90,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       {type === 6 && ( // 音频
         <>
           <UploadImg
-            uploadImg={posterImg}
-            setUploadImg={setPosterImg}
+            form={form}
+            setSubmitDisabled={setSubmitDisabled}
+            uploadImg={uploadImg}
+            setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
@@ -110,8 +125,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       {type === 7 && ( // 视频
         <>
           <UploadImg
-            uploadImg={posterImg}
-            setUploadImg={setPosterImg}
+            form={form}
+            setSubmitDisabled={setSubmitDisabled}
+            uploadImg={uploadImg}
+            setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
@@ -142,8 +159,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
       {type === 8 && ( // 第三方链接
         <>
           <UploadImg
-            uploadImg={posterImg}
-            setUploadImg={setPosterImg}
+            form={form}
+            setSubmitDisabled={setSubmitDisabled}
+            uploadImg={uploadImg}
+            setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
@@ -187,8 +206,10 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({ type, posterImg, set
             <Input className={style.input} placeholder={'请输入小程序路径'} />
           </Form.Item>
           <UploadImg
-            uploadImg={posterImg}
-            setUploadImg={setPosterImg}
+            form={form}
+            setSubmitDisabled={setSubmitDisabled}
+            uploadImg={uploadImg}
+            setUploadImg={setUploadImg}
             imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
             rules={[{ required: true, message: '图片仅支持.jpg格式' }]}
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}

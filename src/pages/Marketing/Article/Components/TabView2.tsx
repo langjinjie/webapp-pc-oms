@@ -125,6 +125,16 @@ const TabView2: React.FC = () => {
         <Input placeholder="请输入" />
       </Form.Item>
       <Form.Item
+        label="渠道来源"
+        rules={[
+          { type: 'string', required: true, message: '请输入渠道来源' },
+          { message: '渠道来源最多12个字符', max: 12 }
+        ]}
+        name="fromSource"
+      >
+        <Input maxLength={12} placeholder={'请输入渠道来源，限12个字符以内。'} />
+      </Form.Item>
+      <Form.Item
         name="defaultImg"
         label={'文章分享封面'}
         extra=" 为确保最佳展示效果，请上传154*154像素高清图片，支持.png及.jpg格式的图片。若不上传，则默认为链接对应文章的自带封面。"
