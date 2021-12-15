@@ -26,7 +26,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [catalogParam, setCatalogParam] = useState<IContentParam>({ name: '', contentType: 0 });
-  const [posterImg, setPosterImg] = useState('');
+  const [uploadImg, setUploadImg] = useState('');
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [btnIsLoading, setBtnIsLoading] = useState(false);
   const [fileList, setFileList] = useState<{ name: string; uid: string; status: string; url: string }[]>([]);
@@ -45,7 +45,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   // 关闭modal重置
   const resetHandle = () => {
     form.resetFields();
-    setPosterImg('');
+    setUploadImg('');
     setCatalogDetail({
       sceneId: '',
       catalogId: '',
@@ -65,7 +65,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   const resetOnchange = (name: string, contentType: number) => {
     form.resetFields();
     form.setFieldsValue({ name, contentType });
-    setPosterImg('');
+    setUploadImg('');
     setFileList([]);
   };
   // 获取最后一级目录详情
@@ -87,9 +87,9 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       setCatalogParam({ name: res.name, contentType: res.contentType });
       // 处理长图回写
       if (res.contentType === 3) {
-        setPosterImg(res.contentUrl);
+        setUploadImg(res.contentUrl);
       } else {
-        setPosterImg(res.thumbnail);
+        setUploadImg(res.thumbnail);
       }
       // 处理小程序数据回写
       if (res.contentType === 9) {
@@ -109,7 +109,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     setCatalogParam({ ...catalogParam, contentType: e });
     if (e === catalogDetail.contentType) {
       form.setFieldsValue({ ...catalogDetail });
-      setPosterImg(catalogDetail.contentUrl as string);
+      setUploadImg(catalogDetail.contentUrl as string);
       if (catalogDetail.contentType === 6 || catalogDetail.contentType === 7) {
         setFileList([
           {
@@ -121,9 +121,9 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         ]);
       }
       if (e === 3) {
-        setPosterImg(catalogDetail.contentUrl as string);
+        setUploadImg(catalogDetail.contentUrl as string);
       } else {
-        setPosterImg(catalogDetail.thumbnail as string);
+        setUploadImg(catalogDetail.thumbnail as string);
       }
     } else {
       resetOnchange(name, e);
@@ -158,6 +158,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   // modal确认
   const modalOnOkHandle = async () => {
     await form.validateFields();
+    console.log(form.getFieldsValue());
     const updataCatalog = form.getFieldsValue();
     // 小程序请求参数
     if (updataCatalog.contentUrl && updataCatalog.contentType !== 9 && !updataCatalog.contentUrl.startsWith('http')) {
@@ -165,7 +166,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
     } else if (updataCatalog.contentType === 9) {
       updataCatalog.contentUrl = JSON.stringify({ appId: updataCatalog.appId, appPath: updataCatalog.appPath || '' });
     }
-    // 长图请求参数
+    // 图片请求参数
     if (updataCatalog.contentType === 2) {
       updataCatalog.contentUrl = updataCatalog.thumbnail;
       delete updataCatalog.thumbnail;
@@ -199,60 +200,59 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       }
     }
   }, [editOrAddLastCatalogParam]);
-  if (editOrAddLastCatalogParam) {
-    return (
-      <Modal
-        width={720}
-        centered
-        wrapClassName={style.modalWrap}
-        closable={false}
-        maskClosable={false}
-        visible={editOrAddLastCatalogParam.visible}
-        title={editOrAddLastCatalogParam.title + '目录'}
-        onCancel={onCancelHandle}
-        onOk={modalOnOkHandle}
-        okButtonProps={{
-          disabled: submitDisabled,
-          loading: btnIsLoading
-        }}
-      >
-        <Form form={form} onValuesChange={() => setSubmitDisabled(false)}>
-          <Form.Item className={style.modalContentFormItem} label="目录名称:" required>
-            <Form.Item name="name" rules={[{ required: true, message: '请输入目录名称' }]} noStyle>
-              <Input
-                className={style.modalContentInput}
-                placeholder={'请输入目录名称'}
-                maxLength={50}
-                onChange={inputOnChangeHandle}
-              />
-            </Form.Item>
-            <span className={style.limitLength}>{catalogParam.name.length}/50</span>
+  return (
+    <Modal
+      width={720}
+      centered
+      wrapClassName={style.modalWrap}
+      closable={false}
+      maskClosable={false}
+      visible={editOrAddLastCatalogParam?.visible}
+      title={editOrAddLastCatalogParam?.title + '目录'}
+      onCancel={onCancelHandle}
+      onOk={modalOnOkHandle}
+      okButtonProps={{
+        disabled: submitDisabled,
+        loading: btnIsLoading
+      }}
+    >
+      <Form form={form} onChange={() => console.log('111')} onValuesChange={() => setSubmitDisabled(false)}>
+        <Form.Item className={style.modalContentFormItem} label="目录名称:" required>
+          <Form.Item name="name" rules={[{ required: true, message: '请输入目录名称' }]} noStyle>
+            <Input
+              className={style.modalContentInput}
+              placeholder={'请输入目录名称'}
+              maxLength={50}
+              onChange={inputOnChangeHandle}
+            />
           </Form.Item>
-          <Form.Item
-            className={style.modalContentFormItem}
-            label="话术格式:"
-            name="contentType"
-            rules={[{ required: true, message: '请选择话术格式' }]}
-          >
-            <Select className={style.modalContentSelect} placeholder={'请选择'} onChange={selectOnchangeHandle}>
-              {catalogType2Name.map((item) => (
-                <Select.Option key={item.value} value={item.value}>
-                  {item.label}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <SpeechTypeLabel
-            type={catalogParam.contentType}
-            posterImg={posterImg}
-            setPosterImg={setPosterImg}
-            fileList={fileList}
-          />
-        </Form>
-      </Modal>
-    );
-  }
-  return null;
+          <span className={style.limitLength}>{catalogParam.name.length}/50</span>
+        </Form.Item>
+        <Form.Item
+          className={style.modalContentFormItem}
+          label="话术格式:"
+          name="contentType"
+          rules={[{ required: true, message: '请选择话术格式' }]}
+        >
+          <Select className={style.modalContentSelect} placeholder={'请选择'} onChange={selectOnchangeHandle}>
+            {catalogType2Name.map((item) => (
+              <Select.Option key={item.value} value={item.value}>
+                {item.label}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <SpeechTypeLabel
+          form={form}
+          setSubmitDisabled={setSubmitDisabled}
+          type={catalogParam.contentType}
+          uploadImg={uploadImg}
+          setUploadImg={setUploadImg}
+          fileList={fileList}
+        />
+      </Form>
+    </Modal>
+  );
 };
 
 export default EditOrAddLastCatalog;

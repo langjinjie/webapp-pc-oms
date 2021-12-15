@@ -5,6 +5,7 @@
  */
 
 import { lazy } from 'react';
+import { CacheRouteProps } from 'react-router-cache-route';
 import { RouteProps } from 'react-router-dom';
 
 export interface Menu {
@@ -142,14 +143,18 @@ export const routes: RouteProps[] = [
   {
     path: '/speechManage/edit',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
+  }
+];
+
+// 缓存路由
+export const cacheRoutes: CacheRouteProps[] = [
+  {
+    path: '/organization',
+    component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
   },
   {
     path: '/contentsManage',
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
-  },
-  {
-    path: '/organization',
-    component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
   },
   {
     path: '/organization/staff-detail',
@@ -159,9 +164,12 @@ export const routes: RouteProps[] = [
   {
     path: '/statistics-free',
     component: lazy(() => import('src/pages/OrgManage/StatisticsFree/List'))
+  },
+  {
+    path: '/test/video',
+    component: lazy(() => import('src/pages/Test/Video/Video'))
   }
 ];
-
 export const menus: Menu[] = [
   {
     name: '机构管理',
@@ -270,3 +278,17 @@ export const menus: Menu[] = [
     ]
   }
 ];
+
+if (process.env.NODE_ENV === 'development') {
+  menus.push({
+    name: '调试',
+    icon: 'icon_daohang_28_xitongshezhi',
+    path: 'test',
+    children: [
+      {
+        name: '视频',
+        path: '/test/video'
+      }
+    ]
+  });
+}

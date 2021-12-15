@@ -1,16 +1,18 @@
 import React from 'react';
 
-import { Input } from 'antd';
+import { DatePicker, Input } from 'antd';
 import { Icon } from 'src/components';
 
 import styles from './style.module.less';
+import moment from 'moment';
 
 interface EditTextProps {
+  type: 'date' | 'text';
   value?: string;
   readOnly?: boolean;
   onChange?: (value: any) => void;
 }
-export const EditText: React.FC<EditTextProps> = ({ value, onChange, readOnly = true }) => {
+export const EditText: React.FC<EditTextProps> = ({ value, onChange, type, readOnly = true }) => {
   const clearInputValue = () => {
     onChange?.('');
   };
@@ -20,13 +22,30 @@ export const EditText: React.FC<EditTextProps> = ({ value, onChange, readOnly = 
   };
   return (
     <div className={styles.editText}>
-      <Input
-        bordered={false}
-        value={value}
-        readOnly={readOnly}
-        onChange={handleChange}
-        suffix={!readOnly ? <Icon name="icon_common_16_inputclean" onClick={clearInputValue} /> : undefined}
-      />
+      {type === 'date'
+        ? (
+        <DatePicker
+          bordered={false}
+          disabled={readOnly}
+          value={value ? moment(value) : undefined}
+          onChange={(value, dateString) => onChange?.(dateString)}
+        />
+          )
+        : (
+        <Input
+          bordered={false}
+          value={value}
+          readOnly={readOnly}
+          onChange={handleChange}
+          suffix={
+            !readOnly
+              ? (
+              <Icon name="icon_common_16_inputclean" className="font16" onClick={clearInputValue} />
+                )
+              : undefined
+          }
+        />
+          )}
     </div>
   );
 };

@@ -84,6 +84,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       form.setFields([
         { name: 'title', value: res.title },
         { name: 'originalCreator', value: res.originalCreator },
+        { name: 'fromSource', value: res.fromSource },
         { name: 'summary', value: res.summary },
         { name: 'categoryId', value: res.categoryId || '' },
         { name: 'tagIdList', value: res.tagIdList || [] },
@@ -174,6 +175,16 @@ const TabView3: React.FC<TabView3Props> = (props) => {
           name="originalCreator"
         >
           <Input maxLength={15} placeholder={'请输入原创作者名称，限15个字符以内。'} />
+        </Form.Item>
+        <Form.Item
+          label="渠道来源"
+          rules={[
+            { type: 'string', required: true, message: '请输入渠道来源' },
+            { message: '渠道来源最多12个字符', max: 12 }
+          ]}
+          name="fromSource"
+        >
+          <Input maxLength={12} placeholder={'请输入渠道来源，限12个字符以内。'} />
         </Form.Item>
         <Form.Item
           label="文章封面"

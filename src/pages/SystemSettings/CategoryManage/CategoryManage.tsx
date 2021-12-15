@@ -263,6 +263,11 @@ const CategoryManage: React.FC = () => {
     }
   };
 
+  const modalOnCancelHandle = () => {
+    setIsModalVisible(false);
+    setAddTypeName('');
+  };
+
   useEffect(() => {
     getTypeList[tabIndex]();
   }, []);
@@ -407,16 +412,17 @@ const CategoryManage: React.FC = () => {
         wrapClassName={style.modalWrap}
         title={modalType}
         closeIcon={<span />}
+        maskClosable={false}
         visible={isModalVisible}
         centered
         width={480}
         okText={'确认'}
-        okButtonProps={{ disabled: addTypeName.length > 12 }}
-        onCancel={() => setIsModalVisible(false)}
+        okButtonProps={{ disabled: addTypeName.length > 12 || addTypeName.length === 0 }}
         onOk={modalOnOk}
+        onCancel={modalOnCancelHandle}
       >
         <div className={style.modalContent}>
-          <p className={style.content}>请输入分类名称</p>
+          <p>请输入分类名称</p>
           <input
             ref={addInputNode}
             className={style.addTypeName}

@@ -158,7 +158,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
             name="thumbnail"
             extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
           >
-            <NgUpload beforeUpload={beforeUploadSmallPic}></NgUpload>
+            <NgUpload beforeUpload={beforeUploadSmallPic} showDeleteBtn />
           </Form.Item>
           <Form.Item
             name="title"

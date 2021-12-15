@@ -299,35 +299,34 @@ const SensitiveList: React.FC = () => {
           paginationChange={paginationChange}
         />
         <div className={classNames(style.multiOperation, { [style.empty]: !sensitiveList.total })}>
-          <div className={style.btnWrap}>
-            <Button htmlType="button" onClick={() => singleAdd('add')}>
-              新增
-            </Button>
-            <Button htmlType="button" onClick={() => setVisible(true)}>
-              批量新增
-            </Button>
-            <Button onClick={() => onDownLoadExcel(1, '敏感词列表')}>全量导出</Button>
-            {!!sensitiveList.total && (
-              <>
-                <Button
-                  disabled={disabledColumnType !== 0 && disabledColumnType !== 2}
-                  onClick={() => buttonHandle('上架', 1)}
-                >
-                  上架
-                </Button>
-                <Button disabled={disabledColumnType !== 1} onClick={() => buttonHandle('下架', 2)}>
-                  下架
-                </Button>
-                <Button
-                  disabled={disabledColumnType === 1 || disabledColumnType === -1}
-                  onClick={() => buttonHandle('删除', 3)}
-                >
-                  删除
-                </Button>
-              </>
-            )}
-          </div>
-          <div className={style.paginationWrap} />
+          {/* <div className={style.btnWrap}> */}
+          <Button htmlType="button" onClick={() => singleAdd('add')}>
+            新增
+          </Button>
+          <Button htmlType="button" onClick={() => setVisible(true)}>
+            批量新增
+          </Button>
+          <Button onClick={() => onDownLoadExcel(1, '敏感词列表')}>全量导出</Button>
+          {!!sensitiveList.total && (
+            <>
+              <Button
+                disabled={disabledColumnType !== 0 && disabledColumnType !== 2}
+                onClick={() => buttonHandle('上架', 1)}
+              >
+                上架
+              </Button>
+              <Button disabled={disabledColumnType !== 1} onClick={() => buttonHandle('下架', 2)}>
+                下架
+              </Button>
+              <Button
+                disabled={disabledColumnType === 1 || disabledColumnType === -1}
+                onClick={() => buttonHandle('删除', 3)}
+              >
+                删除
+              </Button>
+            </>
+          )}
+          {/* </div> */}
         </div>
       </Card>
       <ExportModal
