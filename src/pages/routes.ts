@@ -5,8 +5,8 @@
  */
 
 import { lazy } from 'react';
-import { RouteProps } from 'react-router-dom';
 import { CacheRouteProps } from 'react-router-cache-route';
+import { RouteProps } from 'react-router-dom';
 
 export interface Menu {
   name: string;
@@ -143,6 +143,14 @@ export const routes: RouteProps[] = [
   {
     path: '/speechManage/edit',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
+  }
+];
+
+// 缓存路由
+export const cacheRoutes: CacheRouteProps[] = [
+  {
+    path: '/organization',
+    component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
   },
   {
     path: '/contentsManage',
@@ -162,15 +170,6 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Test/Video/Video'))
   }
 ];
-
-// 缓存路由
-export const cacheRoutes: CacheRouteProps[] = [
-  {
-    path: '/organization',
-    component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
-  }
-];
-
 export const menus: Menu[] = [
   {
     name: '机构管理',
