@@ -2,6 +2,26 @@
   :global {
     .ant-input {
       caret-color: #3b6fce;
+      color: #7e8185;
+    }
+    .ant-input[readonly] {
+      color: #111;
+    }
+    .ant-picker-input input[disabled] {
+      color: #111 !important;
+    }
+    .ant-picker-input input {
+      color: #7e8185;
+    }
+    .ant-input-suffix {
+      display: none;
+    }
+  }
+  &:hover {
+    :global {
+      .ant-input-suffix {
+        display: flex;
+      }
     }
   }
 }
