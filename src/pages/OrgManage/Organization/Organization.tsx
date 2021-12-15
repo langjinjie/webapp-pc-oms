@@ -153,7 +153,7 @@ const Organization: React.FC = () => {
    * @param key
    * @param children
    */
-  const onLoadData = async ({ key, children }: any) : Promise<void> => {
+  const onLoadData = async ({ key, children }: any): Promise<void> => {
     if (!children || children?.length === 0) {
       const res: any = await queryCorpOrg({ parentId: key });
       if (res) {
@@ -288,13 +288,7 @@ const Organization: React.FC = () => {
         </ul>
       </section>
       <div className={style.right}>
-        {
-          displayType === 0
-            ? <StaffList departmentId={currentDepartment.id!} />
-            : (
-            <StaffDetail />
-              )
-        }
+        {displayType === 0 ? <StaffList departmentId={currentDepartment.id!} /> : <StaffDetail />}
       </div>
       <ul
         style={{ ...position, transform: `scale(${showDepart ? 1 : 0})` }}
@@ -308,15 +302,21 @@ const Organization: React.FC = () => {
             copy(currentNode.id!, false);
             message.success('部门id已复制');
           }}
-        >部门ID：{currentNode.id}</li>
+        >
+          部门ID：{currentNode.id}
+        </li>
         <li className={style.operationItem} onClick={() => setDepartmentVisible(true)}>
           添加子部门
         </li>
         <li
-          className={style.operationItem}
+          className={classNames(style.operationItem, {
+            [style.disabled]: currentNode.isRoot
+          })}
           onClick={() => {
-            setDepartmentVisible(true);
-            setDepartmentName(currentNode.name!);
+            if (!currentNode.isRoot) {
+              setDepartmentVisible(true);
+              setDepartmentName(currentNode.name!);
+            }
           }}
         >
           修改名称
@@ -344,7 +344,10 @@ const Organization: React.FC = () => {
           className={classNames(style.operationItem, {
             [style.disabled]: currentNode.index! === (currentNode.total || 0) - 1
           })}
-          onClick={() => currentNode.index! < (currentNode.total || 0) - 1 && setOrganization(moveData(organization, currentNode.id!, 'down'))}
+          onClick={() =>
+            currentNode.index! < (currentNode.total || 0) - 1 &&
+            setOrganization(moveData(organization, currentNode.id!, 'down'))
+          }
         >
           下移
         </li>
