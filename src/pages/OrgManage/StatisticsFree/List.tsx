@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
-import { AddStatisticsFreeModal } from './ExportStaff/addStatisticsFreeModal';
+import { AddStatisticsFreeModal } from './Components/ExportStaff/AddStatisticsFreeModal';
+import { addFreeStaffs, getFreeStaffList } from 'src/apis/orgManage';
 
 const StatisticsFreeList: React.FC = () => {
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [visible, setVisible] = useState(false);
+  const [dataSource, setDataSource] = useState<StaffProps[]>([]);
 
   const handleSearch = (params: any) => {
     console.log(params);
@@ -29,6 +31,28 @@ const StatisticsFreeList: React.FC = () => {
         name: record.name
       };
     }
+  };
+
+  const getList = async (params?: any) => {
+    const res = await getFreeStaffList({
+      corpId: '',
+      name: '',
+      pageSize: '',
+      pageNum: 1,
+      ...params
+    });
+    if (res) {
+      setDataSource(res);
+    }
+  };
+  useEffect(() => {
+    getList();
+  }, []);
+
+  const submitAddFreeStaffs = async (params: { userIds: string[]; freeType: string }) => {
+    setVisible(false);
+    const res = await addFreeStaffs(params);
+    console.log(res);
   };
   return (
     <div className="container">
@@ -63,19 +87,13 @@ const StatisticsFreeList: React.FC = () => {
           columns={tableColumns()}
           loading={false}
           rowSelection={rowSelection}
-          dataSource={[{ userId: '122', name: 'yuyd' }]}
+          dataSource={dataSource}
           setRowKey={(record: StaffProps) => {
             return record.userId;
           }}
         />
       </div>
-      <AddStatisticsFreeModal
-        visible={visible}
-        onCancel={() => setVisible(false)}
-        onConfirm={() => {
-          console.log('确定');
-        }}
-      />
+      <AddStatisticsFreeModal visible={visible} onCancel={() => setVisible(false)} onConfirm={submitAddFreeStaffs} />
     </div>
   );
 };
