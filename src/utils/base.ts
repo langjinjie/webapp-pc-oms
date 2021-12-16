@@ -80,3 +80,22 @@ export const useDocumentTitle = (title: string, keepOnUumount = true): void => {
   }, [keepOnUumount, oldTitle]);
 };
 export const UNKNOWN = '— —';
+
+export const debounce = (fn: { apply: (arg0: any, arg1: any) => void }, delay: number): (() => void) => {
+  // 定时器
+  let timer: NodeJS.Timeout;
+
+  // 将debounce处理结果当作函数返回
+  return (...args: any) => {
+    // 保留调用时的this上下文
+    // 保留调用时传入的参数
+    // 每次事件被触发时，都去清除之前的旧定时器
+    if (timer) {
+      clearTimeout(timer);
+    }
+    // 设立新定时器
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
+};

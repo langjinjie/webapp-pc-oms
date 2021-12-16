@@ -86,7 +86,7 @@ const StaffList: React.FC<StaffListProps> = ({ departmentId }) => {
           setDisabledColumnType
         })}
       />
-      <MultiSetting visible={multiVisible} setVisible={setMultiVisible} />
+      <MultiSetting visible={multiVisible} setMultiVisible={setMultiVisible} />
     </div>
   );
 };
