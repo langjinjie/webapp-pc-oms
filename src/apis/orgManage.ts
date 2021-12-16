@@ -60,3 +60,25 @@ export const requestDownLoadSensitiveList: HttpFC = (param) => {
     responseType: 'blob'
   });
 };
+
+/**
+ * 数据免统计名单
+ *********************************************/
+// 免统计名单列表
+export const getFreeStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/user/freeStats/list', param);
+};
+
+// 批量删除免统计员工
+export const delFreeStaffs: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/user/freeStats/del', param);
+};
+// 查询坐席员工接口
+export const searchStaffByName: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/freeStats/findByName', param);
+};
+
+// 新增免统计员工
+export const addFreeStaffs: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/user/freeStats/add', param);
+};
