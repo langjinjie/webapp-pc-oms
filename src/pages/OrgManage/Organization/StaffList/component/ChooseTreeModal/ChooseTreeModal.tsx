@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, Key } from 'react';
 import { Modal, Tree, Input } from 'antd';
 import { Icon } from 'src/components';
 import { queryCorpOrg } from 'src/apis/stationConfig';
@@ -15,7 +15,7 @@ interface IChooseTreeModalProps {
 
 interface ItreeProps {
   autoExpandParent: boolean;
-  expandedKeys: string[];
+  expandedKeys: Key[];
   height: number;
   virtual: boolean;
   blockNode: boolean;
@@ -31,45 +31,67 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [treeData, setTreeData] = useState<any[]>([]);
+  const [flatTreeData, setFlatTreeData] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState('');
-  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState<Key[]>([]);
   const [selectList, setSelectList] = useState<any[]>([]);
+  const [searchList, setSearchList] = useState<any[]>([]);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
-    height: 334,
+    height: 332,
     virtual: false,
     blockNode: true,
     checkable: true,
     defaultExpandParent: false
   });
   const { Search } = Input;
-  const [dataList] = useState<any[]>([]);
-
   // 重置
   const onResetHandle = () => {
     setSelectedKeys([]);
     setTreeProps({ ...treeProps, autoExpandParent: true, expandedKeys: [] });
     setSearchValue('');
     setSelectList([]);
+    setFlatTreeData([]);
   };
 
-  // 获取企业组织架构
-  const getCorpOrg = async () => {
-    const res = await queryCorpOrg({ corpId });
-    res && setTreeData(res);
-  };
-
-  // 组织架构扁平化
-  const generateList = (data: any) => {
-    for (let i = 0; i < data.length; i++) {
-      const node = data[i];
-      // const { id, name } = node;
-      dataList.push({ ...node, children: null });
-      if (node.children) {
-        generateList(node.children);
-      }
+  // 获取组织架构
+  const getCorpOrg = async (parentId = '0') => {
+    const res = await queryCorpOrg({ corpId, parentId });
+    if (res) {
+      // 将树结构添加到扁平结构中
+      setFlatTreeData([...flatTreeData, ...res]);
+      res.forEach((item: any) => {
+        item.isLeaf = !item.isParent;
+      });
+      return res;
     }
+  };
+
+  // 向树结构添加子节点
+  const updateTreeData = (list: any[], key: React.Key, children: any[]): any[] => {
+    return list.map((node) => {
+      if (node.id === key) {
+        return {
+          ...node,
+          children
+        };
+      }
+      if (node.children) {
+        return {
+          ...node,
+          children: updateTreeData(node.children, key, children)
+        };
+      }
+      return node;
+    });
+  };
+
+  // 异步获取组织架构
+  const onLoadDataHandle = async ({ key }: any) => {
+    // 获取对应的子节点
+    const res = await getCorpOrg(key);
+    res && setTreeData((treeData) => updateTreeData(treeData, key, res));
   };
 
   // 搜索部门之后过滤
@@ -91,9 +113,10 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
           <span>{item.name}</span>
             );
       if (item.children) {
-        return { name, id: item.id, children: loop(item.children) };
+        return { isLeaf: !item.isParent, name, id: item.id, children: loop(item.children) };
       }
       return {
+        isLeaf: !item.isParent,
         name,
         id: item.id
       };
@@ -115,11 +138,11 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     return parentKey;
   };
 
-  // 搜索组织架构
-  const searchHandle = (value: string) => {
+  // 本地搜索组织架构
+  const onChangeHandle = (value: string) => {
+    value || setSearchList([]);
     setSearchValue(value);
-    console.log('搜索', value);
-    const expandedKeys = dataList
+    const expandedKeys = flatTreeData
       .map((item) => {
         if (item.name.indexOf(value) > -1) {
           return getParentKey(item.id, treeData);
@@ -127,19 +150,29 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
         return null;
       })
       .filter((item, i, self) => item && self.indexOf(item) === i);
-    setTreeProps({ ...treeProps, expandedKeys });
+    setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: true });
+  };
+
+  // 搜索部门或者员工
+  const onSearchHandle = (val: string) => {
+    if (val) {
+      setSearchList([{ name: '郎金杰' }]);
+    } else {
+      setSearchList([]);
+    }
   };
 
   // 展开/折叠触发
-  const onExpandHandle = (expandedKeys: any) => {
+  const onExpandHandle = (expandedKeys: Key[]) => {
     setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
   };
 
   // 选中复选框
-  const onCheckedHandle = (checked: any) => {
+  const onCheckedHandle = (checked: Key[]) => {
     setSelectedKeys(checked);
+    console.log(checked);
     // 过滤出已经选中的节点
-    const filterChecked = dataList.filter((item) => !item.isParent && checked.includes(item.id));
+    const filterChecked = flatTreeData.filter((item) => !item.isParent && checked.includes(item.id));
     setSelectList(filterChecked);
   };
 
@@ -150,7 +183,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
 
   // 点击单个去选选中员工
   const clickDelStaffHandle = (id: string, filterKeys = [...selectedKeys]) => {
-    filterKeys = filterKeys.filter((key: string) => key !== id);
+    filterKeys = filterKeys.filter((key: Key) => key !== id);
     setSelectedKeys(filterKeys);
     // 判断当前点击的是否有父级
     const currentNode = selectList.find((item) => item.id === id);
@@ -168,29 +201,37 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
 
   // 取消modal
   const onCancelHandle = () => {
-    console.log('cancel~');
     setChooseTreeParam({ ...chooseTreeParam, visible: false });
     setMultiVisible(true);
   };
 
   // 确认modal
   const onOkHandle = () => {
-    console.log('ok~');
     setStaffList(['李斯']);
-    console.log(selectedKeys);
     setChooseTreeParam({ ...chooseTreeParam, visible: false });
     setMultiVisible(true);
   };
   useEffect(() => {
     if (chooseTreeParam.visible) {
       setTreeProps({ ...treeProps, checkable: chooseTreeParam.isShowStaff });
-      getCorpOrg();
+      (async () => {
+        setTreeData(await getCorpOrg());
+      })();
     }
     !chooseTreeParam.visible && onResetHandle();
   }, [chooseTreeParam.visible]);
   useEffect(() => {
-    treeData.length && generateList(treeData);
-  }, [treeData, searchValue]);
+    (() => {
+      // 将被选中父级的所有子节点被异步请求完成后手动添加为选中节点
+      const newSelectedKeys = flatTreeData
+        .filter((item: any) => selectedKeys.includes(item.parentId))
+        .map((item) => item.id);
+      setSelectedKeys(Array.from(new Set([...selectedKeys, ...newSelectedKeys])));
+      setSelectList(
+        flatTreeData.filter((item) => !item.isParent && [...selectedKeys, ...newSelectedKeys].includes(item.id))
+      );
+    })();
+  }, [flatTreeData]);
   return (
     <Modal
       width={'auto'}
@@ -205,16 +246,35 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     >
       <div className={style.treeWrap}>
         <div className={style.tree}>
-          <Search className={style.searchTree} placeholder="搜索成员" onSearch={(e) => searchHandle(e)} />
-          <Tree
-            {...treeProps}
-            fieldNames={{ title: 'name', key: 'id', children: 'children' }}
-            treeData={loop(treeData)}
-            checkedKeys={selectedKeys}
-            onExpand={onExpandHandle}
-            onCheck={(checked) => onCheckedHandle(checked)}
-            onSelect={(selectKeys) => onSelectHandle(selectKeys)}
+          <Search
+            className={style.searchTree}
+            placeholder="搜索成员"
+            onChange={(e) => onChangeHandle(e.target.value)}
+            onSearch={(val) => onSearchHandle(val)}
+            enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
           />
+          {searchList.length
+            ? (
+            <div className={style.searchListWrap}>
+              {searchList.map((item: any) => (
+                <div key={item} className={style.searchItem}>
+                  <div className={style.name}>{item.name}</div>
+                </div>
+              ))}
+            </div>
+              )
+            : (
+            <Tree
+              {...treeProps}
+              fieldNames={{ title: 'name', key: 'id' }}
+              treeData={loop(treeData)}
+              loadData={onLoadDataHandle}
+              checkedKeys={selectedKeys}
+              onExpand={onExpandHandle}
+              onCheck={(checked) => onCheckedHandle(checked as Key[])}
+              onSelect={(selectKeys) => onSelectHandle(selectKeys)}
+            />
+              )}
         </div>
         {chooseTreeParam.isShowStaff && (
           <div className={style.choosedStaff}>

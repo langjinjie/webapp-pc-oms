@@ -14,9 +14,29 @@
         margin: 10px auto;
         width: 320px;
         height: 32px;
-        border-radius: 18px;
-        border: 1px solid #e1e2e6;
-        overflow: hidden;
+        .searchIcon {
+          margin-right: 2px;
+          color: #a9aab0;
+          font-size: 16px;
+        }
+      }
+      .searchListWrap {
+        height: 332px;
+        padding: 10px 20px;
+        overflow-y: auto;
+        .searchItem {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 300px;
+          height: 36px;
+          padding: 0 15px;
+          border-radius: 8px;
+          &:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+          }
+        }
       }
     }
     .choosedStaff {
@@ -33,7 +53,7 @@
       .selectList {
         height: 300px;
         padding: 10px 4px;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: hidden;
         .selectItem {
           display: flex;
@@ -79,14 +99,55 @@
     }
     .ant-tree {
       border-top: 1px solid rgba(0, 0, 0, 0.1);
+      .ant-tree-list-holder-inner {
+        padding: 10px 0;
+        .ant-tree-treenode {
+          margin-left: 20px;
+          align-items: center;
+          width: 300px;
+          height: 36px;
+          padding: 0 16px;
+          border-radius: 8px;
+          font-size: 14px;
+          transition: all 0.3s, border 0s, line-height 0s, box-shadow 0s;
+          &:hover {
+            background-color: #f5f5f5;
+          }
+          &.ant-tree-treenode-selected {
+            background: rgba(48, 120, 219, 0.2);
+          }
+          .ant-tree-switcher {
+            line-height: 40px;
+            .ant-tree-switcher-icon {
+              font-size: 14px;
+            }
+          }
+          .ant-tree-checkbox {
+            margin-top: 0;
+          }
+          .ant-tree-node-selected {
+            background-color: transparent;
+          }
+        }
+      }
     }
-    .ant-input {
-      border: none;
-      box-shadow: none;
-      outline: none;
+    // Search
+    input.ant-input {
+      border-radius: 18px !important;
     }
-    .ant-input-search-button {
-      border: none;
+    .ant-input-group-addon {
+      left: 0;
+      width: 0;
+      .ant-input-search-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: none;
+        border: none;
+        box-shadow: none;
+        outline: none;
+        z-index: 999;
+      }
     }
   }
 }
