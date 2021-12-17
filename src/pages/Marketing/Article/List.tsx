@@ -22,7 +22,7 @@ import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
 import { useDocumentTitle } from 'src/utils/base';
 
 const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
-  useDocumentTitle('文章列表');
+  useDocumentTitle('营销素材-文章库');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -89,26 +89,26 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 获取列表数据
   const onSearch = (values: SearchParamsProps) => {
-    const { title, categoryId, rangePicker, syncBank, corpId } = values;
+    const { title, categoryId, fromSource, rangePicker, syncBank, corpId } = values;
     let minTime = '';
     let maxTime = '';
     if (rangePicker && rangePicker.length > 0) {
       minTime = rangePicker[0].format('YYYY-MM-DD');
       maxTime = rangePicker[1].format('YYYY-MM-DD');
     }
-    setQueryForm((queryForm) => ({ ...queryForm, title, categoryId, minTime, maxTime, syncBank, corpId }));
+    setQueryForm((queryForm) => ({ ...queryForm, title, categoryId, fromSource, minTime, maxTime, syncBank, corpId }));
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    getList({ title, categoryId, minTime, maxTime, syncBank, pageNum: 1, corpId });
+    getList({ title, categoryId, fromSource, minTime, maxTime, syncBank, pageNum: 1, corpId });
   };
   const onValuesChange = (changeVals: any, values: SearchParamsProps) => {
-    const { title, categoryId, rangePicker, syncBank, corpId } = values;
+    const { title, categoryId, fromSource, rangePicker, syncBank, corpId } = values;
     let minTime = '';
     let maxTime = '';
     if (rangePicker && rangePicker.length > 0) {
       minTime = rangePicker[0].format('YYYY-MM-DD');
       maxTime = rangePicker[1].format('YYYY-MM-DD');
     }
-    setQueryForm((queryForm) => ({ ...queryForm, title, categoryId, minTime, maxTime, syncBank, corpId }));
+    setQueryForm((queryForm) => ({ ...queryForm, title, categoryId, fromSource, minTime, maxTime, syncBank, corpId }));
   };
 
   const handlePreview = () => {

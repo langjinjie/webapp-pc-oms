@@ -5,6 +5,7 @@
  */
 
 import { lazy } from 'react';
+import { CacheRouteProps } from 'react-router-cache-route';
 import { RouteProps } from 'react-router-dom';
 
 export interface Menu {
@@ -101,9 +102,14 @@ export const routes: RouteProps[] = [
     path: '/station',
     component: lazy(() => import('src/pages/Operation/StationConfig/StationConfig'))
   },
+  // 标签配置
   {
     path: '/tagConfig',
     component: lazy(() => import('src/pages/Operation/TagConfig/List'))
+  },
+  {
+    path: '/tagConfig/history',
+    component: lazy(() => import('src/pages/Operation/TagConfig/HistoryList'))
   },
   // 新增小站配置
   {
@@ -137,13 +143,14 @@ export const routes: RouteProps[] = [
   {
     path: '/speechManage/edit',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
-  },
+  }
+];
+export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/contentsManage',
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
   }
 ];
-
 export const menus: Menu[] = [
   {
     name: '机构管理',

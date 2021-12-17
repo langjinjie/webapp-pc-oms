@@ -137,7 +137,7 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     getStationList();
-    setTitle('小站配置');
+    setTitle('运营配置-小站配置');
   }, []);
 
   return (

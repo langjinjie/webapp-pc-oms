@@ -26,10 +26,10 @@ import { PaginationProps } from '../Article/Config';
 enum OperateTypes {
   '上架' = 1,
   '下架' = 2,
-  '删除' = 3,
+  '删除' = 3
 }
 const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
-  useDocumentTitle('活动列表');
+  useDocumentTitle('营销素材-活动库');
   interface paramsType {
     activityName: String;
     status: String;

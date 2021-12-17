@@ -9,7 +9,9 @@ import { ICatalogItem, IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils
 import { getCategoryList } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
 import style from './style.module.less';
-import { useDocumentTitle } from 'src/utils/base';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { useDidRecover } from 'react-router-cache-route';
+// import NgTree from './component/NgTree/NgTree';
 
 const ContentsManage: React.FC = () => {
   useDocumentTitle('销售宝典-目录管理');
@@ -28,14 +30,75 @@ const ContentsManage: React.FC = () => {
   useEffect(() => {
     getCatalogList();
   }, []);
+
+  useDidRecover(() => {
+    const { isCatch } = URLSearchParams(location.search);
+    // 判断页面是否需要更新
+    if (!isCatch) {
+      getCatalogList();
+    }
+  });
   return (
     <>
+      {/* <NgTree
+        dataSource={[
+          {
+            label: '爷爷1',
+            children: [
+              {
+                label: '爸爸1',
+                children: [
+                  {
+                    label: '儿子1'
+                  },
+                  {
+                    label: '儿子2'
+                  },
+                  {
+                    label: '儿子3'
+                  }
+                ]
+              },
+              {
+                label: '爸爸2',
+                children: [
+                  {
+                    label: '儿子1'
+                  },
+                  {
+                    label: '儿子2'
+                  },
+                  {
+                    label: '儿子3'
+                  }
+                ]
+              },
+              {
+                label: '爸爸3',
+                children: [
+                  {
+                    label: '儿子1'
+                  },
+                  {
+                    label: '儿子2'
+                  },
+                  {
+                    label: '儿子3'
+                  }
+                ]
+              }
+            ]
+          }
+        ]}
+        parentDatas={[]}
+      /> */}
       <div className={style.wrap}>
         {contentsList.map((item, index) => (
           <div className={style.contentBannerWrap} key={item.catalogId}>
             <ContentBanner
               parentId="0"
               catalog={item}
+              parentCatalog={[item]}
               setCurrentContents={setCurrentContents}
               currentContents={currentContents}
               isHiddenMoveUp={contentsList.length === 1 || index === 0}
