@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
 import { message, Modal, /* Form, */ Tag } from 'antd';
 import { Icon } from 'src/components';
 import { ChooseTreeModal } from 'src/pages/OrgManage/Organization/StaffList/component';
@@ -18,6 +18,8 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   });
   const [staffInfo, setStaffInfo] = useState<{ [key: string]: any }>({});
   const [tagList, setTagList] = useState<string[]>([]);
+  const [isShowInput, setIsShowInput] = useState(false);
+  const inputRef: MutableRefObject<any> = useRef(null);
   // const [form] = Form.useForm();
   // modal取消
   const onCancelHandle = () => {
@@ -38,12 +40,18 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
     setMultiVisible(false);
     setChooseTreeParam({ title: '选择部门', visible: true, isShowStaff: false });
   };
+  // 点击添加标签
+  const clickAddTagHandle = async () => {
+    await setIsShowInput(true);
+    inputRef?.current?.focus();
+  };
   // onChange
   const onChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setStaffInfo({ ...staffInfo, tag: e.target.value });
   };
   // 失去焦点
   const onBlurHandle = (e: React.FocusEvent<HTMLInputElement>) => {
+    setIsShowInput(false);
     if (e.target.value) {
       // 判断标签数量
       if (tagList.length + e.target.value.split('；').length >= 4) message.warning('最多能添加4个标签');
@@ -67,6 +75,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
       }
       setTagList([...tagList, ...(e.target as HTMLInputElement).value.split('；')].splice(0, 4));
       setStaffInfo({ ...staffInfo, tag: '' });
+      setIsShowInput(false);
     }
   };
   useEffect(() => {
@@ -143,18 +152,26 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
                 </Tag>
               ))}
               {/* </div> */}
-              {tagList.length !== 4 && (
-                <input
-                  className={style.input}
-                  value={staffInfo.tag || ''}
-                  type="text"
-                  maxLength={12}
-                  placeholder="请输入标签(最多12个字)"
-                  onChange={(e) => onChangeHandle(e)}
-                  onBlur={(e) => onBlurHandle(e)}
-                  onKeyDown={(e) => inputOnKeyDownHandle(e)}
-                />
-              )}
+              {tagList.length !== 4 &&
+                (isShowInput
+                  ? (
+                  <input
+                    ref={inputRef}
+                    className={style.input}
+                    value={staffInfo.tag || ''}
+                    type="text"
+                    maxLength={12}
+                    placeholder={'请输入标签名字'}
+                    onChange={(e) => onChangeHandle(e)}
+                    onBlur={(e) => onBlurHandle(e)}
+                    onKeyDown={(e) => inputOnKeyDownHandle(e)}
+                  />
+                    )
+                  : (
+                  <Tag className={style.addTag} onClick={clickAddTagHandle}>
+                    <Icon name="xinjian" />
+                  </Tag>
+                    ))}
             </div>
           </div>
           {/* </Form> */}
