@@ -19,7 +19,6 @@ const StaffList: React.FC<StaffListProps> = ({ departmentId }) => {
 
   // 获取员工列表
   const getStaffList = () => {
-    console.log(selectedRowKeys);
     const staffItem = {
       name: '李思',
       account: 'lisisi',

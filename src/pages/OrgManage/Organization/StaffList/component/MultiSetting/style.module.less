@@ -15,10 +15,35 @@
     height: 16px;
   }
   .chooseStaff {
+    position: relative;
     padding-bottom: 54px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
+    .choosedInfo {
+      position: absolute;
+      right: 0;
+      bottom: 30px;
+      height: 18px;
+      font-size: 12px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      vertical-align: baseline;
+      .choosedCount,
+      .cancel {
+        display: inline-block;
+      }
+      .choosedCount {
+        color: #7e8185;
+        margin-right: 14px;
+      }
+      .cancel {
+        padding-left: 6px;
+        padding-bottom: 6px;
+        color: #f25555;
+        cursor: pointer;
+      }
+    }
     .title {
       font-size: 16px;
     }
@@ -26,9 +51,11 @@
       margin-top: 20px;
       width: 572px;
       height: 100px;
+      line-height: 20px;
       padding: 10px 16px;
       background: #f8f8f8;
       border-radius: 8px;
+      color: #7e8185;
     }
   }
   .otherInfo {
@@ -42,6 +69,7 @@
         color: #7e8185;
       }
       .value {
+        position: relative;
         margin-top: 8px;
         padding: 0 16px;
         width: 572px;
@@ -49,6 +77,10 @@
         line-height: 40px;
         background: #f8f8f8;
         border-radius: 8px;
+        color: #111111;
+        .department {
+          cursor: pointer;
+        }
         .input {
           width: 100%;
           border: none;
@@ -59,6 +91,29 @@
           overflow: hidden;
           &::placeholder {
             color: #cccdd0;
+          }
+        }
+        .allDesc {
+          display: block;
+          position: absolute;
+          left: 0;
+          max-width: 572px;
+          height: 0;
+          line-height: 20px;
+          border-radius: 8px;
+          overflow: hidden;
+          text-align: justify;
+          &.active {
+            height: auto;
+            padding: 8px 16px;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+            z-index: 9;
+          }
+          &.isHiddenAllDesc {
+            height: 0;
+            padding: 0;
+            background-color: transparent;
           }
         }
       }
@@ -77,6 +132,7 @@
             border-radius: 8px;
             margin-top: 9px;
             margin-bottom: 9px;
+            color: #318cf5;
           }
           .input {
             flex: 1;

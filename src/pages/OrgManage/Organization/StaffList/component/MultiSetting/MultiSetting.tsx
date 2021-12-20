@@ -1,34 +1,60 @@
-import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
+import React, { useState, useRef, MutableRefObject, useEffect } from 'react';
 import { message, Modal, /* Form, */ Tag } from 'antd';
 import { Icon } from 'src/components';
 import { ChooseTreeModal } from 'src/pages/OrgManage/Organization/StaffList/component';
 import style from './style.module.less';
+import classNames from 'classnames';
 
 interface IMultiSettingProps {
   visible: boolean;
   setMultiVisible: (param: boolean) => void;
 }
 
+interface IStaffInfo {
+  staffList: any[];
+  department: any;
+  post: string;
+  desc: string;
+  tags: string;
+}
+
 const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }) => {
-  const [staffList, setStaffList] = useState<any[]>([]);
   const [chooseTreeParam, setChooseTreeParam] = useState<{ title: string; visible: boolean; isShowStaff: boolean }>({
     title: '',
     visible: false,
     isShowStaff: true
   });
-  const [staffInfo, setStaffInfo] = useState<{ [key: string]: any }>({});
+  const [staffInfo, setStaffInfo] = useState<IStaffInfo>({
+    staffList: [],
+    department: null,
+    post: '',
+    desc: '',
+    tags: ''
+  });
   const [tagList, setTagList] = useState<string[]>([]);
   const [isShowInput, setIsShowInput] = useState(false);
+  const [isShowAllDesc, setIsShowAllDesc] = useState(false);
+  const [isHiddenAllDesc, setIsHiddenAllDesc] = useState(true);
   const inputRef: MutableRefObject<any> = useRef(null);
+  const descRef: MutableRefObject<any> = useRef(null);
+  const allDesc: MutableRefObject<any> = useRef(null);
+  const allDescInputRef: MutableRefObject<any> = useRef(null);
+  let timerId: NodeJS.Timeout;
   // const [form] = Form.useForm();
+  // 重置
+  const onResetHandle = () => {
+    setStaffInfo({ staffList: [], department: null, post: '', desc: '', tags: '' });
+    setIsShowAllDesc(false);
+  };
   // modal取消
   const onCancelHandle = () => {
     setMultiVisible(false);
+    onResetHandle();
   };
   // modal确认
   const onOkHandle = () => {
-    console.log('tagList', tagList);
     setMultiVisible(false);
+    onResetHandle();
   };
   // 点击添加员工
   const addStaffHandle = () => {
@@ -47,22 +73,20 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   };
   // onChange
   const onChangeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStaffInfo({ ...staffInfo, tag: e.target.value });
+    setStaffInfo({ ...staffInfo, tags: e.target.value });
   };
   // 失去焦点
   const onBlurHandle = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsShowInput(false);
     if (e.target.value) {
       // 判断标签数量
-      if (tagList.length + e.target.value.split('；').length >= 4) message.warning('最多能添加4个标签');
-      setTagList([...tagList, ...e.target.value.split('；')].splice(0, 4));
-      setStaffInfo({ ...staffInfo, tag: '' });
+      if (tagList.length >= 3) message.warning('最多能添加4个标签');
+      setTagList([...tagList, e.target.value]);
+      setStaffInfo({ ...staffInfo, tags: '' });
     }
   };
   // 删除标签
   const closeTagHandle = (tag: string) => {
-    console.log(tag);
-    console.log(tagList);
     const filterTagList = tagList.filter((item) => item !== tag);
     setTagList(filterTagList);
   };
@@ -74,13 +98,61 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
         message.warning('最多能添加4个标签');
       }
       setTagList([...tagList, ...(e.target as HTMLInputElement).value.split('；')].splice(0, 4));
-      setStaffInfo({ ...staffInfo, tag: '' });
+      setStaffInfo({ ...staffInfo, tags: '' });
       setIsShowInput(false);
     }
   };
+  // 输入职务、描述
+  const InputHandle = (e: React.ChangeEvent<HTMLInputElement>, value: string) => {
+    clearTimeout(timerId);
+    setIsShowAllDesc(false);
+    setStaffInfo((staffInfo) => ({ ...staffInfo, [value]: e.target.value.trim() }));
+  };
+  // 鼠标悬停在描述上展示全部文本
+  const showAllDescHandle = () => {
+    // let timerId:NodeJS.Timeout;
+    timerId = setTimeout(() => {
+      console.log('悬停一秒了');
+      setIsShowAllDesc(true);
+    }, 1000);
+    console.log('鼠标移入了~~');
+    // 定义鼠标移动事件
+    const onMouseMoveHandle = () => {
+      clearTimeout(timerId);
+      timerId = setTimeout(() => {
+        console.log('悬停一秒了');
+        setIsShowAllDesc(true);
+      }, 1000);
+    };
+    // 定义鼠标移出事件
+    const onMouseLeaveHandle = () => {
+      setIsShowAllDesc(false);
+      clearTimeout(timerId);
+      descRef.current.removeEventListener('mouseleave', onMouseLeaveHandle);
+      descRef.current.removeEventListener('mousemove', onMouseMoveHandle);
+    };
+    descRef.current.addEventListener('mousemove', onMouseMoveHandle);
+    descRef.current.addEventListener('mouseleave', onMouseLeaveHandle);
+  };
   useEffect(() => {
-    setStaffList([{ name: '李斯' }]);
-  }, []);
+    if (visible) {
+      descRef.current.addEventListener('mouseenter', showAllDescHandle);
+    }
+    return () => {
+      descRef.current.removeEventListener('mouseenter', showAllDescHandle);
+    };
+  }, [visible]);
+  useEffect(() => {
+    if (visible) {
+      if (allDesc.current.clientWidth > allDescInputRef.current.clientWidth) {
+        console.log('超出了~');
+        setIsHiddenAllDesc(false);
+      } else {
+        console.log('没超出~');
+        setIsHiddenAllDesc(true);
+      }
+    }
+  }, [staffInfo.desc]);
   return (
     <>
       <Modal
@@ -88,6 +160,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
         title={'批量设置信息'}
         visible={visible}
         centered={true}
+        maskClosable={false}
         closeIcon={<Icon className={style.closeIcon} name={'biaoqian_quxiao'} />}
         width={620}
         onCancel={onCancelHandle}
@@ -95,9 +168,17 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
       >
         {/* 选择员工 */}
         <div className={style.chooseStaff}>
+          {!!staffInfo.staffList?.length && (
+            <div className={style.choosedInfo}>
+              <span className={style.choosedCount}>已选则{staffInfo.staffList?.length}人</span>
+              <span className={style.cancel} onClick={() => setStaffInfo({ ...staffInfo, staffList: [] })}>
+                全部取消
+              </span>
+            </div>
+          )}
           <div className={style.title}>选择员工</div>
           <div className={style.staffList}>
-            {staffList.length
+            {!staffInfo.staffList?.length
               ? (
               <div className={style.add} onClick={addStaffHandle}>
                 <Icon className={style.addIcon} name="tianjiafenzu" />
@@ -106,7 +187,9 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
                 )
               : (
               <>
-                <div>员工列表</div>
+                {staffInfo.staffList?.map((item: any) => (
+                  <span key={item.id}>{item.name}；</span>
+                ))}
               </>
                 )}
           </div>
@@ -120,7 +203,9 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
             <div className={style.value}>
               {staffInfo.department
                 ? (
-                <div>{staffInfo.department}</div>
+                <div className={style.department} onClick={addDepartmentHandle}>
+                  {staffInfo.department.name}
+                </div>
                   )
                 : (
                 <div className={style.add} onClick={addDepartmentHandle}>
@@ -133,13 +218,40 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
           <div className={style.infoItem}>
             <div className={style.title}>职务</div>
             <div className={style.value}>
-              <input className={style.input} type="text" placeholder="请输入职务" maxLength={16} />
+              <input
+                value={staffInfo.post}
+                className={style.input}
+                type="text"
+                placeholder="请输入职务"
+                maxLength={16}
+                onChange={(e) => InputHandle(e, 'post')}
+              />
             </div>
           </div>
           <div className={style.infoItem}>
             <div className={style.title}>描述</div>
-            <div className={style.value}>
-              <input className={style.input} type="text" placeholder="请输入描述" maxLength={60} />
+            <div className={style.value} ref={descRef}>
+              <input
+                ref={allDescInputRef}
+                value={staffInfo.desc}
+                className={style.input}
+                type="text"
+                placeholder="请输入描述"
+                maxLength={60}
+                onChange={(e) => InputHandle(e, 'desc')}
+              />
+              {
+                <div
+                  ref={allDesc}
+                  className={classNames(
+                    style.allDesc,
+                    { [style.active]: isShowAllDesc },
+                    { [style.isHiddenAllDesc]: isHiddenAllDesc }
+                  )}
+                >
+                  {staffInfo.desc}
+                </div>
+              }
             </div>
           </div>
           <div className={style.infoItem}>
@@ -158,7 +270,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
                   <input
                     ref={inputRef}
                     className={style.input}
-                    value={staffInfo.tag || ''}
+                    value={staffInfo.tags}
                     type="text"
                     maxLength={12}
                     placeholder={'请输入标签名字'}
@@ -179,7 +291,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
       </Modal>
       <ChooseTreeModal
         chooseTreeParam={chooseTreeParam}
-        setStaffList={setStaffList}
+        setStaffInfo={setStaffInfo}
         setMultiVisible={setMultiVisible}
         setChooseTreeParam={setChooseTreeParam}
       />

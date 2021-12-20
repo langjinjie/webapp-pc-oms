@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, Key } from 'react';
-import { Modal, Tree, Input } from 'antd';
+import { Modal, Tree, Input, TreeDataNode } from 'antd';
 import { Icon } from 'src/components';
 import { queryCorpOrg } from 'src/apis/stationConfig';
 import { Context } from 'src/store';
@@ -8,7 +8,7 @@ import style from './style.module.less';
 
 interface IChooseTreeModalProps {
   chooseTreeParam: { title: string; visible: boolean; isShowStaff: boolean };
-  setStaffList: (param: any) => void;
+  setStaffInfo: (param: any) => void;
   setMultiVisible: (param: boolean) => void;
   setChooseTreeParam: (param: { title: string; visible: boolean; isShowStaff: boolean }) => void;
 }
@@ -25,7 +25,7 @@ interface ItreeProps {
 
 const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   chooseTreeParam,
-  setStaffList,
+  setStaffInfo,
   setMultiVisible,
   setChooseTreeParam
 }) => {
@@ -162,15 +162,43 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     }
   };
 
+  // 折叠父级,将所有的子级全部折叠逻辑
+  const expandedHandle = (expandedKeys: Key[], expandedId: string) => {
+    // 找出点击折叠的节点的所有子节点
+    const arr1 = flatTreeData.filter((item) => item.parentId === expandedId);
+    // 找出当前节点已经展开的子节点
+    const arr2 = arr1.filter((item) => expandedKeys.includes(item.id)).map((item) => item.id);
+    if (arr2.length) {
+      // 将展开的子节点过滤掉
+      const newExpandedKeys = expandedKeys.filter((item) => !arr2.includes(item));
+      arr2.forEach((item) => {
+        expandedHandle(newExpandedKeys, item);
+      });
+    } else {
+      setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
+    }
+  };
+
   // 展开/折叠触发
-  const onExpandHandle = (expandedKeys: Key[]) => {
-    setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
+  const onExpandHandle = (
+    expandedKeys: Key[],
+    info: {
+      node: TreeDataNode;
+      expanded: boolean;
+      nativeEvent: MouseEvent;
+    }
+  ) => {
+    // 判断是折叠还是展开
+    if (info.expanded) {
+      setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
+    } else {
+      expandedHandle(expandedKeys, info.node.key as string);
+    }
   };
 
   // 选中复选框
   const onCheckedHandle = (checked: Key[]) => {
     setSelectedKeys(checked);
-    console.log(checked);
     // 过滤出已经选中的节点
     const filterChecked = flatTreeData.filter((item) => !item.isParent && checked.includes(item.id));
     setSelectList(filterChecked);
@@ -181,14 +209,18 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     chooseTreeParam.isShowStaff || setSelectedKeys(selectKeys);
   };
 
-  // 点击单个去选选中员工
+  // 点击单个删除选中员工
   const clickDelStaffHandle = (id: string, filterKeys = [...selectedKeys]) => {
-    filterKeys = filterKeys.filter((key: Key) => key !== id);
-    setSelectedKeys(filterKeys);
-    // 判断当前点击的是否有父级
-    const currentNode = selectList.find((item) => item.id === id);
-    if (currentNode && currentNode.parentId !== '0') {
+    // 找出当前点击删除的节点
+    const currentNode = flatTreeData.find((item) => item.id === id);
+    // 找到当前元素的父级,并且从selectKeys中删除
+    const parentId = currentNode?.parentId;
+    filterKeys = filterKeys.filter((key: Key) => key !== id && (!parentId || key !== parentId));
+    // 判断当前节点的父级是否备选中
+    if (selectedKeys.some((item) => item === parentId)) {
       clickDelStaffHandle(currentNode.parentId, filterKeys);
+    } else {
+      setSelectedKeys(filterKeys);
     }
     setSelectList([...selectList.filter((item) => item.id !== id)]);
   };
@@ -207,7 +239,16 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
 
   // 确认modal
   const onOkHandle = () => {
-    setStaffList(['李斯']);
+    // 判断是选中员工还是选择部门
+    if (chooseTreeParam.title === '选择员工') {
+      setStaffInfo((staffInfo: any) => ({ ...staffInfo, staffList: selectList }));
+    } else {
+      console.log(flatTreeData.find((item) => item.id === selectedKeys[0]));
+      setStaffInfo((staffInfo: any) => ({
+        ...staffInfo,
+        department: flatTreeData.find((item) => item.id === selectedKeys[0])
+      }));
+    }
     setChooseTreeParam({ ...chooseTreeParam, visible: false });
     setMultiVisible(true);
   };
@@ -239,6 +280,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       title={chooseTreeParam.title}
       visible={chooseTreeParam.visible}
       centered={true}
+      maskClosable={false}
       closeIcon={<Icon className={style.closeIcon} name={'biaoqian_quxiao'} />}
       onCancel={onCancelHandle}
       onOk={onOkHandle}
