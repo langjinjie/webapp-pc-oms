@@ -149,6 +149,13 @@ export const routes: (RouteProps & expandRoute)[] = [
     path: '/speechManage/edit',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
   },
+  /**
+   * 机构管理->账号管理
+   */
+  {
+    path: '/organization/laod',
+    component: lazy(() => import('src/pages/OrgManage/Organization/StaffList/MultiLaod/MultiLaod'))
+  },
   {
     path: '/test/video',
     component: lazy(() => import('src/pages/Test/Video/Video'))
