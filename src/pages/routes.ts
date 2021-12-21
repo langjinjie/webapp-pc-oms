@@ -12,10 +12,15 @@ export interface Menu {
   name: string;
   icon?: string;
   path: string;
+  onlyMain?: boolean;
   children?: Menu[];
 }
 
-export const routes: RouteProps[] = [
+interface expandRoute {
+  onlyMain?: boolean;
+}
+
+export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
@@ -143,11 +148,25 @@ export const routes: RouteProps[] = [
   {
     path: '/speechManage/edit',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
+  },
+  {
+    path: '/test/video',
+    component: lazy(() => import('src/pages/Test/Video/Video'))
+  },
+  {
+    path: '/company',
+    component: lazy(() => import('src/pages/OrgManage/Company/Company')),
+    onlyMain: true
+  },
+  {
+    path: '/company/access',
+    component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess')),
+    onlyMain: true
   }
 ];
 
 // 缓存路由
-export const cacheRoutes: CacheRouteProps[] = [
+export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
   {
     path: '/organization',
     component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
@@ -164,12 +183,9 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/statistics-free',
     component: lazy(() => import('src/pages/OrgManage/StatisticsFree/List'))
-  },
-  {
-    path: '/test/video',
-    component: lazy(() => import('src/pages/Test/Video/Video'))
   }
 ];
+
 export const menus: Menu[] = [
   {
     name: '机构管理',
@@ -187,6 +203,11 @@ export const menus: Menu[] = [
       {
         name: '组织架构管理',
         path: '/organization'
+      },
+      {
+        name: '企业接入',
+        path: '/company',
+        onlyMain: true
       },
       {
         name: '数据免统计名单',
