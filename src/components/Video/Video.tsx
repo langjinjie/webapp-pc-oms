@@ -11,6 +11,7 @@ import style from './style.module.less';
 interface VideoProps {
   url: string[];
   autoPlay?: boolean;
+  fastType?: 0 | 1 | 2; // 快进方式 0-默认（随意）1-已缓冲 2-已播放
   videoEle?: MutableRefObject<any>;
 }
 
@@ -29,7 +30,7 @@ interface Rate {
   label: string;
 }
 
-const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
+const Video: React.FC<VideoProps> = ({ url, autoPlay, fastType = 0, videoEle }) => {
   const [playing, setPlaying] = useState<boolean>(false);
   const [full, setFull] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(1);
@@ -71,6 +72,10 @@ const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
     }
   ];
 
+  /**
+   * 进入全屏
+   * @param ele
+   */
   const openFullscreen = (ele: HTMLElement) => {
     if (ele.requestFullscreen) {
       ele.requestFullscreen();
@@ -92,6 +97,9 @@ const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
     }
   };
 
+  /**
+   * 退出全屏
+   */
   const closeFullscreen = () => {
     if (document.exitFullscreen) {
       document.exitFullscreen();
@@ -113,6 +121,10 @@ const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
     }
   };
 
+  /**
+   * 格式化时间
+   * @param seconds
+   */
   const formatTime = (seconds: number) => {
     const hour: number = Math.floor(seconds / (60 * 60));
     const minute: number = Math.floor(seconds / 60) % 60;
@@ -130,6 +142,9 @@ const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
     return timeStr;
   };
 
+  /**
+   * 获取当前播放的时间点和缓冲时间
+   */
   const getPlayTime = () => {
     // const video: HTMLVideoElement = document.getElementById('video1') as HTMLVideoElement;
     if (videoRef.current?.played) {
@@ -139,6 +154,9 @@ const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
     setCurrentTime(videoRef.current?.currentTime || 0);
   };
 
+  /**
+   * 获取银两条相关信息
+   */
   const getSoundInfo = () => {
     soundInfo.current = {
       height: soundRef.current?.clientHeight || 1,
@@ -146,6 +164,9 @@ const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
     };
   };
 
+  /**
+   * 获取进度条相关信息
+   */
   const getProcessInfo = () => {
     setProcessInfo({
       width: processRef.current?.clientWidth || 1,
@@ -153,6 +174,9 @@ const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
     });
   };
 
+  /**
+   * 全屏切换
+   */
   const fullChange = () => {
     getProcessInfo();
     if (document.fullscreenElement) {
@@ -162,6 +186,10 @@ const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
     }
   };
 
+  /**
+   * 计算音量值
+   * @param y
+   */
   const calcSound = (y: number) => {
     const video: HTMLVideoElement = document.getElementById('video1') as HTMLVideoElement;
     const { height, startY } = soundInfo.current;
@@ -177,21 +205,31 @@ const Video: React.FC<VideoProps> = ({ url, autoPlay, videoEle }) => {
     }
   };
 
+  /**
+   * 计算进度条
+   * @param x
+   */
   const calcProcess = (x: number) => {
     const video: HTMLVideoElement = document.getElementById('video1') as HTMLVideoElement;
     const { width, startX } = processInfo;
     const targetTime = ((x > startX ? x - startX : 0) * duration) / width;
-    if (targetTime <= playTime && targetTime > 0) {
+    if ([0, 1].includes(fastType) || targetTime <= playTime) {
       video.currentTime = targetTime;
       setCurrentTime(targetTime);
     }
   };
 
+  /**
+   * 暂停
+   */
   const onPause = () => {
     setPlaying(false);
     videoRef.current?.pause();
   };
 
+  /**
+   * 播放
+   */
   const onPlay = () => {
     setPlaying(true);
     videoRef.current?.play();

@@ -64,8 +64,8 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       res.forEach((item: any) => {
         item.isLeaf = !item.isParent;
       });
-      return res;
     }
+    return res || [];
   };
 
   // 向树结构添加子节点
