@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Breadcrumb, Button, Col, Form, Row } from 'antd';
 import classNames from 'classnames';
-import { getStaffDetail } from 'src/apis/orgManage';
+import { getStaffDetail, saveStaffDetail } from 'src/apis/orgManage';
 
 import { EditText } from './Components/EditTextProps';
 import styles from './style.module.less';
@@ -25,29 +25,28 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
 
   const navigatorToList: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault();
-    console.log('aa');
     navigation?.();
   };
 
   const getDetail = async () => {
-    console.log(staffInfo);
-    const res = await getStaffDetail({ staffId });
+    console.log(staffInfo, staffId);
+    const res = await getStaffDetail({ staffId: 'c7ec5682eae443b184d5eeb142199ac8' });
     if (res) {
-      setStaffInfo(res);
+      listForm.setFieldsValue(res.staffExtInfo);
+      setStaffInfo(res.staffExtInfo);
     }
   };
 
-  const [formParams] = useState({
-    phone: 18575544959,
-    date: '2021-12-15'
-  });
   useEffect(() => {
     getDetail();
-    listForm.setFieldsValue(formParams);
   }, []);
 
-  const onFinish = (values: any) => {
-    console.log('onFinish', values);
+  const onFinish = async (values: any) => {
+    const res = await saveStaffDetail({
+      ...staffInfo,
+      ...values
+    });
+    console.log(res);
     setIsReadOnly(true);
   };
   // const onSubmit = () => {
@@ -56,15 +55,19 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
   return (
     <div className={styles.staff_container}>
       <header className={styles.header}>
-        <div className={styles.breadcrumbWrap}>
-          <span>当前位置：</span>
-          <Breadcrumb>
-            <a onClick={navigatorToList}>
-              <Breadcrumb.Item>标签配置</Breadcrumb.Item>
-            </a>
-            <Breadcrumb.Item>保存与推送记录</Breadcrumb.Item>
-          </Breadcrumb>
-        </div>
+        {navigation
+          ? (
+          <div className={styles.breadcrumbWrap}>
+            <span>当前位置：</span>
+            <Breadcrumb>
+              <Breadcrumb.Item className={styles.pointer} onClick={navigatorToList}>
+                标签配置
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>保存与推送记录</Breadcrumb.Item>
+            </Breadcrumb>
+          </div>
+            )
+          : null}
       </header>
       <div className={styles.staff_content}>
         {isReadOnly
@@ -94,8 +97,14 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                     </span>
                   </dd>
                   <dd className={styles.staffTag}>
-                    <span className={styles.staffTag_primary}>{staffInfo.isDeleted ? '离职' : '在职'}</span>\
-                    {staffInfo.isLeader ? <span className={styles.staffTag_warning}>上级</span> : null}
+                    <span className={styles.staffTag_primary}>{staffInfo.isDeleted ? '离职' : '在职'}</span>
+                    {staffInfo.isLeader
+                      ? (
+                      <span>
+                        \<span className={styles.staffTag_warning}>上级</span>
+                      </span>
+                        )
+                      : null}
                   </dd>
                 </dl>
                 <ul className={styles.infoList}>
@@ -146,6 +155,11 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                       {staffInfo.fullDeptName}
                     </li>
                     <li className={styles.infoItem}>
+                      <Form.Item label="资源" required name="resource">
+                        <EditText readOnly={isReadOnly} />
+                      </Form.Item>
+                    </li>
+                    <li className={styles.infoItem}>
                       <Form.Item label="业务模式" required name="businessModel">
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
@@ -168,8 +182,8 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                   </div>
                   <ul className={styles.infoList}>
                     <li className={styles.infoItem}>
-                      <Form.Item label="姓名" required name="name">
-                        <EditText readOnly={isReadOnly} />
+                      <Form.Item label="姓名" required name="staffName">
+                        <EditText readOnly={true} />
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
