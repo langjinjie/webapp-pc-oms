@@ -1,7 +1,7 @@
 import React, { useState, useRef, MutableRefObject, useEffect } from 'react';
 import { message, Modal, /* Form, */ Tag } from 'antd';
 import { Icon } from 'src/components';
-import { ChooseTreeModal } from 'src/pages/OrgManage/Organization/StaffList/component';
+import ChooseTreeModal from 'src/pages/OrgManage/Organization/StaffList/ChooseTreeModal/ChooseTreeModal';
 import style from './style.module.less';
 import classNames from 'classnames';
 
