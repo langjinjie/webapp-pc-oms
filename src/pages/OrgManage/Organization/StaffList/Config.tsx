@@ -6,6 +6,7 @@ const TableColumns = (): ColumnsType<any> => [
   { title: '企微账号', dataIndex: 'account', align: 'center' },
   { title: '员工工号', dataIndex: 'number', align: 'center' },
   { title: '部门', dataIndex: 'department', align: 'center' },
+  { title: '资源' },
   { title: '职务', dataIndex: 'post', align: 'center' },
   { title: '业务模式', dataIndex: 'business', align: 'center' },
   { title: '业务地区', dataIndex: 'area', align: 'center' },

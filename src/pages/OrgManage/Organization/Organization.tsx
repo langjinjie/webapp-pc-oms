@@ -288,7 +288,13 @@ const Organization: React.FC = () => {
         </ul>
       </section>
       <div className={style.right}>
-        {displayType === 0 ? <StaffList departmentId={currentDepartment.id!} /> : <StaffDetail />}
+        {displayType === 0
+          ? (
+          <StaffList setDisplayType={setDisplayType} departmentId={currentDepartment.id!} />
+            )
+          : (
+          <StaffDetail />
+            )}
       </div>
       <ul
         style={{ ...position, transform: `scale(${showDepart ? 1 : 0})` }}
