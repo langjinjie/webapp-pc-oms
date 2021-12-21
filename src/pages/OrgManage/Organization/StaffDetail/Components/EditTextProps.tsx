@@ -7,12 +7,12 @@ import styles from './style.module.less';
 import moment from 'moment';
 
 interface EditTextProps {
-  type: 'date' | 'text';
+  type?: 'date' | 'text';
   value?: string;
   readOnly?: boolean;
   onChange?: (value: any) => void;
 }
-export const EditText: React.FC<EditTextProps> = ({ value, onChange, type, readOnly = true }) => {
+export const EditText: React.FC<EditTextProps> = ({ value, onChange, type = 'text', readOnly = true }) => {
   const clearInputValue = () => {
     onChange?.('');
   };

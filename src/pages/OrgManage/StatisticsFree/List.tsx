@@ -9,6 +9,10 @@ const StatisticsFreeList: React.FC = () => {
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [visible, setVisible] = useState(false);
   const [dataSource, setDataSource] = useState<StaffProps[]>([]);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    total: 0
+  });
 
   const handleSearch = (params: any) => {
     console.log(params);
@@ -35,14 +39,15 @@ const StatisticsFreeList: React.FC = () => {
 
   const getList = async (params?: any) => {
     const res = await getFreeStaffList({
-      corpId: '',
       name: '',
-      pageSize: '',
+      pageSize: 10,
       pageNum: 1,
       ...params
     });
     if (res) {
-      setDataSource(res);
+      const { list, total } = res;
+      setPagination(total);
+      setDataSource(list || []);
     }
   };
   useEffect(() => {
@@ -87,6 +92,7 @@ const StatisticsFreeList: React.FC = () => {
           columns={tableColumns()}
           loading={false}
           rowSelection={rowSelection}
+          pagination={pagination}
           dataSource={dataSource}
           setRowKey={(record: StaffProps) => {
             return record.userId;
