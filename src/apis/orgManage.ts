@@ -62,6 +62,18 @@ export const requestDownLoadSensitiveList: HttpFC = (param) => {
 };
 
 /**
+ * 坐席详情模块
+ ********************************************/
+// 获取坐席详情
+export const getStaffDetail: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/staffinfo', param);
+};
+// 保存坐席信息
+export const saveStaffDetail: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/usersave', param);
+};
+
+/**
  * 数据免统计名单
  *********************************************/
 // 免统计名单列表
