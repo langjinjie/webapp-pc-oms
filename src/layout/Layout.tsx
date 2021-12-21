@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect, useContext, Suspense } from 'react';
 import { Redirect, Route, withRouter, RouteProps, RouteComponentProps } from 'react-router-dom';
+import CacheRoute, { CacheRouteProps, CacheSwitch } from 'react-router-cache-route';
 import classNames from 'classnames';
 import { Icon } from 'src/components';
 import { Context } from 'src/store';
@@ -14,25 +15,31 @@ import { queryUserInfo } from 'src/apis';
 import { getCookie } from 'src/utils/base';
 import Header from './Header';
 import './style.less';
-import CacheRoute, { CacheRouteProps, CacheSwitch } from 'react-router-cache-route';
 
-const Routes = withRouter(({ location }) => (
-  <Suspense fallback={null}>
-    <CacheSwitch location={location}>
-      {routes.map(({ path, ...props }: RouteProps) => (
-        <Route key={`rt${path}`} path={path} {...props} exact />
-      ))}
-      {cacheRoutes.map(({ path, ...props }: CacheRouteProps) => (
-        <CacheRoute saveScrollPosition className="cache-route" key={`rt${path}`} path={path} {...props} exact />
-      ))}
+const Routes = withRouter(({ location }) => {
+  const { isMainCorp } = useContext(Context);
 
-      <Redirect from="/*" to="/index" />
-    </CacheSwitch>
-  </Suspense>
-));
+  return (
+    <Suspense fallback={null}>
+      <CacheSwitch location={location}>
+        {routes
+          .filter(({ onlyMain }) => !onlyMain || isMainCorp)
+          .map(({ path, ...props }: RouteProps) => (
+            <Route key={`rt${path}`} path={path} {...props} exact />
+          ))}
+        {cacheRoutes
+          .filter(({ onlyMain }) => !onlyMain || isMainCorp)
+          .map(({ path, ...props }: CacheRouteProps) => (
+            <CacheRoute saveScrollPosition className="cache-route" key={`rt${path}`} path={path} {...props} exact />
+          ))}
+        <Redirect from="/*" to="/index" />
+      </CacheSwitch>
+    </Suspense>
+  );
+});
 
 const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
-  const { setUserInfo, setIsMainCorp, setCurrentCorpId } = useContext(Context);
+  const { isMainCorp, setUserInfo, setIsMainCorp, setCurrentCorpId } = useContext(Context);
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
   const [subMenus, setSubMenus] = useState<Menu[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -77,8 +84,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
       initMenu();
       getUserInfo();
     } else if (window.location.pathname !== '/tenacity-oms/login') {
-      // history.push('/login');
-      console.log(123);
+      history.push('/login');
     }
   }, []);
 
@@ -114,19 +120,21 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
           ))}
         </ul>
         <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
-          {subMenus.map((subMenu: Menu, index: number) => (
-            <li
-              className={classNames('sub-menu-item', {
-                'sub-menu-active': subMenuIndex === index
-              })}
-              key={subMenu.path}
-              onClick={() => {
-                history.push(subMenu.path);
-              }}
-            >
-              {subMenu.name}
-            </li>
-          ))}
+          {subMenus
+            .filter(({ onlyMain }) => !onlyMain || isMainCorp)
+            .map((subMenu: Menu, index: number) => (
+              <li
+                className={classNames('sub-menu-item', {
+                  'sub-menu-active': subMenuIndex === index
+                })}
+                key={subMenu.path}
+                onClick={() => {
+                  history.push(subMenu.path);
+                }}
+              >
+                {subMenu.name}
+              </li>
+            ))}
         </ul>
         <div className="content-wrap">
           <div className="route-content">
