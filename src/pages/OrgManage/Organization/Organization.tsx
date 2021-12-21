@@ -51,6 +51,8 @@ const Organization: React.FC = () => {
   const [chooseNode, setChooseNode] = useState<OrganizationItem>({});
   const [leaderVisible, setLeaderVisible] = useState<boolean>(false);
   const [currentDepartment, setCurrentDepartment] = useState<OrganizationItem>({});
+  // 员工id
+  const [staffId, setStaffId] = useState('');
 
   /**
    * 处理/计算左边位置
@@ -290,10 +292,10 @@ const Organization: React.FC = () => {
       <div className={style.right}>
         {displayType === 0
           ? (
-          <StaffList setDisplayType={setDisplayType} departmentId={currentDepartment.id!} />
+          <StaffList setDisplayType={setDisplayType} setStaffId={setStaffId} departmentId={currentDepartment.id!} />
             )
           : (
-          <StaffDetail />
+          <StaffDetail staffId={staffId} navigation={() => setDisplayType(0)} />
             )}
       </div>
       <ul

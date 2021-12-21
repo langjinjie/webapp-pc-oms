@@ -9,6 +9,7 @@ import style from './style.module.less';
 interface IStaffListProps {
   departmentId: string;
   setDisplayType: (param: number) => void;
+  setStaffId: (param: string) => void;
 }
 
 interface ISearchParam {
@@ -18,7 +19,7 @@ interface ISearchParam {
   status: string;
 }
 
-const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType }) => {
+const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType, setStaffId }) => {
   const [staffList, setStaffList] = useState<{ total: number; list: any[] }>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [paginationParam, setPaginationParam] = useState({ current: 1, pageSize: 10 });
@@ -42,7 +43,8 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType }) 
       location: '上海',
       openingTime: '2021-04-30 11:23',
       downTime: '2021-04-30 11:23',
-      status: 0
+      status: 0,
+      staffId: '0'
     };
     const staffLsit = [];
     for (let i = 0; i < 20; i++) {
@@ -71,6 +73,19 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType }) 
   const onResetHandle = () => {
     console.log(searchParam);
     console.log('重置');
+  };
+  // Table行点击
+  const onRowHandle = (row: object) => {
+    return {
+      onClick: () => {
+        console.log('该行的数据', row);
+        setStaffId('000');
+        setDisplayType(1);
+      },
+      style: {
+        cursor: 'pointer'
+      }
+    };
   };
 
   useEffect(() => {
@@ -149,17 +164,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType }) 
           disabledColumnType,
           setDisabledColumnType
         })}
-        onRow={(row) => {
-          return {
-            onClick: () => {
-              console.log('该行的数据', row);
-              setDisplayType(1);
-            },
-            style: {
-              cursor: 'pointer'
-            }
-          };
-        }}
+        onRow={(row) => onRowHandle(row)}
       />
       <MultiSetting visible={multiVisible} setMultiVisible={setMultiVisible} />
     </div>
