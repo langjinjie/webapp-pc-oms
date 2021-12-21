@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
-import { MultiSetting } from './component';
+import MultiSetting from './MultiSetting/MultiSetting';
 import style from './style.module.less';
 
 interface StaffListProps {
@@ -16,6 +17,7 @@ const StaffList: React.FC<StaffListProps> = ({ departmentId }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [disabledColumnType, setDisabledColumnType] = useState(-1);
   const [multiVisible, setMultiVisible] = useState<boolean>(false);
+  const history = useHistory();
 
   // 获取员工列表
   const getStaffList = () => {
@@ -47,6 +49,11 @@ const StaffList: React.FC<StaffListProps> = ({ departmentId }) => {
     setMultiVisible((visible) => !visible);
   };
 
+  // 批量导入信息
+  const multiLaodingInHangle = () => {
+    history.push('/organization/laod');
+  };
+
   useEffect(() => {
     console.log(departmentId);
     setIsLoading(true);
@@ -59,7 +66,7 @@ const StaffList: React.FC<StaffListProps> = ({ departmentId }) => {
         <Button type="primary" className={style.btn} onClick={multiSettingHandle}>
           批量设置信息
         </Button>
-        <Button type="primary" className={style.btn}>
+        <Button type="primary" className={style.btn} onClick={multiLaodingInHangle}>
           批量导入信息
         </Button>
         <Button type="primary" className={style.btn}>
