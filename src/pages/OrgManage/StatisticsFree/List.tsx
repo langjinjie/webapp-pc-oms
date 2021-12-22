@@ -1,21 +1,47 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'antd';
+import { Button, message, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
 import { AddStatisticsFreeModal } from './Components/ExportStaff/AddStatisticsFreeModal';
-import { addFreeStaffs, getFreeStaffList } from 'src/apis/orgManage';
+import { addFreeStaffs, delFreeStaffs, getFreeStaffList } from 'src/apis/orgManage';
+import DeleteModal from './Components/DeleteModal/DeleteModal';
 
 const StatisticsFreeList: React.FC = () => {
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [visible, setVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [deleteVisible, setDeleteVisible] = useState(false);
   const [dataSource, setDataSource] = useState<StaffProps[]>([]);
-  const [pagination, setPagination] = useState({
+  const [formParams, setFormParams] = useState({
+    name: ''
+  });
+  const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
-    total: 0
+    total: 0,
+    showTotal: (total) => {
+      return `共 ${total} 条记录`;
+    }
   });
 
-  const handleSearch = (params: any) => {
-    console.log(params);
+  const getList = async (params?: any) => {
+    setIsLoading(true);
+    const res = await getFreeStaffList({
+      ...formParams,
+      pageSize: 10,
+      pageNum: 1,
+      ...params
+    });
+    setIsLoading(false);
+    if (res) {
+      const { list, total } = res;
+      setPagination((pagination) => ({ ...pagination, total }));
+      setDataSource(list || []);
+    }
+  };
+
+  const handleSearch = ({ name = '' }: { name: string }) => {
+    setFormParams({ name });
+    getList({ pageNum: 1, name });
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: StaffProps[]) => {
@@ -37,28 +63,34 @@ const StatisticsFreeList: React.FC = () => {
     }
   };
 
-  const getList = async (params?: any) => {
-    const res = await getFreeStaffList({
-      name: '',
-      pageSize: 10,
-      pageNum: 1,
-      ...params
-    });
-    if (res) {
-      const { list, total } = res;
-      setPagination(total);
-      setDataSource(list || []);
-    }
-  };
   useEffect(() => {
     getList();
   }, []);
 
-  const submitAddFreeStaffs = async (params: { userIds: string[]; freeType: string }) => {
+  const onPaginationChange = (pageNum: number, pageSize?: number) => {
+    setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize }));
+    getList({ pageNum, pageSize });
+  };
+
+  const submitAddFreeStaffs = async (params: { staffIds: string[]; freeType: string }) => {
     setVisible(false);
     const res = await addFreeStaffs(params);
-    console.log(res);
+    if (res) {
+      message.success('新增成功!');
+      await getList({ pageNum: 1 });
+    }
   };
+
+  const deleteStaffs = async () => {
+    console.log(selectedRowKeys);
+    const res = await delFreeStaffs({ staffIds: selectedRowKeys });
+    setDeleteVisible(false);
+    if (res) {
+      message.success('删除成功!');
+      await getList({ pageNum: 1 });
+    }
+  };
+
   return (
     <div className="container">
       <div className="header">
@@ -76,7 +108,7 @@ const StatisticsFreeList: React.FC = () => {
           <Button
             type="primary"
             onClick={() => {
-              console.log('添加');
+              setDeleteVisible(true);
             }}
             shape="round"
             size="large"
@@ -90,16 +122,21 @@ const StatisticsFreeList: React.FC = () => {
       <div className="pt20">
         <NgTable
           columns={tableColumns()}
-          loading={false}
+          loading={isLoading}
           rowSelection={rowSelection}
           pagination={pagination}
           dataSource={dataSource}
+          paginationChange={onPaginationChange}
           setRowKey={(record: StaffProps) => {
-            return record.userId;
+            return record.staffId;
           }}
         />
       </div>
+      {/* 添加免统计弹框 */}
       <AddStatisticsFreeModal visible={visible} onCancel={() => setVisible(false)} onConfirm={submitAddFreeStaffs} />
+
+      {/* 删除选中名单弹框 */}
+      <DeleteModal visible={deleteVisible} onCancel={() => setDeleteVisible(false)} onOk={deleteStaffs} />
     </div>
   );
 };

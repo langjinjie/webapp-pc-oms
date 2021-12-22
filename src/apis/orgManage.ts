@@ -1,5 +1,5 @@
 import http from 'src/utils/http';
-type HttpFC = (param: { [key: string]: any }) => Promise<any>;
+type HttpFC<T = any> = (param: T) => Promise<any>;
 type HttpVoid = () => Promise<any>;
 /* 机构管理 */
 // 获取机构列表
@@ -89,6 +89,12 @@ export const requestDownStaffList: HttpFC = (param) => {
   });
 };
 
+/**
+ * 部门员工搜索接口
+ */
+export const searchStaffList: HttpFC<{ keyWords: string; searchType?: 1 | 2 }> = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
+};
 /**
  * 坐席详情模块
  ********************************************/
