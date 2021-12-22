@@ -6,64 +6,71 @@
 import React, { useEffect, useState } from 'react';
 import { Input } from 'antd';
 import classNames from 'classnames';
-import { Icon, Modal } from 'src/components';
+import { Icon, Modal, Empty } from 'src/components';
+import { queryStaffList, searchStaffAndDepart } from 'src/apis/organization';
 import style from './style.module.less';
 
-interface SetLeaderProps {
-  chooseIds: string[];
-  visible: boolean;
-  onClose: () => void;
-  onOk: (ids: string[]) => void;
+interface UserItem {
+  staffId?: string;
+  staffName?: string;
 }
 
-interface UserItem {
-  id?: string;
-  name?: string;
+interface SetLeaderProps {
+  deptId?: string;
+  deptType: number;
+  visible: boolean;
+  onClose: () => void;
+  onOk: (leader: UserItem) => void;
+  leaderInfo?: UserItem;
 }
 
 const { Search } = Input;
 
-const SetLeader: React.FC<SetLeaderProps> = ({ chooseIds, visible, onClose, onOk }) => {
+const SetLeader: React.FC<SetLeaderProps> = (props) => {
+  const { deptId, deptType, leaderInfo, visible, onClose, onOk } = props;
   const [userList, setUserList] = useState<UserItem[]>([]);
   const [allUserList, setAllUserList] = useState<UserItem[]>([]);
-  const [chooseUser, setChooseUser] = useState<UserItem>({ });
+  const [chooseUser, setChooseUser] = useState<UserItem>({});
 
-  const onSearch = (val: string) => {
+  const onSearch = async (val: string) => {
     if (val) {
-      setUserList([
-        {
-          id: '123',
-          name: '龙春表'
-        },
-        {
-          id: '456',
-          name: '林堞雅'
-        }
-      ]);
+      const res: any = await searchStaffAndDepart({ keyWords: val, searchType: 2 });
+      if (res) {
+        setUserList(res.staffList || []);
+      }
     } else {
       setUserList(allUserList);
     }
   };
 
+  const getStaffList = async () => {
+    const res: any = await queryStaffList({ deptId, deptType, queryType: 0 });
+    if (res) {
+      const resList = res.list || [];
+      setAllUserList(resList);
+      setUserList(resList);
+      if (leaderInfo?.staffId) {
+        setChooseUser(leaderInfo);
+      } else if (resList.length > 0) {
+        setChooseUser(resList[0]);
+      } else {
+        setChooseUser({});
+      }
+    }
+  };
+
   useEffect(() => {
-    const resList = [{
-      id: '123',
-      name: '龙春表'
-    },
-    {
-      id: '456',
-      name: '林堞雅'
-    },
-    {
-      id: '789',
-      name: '周润发'
-    }];
-    setAllUserList(resList);
-    setUserList(resList);
-  }, []);
+    if (visible) {
+      getStaffList();
+    } else {
+      setAllUserList([]);
+      setUserList([]);
+      setChooseUser({});
+    }
+  }, [visible]);
 
   return (
-    <Modal width={620} title="设置上级" visible={visible} onClose={onClose} onOk={() => onOk(chooseIds)}>
+    <Modal width={620} title="设置上级" visible={visible} onClose={onClose} onOk={() => onOk(chooseUser)}>
       <div className={style.setLeaderWrap}>
         <section className={style.left}>
           <div className={style.inputWrap}>
@@ -74,16 +81,17 @@ const SetLeader: React.FC<SetLeaderProps> = ({ chooseIds, visible, onClose, onOk
             />
           </div>
           <div className={classNames(style.scrollWrap, 'scroll-strip')}>
+            {userList.length === 0 && <Empty />}
             <ul className={style.searchList}>
               {userList.map((item: UserItem) => (
                 <li
-                  key={item.id}
+                  key={item.staffId}
                   className={classNames(style.searchItem, {
-                    [style.active]: item.id === chooseUser.id
+                    [style.active]: item.staffId === chooseUser.staffId
                   })}
                   onClick={() => setChooseUser(item)}
                 >
-                  {item.name}
+                  {item.staffName}
                 </li>
               ))}
             </ul>
@@ -91,7 +99,7 @@ const SetLeader: React.FC<SetLeaderProps> = ({ chooseIds, visible, onClose, onOk
         </section>
         <section className={style.right}>
           <div className={style.chooseHeader}>已选</div>
-          <div className={style.leaderName}>{chooseUser.name}</div>
+          <div className={style.leaderName}>{chooseUser.staffName}</div>
         </section>
       </div>
     </Modal>
