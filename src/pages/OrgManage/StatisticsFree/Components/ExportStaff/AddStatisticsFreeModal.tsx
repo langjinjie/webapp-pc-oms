@@ -1,11 +1,12 @@
 import { Form, Select } from 'antd';
 import React, { useEffect } from 'react';
+import { searchStaffList } from 'src/apis/orgManage';
 import DebounceSelect from '../DebounceSelect/DebounceSelect';
 import { NgModal } from '../NgModal/NgModal';
 
 interface AddStatisticsFreeModalProps {
   visible: boolean;
-  onConfirm: (params: { userIds: string[]; freeType: string }) => void;
+  onConfirm: (params: { staffIds: string[]; freeType: string }) => void;
   onCancel: () => void;
 }
 
@@ -17,28 +18,27 @@ interface UserValue {
 export const AddStatisticsFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ visible, onConfirm, onCancel }) => {
   const [addForm] = Form.useForm();
   async function fetchUserList (username: string): Promise<UserValue[]> {
-    console.log('fetching user', username);
-
-    return fetch('https://randomuser.me/api/?results=5')
-      .then((response) => response.json())
-      .then((body) =>
-        body.results.map(
-          (user: { name: { first: string; last: string }; login: { username: string } }, index: number) => ({
-            label: `${user.name.first} (${user.name.last})`,
-            value: user.login.username,
-            key: index
-          })
-        )
-      );
+    const res = await searchStaffList({ keyWords: username, searchType: 2 });
+    if (res) {
+      const { staffList } = res;
+      return staffList.map((staff: { staffName: string; staffId: string; userId: string }) => ({
+        label: staff.staffName + `(${staff.userId})`,
+        value: staff.staffId,
+        key: staff.staffId
+      }));
+    } else {
+      return [];
+    }
   }
 
   const handleOK = () => {
     addForm
       .validateFields()
       .then((values) => {
+        console.log(values);
         const { userIds = [], freeType = [] } = values;
         onConfirm({
-          userIds: userIds.map((item: any) => item.id),
+          staffIds: userIds.map((item: any) => item.value),
           freeType: freeType.join(',')
         });
       })

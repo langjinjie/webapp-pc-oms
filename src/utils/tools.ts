@@ -22,3 +22,12 @@ export const getDateTimeBefor = (publishtime: string): string => {
   }
   return moment(publishtime).format('MM-DD hh:mm');
 };
+
+export const isPhoneNo = (phone: string): boolean => {
+  const phoneReg = /^1[3-9]\d{9}$/;
+  if (phoneReg.test(phone)) {
+    return true;
+  } else {
+    return false;
+  }
+};

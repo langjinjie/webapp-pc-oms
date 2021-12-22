@@ -7,17 +7,20 @@ import styles from './style.module.less';
 import moment from 'moment';
 
 interface EditTextProps {
-  type?: 'date' | 'text';
+  type?: 'date' | 'text' | 'textArea';
   value?: string;
   readOnly?: boolean;
   onChange?: (value: any) => void;
+  placeholder?: string;
 }
-export const EditText: React.FC<EditTextProps> = ({ value, onChange, type = 'text', readOnly = true }) => {
+export const EditText: React.FC<EditTextProps> = ({ value, onChange, type = 'text', readOnly = true, placeholder }) => {
   const clearInputValue = () => {
     onChange?.('');
   };
+  const handleTextareaChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    onChange?.(e.target.value);
+  };
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    console.log(e.target.value);
     onChange?.(e.target.value);
   };
   return (
@@ -32,19 +35,40 @@ export const EditText: React.FC<EditTextProps> = ({ value, onChange, type = 'tex
         />
           )
         : (
-        <Input
-          bordered={false}
-          value={value}
-          readOnly={readOnly}
-          onChange={handleChange}
-          suffix={
-            !readOnly
+        <>
+          {readOnly
+            ? (
+            <div>{value}</div>
+              )
+            : type === 'text'
               ? (
-              <Icon name="icon_common_16_inputclean" className="font16" onClick={clearInputValue} />
+            <Input
+              placeholder={placeholder}
+              bordered={false}
+              value={value}
+              readOnly={readOnly}
+              onChange={handleChange}
+              suffix={
+                !readOnly
+                  ? (
+                  <Icon name="icon_common_16_inputclean" className="font16" onClick={clearInputValue} />
+                    )
+                  : undefined
+              }
+            />
                 )
-              : undefined
-          }
-        />
+              : (
+            <Input.TextArea
+              placeholder={placeholder}
+              className={styles.textarea}
+              allowClear
+              bordered={false}
+              value={value}
+              autoSize
+              onChange={handleTextareaChange}
+            />
+                )}
+        </>
           )}
     </div>
   );

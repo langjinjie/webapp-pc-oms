@@ -9,6 +9,18 @@
       margin-right: 20px;
     }
   }
+  .form {
+    margin: 20px 0;
+    .searchBtn,
+    .resetBtn {
+      width: 88px;
+      height: 36px;
+      border-radius: 20px;
+    }
+    .label {
+      align-items: center;
+    }
+  }
   .tableWrap {
     border: 1px solid #e5e5e7;
     border-radius: 8px;
@@ -16,6 +28,9 @@
     :global {
       td.ant-table-selection-column {
         padding-left: 8px !important; // 选择框对其
+      }
+      .ant-table-pagination.ant-pagination {
+        padding-right: 16px;
       }
     }
   }

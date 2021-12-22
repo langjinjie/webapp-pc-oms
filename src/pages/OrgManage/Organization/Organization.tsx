@@ -120,6 +120,7 @@ const Organization: React.FC = () => {
   /**
    * 格式化数据源
    * @param data
+   * @param isRoot
    */
   const formatData = (data: OrganizationItem[]) => {
     const isNewStaffDepart = Number(data[0].deptId) === -1;
