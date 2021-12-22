@@ -4,11 +4,11 @@
  * @date 2021-12-10 10:36
  */
 import React, { useEffect, useState } from 'react';
-import { Input, Tree, Modal as AntdModal, message } from 'antd';
+import { Input, Tree, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
 import { Icon, Modal, Empty } from 'src/components';
-import { queryDepartmentList, searchStaffAndDepart } from 'src/apis/organization';
+import { queryDepartmentList, searchStaffAndDepart, saveDepartment, operateDepartment } from 'src/apis/organization';
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
@@ -25,7 +25,7 @@ interface OrganizationItem {
   deptId?: string;
   deptName?: string;
   deptType?: number;
-  effCount?: boolean;
+  effCount?: number;
   isLeaf?: boolean;
   index?: number;
   totalCount?: number;
@@ -49,6 +49,7 @@ const Organization: React.FC = () => {
   const [showDepart, setShowDepart] = useState<boolean>(false);
   const [departmentVisible, setDepartmentVisible] = useState<boolean>(false);
   const [departmentName, setDepartmentName] = useState<string>('');
+  const [isAddDepart, setIsAddDepart] = useState<boolean>(true);
   const [currentNode, setCurrentNode] = useState<OrganizationItem & StaffItem>({});
   const [deleteVisible, setDeleteVisible] = useState<boolean>(false);
   const [searchList, setSearchList] = useState<OrganizationItem[]>([]);
@@ -120,19 +121,18 @@ const Organization: React.FC = () => {
   /**
    * 格式化数据源
    * @param data
-   * @param isRoot
    */
-  const formatData = (data: OrganizationItem[]) => {
+  const formatData = (data: OrganizationItem[]): OrganizationItem[] => {
+    if (data.length === 0) {
+      return [];
+    }
     const isNewStaffDepart = Number(data[0].deptId) === -1;
     return data.map((item, index) => ({
       ...item,
       index: isNewStaffDepart ? index - 1 : index,
       total: isNewStaffDepart ? data.length - 1 : data.length,
-      children: []
+      children: formatData(item.children || [])
     }));
-    /* if (resItem.children && resItem.children.length > 0) {
-      resItem.children = formatData(resItem.children);
-    } */
   };
 
   /**
@@ -204,17 +204,119 @@ const Organization: React.FC = () => {
   };
 
   /**
+   * 添加节点-新增部门
+   * @param data
+   * @param node
+   */
+  const addData = (data: OrganizationItem[], node: OrganizationItem): OrganizationItem[] => {
+    return data.map((item) => {
+      if (item.deptId === currentNode.deptId) {
+        const parentNode: OrganizationItem = {
+          ...currentNode,
+          isLeaf: false,
+          children: formatData([...(currentNode.children || []), node])
+        };
+        return parentNode;
+      }
+      if (item.children && item.children.length > 0) {
+        return {
+          ...item,
+          children: addData(item.children, node)
+        };
+      }
+      return item;
+    });
+  };
+
+  /**
+   * 移动部门
+   * @param type
+   */
+  const onMoveDepartment = async (type: string) => {
+    const param = {
+      deptId: currentNode.deptId,
+      opstatus: type === 'up' ? 1 : 2
+    };
+    const res: any = await operateDepartment(param);
+    if (res) {
+      message.success(`${type === 'up' ? '上' : '下'}移成功`);
+      setOrganization(moveData(organization, currentNode.deptId!, type));
+    }
+  };
+
+  /**
+   * 保存部门
+   */
+  const saveDepart = async () => {
+    if (!departmentName) {
+      return message.error('请输入部门名称！');
+    }
+    const param: any = {
+      deptName: departmentName,
+      parentId: isAddDepart ? currentNode.deptId : '',
+      deptId: isAddDepart ? '' : currentNode.deptId
+    };
+    const res: any = await saveDepartment(param);
+    if (res) {
+      setDepartmentVisible(false);
+      if (isAddDepart) {
+        message.success('添加成功');
+        if ((currentNode.isLeaf || (currentNode.children || []).length > 0) && typeof res === 'number') {
+          const newDepart: OrganizationItem = {
+            deptId: String(res),
+            deptName: departmentName,
+            deptType: 0,
+            effCount: 0,
+            isLeaf: true
+          };
+          setOrganization(addData(organization, newDepart));
+        }
+      } else {
+        setOrganization(
+          updateNodeInfo(organization, {
+            ...currentNode,
+            deptName: departmentName
+          })
+        );
+        message.success('修改成功');
+      }
+    }
+  };
+
+  /**
+   * 删除节点
+   * @param data
+   */
+  const deleteData = (data: OrganizationItem[]): OrganizationItem[] => {
+    return data.map((item) => {
+      const index: number = (item.children || []).findIndex((item) => item.deptId === currentNode.deptId);
+      if (index > -1) {
+        const resChildren = formatData((item.children || []).filter((item) => item.deptId !== currentNode.deptId));
+        return {
+          ...item,
+          children: resChildren,
+          isLeaf: resChildren.length === 0
+        };
+      }
+      if (item.children && item.children.length > 0) {
+        return {
+          ...item,
+          children: deleteData(item.children)
+        };
+      }
+      return item;
+    });
+  };
+
+  /**
    * 删除部门
    */
-  const delDepartment = () => {
-    if (currentNode.isLeaf) {
-      AntdModal.confirm({
-        title: '提示',
-        content: '确定删除？',
-        async onOk () {
-          console.log('1123');
-        }
-      });
+  const delDepartment = async () => {
+    const res: any = await operateDepartment({ deptId: currentNode.deptId, opstatus: 9 });
+    if (res) {
+      message.success('删除成功');
+      setShowDepart(false);
+      setOrganization(deleteData(organization));
     }
   };
 
@@ -284,7 +386,7 @@ const Organization: React.FC = () => {
             titleRender={(node) => (
               <div className={style.nodeItem}>
                 {node.deptName}({node.deptType === 1 ? `${node.effCount}/${node.totalCount}` : node.effCount})
-                {Number(node.deptId) > -1 && (
+                {Number(node.deptId) !== -1 && (
                   <Icon
                     className={style.dotIcon}
                     name="diandian"
@@ -356,7 +458,14 @@ const Organization: React.FC = () => {
         >
           部门ID：{currentNode.deptId}
         </li>
-        <li className={style.operationItem} onClick={() => setDepartmentVisible(true)}>
+        <li
+          className={style.operationItem}
+          onClick={() => {
+            setDepartmentVisible(true);
+            setIsAddDepart(true);
+            setDepartmentName('');
+          }}
+        >
           添加子部门
         </li>
         <li
@@ -367,6 +476,7 @@ const Organization: React.FC = () => {
             if (currentNode.deptType === 0) {
               setDepartmentVisible(true);
               setDepartmentName(currentNode.deptName!);
+              setIsAddDepart(false);
             }
           }}
         >
@@ -387,7 +497,7 @@ const Organization: React.FC = () => {
           className={classNames(style.operationItem, {
             [style.disabled]: currentNode.index === 0
           })}
-          onClick={() => currentNode.index! > 0 && setOrganization(moveData(organization, currentNode.deptId!, 'up'))}
+          onClick={() => currentNode.index! > 0 && onMoveDepartment('up')}
         >
           上移
         </li>
@@ -395,10 +505,7 @@ const Organization: React.FC = () => {
           className={classNames(style.operationItem, {
             [style.disabled]: currentNode.index! === (currentNode.total || 0) - 1
           })}
-          onClick={() =>
-            currentNode.index! < (currentNode.total || 0) - 1 &&
-            setOrganization(moveData(organization, currentNode.deptId!, 'down'))
-          }
+          onClick={() => currentNode.index! < (currentNode.total || 0) - 1 && onMoveDepartment('down')}
         >
           下移
         </li>
@@ -407,10 +514,8 @@ const Organization: React.FC = () => {
         <Modal
           visible={departmentVisible}
           onClose={() => setDepartmentVisible(false)}
-          title="添加部门"
-          onOk={() => {
-            setDepartmentVisible(false);
-          }}
+          title={`${isAddDepart ? '添加' : '修改'}部门`}
+          onOk={() => saveDepart()}
         >
           <Input
             className={style.inputRadius}
@@ -448,7 +553,6 @@ const Organization: React.FC = () => {
             };
             setCurrentNode(newNode);
             setOrganization(updateNodeInfo(organization, newNode));
-            setLeaderVisible(false);
           }}
         />
       </div>
