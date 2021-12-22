@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react';
-
-import { Breadcrumb, Button, Col, Form, Row } from 'antd';
+import { useLocation, useHistory } from 'react-router';
+import { Breadcrumb, Button, Col, Form, message, Row } from 'antd';
 import classNames from 'classnames';
 import { getStaffDetail, saveStaffDetail } from 'src/apis/orgManage';
 
 import { EditText } from './Components/EditTextProps';
 import styles from './style.module.less';
 import { isPhoneNo } from 'src/utils/tools';
+import { URLSearchParams } from 'src/utils/base';
 
 interface StaffDetailProps {
   staffId: string;
-  navigation?: () => void;
 }
 
-const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
+const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
   const [listForm] = Form.useForm();
   const [isReadOnly, setIsReadOnly] = useState(true);
+  const routerLocation = useLocation();
+  const routerHistory = useHistory();
   const [staffInfo, setStaffInfo] = useState<{ [propKey: string]: any }>({
     staffName: '',
     avatar: '',
@@ -26,10 +28,14 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
 
   const navigatorToList: React.MouseEventHandler<HTMLAnchorElement> = (e) => {
     e.preventDefault();
-    navigation?.();
+    routerHistory.push('/organization');
   };
 
   const getDetail = async () => {
+    if (!staffId) {
+      const { staffId: currentStaffId } = URLSearchParams(routerLocation.search) as { [key: string]: string };
+      staffId = currentStaffId;
+    }
     const res = await getStaffDetail({ staffId });
     if (res) {
       listForm.setFieldsValue(res.staffExtInfo);
@@ -39,7 +45,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
 
   useEffect(() => {
     getDetail();
-  }, []);
+  }, [staffId]);
 
   const onFinish = async (values: any) => {
     const res = await saveStaffDetail({
@@ -47,6 +53,9 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
       ...values
     });
     console.log(res);
+    if (res) {
+      message.success('保存成功');
+    }
     setIsReadOnly(true);
   };
   // const onSubmit = () => {
@@ -89,7 +98,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
   return (
     <div className={styles.staff_container}>
       <header className={styles.header}>
-        {navigation
+        {!staffId
           ? (
           <div className={styles.breadcrumbWrap}>
             <span>当前位置：</span>
@@ -127,7 +136,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                   <dd>
                     <span className={classNames(styles.staffName, 'font16 bold')}>{staffInfo.staffName}</span>
                     <span className={classNames(styles.staffGender, 'font12 color-text-regular')}>
-                      / {staffInfo.gender ? '女士' : '男士'}
+                      / {staffInfo.gender === 2 ? '女士' : '男士'}
                     </span>
                   </dd>
                   <dd className={styles.staffTag}>

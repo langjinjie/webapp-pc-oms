@@ -4,56 +4,58 @@ import { Button, Form, Space, Select, Input } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import MultiSetting from './MultiSetting/MultiSetting';
+import { requestGetDepStaffList } from 'src/apis/orgManage';
+import { IDepStaffList } from 'src/utils/interface';
 import style from './style.module.less';
 
 interface IStaffListProps {
   departmentId: string;
-  setDisplayType: (param: number) => void;
-  setStaffId: (param: string) => void;
+  deptType: number;
 }
 
 interface ISearchParam {
-  business: string;
-  area: string;
-  location: string;
-  status: string;
+  resource: string;
+  businessModel: string;
+  businessArea: string;
+  officePlace: string;
+  isDeleted?: number;
 }
 
-const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType, setStaffId }) => {
+const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1' }) => {
   const [staffList, setStaffList] = useState<{ total: number; list: any[] }>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(false);
-  const [paginationParam, setPaginationParam] = useState({ current: 1, pageSize: 10 });
+  const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [disabledColumnType, setDisabledColumnType] = useState(-1);
   const [multiVisible, setMultiVisible] = useState<boolean>(false);
-  const [searchParam, setSearchParam] = useState<ISearchParam>({ business: '', area: '', location: '', status: '' });
+  const [searchParam, setSearchParam] = useState<ISearchParam>({
+    resource: '',
+    businessModel: '',
+    businessArea: '',
+    officePlace: ''
+  });
   const history = useHistory();
   const [form] = Form.useForm();
+  // 员工状态对照表
+  const staffStatusList = [
+    { value: 0, label: '在职' },
+    { value: 1, label: '离职' }
+  ];
   // 获取员工列表
-  const getStaffList = (searchParam: ISearchParam) => {
-    console.log('请求参数', searchParam);
-    const staffItem = {
-      name: '李思',
-      account: 'lisisi',
-      number: '0',
-      department: '深圳团队',
-      post: '客户经理',
-      business: '电销',
-      area: '上海',
-      location: '上海',
-      openingTime: '2021-04-30 11:23',
-      downTime: '2021-04-30 11:23',
-      status: 0,
-      staffId: '0'
-    };
-    const staffLsit = [];
-    for (let i = 0; i < 20; i++) {
-      const initalStaffItem = { ...staffItem };
-      initalStaffItem.number = i + '';
-      i % 2 === 0 ? (initalStaffItem.status = 0) : (initalStaffItem.status = 1);
-      staffLsit.push(initalStaffItem);
+  const getStaffList = async (searchParam: ISearchParam) => {
+    setIsLoading(true);
+    const res = await requestGetDepStaffList({ ...searchParam, ...paginationParam, deptId, deptType: 0, queryType: 1 });
+    if (res) {
+      setStaffList(res);
+      setIsLoading(false);
     }
-    setStaffList({ total: staffLsit.length, list: staffLsit });
+  };
+  // 重置
+  const resetHandle = () => {
+    setPaginationParam((paginationParam) => ({ ...paginationParam, pageNum: 1 }));
+    setSearchParam(form.getFieldsValue());
+    setDisabledColumnType(-1);
+    setSelectedRowKeys([]);
   };
   // 批量设置信息
   const multiSettingHandle = () => {
@@ -63,24 +65,11 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType, se
   const multiLaodingInHangle = () => {
     history.push('/organization/laod');
   };
-  // 搜索
-  const onFinishHandle = () => {
-    console.log(form.getFieldsValue());
-    getStaffList(form.getFieldsValue());
-    setSearchParam(form.getFieldsValue());
-  };
-  // 重置
-  const onResetHandle = () => {
-    console.log(searchParam);
-    console.log('重置');
-  };
   // Table行点击
-  const onRowHandle = (row: object) => {
+  const onRowHandle = (row: IDepStaffList) => {
     return {
-      onClick: () => {
-        console.log('该行的数据', row);
-        setStaffId('000');
-        setDisplayType(1);
+      onDoubleClick: () => {
+        history.push('/organization/staff-detail?staffId=' + row.staffId);
       },
       style: {
         cursor: 'pointer'
@@ -89,11 +78,9 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType, se
   };
 
   useEffect(() => {
-    console.log(departmentId);
-    setIsLoading(true);
+    console.log('deptId', deptId);
     getStaffList(searchParam);
-    setIsLoading(false);
-  }, []);
+  }, [paginationParam, searchParam]);
   return (
     <div className={style.wrap}>
       <div className={style.operation}>
@@ -106,33 +93,35 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType, se
         <Button type="primary" className={style.btn}>
           批量导出信息
         </Button>
-        <Button type="primary" className={style.btn}>
+        <Button
+          type="primary"
+          className={style.btn}
+          disabled={!(searchParam.isDeleted === 1 && selectedRowKeys.length)}
+        >
           删除
         </Button>
       </div>
-      <Form
-        name="base"
-        className={style.form}
-        layout="inline"
-        form={form}
-        onFinish={onFinishHandle}
-        onReset={onResetHandle}
-      >
+      <Form name="base" className={style.form} layout="inline" form={form} onFinish={resetHandle} onReset={resetHandle}>
         <Space className={style.antSpace}>
-          <Form.Item className={style.label} name="business" label="业务模式：">
+          <Form.Item className={style.label} name="resource" label="资源：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
           </Form.Item>
-          <Form.Item className={style.label} name="area" label="业务地区：">
+          <Form.Item className={style.label} name="businessModel" label="业务模式：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
           </Form.Item>
-          <Form.Item className={style.label} name="location" label="办公职场：">
+        </Space>
+        <Space className={style.antSpace}>
+          <Form.Item className={style.label} name="businessArea" label="业务地区：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
           </Form.Item>
-          <Form.Item className={style.label} name="status" label="状态：">
-            <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 100 }}>
-              {[1, 2, 3].map((item) => (
-                <Select.Option key={item} value={item}>
-                  {item}
+          <Form.Item className={style.label} name="officePlace" label="办公职场：">
+            <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
+          </Form.Item>
+          <Form.Item className={style.label} name="isDeleted" label="状态：">
+            <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
+              {staffStatusList.map((item) => (
+                <Select.Option key={item.value} value={item.value}>
+                  {item.label}
                 </Select.Option>
               ))}
             </Select>
@@ -151,10 +140,12 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType, se
       </Form>
       <NgTable
         className={style.tableWrap}
-        setRowKey={(record: any) => record.number}
+        setRowKey={(record: any) => record.staffId}
         dataSource={staffList.list}
         columns={TableColumns()}
         loading={isLoading}
+        tableLayout={'fixed'}
+        scroll={{ x: 1300 }}
         {...TablePagination({
           staffList,
           paginationParam,
@@ -164,7 +155,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId, setDisplayType, se
           disabledColumnType,
           setDisabledColumnType
         })}
-        onRow={(row) => onRowHandle(row)}
+        onRow={(row: IDepStaffList) => onRowHandle(row)}
       />
       <MultiSetting visible={multiVisible} setMultiVisible={setMultiVisible} />
     </div>

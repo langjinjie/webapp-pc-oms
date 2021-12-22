@@ -440,7 +440,7 @@ const Organization: React.FC = () => {
           <StaffDetail staffId={currentNode.staffId} />
             )
           : (
-          <StaffList departmentId={currentNode.deptId!} />
+          <StaffList departmentId={currentNode.deptId!} deptType={currentNode.deptType!} />
             )}
       </div>
       <ul
