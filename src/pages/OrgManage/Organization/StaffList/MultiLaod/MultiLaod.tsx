@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Form, Space, Select, Input, DatePicker } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Form, Space, Select, Input, DatePicker, message } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import { useHistory } from 'react-router-dom';
+import { Context } from 'src/store';
+import { requestGetHistoryLoad, requestImportStaffList, requestDownStaffList } from 'src/apis/orgManage';
+import { IStaffImpList } from 'src/utils/interface';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import style from './style.module.less';
 
@@ -15,13 +18,14 @@ interface ISearchParam {
 
 interface IExportList {
   total: number;
-  list: any[];
+  list: IStaffImpList[];
 }
 
 const MultiLaod: React.FC = () => {
+  const { currentCorpId: corpId } = useContext(Context);
   const [exportList, setExportList] = useState<IExportList>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(true);
-  const [paginationParam, setPaginationParam] = useState({ current: 1, pageSize: 10 });
+  const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
   const [exportModal, setExportModal] = useState(false);
   const [searchParam, setSearchParam] = useState<ISearchParam>({
     status: 0,
@@ -35,26 +39,14 @@ const MultiLaod: React.FC = () => {
   const history = useHistory();
 
   // 获取列表
-  const getExportList = () => {
+  const getExportList = async () => {
     setIsLoading(true);
-    const listItem = {
-      name: '人保贵州线上理赔一组坐席清单',
-      number: '202112011200',
-      createTime: '2021-04-30 11:23 ',
-      createName: '李思',
-      status: 0, // 0:校验中 1:成功 2:异常
-      successCount: '12/1000'
-    };
-    const list = [];
-    for (let i = 0; i < 20; i++) {
-      const initalItem = { ...listItem };
-      initalItem.number = +listItem.number + i + '';
-      i % 2 === 0 ? (listItem.status = 0) : (listItem.status = 1);
-      i % 3 === 0 && (listItem.status = 2);
-      list.push(initalItem);
+    const res = await requestGetHistoryLoad(paginationParam);
+    console.log(res);
+    if (res) {
+      setExportList(res);
+      setIsLoading(false);
     }
-    setExportList({ total: list.length, list: list });
-    setIsLoading(false);
   };
   // 查询
   const onFinishHandle = () => {
@@ -74,22 +66,27 @@ const MultiLaod: React.FC = () => {
     console.log('重置表格~');
   };
   // 批量上传
-  const mulitiUpload = () => {
-    console.log('批量上传');
+  const mulitiUpload = async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('corpId', corpId);
+    const res = await requestImportStaffList(formData);
+    if (res) {
+      message.success('上传成功');
+      setExportModal(false);
+    }
   };
+
   /**
    * @interfaceType 1全量导出 2导出模板
    *  */
-  const onDownLoadExcel = async (interfaceType: number, fileName: string) => {
-    if (interfaceType === 1) {
-      console.log('全量导出', fileName);
-    } else {
-      console.log('导出模板', fileName);
-    }
+  const onDownLoadExcel = async () => {
+    const res = await requestDownStaffList({});
+    console.log(res);
   };
   useEffect(() => {
     getExportList();
-  }, []);
+  }, [paginationParam]);
   return (
     <div className={style.wrap}>
       <div className={style.crumbs}>
@@ -148,7 +145,7 @@ const MultiLaod: React.FC = () => {
       </Form>
       <NgTable
         className={style.tableWrap}
-        setRowKey={(record: any) => record.number}
+        setRowKey={(record: any) => record.batchId}
         dataSource={exportList.list}
         columns={TableColumns()}
         loading={isLoading}
@@ -160,9 +157,10 @@ const MultiLaod: React.FC = () => {
       />
       <ExportModal
         visible={exportModal}
+        title={'批量导入信息'}
         onOK={mulitiUpload}
         onCancel={() => setExportModal(false)}
-        onDownLoad={() => onDownLoadExcel(2, '敏感词列表模板')}
+        onDownLoad={() => onDownLoadExcel()}
       />
     </div>
   );

@@ -188,6 +188,10 @@ export interface ISensitiveSearchParam {
   updateEndTime: string;
 }
 
+/**
+ * 员工组织架构
+ *  */
+
 // 组织架构
 export interface IOrganizationItem {
   id?: string;
@@ -201,4 +205,33 @@ export interface IOrganizationItem {
   leaderId?: string;
   isRoot?: boolean;
   children?: IOrganizationItem[];
+}
+// 组织架构员工列表
+export interface IDepStaffList {
+  staffId: string;
+  userId: string;
+  staffName: string;
+  resource?: string;
+  avatar: string;
+  isLeader: number;
+  jobNumber?: string;
+  deptName?: string;
+  position?: string;
+  businessModel?: string;
+  businessArea?: string;
+  officePlace?: string;
+  accountStartTime?: string;
+  accountEndTime?: string;
+  isDeleted: number;
+}
+// 批量导入员工历史记录
+export interface IStaffImpList {
+  batchId: string;
+  title: string;
+  batchCode: string;
+  dateCreated: string;
+  createBy: string;
+  status: number;
+  successCount: number;
+  totalCount: number;
 }

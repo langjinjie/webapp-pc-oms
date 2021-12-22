@@ -10,7 +10,15 @@
     }
   }
   .form {
-    margin: 20px 0;
+    margin-top: 20px;
+    .antSpace {
+      margin-bottom: 20px;
+      .label {
+        label {
+          width: 70px;
+        }
+      }
+    }
     .searchBtn,
     .resetBtn {
       width: 88px;
@@ -26,9 +34,6 @@
     border-radius: 8px;
     overflow: hidden;
     :global {
-      td.ant-table-selection-column {
-        padding-left: 8px !important; // 选择框对其
-      }
       .ant-table-pagination.ant-pagination {
         padding-right: 16px;
       }
