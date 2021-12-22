@@ -62,6 +62,34 @@ export const requestDownLoadSensitiveList: HttpFC = (param) => {
 };
 
 /**
+ * 组织架构->员工列表接口
+ */
+// 获取组织架构员工列表
+export const requestGetDepStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/stafflist', param);
+};
+// 批量导入历史记录别表接口
+export const requestGetHistoryLoad: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/implist', param);
+};
+// 员工批量导入接口
+export const requestImportStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/impstaff', param);
+};
+// 导入异常表格下载
+export const requestDownLoadFailLoad: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/impdownload', param, {
+    responseType: 'blob'
+  });
+};
+// 批量导出员工信息接口
+export const requestDownStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/saffExp', param, {
+    responseType: 'blob'
+  });
+};
+
+/**
  * 坐席详情模块
  ********************************************/
 // 获取坐席详情
