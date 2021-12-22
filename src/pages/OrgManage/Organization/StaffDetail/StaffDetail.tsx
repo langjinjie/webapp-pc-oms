@@ -6,6 +6,7 @@ import { getStaffDetail, saveStaffDetail } from 'src/apis/orgManage';
 
 import { EditText } from './Components/EditTextProps';
 import styles from './style.module.less';
+import { isPhoneNo } from 'src/utils/tools';
 
 interface StaffDetailProps {
   staffId: string;
@@ -29,8 +30,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
   };
 
   const getDetail = async () => {
-    console.log(staffInfo, staffId);
-    const res = await getStaffDetail({ staffId: 'c7ec5682eae443b184d5eeb142199ac8' });
+    const res = await getStaffDetail({ staffId });
     if (res) {
       listForm.setFieldsValue(res.staffExtInfo);
       setStaffInfo(res.staffExtInfo);
@@ -52,6 +52,40 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
   // const onSubmit = () => {
   //   listForm.submit();
   // };
+
+  const validatorPhone = (_: any, value: string): any => {
+    if (value && !isPhoneNo(value)) {
+      return Promise.reject(new Error('请输入正确的手机号'));
+    } else {
+      return Promise.resolve();
+    }
+  };
+
+  const validatorTags = (_: any, value: string) => {
+    if (!value) {
+      return Promise.resolve();
+    } else {
+      const lightsValues = value.replace(/，/gi, ',');
+      let lightsArr: string[] = [];
+      lightsArr = lightsValues.split(',');
+
+      if (lightsArr.length > 0) {
+        let isMaxLengthError = false;
+        lightsArr.forEach((light) => {
+          if (light.length > 16) {
+            isMaxLengthError = true;
+          }
+        });
+        if (isMaxLengthError) {
+          return Promise.reject(new Error('单一标签最多12个字'));
+        }
+      }
+      if (lightsArr.length > 4) {
+        return Promise.reject(new Error('最多可以添加4个标签'));
+      }
+      return Promise.resolve();
+    }
+  };
   return (
     <div className={styles.staff_container}>
       <header className={styles.header}>
@@ -113,27 +147,74 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                     {staffInfo.userId}
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="工号" rules={[{ required: true }]} name="jobNumber">
+                    <Form.Item
+                      label="工号"
+                      name="jobNumber"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        },
+                        {
+                          required: true
+                        }
+                      ]}
+                    >
                       <EditText type="text" readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="手机号" name="mobile">
+                    <Form.Item
+                      label="手机号"
+                      name="mobile"
+                      rules={[
+                        {
+                          validator: validatorPhone
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="年龄段" name="ageLevel">
+                    <Form.Item
+                      label="年龄段"
+                      name="ageLevel"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="司龄段" name="corpAgeLevel">
+                    <Form.Item
+                      label="司龄段"
+                      name="corpAgeLevel"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="级别简称" name="classLevel">
+                    <Form.Item
+                      label="级别简称"
+                      name="classLevel"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
@@ -155,22 +236,62 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                       {staffInfo.fullDeptName}
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="资源" required name="resource">
+                      <Form.Item
+                        label="资源"
+                        name="resource"
+                        rules={[
+                          {
+                            type: 'string',
+                            max: 100,
+                            required: true
+                          }
+                        ]}
+                      >
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="业务模式" required name="businessModel">
+                      <Form.Item
+                        label="业务模式"
+                        name="businessModel"
+                        rules={[
+                          {
+                            type: 'string',
+                            max: 100,
+                            required: true
+                          }
+                        ]}
+                      >
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="业务地区" required name="businessArea">
+                      <Form.Item
+                        label="业务地区"
+                        name="businessArea"
+                        rules={[
+                          {
+                            type: 'string',
+                            max: 30,
+                            required: true
+                          }
+                        ]}
+                      >
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="办公职场" required name="officePlace">
+                      <Form.Item
+                        label="办公职场"
+                        name="officePlace"
+                        rules={[
+                          {
+                            type: 'string',
+                            max: 30,
+                            required: true
+                          }
+                        ]}
+                      >
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
@@ -187,27 +308,86 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="部门" required name="depart">
+                      <Form.Item
+                        label="部门"
+                        name="depart"
+                        rules={[
+                          {
+                            required: true,
+                            type: 'string',
+                            max: 100
+                          }
+                        ]}
+                      >
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="岗位" required name="cardPosition">
+                      <Form.Item
+                        label="岗位"
+                        required
+                        name="cardPosition"
+                        rules={[
+                          {
+                            required: true,
+                            type: 'string',
+                            max: 100
+                          }
+                        ]}
+                      >
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="标签" required name="tags">
-                        <EditText readOnly={isReadOnly} />
+                      <Form.Item
+                        label="标签"
+                        required
+                        name="tags"
+                        rules={[
+                          {
+                            required: true,
+                            type: 'string',
+                            max: 60
+                          },
+                          {
+                            validator: validatorTags
+                          }
+                        ]}
+                      >
+                        <EditText
+                          placeholder="最多可以添加4个标签,单一标签字数上限为12字,标签以英文逗号隔开"
+                          type="textArea"
+                          readOnly={isReadOnly}
+                        />
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="描述" required name="desc">
-                        <EditText readOnly={isReadOnly} />
+                      <Form.Item
+                        label="描述"
+                        required
+                        name="desc"
+                        rules={[
+                          {
+                            required: true,
+                            type: 'string',
+                            max: 60
+                          }
+                        ]}
+                      >
+                        <EditText readOnly={isReadOnly} type="textArea" />
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="证书编号" required name="certNo">
+                      <Form.Item
+                        label="证书编号"
+                        name="certNo"
+                        rules={[
+                          {
+                            type: 'string',
+                            max: 60
+                          }
+                        ]}
+                      >
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
@@ -222,12 +402,31 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                 </div>
                 <ul className={styles.infoList}>
                   <li className={styles.infoItem}>
-                    <Form.Item label="职位" required name="position">
+                    <Form.Item
+                      label="职位"
+                      name="position"
+                      rules={[
+                        {
+                          required: true,
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="级别" name="agentLevel">
+                    <Form.Item
+                      label="级别"
+                      name="agentLevel"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
@@ -242,27 +441,72 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="出生城市" name="bornCity">
+                    <Form.Item
+                      label="出生城市"
+                      name="bornCity"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText type="text" readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="居住城市" name="liveCity">
+                    <Form.Item
+                      label="居住城市"
+                      name="liveCity"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText type="text" readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="籍贯" name="origCity">
+                    <Form.Item
+                      label="籍贯"
+                      name="origCity"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="户籍" name="houseType">
+                    <Form.Item
+                      label="户籍"
+                      name="houseType"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="婚姻状况" name="mariStatus">
+                    <Form.Item
+                      label="婚姻状况"
+                      name="mariStatus"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>
@@ -272,7 +516,16 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId, navigation }) => {
                     </Form.Item>
                   </li>
                   <li className={styles.infoItem}>
-                    <Form.Item label="全日制最高学历" name="education">
+                    <Form.Item
+                      label="全日制最高学历"
+                      name="education"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
                       <EditText readOnly={isReadOnly} />
                     </Form.Item>
                   </li>

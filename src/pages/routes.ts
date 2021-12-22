@@ -182,10 +182,7 @@ export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
     path: '/contentsManage',
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
   },
-  {
-    path: '/organization/staff-detail',
-    component: lazy(() => import('src/pages/OrgManage/Organization/StaffDetail/StaffDetail'))
-  },
+
   // 免统计
   {
     path: '/statistics-free',
@@ -219,10 +216,6 @@ export const menus: Menu[] = [
       {
         name: '数据免统计名单',
         path: '/statistics-free'
-      },
-      {
-        name: '坐席详情（测试入口）',
-        path: '/organization/staff-detail'
       }
     ]
   },
