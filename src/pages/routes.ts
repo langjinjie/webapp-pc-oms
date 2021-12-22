@@ -182,7 +182,10 @@ export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
     path: '/contentsManage',
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
   },
-
+  {
+    path: '/organization/staff-detail',
+    component: lazy(() => import('src/pages/OrgManage/Organization/StaffDetail/StaffDetail'))
+  },
   // 免统计
   {
     path: '/statistics-free',
