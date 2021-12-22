@@ -10,8 +10,7 @@ import style from './style.module.less';
 
 interface IStaffListProps {
   departmentId: string;
-  setDisplayType: (param: number) => void;
-  setStaffId: (param: string) => void;
+  deptType: number;
 }
 
 interface ISearchParam {
@@ -22,7 +21,7 @@ interface ISearchParam {
   isDeleted?: number;
 }
 
-const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', setDisplayType, setStaffId }) => {
+const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1' }) => {
   const [staffList, setStaffList] = useState<{ total: number; list: any[] }>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
@@ -70,8 +69,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', setD
   const onRowHandle = (row: IDepStaffList) => {
     return {
       onDoubleClick: () => {
-        setStaffId(row.staffId);
-        setDisplayType(1);
+        history.push('/organization/staff-detail?staffId=' + row.staffId);
       },
       style: {
         cursor: 'pointer'
