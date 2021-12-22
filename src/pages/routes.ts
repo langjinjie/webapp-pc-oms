@@ -169,6 +169,11 @@ export const routes: (RouteProps & expandRoute)[] = [
     path: '/company/access',
     component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess')),
     onlyMain: true
+  },
+  // 坐席详情
+  {
+    path: '/organization/staff-detail',
+    component: lazy(() => import('src/pages/OrgManage/Organization/StaffDetail/StaffDetail'))
   }
 ];
 
@@ -182,10 +187,7 @@ export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
     path: '/contentsManage',
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
   },
-  {
-    path: '/organization/staff-detail',
-    component: lazy(() => import('src/pages/OrgManage/Organization/StaffDetail/StaffDetail'))
-  },
+
   // 免统计
   {
     path: '/statistics-free',

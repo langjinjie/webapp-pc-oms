@@ -136,7 +136,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                   <dd>
                     <span className={classNames(styles.staffName, 'font16 bold')}>{staffInfo.staffName}</span>
                     <span className={classNames(styles.staffGender, 'font12 color-text-regular')}>
-                      / {staffInfo.gender ? '女士' : '男士'}
+                      / {staffInfo.gender === 2 ? '女士' : '男士'}
                     </span>
                   </dd>
                   <dd className={styles.staffTag}>
