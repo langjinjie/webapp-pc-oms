@@ -4,7 +4,7 @@ import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
-import { requestGetHistoryLoad, requestImportStaffList, requestDownStaffList } from 'src/apis/orgManage';
+import { requestGetHistoryLoad, requestImportStaffList /* , requestDownStaffList */ } from 'src/apis/orgManage';
 import { IStaffImpList } from 'src/utils/interface';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import style from './style.module.less';
@@ -76,13 +76,17 @@ const MultiLaod: React.FC = () => {
       setExportModal(false);
     }
   };
-
-  /**
-   * @interfaceType 1全量导出 2导出模板
-   *  */
+  // 下载模板
   const onDownLoadExcel = async () => {
-    const res = await requestDownStaffList({});
-    console.log(res);
+    const url =
+      'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/stafforg_import.xlsx';
+    const link = document.createElement('a');
+    link.style.display = 'none';
+    link.href = url;
+    document.body.appendChild(link);
+    link.click(); // 点击下载
+    link.remove(); // 下载完成移除元素
+    window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
   };
   useEffect(() => {
     getExportList();
@@ -103,9 +107,15 @@ const MultiLaod: React.FC = () => {
         <Button type="primary" className={style.btn}>
           下载新增员工信息表
         </Button>
-        <Button type="primary" className={style.btn}>
+        {/* <Button type="primary" className={style.btn} onClick={downLoadTemplate}>
           下载模板
-        </Button>
+        </Button> */}
+        <a
+          className={style.btn}
+          href="https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/stafforg_import.xlsx"
+        >
+          下载模板
+        </a>
       </div>
       <Form
         name="base"
