@@ -214,11 +214,6 @@ export const menus: Menu[] = [
         path: '/organization'
       },
       {
-        name: '企业接入',
-        path: '/company',
-        onlyMain: true
-      },
-      {
         name: '数据免统计名单',
         path: '/statistics-free'
       }
@@ -314,6 +309,11 @@ if (process.env.NODE_ENV === 'development') {
       {
         name: '视频',
         path: '/test/video'
+      },
+      {
+        name: '企业接入',
+        path: '/company',
+        onlyMain: true
       }
     ]
   });
