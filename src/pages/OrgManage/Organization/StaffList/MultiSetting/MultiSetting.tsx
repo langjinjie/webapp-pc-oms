@@ -1,6 +1,7 @@
 import React, { useState, useRef, MutableRefObject, useEffect } from 'react';
 import { message, Modal, /* Form, */ Tag } from 'antd';
 import { Icon } from 'src/components';
+import { requestMultiSave } from 'src/apis/orgManage';
 import ChooseTreeModal from 'src/pages/OrgManage/Organization/StaffList/ChooseTreeModal/ChooseTreeModal';
 import style from './style.module.less';
 import classNames from 'classnames';
@@ -13,7 +14,7 @@ interface IMultiSettingProps {
 interface IStaffInfo {
   staffList: any[];
   department: any;
-  post: string;
+  cardPosition: string;
   desc: string;
   tags: string;
 }
@@ -27,7 +28,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   const [staffInfo, setStaffInfo] = useState<IStaffInfo>({
     staffList: [],
     department: null,
-    post: '',
+    cardPosition: '',
     desc: '',
     tags: ''
   });
@@ -43,7 +44,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   // const [form] = Form.useForm();
   // 重置
   const onResetHandle = () => {
-    setStaffInfo({ staffList: [], department: null, post: '', desc: '', tags: '' });
+    setStaffInfo({ staffList: [], department: null, cardPosition: '', desc: '', tags: '' });
     setIsShowAllDesc(false);
   };
   // modal取消
@@ -52,9 +53,22 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
     onResetHandle();
   };
   // modal确认
-  const onOkHandle = () => {
-    setMultiVisible(false);
-    onResetHandle();
+  const onOkHandle = async () => {
+    console.log('ok');
+    const { staffList, department, cardPosition, desc } = staffInfo;
+    const staffIds = staffList.map((item) => item.id);
+    const tags = tagList.reduce((prev: string, now: string, index: number) => {
+      if (index === tagList.length - 1) {
+        return prev + now;
+      } else {
+        return prev + now + '，';
+      }
+    }, '');
+    const res = await requestMultiSave({ staffIds, deptId: department?.id, cardPosition, desc, tags });
+    if (res) {
+      setMultiVisible(false);
+      onResetHandle();
+    }
   };
   // 点击添加员工
   const addStaffHandle = () => {
@@ -94,10 +108,8 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   const inputOnKeyDownHandle = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       // 判断标签数量
-      if (tagList.length + (e.target as HTMLInputElement).value.split('；').length >= 4) {
-        message.warning('最多能添加4个标签');
-      }
-      setTagList([...tagList, ...(e.target as HTMLInputElement).value.split('；')].splice(0, 4));
+      if (tagList.length >= 3) message.warning('最多能添加4个标签');
+      setTagList([...tagList, (e.target as HTMLInputElement).value]);
       setStaffInfo({ ...staffInfo, tags: '' });
       setIsShowInput(false);
     }
@@ -136,10 +148,10 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   };
   useEffect(() => {
     if (visible) {
-      descRef.current.addEventListener('mouseenter', showAllDescHandle);
+      descRef.current?.addEventListener('mouseenter', showAllDescHandle);
     }
     return () => {
-      descRef.current.removeEventListener('mouseenter', showAllDescHandle);
+      descRef.current?.removeEventListener('mouseenter', showAllDescHandle);
     };
   }, [visible]);
   useEffect(() => {
@@ -165,6 +177,10 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
         width={620}
         onCancel={onCancelHandle}
         onOk={onOkHandle}
+        okButtonProps={{
+          disabled:
+            !staffInfo.staffList.length || ![...Object.values(staffInfo).slice(1), tagList.length].some((item) => item)
+        }}
       >
         {/* 选择员工 */}
         <div className={style.chooseStaff}>
@@ -219,12 +235,12 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
             <div className={style.title}>职务</div>
             <div className={style.value}>
               <input
-                value={staffInfo.post}
+                value={staffInfo.cardPosition}
                 className={style.input}
                 type="text"
                 placeholder="请输入职务"
                 maxLength={16}
-                onChange={(e) => InputHandle(e, 'post')}
+                onChange={(e) => InputHandle(e, 'cardPosition')}
               />
             </div>
           </div>

@@ -21,7 +21,7 @@ interface ISearchParam {
   isDeleted?: number;
 }
 
-const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', deptType = 0 }) => {
+const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', deptType = 1 }) => {
   const [staffList, setStaffList] = useState<{ total: number; list: any[] }>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
@@ -99,7 +99,6 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
   };
 
   useEffect(() => {
-    console.log('deptId', deptId);
     getStaffList(searchParam);
   }, [paginationParam, searchParam]);
   useEffect(() => {
