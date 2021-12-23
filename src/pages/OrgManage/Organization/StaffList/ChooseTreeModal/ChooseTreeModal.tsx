@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useState, Key } from 'react';
-import { Modal, Tree, Input, TreeDataNode } from 'antd';
+import React, { useEffect, useState, Key } from 'react';
+import { Modal, Tree, Input } from 'antd';
 import { Icon } from 'src/components';
-import { queryCorpOrg } from 'src/apis/stationConfig';
-import { Context } from 'src/store';
-// import { IOrganizationItem } from 'src/utils/interface';
+import { requestGetDeptList, requestGetDepStaffList, searchStaffList } from 'src/apis/orgManage';
 import style from './style.module.less';
+import classNames from 'classnames';
 
 interface IChooseTreeModalProps {
   chooseTreeParam: { title: string; visible: boolean; isShowStaff: boolean };
@@ -29,7 +28,6 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   setMultiVisible,
   setChooseTreeParam
 }) => {
-  const { currentCorpId: corpId } = useContext(Context);
   const [treeData, setTreeData] = useState<any[]>([]);
   const [flatTreeData, setFlatTreeData] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState('');
@@ -39,7 +37,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
-    height: 332,
+    height: 331,
     virtual: false,
     blockNode: true,
     checkable: true,
@@ -53,19 +51,36 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     setSearchValue('');
     setSelectList([]);
     setFlatTreeData([]);
+    setSearchList([]);
   };
 
   // 获取组织架构
-  const getCorpOrg = async (parentId = '0') => {
-    const res = await queryCorpOrg({ corpId, parentId });
-    if (res) {
-      // 将树结构添加到扁平结构中
-      setFlatTreeData([...flatTreeData, ...res]);
-      res.forEach((item: any) => {
-        item.isLeaf = !item.isParent;
-      });
+  const getCorpOrg = async (parentId: string) => {
+    let res1 = await requestGetDeptList({ parentId });
+    let res2 = [];
+    if (chooseTreeParam.title === '选择员工' && parentId) {
+      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId });
+      res2 = res.list.map((item: any) => ({
+        ...item,
+        name: item.staffName,
+        id: item.staffId,
+        isLeaf: true,
+        isStaff: true,
+        parentId
+      }));
     }
-    return res || [];
+    if (res1) {
+      res1 = res1.filter((item: any) => item.deptId !== -1);
+      // 将树结构添加到扁平结构中
+      res1.forEach((item: any) => {
+        item.name = item.deptName;
+        item.id = item.deptId;
+        item.parentId = parentId;
+      });
+      setFlatTreeData([...flatTreeData, ...res1, ...res2]);
+    }
+    console.log('[...res1, ...res2]', [...res1, ...res2]);
+    return [...res1, ...res2];
   };
 
   // 向树结构添加子节点
@@ -87,7 +102,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     });
   };
 
-  // 异步获取组织架构
+  // 异步获取组织架构及当前目录下的员工
   const onLoadDataHandle = async ({ key }: any) => {
     // 获取对应的子节点
     const res = await getCorpOrg(key);
@@ -113,10 +128,10 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
           <span>{item.name}</span>
             );
       if (item.children) {
-        return { isLeaf: !item.isParent, name, id: item.id, children: loop(item.children) };
+        return { isLeaf: item.isLeaf, name, id: item.id, children: loop(item.children) };
       }
       return {
-        isLeaf: !item.isParent,
+        isLeaf: item.isLeaf,
         name,
         id: item.id
       };
@@ -154,54 +169,110 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   };
 
   // 搜索部门或者员工
-  const onSearchHandle = (val: string) => {
+  const onSearchHandle = async (val: string) => {
     if (val) {
-      setSearchList([{ name: '郎金杰' }]);
+      const res = await searchStaffList({ keyWords: val, searchType: 2 });
+      console.log(res);
+      res.staffList.forEach((item: any) => {
+        item.id = item.staffId;
+        item.name = item.staffName;
+        item.isLeaf = true;
+        item.isStaff = true;
+      });
+      setSearchList(res.staffList);
     } else {
       setSearchList([]);
     }
   };
 
-  // 折叠父级,将所有的子级全部折叠逻辑
-  const expandedHandle = (expandedKeys: Key[], expandedId: string) => {
-    // 找出点击折叠的节点的所有子节点
-    const arr1 = flatTreeData.filter((item) => item.parentId === expandedId);
-    // 找出当前节点已经展开的子节点
-    const arr2 = arr1.filter((item) => expandedKeys.includes(item.id)).map((item) => item.id);
-    if (arr2.length) {
-      // 将展开的子节点过滤掉
-      const newExpandedKeys = expandedKeys.filter((item) => !arr2.includes(item));
-      arr2.forEach((item) => {
-        expandedHandle(newExpandedKeys, item);
+  // 选择搜索结果的员工列表
+  const clickSearchList = (item: any) => {
+    if (selectList.some((selectItem) => item.id === selectItem.id)) {
+      setSelectList((list) => {
+        return [...list.filter((listItem) => listItem.id !== item.id)];
       });
+      // 判断当前节点是否已经在treeData中
+      if (flatTreeData.some((flatTreeItem) => flatTreeItem.id === item.id)) {
+        setSelectedKeys([...selectedKeys.filter((key) => key !== item.id)]);
+      }
     } else {
-      setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
+      setSelectList((list) => [...list, item]);
+      // 判断当前节点是否已经在treeData中
+      if (flatTreeData.some((flatTreeItem) => flatTreeItem.id === item.id)) {
+        setSelectedKeys(Array.from(new Set([...selectedKeys, item.id])));
+      }
     }
   };
 
   // 展开/折叠触发
-  const onExpandHandle = (
-    expandedKeys: Key[],
-    info: {
-      node: TreeDataNode;
-      expanded: boolean;
-      nativeEvent: MouseEvent;
-    }
-  ) => {
-    // 判断是折叠还是展开
-    if (info.expanded) {
-      setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
-    } else {
-      expandedHandle(expandedKeys, info.node.key as string);
-    }
+  const onExpandHandle = (expandedKeys: Key[]) => {
+    setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
   };
 
+  // 找出选中部门下面所有的员工
+  // const lookupDeptStaffList:any = async (deptId:string) => {
+  //   if (flatTreeData.some((flatTreeItem) => flatTreeItem.parentId === deptId)) {
+  //     console.log('该节点被打开过了');
+  //     // 找出该节点的所有的子节点
+  //     return flatTreeData.filter((flatTreeItem) => flatTreeItem.parentId === deptId).map((item) => item.id).map((id) => lookupDeptStaffList(id));
+  //   } else {
+  //     console.log('该节点没有被打开过');
+  //     const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId });
+  //     console.log(res.list);
+  //     return res.list.map((resItem:any) => ({ ...resItem, name: resItem.staffName, id: resItem.staffId }));
+  //   }
+  // };
+
   // 选中复选框
-  const onCheckedHandle = (checked: Key[]) => {
+  const onCheckedHandle = async (checked: Key[], info: any) => {
+    let currentNodeStaffList = [];
     setSelectedKeys(checked);
+    // 判断是选中还是取消
+    if (info.checked) {
+      if (!info.node.staffId) {
+        const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.key });
+        console.log(res.list);
+        currentNodeStaffList = res.list.map((resItem: any) => ({
+          ...resItem,
+          name: resItem.staffName,
+          id: resItem.staffId
+        }));
+      }
+    } else {
+      console.log('取消~');
+    }
     // 过滤出已经选中的节点
-    const filterChecked = flatTreeData.filter((item) => !item.isParent && checked.includes(item.id));
-    setSelectList(filterChecked);
+    const filterChecked = flatTreeData.filter((item) => item.staffId && checked.includes(item.id));
+    // 如果当前的节点是部门节点
+    if (!info.node.staffId) {
+      const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.key });
+      console.log(res.list);
+      currentNodeStaffList = res.list.map((resItem: any) => ({
+        ...resItem,
+        name: resItem.staffName,
+        id: resItem.staffId
+      }));
+    }
+    // 判断是选中还是不选中
+    // if (info.checked) {
+    //   console.log('选中');
+    // if (flatTreeData.some((flatTreeItem) => flatTreeItem.parentId === info.node.id)) {
+    //   console.log('该节点被打开过了');
+    //   // 找出该节点的所有的子节点
+    //   flatTreeData.filter((flatTreeItem) => flatTreeItem.parentId === info.node.id);
+    // } else {
+    //   console.log('该节点没有被打开过');
+    //   const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.key });
+    //   console.log(res.list);
+    //   currentNodeStaffList = res.list.map((resItem:any) => ({ ...resItem, name: resItem.staffName, id: resItem.staffId }));
+    // }
+    // } else {
+    //   console.log('取消选中');
+    // }
+    // console.log(currentNodeStaffList);
+    const selectList = [...filterChecked, ...currentNodeStaffList];
+    console.log(selectList);
+    setSelectList([...filterChecked, ...currentNodeStaffList]);
   };
 
   // 点击节点
@@ -215,6 +286,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     const currentNode = flatTreeData.find((item) => item.id === id);
     // 找到当前元素的父级,并且从selectKeys中删除
     const parentId = currentNode?.parentId;
+    console.log(parentId);
     filterKeys = filterKeys.filter((key: Key) => key !== id && (!parentId || key !== parentId));
     // 判断当前节点的父级是否备选中
     if (selectedKeys.some((item) => item === parentId)) {
@@ -235,6 +307,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   const onCancelHandle = () => {
     setChooseTreeParam({ ...chooseTreeParam, visible: false });
     setMultiVisible(true);
+    onResetHandle();
   };
 
   // 确认modal
@@ -256,21 +329,31 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     if (chooseTreeParam.visible) {
       setTreeProps({ ...treeProps, checkable: chooseTreeParam.isShowStaff });
       (async () => {
-        setTreeData(await getCorpOrg());
+        setTreeData(await getCorpOrg(''));
       })();
     }
     !chooseTreeParam.visible && onResetHandle();
-  }, [chooseTreeParam.visible]);
+  }, [chooseTreeParam]);
   useEffect(() => {
     (() => {
       // 将被选中父级的所有子节点被异步请求完成后手动添加为选中节点
+      // 将没有加载出来的选出来
+      const noRequestKeys = selectList.filter(
+        (flatTreeItem: any) => !flatTreeData.some((selectItem) => selectItem.id === flatTreeItem.id)
+      );
+      console.log(noRequestKeys);
+      // 先将selectList同步到keys中
       const newSelectedKeys = flatTreeData
         .filter((item: any) => selectedKeys.includes(item.parentId))
         .map((item) => item.id);
-      setSelectedKeys(Array.from(new Set([...selectedKeys, ...newSelectedKeys])));
-      setSelectList(
-        flatTreeData.filter((item) => !item.isParent && [...selectedKeys, ...newSelectedKeys].includes(item.id))
-      );
+      const selectListKeys = selectList
+        .filter((flatTreeItem: any) => flatTreeData.some((selectItem) => selectItem.id === flatTreeItem.id))
+        .map((item) => item.id);
+      // 找出通过搜索选中的员工
+      const selectKeys = Array.from(new Set([...selectedKeys, ...newSelectedKeys, ...selectListKeys]));
+      setSelectedKeys(selectKeys);
+      const rendedSelectList = flatTreeData.filter((item) => item.staffId && selectKeys.includes(item.id));
+      setSelectList([...rendedSelectList, ...noRequestKeys]);
     })();
   }, [flatTreeData]);
   return (
@@ -295,17 +378,22 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
             onSearch={(val) => onSearchHandle(val)}
             enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
           />
-          {searchList.length
-            ? (
+          {!!searchList.length && (
             <div className={style.searchListWrap}>
               {searchList.map((item: any) => (
-                <div key={item} className={style.searchItem}>
+                <div
+                  key={item.id}
+                  className={classNames(style.searchItem, {
+                    [style.active]: selectList.some((selectItem) => item.id === selectItem.id)
+                  })}
+                  onClick={() => clickSearchList(item)}
+                >
                   <div className={style.name}>{item.name}</div>
                 </div>
               ))}
             </div>
-              )
-            : (
+          )}
+          {!searchList.length && (
             <Tree
               {...treeProps}
               fieldNames={{ title: 'name', key: 'id' }}
@@ -313,15 +401,16 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
               loadData={onLoadDataHandle}
               checkedKeys={selectedKeys}
               onExpand={onExpandHandle}
-              onCheck={(checked) => onCheckedHandle(checked as Key[])}
+              // @ts-ignore
+              onCheck={onCheckedHandle}
               onSelect={(selectKeys) => onSelectHandle(selectKeys)}
             />
-              )}
+          )}
         </div>
         {chooseTreeParam.isShowStaff && (
           <div className={style.choosedStaff}>
             <div className={style.title}>已选</div>
-            <div className={style.selectList}>
+            <div className={classNames(style.selectList, 'scroll-strip')}>
               {selectList.map((item) => (
                 <div className={style.selectItem} key={item.id}>
                   <span className={style.itemName}>{item.name}</span>

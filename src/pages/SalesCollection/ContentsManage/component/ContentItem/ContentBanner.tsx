@@ -64,8 +64,13 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   // 点击目录
   const contentsClickHandle = async () => {
     if (catalog.lastLevel) return;
-    setCurrentContents(currentContents === catalog.catalogId ? '' : catalog.catalogId);
-    currentContents !== catalog.catalogId && getCurrentChildrenList();
+    if (currentContents === catalog.catalogId) {
+      setCurrentContents('');
+      setCurrentContent('');
+    } else {
+      setCurrentContents(catalog.catalogId);
+      getCurrentChildrenList();
+    }
   };
   // 编辑
   const editClickHandle = async (e: MouseEvent) => {
@@ -130,6 +135,14 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       }
     });
   };
+  const deleFirmModalOnOk = async () => {
+    const res = await requestDeleteCatalog({ corpId, sceneId: catalog.sceneId, catalogId: catalog.catalogId });
+    if (res) {
+      message.success('删除成功');
+      await setFirmModalParam({ title: '', content: '', visible: false });
+      getParentChildrenList();
+    }
+  };
   // 删除
   const delClickHandle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -138,12 +151,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       content: `确定删除目录“${catalog.name}”吗？`,
       visible: true,
       onOk: async () => {
-        const res = await requestDeleteCatalog({ corpId, sceneId: catalog.sceneId, catalogId: catalog.catalogId });
-        if (res) {
-          setFirmModalParam({ title: '', content: '', visible: false });
-          message.success('删除成功');
-          getParentChildrenList();
-        }
+        await deleFirmModalOnOk();
       },
       onCancel: () => {
         setFirmModalParam({ title: '', content: '', visible: false });
@@ -152,7 +160,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   };
   useEffect(() => {
     return () => {
-      setCurrentContents('');
+      setCurrentContent('');
     };
   }, []);
   const transTree = (data: any[]) => {

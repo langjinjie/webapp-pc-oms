@@ -88,6 +88,10 @@ export const requestDownStaffList: HttpFC = (param) => {
     responseType: 'blob'
   });
 };
+// 获取组织架构
+export const requestGetDeptList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/deptlist', param);
+};
 
 /**
  * 部门员工搜索接口

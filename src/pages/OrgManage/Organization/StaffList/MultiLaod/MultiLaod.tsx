@@ -4,7 +4,7 @@ import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
-import { requestGetHistoryLoad, requestImportStaffList /* , requestDownStaffList */ } from 'src/apis/orgManage';
+import { requestGetHistoryLoad, requestImportStaffList, requestDownStaffList } from 'src/apis/orgManage';
 import { IStaffImpList } from 'src/utils/interface';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import style from './style.module.less';
@@ -88,6 +88,24 @@ const MultiLaod: React.FC = () => {
     link.remove(); // 下载完成移除元素
     window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
   };
+  // 下载新增员工信息表
+  const downLoadNewStaffList = async () => {
+    const res = await requestDownStaffList({
+      deptType: 2
+    });
+    if (res) {
+      const blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', '新增员工信息表.xlsx');
+      document.body.appendChild(link);
+      link.click(); // 点击下载
+      link.remove(); // 下载完成移除元素
+      window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
+    }
+  };
   useEffect(() => {
     getExportList();
   }, [paginationParam]);
@@ -104,7 +122,7 @@ const MultiLaod: React.FC = () => {
         <Button type="primary" className={style.btn} onClick={() => setExportModal(true)}>
           上传表格
         </Button>
-        <Button type="primary" className={style.btn}>
+        <Button type="primary" className={style.btn} onClick={downLoadNewStaffList}>
           下载新增员工信息表
         </Button>
         {/* <Button type="primary" className={style.btn} onClick={downLoadTemplate}>

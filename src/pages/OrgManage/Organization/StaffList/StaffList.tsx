@@ -4,7 +4,7 @@ import { Button, Form, Space, Select, Input } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import MultiSetting from './MultiSetting/MultiSetting';
-import { requestGetDepStaffList } from 'src/apis/orgManage';
+import { requestGetDepStaffList, requestDownStaffList } from 'src/apis/orgManage';
 import { IDepStaffList } from 'src/utils/interface';
 import style from './style.module.less';
 
@@ -21,7 +21,7 @@ interface ISearchParam {
   isDeleted?: number;
 }
 
-const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1' }) => {
+const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', deptType }) => {
   const [staffList, setStaffList] = useState<{ total: number; list: any[] }>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
@@ -44,7 +44,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1' }) =>
   // 获取员工列表
   const getStaffList = async (searchParam: ISearchParam) => {
     setIsLoading(true);
-    const res = await requestGetDepStaffList({ ...searchParam, ...paginationParam, deptId, deptType: 0, queryType: 1 });
+    const res = await requestGetDepStaffList({ ...searchParam, ...paginationParam, deptId, deptType, queryType: 1 });
     if (res) {
       setStaffList(res);
       setIsLoading(false);
@@ -65,7 +65,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1' }) =>
   const multiLaodingInHangle = () => {
     history.push('/organization/laod');
   };
-  // Table行点击
+  // Table行双击
   const onRowHandle = (row: IDepStaffList) => {
     return {
       onDoubleClick: () => {
@@ -76,11 +76,32 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1' }) =>
       }
     };
   };
+  // 批量导出
+  const downLoadStaffList = async () => {
+    const res = await requestDownStaffList({
+      deptType: 1,
+      deptId,
+      staffIds: selectedRowKeys,
+      ...searchParam
+    });
+    if (res) {
+      const blob = new Blob([res.data]);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', '员工信息表.xlsx');
+      document.body.appendChild(link);
+      link.click(); // 点击下载
+      link.remove(); // 下载完成移除元素
+      window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
+    }
+  };
 
   useEffect(() => {
     console.log('deptId', deptId);
     getStaffList(searchParam);
-  }, [paginationParam, searchParam]);
+  }, [paginationParam, searchParam, deptId, deptType]);
   return (
     <div className={style.wrap}>
       <div className={style.operation}>
@@ -90,7 +111,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1' }) =>
         <Button type="primary" className={style.btn} onClick={multiLaodingInHangle}>
           批量导入信息
         </Button>
-        <Button type="primary" className={style.btn}>
+        <Button type="primary" className={style.btn} onClick={downLoadStaffList}>
           批量导出信息
         </Button>
         <Button
