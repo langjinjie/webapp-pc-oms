@@ -28,3 +28,27 @@ export const queryStaffList: HttpFunction = (param: Object) => {
 export const searchStaffAndDepart: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
 };
+
+/**
+ * 保存部门
+ * @param param
+ */
+export const saveDepartment: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/stafforg/deptsave', param);
+};
+
+/**
+ * 设置部门上级
+ * @param param
+ */
+export const saveDepartmentLeader: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/stafforg/setdeptleader', param);
+};
+
+/**
+ * 操作部门
+ * @param param
+ */
+export const operateDepartment: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/stafforg/opstatus', param);
+};

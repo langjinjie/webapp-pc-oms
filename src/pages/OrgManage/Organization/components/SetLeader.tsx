@@ -4,10 +4,10 @@
  * @date 2021-12-13 15:20
  */
 import React, { useEffect, useState } from 'react';
-import { Input } from 'antd';
+import { Input, message } from 'antd';
 import classNames from 'classnames';
 import { Icon, Modal, Empty } from 'src/components';
-import { queryStaffList, searchStaffAndDepart } from 'src/apis/organization';
+import { queryStaffList, searchStaffAndDepart, saveDepartmentLeader } from 'src/apis/organization';
 import style from './style.module.less';
 
 interface UserItem {
@@ -59,6 +59,18 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
     }
   };
 
+  /**
+   * 保存
+   */
+  const onSave = async () => {
+    const res: any = await saveDepartmentLeader({ staffId: chooseUser.staffId, deptId });
+    if (res) {
+      onClose();
+      onOk(chooseUser);
+      message.success('设置成功!');
+    }
+  };
+
   useEffect(() => {
     if (visible) {
       getStaffList();
@@ -70,7 +82,7 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
   }, [visible]);
 
   return (
-    <Modal width={620} title="设置上级" visible={visible} onClose={onClose} onOk={() => onOk(chooseUser)}>
+    <Modal width={620} title="设置上级" visible={visible} onClose={onClose} onOk={onSave}>
       <div className={style.setLeaderWrap}>
         <section className={style.left}>
           <div className={style.inputWrap}>
