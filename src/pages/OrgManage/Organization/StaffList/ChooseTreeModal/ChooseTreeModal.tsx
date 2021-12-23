@@ -227,7 +227,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   const onCheckedHandle = async (checked: Key[], info: any) => {
     let currentNodeStaffList = [];
     setSelectedKeys(checked);
-    // 判断是选中还是取消
+    // 判断点击的是
     if (info.checked) {
       if (!info.node.staffId) {
         const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.key });

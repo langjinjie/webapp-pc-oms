@@ -101,7 +101,16 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
   useEffect(() => {
     console.log('deptId', deptId);
     getStaffList(searchParam);
-  }, [paginationParam, searchParam, deptId, deptType]);
+  }, [paginationParam, searchParam]);
+  useEffect(() => {
+    setSearchParam({
+      resource: '',
+      businessModel: '',
+      businessArea: '',
+      officePlace: ''
+    });
+    setPaginationParam({ ...paginationParam, pageNum: 1 });
+  }, [deptId, deptType]);
   return (
     <div className={style.wrap}>
       <div className={style.operation}>
