@@ -130,7 +130,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
           删除
         </Button>
       </div>
-      <Form name="base" className={style.form} layout="inline" form={form} onFinish={resetHandle} onReset={resetHandle}>
+      <Form name="base" className={style.form} layout="inline" form={form} onReset={resetHandle}>
         <Space className={style.antSpace}>
           <Form.Item className={style.label} name="resource" label="资源：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
@@ -157,7 +157,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
           </Form.Item>
           <Form.Item>
             <Space size="small">
-              <Button className={style.searchBtn} type="primary" htmlType="submit">
+              <Button className={style.searchBtn} type="primary" onClick={resetHandle}>
                 查询
               </Button>
               <Button className={style.resetBtn} htmlType="reset">
