@@ -3,3 +3,117 @@
 * @author Lester
 * @date 2021-12-21 14:42
 */
+.wrap {
+  padding: 24px 40px;
+
+  .contentWrap {
+    position: relative;
+    margin-top: 40px;
+    width: 100%;
+    overflow: hidden;
+
+    :global {
+      .ant-form {
+        .ant-row {
+          .ant-form-item-extra {
+            position: absolute;
+            top: 0;
+            right: -108px;
+
+            .ant-btn {
+              width: 88px;
+              padding: 0;
+              height: 36px;
+              line-height: 36px;
+              border-radius: 18px;
+              border: 1px solid @primary-color;
+              text-align: center;
+              color: @primary-color;
+            }
+          }
+        }
+      }
+    }
+
+    .uploadBtn {
+      padding: 0 24px;
+      height: 32px;
+      line-height: 32px;
+      border-radius: 16px;
+      border: 1px solid @primary-color;
+      color: @primary-color;
+      font-size: 14px;
+
+      .uploadIcon {
+        font-size: 16px;
+      }
+    }
+
+    .desc {
+      font-size: 12px;
+      font-weight: 500;
+      color: @primary-color;
+      line-height: 18px;
+    }
+
+    .warn {
+      margin: 12px 0 30px;
+      font-size: 12px;
+      color: #f25555;
+      line-height: 18px;
+    }
+
+    .mainText {
+      font-size: 16px;
+      font-weight: bold;
+      color: #111111;
+      line-height: 22px;
+    }
+
+    .deputyText {
+      font-size: 12px;
+      color: #111111;
+    }
+
+    .mb30 {
+      margin-bottom: 30px;
+    }
+
+    .mb12 {
+      margin-bottom: 12px;
+    }
+
+    .btnWrap {
+      margin-top: 40px;
+      width: 100%;
+      padding-left: 210px;
+
+      .linkText {
+        margin-left: 40px;
+        font-size: 18px;
+        font-weight: 500;
+        color: @primary-color;
+        line-height: 24px;
+        cursor: pointer;
+      }
+
+      :global {
+        .ant-btn {
+          padding: 0 40px;
+          height: 40px;
+          line-height: 40px;
+          border-radius: 20px;
+          border: 1px solid @primary-color;
+          font-size: 16px;
+          color: @primary-color;
+
+          &.ant-btn-primary {
+            margin-left: 20px;
+            background-color: @primary-color;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
