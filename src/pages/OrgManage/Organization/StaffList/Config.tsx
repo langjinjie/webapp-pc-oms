@@ -1,22 +1,33 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
+import style from './style.module.less';
 
 const TableColumns = (): ColumnsType<any> => [
-  { title: '姓名', dataIndex: 'staffName', width: 80, align: 'center' },
-  { title: '企微账号', dataIndex: 'userId', width: 150, align: 'center' },
-  { title: '员工工号', dataIndex: 'jobNumber', width: 100, align: 'center' },
-  { title: '部门', dataIndex: 'deptName', width: 100, align: 'center' },
-  { title: '资源', dataIndex: 'resource', width: 100, align: 'center' },
-  { title: '职务', dataIndex: 'position', width: 150, align: 'center' },
-  { title: '业务模式', dataIndex: 'businessModel', width: 100, align: 'center' },
-  { title: '业务地区', dataIndex: 'businessArea', width: 150, align: 'center' },
-  { title: '办公职场', dataIndex: 'officePlace', width: 90, align: 'center' },
-  { title: '账号开通时间', dataIndex: 'accountStartTime', width: 180, align: 'center' },
-  { title: '账号停止时间', dataIndex: 'accountEndTime', width: 180, align: 'center' },
+  {
+    title: '姓名',
+    width: 150,
+    render (row) {
+      return (
+        <span>
+          {row.staffName}
+          {!!row.isLeader && <span className={style.isLeader}>上级</span>}
+        </span>
+      );
+    }
+  },
+  { title: '企微账号', dataIndex: 'userId', width: 150 },
+  { title: '员工工号', dataIndex: 'jobNumber', width: 100 },
+  { title: '部门', dataIndex: 'deptName', width: 100 },
+  { title: '资源', dataIndex: 'resource', width: 100 },
+  { title: '职务', dataIndex: 'position', width: 150 },
+  { title: '业务模式', dataIndex: 'businessModel', width: 100 },
+  { title: '业务地区', dataIndex: 'businessArea', width: 150 },
+  { title: '办公职场', dataIndex: 'officePlace', width: 90 },
+  { title: '账号开通时间', dataIndex: 'accountStartTime', width: 180 },
+  { title: '账号停止时间', dataIndex: 'accountEndTime', width: 180 },
   {
     title: '状态',
     width: 60,
-    align: 'center',
     render (row) {
       return <span>{row.isDeleted ? '离职' : '在职'}</span>;
     }
