@@ -18,7 +18,7 @@ interface UserValue {
 export const AddStatisticsFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ visible, onConfirm, onCancel }) => {
   const [addForm] = Form.useForm();
   async function fetchUserList (username: string): Promise<UserValue[]> {
-    const res = await searchStaffList({ keyWords: username, searchType: 2 });
+    const res = await searchStaffList({ keyWords: username, searchType: 2, isDeleted: false });
     if (res) {
       const { staffList } = res;
       return staffList.map((staff: { staffName: string; staffId: string; userId: string }) => ({
@@ -56,7 +56,7 @@ export const AddStatisticsFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ 
 
   return (
     <NgModal forceRender={true} visible={visible} title="新增免统计名单" onOk={handleOK} onCancel={onCancel}>
-      <Form layout="vertical" form={addForm}>
+      <Form layout="vertical" form={addForm} style={{ marginBottom: '40px' }}>
         <Form.Item label="员工姓名" name={'userIds'} rules={[{ required: true }]}>
           <DebounceSelect
             placeholder="请输入员工姓名进行查询"

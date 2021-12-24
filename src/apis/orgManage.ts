@@ -92,11 +92,15 @@ export const requestDownStaffList: HttpFC = (param) => {
 export const requestGetDeptList: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/stafforg/deptlist', param);
 };
+// 批量设置保存接口
+export const requestMultiSave: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/batchsetsave', param);
+};
 
 /**
  * 部门员工搜索接口
  */
-export const searchStaffList: HttpFC<{ keyWords: string; searchType?: 1 | 2 }> = (param) => {
+export const searchStaffList: HttpFC<{ keyWords: string; searchType?: 1 | 2; isDeleted: boolean }> = (param) => {
   return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
 };
 /**

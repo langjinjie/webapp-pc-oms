@@ -38,7 +38,7 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
   },
   {
     title: '员工工号',
-    dataIndex: 'seatsId',
+    dataIndex: 'jobNumber',
     align: 'left',
     width: 180,
     render: (value) => <span>{value || UNKNOWN}</span>
@@ -47,24 +47,31 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     title: '职务',
     align: 'left',
     dataIndex: 'position',
-    width: 200
+    width: 200,
+    render: (value) => <span>{value || UNKNOWN}</span>
   },
   {
     title: '免统计模块',
     dataIndex: 'freeType',
     width: 200,
     render: (value: string) => {
-      return (
-        <span>
-          {value.indexOf('1') > -1 ? '排行榜 ' : null} {value.indexOf('2') > -1 ? ' 战报' : null}
-        </span>
-      );
+      return value.split(',').map((item, index: number) => {
+        if (item === '1') {
+          return <span>排行榜 {index + 1 < value.length ? '、' : ''}</span>;
+        } else {
+          return <span>战报</span>;
+        }
+      });
     }
+    // <span>
+    //   {value.indexOf('1') > -1 ? '排行榜 ' : null} {value.indexOf('2') > -1 ? ' 战报' : null}
+    // </span>
   },
   {
     title: '部门',
     align: 'left',
     dataIndex: 'deptName',
-    width: 200
+    width: 200,
+    render: (value) => <span>{value || UNKNOWN}</span>
   }
 ];
