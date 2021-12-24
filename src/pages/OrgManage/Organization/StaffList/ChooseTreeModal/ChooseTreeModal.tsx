@@ -60,7 +60,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     let res1 = await requestGetDeptList({ parentId });
     let res2 = [];
     if (chooseTreeParam.title === '选择员工' && parentId) {
-      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId, isFull: true });
+      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId });
       res2 = res.list.map((item: any) => ({
         ...item,
         name: item.staffName,
@@ -177,7 +177,11 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   // 搜索部门或者员工
   const onSearchHandle = async (val: string) => {
     if (val) {
-      const res = await searchStaffList({ keyWords: val, searchType: chooseTreeParam.title === '选择员工' ? 2 : 1 });
+      const res = await searchStaffList({
+        keyWords: val,
+        searchType: chooseTreeParam.title === '选择员工' ? 2 : 1,
+        isFull: true
+      });
       if (chooseTreeParam.title === '选择员工') {
         res.staffList.forEach((item: any) => {
           item.id = item.staffId;
