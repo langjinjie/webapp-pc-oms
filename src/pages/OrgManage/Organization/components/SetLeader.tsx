@@ -63,6 +63,9 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
    * 保存
    */
   const onSave = async () => {
+    if (!chooseUser.staffId || !chooseUser.staffName) {
+      return message.error('请选择上级！');
+    }
     const res: any = await saveDepartmentLeader({ staffId: chooseUser.staffId, deptId });
     if (res) {
       onClose();
