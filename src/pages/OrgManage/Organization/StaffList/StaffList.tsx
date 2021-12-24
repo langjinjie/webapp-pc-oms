@@ -48,8 +48,10 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
     const res = await requestGetDepStaffList({ ...searchParam, ...paginationParam, deptId, deptType, queryType: 1 });
     if (res) {
       setStaffList(res);
-      setIsLoading(false);
+    } else {
+      setStaffList({ total: 0, list: [] });
     }
+    setIsLoading(false);
   };
   // 重置
   const resetHandle = () => {
