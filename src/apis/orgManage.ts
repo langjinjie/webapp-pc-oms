@@ -100,7 +100,7 @@ export const requestMultiSave: HttpFC = (param) => {
 /**
  * 部门员工搜索接口
  */
-export const searchStaffList: HttpFC<{ keyWords: string; searchType?: 1 | 2 }> = (param) => {
+export const searchStaffList: HttpFC<{ keyWords: string; searchType?: 1 | 2; isDeleted: boolean }> = (param) => {
   return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
 };
 /**

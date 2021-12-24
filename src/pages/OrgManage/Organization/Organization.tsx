@@ -3,7 +3,7 @@
  * @author Lester
  * @date 2021-12-10 10:36
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
 import { Input, Tree, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
@@ -56,6 +56,8 @@ const Organization: React.FC = () => {
   const [staffList, setStaffList] = useState<StaffItem[]>([]);
   const [displayType, setDisplayType] = useState<number>(0);
   const [leaderVisible, setLeaderVisible] = useState<boolean>(false);
+
+  const staffListRef: MutableRefObject<any> = useRef(null);
 
   /**
    * 处理/计算左边位置
@@ -214,7 +216,7 @@ const Organization: React.FC = () => {
         const parentNode: OrganizationItem = {
           ...currentNode,
           isLeaf: false,
-          children: formatData([...(currentNode.children || []), node])
+          children: formatData([...(item.children || []), node])
         };
         return parentNode;
       }
@@ -326,16 +328,16 @@ const Organization: React.FC = () => {
    */
   const onSearch = async (val: string) => {
     if (val) {
-      const res: any = await searchStaffAndDepart({ keyWords: val });
+      const res: any = await searchStaffAndDepart({ keyWords: val, isDeleted: false });
       if (res) {
         const departList = res.deptList || [];
         const staffList = res.staffList || [];
         setSearchList(departList);
         setStaffList(staffList);
-        if (departList.length > 0) {
-          setCurrentNode(departList[0]);
-        } else if (staffList.length > 0) {
+        if (staffList.length > 0) {
           setCurrentNode(staffList[0]);
+        } else if (departList.length > 0) {
+          setCurrentNode(departList[0]);
         }
       }
       setDisplayType(1);
@@ -410,17 +412,6 @@ const Organization: React.FC = () => {
         </div>
         <ul style={{ display: displayType === 1 ? 'block' : 'none' }} className={style.searchList}>
           {searchList.length === 0 && staffList.length === 0 && <Empty />}
-          {searchList.map((item: OrganizationItem) => (
-            <li
-              key={item.deptId}
-              className={classNames(style.searchItem, {
-                [style.active]: item.deptId === currentNode.deptId
-              })}
-              onClick={() => setCurrentNode(item)}
-            >
-              {item.deptName}
-            </li>
-          ))}
           {staffList.map((item: StaffItem) => (
             <li
               key={item.staffId}
@@ -432,6 +423,17 @@ const Organization: React.FC = () => {
               {item.staffName}
             </li>
           ))}
+          {searchList.map((item: OrganizationItem) => (
+            <li
+              key={item.deptId}
+              className={classNames(style.searchItem, {
+                [style.active]: item.deptId === currentNode.deptId
+              })}
+              onClick={() => setCurrentNode(item)}
+            >
+              {item.deptName}
+            </li>
+          ))}
         </ul>
       </section>
       <div className={style.right}>
@@ -440,7 +442,7 @@ const Organization: React.FC = () => {
           <StaffDetail staffId={currentNode.staffId} />
             )
           : (
-          <StaffList departmentId={currentNode.deptId!} deptType={currentNode.deptType!} />
+          <StaffList staffListRef={staffListRef} departmentId={currentNode.deptId!} deptType={currentNode.deptType!} />
             )}
       </div>
       <ul
@@ -553,6 +555,7 @@ const Organization: React.FC = () => {
             };
             setCurrentNode(newNode);
             setOrganization(updateNodeInfo(organization, newNode));
+            staffListRef.current?.resetHandle();
           }}
         />
       </div>

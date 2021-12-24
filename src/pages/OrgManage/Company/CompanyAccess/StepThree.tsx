@@ -4,11 +4,11 @@
  * @date 2021-12-23 16:45
  */
 import React from 'react';
-import { Form, Input, Button, Upload, message, FormProps } from 'antd';
+import { Form, Input, Button, message, FormProps } from 'antd';
 import classNames from 'classnames';
 import { copy } from 'lester-tools';
 import style from './style.module.less';
-import { Icon } from '../../../../components';
+import { FileUpload } from 'src/components';
 
 interface StepThreeProps {
   nextStep: () => void;
@@ -24,13 +24,6 @@ const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep }) => {
     labelAlign: 'right',
     labelCol: { span: 2 },
     wrapperCol: { span: 8 }
-  };
-
-  const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-      return e.slice(e.length - 1);
-    }
-    return e && e.fileList.slice(e.fileList.length - 1);
   };
 
   const onSubmit = (values: any) => {
@@ -131,19 +124,8 @@ const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep }) => {
       <div className={classNames(style.deputyText, style.mb12)}>
         b.申请校验域名，下载校验文件并上传至后台保存-&gt; 保存成功后
       </div>
-      <Item
-        wrapperCol={{ offset: 2 }}
-        name="checkFile"
-        getValueFromEvent={normFile}
-        valuePropName="fileList"
-        rules={[{ required: true, message: '请上传' }]}
-      >
-        <Upload accept="*" action="/tenacity-admin/api/file/upload" data={{ bizKey: 'news' }}>
-          <Button className={style.uploadBtn}>
-            <Icon className={style.uploadIcon} name="shangchuanwenjian" />
-            上传校验文件
-          </Button>
-        </Upload>
+      <Item wrapperCol={{ offset: 2 }} name="checkFile" rules={[{ required: true, message: '请上传' }]}>
+        <FileUpload />
       </Item>
       <div className={classNames(style.mainText, style.mb12)}>6.客户联系API授权可调用应用</div>
       <div className={style.btnWrap}>

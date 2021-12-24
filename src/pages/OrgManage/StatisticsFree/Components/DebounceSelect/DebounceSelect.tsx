@@ -19,6 +19,7 @@ const DebounceSelect = <ValueType extends { key?: string; label: React.ReactNode
 
   const debounceFetcher = useMemo(() => {
     const loadOptions = (value: string) => {
+      if (!value) return false;
       fetchRef.current += 1;
       const fetchId = fetchRef.current;
       setOptions([]);

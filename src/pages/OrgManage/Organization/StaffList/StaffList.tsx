@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useImperativeHandle, MutableRefObject } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Form, Space, Select, Input } from 'antd';
 import { NgTable } from 'src/components';
@@ -11,6 +11,7 @@ import style from './style.module.less';
 interface IStaffListProps {
   departmentId: string;
   deptType: number;
+  staffListRef?: MutableRefObject<any>;
 }
 
 interface ISearchParam {
@@ -21,7 +22,7 @@ interface ISearchParam {
   isDeleted?: number;
 }
 
-const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', deptType = 1 }) => {
+const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', deptType = 1, staffListRef }) => {
   const [staffList, setStaffList] = useState<{ total: number; list: any[] }>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
@@ -100,9 +101,14 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
     }
   };
 
+  useImperativeHandle(staffListRef, () => ({
+    resetHandle
+  }));
+
   useEffect(() => {
     getStaffList(searchParam);
   }, [paginationParam, searchParam]);
+
   useEffect(() => {
     setSearchParam({
       resource: '',
@@ -112,6 +118,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
     });
     setPaginationParam({ ...paginationParam, pageNum: 1 });
   }, [deptId, deptType]);
+
   return (
     <div className={style.wrap}>
       <div className={style.operation}>
