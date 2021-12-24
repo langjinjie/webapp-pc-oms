@@ -12,6 +12,16 @@
     width: 100%;
     overflow: hidden;
 
+    .imgItem {
+      :global {
+        .ant-form-item-extra {
+          position: static !important;
+          top: 0;
+          right: 0;
+        }
+      }
+    }
+
     :global {
       .ant-form {
         .ant-row {
