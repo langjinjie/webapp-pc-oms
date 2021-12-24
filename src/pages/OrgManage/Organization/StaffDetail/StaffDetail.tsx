@@ -32,6 +32,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
   };
 
   const getDetail = async () => {
+    setIsReadOnly(true);
     if (!staffId) {
       const { staffId: currentStaffId } = URLSearchParams(routerLocation.search) as { [key: string]: string };
       staffId = currentStaffId;
@@ -52,7 +53,6 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
       ...staffInfo,
       ...values
     });
-    console.log(res);
     if (res) {
       message.success('保存成功');
     }
