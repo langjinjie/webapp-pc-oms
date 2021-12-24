@@ -96,13 +96,18 @@ export const requestGetDeptList: HttpFC = (param) => {
 export const requestMultiSave: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/stafforg/batchsetsave', param);
 };
+// 员工(批量)删除
+export const requestDelStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/staffdel', param);
+};
 
 /**
  * 部门员工搜索接口
  */
-export const searchStaffList: HttpFC<{ keyWords: string; searchType?: 1 | 2; isDeleted: boolean }> = (param) => {
-  return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
-};
+export const searchStaffList: HttpFC<{ keyWords: string; searchType?: 1 | 2; isDeleted?: boolean; isFull?: boolean }> =
+  (param) => {
+    return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
+  };
 /**
  * 坐席详情模块
  ********************************************/

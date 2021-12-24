@@ -28,13 +28,12 @@ const onDownLoadFailExcel = async (batchId: string, fileName: string) => {
 
 // columns 参数
 const TableColumns = (): ColumnsType<any> => [
-  { title: '表格名称', dataIndex: 'title', align: 'center' },
-  { title: '批次号', dataIndex: 'batchId', align: 'center' },
-  { title: '创建时间', dataIndex: 'dateCreated', align: 'center' },
-  { title: '创建人', dataIndex: 'createBy', align: 'center' },
+  { title: '表格名称', dataIndex: 'title' },
+  { title: '批次号', dataIndex: 'batchId' },
+  { title: '创建时间', dataIndex: 'dateCreated' },
+  { title: '创建人', dataIndex: 'createBy' },
   {
     title: '状态',
-    align: 'left',
     render (row) {
       return (
         <span
@@ -51,7 +50,6 @@ const TableColumns = (): ColumnsType<any> => [
   },
   {
     title: '批次成功数',
-    align: 'center',
     render (row: IStaffImpList) {
       return (
         <span>
