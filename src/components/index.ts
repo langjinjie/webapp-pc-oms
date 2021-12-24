@@ -15,4 +15,5 @@ export { default as NgEditor } from './TinyEditor/TinyEditor';
 export { default as Form } from './CommonForm/CommonForm';
 export { default as Modal } from './Modal/Modal';
 export { default as ImageUpload } from './ImageUpload/ImageUpload';
+export { default as FileUpload } from './FileUpload/FileUpload';
 export { default as Video } from './Video/Video';
