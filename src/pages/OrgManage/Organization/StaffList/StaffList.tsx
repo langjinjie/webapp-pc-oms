@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useImperativeHandle, MutableRefObject } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Form, Space, Select, Input } from 'antd';
+import { Button, Form, Space, Select, Input, message } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import MultiSetting from './MultiSetting/MultiSetting';
-import { requestGetDepStaffList, requestDownStaffList } from 'src/apis/orgManage';
+import { requestGetDepStaffList, requestDownStaffList, requestDelStaffList } from 'src/apis/orgManage';
 import { IDepStaffList } from 'src/utils/interface';
 import style from './style.module.less';
 
@@ -52,6 +52,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
       setStaffList({ total: 0, list: [] });
     }
     setIsLoading(false);
+    setSelectedRowKeys([]);
   };
   // 重置
   const resetHandle = () => {
@@ -100,6 +101,23 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
       window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
     }
   };
+  // 删除
+  const deleteHandle = async () => {
+    console.log('删除');
+    const res = await requestDelStaffList({ staffIds: selectedRowKeys });
+    if (res) {
+      message.success('删除成功');
+      let pageNum = paginationParam.pageNum;
+      if (selectedRowKeys.length >= staffList.list.length) {
+        pageNum = pageNum - 1;
+        setPaginationParam({ ...paginationParam, pageNum: pageNum < 1 ? 1 : pageNum });
+      } else {
+        setPaginationParam({ ...paginationParam, pageNum });
+      }
+    } else {
+      message.error('删除失败');
+    }
+  };
 
   useImperativeHandle(staffListRef, () => ({
     resetHandle
@@ -135,6 +153,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
           type="primary"
           className={style.btn}
           disabled={!(searchParam.isDeleted === 1 && selectedRowKeys.length)}
+          onClick={deleteHandle}
         >
           删除
         </Button>
