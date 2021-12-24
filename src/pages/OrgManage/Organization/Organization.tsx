@@ -214,7 +214,7 @@ const Organization: React.FC = () => {
         const parentNode: OrganizationItem = {
           ...currentNode,
           isLeaf: false,
-          children: formatData([...(currentNode.children || []), node])
+          children: formatData([...(item.children || []), node])
         };
         return parentNode;
       }
@@ -326,7 +326,7 @@ const Organization: React.FC = () => {
    */
   const onSearch = async (val: string) => {
     if (val) {
-      const res: any = await searchStaffAndDepart({ keyWords: val });
+      const res: any = await searchStaffAndDepart({ keyWords: val, isDeleted: false });
       if (res) {
         const departList = res.deptList || [];
         const staffList = res.staffList || [];

@@ -34,7 +34,7 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
 
   const onSearch = async (val: string) => {
     if (val) {
-      const res: any = await searchStaffAndDepart({ keyWords: val, searchType: 2 });
+      const res: any = await searchStaffAndDepart({ deptId, keyWords: val, searchType: 2, isDeleted: false });
       if (res) {
         setUserList(res.staffList || []);
       }
