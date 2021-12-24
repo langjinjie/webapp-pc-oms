@@ -34,6 +34,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   const [selectedKeys, setSelectedKeys] = useState<Key[]>([]);
   const [selectList, setSelectList] = useState<any[]>([]);
   const [searchList, setSearchList] = useState<any[]>([]);
+  // const [noRenderDelStaff, setNoRenderDelStaff] = useState<any[]>([]); // 保存 在数结构中为渲染但是被删除的元素
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -59,7 +60,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     let res1 = await requestGetDeptList({ parentId });
     let res2 = [];
     if (chooseTreeParam.title === '选择员工' && parentId) {
-      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId });
+      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId, isFull: true });
       res2 = res.list.map((item: any) => ({
         ...item,
         name: item.staffName,
@@ -75,17 +76,14 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
         requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId })
       );
       const productTagResponseList = await Promise.all(productTagRequestList);
-      console.log(productTagResponseList);
       // 将树结构添加到扁平结构中
       res1 = res1.map((item: any, index: number) => {
         if (chooseTreeParam.title === '选择员工' && productTagResponseList[index].list.length) {
-          console.log(productTagResponseList[index]);
           return { ...item, parentId, name: item.deptName, id: item.deptId, isLeaf: false };
         } else {
           return { ...item, parentId, name: item.deptName, id: item.deptId };
         }
       });
-      console.log('res1', res1);
       setFlatTreeData([...flatTreeData, ...res1, ...res2]);
     }
     return [...res1, ...res2];
@@ -180,7 +178,6 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   const onSearchHandle = async (val: string) => {
     if (val) {
       const res = await searchStaffList({ keyWords: val, searchType: chooseTreeParam.title === '选择员工' ? 2 : 1 });
-      console.log(res);
       if (chooseTreeParam.title === '选择员工') {
         res.staffList.forEach((item: any) => {
           item.id = item.staffId;
@@ -229,14 +226,12 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
 
   // 选中复选框
   const onCheckedHandle = async (checked: Key[], info: any) => {
-    console.log(info);
     let currentNodeStaffList = [...selectList];
     setSelectedKeys(checked);
     const checkedItem = flatTreeData.find((flatTreeDataItem) => flatTreeDataItem.id === info.node.id);
     // 判断点击的是
     if (!checkedItem.staffId) {
-      console.log('点击的是部门');
-      const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.id });
+      const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.id, pageSize: 9999 });
       res.list.forEach((item: any) => {
         item.id = item.staffId;
         item.name = item.staffName;
@@ -244,15 +239,12 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       });
       setSelectList([...currentNodeStaffList]);
       if (info.checked) {
-        console.log('选中');
         currentNodeStaffList = [...currentNodeStaffList, ...res.list];
         const currentNodeStaffListKeys = Array.from(new Set(currentNodeStaffList.map((item) => item.id)));
         currentNodeStaffList = currentNodeStaffListKeys.map((key) => ({
           ...currentNodeStaffList.find((item) => item.id === key)
         }));
       } else {
-        console.log(res);
-        console.log('取消选中');
         currentNodeStaffList = [
           ...currentNodeStaffList.filter(
             (currentStaffItem) => !res.list.some((item: any) => item.id === currentStaffItem.id)
@@ -260,15 +252,12 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
         ];
       }
     } else {
-      console.log('点击的是员工');
       if (info.checked) {
-        console.log('选中~');
         currentNodeStaffList = [
           ...currentNodeStaffList,
           ...flatTreeData.filter((flatTreeItem) => flatTreeItem.id === info.node.id)
         ];
       } else {
-        console.log('取消选择');
         currentNodeStaffList = [...selectList.filter((flatTreeItem) => flatTreeItem.id !== info.node.id)];
       }
     }
@@ -287,14 +276,10 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   const clickDelStaffHandle = (id: string, filterKeys = [...selectedKeys]) => {
     // 找出当前点击删除的节点
     const currentNode = flatTreeData.find((item) => item.id === id);
-    console.log('currentNode', currentNode);
     // 找到当前元素的父级,并且从selectKeys中删除
     const parentId = currentNode?.parentId;
-    console.log('parentId', parentId);
-    // 需要知道他的父节点------------------------------------------------------------------------------------------
-    filterKeys = filterKeys.filter((key: Key) => key !== id && (!parentId || key !== parentId));
-    console.log(filterKeys);
-    // 判断当前节点的父级是否备选中
+    filterKeys = filterKeys.filter((key: Key) => key !== id);
+    // 判断当前节点的父级是否被选中
     if (selectedKeys.some((item) => item === parentId)) {
       clickDelStaffHandle(currentNode.parentId, filterKeys);
     } else {
@@ -325,7 +310,6 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     if (chooseTreeParam.title === '选择员工') {
       setStaffInfo((staffInfo: any) => ({ ...staffInfo, staffList: selectList }));
     } else {
-      console.log('selectList[0]', selectList[0]);
       setStaffInfo((staffInfo: any) => ({
         ...staffInfo,
         department: selectList[0]
@@ -346,22 +330,13 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   useEffect(() => {
     (() => {
       // 将被选中父级的所有子节点被异步请求完成后手动添加为选中节点
-      // 将没有加载出来的选出来
-      const noRenderSelectItem = selectList.filter(
-        (flatTreeItem: any) => !flatTreeData.some((selectItem) => selectItem.id === flatTreeItem.id)
-      );
-      // 先将selectList同步到keys中
       const newSelectedKeys = flatTreeData
         .filter((item: any) => selectedKeys.includes(item.parentId))
         .map((item) => item.id);
-      const selectListKeys = selectList
-        .filter((flatTreeItem: any) => flatTreeData.some((selectItem) => selectItem.id === flatTreeItem.id))
-        .map((item) => item.id);
       // 找出通过搜索选中的员工
-      const selectKeys = Array.from(new Set([...selectedKeys, ...newSelectedKeys, ...selectListKeys]));
+      const selectKeys = Array.from(new Set([...selectedKeys, ...newSelectedKeys]));
+      // 找出被删除的staffId
       setSelectedKeys(selectKeys);
-      const rendedSelectList = flatTreeData.filter((item) => item.staffId && selectKeys.includes(item.id));
-      setSelectList([...rendedSelectList, ...noRenderSelectItem]);
     })();
   }, [flatTreeData]);
   return (
@@ -384,7 +359,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
         <div className={style.tree}>
           <Search
             className={style.searchTree}
-            placeholder="搜索成员"
+            placeholder={chooseTreeParam.title === '选择员工' ? '搜索员工' : '搜索部门'}
             onChange={(e) => onChangeHandle(e.target.value)}
             onSearch={(val) => onSearchHandle(val)}
             enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
