@@ -82,10 +82,10 @@ const StatisticsFreeList: React.FC = () => {
   };
 
   const deleteStaffs = async () => {
-    console.log(selectedRowKeys);
     const res = await delFreeStaffs({ staffIds: selectedRowKeys });
     setDeleteVisible(false);
     if (res) {
+      setSelectRowKeys([]);
       message.success('删除成功!');
       await getList({ pageNum: 1 });
     }
