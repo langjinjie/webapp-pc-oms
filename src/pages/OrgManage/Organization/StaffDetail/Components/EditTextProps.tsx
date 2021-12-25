@@ -5,6 +5,7 @@ import { Icon } from 'src/components';
 
 import styles from './style.module.less';
 import moment from 'moment';
+import { UNKNOWN } from 'src/utils/base';
 
 interface EditTextProps {
   type?: 'date' | 'text' | 'textArea';
@@ -38,7 +39,7 @@ export const EditText: React.FC<EditTextProps> = ({ value, onChange, type = 'tex
         <>
           {readOnly
             ? (
-            <div>{value}</div>
+            <div>{value || UNKNOWN}</div>
               )
             : type === 'text'
               ? (
