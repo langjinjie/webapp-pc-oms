@@ -52,13 +52,13 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
     } else {
       setStaffList({ total: 0, list: [] });
     }
+    setDisabledColumnType(-1);
     setIsLoading(false);
     setSelectedRowKeys([]);
   };
   // 查询
   const onSearchHandle = () => {
     setPaginationParam((paginationParam) => ({ ...paginationParam, pageNum: 1 }));
-    setDisabledColumnType(-1);
     setSearchParam(form.getFieldsValue());
   };
   // 重置
@@ -71,8 +71,6 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
       businessArea: '',
       officePlace: ''
     });
-    setDisabledColumnType(-1);
-    setSelectedRowKeys([]);
   };
   // 批量设置信息
   const multiSettingHandle = () => {
