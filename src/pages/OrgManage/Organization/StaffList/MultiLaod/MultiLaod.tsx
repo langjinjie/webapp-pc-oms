@@ -39,7 +39,7 @@ const MultiLaod: React.FC = () => {
       value: 0,
       label: '成功'
     },
-    { value: 1, label: '失败' },
+    { value: 1, label: '异常' },
     { value: 2, label: '校验中' }
   ];
   const [form] = Form.useForm();
