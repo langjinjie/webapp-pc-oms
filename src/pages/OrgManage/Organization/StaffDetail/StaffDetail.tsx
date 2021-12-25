@@ -313,7 +313,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                     </li>
                     <li className={styles.infoItem}>
                       <Form.Item
-                        label="岗位"
+                        label="职位"
                         required
                         name="cardPosition"
                         rules={[
