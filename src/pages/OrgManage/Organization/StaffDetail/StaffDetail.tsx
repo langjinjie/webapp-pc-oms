@@ -81,7 +81,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
       if (lightsArr.length > 0) {
         let isMaxLengthError = false;
         lightsArr.forEach((light) => {
-          if (light.length > 16) {
+          if (light.length > 12) {
             isMaxLengthError = true;
           }
         });
@@ -320,7 +320,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                           {
                             required: true,
                             type: 'string',
-                            max: 100
+                            max: 16
                           }
                         ]}
                       >
