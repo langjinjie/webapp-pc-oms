@@ -10,6 +10,9 @@ import { DrawerItem } from 'src/components';
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 import StepThree from './StepThree';
+import StepFour from './StepFour';
+import StepFive from './StepFive';
+import StepSix from './StepSix';
 import style from './style.module.less';
 
 interface StepItem {
@@ -20,7 +23,7 @@ interface StepItem {
 const { Step } = Steps;
 
 const CompanyAccess: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState<number>(2);
+  const [currentStep, setCurrentStep] = useState<number>(5);
 
   const steps: StepItem[] = [
     {
@@ -69,6 +72,15 @@ const CompanyAccess: React.FC = () => {
         </DrawerItem>
         <DrawerItem visible={currentStep === 2}>
           <StepThree nextStep={() => setCurrentStep(3)} prevStep={() => setCurrentStep(1)} />
+        </DrawerItem>
+        <DrawerItem visible={currentStep === 3}>
+          <StepFour nextStep={() => setCurrentStep(4)} prevStep={() => setCurrentStep(2)} />
+        </DrawerItem>
+        <DrawerItem visible={currentStep === 4}>
+          <StepFive nextStep={() => setCurrentStep(5)} prevStep={() => setCurrentStep(3)} />
+        </DrawerItem>
+        <DrawerItem visible={currentStep === 5}>
+          <StepSix nextStep={() => setCurrentStep(5)} prevStep={() => setCurrentStep(4)} />
         </DrawerItem>
       </div>
     </div>

@@ -130,9 +130,6 @@ const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep }) => {
       <div className={classNames(style.mainText, style.mb12)}>6.客户联系API授权可调用应用</div>
       <div className={style.btnWrap}>
         <Button onClick={prevStep}>上一步</Button>
-        <Button type="primary" htmlType="submit">
-          下一步
-        </Button>
         <Button type="primary" htmlType="submit" onClick={nextStep}>
           下一步
         </Button>
