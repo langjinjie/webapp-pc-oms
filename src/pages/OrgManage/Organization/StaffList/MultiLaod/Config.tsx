@@ -60,7 +60,8 @@ const TableColumns = (): ColumnsType<any> => [
   },
   {
     title: '操作',
-    width: 150,
+    // width: 150,
+    fixed: 'right',
     render (row: IStaffImpList) {
       return (
         <span

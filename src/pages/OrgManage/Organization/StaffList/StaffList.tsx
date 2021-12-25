@@ -210,7 +210,8 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
         columns={TableColumns()}
         loading={isLoading}
         tableLayout={'fixed'}
-        scroll={{ x: 1300 }}
+        scroll={{ x: 'max-content' }}
+        // scroll={{ x: 1300 }}
         {...TablePagination({
           staffList,
           paginationParam,

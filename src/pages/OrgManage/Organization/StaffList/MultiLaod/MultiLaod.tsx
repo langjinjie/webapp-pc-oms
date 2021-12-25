@@ -116,12 +116,13 @@ const MultiLaod: React.FC = () => {
       deptType: 2
     });
     if (res) {
+      console.log(res);
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.style.display = 'none';
       link.href = url;
-      link.setAttribute('download', '新增员工信息表.xlsx');
+      link.setAttribute('download', '信息未完善员工信息表.xlsx');
       document.body.appendChild(link);
       link.click(); // 点击下载
       link.remove(); // 下载完成移除元素
@@ -146,7 +147,7 @@ const MultiLaod: React.FC = () => {
           上传表格
         </Button>
         <Button type="primary" className={style.btn} onClick={downLoadNewStaffList}>
-          下载新增员工信息表
+          下载信息未完善员工信息表
         </Button>
         <a
           className={style.btn}
@@ -190,6 +191,7 @@ const MultiLaod: React.FC = () => {
         dataSource={exportList.list}
         columns={TableColumns()}
         loading={isLoading}
+        scroll={{ x: 'max-content' }}
         {...TablePagination({
           exportList,
           paginationParam,
