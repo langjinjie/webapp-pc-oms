@@ -58,6 +58,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
   // 查询
   const onSearchHandle = () => {
     setPaginationParam((paginationParam) => ({ ...paginationParam, pageNum: 1 }));
+    setDisabledColumnType(-1);
     setSearchParam(form.getFieldsValue());
   };
   // 重置
