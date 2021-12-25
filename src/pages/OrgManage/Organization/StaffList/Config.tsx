@@ -6,7 +6,8 @@ import style from './style.module.less';
 const TableColumns = (): ColumnsType<any> => [
   {
     title: '姓名',
-    width: 150,
+    // width: 150,
+    fixed: 'left',
     render (row) {
       return (
         <span>
@@ -19,70 +20,70 @@ const TableColumns = (): ColumnsType<any> => [
   { title: '企微账号', dataIndex: 'userId', width: 150 },
   {
     title: '员工工号',
-    width: 100,
+    // width: 100,
     render (row) {
       return <span>{row.jobNumber || UNKNOWN}</span>;
     }
   },
   {
     title: '部门',
-    width: 100,
+    // width: 100,
     render (row) {
       return <span>{row.deptName || UNKNOWN}</span>;
     }
   },
   {
     title: '资源',
-    width: 100,
+    // width: 100,
     render (row) {
       return <span>{row.resource || UNKNOWN}</span>;
     }
   },
   {
     title: '职位',
-    width: 150,
+    // width: 150,
     render (row) {
       return <span>{row.position || UNKNOWN}</span>;
     }
   },
   {
     title: '业务模式',
-    width: 100,
+    // width: 100,
     render (row) {
       return <span>{row.businessModel || UNKNOWN}</span>;
     }
   },
   {
     title: '业务地区',
-    width: 150,
+    // width: 150,
     render (row) {
       return <span>{row.businessArea || UNKNOWN}</span>;
     }
   },
   {
     title: '办公职场',
-    width: 90,
+    // width: 90,
     render (row) {
       return <span>{row.officePlace || UNKNOWN}</span>;
     }
   },
   {
     title: '账号开通时间',
-    width: 180,
+    // width: 180,
     render (row) {
       return <span>{row.accountStartTime || UNKNOWN}</span>;
     }
   },
   {
     title: '账号停止时间',
-    width: 180,
+    // width: 180,
     render (row) {
       return <span>{row.accountEndTime || UNKNOWN}</span>;
     }
   },
   {
     title: '状态',
-    width: 60,
+    // width: 60,
     render (row) {
       return <span>{row.isDeleted ? '离职' : '在职'}</span>;
     }
@@ -108,7 +109,6 @@ const TablePagination = (arg: { [key: string]: any }): any => {
   // 切换分页
   const paginationChange = (value: number, pageSize?: number) => {
     setPaginationParam({ pageNum: value, pageSize: pageSize as number });
-    setSelectedRowKeys([]);
   };
   // 点击选择框
   const onSelectChange = async (newSelectedRowKeys: any[]) => {

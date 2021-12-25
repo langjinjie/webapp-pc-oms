@@ -8,7 +8,8 @@ import classNames from 'classnames';
 const status2NameList = ['成功', '异常', '校验中'];
 
 // 下载导入异常表
-const onDownLoadFailExcel = async (batchId: string, fileName: string) => {
+const onDownLoadFailExcel = async (batchId: string, fileName: string, status: number) => {
+  if (status !== 1) return;
   const res = await requestDownLoadFailLoad({
     batchId
   });
@@ -60,12 +61,13 @@ const TableColumns = (): ColumnsType<any> => [
   },
   {
     title: '操作',
-    width: 150,
+    // width: 150,
+    fixed: 'right',
     render (row: IStaffImpList) {
       return (
         <span
           className={classNames(style.edit, { [style.disabled]: row.status !== 1 })}
-          onClick={() => onDownLoadFailExcel(row.batchId, row.title)}
+          onClick={() => onDownLoadFailExcel(row.batchId, row.title, row.status)}
         >
           {row.status === 1 ? '下载异常表格' : '/'}
         </span>
