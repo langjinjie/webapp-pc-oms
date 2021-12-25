@@ -4,9 +4,8 @@
  * @date 2021-12-24 18:28
  */
 import React from 'react';
-import { Form, Input, Button, message, FormProps } from 'antd';
+import { Form, Input, Button, DatePicker, FormProps } from 'antd';
 import classNames from 'classnames';
-import { copy } from 'lester-tools';
 import style from './style.module.less';
 
 interface StepSixProps {
@@ -21,8 +20,18 @@ const StepSix: React.FC<StepSixProps> = ({ nextStep, prevStep }) => {
 
   const formLayout: FormProps = {
     labelAlign: 'right',
-    labelCol: { span: 2 },
-    wrapperCol: { span: 8 }
+    wrapperCol: { span: 5 }
+  };
+
+  const emailValidator = (rule: any, value: string) => {
+    const res = (value || '')
+      .split(';')
+      .every((val: string) => !val || /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+\.([a-zA-Z0-9_-]|\.)*(com|cn)$/.test(val));
+    if (res) {
+      return Promise.resolve();
+    } else {
+      return Promise.reject(new Error('请输入正确格式的邮箱'));
+    }
   };
 
   const onSubmit = (values: any) => {
@@ -30,61 +39,37 @@ const StepSix: React.FC<StepSixProps> = ({ nextStep, prevStep }) => {
   };
 
   return (
-    <Form form={form} {...formLayout} onFinish={onSubmit}>
-      <div className={style.desc}>
-        ·以下企业信息可通过企业微信后台—我的企业—企业信息获取，注：此方式为通过API接口同步通讯录，
-        <br />
-        如果已经通过第三方应用同步通讯录，则需要先取消改同步方式，然后改成通过API接口进行同步
+    <Form form={form} {...formLayout} onFinish={onSubmit} className={style.sixWrap}>
+      <div className={classNames(style.mainText, style.mb12)}>1.设置机构账号数</div>
+      <div className={classNames(style.deputyText, style.mb12)}>
+        设置上限数后，如机构使用人数达到设置上限，则超出部分员工不能正常使用
       </div>
-      <div className={style.warn}>*请记录secret、Token和EncodingAESkey，保存至年高数据库，确保与企微后台信息一致</div>
-      <div className={classNames(style.mainText, style.mb12)}>1.将客户联系secret保存至后台</div>
-      <Item name="secret" label="secret" rules={[{ required: true, message: '请输入' }]}>
+      <Item name="count" rules={[{ required: true, message: '请输入' }]} extra="/人">
         <Input placeholder="请输入" />
       </Item>
-      <div className={classNames(style.mainText, style.mb12)}>2.设置接收事件服务器</div>
-      <div className={classNames(style.deputyText, style.mb12)}>
-        a.点击设置接收事件服务器，复制以下URL前往企微后台填写保存
-      </div>
+      <div className={classNames(style.mainText, style.mb12)}>2.设置应用到期时间</div>
+      <div className={classNames(style.deputyText, style.mb12)}>设置到期日后，过期不能正常访问应用</div>
+      <Item name="date" rules={[{ required: true, message: '请选择' }]}>
+        <DatePicker />
+      </Item>
+      <div className={classNames(style.mainText, style.mb12)}>3.到期提醒接收人员（年高管理员）</div>
       <Item
-        name="url"
-        label="URL"
-        rules={[{ required: true, message: '请输入' }]}
-        extra={
-          <Button
-            onClick={() => {
-              const url: string = form.getFieldValue('url');
-              if (url) {
-                copy(url, false);
-                message.success('复制成功');
-              } else {
-                message.warn('请输入URL');
-              }
-            }}
-          >
-            复制
-          </Button>
-        }
+        name="email"
+        rules={[
+          { required: true, message: '请输入' },
+          {
+            validateTrigger: 'onBlur',
+            validator: emailValidator
+          }
+        ]}
       >
-        <Input placeholder="请输入" />
+        <Input placeholder="请输入邮箱，多个英文分号隔开" />
       </Item>
-      <div className={classNames(style.deputyText, style.mb12)}>
-        b.点击设置接收事件服务器-&gt; 随机获取以下参数 -&gt; 保存成功后再至企微后台保存{' '}
-      </div>
-      <Item name="token" label="Token" rules={[{ required: true, message: '请输入' }]}>
-        <Input placeholder="请输入" />
-      </Item>
-      <Item name="encodingAESkey" label="EncodingAESkey" rules={[{ required: true, message: '请输入' }]}>
-        <Input placeholder="请输入" />
-      </Item>
-      <div className={classNames(style.mainText, style.mb12)}>3.绑定微信开发者ID</div>
       <div className={style.btnWrap}>
         <Button onClick={prevStep}>上一步</Button>
         <Button type="primary" htmlType="submit" onClick={nextStep}>
-          下一步
+          保存
         </Button>
-        <span className={style.linkText} onClick={nextStep}>
-          跳过 》》
-        </span>
       </div>
     </Form>
   );
