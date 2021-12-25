@@ -54,10 +54,21 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
     setIsLoading(false);
     setSelectedRowKeys([]);
   };
+  // 查询
+  const onSearchHandle = () => {
+    setPaginationParam((paginationParam) => ({ ...paginationParam, pageNum: 1 }));
+    setSearchParam(form.getFieldsValue());
+  };
   // 重置
   const resetHandle = () => {
     setPaginationParam((paginationParam) => ({ ...paginationParam, pageNum: 1 }));
-    setSearchParam(form.getFieldsValue());
+    form.resetFields();
+    setSearchParam({
+      resource: '',
+      businessModel: '',
+      businessArea: '',
+      officePlace: ''
+    });
     setDisabledColumnType(-1);
     setSelectedRowKeys([]);
   };
@@ -83,7 +94,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
   // 批量导出
   const downLoadStaffList = async () => {
     const res = await requestDownStaffList({
-      deptType: 1,
+      deptType,
       deptId,
       staffIds: selectedRowKeys,
       ...searchParam
@@ -128,13 +139,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
   }, [paginationParam, searchParam]);
 
   useEffect(() => {
-    setSearchParam({
-      resource: '',
-      businessModel: '',
-      businessArea: '',
-      officePlace: ''
-    });
-    setPaginationParam({ ...paginationParam, pageNum: 1 });
+    resetHandle();
   }, [deptId, deptType]);
 
   return (
@@ -185,7 +190,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
           </Form.Item>
           <Form.Item>
             <Space size="small">
-              <Button className={style.searchBtn} type="primary" onClick={resetHandle}>
+              <Button className={style.searchBtn} type="primary" onClick={onSearchHandle}>
                 查询
               </Button>
               <Button className={style.resetBtn} htmlType="reset">
