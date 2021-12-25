@@ -46,6 +46,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   const onResetHandle = () => {
     setStaffInfo({ staffList: [], department: null, cardPosition: '', desc: '', tags: '' });
     setIsShowAllDesc(false);
+    setTagList([]);
   };
   // modal取消
   const onCancelHandle = () => {
@@ -79,6 +80,11 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   const addDepartmentHandle = () => {
     setMultiVisible(false);
     setChooseTreeParam({ title: '选择部门', visible: true, isShowStaff: false });
+  };
+  // 取消部门
+  const clearDeptHandle = (event: any) => {
+    event.stopPropagation();
+    setStaffInfo({ ...staffInfo, department: null });
   };
   // 点击添加标签
   const clickAddTagHandle = async () => {
@@ -156,6 +162,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   }, [visible]);
   useEffect(() => {
     if (visible) {
+      console.log(!!staffInfo.department);
       if (allDesc.current.clientWidth > allDescInputRef.current.clientWidth) {
         console.log('超出了~');
         setIsHiddenAllDesc(false);
@@ -164,7 +171,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
         setIsHiddenAllDesc(true);
       }
     }
-  }, [staffInfo.desc]);
+  }, [staffInfo]);
   return (
     <>
       <Modal
@@ -221,6 +228,9 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
                 ? (
                 <div className={style.department} onClick={addDepartmentHandle}>
                   {staffInfo.department.name}
+                  <span className={style.clearDept} onClick={clearDeptHandle}>
+                    取消
+                  </span>
                 </div>
                   )
                 : (
@@ -307,6 +317,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
       </Modal>
       <ChooseTreeModal
         chooseTreeParam={chooseTreeParam}
+        department={staffInfo.department}
         setStaffInfo={setStaffInfo}
         setMultiVisible={setMultiVisible}
         setChooseTreeParam={setChooseTreeParam}

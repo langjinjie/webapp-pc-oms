@@ -12,6 +12,16 @@
     width: 100%;
     overflow: hidden;
 
+    .imgItem {
+      :global {
+        .ant-form-item-extra {
+          position: static !important;
+          top: 0;
+          right: 0;
+        }
+      }
+    }
+
     :global {
       .ant-form {
         .ant-row {
@@ -114,6 +124,23 @@
           }
         }
       }
+    }
+  }
+}
+
+.sixWrap {
+  :global {
+    .ant-row {
+      .ant-col {
+        .ant-picker {
+          width: 100%;
+        }
+      }
+    }
+    .ant-form-item-extra {
+      color: #111111;
+      top: 8px !important;
+      right: 15px !important;
     }
   }
 }

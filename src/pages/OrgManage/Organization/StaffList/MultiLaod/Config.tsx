@@ -5,7 +5,7 @@ import { IStaffImpList } from 'src/utils/interface';
 import style from './style.module.less';
 import classNames from 'classnames';
 
-const status2NameList = ['成功', '异常', '异常'];
+const status2NameList = ['成功', '异常', '校验中'];
 
 // 下载导入异常表
 const onDownLoadFailExcel = async (batchId: string, fileName: string) => {
@@ -76,16 +76,16 @@ const TableColumns = (): ColumnsType<any> => [
 
 // Table参数
 const TablePagination = (arg: { [key: string]: any }): any => {
-  const { list, paginationParam, setPaginationParam } = arg;
+  const { exportList, paginationParam, setPaginationParam } = arg;
   // 分页器参数
   const pagination = {
-    total: list?.list.length || 0,
-    current: paginationParam.current,
+    total: exportList.total,
+    current: paginationParam.pageNum,
     showTotal: (total: number) => `共 ${total} 条`
   };
   // 切换分页
   const paginationChange = (value: number, pageSize?: number) => {
-    setPaginationParam({ current: value, pageSize: pageSize as number });
+    setPaginationParam({ pageNum: value, pageSize: pageSize as number });
   };
   return { pagination, paginationChange };
 };
