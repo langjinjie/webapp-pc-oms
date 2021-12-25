@@ -141,13 +141,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                   </dd>
                   <dd className={styles.staffTag}>
                     <span className={styles.staffTag_primary}>{staffInfo.isDeleted ? '离职' : '在职'}</span>
-                    {staffInfo.isLeader
-                      ? (
-                      <span>
-                        \<span className={styles.staffTag_warning}>上级</span>
-                      </span>
-                        )
-                      : null}
+                    {staffInfo.isLeader ? <span className={styles.staffTag_warning}>上级</span> : null}
                   </dd>
                 </dl>
                 <ul className={styles.infoList}>
@@ -233,16 +227,12 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
             <Col span={8} xxl={9}>
               <div>
                 <div className={styles.colBox}>
-                  <div className={styles.cardTitle}>
-                    <span>部门信息</span>
-                    <span className={classNames(styles.cardTitle_extra, 'color-text-regular')}>
-                      战报/排行榜/任务系统
-                    </span>
-                  </div>
+                  <div className={styles.cardTitle}>部门信息</div>
                   <ul className={styles.infoList}>
                     <li className={styles.infoItem}>
-                      <span>部门：</span>
-                      {staffInfo.fullDeptName}
+                      <Form.Item label="部门" required name="fullDeptName">
+                        <EditText readOnly={true} />
+                      </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
                       <Form.Item label="资源" name="resource">
