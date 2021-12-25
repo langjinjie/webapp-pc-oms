@@ -31,6 +31,7 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
   const [userList, setUserList] = useState<UserItem[]>([]);
   const [allUserList, setAllUserList] = useState<UserItem[]>([]);
   const [chooseUser, setChooseUser] = useState<UserItem>({});
+  const [keyword, setKeyword] = useState<string>('');
 
   const onSearch = async (val: string) => {
     if (val) {
@@ -81,6 +82,7 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
       setAllUserList([]);
       setUserList([]);
       setChooseUser({});
+      setKeyword('');
     }
   }, [visible]);
 
@@ -90,6 +92,8 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
         <section className={style.left}>
           <div className={style.inputWrap}>
             <Search
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
               placeholder="搜索成员"
               onSearch={onSearch}
               enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
