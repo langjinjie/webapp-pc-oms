@@ -32,7 +32,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
     desc: '',
     tags: ''
   });
-  const [tagList, setTagList] = useState<string[]>([]);
+  const [tagList, setTagList] = useState<{ tagId: string; tagName: string }[]>([]);
   const [isShowInput, setIsShowInput] = useState(false);
   const [isShowAllDesc, setIsShowAllDesc] = useState(false);
   const [isHiddenAllDesc, setIsHiddenAllDesc] = useState(true);
@@ -55,14 +55,13 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   };
   // modal确认
   const onOkHandle = async () => {
-    console.log('ok');
     const { staffList, department, cardPosition, desc } = staffInfo;
     const staffIds = staffList.map((item) => item.id);
-    const tags = tagList.reduce((prev: string, now: string, index: number) => {
+    const tags = tagList.reduce((prev: string, now: { tagId: string; tagName: string }, index: number) => {
       if (index === tagList.length - 1) {
-        return prev + now;
+        return prev + now.tagName;
       } else {
-        return prev + now + '，';
+        return prev + now.tagName + '，';
       }
     }, '');
     const res = await requestMultiSave({ staffIds, deptId: department?.id, cardPosition, desc, tags });
@@ -99,23 +98,25 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   const onBlurHandle = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsShowInput(false);
     if (e.target.value) {
+      const tagId = new Date().getTime().toString();
       // 判断标签数量
       if (tagList.length >= 3) message.warning('最多能添加4个标签');
-      setTagList([...tagList, e.target.value]);
+      setTagList([...tagList, { tagId, tagName: e.target.value }]);
       setStaffInfo({ ...staffInfo, tags: '' });
     }
   };
   // 删除标签
   const closeTagHandle = (tag: string) => {
-    const filterTagList = tagList.filter((item) => item !== tag);
+    const filterTagList = tagList.filter((item) => item.tagId !== tag);
     setTagList(filterTagList);
   };
   // 输入框按下回车键
   const inputOnKeyDownHandle = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      const tagId = new Date().getTime().toString();
       // 判断标签数量
       if (tagList.length >= 3) message.warning('最多能添加4个标签');
-      setTagList([...tagList, (e.target as HTMLInputElement).value]);
+      setTagList([...tagList, { tagId, tagName: (e.target as HTMLInputElement).value }]);
       setStaffInfo({ ...staffInfo, tags: '' });
       setIsShowInput(false);
     }
@@ -128,17 +129,13 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   };
   // 鼠标悬停在描述上展示全部文本
   const showAllDescHandle = () => {
-    // let timerId:NodeJS.Timeout;
     timerId = setTimeout(() => {
-      console.log('悬停一秒了');
       setIsShowAllDesc(true);
     }, 1000);
-    console.log('鼠标移入了~~');
     // 定义鼠标移动事件
     const onMouseMoveHandle = () => {
       clearTimeout(timerId);
       timerId = setTimeout(() => {
-        console.log('悬停一秒了');
         setIsShowAllDesc(true);
       }, 1000);
     };
@@ -162,12 +159,9 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   }, [visible]);
   useEffect(() => {
     if (visible) {
-      console.log(!!staffInfo.department);
       if (allDesc.current.clientWidth > allDescInputRef.current.clientWidth) {
-        console.log('超出了~');
         setIsHiddenAllDesc(false);
       } else {
-        console.log('没超出~');
         setIsHiddenAllDesc(true);
       }
     }
@@ -242,13 +236,13 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
             </div>
           </div>
           <div className={style.infoItem}>
-            <div className={style.title}>职务</div>
+            <div className={style.title}>职位</div>
             <div className={style.value}>
               <input
                 value={staffInfo.cardPosition}
                 className={style.input}
                 type="text"
-                placeholder="请输入职务"
+                placeholder="请输入职位"
                 maxLength={16}
                 onChange={(e) => InputHandle(e, 'cardPosition')}
               />
@@ -284,9 +278,9 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
             <div className={style.title}>标签</div>
             <div className={style.value}>
               {/* <div className={style.tagWrap}> */}
-              {tagList?.map((tag: string) => (
-                <Tag key={tag} className={style.tagItem} closable onClose={() => closeTagHandle(tag)}>
-                  {tag}
+              {tagList?.map((tag) => (
+                <Tag key={tag.tagId} className={style.tagItem} closable onClose={() => closeTagHandle(tag.tagId)}>
+                  {tag.tagName}
                 </Tag>
               ))}
               {/* </div> */}

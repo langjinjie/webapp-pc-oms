@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useImperativeHandle, MutableRefObject } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Form, Space, Select, Input, message } from 'antd';
+import { Button, Form, Space, Select, Input, message, Modal } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import MultiSetting from './MultiSetting/MultiSetting';
@@ -29,6 +29,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [disabledColumnType, setDisabledColumnType] = useState(-1);
   const [multiVisible, setMultiVisible] = useState<boolean>(false);
+  const [deleteTips, setDeleteTip] = useState(false);
   const [searchParam, setSearchParam] = useState<ISearchParam>({
     resource: '',
     businessModel: '',
@@ -112,9 +113,9 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
       window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
     }
   };
-  // 删除
-  const deleteHandle = async () => {
-    console.log('删除');
+
+  // 确认删除
+  const delOnOkHandle = async () => {
     const res = await requestDelStaffList({ staffIds: selectedRowKeys });
     if (res) {
       message.success('删除成功');
@@ -125,6 +126,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
       } else {
         setPaginationParam({ ...paginationParam, pageNum });
       }
+      setDeleteTip(false);
     } else {
       message.error('删除失败');
     }
@@ -158,7 +160,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
           type="primary"
           className={style.btn}
           disabled={!(searchParam.isDeleted === 1 && selectedRowKeys.length)}
-          onClick={deleteHandle}
+          onClick={() => setDeleteTip(true)}
         >
           删除
         </Button>
@@ -220,6 +222,18 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
         onRow={(row: IDepStaffList) => onRowHandle(row)}
       />
       <MultiSetting visible={multiVisible} setMultiVisible={setMultiVisible} />
+      <Modal
+        className={style.modalWrap}
+        centered
+        visible={deleteTips}
+        width={300}
+        title={'删除提醒'}
+        onOk={delOnOkHandle}
+        onCancel={() => setDeleteTip(false)}
+        maskClosable={false}
+      >
+        <div className={style.content}>{'您确定要删除该员工吗?'}</div>
+      </Modal>
     </div>
   );
 };

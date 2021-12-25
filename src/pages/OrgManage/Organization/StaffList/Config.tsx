@@ -1,5 +1,6 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
+import { UNKNOWN } from 'src/utils/base';
 import style from './style.module.less';
 
 const TableColumns = (): ColumnsType<any> => [
@@ -16,15 +17,69 @@ const TableColumns = (): ColumnsType<any> => [
     }
   },
   { title: '企微账号', dataIndex: 'userId', width: 150 },
-  { title: '员工工号', dataIndex: 'jobNumber', width: 100 },
-  { title: '部门', dataIndex: 'deptName', width: 100 },
-  { title: '资源', dataIndex: 'resource', width: 100 },
-  { title: '职务', dataIndex: 'position', width: 150 },
-  { title: '业务模式', dataIndex: 'businessModel', width: 100 },
-  { title: '业务地区', dataIndex: 'businessArea', width: 150 },
-  { title: '办公职场', dataIndex: 'officePlace', width: 90 },
-  { title: '账号开通时间', dataIndex: 'accountStartTime', width: 180 },
-  { title: '账号停止时间', dataIndex: 'accountEndTime', width: 180 },
+  {
+    title: '员工工号',
+    width: 100,
+    render (row) {
+      return <span>{row.jobNumber || UNKNOWN}</span>;
+    }
+  },
+  {
+    title: '部门',
+    width: 100,
+    render (row) {
+      return <span>{row.deptName || UNKNOWN}</span>;
+    }
+  },
+  {
+    title: '资源',
+    width: 100,
+    render (row) {
+      return <span>{row.resource || UNKNOWN}</span>;
+    }
+  },
+  {
+    title: '职位',
+    width: 150,
+    render (row) {
+      return <span>{row.position || UNKNOWN}</span>;
+    }
+  },
+  {
+    title: '业务模式',
+    width: 100,
+    render (row) {
+      return <span>{row.businessModel || UNKNOWN}</span>;
+    }
+  },
+  {
+    title: '业务地区',
+    width: 150,
+    render (row) {
+      return <span>{row.businessArea || UNKNOWN}</span>;
+    }
+  },
+  {
+    title: '办公职场',
+    width: 90,
+    render (row) {
+      return <span>{row.officePlace || UNKNOWN}</span>;
+    }
+  },
+  {
+    title: '账号开通时间',
+    width: 180,
+    render (row) {
+      return <span>{row.accountStartTime || UNKNOWN}</span>;
+    }
+  },
+  {
+    title: '账号停止时间',
+    width: 180,
+    render (row) {
+      return <span>{row.accountEndTime || UNKNOWN}</span>;
+    }
+  },
   {
     title: '状态',
     width: 60,

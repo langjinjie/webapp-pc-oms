@@ -56,3 +56,29 @@ span.isLeader {
   line-height: 20px;
   text-align: center;
 }
+// 删除Modal样式
+.modalWrap {
+  .content {
+    text-align: center;
+  }
+  :global {
+    .ant-modal-header,
+    .ant-modal-footer {
+      border: none;
+      text-align: center;
+      padding-left: 30px;
+      padding-right: 30px;
+    }
+    .ant-modal-footer {
+      display: flex;
+      padding-top: 0;
+      padding-bottom: 30px;
+      justify-content: space-between;
+      button {
+        width: 110px;
+        height: 36px;
+        border-radius: 18px;
+      }
+    }
+  }
+}
