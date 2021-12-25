@@ -245,17 +245,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                       {staffInfo.fullDeptName}
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item
-                        label="资源"
-                        name="resource"
-                        rules={[
-                          {
-                            type: 'string',
-                            max: 100,
-                            required: true
-                          }
-                        ]}
-                      >
+                      <Form.Item label="资源" name="resource">
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
