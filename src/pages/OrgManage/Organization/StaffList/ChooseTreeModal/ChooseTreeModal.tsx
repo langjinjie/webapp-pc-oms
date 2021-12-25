@@ -1,12 +1,13 @@
 import React, { useEffect, useState, Key } from 'react';
 import { Modal, Tree, Input } from 'antd';
-import { Icon } from 'src/components';
+import { Icon, Empty } from 'src/components';
 import { requestGetDeptList, requestGetDepStaffList, searchStaffList } from 'src/apis/orgManage';
 import style from './style.module.less';
 import classNames from 'classnames';
 
 interface IChooseTreeModalProps {
   chooseTreeParam: { title: string; visible: boolean; isShowStaff: boolean };
+  department: any;
   setStaffInfo: (param: any) => void;
   setMultiVisible: (param: boolean) => void;
   setChooseTreeParam: (param: { title: string; visible: boolean; isShowStaff: boolean }) => void;
@@ -20,10 +21,12 @@ interface ItreeProps {
   blockNode: boolean;
   checkable: boolean;
   defaultExpandParent: boolean;
+  selectedKeys?: Key[];
 }
 
 const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   chooseTreeParam,
+  department,
   setStaffInfo,
   setMultiVisible,
   setChooseTreeParam
@@ -114,69 +117,18 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     const res = await getCorpOrg(key);
     res && setTreeData((treeData) => updateTreeData(treeData, key, res));
   };
-
-  // 搜索部门之后过滤
-  const loop = (data: any) =>
-    data.map((item: any) => {
-      const index = item.name.indexOf(searchValue);
-      const beforeStr = item.name.substr(0, index);
-      const afterStr = item.name.substr(index + searchValue.length);
-      const name =
-        index > -1
-          ? (
-          <span>
-            {beforeStr}
-            <span className={style['site-tree-search-value']}>{searchValue}</span>
-            {afterStr}
-          </span>
-            )
-          : (
-          <span>{item.name}</span>
-            );
-      if (item.children) {
-        return { isLeaf: item.isLeaf, name, id: item.id, children: loop(item.children) };
-      }
-      return {
-        isLeaf: item.isLeaf,
-        name,
-        id: item.id
-      };
-    });
-
-  // 获取父节点的id
-  const getParentKey = (key: string, tree: any[]): any => {
-    let parentKey;
-    for (let i = 0; i < tree.length; i++) {
-      const node = tree[i];
-      if (node.children) {
-        if (node.children.some((item: any) => item.id === key)) {
-          parentKey = node.id;
-        } else if (getParentKey(key, node.children)) {
-          parentKey = getParentKey(key, node.children);
-        }
-      }
-    }
-    return parentKey;
-  };
-
   // 本地搜索组织架构
   const onChangeHandle = (value: string) => {
-    value || setSearchList([]);
-    setSearchValue(value);
-    const expandedKeys = flatTreeData
-      .map((item) => {
-        if (item.name.indexOf(value) > -1) {
-          return getParentKey(item.id, treeData);
-        }
-        return null;
-      })
-      .filter((item, i, self) => item && self.indexOf(item) === i);
-    setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: true });
+    if (!value) {
+      setSearchList([]);
+      setSearchValue('');
+    }
   };
 
   // 搜索部门或者员工
   const onSearchHandle = async (val: string) => {
     if (val) {
+      setSearchValue(val);
       const res = await searchStaffList({
         keyWords: val,
         searchType: chooseTreeParam.title === '选择员工' ? 2 : 1,
@@ -187,15 +139,12 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
           item.id = item.staffId;
           item.name = item.staffName;
           item.isLeaf = true;
-          // item.isStaff = true;
         });
         setSearchList(res.staffList);
       } else {
         res.deptList.forEach((item: any) => {
           item.id = item.deptId;
           item.name = item.deptName;
-          // item.isLeaf = true;
-          // item.isStaff = true;
         });
         setSearchList(res.deptList);
       }
@@ -324,6 +273,10 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   };
   useEffect(() => {
     if (chooseTreeParam.visible) {
+      if (chooseTreeParam.title === '选择部门') {
+        console.log('department', department);
+        setSelectedKeys([department?.id]);
+      }
       setTreeProps({ ...treeProps, checkable: chooseTreeParam.isShowStaff });
       (async () => {
         setTreeData(await getCorpOrg(''));
@@ -368,29 +321,38 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
             onSearch={(val) => onSearchHandle(val)}
             enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
           />
-          {!!searchList.length && (
+          {!!searchValue && (
             <div className={style.searchListWrap}>
-              {searchList.map((item: any) => (
-                <div
-                  key={item.id}
-                  className={classNames(style.searchItem, {
-                    [style.active]: selectList.some((selectItem) => item.id === selectItem.id)
-                  })}
-                  onClick={() => clickSearchList(item)}
-                >
-                  <div className={style.name}>{item.name}</div>
+              {searchList.length
+                ? (
+                    searchList.map((item: any) => (
+                  <div
+                    key={item.id}
+                    className={classNames(style.searchItem, {
+                      [style.active]: selectList.some((selectItem) => item.id === selectItem.id)
+                    })}
+                    onClick={() => clickSearchList(item)}
+                  >
+                    <div className={style.name}>{item.name}</div>
+                  </div>
+                    ))
+                  )
+                : (
+                <div className={style.empty}>
+                  <Empty />
                 </div>
-              ))}
+                  )}
             </div>
           )}
-          {!searchList.length && (
+          {!searchValue && (
             <Tree
               {...treeProps}
               fieldNames={{ title: 'name', key: 'id' }}
-              treeData={loop(treeData)}
+              treeData={treeData}
               loadData={onLoadDataHandle}
               checkedKeys={selectedKeys}
               onExpand={onExpandHandle}
+              selectedKeys={chooseTreeParam.title === '选择部门' ? selectedKeys : []}
               // @ts-ignore
               onCheck={onCheckedHandle}
               onSelect={(selectKeys) => onSelectHandle(selectKeys)}

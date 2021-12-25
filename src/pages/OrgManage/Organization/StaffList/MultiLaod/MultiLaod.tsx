@@ -11,9 +11,9 @@ import style from './style.module.less';
 
 interface ISearchParam {
   status: number;
-  createName: string;
-  createBeginTime: string;
-  createEndTime: string;
+  createBy: string;
+  startTime: string;
+  endTime: string;
 }
 
 interface IExportList {
@@ -28,11 +28,19 @@ const MultiLaod: React.FC = () => {
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
   const [exportModal, setExportModal] = useState(false);
   const [searchParam, setSearchParam] = useState<ISearchParam>({
-    status: 0,
-    createName: '',
-    createBeginTime: '',
-    createEndTime: ''
+    status: -1,
+    createBy: '',
+    startTime: '',
+    endTime: ''
   });
+  const statusList = [
+    {
+      value: 0,
+      label: '成功'
+    },
+    { value: 1, label: '失败' },
+    { value: 2, label: '校验中' }
+  ];
   const [form] = Form.useForm();
   const { RangePicker } = DatePicker;
 
@@ -41,7 +49,14 @@ const MultiLaod: React.FC = () => {
   // 获取列表
   const getExportList = async () => {
     setIsLoading(true);
-    const res = await requestGetHistoryLoad(paginationParam);
+    const { status, createBy, startTime, endTime } = searchParam;
+    const res = await requestGetHistoryLoad({
+      ...paginationParam,
+      status: status === -1 ? undefined : status,
+      createBy,
+      startTime,
+      endTime
+    });
     console.log(res);
     if (res) {
       setExportList(res);
@@ -50,20 +65,26 @@ const MultiLaod: React.FC = () => {
   };
   // 查询
   const onFinishHandle = () => {
-    const { status, createName, createTime } = form.getFieldsValue();
-    let createBeginTime = '';
-    let createEndTime = '';
+    const { status, createBy, createTime } = form.getFieldsValue();
+    let startTime = '';
+    let endTime = '';
     if (createTime) {
-      createBeginTime = createTime[0].format('YYYY-MM-DD') + ' 00:00:00';
-      createEndTime = createTime[1].format('YYYY-MM-DD') + ' 23:59:59';
+      startTime = createTime[0].format('YYYY-MM-DD') + ' 00:00:00';
+      endTime = createTime[1].format('YYYY-MM-DD') + ' 23:59:59';
     }
-    console.log({ status, createName, createBeginTime, createEndTime });
-    setSearchParam({ status, createName, createBeginTime, createEndTime });
+    setSearchParam({ status, createBy, startTime, endTime });
+    setPaginationParam({ ...paginationParam, pageNum: 1 });
   };
   // 重置
   const onResetHandle = () => {
-    console.log(searchParam);
-    console.log('重置表格~');
+    form.resetFields();
+    setSearchParam({
+      status: -1,
+      createBy: '',
+      startTime: '',
+      endTime: ''
+    });
+    setPaginationParam({ ...paginationParam, pageNum: 1 });
   };
   // 批量上传
   const mulitiUpload = async (file: File): Promise<void> => {
@@ -106,9 +127,10 @@ const MultiLaod: React.FC = () => {
       window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
     }
   };
+
   useEffect(() => {
     getExportList();
-  }, [paginationParam]);
+  }, [paginationParam, searchParam]);
   return (
     <div className={style.wrap}>
       <div className={style.crumbs}>
@@ -125,9 +147,6 @@ const MultiLaod: React.FC = () => {
         <Button type="primary" className={style.btn} onClick={downLoadNewStaffList}>
           下载新增员工信息表
         </Button>
-        {/* <Button type="primary" className={style.btn} onClick={downLoadTemplate}>
-          下载模板
-        </Button> */}
         <a
           className={style.btn}
           href="https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/stafforg_import.xlsx"
@@ -135,25 +154,18 @@ const MultiLaod: React.FC = () => {
           下载模板
         </a>
       </div>
-      <Form
-        name="base"
-        className={style.form}
-        layout="inline"
-        form={form}
-        onFinish={onFinishHandle}
-        onReset={onResetHandle}
-      >
+      <Form name="base" className={style.form} layout="inline" form={form}>
         <Space className={style.antSpace}>
           <Form.Item className={style.label} name="status" label="状态：">
             <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
-              {[1, 2, 3].map((item) => (
-                <Select.Option key={item} value={item}>
-                  {item}
+              {statusList.map((item) => (
+                <Select.Option key={item.value} value={item.value}>
+                  {item.label}
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item className={style.label} name="createName" label="创建人：">
+          <Form.Item className={style.label} name="createBy" label="创建人：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
           </Form.Item>
           <Form.Item className={style.label} name="createTime" label="创建时间：">
@@ -161,10 +173,10 @@ const MultiLaod: React.FC = () => {
           </Form.Item>
           <Form.Item>
             <Space size="small">
-              <Button className={style.searchBtn} type="primary" htmlType="submit">
+              <Button className={style.searchBtn} type="primary" htmlType="submit" onClick={onFinishHandle}>
                 查询
               </Button>
-              <Button className={style.resetBtn} htmlType="reset">
+              <Button className={style.resetBtn} htmlType="reset" onClick={onResetHandle}>
                 重置
               </Button>
             </Space>
