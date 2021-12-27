@@ -159,12 +159,16 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       setSelectList((list) => {
         return [...list.filter((listItem) => listItem.id !== item.id)];
       });
-      // 判断当前节点是否已经在treeData中
+      // 判断当前节点是否已经在treeData中(在则表示该treeData已经被加载)
       if (flatTreeData.some((flatTreeItem) => flatTreeItem.id === item.id)) {
         setSelectedKeys([...selectedKeys.filter((key) => key !== item.id)]);
       }
     } else {
-      setSelectList((list) => [...list, item]);
+      if (chooseTreeParam.title === '选择部门') {
+        setSelectList([item]);
+      } else {
+        setSelectList((list) => [...list, item]);
+      }
       // 判断当前节点是否已经在treeData中
       if (flatTreeData.some((flatTreeItem) => flatTreeItem.id === item.id)) {
         setSelectedKeys(Array.from(new Set([...selectedKeys, item.id])));
