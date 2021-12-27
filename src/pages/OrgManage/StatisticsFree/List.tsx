@@ -24,6 +24,7 @@ const StatisticsFreeList: React.FC = () => {
   });
 
   const getList = async (params?: any) => {
+    setSelectRowKeys([]);
     setIsLoading(true);
     const res = await getFreeStaffList({
       ...formParams,
