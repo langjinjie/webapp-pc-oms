@@ -230,7 +230,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                   <div className={styles.cardTitle}>部门信息</div>
                   <ul className={styles.infoList}>
                     <li className={styles.infoItem}>
-                      <Form.Item label="部门" required name="fullDeptName">
+                      <Form.Item label="部门" name="fullDeptName">
                         <EditText readOnly={true} />
                       </Form.Item>
                     </li>
