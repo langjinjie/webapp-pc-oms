@@ -52,7 +52,7 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
       setAllUserList(resList);
       setUserList(resList);
       if (leaderInfo?.staffId) {
-        setChooseUser(leaderInfo);
+        setChooseUser(resList.find((item: UserItem) => item.staffId === leaderInfo?.staffId) || {});
       } else if (resList.length > 0) {
         setChooseUser(resList[0]);
       } else {
@@ -119,7 +119,9 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
         </section>
         <section className={style.right}>
           <div className={style.chooseHeader}>已选</div>
-          <div className={style.leaderName}>{chooseUser.staffName}</div>
+          <div className={style.leaderName}>
+            {chooseUser.staffName} ({chooseUser.userId})
+          </div>
         </section>
       </div>
     </Modal>
