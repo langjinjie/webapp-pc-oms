@@ -104,9 +104,9 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
             <span>当前位置：</span>
             <Breadcrumb>
               <Breadcrumb.Item className={styles.pointer} onClick={navigatorToList}>
-                标签配置
+                组织架构管理
               </Breadcrumb.Item>
-              <Breadcrumb.Item>保存与推送记录</Breadcrumb.Item>
+              <Breadcrumb.Item>{staffInfo.staffName}</Breadcrumb.Item>
             </Breadcrumb>
           </div>
             )
