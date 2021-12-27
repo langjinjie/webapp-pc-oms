@@ -13,6 +13,7 @@ import style from './style.module.less';
 interface UserItem {
   staffId?: string;
   staffName?: string;
+  userId?: string;
 }
 
 interface SetLeaderProps {
@@ -110,7 +111,7 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
                   })}
                   onClick={() => setChooseUser(item)}
                 >
-                  {item.staffName}
+                  {item.staffName} ({item.userId})
                 </li>
               ))}
             </ul>
