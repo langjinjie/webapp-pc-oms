@@ -215,6 +215,7 @@ export interface IDepStaffList {
   avatar: string;
   isLeader: number;
   jobNumber?: string;
+  deptId: number;
   deptName?: string;
   position?: string;
   businessModel?: string;

@@ -1,13 +1,14 @@
 import React, { useEffect, useState, Key } from 'react';
-import { Modal, Tree, Input } from 'antd';
+import { Modal, Tree, Input, message } from 'antd';
 import { Icon, Empty } from 'src/components';
 import { requestGetDeptList, requestGetDepStaffList, searchStaffList } from 'src/apis/orgManage';
+import { IDepStaffList } from 'src/utils/interface';
 import style from './style.module.less';
 import classNames from 'classnames';
 
 interface IChooseTreeModalProps {
   chooseTreeParam: { title: string; visible: boolean; isShowStaff: boolean };
-  department: any;
+  staffInfo: any;
   setStaffInfo: (param: any) => void;
   setMultiVisible: (param: boolean) => void;
   setChooseTreeParam: (param: { title: string; visible: boolean; isShowStaff: boolean }) => void;
@@ -26,7 +27,7 @@ interface ItreeProps {
 
 const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   chooseTreeParam,
-  department,
+  staffInfo,
   setStaffInfo,
   setMultiVisible,
   setChooseTreeParam
@@ -37,7 +38,6 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   const [selectedKeys, setSelectedKeys] = useState<Key[]>([]);
   const [selectList, setSelectList] = useState<any[]>([]);
   const [searchList, setSearchList] = useState<any[]>([]);
-  // const [noRenderDelStaff, setNoRenderDelStaff] = useState<any[]>([]); // 保存 在数结构中为渲染但是被删除的元素
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -69,7 +69,6 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
         name: item.staffName,
         id: item.staffId,
         isLeaf: true,
-        // isStaff: true,
         parentId
       }));
     }
@@ -194,7 +193,6 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
         item.name = item.staffName;
         item.isLeaf = true;
       });
-      setSelectList([...currentNodeStaffList]);
       if (info.checked) {
         currentNodeStaffList = [...currentNodeStaffList, ...res.list];
         const currentNodeStaffListKeys = Array.from(new Set(currentNodeStaffList.map((item) => item.id)));
@@ -278,8 +276,9 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   useEffect(() => {
     if (chooseTreeParam.visible) {
       if (chooseTreeParam.title === '选择部门') {
-        console.log('department', department);
-        setSelectedKeys([department?.id]);
+        setSelectedKeys([staffInfo.department?.id]);
+      } else {
+        setSelectList(staffInfo.staffList);
       }
       setTreeProps({ ...treeProps, checkable: chooseTreeParam.isShowStaff });
       (async () => {
@@ -294,12 +293,30 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       const newSelectedKeys = flatTreeData
         .filter((item: any) => selectedKeys.includes(item.parentId))
         .map((item) => item.id);
+      const selectListKeys = flatTreeData
+        .filter((flatTreeItem) => selectList.some((selectItem) => selectItem.id === flatTreeItem.id))
+        .map((item) => item.id);
       // 找出通过搜索选中的员工
-      const selectKeys = Array.from(new Set([...selectedKeys, ...newSelectedKeys]));
-      // 找出被删除的staffId
+      const selectKeys = Array.from(new Set([...selectedKeys, ...newSelectedKeys, ...selectListKeys]));
       setSelectedKeys(selectKeys);
     })();
   }, [flatTreeData]);
+  useEffect(() => {
+    if (chooseTreeParam.title === '选择部门') {
+      const isLeaderStaff: IDepStaffList[] = staffInfo.staffList.filter((item: IDepStaffList) => item.isLeader);
+      const isLeaderStaffOfChangeDept = isLeaderStaff.filter((item) => item.deptId !== selectList[0]?.deptId);
+      if (selectList.length && isLeaderStaffOfChangeDept.length) {
+        const name = isLeaderStaffOfChangeDept.reduce((prev: string, now, index) => {
+          if (index === isLeaderStaffOfChangeDept.length - 1) {
+            return prev + now.staffName;
+          } else {
+            return prev + now.staffName + '，';
+          }
+        }, '');
+        message.warning('部门批量修改不可含有上级身份员工：' + name);
+      }
+    }
+  }, [selectList]);
   return (
     <Modal
       width={'auto'}
@@ -369,7 +386,10 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
             <div className={classNames(style.selectList, 'scroll-strip')}>
               {selectList.map((item) => (
                 <div className={style.selectItem} key={item.id}>
-                  <span className={style.itemName}>{item.name}</span>
+                  <span>
+                    {item.name}
+                    {!!item.isLeader && <span className={style.isLeader}>上级</span>}
+                  </span>
                   <Icon
                     className={style.delIcon}
                     name="icon_common_16_inputclean"

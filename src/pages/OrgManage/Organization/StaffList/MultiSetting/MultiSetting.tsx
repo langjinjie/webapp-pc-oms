@@ -41,7 +41,6 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   const allDesc: MutableRefObject<any> = useRef(null);
   const allDescInputRef: MutableRefObject<any> = useRef(null);
   let timerId: NodeJS.Timeout;
-  // const [form] = Form.useForm();
   // 重置
   const onResetHandle = () => {
     setStaffInfo({ staffList: [], department: null, cardPosition: '', desc: '', tags: '' });
@@ -203,11 +202,17 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
               </div>
                 )
               : (
-              <>
+              <span onClick={addStaffHandle}>
                 {staffInfo.staffList?.map((item: any) => (
-                  <span key={item.id}>{item.name}；</span>
+                  <>
+                    <span className={classNames(style.staffItem, { [style.isLeader]: !!item.isLeader })} key={item.id}>
+                      {item.name}
+                      <span className={!!item.isLeader && style.isLeader}>{!!item.isLeader && '（上级）'}</span>
+                    </span>
+                    ；
+                  </>
                 ))}
-              </>
+              </span>
                 )}
           </div>
         </div>
@@ -311,7 +316,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
       </Modal>
       <ChooseTreeModal
         chooseTreeParam={chooseTreeParam}
-        department={staffInfo.department}
+        staffInfo={staffInfo}
         setStaffInfo={setStaffInfo}
         setMultiVisible={setMultiVisible}
         setChooseTreeParam={setChooseTreeParam}
