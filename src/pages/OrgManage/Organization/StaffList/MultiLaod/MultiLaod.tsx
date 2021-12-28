@@ -98,18 +98,6 @@ const MultiLaod: React.FC = () => {
       setExportModal(false);
     }
   };
-  // 下载模板
-  const onDownLoadExcel = async () => {
-    const url =
-      'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/stafforg_import.xlsx';
-    const link = document.createElement('a');
-    link.style.display = 'none';
-    link.href = url;
-    document.body.appendChild(link);
-    link.click(); // 点击下载
-    link.remove(); // 下载完成移除元素
-    window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
-  };
   // 下载新增员工信息表
   const downLoadNewStaffList = async () => {
     const res = await requestDownStaffList({
@@ -151,7 +139,7 @@ const MultiLaod: React.FC = () => {
         </Button>
         <a
           className={style.btn}
-          href="https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/stafforg_import.xlsx"
+          href="https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/%E7%BB%84%E7%BB%87%E6%9E%B6%E6%9E%84%E4%BF%A1%E6%81%AF%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF.xlsx"
         >
           下载模板
         </a>
@@ -203,7 +191,6 @@ const MultiLaod: React.FC = () => {
         title={'批量导入信息'}
         onOK={mulitiUpload}
         onCancel={() => setExportModal(false)}
-        onDownLoad={() => onDownLoadExcel()}
         isShowDownLoad={false}
       />
     </div>
