@@ -74,7 +74,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
     if (!value) {
       return Promise.resolve();
     } else {
-      const lightsValues = value.replace(/，/gi, ',');
+      const lightsValues = value.replace(/，|、/gi, ',');
       let lightsArr: string[] = [];
       lightsArr = lightsValues.split(',');
 
