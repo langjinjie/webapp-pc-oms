@@ -75,17 +75,22 @@
           height: 36px;
           padding: 0 15px;
           border-radius: 8px;
+          background-color: #fff;
           text-align-last: justify;
+          transition: background 0.3s;
           &:hover {
             background-color: rgba(48, 120, 219, 0.2);
             .delIcon {
               display: inline-block;
+              opacity: 1;
             }
           }
           .delIcon {
-            display: none;
+            display: inline-block;
             width: 20px;
             height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
           }
           span.isLeader {
             display: inline-block;
@@ -126,6 +131,12 @@
     .ant-tree {
       width: auto;
       border-top: 1px solid rgba(0, 0, 0, 0.1);
+      .ant-tree-node-content-wrapper.ant-tree-node-selected {
+        background-color: transparent;
+      }
+      .ant-tree-node-content-wrapper:hover {
+        background-color: transparent;
+      }
       .ant-tree-list-holder {
         &::-webkit-scrollbar {
           width: 6px;

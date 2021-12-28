@@ -67,6 +67,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
     if (res) {
       setMultiVisible(false);
       onResetHandle();
+      message.success('批量修改成功');
     }
   };
   // 点击添加员工
