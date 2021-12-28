@@ -204,6 +204,7 @@ const MultiLaod: React.FC = () => {
         onOK={mulitiUpload}
         onCancel={() => setExportModal(false)}
         onDownLoad={() => onDownLoadExcel()}
+        isShowDownLoad={false}
       />
     </div>
   );

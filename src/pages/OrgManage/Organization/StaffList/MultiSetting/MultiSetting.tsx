@@ -1,5 +1,5 @@
 import React, { useState, useRef, MutableRefObject, useEffect } from 'react';
-import { message, Modal, /* Form, */ Tag } from 'antd';
+import { message, Modal, Popover, Tag } from 'antd';
 import { Icon } from 'src/components';
 import { requestMultiSave } from 'src/apis/orgManage';
 import ChooseTreeModal from 'src/pages/OrgManage/Organization/StaffList/ChooseTreeModal/ChooseTreeModal';
@@ -222,7 +222,14 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
           {/* <Form form={form}> */}
           <div className={style.infoTitle}>设置项目</div>
           <div className={style.infoItem}>
-            <div className={style.title}>部门信息</div>
+            <div className={style.title}>
+              部门信息
+              <Popover placement="right" className={style.iconWrap} content={'部门批量修改不可含有上级身份员工'}>
+                <span>
+                  <Icon name="i" />
+                </span>
+              </Popover>
+            </div>
             <div className={style.value}>
               {staffInfo.department
                 ? (
