@@ -120,7 +120,7 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
         <section className={style.right}>
           <div className={style.chooseHeader}>已选</div>
           <div className={style.leaderName}>
-            {chooseUser.staffName} ({chooseUser.userId})
+            {chooseUser.staffName} {chooseUser.userId ? `(${chooseUser.userId})` : ''}
           </div>
         </section>
       </div>
