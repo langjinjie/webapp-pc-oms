@@ -21,6 +21,10 @@
   .ant-input {
     border-radius: 18px;
     padding: 6px 11px;
+
+    &::placeholder {
+      font-size: 12px;
+    }
   }
   .ant-input-affix-wrapper,
   .ant-picker {
@@ -193,24 +197,31 @@
       margin-bottom: 20px;
     }
   }
-  // Table组件
-  .ant-table-pagination {
-    align-items: center;
-    .ant-pagination-item {
+}
+// Table组件
+.ant-table-pagination {
+  align-items: center;
+  .ant-pagination-item {
+    border-radius: 8px;
+  }
+  .ant-pagination-prev,
+  .ant-pagination-next {
+    .ant-pagination-item-link {
       border-radius: 8px;
     }
-    .ant-pagination-prev,
-    .ant-pagination-next {
-      .ant-pagination-item-link {
-        border-radius: 8px;
-      }
+  }
+  .ant-pagination-options {
+    display: flex;
+    align-items: center;
+    input {
+      border-radius: 8px;
     }
-    .ant-pagination-options {
-      display: flex;
-      align-items: center;
-      input {
-        border-radius: 8px;
-      }
-    }
+  }
+}
+
+.table-container {
+  table tr th.ant-table-selection-column,
+  table tr td.ant-table-selection-column {
+    padding-left: 16px;
   }
 }

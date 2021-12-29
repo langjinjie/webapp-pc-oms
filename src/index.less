@@ -20,6 +20,35 @@ body {
   touch-action: pan-y pan-x;
   word-break: break-word;
 }
+
+.scroll-strip {
+  overflow-y: auto;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: rgb(239, 239, 239);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #bfbfbf;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #318cf5;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: #e6e7eb;
+  }
+}
+
 h1,
 h2,
 h3,
@@ -46,6 +75,19 @@ ul {
 .container {
   padding: 24px;
   background: #fff;
+
+  /** 列表头部操作按钮样式
+  ------------------------------------------- */
+  .header {
+    .btn_wrap {
+      .ant-btn {
+        padding: 0 40px;
+        & + .ant-btn {
+          margin-left: 40px;
+        }
+      }
+    }
+  }
 }
 
 // fontSize 12-28px
@@ -82,6 +124,14 @@ ul {
   .ml((@i + 5));
 }
 .ml(5);
+// 上外边距 5->40px
+.mt(@i) when(@i<=40) {
+  .mt@{i} {
+    margin-top: @i + 0px;
+  }
+  .mt((@i + 2));
+}
+.mt(6);
 
 @bgColor_3078DB: #3078db;
 @color_fff: #fff;
@@ -587,7 +637,7 @@ ul {
 .ant-table-thead > tr > th {
   background-color: #f3f7ff !important;
   color: #7e8185 !important;
-  padding: 11px 16px !important;
+  // padding: 11px 16px !important;
 }
 .ant-table-thead
   > tr
@@ -713,6 +763,11 @@ ul {
     &:hover {
       color: #111;
     }
+    &:disabled {
+      border-color: #d9d9d9;
+      background-color: #f5f5f5;
+      color: rgba(0, 0, 0, 0.25);
+    }
   }
   .ant-btn-primary {
     color: #fff;
@@ -724,5 +779,10 @@ ul {
     color: #fff;
     background: #40a9ff;
     border-color: #40a9ff;
+  }
+  .ant-btn-primary:disabled {
+    border-color: #d9d9d9;
+    background-color: #f5f5f5;
+    color: rgba(0, 0, 0, 0.25);
   }
 }

@@ -1,5 +1,5 @@
 import http from 'src/utils/http';
-type HttpFC = (param: { [key: string]: any }) => Promise<any>;
+type HttpFC<T = any> = (param: T) => Promise<any>;
 type HttpVoid = () => Promise<any>;
 /* 机构管理 */
 // 获取机构列表
@@ -59,4 +59,85 @@ export const requestDownLoadSensitiveList: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/sensitive/export', param, {
     responseType: 'blob'
   });
+};
+
+/**
+ * 组织架构->员工列表接口
+ */
+// 获取组织架构员工列表
+export const requestGetDepStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/stafflist', param);
+};
+// 批量导入历史记录别表接口
+export const requestGetHistoryLoad: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/implist', param);
+};
+// 员工批量导入接口
+export const requestImportStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/impstaff', param);
+};
+// 导入异常表格下载
+export const requestDownLoadFailLoad: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/impdownload', param, {
+    responseType: 'blob'
+  });
+};
+// 批量导出员工信息接口
+export const requestDownStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/saffExp', param, {
+    responseType: 'blob'
+  });
+};
+// 获取组织架构
+export const requestGetDeptList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/deptlist', param);
+};
+// 批量设置保存接口
+export const requestMultiSave: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/batchsetsave', param);
+};
+// 员工(批量)删除
+export const requestDelStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/staffdel', param);
+};
+
+/**
+ * 部门员工搜索接口
+ */
+export const searchStaffList: HttpFC<{ keyWords: string; searchType?: 1 | 2; isDeleted?: boolean; isFull?: boolean }> =
+  (param) => {
+    return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
+  };
+/**
+ * 坐席详情模块
+ ********************************************/
+// 获取坐席详情
+export const getStaffDetail: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/staffinfo', param);
+};
+// 保存坐席信息
+export const saveStaffDetail: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/usersave', param);
+};
+
+/**
+ * 数据免统计名单
+ *********************************************/
+// 免统计名单列表
+export const getFreeStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/user/freeStats/list', param);
+};
+
+// 批量删除免统计员工
+export const delFreeStaffs: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/user/freeStats/del', param);
+};
+// 查询坐席员工接口
+export const searchStaffByName: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/freeStats/findByName', param);
+};
+
+// 新增免统计员工
+export const addFreeStaffs: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/user/freeStats/add', param);
 };

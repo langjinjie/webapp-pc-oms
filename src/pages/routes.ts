@@ -12,10 +12,15 @@ export interface Menu {
   name: string;
   icon?: string;
   path: string;
+  onlyMain?: boolean;
   children?: Menu[];
 }
 
-export const routes: RouteProps[] = [
+interface expandRoute {
+  onlyMain?: boolean;
+}
+
+export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
@@ -143,22 +148,75 @@ export const routes: RouteProps[] = [
   {
     path: '/speechManage/edit',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
+  },
+  /**
+   * 机构管理->账号管理
+   */
+  {
+    path: '/organization/laod',
+    component: lazy(() => import('src/pages/OrgManage/Organization/StaffList/MultiLaod/MultiLaod'))
+  },
+  {
+    path: '/test/video',
+    component: lazy(() => import('src/pages/Test/Video/Video'))
+  },
+  {
+    path: '/company',
+    component: lazy(() => import('src/pages/OrgManage/Company/Company')),
+    onlyMain: true
+  },
+  {
+    path: '/company/access',
+    component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess')),
+    onlyMain: true
+  },
+  // 坐席详情
+  {
+    path: '/organization/staff-detail',
+    component: lazy(() => import('src/pages/OrgManage/Organization/StaffDetail/StaffDetail'))
   }
 ];
-export const cacheRoutes: CacheRouteProps[] = [
+
+// 缓存路由
+export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
+  {
+    path: '/organization',
+    component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
+  },
   {
     path: '/contentsManage',
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
+  },
+
+  // 免统计
+  {
+    path: '/statistics-free',
+    component: lazy(() => import('src/pages/OrgManage/StatisticsFree/List'))
   }
 ];
+
 export const menus: Menu[] = [
   {
     name: '机构管理',
     icon: 'icon_daohang_28_jigouguanli',
     path: 'seatManage',
     children: [
-      { name: '账号管理', path: '/orgManage' },
-      { name: '敏感词管理', path: '/sensitiveManage' }
+      {
+        name: '账号管理',
+        path: '/orgManage'
+      },
+      {
+        name: '敏感词管理',
+        path: '/sensitiveManage'
+      },
+      {
+        name: '组织架构管理',
+        path: '/organization'
+      },
+      {
+        name: '数据免统计名单',
+        path: '/statistics-free'
+      }
     ]
   },
   {
@@ -241,3 +299,22 @@ export const menus: Menu[] = [
     ]
   }
 ];
+
+if (process.env.NODE_ENV === 'development') {
+  menus.push({
+    name: '调试',
+    icon: 'icon_daohang_28_xitongshezhi',
+    path: 'test',
+    children: [
+      {
+        name: '视频',
+        path: '/test/video'
+      },
+      {
+        name: '企业接入',
+        path: '/company',
+        onlyMain: true
+      }
+    ]
+  });
+}

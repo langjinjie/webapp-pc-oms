@@ -1,0 +1,79 @@
+.wrap {
+  padding: 20px 24px;
+  .crumbs {
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.45);
+    .lastName {
+      margin-right: 8px;
+      cursor: pointer;
+      &:hover {
+        color: #3078db;
+      }
+    }
+    .currentName {
+      margin-left: 8px;
+      color: #3078db;
+    }
+  }
+  .operation {
+    margin-top: 24px;
+    .btn {
+      height: 32px;
+      padding: 0 17px;
+      border-radius: 16px;
+      margin-right: 20px;
+    }
+    a.btn {
+      display: inline-block;
+      border: 1px solid #1890ff;
+      background-color: #1890ff;
+      color: #fff;
+      line-height: 32px;
+    }
+  }
+  .form {
+    margin: 20px 0;
+    .searchBtn,
+    .resetBtn {
+      width: 88px;
+      height: 36px;
+      border-radius: 20px;
+    }
+    .label {
+      align-items: center;
+    }
+  }
+  // Table样式
+  .check,
+  .fail,
+  .success {
+    &::before {
+      content: ' ';
+      display: inline-block;
+      margin-right: 6px;
+      width: 8px;
+      height: 8px;
+      background-color: #6b97ff;
+      border-radius: 50%;
+    }
+  }
+  .fail {
+    &::before {
+      background-color: #f25555;
+    }
+  }
+  .success {
+    &::before {
+      background-color: #52c41a;
+    }
+  }
+  .edit {
+    color: #3078db;
+    cursor: pointer;
+    &.disabled {
+      cursor: not-allowed;
+    }
+  }
+}
