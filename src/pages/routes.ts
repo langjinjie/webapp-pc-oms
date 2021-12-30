@@ -184,11 +184,20 @@ export const routes: (RouteProps & expandRoute)[] = [
   },
   {
     path: '/pointsDeduction',
-    component: lazy(() => import('src/pages/PointsMall/PointsDeduction/PointsDeduction'))
+    component: lazy(() => import('src/pages/PointsMall/PointsDeduction/List'))
+  },
+  // 积分扣除记录
+  {
+    path: '/pointsDeduction/record',
+    component: lazy(() => import('src/pages/PointsMall/PointsDeduction/Record/Record'))
   },
   {
     path: '/addSubPoints',
-    component: lazy(() => import('src/pages/PointsMall/AddSubPoints/AddSubPoints'))
+    component: lazy(() => import('src/pages/PointsMall/AddSubPoints/List'))
+  },
+  {
+    path: '/addSubPoints/record',
+    component: lazy(() => import('src/pages/PointsMall/AddSubPoints/Record/Record'))
   }
 ];
 
