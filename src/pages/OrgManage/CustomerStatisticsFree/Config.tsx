@@ -6,21 +6,21 @@ import { Tooltip } from 'antd';
 
 export const searchCols: SearchCol[] = [
   {
-    name: 'name',
+    name: 'condition',
     type: 'input',
     label: '客户姓名',
     placeholder: '搜索客户姓名/车牌号码/外部联系人ID',
     width: 280
   },
   {
-    name: 'name',
+    name: 'staffName',
     type: 'input',
     label: '客户经理',
     placeholder: '',
     width: 180
   },
   {
-    name: 'name',
+    name: 'addReason',
     type: 'input',
     label: '添加理由',
     placeholder: '员工姓名',
@@ -39,13 +39,13 @@ export interface StaffProps {
 export const tableColumns = (): ColumnsType<StaffProps> => [
   {
     title: '客户姓名',
-    dataIndex: 'name',
+    dataIndex: 'remarkName',
     width: 100,
     render: (value) => <span>{value || UNKNOWN}</span>
   },
   {
     title: '昵称',
-    dataIndex: 'userId',
+    dataIndex: 'name',
     align: 'left',
     width: 200,
     ellipsis: {
@@ -54,7 +54,7 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
   },
   {
     title: '车牌号码',
-    dataIndex: 'userId',
+    dataIndex: 'carNumber',
     align: 'left',
     width: 200,
     ellipsis: {
@@ -63,7 +63,7 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
   },
   {
     title: '客户经理',
-    dataIndex: 'jobNumber',
+    dataIndex: 'staffNames',
     align: 'left',
     width: 180,
     ellipsis: {
@@ -78,29 +78,21 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
   {
     title: '添加时间',
     align: 'left',
-    dataIndex: 'position',
+    dataIndex: 'dateCreated',
     width: 200,
     render: (value) => <span>{value || UNKNOWN}</span>
   },
   {
     title: '删除时间',
     align: 'left',
-    dataIndex: 'position',
+    dataIndex: 'dateDeleted',
     width: 200,
     render: (value) => <span>{value || UNKNOWN}</span>
   },
   {
     title: '添加理由',
-    dataIndex: 'freeType',
+    dataIndex: 'addReason',
     width: 200,
-    render: (value: string) => {
-      return value.split(',').map((item, index: number) => {
-        if (item === '1') {
-          return <span>排行榜 {index + 1 < value.length ? '、' : ''}</span>;
-        } else {
-          return <span>战报</span>;
-        }
-      });
-    }
+    render: (value) => <span>{value || UNKNOWN}</span>
   }
 ];

@@ -141,3 +141,23 @@ export const searchStaffByName: HttpFC = (param) => {
 export const addFreeStaffs: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/user/freeStats/add', param);
 };
+
+/**
+ * 客户免统计模块
+ * *************************************************/
+// 客户免统计列表
+export const getCustomerFreeList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/free/clientFreeStats/list', param);
+};
+// 客户免统计删除
+export const delFreeCustomer: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/free/clientFreeStats/del', param);
+};
+// 查询外部联系人
+export const getCustomerByExternalUserId: HttpFC<{ externalUserid: string }> = (param) => {
+  return http.post('/tenacity-admin/api/free/clientFreeStats/findByExternalUserid', param);
+};
+// 新增免统计
+export const addFreeCustomer: HttpFC<{ externalUserid: string }> = (param) => {
+  return http.post('/tenacity-admin/api/user/clientFreeStats/add', param);
+};

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Button, message, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
-import { AddStatisticsFreeModal } from '../StatisticsFree/Components/ExportStaff/AddStatisticsFreeModal';
-import { addFreeStaffs, delFreeStaffs, getFreeStaffList } from 'src/apis/orgManage';
+import { AddCustomerFreeModal } from './Components/AddCustomerModal';
+import { addFreeStaffs, delFreeCustomer, getCustomerFreeList } from 'src/apis/orgManage';
 import DeleteModal from '../StatisticsFree/Components/DeleteModal/DeleteModal';
 
 const CustomerStatisticsFree: React.FC = () => {
@@ -13,7 +13,9 @@ const CustomerStatisticsFree: React.FC = () => {
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [dataSource, setDataSource] = useState<StaffProps[]>([]);
   const [formParams, setFormParams] = useState({
-    name: ''
+    condition: '',
+    staffName: '',
+    addReason: ''
   });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -25,7 +27,7 @@ const CustomerStatisticsFree: React.FC = () => {
 
   const getList = async (params?: any) => {
     setIsLoading(true);
-    const res = await getFreeStaffList({
+    const res = await getCustomerFreeList({
       ...formParams,
       pageSize: 10,
       pageNum: 1,
@@ -39,9 +41,17 @@ const CustomerStatisticsFree: React.FC = () => {
     }
   };
 
-  const handleSearch = ({ name = '' }: { name: string }) => {
-    setFormParams({ name });
-    getList({ pageNum: 1, name });
+  const handleSearch = ({
+    condition = '',
+    staffName = '',
+    addReason = ''
+  }: {
+    condition: string;
+    staffName: string;
+    addReason: string;
+  }) => {
+    setFormParams({ condition, staffName, addReason });
+    getList({ pageNum: 1, condition, staffName, addReason });
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: StaffProps[]) => {
@@ -82,7 +92,7 @@ const CustomerStatisticsFree: React.FC = () => {
   };
 
   const deleteStaffs = async () => {
-    const res = await delFreeStaffs({ staffIds: selectedRowKeys });
+    const res = await delFreeCustomer({ externalUserids: selectedRowKeys });
     setDeleteVisible(false);
     if (res) {
       setSelectRowKeys([]);
@@ -128,12 +138,12 @@ const CustomerStatisticsFree: React.FC = () => {
           dataSource={dataSource}
           paginationChange={onPaginationChange}
           setRowKey={(record: StaffProps) => {
-            return record.staffId;
+            return record.externalUserid;
           }}
         />
       </div>
       {/* 添加免统计弹框 */}
-      <AddStatisticsFreeModal visible={visible} onCancel={() => setVisible(false)} onConfirm={submitAddFreeStaffs} />
+      <AddCustomerFreeModal visible={visible} onCancel={() => setVisible(false)} onConfirm={submitAddFreeStaffs} />
 
       {/* 删除选中名单弹框 */}
       <DeleteModal visible={deleteVisible} onCancel={() => setDeleteVisible(false)} onOk={deleteStaffs} />

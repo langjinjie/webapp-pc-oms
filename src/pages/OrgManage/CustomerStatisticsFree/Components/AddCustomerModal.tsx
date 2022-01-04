@@ -1,34 +1,18 @@
-import { Form, Select } from 'antd';
-import React, { useEffect } from 'react';
-import { searchStaffList } from 'src/apis/orgManage';
+import { Form, Input } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { getCustomerByExternalUserId } from 'src/apis/orgManage';
+import { Icon } from 'src/components';
 import { NgModal } from '../../StatisticsFree/Components/NgModal/NgModal';
-
+import styles from './style.module.less';
 interface AddStatisticsFreeModalProps {
   visible: boolean;
   onConfirm: (params: { staffIds: string[]; freeType: string }) => void;
   onCancel: () => void;
 }
 
-interface UserValue {
-  label: string;
-  value: string;
-}
-
-export const AddStatisticsFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ visible, onConfirm, onCancel }) => {
+export const AddCustomerFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ visible, onConfirm, onCancel }) => {
   const [addForm] = Form.useForm();
-  // async function fetchUserList(username: string): Promise<UserValue[]> {
-  //   const res = await searchStaffList({ keyWords: username, searchType: 2, isDeleted: false });
-  //   if (res) {
-  //     const { staffList } = res;
-  //     return staffList.map((staff: { staffName: string; staffId: string; userId: string }) => ({
-  //       label: staff.staffName + `(${staff.userId})`,
-  //       value: staff.staffId,
-  //       key: staff.staffId
-  //     }));
-  //   } else {
-  //     return [];
-  //   }
-  // }
+  const [customer, setCustomer] = useState<any>({});
 
   const handleOK = () => {
     addForm
@@ -53,29 +37,42 @@ export const AddStatisticsFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ 
     }
   }, [visible]);
 
+  const handleSearch = async (value: string) => {
+    console.log(value);
+    const res = await getCustomerByExternalUserId({ externalUserid: value });
+    console.log(res);
+    if (res) {
+      setCustomer(res);
+    }
+  };
+
   return (
     <NgModal forceRender={true} visible={visible} title="新增免统计名单" onOk={handleOK} onCancel={onCancel}>
-      <Form layout="vertical" form={addForm} style={{ marginBottom: '40px' }}>
-        <Form.Item label="员工姓名" name={'userIds'} rules={[{ required: true }]}>
-          {/* <DebounceSelect
-            placeholder="请输入员工姓名进行查询"
-            mode="multiple"
-            style={{ width: '100%' }}
-            fetchOptions={fetchUserList}
-          /> */}
-        </Form.Item>
-        <Form.Item
-          name={'freeType'}
-          rules={[{ required: true }]}
-          label="免统计模块"
-          extra={'如当前员工已存在免统计模块，更新后会覆盖原有免统计模块'}
-        >
-          <Select mode="multiple" placeholder="请选择免统计模块">
-            <Select.Option value={1}>排行榜</Select.Option>
-            <Select.Option value={2}>战报</Select.Option>
-          </Select>
-        </Form.Item>
-      </Form>
+      <div className={styles.formWrap}>
+        <Form layout="vertical" form={addForm} style={{ marginBottom: '40px' }}>
+          <Form.Item label="外部联系人ID" name={'userIds'} rules={[{ required: true }]}>
+            <Input.Search
+              placeholder="待输入"
+              onSearch={handleSearch}
+              maxLength={30}
+              enterButton={<Icon className={styles.searchBtn} name="icon_common_16_seach" />}
+            ></Input.Search>
+          </Form.Item>
+          <div className={styles.formItem}>
+            <span className={styles.formLabel}>客户姓名/昵称:</span>
+            {customer.remarkName}
+          </div>
+          <div className={styles.formItem}>
+            <span className={styles.formLabel}>客户经理:</span>
+            {customer.staffFriends?.map((staff: any) => (
+              <span key={staff.userId}>{`${staff.staffName}(${staff.userId})`}</span>
+            ))}
+          </div>
+          <Form.Item name={'freeType'} rules={[{ required: true }]} label="添加理由">
+            <Input placeholder="待输入" />
+          </Form.Item>
+        </Form>
+      </div>
     </NgModal>
   );
 };
