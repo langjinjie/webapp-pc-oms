@@ -387,7 +387,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
         <div className={style.tree}>
           <Search
             className={style.searchTree}
-            placeholder={chooseTreeParam.title === '选择员工' ? '搜索员工' : '搜索部门'}
+            placeholder={chooseTreeParam.title === '选择员工' ? '搜索员工/部门' : '搜索部门'}
             onChange={(e) => onChangeHandle(e.target.value)}
             onSearch={(val) => onSearchHandle(val)}
             enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
