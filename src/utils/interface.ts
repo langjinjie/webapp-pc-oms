@@ -16,6 +16,7 @@ export interface IStaffList {
   staffId: string;
   userId: string;
   corpId: string;
+  entryValue: string;
   staffName: string;
   mangerName: string;
   serviceType: string;

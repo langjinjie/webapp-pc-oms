@@ -110,7 +110,7 @@ const StaffList: React.FC = () => {
       align: 'center'
     },
     {
-      title: '团队经理',
+      title: '直属上级',
       dataIndex: 'mangerName',
       align: 'center'
     },
@@ -120,6 +120,10 @@ const StaffList: React.FC = () => {
         return row.lastLoginTime || '--';
       },
       align: 'center'
+    },
+    {
+      title: '数据录入',
+      dataIndex: 'entryValue'
     },
     {
       title: '员工状态',
@@ -197,6 +201,7 @@ const StaffList: React.FC = () => {
     current: paginationParam.current,
     showQuickJumper: true,
     showSizeChanger: true,
+    pageSizeOptions: ['10', '20', '50', '100', '500'],
     onChange (value: number, pageSize?: number) {
       getStaffList(value, pageSize, currentSearchParam);
       setPaginationParam({ current: value, pageSize: pageSize as number });
