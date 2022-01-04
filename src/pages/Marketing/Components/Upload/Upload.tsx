@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Upload } from 'antd';
+import { message, Upload } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -16,6 +16,7 @@ interface NgUploadProps {
   beforeUpload?: (file: RcFile) => void;
   btnText?: string;
   type?: 'video' | 'audio';
+  showDeleteBtn?: boolean;
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -23,7 +24,14 @@ const getBase64 = (img: any, callback: (str: any) => void) => {
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 };
-const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnText = '上传图片', type }) => {
+const NgUpload: React.FC<NgUploadProps> = ({
+  onChange,
+  value,
+  beforeUpload,
+  btnText = '上传图片',
+  type,
+  showDeleteBtn
+}) => {
   const [states, setStates] = useState({
     loading: false,
     imageUrl: ''
@@ -83,8 +91,15 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
       onChange?.(res.filePath);
       setStates((states) => ({ ...states, loading: false, imageUrl: res.filePath || '' }));
     } else {
+      message.error('长传失败');
       setStates((states) => ({ ...states, loading: false }));
     }
+  };
+
+  const deletePic: React.MouseEventHandler<Element> = (e) => {
+    e.stopPropagation();
+    onChange?.('');
+    setStates((states) => ({ ...states, imageUrl: '' }));
   };
 
   return (
@@ -95,15 +110,20 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
           listType="picture-card"
           beforeUpload={beforeUpload}
           showUploadList={false}
-          className={classNames({ 'avatar-uploader': !type })}
+          className={classNames({ 'avatar-uploader': !type }, styles.uploadWrap)}
           customRequest={posterUploadFile}
         >
           {states.imageUrl ? <img src={states.imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+          {states.imageUrl && showDeleteBtn
+            ? (
+            <Icon className={styles.delete} onClick={deletePic} name="guanbi" />
+              )
+            : null}
         </Upload>
       )}
       {type === 'audio' && (
         <>
-          {states.imageUrl && <audio autoPlay controls className={styles.audio} src={states.imageUrl}></audio>}
+          {states.imageUrl && <audio controls className={styles.audio} src={states.imageUrl}></audio>}
 
           <Upload
             onChange={handleChange}
@@ -119,7 +139,7 @@ const NgUpload: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, btnT
       )}
       {type === 'video' && (
         <>
-          {states.imageUrl && <video autoPlay controls className={styles.video} src={states.imageUrl}></video>}
+          {states.imageUrl && <video controls className={styles.video} src={states.imageUrl}></video>}
 
           <Upload
             onChange={handleChange}

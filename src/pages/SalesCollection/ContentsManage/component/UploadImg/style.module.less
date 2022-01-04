@@ -1,0 +1,63 @@
+.imgformItem {
+  .uploadWrap {
+    .imgWrap {
+      position: relative;
+      .iconWrap {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        background-color: rgba(0, 0, 0, 0);
+        transition: background 0.5s;
+        .delIcon {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 20px;
+          height: 20px;
+          padding: 2px;
+          margin: auto;
+          opacity: 0;
+          transition: opacity 0.5s;
+          color: #ffffffd9;
+        }
+      }
+      &:hover {
+        .iconWrap {
+          background-color: rgba(0, 0, 0, 0.4);
+          .delIcon {
+            opacity: 1;
+          }
+        }
+      }
+      img {
+        width: 100%;
+        border-radius: 8px;
+      }
+    }
+    .iconWrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 102px;
+      height: 102px;
+      .uploadIcon {
+        width: 36px;
+        height: 36px;
+      }
+      .uploadTip {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #606366;
+      }
+    }
+  }
+  :global {
+    .ant-form-item-control {
+      margin-left: 20px;
+    }
+  }
+}

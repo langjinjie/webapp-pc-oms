@@ -2,7 +2,7 @@ import http from 'src/utils/http';
 export type HttpFC<T = { [key: string]: any }> = (param: T) => Promise<any>;
 type HttpVoid = () => Promise<any>;
 
-// 获取产品分类列表
+// 获取产品分类列表1
 export const requestGetProductTypeList: HttpVoid = () => {
   return http.post('/tenacity-admin/api/prouct/typelist');
 };

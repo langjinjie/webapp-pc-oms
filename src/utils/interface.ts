@@ -124,14 +124,11 @@ export interface ICatalogItem {
 
 // 添加/编辑目录参数
 export interface IEditOrAddCatalogParam {
+  visible: boolean;
   title: string;
   catalog: ICatalogItem;
   parentId: string;
-}
-
-// 添加/编辑最后一级目录参数
-export interface IEditOrAddLastCatalogParam extends IEditOrAddCatalogParam {
-  visible: boolean;
+  getParentChildrenList: () => void;
 }
 
 // 二确param
@@ -189,4 +186,53 @@ export interface ISensitiveSearchParam {
   status: number;
   updateBeginTime: string;
   updateEndTime: string;
+}
+
+/**
+ * 员工组织架构
+ *  */
+
+// 组织架构
+export interface IOrganizationItem {
+  id?: string;
+  name?: string;
+  key?: string;
+  title?: string;
+  isParent?: boolean;
+  isLeaf?: boolean;
+  index?: number;
+  total?: number;
+  leaderId?: string;
+  isRoot?: boolean;
+  children?: IOrganizationItem[];
+}
+// 组织架构员工列表
+export interface IDepStaffList {
+  staffId: string;
+  userId: string;
+  staffName: string;
+  resource?: string;
+  avatar: string;
+  isLeader: number;
+  jobNumber?: string;
+  deptId: number;
+  deptName?: string;
+  position?: string;
+  businessModel?: string;
+  businessArea?: string;
+  officePlace?: string;
+  accountStartTime?: string;
+  accountEndTime?: string;
+  isDeleted: number;
+}
+// 批量导入员工历史记录
+export interface IStaffImpList {
+  batchId: string;
+  title: string;
+  batchCode: string;
+  dateCreated: string;
+  createBy: string;
+  status: number;
+  successCount: number;
+  totalCount: number;
 }

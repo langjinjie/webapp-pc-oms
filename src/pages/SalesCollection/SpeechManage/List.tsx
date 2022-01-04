@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
 import { RouteComponentProps } from 'react-router';
@@ -17,13 +17,15 @@ import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import ExportModal from './Components/ExportModal/ExportModal';
 import PreviewSpeech from './Components/PreviewSpeech/PreviewSpeech';
-import { columns, setSearchCols, SpeechProps } from './Config';
+import { columns, excelDemoUrl, setSearchCols, SpeechProps } from './Config';
 
 import style from './style.module.less';
 import { Context } from 'src/store';
 import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 
-const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
+const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
+  useDocumentTitle('销售宝典-话术管理');
   const { currentCorpId } = useContext(Context);
   const [formParams, setFormParams] = useState({
     catalogId: '',
@@ -50,15 +52,40 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   const [visiblePreview, setVisiblePreview] = useState(false);
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [formDefaultValue, setFormDefaultValue] = useState<{ catalogIds: string[] }>({
+    catalogIds: []
+  });
   const [lastCategory, setLastCategory] = useState<any>();
   const [visibleChecked, setVisibleChecked] = useState(false);
+  const [isNew, setIsNew] = useState(false);
   const [checkedInfo, setCheckedInfo] = useState({
     change: 0,
     checking: 0,
     checkTime: ''
   });
   const [loading] = useState(false);
-  const onValuesChange = (values: any) => {
+
+  // 查询话术列表
+  const getList = async (params?: any) => {
+    // 清空选中的列表
+    setSelectRowKeys([]);
+    // 重置当前操作状态
+    setCurrentType(null);
+    const { pageSize, current: pageNum } = pagination;
+    const { list, total } = await getSpeechList({
+      ...formParams,
+      pageNum,
+      pageSize,
+      sceneId: lastCategory?.sceneId || '',
+      ...params
+    });
+    setDataSource(list || []);
+    setIsNew(true);
+    setPagination((pagination) => ({ ...pagination, total: total || 0 }));
+  };
+
+  const onValuesChange = (changeValues: any, values: any) => {
+    setIsNew(false);
     const {
       catalogIds,
       content = '',
@@ -89,24 +116,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       updateBeginTime,
       updateEndTime
     }));
-  };
-
-  // 查询话术列表
-  const getList = async (params?: any) => {
-    // 清空选中的列表
-    setSelectRowKeys([]);
-    // 重置当前操作状态
-    setCurrentType(null);
-    const { pageSize, current: pageNum } = pagination;
-    const { list, total } = await getSpeechList({
-      ...formParams,
-      pageNum,
-      pageSize,
-      sceneId: lastCategory?.sceneId || '',
-      ...params
-    });
-    setDataSource(list || []);
-    setPagination((pagination) => ({ ...pagination, total: total || 0 }));
   };
   // 点击查询按钮
   const onSearch = async (values: any) => {
@@ -128,8 +137,12 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       updateEndTime = times[1].endOf('day')?.valueOf();
     }
     let catalogId = '';
-    if (catalogIds) {
+    let sceneId = '';
+    if (catalogIds && catalogIds.length > 0) {
       catalogId = catalogIds[catalogIds.length - 1];
+      sceneId = lastCategory.sceneId;
+    } else {
+      setLastCategory(null);
     }
     setFormParams((formParams) => ({
       ...formParams,
@@ -142,6 +155,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       updateBeginTime,
       updateEndTime
     }));
+
     await getList({
       catalogId,
       content,
@@ -150,7 +164,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       status,
       tip,
       updateBeginTime,
-      updateEndTime
+      updateEndTime,
+      sceneId
     });
   };
 
@@ -162,7 +177,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
           item.isLeaf = false;
         }
       });
-      setCategories(res);
+      return res;
+      // setCategories(res);
     }
   };
 
@@ -175,9 +191,39 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       }
     }
   };
+  const initSetFormQuery = async () => {
+    const { catalog } = URLSearchParams(location.search) as { [key: string]: string };
+    if (catalog) {
+      const catalogs = catalog.split(',');
+      setFormDefaultValue((formDefaultValue) => ({ ...formDefaultValue, catalogIds: catalogs }));
+      const tree = JSON.parse(localStorage.getItem('catalogTree') || '[]') as any[];
+      const res = await getCategory();
+      const copyData = [...res];
+      res?.forEach((item: any, index: number) => {
+        if (item.catalogId === tree[0].catalogId) {
+          copyData[index] = tree[0];
+        }
+      });
+      setCategories(copyData);
+      const catalogId = catalogs[catalogs.length - 1];
+      getList({
+        sceneId: tree[0].sceneId,
+        catalogId
+      });
+      setLastCategory({
+        sceneId: tree[0].sceneId,
+        catalogId,
+        lastLevel: 1
+      });
+      setFormParams((formParams) => ({ ...formParams, catalogId }));
+    } else {
+      const res = await getCategory();
+      setCategories(res);
+      getList();
+    }
+  };
   useEffect(() => {
-    getList();
-    getCategory();
+    initSetFormQuery();
     getSensitiveCheckedInfo();
   }, []);
 
@@ -208,7 +254,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const rowSelection = {
-    hideSelectAll: true,
+    hideSelectAll: false,
     selectedRowKeys: selectedRowKeys,
     onChange: (selectedRowKeys: React.Key[], selectedRows: SpeechProps[]) => {
       onSelectChange(selectedRowKeys, selectedRows);
@@ -220,6 +266,14 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       };
     }
   };
+
+  // 动态计算是否显示全选框
+  const hideSelectAll = useMemo(() => {
+    if (formParams.status !== '' && isNew) {
+      return false;
+    }
+    return true;
+  }, [formParams.status, isNew]);
 
   // 编辑话术
   const handleEdit: (scored: SpeechProps) => void = (scored) => {
@@ -256,8 +310,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
         // 批量导出
         const { status, sensitive, updateBeginTime, updateEndTime, content, tip, contentType } = formParams;
         const params = {
-          sceneId: lastCategory.sceneId || '',
-          catalogId: lastCategory.catalogId || '',
+          sceneId: lastCategory?.sceneId || '',
+          catalogId: lastCategory?.catalogId || '',
           content,
           tip,
           contentType,
@@ -309,7 +363,11 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
           setCurrentType(null);
 
           const { successNum, failNum } = res;
-          message.success(`已完成！操作成功${successNum}条，操作失败${failNum}条`);
+          message.success(
+            failNum > 0
+              ? `已完成！操作成功${successNum}条，操作失败${failNum}条，敏感词检测异常和未知会导致上架失败！`
+              : '已完成！操作成功'
+          );
           // 重新更新列表
           setPagination((pagination) => ({ ...pagination, current: 1 }));
           getList({ pageNum: 1 });
@@ -339,7 +397,19 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
     setLastCategory(lastSelectedOptions);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    getList({ pageNum: 1, sceneId: lastSelectedOptions?.sceneId, catalogId: lastSelectedOptions?.catalogId });
+    let params = {};
+    if (lastSelectedOptions.lastLevel === 1) {
+      params = {
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: ''
+      };
+      setFormParams((formParams) => ({ ...formParams, ...params }));
+    }
   };
 
   const doCheck = () => {
@@ -348,8 +418,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const handleDownload = () => {
-    window.location.href =
-      'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/smart_content_export_template.xlsx';
+    window.location.href = excelDemoUrl;
   };
 
   // 导入表格
@@ -358,7 +427,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
     const formData = new FormData();
     formData.append('file', file);
     const res = await addBatchSpeech(formData);
-    console.log(res);
     if (res) {
       message.success(res);
     }
@@ -415,23 +483,23 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history }) => {
       </div>
       <div className="form-inline pt20">
         <NgFormSearch
+          defaultValues={formDefaultValue}
           searchCols={setSearchCols(categories)}
           loadData={loadData}
           onSearch={onSearch}
           onChangeOfCascader={onCascaderChange}
           onValuesChange={onValuesChange}
-          disabled={lastCategory?.lastLevel === 1}
         />
       </div>
 
       <NgTable
         dataSource={dataSource}
-        columns={columns({ handleEdit, handleSort, lastCategory, pagination })}
+        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew })}
         setRowKey={(record: SpeechProps) => {
           return record.contentId;
         }}
         loading={loading}
-        rowSelection={rowSelection}
+        rowSelection={{ ...rowSelection, hideSelectAll }}
         pagination={pagination}
         paginationChange={paginationChange}
       ></NgTable>

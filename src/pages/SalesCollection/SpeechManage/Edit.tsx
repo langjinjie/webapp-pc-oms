@@ -7,7 +7,7 @@ import { useForm } from 'antd/lib/form/Form';
 import { speechContentTypes, SpeechProps } from './Config';
 import SpeechItem from './Components/SpeechTypeItem/SpeechItem';
 import { RouteComponentProps } from 'react-router';
-import { URLSearchParams } from 'src/utils/base';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
 import InputShowLength from './Components/InputShowLength/InputShowLength';
 
@@ -18,7 +18,8 @@ const scenesStates = [
   { sceneId: 4, name: '场景话术', needGenderType: 1, needAgeType: 1 },
   { sceneId: 5, name: '问答知识', needGenderType: 0, needAgeType: 0 }
 ];
-const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
+const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
+  useDocumentTitle('话术编辑');
   const [speechForm] = useForm();
   const [speech, setSpeech] = useState<SpeechProps>();
   const [originSpeech, setOriginSpeech] = useState<SpeechProps>();
@@ -38,71 +39,132 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           item.isLeaf = false;
         }
       });
-      setCategories(res);
+      return res;
     }
   };
-  const getDetail = async () => {
-    const params = URLSearchParams(location.search);
-    if (params.contentId) {
-      const res = await getSpeechDetail(params);
-      if (res) {
-        setSpeech(res);
-        setOriginSpeech(res);
-        const {
-          ageType,
-          catalogId,
-          content,
-          contentType,
-          contentUrl,
-          fullCatalogId,
-          fullName,
-          genderType,
-          logoUrl,
-          name,
-          sceneId,
-          sensitive,
-          sensitiveWord,
-          status,
-          summary,
-          thumbnail,
-          tip,
-          title,
-          videoDuration,
-          videoSize
-        } = res;
-        const currentScenes = scenesStates.filter((scenes) => scenes.sceneId === sceneId)[0];
-        setCurrentScenesState(currentScenes);
+  const getDetail = async (contentId: string, sceneId: string) => {
+    const res = await getSpeechDetail({
+      sceneId,
+      contentId
+    });
+    if (res) {
+      setSpeech(res);
+      setOriginSpeech(res);
+      const {
+        ageType,
+        catalogId,
+        content,
+        contentType,
+        contentUrl,
+        fullCatalogId,
+        fullName,
+        genderType,
+        logoUrl,
+        name,
+        sceneId,
+        sensitive,
+        sensitiveWord,
+        status,
+        summary,
+        thumbnail,
+        tip,
+        title,
+        videoDuration,
+        videoSize
+      } = res;
+      const currentScenes = scenesStates.filter((scenes) => scenes.sceneId === sceneId)[0];
+      setCurrentScenesState(currentScenes);
+      const formData = {
+        ageType,
+        catalogId,
+        content,
+        contentType,
+        contentUrl,
+        fullCatalogId,
+        fullName,
+        genderType,
+        logoUrl,
+        name,
+        sceneId,
+        sensitive,
+        sensitiveWord,
+        status,
+        summary,
+        thumbnail,
+        tip,
+        title,
+        videoDuration,
+        videoSize
+      };
+      if (contentType === 9) {
+        const { appId, appPath } = JSON.parse(contentUrl || '{}');
         speechForm.setFieldsValue({
-          ageType,
-          catalogId,
-          content,
-          contentType,
-          contentUrl,
-          fullCatalogId,
-          fullName,
-          genderType,
-          logoUrl,
-          name,
-          sceneId,
-          sensitive,
-          sensitiveWord,
-          status,
-          summary,
-          thumbnail,
-          tip,
-          title,
-          videoDuration,
-          videoSize
+          ...formData,
+          appId,
+          appPath
         });
+        setOriginSpeech((originSpeech) => ({ ...originSpeech!, appId, appPath }));
+      } else {
+        speechForm.setFieldsValue(formData);
       }
+    }
+  };
+
+  const getCatalogDetail = async (sceneId: string, catalogId: string) => {
+    const res = await requestGetCatalogDetail({ sceneId, catalogId });
+    if (res) {
+      if (res.contentType === 9) {
+        const { appId, appPath } = JSON.parse(res.contentUrl || '{}');
+        setOriginSpeech(() => ({ ...res, appId, appPath }));
+      } else {
+        setOriginSpeech(res);
+      }
+    }
+  };
+
+  const initSetFormQuery = async () => {
+    const { catalog, contentId, sceneId } = URLSearchParams(location.search) as { [key: string]: string };
+    if (catalog) {
+      console.log(catalog);
+      const catalogs = catalog.split(',');
+      const tree = JSON.parse(localStorage.getItem('catalogTree') || '[]') as any[];
+      const res = await getCategory();
+      const copyData = [...res];
+      res?.forEach((item: any, index: number) => {
+        if (item.catalogId === tree[0].catalogId) {
+          copyData[index] = tree[0];
+        }
+      });
+      setCategories(copyData);
+      const catalogId = catalogs[catalogs.length - 1];
+
+      await getCatalogDetail(tree[0].sceneId, catalogId);
+      setTimeout(() => {
+        speechForm.setFieldsValue({
+          categoryId: catalogs
+        });
+      }, 300);
+    } else if (contentId && sceneId) {
+      getDetail(contentId, sceneId);
     } else {
-      await getCategory();
+      const res = await getCategory();
+      setCategories(res);
     }
   };
 
   useEffect(() => {
-    getDetail();
+    initSetFormQuery();
   }, []);
+
+  const handleBack = () => {
+    const backRoutePath = sessionStorage.getItem('backRoute');
+    if (backRoutePath) {
+      sessionStorage.removeItem('backRoute');
+      history.replace(`${backRoutePath}?isCatch=1`);
+    } else {
+      history.goBack();
+    }
+  };
 
   const onSubmit = async (params: any) => {
     const res = await editSpeech({
@@ -112,7 +174,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
       const { code, sensitiveWord } = res;
       if (code === 0) {
         message.success('保存成功');
-        history.back();
+        handleBack();
       } else if (code === 1) {
         message.error('触发了敏感词,请修改后再提交');
         setSpeech((speech) => ({ ...speech!, sensitiveWord, sensitive: 1 }));
@@ -121,54 +183,64 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
   };
 
   const onFinish = async (values: any) => {
-    const { content, contentType, tip, ageType, genderType, contentUrl, title, summary, thumbnail } = values;
+    console.log(values);
+    const {
+      content,
+      contentType,
+      tip,
+      ageType,
+      genderType,
+      contentUrl,
+      title,
+      summary,
+      thumbnail,
+      appId,
+      appPath = ''
+    } = values;
+
+    const submitData = {
+      sceneId: originSpeech?.sceneId,
+      catalogId: originSpeech?.catalogId,
+      contentId: speech?.contentId || '',
+      content,
+      contentType,
+      ageType,
+      tip,
+      genderType,
+      contentUrl: contentType === 9 ? JSON.stringify({ appId, appPath }) : contentUrl,
+      thumbnail,
+      title,
+      summary: summary || originSpeech?.summary
+    };
     if (
       (originSpeech?.contentType === 2 && contentUrl !== originSpeech.contentUrl) ||
       ((originSpeech?.contentType === 7 || originSpeech?.contentType === 6) &&
-        (title !== originSpeech?.title || originSpeech.contentUrl !== contentUrl)) ||
-      ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8 || originSpeech?.contentType === 9) &&
         (title !== originSpeech?.title ||
-          title !== originSpeech.title ||
+          originSpeech.contentUrl !== contentUrl ||
+          summary !== originSpeech.summary ||
+          thumbnail !== originSpeech.thumbnail)) ||
+      ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8) &&
+        (title !== originSpeech?.title ||
           thumbnail !== originSpeech.thumbnail ||
           summary !== originSpeech.summary ||
-          contentUrl !== originSpeech.contentUrl))
+          contentUrl !== originSpeech.contentUrl)) ||
+      (originSpeech?.contentType === 9 &&
+        (title !== originSpeech?.title ||
+          thumbnail !== originSpeech.thumbnail ||
+          appId !== originSpeech.appId ||
+          appPath !== originSpeech.appPath ||
+          summary !== originSpeech.summary))
     ) {
       Modal.confirm({
         content: '修改目录会对已上架话术产生影响，企微前端能实时看到变化',
         cancelText: '取消',
         okText: '确定',
         onOk: async () => {
-          await onSubmit({
-            sceneId: originSpeech?.sceneId,
-            catalogId: originSpeech?.catalogId,
-            contentId: speech?.contentId || '',
-            content,
-            contentType,
-            ageType,
-            tip,
-            genderType,
-            contentUrl,
-            title,
-            thumbnail,
-            summary: summary || originSpeech?.summary
-          });
+          await onSubmit(submitData);
         }
       });
     } else {
-      await onSubmit({
-        sceneId: originSpeech?.sceneId,
-        catalogId: originSpeech?.catalogId,
-        contentId: speech?.contentId || '',
-        content,
-        contentType,
-        ageType,
-        tip,
-        genderType,
-        contentUrl,
-        thumbnail,
-        title,
-        summary: summary || originSpeech?.summary
-      });
+      await onSubmit(submitData);
     }
   };
 
@@ -199,11 +271,12 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
 
   useMemo(() => {
     if (originSpeech) {
-      const { contentType, contentUrl, title, summary, thumbnail } = originSpeech;
-      speechForm.setFieldsValue({ contentType, contentUrl, title, summary, thumbnail });
+      const { contentType, contentUrl, title, summary, thumbnail, appId, appPath } = originSpeech;
+      speechForm.setFieldsValue({ contentType, contentUrl, title, summary, thumbnail, appId, appPath });
     }
   }, [originSpeech]);
 
+  // 类目改变
   const onCascaderChange = async (value: any, selectedOptions: any) => {
     const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
     const sceneId = lastSelectedOptions.sceneId;
@@ -211,15 +284,13 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
     setCurrentScenesState(currentScenes);
     if (lastSelectedOptions) {
       const { sceneId, catalogId } = lastSelectedOptions;
-      const res = await requestGetCatalogDetail({ sceneId, catalogId });
-      if (res) {
-        setOriginSpeech(res);
+      if (sceneId && catalogId) {
+        // 获取分类详情
+        await getCatalogDetail(sceneId, catalogId);
+      } else {
+        setOriginSpeech(undefined);
       }
     }
-  };
-
-  const handleBack = () => {
-    history.back();
   };
 
   return (
@@ -266,9 +337,9 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
         <Form.Item label="话术内容" name="content" rules={[{ required: true }]}>
           <CustomTextArea sensitiveWord={speech?.sensitiveWord} sensitive={speech?.sensitive} maxLength={1200} />
         </Form.Item>
-        {currentScenesState.sceneId !== 3 && currentScenesState.sceneId !== 5 && currentScenesState.sceneId !== 0 && (
-          <Form.Item label="客户大类" required={true} className={styles.formItem__selectGroup}>
-            {currentScenesState.needGenderType === 1 && (
+        {currentScenesState?.sceneId !== 3 && currentScenesState?.sceneId !== 5 && currentScenesState?.sceneId !== 0 && (
+          <Form.Item label="客户分类" required={true} className={styles.formItem__selectGroup}>
+            {currentScenesState?.needGenderType === 1 && (
               <Form.Item name="genderType" rules={[{ required: true, message: '请选择性别' }]}>
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={0}>全部性别</Select.Option>
@@ -277,7 +348,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
                 </Select>
               </Form.Item>
             )}
-            {currentScenesState.needAgeType === 1 && (
+            {currentScenesState?.needAgeType === 1 && (
               <Form.Item name={'ageType'} rules={[{ required: true, message: '请选择年龄' }]}>
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={0}>全部年龄</Select.Option>
@@ -293,7 +364,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location }) => {
           <InputShowLength className="width360" maxLength={20} placeholder={'请输入'} />
         </Form.Item>
         <Form.Item className={styles.formItem__footerBtnWrap}>
-          <Space>
+          <Space size={20}>
             <Button type="default" shape="round" onClick={() => handleBack()}>
               返回
             </Button>

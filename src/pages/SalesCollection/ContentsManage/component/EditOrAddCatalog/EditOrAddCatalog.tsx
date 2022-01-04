@@ -8,9 +8,8 @@ import style from './style.module.less';
 import { Context } from 'src/store';
 
 interface IAddOrEditContentProps {
-  editOrAddCatalogVisible: boolean;
-  setEditOrAddCatalogVisible: (param: boolean) => void;
   editOrAddCatalogParam: IEditOrAddCatalogParam;
+  setEditOrAddCatalogParam: (param: IEditOrAddCatalogParam) => void;
   setFirmModalParam: (param: IFirmModalParam) => void;
 }
 
@@ -20,22 +19,50 @@ interface ICatalogSenceAndLevel {
 }
 
 const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
-  editOrAddCatalogVisible,
-  setEditOrAddCatalogVisible,
   editOrAddCatalogParam,
+  setEditOrAddCatalogParam,
   setFirmModalParam
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [iconImg, setIconImg] = useState('');
   const [catalogName, setCatalogName] = useState('');
   const [catalogSenceAndLevel, setCatalogSenceAndLevel] = useState<ICatalogSenceAndLevel>({ sence: 0, level: 0 });
+  const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [btnIsLoading, setBtnIsLoading] = useState(false);
+  const resetHandle = () => {
+    setIconImg('');
+    setCatalogName('');
+    setCatalogSenceAndLevel({ sence: 0, level: 0 });
+    setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
+    setSubmitDisabled(true);
+    setBtnIsLoading(false);
+  };
 
+  // 更新Modal确定的disabled状态
+  const updateOkBtnStatus = (catalogName: string, iconImg: string) => {
+    const isShowIcon =
+      (editOrAddCatalogParam.catalog.sceneId === 4 && editOrAddCatalogParam.catalog.level === 2) ||
+      (editOrAddCatalogParam.catalog.sceneId === 5 && editOrAddCatalogParam.catalog.level === 1);
+    setSubmitDisabled(
+      catalogName.length < catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0] ||
+        catalogName.length > catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1] ||
+        (editOrAddCatalogParam.title === '编辑' &&
+          editOrAddCatalogParam.catalog.name === catalogName &&
+          iconImg === editOrAddCatalogParam.catalog.logoUrl) ||
+        (isShowIcon && !iconImg)
+    );
+  };
+
+  // 输入目录名称的onChange
   const inputOnChangHangle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCatalogName(e.target.value.trim());
+    updateOkBtnStatus(e.target.value.trim(), iconImg);
   };
 
   // 确认修改/增加目录handle
   const firmModalOnOk = async () => {
+    setSubmitDisabled(true);
+    setBtnIsLoading(true);
     const { parentId, catalog } = editOrAddCatalogParam;
     const { sceneId, catalogId, level, lastLevel } = catalog;
     const res = await requestEditCatalog({
@@ -48,24 +75,34 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       catalogId: editOrAddCatalogParam.title === '新增' ? undefined : catalogId,
       logoUrl: iconImg
     });
+    setSubmitDisabled(false);
+    setBtnIsLoading(false);
     if (res) {
-      setFirmModalParam({ title: '成功', content: '', visible: false });
+      setFirmModalParam({ title: '', content: '', visible: false });
       message.success(`目录${editOrAddCatalogParam.title}成功`);
+      editOrAddCatalogParam.getParentChildrenList();
+      resetHandle();
     }
   };
   // modal确认
   const modalOnOkHandle = async () => {
-    setEditOrAddCatalogVisible(false);
-    let title = '修改提醒';
-    let content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化,您确定要修改目录吗?';
-    editOrAddCatalogParam.title === '新增' && (title = '新增提醒');
-    editOrAddCatalogParam.title === '新增' && (content = '您确定要新增目录吗?');
-    setFirmModalParam({
-      title,
-      content,
-      visible: true,
-      onOk: firmModalOnOk
-    });
+    const title = '修改提醒';
+    const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化';
+    if (editOrAddCatalogParam.title === '新增') {
+      await firmModalOnOk();
+    } else {
+      setFirmModalParam({
+        title,
+        content,
+        visible: true,
+        onOk: firmModalOnOk,
+        onCancel () {
+          setFirmModalParam({ title: '', content: '', visible: false });
+          setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: true });
+        }
+      });
+      setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
+    }
   };
   // updaload beforeUpload
   const beforeUploadHandle = (file: File): Promise<boolean> => {
@@ -73,9 +110,9 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
     if (!isJpgOrPng) {
       message.error('只允许上传JPG/PNG文件!');
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
+    const isLt2M = file.size / 1024 / 1024 < 5;
     if (!isLt2M) {
-      message.error('图片大小不能超过2MB!');
+      message.error('图片大小不能超过5MB!');
     }
     // 获取图片的真实尺寸
     return new Promise((resolve) => {
@@ -102,17 +139,18 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   const handleChange = (info: any) => {
     if (info.file.status === 'done') {
       setIconImg(info.file.response.retdata.filePath);
+      updateOkBtnStatus(catalogName, info.file.response.retdata.filePath);
     }
   };
   const onCancelHandle = () => {
-    setIconImg('');
-    setEditOrAddCatalogVisible(false);
+    resetHandle();
+    setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
   };
   useEffect(() => {
-    if (editOrAddCatalogVisible) {
+    if (editOrAddCatalogParam?.visible) {
       if (editOrAddCatalogParam.title === '编辑') {
-        setCatalogName(editOrAddCatalogParam.catalog.name || '');
-        setIconImg(editOrAddCatalogParam.catalog.logoUrl);
+        catalogName || setCatalogName(editOrAddCatalogParam.catalog.name || '');
+        iconImg || setIconImg(editOrAddCatalogParam.catalog.logoUrl);
       } else {
         setCatalogName('');
       }
@@ -121,29 +159,21 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
         level: editOrAddCatalogParam.catalog.level
       });
     }
-  }, [editOrAddCatalogVisible]);
+  }, [editOrAddCatalogParam]);
   return (
     <Modal
       width={320}
       centered
       wrapClassName={style.modalWrap}
       closable={false}
-      visible={editOrAddCatalogVisible}
+      visible={editOrAddCatalogParam?.visible}
       title={editOrAddCatalogParam?.title + '目录'}
       onCancel={onCancelHandle}
       onOk={modalOnOkHandle}
       maskClosable={false}
       okButtonProps={{
-        // 判断必填项目为空或者是未发生修改则状态为:disabled
-        disabled:
-          catalogName.length < catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0] ||
-          catalogName.length > catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1] ||
-          (editOrAddCatalogParam.title === '编辑' &&
-            editOrAddCatalogParam.catalog.name === catalogName &&
-            iconImg === editOrAddCatalogParam.catalog.logoUrl) ||
-          ([4, 5].includes(editOrAddCatalogParam.catalog.sceneId) &&
-            editOrAddCatalogParam.catalog.level === 2 &&
-            !iconImg)
+        disabled: submitDisabled,
+        loading: btnIsLoading
       }}
     >
       {editOrAddCatalogParam && (
@@ -158,7 +188,8 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
               catalogLmitLengtgTip[catalogSenceAndLevel.sence][catalogSenceAndLevel.level]
             }）`}
           />
-          {[4, 5].includes(editOrAddCatalogParam.catalog.sceneId) && editOrAddCatalogParam.catalog.level === 2 && (
+          {((editOrAddCatalogParam.catalog.sceneId === 4 && editOrAddCatalogParam.catalog.level === 2) ||
+            (editOrAddCatalogParam.catalog.sceneId === 5 && editOrAddCatalogParam.catalog.level === 1)) && (
             <div className={style.uploadWrap}>
               <div className={style.tip}>该目录需上传icon，请上传80x80像素的图片</div>
               <Upload

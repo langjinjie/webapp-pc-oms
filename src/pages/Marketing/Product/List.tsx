@@ -20,7 +20,7 @@ import moment from 'moment';
 import { useDocumentTitle } from 'src/utils/base';
 
 const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
-  useDocumentTitle('产品列表');
+  useDocumentTitle('营销素材-产品库');
   const [params, setParams] = useState({
     productName: '',
     category: '',

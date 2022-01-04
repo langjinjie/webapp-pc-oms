@@ -8,11 +8,20 @@ import classNames from 'classnames';
 const { Dragger } = Upload;
 interface ExportModalProps {
   visible: boolean;
+  title?: string;
   onOK: (file: File) => void;
   onCancel: () => void;
   onDownLoad?: () => void;
+  isShowDownLoad?: boolean;
 }
-const ExportModal: React.FC<ExportModalProps> = ({ visible, onOK, onCancel, onDownLoad }) => {
+const ExportModal: React.FC<ExportModalProps> = ({
+  visible,
+  title,
+  onOK,
+  onCancel,
+  onDownLoad,
+  isShowDownLoad = true
+}) => {
   const [fileList, setFileList] = useState<any[]>([]);
   const props = {
     multiple: false,
@@ -39,7 +48,7 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onOK, onCancel, onDo
   }, [visible]);
   return (
     <Modal
-      title="批量新增"
+      title={title || '批量新增'}
       centered
       visible={visible}
       onOk={() => onOK(fileList[0])}
@@ -51,11 +60,13 @@ const ExportModal: React.FC<ExportModalProps> = ({ visible, onOK, onCancel, onDo
       }}
     >
       <Form>
-        <Form.Item label="下载模板">
-          <Button type="primary" className={styles.uploadBtn} shape="round" ghost onClick={() => onDownLoad?.()}>
-            下载
-          </Button>
-        </Form.Item>
+        {isShowDownLoad && (
+          <Form.Item label="下载模板">
+            <Button type="primary" className={styles.uploadBtn} shape="round" ghost onClick={() => onDownLoad?.()}>
+              下载
+            </Button>
+          </Form.Item>
+        )}
         <Form.Item label="文件添加">
           <Dragger
             className={styles.dragWrap}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'antd';
 import style from './style.module.less';
@@ -36,17 +36,20 @@ interface SearchComponentProps {
   onChangeOfCascader?:
     | ((value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => void)
     | undefined;
-  disabled?: boolean;
+  defaultValues?: any;
 }
 const { RangePicker } = DatePicker;
 
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
-  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader, disabled } = props;
+  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader, onReset } = props;
   const [from] = Form.useForm();
-  const onReset = () => {
-    console.log('sss');
-    onChangeOfCascader?.([''], []);
-    onSearch({});
+  const handleReset = () => {
+    if (onReset) {
+      onReset();
+    } else {
+      onChangeOfCascader?.([''], []);
+      onSearch({});
+    }
   };
   // 对数据进行处理
   const onChange = (value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => {
@@ -59,12 +62,16 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         }
       });
       if (lastOption?.lastLevel === 1) {
-        console.log({ lastOption });
         from.resetFields(fields);
       }
     }
     onChangeOfCascader?.(value, selectedOptions);
   };
+  useEffect(() => {
+    if (props.defaultValues?.catalogIds) {
+      from.setFieldsValue({ catalogIds: props.defaultValues.catalogIds });
+    }
+  }, [props.defaultValues]);
   return (
     <>
       {isInline
@@ -74,7 +81,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           layout="inline"
           onFinish={onSearch}
           onReset={() => {
-            onReset ? onReset() : onSearch({});
+            handleReset();
           }}
           className={style['search-wrap']}
           onValuesChange={onValuesChange}
@@ -88,7 +95,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               )) ||
               (col.type === 'select' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Select placeholder="请选择" disabled={disabled} allowClear style={{ width: col.width }}>
+                  <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                     {col.options &&
                       col.options.map((option) => (
                         <Select.Option key={option.id} value={option.id}>
@@ -100,7 +107,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               )) ||
               (col.type === 'rangePicker' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <RangePicker disabled={disabled} format="YYYY-MM-DD" style={{ width: '320px' }} />
+                  <RangePicker format="YYYY-MM-DD" style={{ width: '320px' }} />
                 </Form.Item>
               )) ||
               (col.type === 'cascader' && (
@@ -112,6 +119,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     loadData={(data) => {
                       loadData?.(data);
                     }}
+                    style={{ width: col.width }}
                     onChange={onChange}
                   />
                 </Form.Item>
@@ -135,7 +143,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         <Form
           form={from}
           onFinish={onSearch}
-          onReset={onReset}
+          onReset={handleReset}
           className={style.customLayout}
           onValuesChange={onValuesChange}
         >
@@ -172,7 +180,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder} width={col.width} />
+                    <Input placeholder={col.placeholder} style={{ width: col.width }} />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (

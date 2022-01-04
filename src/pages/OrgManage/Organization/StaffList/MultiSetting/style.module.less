@@ -1,0 +1,215 @@
+.modalWrap {
+  // 添加按钮的公共样式
+  .add {
+    font-size: 14px;
+    color: #318cf5;
+    cursor: pointer;
+    .addIcon {
+      margin-right: 2px;
+    }
+  }
+
+  font-size: 16px;
+  .closeIcon {
+    width: 16px;
+    height: 16px;
+  }
+  .chooseStaff {
+    position: relative;
+    padding-bottom: 54px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    .choosedInfo {
+      position: absolute;
+      right: 0;
+      bottom: 30px;
+      height: 18px;
+      font-size: 12px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      vertical-align: baseline;
+      .choosedCount,
+      .cancel {
+        display: inline-block;
+      }
+      .choosedCount {
+        color: #7e8185;
+        margin-right: 14px;
+      }
+      .cancel {
+        padding-left: 6px;
+        padding-bottom: 6px;
+        color: #f25555;
+        cursor: pointer;
+      }
+    }
+    .title {
+      font-size: 16px;
+    }
+    .staffList {
+      margin-top: 20px;
+      width: 572px;
+      height: 100px;
+      line-height: 20px;
+      padding: 10px 16px;
+      background: #f8f8f8;
+      border-radius: 8px;
+      color: #7e8185;
+      overflow: auto;
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 5px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: rgb(239, 239, 239);
+        border-radius: 2px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #bfbfbf;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: #318cf5;
+      }
+
+      &::-webkit-scrollbar-corner {
+        background-color: #e6e7eb;
+      }
+      .staffItem {
+        cursor: pointer;
+        &.isLeader {
+          background-color: rgba(255, 195, 56, 0.2);
+          color: #ddb100;
+        }
+        span.isLeader {
+          display: inline-block;
+          margin-left: 4px;
+          height: 20px;
+          border-radius: 100px;
+          font-size: 12px;
+          font-family: PingFangSC-Medium, PingFang SC;
+          font-weight: 500;
+          line-height: 20px;
+          text-align: center;
+        }
+      }
+    }
+  }
+  .otherInfo {
+    padding: 28px 0;
+    .infoTitle {
+      font-size: 16px;
+    }
+    .infoItem {
+      margin-top: 20px;
+      .title {
+        color: #7e8185;
+        .iconWrap {
+          margin-left: 6px;
+        }
+      }
+      .value {
+        position: relative;
+        margin-top: 8px;
+        padding: 0 16px;
+        width: 572px;
+        height: 40px;
+        line-height: 40px;
+        background: #f8f8f8;
+        border-radius: 8px;
+        color: #111111;
+        .department {
+          display: flex;
+          justify-content: space-between;
+          cursor: pointer;
+          .clearDept {
+            font-size: 12px;
+            color: #f25555;
+            cursor: pointer;
+          }
+        }
+        .input {
+          width: 100%;
+          border: none;
+          background-color: transparent;
+          outline: none;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          &::placeholder {
+            color: #cccdd0;
+          }
+        }
+        .allDesc {
+          display: block;
+          position: absolute;
+          left: 0;
+          max-width: 572px;
+          height: 0;
+          line-height: 20px;
+          border-radius: 8px;
+          overflow: hidden;
+          text-align: justify;
+          &.active {
+            height: auto;
+            padding: 8px 16px;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+            z-index: 9;
+          }
+          &.isHiddenAllDesc {
+            height: 0;
+            padding: 0;
+            background-color: transparent;
+          }
+        }
+      }
+      &:last-child {
+        .value {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          align-items: center;
+          min-height: 40px;
+          line-height: 40px;
+          height: auto;
+          .tagItem {
+            height: 22px;
+            background: #eaf3fe;
+            border-radius: 8px;
+            margin-top: 9px;
+            margin-bottom: 9px;
+            color: #318cf5;
+          }
+          .input {
+            flex: 1;
+            width: auto;
+            min-width: 170px;
+          }
+          .addTag {
+            width: 56px;
+            height: 24px;
+            background: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e1e2e6;
+            text-align: center;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+  :global {
+    .ant-modal-header {
+      .ant-modal-title {
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: #111111;
+      }
+    }
+  }
+}

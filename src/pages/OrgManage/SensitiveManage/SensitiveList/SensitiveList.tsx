@@ -15,6 +15,7 @@ import { sensitiveStatusList } from 'src/utils/commonData';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { useDocumentTitle } from 'src/utils/base';
 
 interface IDeleteTipsParam {
   visible: boolean;
@@ -41,7 +42,7 @@ const SensitiveList: React.FC = () => {
   const [sensitiveType, setSensitiveType] = useState<ISensitiveType[]>([]);
   const [visible, setVisible] = useState(false);
   const [deleteTips, setDeleteTip] = useState<IDeleteTipsParam>({ visible: false, title: '', content: '', type: 0 });
-
+  useDocumentTitle('机构管理-敏感词管理');
   const history = useHistory();
   const { RangePicker } = DatePicker;
 
@@ -130,7 +131,8 @@ const SensitiveList: React.FC = () => {
   // 分页器参数
   const pagination = {
     total: sensitiveList.total,
-    current: paginationParam.current
+    current: paginationParam.current,
+    showTotal: (total: number) => `共 ${total} 条`
   };
   // 点击选择框
   const onSelectChange = async (newSelectedRowKeys: any[]) => {
@@ -297,35 +299,34 @@ const SensitiveList: React.FC = () => {
           paginationChange={paginationChange}
         />
         <div className={classNames(style.multiOperation, { [style.empty]: !sensitiveList.total })}>
-          <div className={style.btnWrap}>
-            <Button htmlType="button" onClick={() => singleAdd('add')}>
-              新增
-            </Button>
-            <Button htmlType="button" onClick={() => setVisible(true)}>
-              批量新增
-            </Button>
-            <Button onClick={() => onDownLoadExcel(1, '敏感词列表')}>全量导出</Button>
-            {!!sensitiveList.total && (
-              <>
-                <Button
-                  disabled={disabledColumnType !== 0 && disabledColumnType !== 2}
-                  onClick={() => buttonHandle('上架', 1)}
-                >
-                  上架
-                </Button>
-                <Button disabled={disabledColumnType !== 1} onClick={() => buttonHandle('下架', 2)}>
-                  下架
-                </Button>
-                <Button
-                  disabled={disabledColumnType === 1 || disabledColumnType === -1}
-                  onClick={() => buttonHandle('删除', 3)}
-                >
-                  删除
-                </Button>
-              </>
-            )}
-          </div>
-          <div className={style.paginationWrap} />
+          {/* <div className={style.btnWrap}> */}
+          <Button htmlType="button" onClick={() => singleAdd('add')}>
+            新增
+          </Button>
+          <Button htmlType="button" onClick={() => setVisible(true)}>
+            批量新增
+          </Button>
+          <Button onClick={() => onDownLoadExcel(1, '敏感词列表')}>全量导出</Button>
+          {!!sensitiveList.total && (
+            <>
+              <Button
+                disabled={disabledColumnType !== 0 && disabledColumnType !== 2}
+                onClick={() => buttonHandle('上架', 1)}
+              >
+                上架
+              </Button>
+              <Button disabled={disabledColumnType !== 1} onClick={() => buttonHandle('下架', 2)}>
+                下架
+              </Button>
+              <Button
+                disabled={disabledColumnType === 1 || disabledColumnType === -1}
+                onClick={() => buttonHandle('删除', 3)}
+              >
+                删除
+              </Button>
+            </>
+          )}
+          {/* </div> */}
         </div>
       </Card>
       <ExportModal

@@ -50,8 +50,9 @@
   }
   .multiOperation {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     margin-top: -52px;
+    padding-right: 680px;
     &.empty {
       margin-top: 16px;
     }
@@ -66,15 +67,6 @@
         border-color: #d9d9d9;
         color: rgba(0, 0, 0, 0.25);
       }
-    }
-    .paginationWrap {
-      width: 650px;
-      height: 32px;
-    }
-  }
-  :global {
-    .ant-table-selection-column {
-      padding-left: 16px !important;
     }
   }
 }

@@ -5,16 +5,22 @@
  */
 
 import { lazy } from 'react';
+import { CacheRouteProps } from 'react-router-cache-route';
 import { RouteProps } from 'react-router-dom';
 
 export interface Menu {
   name: string;
   icon?: string;
   path: string;
+  onlyMain?: boolean;
   children?: Menu[];
 }
 
-export const routes: RouteProps[] = [
+interface expandRoute {
+  onlyMain?: boolean;
+}
+
+export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
@@ -105,9 +111,14 @@ export const routes: RouteProps[] = [
     path: '/station',
     component: lazy(() => import('src/pages/Operation/StationConfig/StationConfig'))
   },
+  // 标签配置
   {
     path: '/tagConfig',
     component: lazy(() => import('src/pages/Operation/TagConfig/List'))
+  },
+  {
+    path: '/tagConfig/history',
+    component: lazy(() => import('src/pages/Operation/TagConfig/HistoryList'))
   },
   // 新增小站配置
   {
@@ -117,11 +128,11 @@ export const routes: RouteProps[] = [
   // 系统设置
   {
     path: '/categoryManage',
-    component: lazy(() => import('src/pages/SystemSettings/categoryManage/categoryManage'))
+    component: lazy(() => import('src/pages/SystemSettings/CategoryManage/CategoryManage'))
   },
   {
     path: '/tagManage',
-    component: lazy(() => import('src/pages/SystemSettings/tagManage/tagManage'))
+    component: lazy(() => import('src/pages/SystemSettings/TagManage/TagManage'))
   },
   // 周报配置
   {
@@ -142,9 +153,49 @@ export const routes: RouteProps[] = [
     path: '/speechManage/edit',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
   },
+  /**
+   * 机构管理->账号管理
+   */
+  {
+    path: '/organization/laod',
+    component: lazy(() => import('src/pages/OrgManage/Organization/StaffList/MultiLaod/MultiLaod'))
+  },
+  {
+    path: '/test/video',
+    component: lazy(() => import('src/pages/Test/Video/Video'))
+  },
+  {
+    path: '/company',
+    component: lazy(() => import('src/pages/OrgManage/Company/Company')),
+    onlyMain: true
+  },
+  {
+    path: '/company/access',
+    component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess')),
+    onlyMain: true
+  },
+  // 坐席详情
+  {
+    path: '/organization/staff-detail',
+    component: lazy(() => import('src/pages/OrgManage/Organization/StaffDetail/StaffDetail'))
+  }
+];
+
+// 缓存路由
+export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
+  {
+    path: '/organization',
+    component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
+  },
   {
     path: '/contentsManage',
     component: lazy(() => import('src/pages/SalesCollection/ContentsManage/ContentsManage'))
+  },
+
+  // 免统计
+  {
+    path: '/statistics-free',
+    component: lazy(() => import('src/pages/OrgManage/StatisticsFree/List'))
   }
 ];
 
@@ -154,8 +205,22 @@ export const menus: Menu[] = [
     icon: 'icon_daohang_28_jigouguanli',
     path: 'seatManage',
     children: [
-      { name: '账号管理', path: '/orgManage' },
-      { name: '敏感词管理', path: '/sensitiveManage' }
+      {
+        name: '账号管理',
+        path: '/orgManage'
+      },
+      {
+        name: '敏感词管理',
+        path: '/sensitiveManage'
+      },
+      {
+        name: '组织架构管理',
+        path: '/organization'
+      },
+      {
+        name: '数据免统计名单',
+        path: '/statistics-free'
+      }
     ]
   },
   {
@@ -230,7 +295,7 @@ export const menus: Menu[] = [
   },
   {
     name: '销售宝典',
-    icon: 'icon_daohang_28_xitongshezhi',
+    icon: 'xiaoshoubaodian',
     path: 'salesCollection',
     children: [
       { name: '话术管理', path: '/speechManage' },
@@ -238,3 +303,22 @@ export const menus: Menu[] = [
     ]
   }
 ];
+
+if (process.env.NODE_ENV === 'development') {
+  menus.push({
+    name: '调试',
+    icon: 'icon_daohang_28_xitongshezhi',
+    path: 'test',
+    children: [
+      {
+        name: '视频',
+        path: '/test/video'
+      },
+      {
+        name: '企业接入',
+        path: '/company',
+        onlyMain: true
+      }
+    ]
+  });
+}

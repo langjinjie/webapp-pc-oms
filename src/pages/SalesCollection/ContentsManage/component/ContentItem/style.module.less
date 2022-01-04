@@ -1,6 +1,7 @@
 .bannerWrap {
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;
   height: 48px;
   line-height: 48px;
   background-color: #f7f7f8;
@@ -44,12 +45,22 @@
     height: 100%;
     font-size: 14px;
     color: #111111;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    &.empty {
+      color: #ccccd0;
+    }
   }
   .info {
     height: 100%;
     margin: 0 5px;
     font-size: 12px;
     color: #606366;
+    white-space: nowrap;
+    &.empty {
+      color: #ccccd0;
+    }
   }
   .edit {
     display: none;
@@ -57,20 +68,20 @@
     height: 100%;
     font-size: 12px;
     color: #318cf5;
-    span {
-      width: 60px;
-      height: 100%;
-      cursor: pointer;
-      .svgIcon {
-        margin-right: 4px;
-        width: 12px;
-        height: 12px;
-      }
-      &.hidden {
-        color: #d9d9d9;
-        cursor: not-allowed;
+    :global {
+      .ant-btn {
+        margin-right: 14px;
+        line-height: inherit;
         .svgIcon {
+          margin-right: 8px;
+          font-size: 12px;
+        }
+        &.is_disabled {
+          color: #d9d9d9;
           cursor: not-allowed;
+          .svgIcon {
+            cursor: not-allowed;
+          }
         }
       }
     }
@@ -82,6 +93,8 @@
     display: flex;
     align-items: center;
     margin-left: 20px;
+    width: 60px;
+    height: 36px;
     font-weight: 400;
     color: #318cf5;
     cursor: pointer;

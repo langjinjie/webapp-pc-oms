@@ -20,7 +20,7 @@ interface PostPosterData {
   list: Poster[];
 }
 const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
-  useDocumentTitle('海报列表页');
+  useDocumentTitle('营销素材-海报库');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,

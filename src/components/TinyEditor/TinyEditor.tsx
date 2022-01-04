@@ -22,7 +22,6 @@ function imageUploadHandler (blobInfo, success, failure, progress) {
   formData.append('bizKey', 'news');
   uploadImage2(formData, { onUploadProgress: progressFn })
     .then((data) => {
-      console.log(data);
       success(data.filePath);
     })
     .catch((err) => {

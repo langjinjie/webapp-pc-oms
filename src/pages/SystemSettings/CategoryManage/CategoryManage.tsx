@@ -13,6 +13,7 @@ import {
   requestDeletePosterType,
   requestSaveSortMarket
 } from 'src/apis/systemSettings';
+
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { Icon } from 'src/components';
@@ -21,8 +22,9 @@ import { Tabs, ChildrenCategory } from 'src/pages/SystemSettings/component/index
 import classNames from 'classnames';
 import style from './style.module.less';
 import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
+import { useDocumentTitle } from 'src/utils/base';
 
-const categoryManage: React.FC = () => {
+const CategoryManage: React.FC = () => {
   const { isMainCorp } = useContext(Context);
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [editType, setEditType] = useState('');
@@ -37,6 +39,7 @@ const categoryManage: React.FC = () => {
   const [isOnDrag, setIsOnDrag] = useState('');
   const [isCancel, setIsCancel] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  useDocumentTitle('系统设置-分类管理');
 
   const tabs = ['产品库', '文章库', '海报库'];
   const addInputNode: MutableRefObject<any> = useRef();
@@ -260,6 +263,11 @@ const categoryManage: React.FC = () => {
     }
   };
 
+  const modalOnCancelHandle = () => {
+    setIsModalVisible(false);
+    setAddTypeName('');
+  };
+
   useEffect(() => {
     getTypeList[tabIndex]();
   }, []);
@@ -404,16 +412,17 @@ const categoryManage: React.FC = () => {
         wrapClassName={style.modalWrap}
         title={modalType}
         closeIcon={<span />}
+        maskClosable={false}
         visible={isModalVisible}
         centered
         width={480}
         okText={'确认'}
-        okButtonProps={{ disabled: addTypeName.length > 12 }}
-        onCancel={() => setIsModalVisible(false)}
+        okButtonProps={{ disabled: addTypeName.length > 12 || addTypeName.length === 0 }}
         onOk={modalOnOk}
+        onCancel={modalOnCancelHandle}
       >
         <div className={style.modalContent}>
-          <p className={style.content}>请输入分类名称</p>
+          <p>请输入分类名称</p>
           <input
             ref={addInputNode}
             className={style.addTypeName}
@@ -429,4 +438,4 @@ const categoryManage: React.FC = () => {
     </div>
   );
 };
-export default categoryManage;
+export default CategoryManage;

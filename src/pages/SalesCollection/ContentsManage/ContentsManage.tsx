@@ -5,18 +5,21 @@ import {
   AddOrEditLastCatalog,
   ConfirmModal
 } from 'src/pages/SalesCollection/ContentsManage/component';
-import { ICatalogItem, IFirmModalParam, IEditOrAddCatalogParam, IEditOrAddLastCatalogParam } from 'src/utils/interface';
+import { ICatalogItem, IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils/interface';
 import { getCategoryList } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
 import style from './style.module.less';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { useDidRecover } from 'react-router-cache-route';
+// import NgTree from './component/NgTree/NgTree';
 
 const ContentsManage: React.FC = () => {
+  useDocumentTitle('销售宝典-目录管理');
   const { currentCorpId: corpId } = useContext(Context);
   const [contentsList, setContentList] = useState<ICatalogItem[]>([]);
   const [currentContents, setCurrentContents] = useState<string>(''); // 当前展开的目录
-  const [editOrAddCatalogVisible, setEditOrAddCatalogVisible] = useState(false);
   const [editOrAddCatalogParam, setEditOrAddCatalogParam] = useState<IEditOrAddCatalogParam>();
-  const [editOrAddLastCatalogParam, setEditOrAddLastCatalogParam] = useState<IEditOrAddLastCatalogParam>();
+  const [editOrAddLastCatalogParam, setEditOrAddLastCatalogParam] = useState<IEditOrAddCatalogParam>();
   const [firmModalParam, setFirmModalParam] = useState<IFirmModalParam>({ visible: false, title: '', content: '' });
   // 获取一级目录列表
   const getCatalogList = async () => {
@@ -28,41 +31,93 @@ const ContentsManage: React.FC = () => {
     getCatalogList();
   }, []);
 
-  useEffect(() => {
-    if (firmModalParam.title === '成功' && !firmModalParam.visible) {
+  useDidRecover(() => {
+    const { isCatch } = URLSearchParams(location.search);
+    // 判断页面是否需要更新
+    if (!isCatch) {
       getCatalogList();
     }
-  }, [firmModalParam]);
+  });
   return (
     <>
+      {/* <NgTree
+        dataSource={[
+          {
+            label: '爷爷1',
+            children: [
+              {
+                label: '爸爸1',
+                children: [
+                  {
+                    label: '儿子1'
+                  },
+                  {
+                    label: '儿子2'
+                  },
+                  {
+                    label: '儿子3'
+                  }
+                ]
+              },
+              {
+                label: '爸爸2',
+                children: [
+                  {
+                    label: '儿子1'
+                  },
+                  {
+                    label: '儿子2'
+                  },
+                  {
+                    label: '儿子3'
+                  }
+                ]
+              },
+              {
+                label: '爸爸3',
+                children: [
+                  {
+                    label: '儿子1'
+                  },
+                  {
+                    label: '儿子2'
+                  },
+                  {
+                    label: '儿子3'
+                  }
+                ]
+              }
+            ]
+          }
+        ]}
+        parentDatas={[]}
+      /> */}
       <div className={style.wrap}>
         {contentsList.map((item, index) => (
           <div className={style.contentBannerWrap} key={item.catalogId}>
             <ContentBanner
               parentId="0"
               catalog={item}
+              parentCatalog={[item]}
               setCurrentContents={setCurrentContents}
               currentContents={currentContents}
               isHiddenMoveUp={contentsList.length === 1 || index === 0}
               isHiddenMoveDown={contentsList.length === 1 || index === contentsList.length - 1}
               setEditOrAddCatalogParam={setEditOrAddCatalogParam}
-              setEditOrAddCatalogVisible={setEditOrAddCatalogVisible}
               setFirmModalParam={setFirmModalParam}
-              firmModalParam={firmModalParam}
-              editOrAddLastCatalogParam={editOrAddLastCatalogParam as IEditOrAddLastCatalogParam}
               setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
+              setParentChildrenList={setContentList}
             />
           </div>
         ))}
       </div>
       <EditOrAddCatalog
-        editOrAddCatalogVisible={editOrAddCatalogVisible}
-        setEditOrAddCatalogVisible={setEditOrAddCatalogVisible}
         editOrAddCatalogParam={editOrAddCatalogParam as IEditOrAddCatalogParam}
+        setEditOrAddCatalogParam={setEditOrAddCatalogParam}
         setFirmModalParam={setFirmModalParam}
       />
       <AddOrEditLastCatalog
-        editOrAddLastCatalogParam={editOrAddLastCatalogParam as IEditOrAddLastCatalogParam}
+        editOrAddLastCatalogParam={editOrAddLastCatalogParam as IEditOrAddCatalogParam}
         setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
         setFirmModalParam={setFirmModalParam}
       />

@@ -8,7 +8,7 @@
 process.env.NODE_ENV = 'production';
 
 // 当Promise 被 reject 且没有 reject 处理器的时候，会触发 unhandledrejection 事件
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   throw err;
 });
 
@@ -20,11 +20,8 @@ const TerserWebpackPlugin = require('terser-webpack-plugin'); // js压缩
 const webpackConfig = require('./webpack.config');
 
 const buildConfig = {
-  devtool: 'source-map',
-  plugins: [
-    new CleanWebpackPlugin(),
-    new SimpleProgressWebpackPlugin()
-  ],
+  // devtool: 'source-map',
+  plugins: [new CleanWebpackPlugin(), new SimpleProgressWebpackPlugin()],
   performance: {
     hints: false
   },
@@ -41,8 +38,7 @@ const buildConfig = {
         // 基础库
         baseChunks: {
           name: 'base.chunks', // 要分隔出来的 chunk 名称
-          test: (module) =>
-            /react|react-dom|react-router-dom|axios|moment/.test(module.context),
+          test: (module) => /react|react-dom|react-router-dom|axios|moment/.test(module.context),
           priority: 20 // 打包优先级
         },
         // UI、icon、图表、表情等库

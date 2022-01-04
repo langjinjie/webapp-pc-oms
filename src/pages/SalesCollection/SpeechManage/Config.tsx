@@ -5,23 +5,24 @@ import { Button, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
-
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 export const sensitiveOptions = [
   { id: 0, name: '未知' },
   { id: 1, name: '是' },
   { id: 2, name: '否' }
 ];
 export const speechContentTypes = [
-  { id: 1, name: '文本' },
-  { id: 2, name: '长图' },
+  { id: 1, name: '纯文字' },
+  { id: 2, name: '图片' },
   { id: 3, name: '名片' },
   { id: 4, name: '小站' },
-  { id: 5, name: '单图文' },
-  { id: 6, name: '单语音' },
-  { id: 7, name: '单视频' },
-  { id: 8, name: '第三方链接' },
-  { id: 9, name: '小程序链接' }
+  { id: 5, name: '图文链接' },
+  { id: 6, name: '音频' },
+  { id: 7, name: '视频' },
+  { id: 9, name: '小程序' }
 ];
+export const excelDemoUrl =
+  'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/smart_content_import_template.xlsx';
 
 export const statusOptions = [
   { id: 0, name: '待上架' },
@@ -35,7 +36,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       name: 'catalogIds',
       type: 'cascader',
       label: '选择目录',
-      width: '268px',
+      width: '320px',
       placeholder: '请输入',
       fieldNames: { label: 'name', value: 'catalogId', children: 'children' },
       cascaderOptions: options
@@ -44,35 +45,35 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       name: 'content',
       type: 'input',
       label: '话术内容',
-      width: '268px',
+      width: '280px',
       placeholder: '请输入'
     },
     {
       name: 'tip',
       type: 'input',
       label: '话术小贴士',
-      width: '268px',
+      width: '280px',
       placeholder: '请输入'
     },
     {
       name: 'contentType',
       type: 'select',
-      width: 160,
+      width: 140,
       label: '话术格式',
       options: speechContentTypes
     },
     {
       name: 'status',
       type: 'select',
-      width: 160,
+      width: 140,
       label: '上架状态',
       options: statusOptions
     },
     {
       name: 'sensitive',
       type: 'select',
-      width: 160,
-      label: '是否出发敏感词',
+      width: 140,
+      label: '是否触发敏感词',
       options: sensitiveOptions
     },
     {
@@ -89,16 +90,18 @@ interface OperateProps {
   handleSort: (record: SpeechProps, sortType: number) => void;
   lastCategory: any;
   pagination: any;
+  formParams: any;
+  isNew: boolean;
 }
 export const genderTypeOptions = [
-  { id: 1, name: '男' },
-  { id: 2, name: '女' }
+  { id: 1, name: '男性' },
+  { id: 2, name: '女性' }
 ];
 
 export const ageTypeOptions = [
-  { id: 1, name: '-老年' },
-  { id: 2, name: '-中年' },
-  { id: 3, name: '-青年' }
+  { id: 1, name: '老年' },
+  { id: 2, name: '中年' },
+  { id: 3, name: '青年' }
 ];
 export interface SpeechProps {
   sceneId: number; // 业务场景ID，1-车险流程，2-非车流程，3-异议处理，4-场景话术，5-问答知识，6-智能教练。
@@ -119,10 +122,19 @@ export interface SpeechProps {
   [propKey: string]: any;
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
-  const { handleEdit, handleSort, lastCategory, pagination } = args;
+  const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew } = args;
+  const {
+    content = '',
+    contentType = '',
+    sensitive = '',
+    status = '',
+    updateBeginTime = '',
+    updateEndTime = '',
+    tip = ''
+  } = formParams;
   return [
     {
-      title: '来源',
+      title: '目录',
       dataIndex: 'fullName',
       width: 200,
       ellipsis: {
@@ -137,9 +149,9 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '话术格式',
       dataIndex: 'contentType',
-      width: 100,
+      width: 120,
       render: (contentType) => (
-        <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0].name || UNKNOWN}</span>
+        <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0]?.name || UNKNOWN}</span>
       )
     },
     {
@@ -163,7 +175,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
         return (
           <span>
             {(genderTypeOptions.filter((item) => item.id === value)?.[0]?.name || '') +
-              (ageTypeOptions.filter((ageType) => ageType.id === record.ageType)?.[0]?.name || '') || UNKNOWN}
+              (ageTypeOptions.filter((ageType) => ageType.id === record.ageType)?.[0]?.name || '') || '全部'}
           </span>
         );
       }
@@ -186,8 +198,17 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       ellipsis: {
         showTitle: false
       },
-      render: (value) => {
-        return <span>{sensitiveOptions.filter((sensitive) => sensitive.id === value)?.[0].name || UNKNOWN}</span>;
+      render: (value, record: SpeechProps) => {
+        return (
+          <span>
+            {sensitiveOptions.filter((sensitive) => sensitive.id === value)?.[0].name}
+            {value === 1 && (
+              <Tooltip title={record.sensitiveWord} className="ml10">
+                <ExclamationCircleOutlined />
+              </Tooltip>
+            )}
+          </span>
+        );
       }
     },
     {
@@ -203,6 +224,24 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       title: '更新时间',
       dataIndex: 'lastUpdated',
       width: 180,
+
+      render: (name) => {
+        return <span>{name || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '创建人',
+      dataIndex: 'createBy',
+      width: 130,
+
+      render: (name) => {
+        return <span>{name || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '更新人',
+      dataIndex: 'updateBy',
+      width: 130,
 
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
@@ -243,12 +282,40 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
               编辑
             </Button>
             {(index !== 0 || (pagination.current === 1 && index !== 0) || pagination.current !== 1) && (
-              <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record, -1)}>
+              <Button
+                disabled={
+                  !isNew ||
+                  lastCategory?.lastLevel !== 1 ||
+                  content !== '' ||
+                  contentType !== '' ||
+                  sensitive !== '' ||
+                  status !== '' ||
+                  updateBeginTime !== '' ||
+                  updateEndTime !== '' ||
+                  tip !== ''
+                }
+                type="link"
+                onClick={() => handleSort(record, -1)}
+              >
                 上移
               </Button>
             )}
             {(pagination.current - 1) * pagination.pageSize + index + 1 !== pagination.total && (
-              <Button disabled={lastCategory?.lastLevel !== 1} type="link" onClick={() => handleSort(record, 1)}>
+              <Button
+                disabled={
+                  !isNew ||
+                  lastCategory?.lastLevel !== 1 ||
+                  content !== '' ||
+                  contentType !== '' ||
+                  sensitive !== '' ||
+                  status !== '' ||
+                  updateBeginTime !== '' ||
+                  updateEndTime !== '' ||
+                  tip !== ''
+                }
+                type="link"
+                onClick={() => handleSort(record, 1)}
+              >
                 下移
               </Button>
             )}

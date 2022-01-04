@@ -25,6 +25,7 @@ interface WeeklyItem {
   paperTitle: string;
   paperStatus: number;
   sendTime: string;
+  pushTime: string;
 }
 
 const { confirm } = Modal;
@@ -143,6 +144,10 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
       dataIndex: 'sendTime'
     },
     {
+      title: '推送时间',
+      dataIndex: 'pushTime'
+    },
+    {
       title: '发布状态',
       dataIndex: 'paperStatus',
       render: (text: number) => (
@@ -214,7 +219,7 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   useEffect(() => {
-    setTitle('周报列表');
+    setTitle('运营配置-周报配置');
     getWeeklyList();
   }, []);
 

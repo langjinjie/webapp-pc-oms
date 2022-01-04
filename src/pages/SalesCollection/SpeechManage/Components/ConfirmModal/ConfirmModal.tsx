@@ -22,7 +22,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ visible, onCancel, onOk, is
     >
       <div className={style.ngModalWrap}>
         <div className={style.modalTitle}>{title}</div>
-        <div className={style.modalContent}>批量新增话术完成，为了不影响话术上架，建议您再重新检测敏感词。</div>
+        <div className={style.modalContent}>有敏感词更新，为了不影响话术上架，建议您重新检测敏感词。</div>
         <div className={style.modalFooter}>
           {isShowCancel && (
             <Button type="default" onClick={() => onCancel?.()}>

@@ -89,13 +89,16 @@ const getBabelLoader = (isTs = false) => {
 module.exports = function () {
   const ROOT_PATH = path.resolve(__dirname, '../');
 
+  const date = new Date();
+  const time = `${date.getFullYear()}${date.getMonth() + 1}${date.getDay()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
   return {
     entry: {
       main: path.resolve(ROOT_PATH, './src/index.tsx')
     },
     output: {
-      path: path.resolve(ROOT_PATH, './tenacity-oms'),
-      filename: 'js/[name].[chunkhash:8].bundle.js',
+      path: path.resolve(ROOT_PATH, './dist'),
+      filename: time + '/js/[name].[chunkhash:8].bundle.js',
       publicPath: isDev ? '/' : '/tenacity-oms/'
       // publicPath: isDev ? '/' : './'
     },
@@ -153,7 +156,7 @@ module.exports = function () {
           options: {
             esModule: false,
             limit: 10000,
-            name: 'images/[name].[contenthash:8].[ext]'
+            name: time + '/images/[name].[contenthash:8].[ext]'
           }
         },
         {
@@ -161,7 +164,7 @@ module.exports = function () {
           loader: 'url-loader',
           options: {
             limit: 10000,
-            name: 'font/[name].[contenthash:8].[ext]'
+            name: time + '/font/[name].[contenthash:8].[ext]'
           }
         }
       ]
@@ -182,7 +185,7 @@ module.exports = function () {
           // Copy glob results (with dot files) to /absolute/path/
           {
             from: path.resolve(ROOT_PATH, './static/'),
-            to: path.resolve(ROOT_PATH, './tenacity-oms/static')
+            to: path.resolve(ROOT_PATH, './dist/static')
           }
         ]
       }),
@@ -196,8 +199,8 @@ module.exports = function () {
         }
       }),
       new MiniCssExtractPlugin({
-        filename: isDev ? 'css/[name][hash:8].css' : 'css/[name].[chunkhash:8].css',
-        chunkFilename: isDev ? 'css/[id][hash:8].css' : 'css/[id].[chunkhash:8].css',
+        filename: isDev ? time + '/css/[name][hash:8].css' : time + '/css/[name].[chunkhash:8].css',
+        chunkFilename: isDev ? time + '/css/[id][hash:8].css' : time + '/css/[id].[chunkhash:8].css',
         ignoreOrder: true
       }),
       new HappyPack({

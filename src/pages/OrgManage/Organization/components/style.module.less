@@ -1,0 +1,150 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2021-12-13 15:36
+*/
+.setLeaderWrap {
+  width: 572px;
+  height: 386px;
+  border-radius: 8px;
+  outline: 1px solid #e5e5e7;
+  display: flex;
+
+  .scrollWrap {
+    flex: 1;
+  }
+
+  .left {
+    width: 360px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .inputWrap {
+      width: 100%;
+      padding: 10px 20px;
+      border-bottom: 1px solid #e5e5e7;
+
+      :global {
+        .ant-input {
+          border-radius: 18px;
+          padding: 6px 11px;
+
+          &::placeholder {
+            font-size: 12px;
+          }
+        }
+
+        .ant-input-group-addon {
+          left: 1px !important;
+        }
+
+        .ant-input-search-button {
+          position: absolute;
+          left: -50px;
+          top: 2px;
+          background: none;
+          border: none;
+          box-shadow: none;
+          outline: none;
+          z-index: 999;
+        }
+      }
+
+      .searchIcon {
+        margin-right: 2px;
+        color: #a9aab0;
+        font-size: 16px;
+      }
+    }
+
+    .treeWrap {
+      padding: 10px 20px;
+
+      .nodeItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .dotIcon {
+          display: none;
+          width: 24px;
+          font-size: 16px;
+        }
+      }
+
+      :global {
+        .ant-tree-treenode {
+          padding: 5px 0;
+
+          .ant-tree-node-content-wrapper {
+            background: none;
+            padding: 0;
+          }
+
+          &.ant-tree-treenode-selected {
+            background: rgba(48, 120, 219, 0.2);
+            border-radius: 8px;
+
+            .ant-tree-node-selected {
+              background: none;
+
+              :local {
+                .nodeItem {
+                  color: @primary-color;
+
+                  .dotIcon {
+                    color: gray;
+                    display: inline-block;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .searchList {
+      padding: 10px 20px;
+
+      .searchItem {
+        padding: 0 16px;
+        width: 100%;
+        height: 36px;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 36px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        cursor: pointer;
+
+        &.active {
+          background: rgba(48, 120, 219, 0.2);
+          color: #318cf5;
+        }
+      }
+    }
+  }
+
+  .right {
+    flex: 1;
+    border-left: 1px solid #e5e5e7;
+    font-size: 14px;
+    line-height: 20px;
+
+    .chooseHeader {
+      padding: 18px 19px;
+
+      color: #111111;
+      line-height: 20px;
+      border-bottom: 1px solid #e5e5e7;
+    }
+
+    .leaderName {
+      padding: 10px 19px;
+      color: #318cf5;
+    }
+  }
+}

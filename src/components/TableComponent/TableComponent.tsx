@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import { Table, TablePaginationConfig, TableProps } from 'antd';
 export interface PaginationProps {
@@ -8,6 +9,7 @@ export interface PaginationProps {
   showTotal: (total: any) => string;
 }
 interface TableComponentProps<T> extends TableProps<T> {
+  className?: string;
   loading: boolean;
   columns: any;
   pagination?: TablePaginationConfig;
@@ -21,15 +23,28 @@ interface TableComponentProps<T> extends TableProps<T> {
 }
 
 const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.Element => {
-  const { columns, dataSource, paginationChange, pagination, loading, setRowKey, rowSelection } = props;
+  const {
+    className,
+    columns,
+    dataSource,
+    paginationChange,
+    pagination,
+    loading,
+    setRowKey,
+    rowSelection,
+    onRow,
+    scroll,
+    tableLayout
+  } = props;
   return (
     <Table
-      className="table-container"
+      className={classNames('table-container', className)}
       columns={columns}
       dataSource={dataSource}
-      scroll={{ x: 1300 }}
+      scroll={scroll || { x: 1300 }}
       rowKey={setRowKey}
       loading={loading}
+      tableLayout={tableLayout}
       rowSelection={
         rowSelection
           ? {
@@ -48,6 +63,7 @@ const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.El
             }
           : false
       }
+      onRow={onRow}
     />
   );
 };
