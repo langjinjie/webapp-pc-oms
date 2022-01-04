@@ -3,78 +3,97 @@ import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN } from 'src/utils/base';
 import style from './style.module.less';
 
-const TableColumns = (): ColumnsType<any> => [
-  {
-    title: '客户经理姓名',
-    dataIndex: 'staffName',
-    fixed: 'left'
-  },
-  { title: '客户经理ID', dataIndex: 'staffId' },
-  {
-    title: '日期',
-    // width: 100,
-    render (row) {
-      return <span>{row.time || UNKNOWN}</span>;
+interface IPonitsParam {
+  visible: boolean;
+  ponitsRow: any;
+}
+interface ITableColumns {
+  setPonitsParam: (param: IPonitsParam) => void;
+}
+
+const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
+  // 点击查看
+  const clickCheckHandle = (row: any) => {
+    console.log('点击查看~');
+    setPonitsParam({ visible: true, ponitsRow: row });
+  };
+  return [
+    {
+      title: '客户经理姓名',
+      dataIndex: 'staffName',
+      fixed: 'left'
+    },
+    { title: '客户经理ID', dataIndex: 'staffId' },
+    {
+      title: '日期',
+      // width: 100,
+      render (row) {
+        return <span>{row.time || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '是否有黑名单',
+      dataIndex: 'blacklist'
+    },
+    {
+      title: '待发积分',
+      render (row) {
+        return <span>{row.newPonits || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '黑名单积分',
+      dataIndex: 'blackPonits'
+    },
+    {
+      title: '应发积分',
+      render (row) {
+        return <span>{row.shouldPonits || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '已发积分',
+      render (row) {
+        return <span>{row.sendedPonits || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '积分回收',
+      render (row) {
+        return <span>{row.recoveryPonits || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '积分发放状态',
+      render (row) {
+        return <span className={style.sendStatus}>{row.sendStatus ? '未发放' : '已发放'}</span>;
+      }
+    },
+    {
+      title: '积分发放时间',
+      render (row) {
+        return <span>{row.sendTime || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '操作人',
+      render (row) {
+        return <span>{row.operator || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '操作',
+      fixed: 'right',
+      render (row) {
+        return (
+          <span className={style.check} onClick={() => clickCheckHandle(row)}>
+            查看
+          </span>
+        );
+      }
     }
-  },
-  {
-    title: '是否有黑名单',
-    dataIndex: 'blacklist'
-  },
-  {
-    title: '待发积分',
-    render (row) {
-      return <span>{row.newPonits || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '黑名单积分',
-    dataIndex: 'blackPonits'
-  },
-  {
-    title: '应发积分',
-    render (row) {
-      return <span>{row.shouldPonits || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '已发积分',
-    render (row) {
-      return <span>{row.sendedPonits || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '积分回收',
-    render (row) {
-      return <span>{row.recoveryPonits || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '积分发放状态',
-    render (row) {
-      return <span className={style.sendStatus}>{row.sendStatus ? '未发放' : '已发放'}</span>;
-    }
-  },
-  {
-    title: '积分发放时间',
-    render (row) {
-      return <span>{row.sendTime || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '操作人',
-    render (row) {
-      return <span>{row.operator || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '操作',
-    fixed: 'right',
-    render () {
-      return <span className={style.check}>查看</span>;
-    }
-  }
-];
+  ];
+};
 
 const TablePagination = (arg: { [key: string]: any }): any => {
   const {
@@ -125,6 +144,10 @@ const TablePagination = (arg: { [key: string]: any }): any => {
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
+    onSelect (row: any) {
+      console.log('选中了');
+      console.log(row);
+    },
     hideSelectAll: false, // 是否隐藏全选
     getCheckboxProps: (record: any) => ({
       disabled: disabledColumnType === -1 ? false : record.isDeleted !== disabledColumnType,

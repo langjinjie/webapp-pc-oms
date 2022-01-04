@@ -3,6 +3,7 @@ import { useDocumentTitle } from 'src/utils/base';
 import { Form, Space, Input, Select, Button, DatePicker } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
+import PonitsDetail from './PonitsDetail/PonitsDetail';
 import style from './style.module.less';
 
 interface IPonitsList {
@@ -10,15 +11,23 @@ interface IPonitsList {
   list: any[];
 }
 
+interface IPonitsParam {
+  visible: boolean;
+  ponitsRow: any;
+}
+
 const PointsProvide: React.FC = () => {
   const [ponitsList, setPonitsList] = useState<IPonitsList>({ total: 0, list: [] });
+  const [renderedList] = useState<{ [key: string]: any }>({});
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
+  const [searchParam, setSearchParam] = useState<{ [key: string]: any }>({});
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [disabledColumnType, setDisabledColumnType] = useState(-1);
   const [isLoading, setIsloading] = useState(true);
+  const [ponitsParam, setPonitsParam] = useState<IPonitsParam>({ visible: false, ponitsRow: {} });
   const [form] = Form.useForm();
   const { RangePicker } = DatePicker;
-  const getPointsList = () => {
+  const getPointsList = async () => {
     setIsloading(true);
     console.log(ponitsList);
     const pointsItem = {
@@ -36,7 +45,8 @@ const PointsProvide: React.FC = () => {
       operator: '贾老师'
     };
     const list = [];
-    for (let i = 0; i < 20; i++) {
+    const index = (paginationParam.pageNum - 1) * 10;
+    for (let i = index; i < index + 10; i++) {
       const item = { ...pointsItem };
       item.staffId += i;
       item.blacklist = i % 2;
@@ -48,24 +58,43 @@ const PointsProvide: React.FC = () => {
       list.push(item);
     }
     console.log(list);
-    setPonitsList({ total: list.length, list });
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('成功~');
+      }, 1000);
+    });
+    list.forEach((item) => {
+      renderedList[item.staffId] = item;
+    });
+    console.log(renderedList);
+    console.log(Object.values(renderedList));
+    setSelectedRowKeys([]);
+    setDisabledColumnType(-1);
+    setPonitsList({ total: 20, list });
     setIsloading(false);
   };
   const resetHandle = () => {
     console.log('重置');
+    setSearchParam(form.getFieldsValue());
   };
   // 查询
   const onSearchHandle = () => {
     console.log('查询');
+    setPaginationParam({ ...paginationParam, pageNum: 1 });
+    setSearchParam(form.getFieldsValue());
   };
   const provideStatusList = [
     { value: 0, label: '已发放' },
     { value: 1, label: '未发放' }
   ];
+  // 一键发放积分
+  const sendAllPonitsHandle = () => {
+    console.log(renderedList);
+  };
   useDocumentTitle('积分商城-积分发放');
   useEffect(() => {
     getPointsList();
-  }, []);
+  }, [paginationParam, searchParam]);
   return (
     <div className={style.wrap}>
       <Form name="base" className={style.form} layout="inline" form={form} onReset={resetHandle}>
@@ -97,7 +126,7 @@ const PointsProvide: React.FC = () => {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item>
+            <Form.Item style={{ width: 186 }}>
               <Button className={style.searchBtn} type="primary" onClick={onSearchHandle}>
                 查询
               </Button>
@@ -107,7 +136,12 @@ const PointsProvide: React.FC = () => {
             </Form.Item>
           </Space>
           <Space>
-            <Button className={style.provideAllBtn} type="primary">
+            <Button
+              className={style.provideAllBtn}
+              type="primary"
+              onClick={sendAllPonitsHandle}
+              disabled={!!selectedRowKeys.length}
+            >
               一键群发积分
             </Button>
           </Space>
@@ -117,7 +151,7 @@ const PointsProvide: React.FC = () => {
         className={style.tableWrap}
         setRowKey={(record: any) => record.staffId}
         dataSource={ponitsList.list}
-        columns={TableColumns()}
+        columns={TableColumns({ setPonitsParam })}
         loading={isLoading}
         tableLayout={'fixed'}
         scroll={{ x: 'max-content' }}
@@ -131,6 +165,15 @@ const PointsProvide: React.FC = () => {
           setDisabledColumnType
         })}
       />
+      {!!ponitsList.total && (
+        <div className={style.sendPonits}>
+          <Button disabled={!selectedRowKeys.length} className={style.sendPonitsBtn}>
+            发放积分
+          </Button>
+        </div>
+      )}
+      {/* 积分详情 */}
+      <PonitsDetail ponitsParam={ponitsParam} setPonitsParam={setPonitsParam} />
     </div>
   );
 };
