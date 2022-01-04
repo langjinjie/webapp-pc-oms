@@ -21,7 +21,7 @@ const MessageType: React.FC<MessageTypeProps> = ({ value, onChange }) => {
             <Icon className={style.checkIcon} name="biaoqian_wancheng" />
           </div>
         )}
-        <img className={style.msgImg} src={require('src/assets/images/artImg.png')} alt="" />
+        <img className={style.msgImg} src={require('src/assets/images/notice/new.png')} alt="" />
         <div className={style.msgDesc}>上新</div>
       </li>
       <li className={style.msgTypeItem} onClick={() => onChange && onChange(2)}>
@@ -30,7 +30,7 @@ const MessageType: React.FC<MessageTypeProps> = ({ value, onChange }) => {
             <Icon className={style.checkIcon} name="biaoqian_wancheng" />
           </div>
         )}
-        <img className={style.msgImg} src={require('src/assets/images/artImg.png')} alt="" />
+        <img className={style.msgImg} src={require('src/assets/images/notice/notice.png')} alt="" />
         <div className={style.msgDesc}>通知</div>
       </li>
     </ul>

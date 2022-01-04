@@ -4,6 +4,12 @@
 * @date 2021-11-18 17:10
 */
 .formWrap {
+  :global {
+    .ant-form-item-label {
+      margin-right: 20px;
+    }
+  }
+
   .btnWrap {
     margin-top: 40px;
     display: flex;
@@ -52,8 +58,7 @@
     cursor: pointer;
 
     .msgImg {
-      width: 160px;
-      height: 100px;
+      width: 280px;
     }
 
     .msgDesc {
@@ -70,7 +75,7 @@
       left: 0;
       right: 0;
       top: 0;
-      height: 100px;
+      height: 118px;
       background-color: rgba(0, 0, 0, 0.5);
 
       .checkIcon {
