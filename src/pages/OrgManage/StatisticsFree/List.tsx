@@ -142,4 +142,4 @@ const StatisticsFreeList: React.FC = () => {
   );
 };
 
-export default StatisticsFreeList;
+export default React.memo(StatisticsFreeList);
