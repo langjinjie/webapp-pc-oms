@@ -71,11 +71,16 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       catalogId: editOrAddLastCatalogParam.catalog.catalogId
     });
     if (res) {
-      // 处理音视频的回写
+      // 处理音视频pdf的回写
       setCatalogDetail(res);
-      if (res.contentType === 6 || res.contentType === 7) {
+      if (res.contentType === 6 || res.contentType === 7 || res.contentType === 10) {
         setFileList([
-          { uid: '1', name: `media.${res.contentType === 6 ? 'mp3' : 'mp4'}`, url: res.contentUrl, status: 'done' }
+          {
+            uid: '1',
+            name: res.contentUrl.split('/')[res.contentUrl.split('/').length - 1].split('?')[0],
+            url: res.contentUrl,
+            status: 'done'
+          }
         ]);
       }
       form.setFieldsValue(res);

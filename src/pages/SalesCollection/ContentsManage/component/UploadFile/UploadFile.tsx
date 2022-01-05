@@ -90,7 +90,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ type, fileList, imgLimitParam,
           name="file"
           maxCount={1}
           action="/tenacity-admin/api/file/upload"
-          data={{ bizKey: 'media' }}
+          data={{ bizKey: type === 'PDF' ? 'pdf' : 'media' }}
           defaultFileList={fileList}
           onChange={upLoadOnChangeHandle}
           beforeUpload={(file) => beforeUploadFileHandle(file)}
