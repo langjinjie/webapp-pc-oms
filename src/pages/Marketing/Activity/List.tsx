@@ -203,7 +203,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
 
   const handleToggleOnlineState = (type: number) => {
     Modal.confirm({
-      content: '确认上架？',
+      content: type === 1 ? '确认上架？' : '确定下架？',
       cancelText: '取消',
       okText: '确定',
       onOk: async () => {
