@@ -154,10 +154,10 @@ export const delFreeCustomer: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/free/clientFreeStats/del', param);
 };
 // 查询外部联系人
-export const getCustomerByExternalUserId: HttpFC<{ externalUserid: string }> = (param) => {
+export const getCustomerByExternalUserId: HttpFC<{ externalUserId: string }> = (param) => {
   return http.post('/tenacity-admin/api/free/clientFreeStats/findByExternalUserid', param);
 };
 // 新增免统计
-export const addFreeCustomer: HttpFC<{ externalUserid: string }> = (param) => {
-  return http.post('/tenacity-admin/api/user/clientFreeStats/add', param);
+export const addFreeCustomer: HttpFC<{ externalUserId: string; addReason: string }> = (param) => {
+  return http.post('/tenacity-admin/api/free/clientFreeStats/add', param);
 };

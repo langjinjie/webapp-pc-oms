@@ -27,20 +27,22 @@ export const searchCols: SearchCol[] = [
     width: 180
   }
 ];
-export interface StaffProps {
+export interface CustomerProps {
   name: string; // 坐席姓名
   userId: string; // 企微账号
   seatsId: string; // 工号
   staffId: string;
   position: string; // 岗位名称
   freeType: string; // 免统计模块 1、排行榜，2、战报 多个用,分开
+  externalUserId: string;
+  isDeleted: boolean;
 }
 
-export const tableColumns = (): ColumnsType<StaffProps> => [
+export const tableColumns = (): ColumnsType<CustomerProps> => [
   {
     title: '客户姓名',
     dataIndex: 'remarkName',
-    width: 100,
+    width: 160,
     render: (value) => <span>{value || UNKNOWN}</span>
   },
   {
@@ -59,7 +61,12 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     width: 200,
     ellipsis: {
       showTitle: false
-    }
+    },
+    render: (name) => (
+      <Tooltip placement="topLeft" title={name}>
+        {name || UNKNOWN}
+      </Tooltip>
+    )
   },
   {
     title: '客户经理',
@@ -93,6 +100,13 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     title: '添加理由',
     dataIndex: 'addReason',
     width: 200,
-    render: (value) => <span>{value || UNKNOWN}</span>
+    ellipsis: {
+      showTitle: false
+    },
+    render: (name) => (
+      <Tooltip placement="topLeft" title={name}>
+        {name || UNKNOWN}
+      </Tooltip>
+    )
   }
 ];

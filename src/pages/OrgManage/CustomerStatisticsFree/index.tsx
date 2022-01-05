@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
-import { searchCols, StaffProps, tableColumns } from './Config';
+import { searchCols, CustomerProps, tableColumns } from './Config';
 import { AddCustomerFreeModal } from './Components/AddCustomerModal';
-import { addFreeStaffs, delFreeCustomer, getCustomerFreeList } from 'src/apis/orgManage';
+import { addFreeCustomer, delFreeCustomer, getCustomerFreeList } from 'src/apis/orgManage';
 import DeleteModal from '../StatisticsFree/Components/DeleteModal/DeleteModal';
 
 const CustomerStatisticsFree: React.FC = () => {
@@ -11,7 +11,7 @@ const CustomerStatisticsFree: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteVisible, setDeleteVisible] = useState(false);
-  const [dataSource, setDataSource] = useState<StaffProps[]>([]);
+  const [dataSource, setDataSource] = useState<CustomerProps[]>([]);
   const [formParams, setFormParams] = useState({
     condition: '',
     staffName: '',
@@ -54,7 +54,7 @@ const CustomerStatisticsFree: React.FC = () => {
     getList({ pageNum: 1, condition, staffName, addReason });
   };
 
-  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: StaffProps[]) => {
+  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: CustomerProps[]) => {
     setSelectRowKeys(selectedRowKeys);
     console.log(selectedRows);
   };
@@ -62,12 +62,12 @@ const CustomerStatisticsFree: React.FC = () => {
   const rowSelection = {
     hideSelectAll: false,
     selectedRowKeys: selectedRowKeys,
-    onChange: (selectedRowKeys: React.Key[], selectedRows: StaffProps[]) => {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: CustomerProps[]) => {
       onSelectChange(selectedRowKeys, selectedRows);
     },
-    getCheckboxProps: (record: StaffProps) => {
+    getCheckboxProps: (record: CustomerProps) => {
       return {
-        disabled: false,
+        disabled: record.isDeleted,
         name: record.name
       };
     }
@@ -82,17 +82,22 @@ const CustomerStatisticsFree: React.FC = () => {
     getList({ pageNum, pageSize });
   };
 
-  const submitAddFreeStaffs = async (params: { staffIds: string[]; freeType: string }) => {
+  const submitAddFreeStaffs = async (params: { externalUserId: string; addReason: string }) => {
     setVisible(false);
-    const res = await addFreeStaffs(params);
+    const res = await addFreeCustomer(params);
     if (res) {
       message.success('新增成功!');
-      await getList({ pageNum: 1 });
+      setFormParams({
+        condition: '',
+        staffName: '',
+        addReason: ''
+      });
+      await getList({ pageNum: 1, condition: '', staffName: '', addReason: '' });
     }
   };
 
   const deleteStaffs = async () => {
-    const res = await delFreeCustomer({ externalUserids: selectedRowKeys });
+    const res = await delFreeCustomer({ externalUserIds: selectedRowKeys });
     setDeleteVisible(false);
     if (res) {
       setSelectRowKeys([]);
@@ -124,7 +129,7 @@ const CustomerStatisticsFree: React.FC = () => {
             size="large"
             disabled={selectedRowKeys.length === 0}
           >
-            删除成员
+            删除
           </Button>
         </div>
         <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
@@ -137,8 +142,8 @@ const CustomerStatisticsFree: React.FC = () => {
           pagination={pagination}
           dataSource={dataSource}
           paginationChange={onPaginationChange}
-          setRowKey={(record: StaffProps) => {
-            return record.externalUserid;
+          setRowKey={(record: CustomerProps) => {
+            return record.externalUserId;
           }}
         />
       </div>
