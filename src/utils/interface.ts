@@ -162,6 +162,12 @@ export interface ICatalogDetail {
   audioVideoId?: string;
 }
 
+// 话术类型参数
+export interface IContentParam {
+  name: string;
+  contentType: number;
+}
+
 /* 敏感词管理 */
 // 敏感词列表
 export interface ISensitiveList {

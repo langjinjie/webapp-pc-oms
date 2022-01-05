@@ -1,12 +1,13 @@
 import React from 'react';
 import { Form, Input, FormInstance } from 'antd';
 import { UploadImg, UploadFile } from 'src/pages/SalesCollection/ContentsManage/component';
+import { IContentParam } from 'src/utils/interface';
 import InputShowLength from 'src/pages/SalesCollection/SpeechManage/Components/InputShowLength/InputShowLength';
 import style from './style.module.less';
 
 interface ISpeechTypeLabelProps {
   form: FormInstance<any>;
-  type: number;
+  type: IContentParam;
   uploadImg: string;
   setUploadImg: (param: string) => void;
   fileList: any[];
@@ -23,7 +24,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
 }) => {
   return (
     <>
-      {type === 2 && ( // 图片
+      {type.contentType === 2 && ( // 图片
         <>
           <UploadImg
             form={form}
@@ -36,21 +37,21 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
           />
         </>
       )}
-      {type === 3 && ( // 名片
+      {type.contentType === 3 && ( // 名片
         <>
           <Form.Item className={style.formItem} label="名片样式:">
             <div className={style.card} />
           </Form.Item>
         </>
       )}
-      {type === 4 && (
+      {type.contentType === 4 && (
         <>
           <Form.Item className={style.formItem} label="小站样式:">
             <div className={style.station} />
           </Form.Item>
         </>
       )}
-      {type === 5 && ( // 图文链接
+      {type.contentType === 5 && ( // 图文链接
         <>
           <UploadImg
             form={form}
@@ -87,7 +88,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
           </Form.Item>
         </>
       )}
-      {type === 6 && ( // 音频
+      {type.contentType === 6 && ( // 音频
         <>
           <UploadImg
             form={form}
@@ -98,10 +99,11 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
           <UploadFile
+            type={'音频'}
             fileList={fileList}
             imgLimitParam={{ type: ['audio/mpeg', 'audio/mp3'], size: 20 }}
-            rules={[{ required: true, message: '请上传大小不超过20M的MP3音频文件' }]}
-            extra={'仅支持MP3格式，最大20M'}
+            rules={[{ required: true, message: '请上传大小不超过20MB的mp3音频文件' }]}
+            extra={'仅支持.mp3格式，最大20MB'}
           />
 
           <Form.Item
@@ -122,7 +124,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
           </Form.Item>
         </>
       )}
-      {type === 7 && ( // 视频
+      {type.contentType === 7 && ( // 视频
         <>
           <UploadImg
             form={form}
@@ -133,10 +135,11 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
           />
           <UploadFile
+            type={'视频'}
             fileList={fileList}
             imgLimitParam={{ type: ['video/mp4'], size: 100 }}
-            rules={[{ required: true, message: '请上传大小不超过100M的MP4视频文件' }]}
-            extra={'仅支持MP4格式，最大100M'}
+            rules={[{ required: true, message: '请上传大小不超过100MB的mp4视频文件' }]}
+            extra={'仅支持.mp4格式，最大100MB'}
           />
           <Form.Item
             className={style.formItem}
@@ -156,7 +159,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
           </Form.Item>
         </>
       )}
-      {type === 8 && ( // 第三方链接
+      {type.contentType === 8 && ( // 第三方链接
         <>
           <UploadImg
             form={form}
@@ -192,7 +195,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
           </Form.Item>
         </>
       )}
-      {type === 9 && ( // 小程序
+      {type.contentType === 9 && ( // 小程序
         <>
           <Form.Item
             className={style.formItem}
@@ -229,6 +232,41 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             rules={[{ required: true, message: '请输入小程序摘要' }]}
           >
             <InputShowLength className={style.input} placeholder={'请输入小程序摘要'} maxLength={30} />
+          </Form.Item>
+        </>
+      )}
+      {type.contentType === 10 && ( // PDF
+        <>
+          <UploadImg
+            form={form}
+            setSubmitDisabled={setSubmitDisabled}
+            uploadImg={uploadImg}
+            setUploadImg={setUploadImg}
+            imgLimitParam={{ type: ['image/jpeg'], size: 5, limitWidth: 0, limitHeight: 0 }}
+            extra={'为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式'}
+          />
+          <UploadFile
+            type={'PDF'}
+            fileList={fileList}
+            imgLimitParam={{ type: ['application/pdf'], size: 100 }}
+            rules={[{ required: true, message: '请上传大小不超过100MB的.pdf文件' }]}
+            extra={'仅支持.pdf格式，最大100MB'}
+          />
+          <Form.Item
+            className={style.formItem}
+            label="PDF标题:"
+            name="title"
+            rules={[{ required: true, message: '请输入PDF标题' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入PDF标题'} maxLength={30} />
+          </Form.Item>
+          <Form.Item
+            className={style.formItem}
+            label="PDF摘要:"
+            name="summary"
+            rules={[{ required: true, message: '请输入PDF摘要' }]}
+          >
+            <InputShowLength className={style.input} placeholder={'请输入PDF摘要'} maxLength={30} />
           </Form.Item>
         </>
       )}

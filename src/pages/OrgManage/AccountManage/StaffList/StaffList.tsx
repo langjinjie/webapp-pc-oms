@@ -264,7 +264,6 @@ const StaffList: React.FC = () => {
   // 导出表格
   const downLoad = async () => {
     const res = await requestLeadingOutExcel({ corpId: (location.state as { [key: string]: unknown }).corpId });
-    console.log(res);
     if (res) {
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
