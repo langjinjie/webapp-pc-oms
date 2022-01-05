@@ -27,6 +27,7 @@ const CustomerStatisticsFree: React.FC = () => {
 
   const getList = async (params?: any) => {
     setIsLoading(true);
+    setSelectRowKeys([]);
     const res = await getCustomerFreeList({
       ...formParams,
       pageSize: 10,
@@ -79,6 +80,7 @@ const CustomerStatisticsFree: React.FC = () => {
 
   const onPaginationChange = (pageNum: number, pageSize?: number) => {
     setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize }));
+
     getList({ pageNum, pageSize });
   };
 
