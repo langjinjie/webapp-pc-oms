@@ -139,6 +139,8 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       const catalogId = catalogs[catalogs.length - 1];
 
       await getCatalogDetail(tree[0].sceneId, catalogId);
+      const currentScenes = scenesStates.filter((scenes) => scenes.sceneId === tree[0].sceneId)[0];
+      setCurrentScenesState(currentScenes);
       setTimeout(() => {
         speechForm.setFieldsValue({
           categoryId: catalogs
@@ -183,7 +185,6 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   };
 
   const onFinish = async (values: any) => {
-    console.log(values);
     const {
       content,
       contentType,
