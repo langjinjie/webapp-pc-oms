@@ -16,14 +16,14 @@ export const searchCols: SearchCol[] = [
     name: 'staffName',
     type: 'input',
     label: '客户经理',
-    placeholder: '',
+    placeholder: '待输入',
     width: 180
   },
   {
     name: 'addReason',
     type: 'input',
     label: '添加理由',
-    placeholder: '员工姓名',
+    placeholder: '待输入',
     width: 180
   }
 ];
