@@ -42,6 +42,7 @@ const StatisticsFreeList: React.FC = () => {
 
   const handleSearch = ({ name = '' }: { name: string }) => {
     setFormParams({ name });
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
     getList({ pageNum: 1, name });
   };
 

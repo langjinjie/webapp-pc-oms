@@ -52,6 +52,7 @@ const CustomerStatisticsFree: React.FC = () => {
     addReason: string;
   }) => {
     setFormParams({ condition, staffName, addReason });
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
     getList({ pageNum: 1, condition, staffName, addReason });
   };
 
