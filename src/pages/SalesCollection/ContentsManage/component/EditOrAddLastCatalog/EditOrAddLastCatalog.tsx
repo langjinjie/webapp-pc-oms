@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Modal, Form, Input, Select /* , message */, message } from 'antd';
-import { ICatalogDetail, IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils/interface';
+import { ICatalogDetail, IFirmModalParam, IEditOrAddCatalogParam, IContentParam } from 'src/utils/interface';
 import { SpeechTypeLabel } from 'src/pages/SalesCollection/ContentsManage/component';
 import { requestGetCatalogDetail, requestEditCatalog } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
@@ -12,11 +12,6 @@ interface IAddOrEditContentProps {
   editOrAddLastCatalogParam: IEditOrAddCatalogParam;
   setEditOrAddLastCatalogParam: (param: IEditOrAddCatalogParam) => void;
   setFirmModalParam: (param: IFirmModalParam) => void;
-}
-
-interface IContentParam {
-  name: string;
-  contentType: number;
 }
 
 const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
@@ -76,11 +71,16 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       catalogId: editOrAddLastCatalogParam.catalog.catalogId
     });
     if (res) {
-      // 处理音视频的回写
+      // 处理音视频pdf的回写
       setCatalogDetail(res);
-      if (res.contentType === 6 || res.contentType === 7) {
+      if (res.contentType === 6 || res.contentType === 7 || res.contentType === 10) {
         setFileList([
-          { uid: '1', name: `media.${res.contentType === 6 ? 'mp3' : 'mp4'}`, url: res.contentUrl, status: 'done' }
+          {
+            uid: '1',
+            name: res.contentUrl.split('/')[res.contentUrl.split('/').length - 1].split('?')[0],
+            url: res.contentUrl,
+            status: 'done'
+          }
         ]);
       }
       form.setFieldsValue(res);
@@ -158,7 +158,6 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   // modal确认
   const modalOnOkHandle = async () => {
     await form.validateFields();
-    console.log(form.getFieldsValue());
     const updataCatalog = form.getFieldsValue();
     // 小程序请求参数
     if (updataCatalog.contentUrl && updataCatalog.contentType !== 9 && !updataCatalog.contentUrl.startsWith('http')) {
@@ -216,7 +215,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         loading: btnIsLoading
       }}
     >
-      <Form form={form} onChange={() => console.log('111')} onValuesChange={() => setSubmitDisabled(false)}>
+      <Form form={form} onValuesChange={() => setSubmitDisabled(false)}>
         <Form.Item className={style.modalContentFormItem} label="目录名称:" required>
           <Form.Item name="name" rules={[{ required: true, message: '请输入目录名称' }]} noStyle>
             <Input
@@ -245,7 +244,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         <SpeechTypeLabel
           form={form}
           setSubmitDisabled={setSubmitDisabled}
-          type={catalogParam.contentType}
+          type={catalogParam}
           uploadImg={uploadImg}
           setUploadImg={setUploadImg}
           fileList={fileList}

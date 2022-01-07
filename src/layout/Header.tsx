@@ -17,22 +17,12 @@ interface IIndexProps {
   setSubMenus: (param: any) => void;
 }
 
-interface EnvName {
-  [key: string]: string;
-}
-
 const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
   const { userInfo, instList, setInstList } = useContext(Context);
   const [changeVisible, setChangeVisible] = useState<boolean>(false);
 
   const history = useHistory();
-
-  const envNames: EnvName = {
-    dev: '测试',
-    uat: 'UAT',
-    www: '生产',
-    local: '本地'
-  };
+  const envName = window.localStorage.getItem('envName');
 
   const logoutHandle = async () => {
     await logout();
@@ -56,10 +46,10 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
     }
   };
 
-  const getEnvName = () => {
+  /* const getEnvName = () => {
     const env: string = (window.location.origin.match(/(?<=\/\/)[a-zA-Z]+(?=\.)/) || ['local'])[0];
     return envNames[env] || '本地';
-  };
+  }; */
 
   useEffect(() => {
     if (instList.length === 0) {
@@ -87,7 +77,7 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
             setSubMenus([]);
           }}
         />
-        <span>({getEnvName()}环境)</span>
+        {envName && <span>({envName})</span>}
       </div>
       <div className="header-info">
         <img className="header-avatar" src={userInfo.avatar} alt="" />
