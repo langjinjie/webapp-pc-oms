@@ -10,11 +10,16 @@ import { UploadChangeParam } from 'antd/lib/upload/interface';
 import { Icon } from 'src/components';
 import style from './style.module.less';
 
+interface KeyMapVal {
+  [key: string]: string;
+}
+
 interface FileUploadProps {
   value?: string;
   onChange?: (val: string) => void;
+  extraData?: KeyMapVal;
 }
-const FileUpload: React.FC<FileUploadProps> = ({ value, onChange }) => {
+const FileUpload: React.FC<FileUploadProps> = ({ value, onChange, extraData }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>('');
 
@@ -38,8 +43,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ value, onChange }) => {
     <Upload
       accept="*"
       showUploadList={false}
-      action="/tenacity-admin/api/file/upload"
-      data={{ bizKey: 'news' }}
+      action="/tenacity-admin/api/corp/open/uploaddomain"
+      data={extraData}
       onChange={fileChange}
     >
       <div className={style.uploadBtn}>

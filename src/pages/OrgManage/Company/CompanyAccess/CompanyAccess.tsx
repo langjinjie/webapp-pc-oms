@@ -36,11 +36,11 @@ const CompanyAccess: React.FC = () => {
     },
     {
       name: '第三步',
-      desc: '配置自建应用'
+      desc: '配置客户联系'
     },
     {
       name: '第四步',
-      desc: '配置客户联系'
+      desc: '配置自建应用'
     },
     {
       name: '第五步',

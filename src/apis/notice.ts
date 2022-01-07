@@ -25,13 +25,13 @@ export const queryNotice: Void2Promise = () => {
  * @param param
  */
 export const queryNoticeList: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-admin/api/paperreport/paperlist', param);
+  return http.post('/tenacity-admin/api/notice/list', param);
 };
 
 /**
- * 删除配置
+ * 删除公告
  * @param param
  */
 export const delNotice: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-admin//api/paperreport/paperdel', param);
+  return http.post('/tenacity-admin//api/notice/opstatus', param);
 };

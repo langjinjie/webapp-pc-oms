@@ -22,9 +22,10 @@ interface SearchParam {
 
 interface NoticeItem {
   noticeId: string;
-  noticeTitle: string;
+  title: string;
   status: number;
-  sendTime: string;
+  startTime: string;
+  endTime: string;
 }
 
 const { confirm } = Modal;
@@ -41,7 +42,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const formItemData: ItemProps[] = [
     {
-      name: 'noticeTitle',
+      name: 'title',
       label: '标题',
       type: 'input'
     },
@@ -51,11 +52,11 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
       type: 'select',
       dataSource: [
         {
-          id: '1',
+          id: '2',
           name: '待生效'
         },
         {
-          id: '2',
+          id: '1',
           name: '生效中'
         },
         {
@@ -65,7 +66,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
       ]
     },
     {
-      name: 'sendTime',
+      name: 'time',
       label: '生效时间',
       type: 'rangePicker'
     }
@@ -144,7 +145,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
     },
     {
       title: '生效时间',
-      dataIndex: 'sendTime'
+      render: (_, item) => `${item.startTime} ${item.endTime}`
     },
     {
       title: '操作',
@@ -182,15 +183,15 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSubmit = (values: any) => {
-    const { sendTime, status, title } = values;
+    const { time, status, title } = values;
     const params: any = {
       title,
       status,
       pageNum: 1
     };
-    if (sendTime && sendTime.length > 0) {
-      params.startTime = sendTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      params.endTime = sendTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+    if (time && time.length > 0) {
+      params.startTime = time[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      params.endTime = time[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
     setSearchParam(values);
     getNoticeList(params, true);

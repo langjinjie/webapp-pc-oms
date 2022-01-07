@@ -214,6 +214,11 @@ export const menus: Menu[] = [
         path: '/orgManage'
       },
       {
+        name: '企业接入',
+        path: '/company',
+        onlyMain: true
+      },
+      {
         name: '敏感词管理',
         path: '/sensitiveManage'
       },
