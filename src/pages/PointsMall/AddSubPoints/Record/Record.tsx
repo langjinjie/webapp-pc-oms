@@ -7,13 +7,22 @@ import { getFreeStaffList } from 'src/apis/orgManage';
 import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './style.module.less';
+import { Moment } from 'moment';
 
 const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
-  useDocumentTitle('积分商城-积分扣减');
+  useDocumentTitle('积分管理-积分扣减');
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<StaffProps[]>([]);
-  const [formParams, setFormParams] = useState({
-    name: ''
+  const [formParams, setFormParams] = useState<{
+    beginTime: null | number;
+    endTime: number | null;
+    staffName: string;
+    adjustType: null | number;
+  }>({
+    beginTime: null,
+    endTime: null,
+    staffName: '',
+    adjustType: null
   });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -39,9 +48,22 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const handleSearch = ({ name = '' }: { name: string }) => {
-    setFormParams({ name });
-    getList({ pageNum: 1, name });
+  const handleSearch = (values: any) => {
+    const {
+      staffName,
+      time,
+      adjustType
+    }: { staffName: string; time: [Moment, Moment] | undefined; adjustType: number } = values;
+    let beginTime!: number;
+    let endTime!: number;
+    if (time) {
+      beginTime = time[0].startOf('day').valueOf();
+      endTime = time[1].endOf('day').valueOf();
+    }
+
+    setFormParams({ staffName, adjustType, beginTime, endTime });
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
+    getList({ pageNum: 1, staffName, adjustType, beginTime, endTime });
   };
 
   useEffect(() => {
@@ -62,7 +84,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
       <div className={styles.breadcrumbWrap}>
         <span>当前位置：</span>
         <Breadcrumb>
-          <Breadcrumb.Item className={styles.pointer} onClick={navigatorToList}>
+          <Breadcrumb.Item className="pointer" onClick={navigatorToList}>
             积分加减
           </Breadcrumb.Item>
           <Breadcrumb.Item>积分加减记录</Breadcrumb.Item>

@@ -9,7 +9,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import styles from './style.module.less';
 
 const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
-  useDocumentTitle('积分商城-积分扣减');
+  useDocumentTitle('积分管理-积分扣减');
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<StaffProps[]>([]);
   const [formParams, setFormParams] = useState({
@@ -62,7 +62,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
       <div className={styles.breadcrumbWrap}>
         <span>当前位置：</span>
         <Breadcrumb>
-          <Breadcrumb.Item className={styles.pointer} onClick={navigatorToList}>
+          <Breadcrumb.Item className="pointer" onClick={navigatorToList}>
             组织架构管理
           </Breadcrumb.Item>
           <Breadcrumb.Item>积分扣减记录</Breadcrumb.Item>

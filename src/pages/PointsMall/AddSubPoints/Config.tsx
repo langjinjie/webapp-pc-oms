@@ -5,7 +5,7 @@ import { Button } from 'antd';
 
 export const searchCols: SearchCol[] = [
   {
-    name: 'name',
+    name: 'staffName',
     type: 'input',
     label: '客户经理姓名',
     placeholder: '请输入',
@@ -13,7 +13,7 @@ export const searchCols: SearchCol[] = [
   }
 ];
 export interface StaffProps {
-  name: string; // 坐席姓名
+  staffName: string; // 坐席姓名
   userId: string; // 企微账号
   seatsId: string; // 工号
   staffId: string;
@@ -21,22 +21,29 @@ export interface StaffProps {
   freeType: string; // 免统计模块 1、排行榜，2、战报 多个用,分开
 }
 
-export const tableColumns = (): ColumnsType<StaffProps> => [
+export const tableColumns = (
+  addPoints: (staff: StaffProps) => void,
+  minusPoints: (staff: StaffProps) => void
+): ColumnsType<StaffProps> => [
   {
     title: '客户经理姓名',
-    dataIndex: 'name'
+    dataIndex: 'staffName'
   },
   {
     title: '积分余额',
-    dataIndex: 'userId',
+    dataIndex: 'points',
     align: 'left'
   },
   {
     title: '操作',
-    render: () => (
+    render: (text, record) => (
       <>
-        <Button type="link">增加</Button>
-        <Button type="link">扣减</Button>
+        <Button type="link" onClick={() => addPoints(record)}>
+          增加
+        </Button>
+        <Button type="link" onClick={() => minusPoints(record)}>
+          扣减
+        </Button>
       </>
     )
   }
