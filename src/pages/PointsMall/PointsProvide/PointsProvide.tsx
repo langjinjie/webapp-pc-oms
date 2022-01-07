@@ -3,12 +3,14 @@ import { useDocumentTitle } from 'src/utils/base';
 import { Form, Space, Input, Select, Button, DatePicker } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
+import { requestGetPonitsSendList } from 'src/apis/pointsMall';
+import { IPointsProvideList } from 'src/utils/interface';
 import PonitsDetail from './PonitsDetail/PonitsDetail';
 import style from './style.module.less';
 
 interface IPonitsList {
   total: number;
-  list: any[];
+  list: IPointsProvideList[];
 }
 
 interface IPonitsParam {
@@ -29,48 +31,12 @@ const PointsProvide: React.FC = () => {
   const { RangePicker } = DatePicker;
   const getPointsList = async () => {
     setIsloading(true);
-    console.log(ponitsList);
-    const pointsItem = {
-      staffName: '李斯',
-      staffId: 2000000,
-      time: '2021.12.12',
-      blacklist: 0,
-      newPonits: 50,
-      blackPonits: 0,
-      shouldPonits: 25,
-      sendedPonits: 25,
-      recoveryPonits: 0,
-      sendStatus: 0,
-      sendTime: '2021.12.13 09:23:45',
-      operator: '贾老师'
-    };
-    const list = [];
-    const index = (paginationParam.pageNum - 1) * 10;
-    for (let i = index; i < index + 10; i++) {
-      const item = { ...pointsItem };
-      item.staffId += i;
-      item.blacklist = i % 2;
-      item.newPonits += i;
-      item.blackPonits += i;
-      item.shouldPonits += i;
-      item.sendedPonits += i;
-      item.recoveryPonits += i;
-      list.push(item);
+    const res = await requestGetPonitsSendList({});
+    if (res) {
+      setPonitsList({ total: res.total, list: res.list });
     }
-    console.log(list);
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('成功~');
-      }, 1000);
-    });
-    list.forEach((item) => {
-      renderedList[item.staffId] = item;
-    });
-    console.log(renderedList);
-    console.log(Object.values(renderedList));
     setSelectedRowKeys([]);
     setDisabledColumnType(-1);
-    setPonitsList({ total: 20, list });
     setIsloading(false);
   };
   const resetHandle = () => {

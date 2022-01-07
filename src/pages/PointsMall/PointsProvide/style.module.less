@@ -41,6 +41,21 @@
       color: #318cf5;
       cursor: pointer;
     }
+    .sendStatus {
+      &::before {
+        content: '';
+        display: inline-block;
+        margin-right: 8px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ccccd0;
+        vertical-align: middle;
+      }
+      &.sended::before {
+        background: #33cdb8;
+      }
+    }
   }
   .sendPonits {
     margin: 16px 0;
