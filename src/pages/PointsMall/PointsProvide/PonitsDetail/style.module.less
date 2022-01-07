@@ -1,15 +1,53 @@
 .tableWrap {
-  :global {
-    .ant-table-cell {
-      vertical-align: top;
-    }
-  }
   // config样式
   .remark {
     .input {
       width: 100%;
       border: none;
       outline: none;
+    }
+  }
+  // 修改table默认样式
+  :global {
+    .ant-table-cell {
+      vertical-align: top;
+    }
+  }
+}
+
+// popoverTableWrap样式
+.title {
+  margin: 8px 0 20px;
+  text-align: center;
+}
+
+.clientNickName,
+.externalUserid,
+.cotent {
+  display: flex;
+  justify-content: space-between;
+  &:not(:last-child) {
+    margin-bottom: 16px;
+  }
+  .addBlackList {
+    display: inline-block;
+    margin-left: 14px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #318cf5;
+    font-size: 12px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #318cf5;
+    line-height: 12px;
+    vertical-align: top;
+    cursor: pointer;
+    &.blackList {
+      border-color: #2a2a2a;
+      background: #2a2a2a;
+      border-radius: 4px;
+      color: #ffffff;
+      cursor: not-allowed;
     }
   }
 }

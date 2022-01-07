@@ -2,8 +2,10 @@ import React, { useState, useRef, MutableRefObject } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN } from 'src/utils/base';
 import { Icon } from 'src/components';
-import { ISendPointsDetail } from 'src/utils/interface';
+import { ISendPointsDetail, IFlowList } from 'src/utils/interface';
+import { Popover, Table } from 'antd';
 import style from './style.module.less';
+import classNames from 'classnames';
 // import classNames from 'classnames';
 
 const TableColumns = (): ColumnsType<any> => {
@@ -32,6 +34,26 @@ const TableColumns = (): ColumnsType<any> => {
     '服务建议发送',
     '点击客户雷达',
     '客户经理主动删除'
+  ];
+  // popoverTable
+  const popovercolums: ColumnsType<any> = [
+    {
+      title: '客户昵称',
+      render (row: IFlowList) {
+        return (
+          <div className={style.clientNickName}>
+            <span>{row.clientNickName}</span>
+            <span className={classNames(style.addBlackList, { [style.blackList]: row.clientInBlack })}>
+              添加进黑名单
+            </span>
+          </div>
+        );
+      }
+    },
+    {
+      title: '客户id',
+      dataIndex: 'externalUserid'
+    }
   ];
   // 输入框失去焦点
   const inputOnblurHandle = (row: ISendPointsDetail) => {
@@ -77,8 +99,32 @@ const TableColumns = (): ColumnsType<any> => {
         return (
           <>
             {row.flowList.slice(0, 3).map((item) => (
-              <div key={item.flowId}>{item.clientNickName}</div>
+              <div className={style.clientNickName} key={item.flowId}>
+                <span>{item.clientNickName}</span>
+                <span className={classNames(style.addBlackList, { [style.blackList]: item.clientInBlack })}>
+                  添加进黑名单
+                </span>
+              </div>
             ))}
+            {row.flowList.length > 3 && (
+              <Popover
+                content={
+                  <>
+                    <div className={style.title}>客户明细</div>
+                    <Table
+                      className={style.popoverTableWrap}
+                      rowKey={'flowId'}
+                      dataSource={row.flowList}
+                      columns={popovercolums}
+                      pagination={false}
+                    />
+                  </>
+                }
+                trigger="click"
+              >
+                <span>查看客户明细</span>
+              </Popover>
+            )}
           </>
         );
       }
@@ -89,7 +135,9 @@ const TableColumns = (): ColumnsType<any> => {
         return (
           <>
             {row.flowList.slice(0, 3).map((item) => (
-              <div key={item.flowId}>{item.externalUserid}</div>
+              <div className={style.externalUserid} key={item.flowId}>
+                {item.externalUserid}
+              </div>
             ))}
           </>
         );
@@ -101,7 +149,9 @@ const TableColumns = (): ColumnsType<any> => {
         return (
           <>
             {row.flowList.slice(0, 3).map((item) => (
-              <div key={item.flowId}>{item.cotent}</div>
+              <div className={style.cotent} key={item.flowId}>
+                {item.cotent}
+              </div>
             ))}
           </>
         );
