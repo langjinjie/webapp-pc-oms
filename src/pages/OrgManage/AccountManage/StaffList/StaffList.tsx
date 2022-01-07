@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { /* useHistory, */ useLocation } from 'react-router';
 import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm /* , message */ } from 'antd';
 import {
   requestGetStaffList,
@@ -44,7 +43,7 @@ const StaffList: React.FC = () => {
   const [opType, setOpType] = useState(0);
 
   // const history = useHistory();
-  const location = useLocation();
+  // const location = useLocation();
 
   // 获取员工列表
   const getStaffList = async (pageNum = paginationParam.current, pageSize = paginationParam.pageSize, params = {}) => {
@@ -74,7 +73,6 @@ const StaffList: React.FC = () => {
         });
       }
     }
-    const { corpId } = location.state as { [key: string]: unknown };
     const params = {
       opType,
       corpId,
@@ -237,7 +235,7 @@ const StaffList: React.FC = () => {
     setSelectedRowKeys([]);
     setDisabledColumnType('2');
     setIsLoading(true);
-    const res = await requestSyncSpcontentdel({ corpId: (location.state as { [key: string]: string }).corpId });
+    const res = await requestSyncSpcontentdel({ corpId });
     if (res) {
       form.resetFields();
       getStaffList(1);
@@ -266,7 +264,7 @@ const StaffList: React.FC = () => {
   };
   // 导出表格
   const downLoad = async () => {
-    const res = await requestLeadingOutExcel({ corpId: (location.state as { [key: string]: unknown }).corpId });
+    const res = await requestLeadingOutExcel({ corpId });
     if (res) {
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
@@ -281,9 +279,6 @@ const StaffList: React.FC = () => {
     }
   };
   useEffect(() => {
-    // if (!(location.state as { [key: string]: string }) || !(location.state as { [key: string]: string }).corpId) {
-    //   return history.push('/orgManage');
-    // }
     getStaffList();
   }, []);
   return (
