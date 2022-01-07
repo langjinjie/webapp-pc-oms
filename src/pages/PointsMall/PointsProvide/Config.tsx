@@ -2,6 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN } from 'src/utils/base';
 import style from './style.module.less';
+import classNames from 'classnames';
 
 interface IPonitsParam {
   visible: boolean;
@@ -28,45 +29,49 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
       title: '日期',
       // width: 100,
       render (row) {
-        return <span>{row.time || UNKNOWN}</span>;
+        return <span>{row.date || UNKNOWN}</span>;
       }
     },
     {
       title: '是否有黑名单',
-      dataIndex: 'blacklist'
+      dataIndex: 'blackClientNum'
     },
     {
       title: '待发积分',
       render (row) {
-        return <span>{row.newPonits || UNKNOWN}</span>;
+        return <span>{row.sendPoints || UNKNOWN}</span>;
       }
     },
     {
       title: '黑名单积分',
-      dataIndex: 'blackPonits'
+      dataIndex: 'blackPoints'
     },
     {
       title: '应发积分',
       render (row) {
-        return <span>{row.shouldPonits || UNKNOWN}</span>;
+        return <span>{row.mustSendPoints || UNKNOWN}</span>;
       }
     },
     {
       title: '已发积分',
       render (row) {
-        return <span>{row.sendedPonits || UNKNOWN}</span>;
+        return <span>{row.sendedPoints || UNKNOWN}</span>;
       }
     },
     {
       title: '积分回收',
       render (row) {
-        return <span>{row.recoveryPonits || UNKNOWN}</span>;
+        return <span>{row.recoveryPoints || UNKNOWN}</span>;
       }
     },
     {
       title: '积分发放状态',
       render (row) {
-        return <span className={style.sendStatus}>{row.sendStatus ? '未发放' : '已发放'}</span>;
+        return (
+          <span className={classNames(style.sendStatus, { [style.sended]: row.sendStatus })}>
+            {row.sendStatus ? '已发放' : '未发放'}
+          </span>
+        );
       }
     },
     {
@@ -78,7 +83,7 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
     {
       title: '操作人',
       render (row) {
-        return <span>{row.operator || UNKNOWN}</span>;
+        return <span>{row.opName || UNKNOWN}</span>;
       }
     },
     {
