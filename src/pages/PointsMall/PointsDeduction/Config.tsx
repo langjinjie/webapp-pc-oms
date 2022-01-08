@@ -2,11 +2,11 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 
 export const searchCols: SearchCol[] = [
   {
-    name: 'name',
+    name: 'staffName',
     type: 'input',
     label: '客户经理姓名',
     placeholder: '请输入',
@@ -18,7 +18,15 @@ export const searchCols: SearchCol[] = [
     label: '日期'
   }
 ];
-export interface StaffProps {
+export interface DeductProps {
+  deductId: string;
+  points: number;
+  date: string;
+  externalUserid: string;
+  clientNickName: string;
+  clientAvatar: string;
+  deductPoints: number;
+  reason: string;
   name: string; // 坐席姓名
   userId: string; // 企微账号
   seatsId: string; // 工号
@@ -27,15 +35,15 @@ export interface StaffProps {
   freeType: string; // 免统计模块 1、排行榜，2、战报 多个用,分开
 }
 
-export const tableColumns = (): ColumnsType<StaffProps> => [
+export const tableColumns = (): ColumnsType<DeductProps> => [
   {
     title: '客户经理姓名',
-    dataIndex: 'name',
-    width: 100
+    dataIndex: 'staffName',
+    width: 140
   },
   {
     title: '客户经理ID',
-    dataIndex: 'userId',
+    dataIndex: 'staffId',
     align: 'left',
     width: 200,
     ellipsis: {
@@ -44,7 +52,7 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
   },
   {
     title: '日期',
-    dataIndex: 'jobNumber',
+    dataIndex: 'date',
     align: 'left',
     width: 180,
     render: (value) => <span>{value || UNKNOWN}</span>
@@ -52,26 +60,22 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
   {
     title: '积分扣减',
     align: 'left',
-    dataIndex: 'position',
+    dataIndex: 'deductPoints',
     width: 200,
     render: (value) => <span>{value || UNKNOWN}</span>
   },
   {
     title: '积分扣减原因',
-    dataIndex: 'freeType',
+    dataIndex: 'reason',
     width: 200,
-    render: (value: string) => {
-      return value.split(',').map((item, index: number) => {
-        if (item === '1') {
-          return <span>排行榜 {index + 1 < value.length ? '、' : ''}</span>;
-        } else {
-          return <span>战报</span>;
-        }
-      });
+    ellipsis: { showTitle: false },
+    render: (text) => {
+      return (
+        <Tooltip placement="topLeft" title={text}>
+          {text || UNKNOWN}
+        </Tooltip>
+      );
     }
-    // <span>
-    //   {value.indexOf('1') > -1 ? '排行榜 ' : null} {value.indexOf('2') > -1 ? ' 战报' : null}
-    // </span>
   },
   {
     title: '删除的客户昵称',

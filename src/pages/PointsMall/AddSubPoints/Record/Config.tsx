@@ -5,7 +5,7 @@ import { UNKNOWN } from 'src/utils/base';
 
 export const searchCols: SearchCol[] = [
   {
-    name: 'name',
+    name: 'staffName',
     type: 'input',
     label: '客户经理姓名',
     placeholder: '请输入',
@@ -17,7 +17,7 @@ export const searchCols: SearchCol[] = [
     label: '日期'
   },
   {
-    name: 'time',
+    name: 'adjustType',
     type: 'select',
     label: '积分加减',
     placeholder: '请选择',
@@ -39,6 +39,7 @@ export interface StaffProps {
   userId: string; // 企微账号
   seatsId: string; // 工号
   staffId: string;
+  adjustType: number;
   position: string; // 岗位名称
   freeType: string; // 免统计模块 1、排行榜，2、战报 多个用,分开
 }
@@ -46,21 +47,26 @@ export interface StaffProps {
 export const tableColumns = (): ColumnsType<StaffProps> => [
   {
     title: '客户经理姓名',
-    dataIndex: 'name',
+    dataIndex: 'staffName',
     width: 130
   },
   {
     title: '积分加减',
-    dataIndex: 'userId',
+    dataIndex: 'adjustPoints',
     align: 'left',
     width: 200,
-    ellipsis: {
-      showTitle: false
+    render (text, record) {
+      return (
+        <span>
+          {record.adjustType === 1 ? '+' : '-'}
+          {text}
+        </span>
+      );
     }
   },
   {
     title: '操作人',
-    dataIndex: 'userId',
+    dataIndex: 'opName',
     align: 'left',
     width: 200,
     ellipsis: {
@@ -69,26 +75,20 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
   },
   {
     title: '操作时间',
-    dataIndex: 'userId',
+    dataIndex: 'opTime',
     align: 'left',
-    width: 200,
-    ellipsis: {
-      showTitle: false
-    }
+    width: 200
   },
   {
     title: '积分余额',
-    dataIndex: 'userId',
+    dataIndex: 'points',
     align: 'left',
-    width: 200,
-    ellipsis: {
-      showTitle: false
-    }
+    width: 200
   },
   {
     title: '备注',
     align: 'left',
-    dataIndex: 'position',
+    dataIndex: 'remark',
     width: 200,
     render: (value) => <span>{value || UNKNOWN}</span>
   }
