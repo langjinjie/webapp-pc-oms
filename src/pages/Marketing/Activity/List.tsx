@@ -109,6 +109,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
           if (copyData.length === 0) {
             getList({ pageNum: pagination.current - 1 || 1, pageSize: pagination.pageSize });
           }
+          setPagination((pagination) => ({ ...pagination, total: pagination.total - 1 || 0 }));
           setDataSource(copyData);
         }
       }
