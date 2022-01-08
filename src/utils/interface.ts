@@ -16,6 +16,7 @@ export interface IStaffList {
   staffId: string;
   userId: string;
   corpId: string;
+  entryValue: string;
   staffName: string;
   mangerName: string;
   serviceType: string;
@@ -159,6 +160,12 @@ export interface ICatalogDetail {
   videoSize?: string;
   videoDuration?: number;
   audioVideoId?: string;
+}
+
+// 话术类型参数
+export interface IContentParam {
+  name: string;
+  contentType: number;
 }
 
 /* 敏感词管理 */

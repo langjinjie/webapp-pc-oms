@@ -58,7 +58,6 @@ const MultiLaod: React.FC = () => {
       startTime,
       endTime
     });
-    console.log(res);
     if (res) {
       setExportList(res);
       setIsLoading(false);
@@ -104,7 +103,6 @@ const MultiLaod: React.FC = () => {
       deptType: 2
     });
     if (res) {
-      console.log(res);
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

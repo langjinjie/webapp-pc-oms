@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router';
+import React, { useEffect, useState, useContext } from 'react';
 import { Button, Card, Form, Input, Select, Space, Table, Modal, Popconfirm /* , message */ } from 'antd';
 import {
   requestGetStaffList,
@@ -14,10 +13,14 @@ import {
   accountStatusEdit2Name,
   staffStatus2Name
 } from 'src/utils/commonData';
+import { Context } from 'src/store';
+import { useDocumentTitle } from 'src/utils/base';
 import classNames from 'classnames';
 import style from './style.module.less';
 
 const StaffList: React.FC = () => {
+  useDocumentTitle('机构管理-账号管理');
+  const { currentCorpId: corpId } = useContext(Context);
   const [form] = Form.useForm();
   const [paginationParam, setPaginationParam] = useState({ current: 1, pageSize: 10 });
   const [staffListInfo, setStaffListInfo] = useState<IStaffListInfo>({
@@ -39,13 +42,12 @@ const StaffList: React.FC = () => {
   const [popconfirmVisible, setPopconfirmVisible] = useState('');
   const [opType, setOpType] = useState(0);
 
-  const history = useHistory();
-  const location = useLocation();
+  // const history = useHistory();
+  // const location = useLocation();
 
   // 获取员工列表
   const getStaffList = async (pageNum = paginationParam.current, pageSize = paginationParam.pageSize, params = {}) => {
     setIsLoading(true);
-    const { corpId } = location.state as { [key: string]: unknown };
     const res = await requestGetStaffList({ corpId, pageNum, pageSize, ...params });
     if (res.list) {
       setStaffListInfo({
@@ -71,7 +73,6 @@ const StaffList: React.FC = () => {
         });
       }
     }
-    const { corpId } = location.state as { [key: string]: unknown };
     const params = {
       opType,
       corpId,
@@ -110,7 +111,7 @@ const StaffList: React.FC = () => {
       align: 'center'
     },
     {
-      title: '团队经理',
+      title: '直属上级',
       dataIndex: 'mangerName',
       align: 'center'
     },
@@ -120,6 +121,10 @@ const StaffList: React.FC = () => {
         return row.lastLoginTime || '--';
       },
       align: 'center'
+    },
+    {
+      title: '数据录入',
+      dataIndex: 'entryValue'
     },
     {
       title: '员工状态',
@@ -197,6 +202,7 @@ const StaffList: React.FC = () => {
     current: paginationParam.current,
     showQuickJumper: true,
     showSizeChanger: true,
+    pageSizeOptions: ['10', '20', '50', '100', '500'],
     onChange (value: number, pageSize?: number) {
       getStaffList(value, pageSize, currentSearchParam);
       setPaginationParam({ current: value, pageSize: pageSize as number });
@@ -229,7 +235,7 @@ const StaffList: React.FC = () => {
     setSelectedRowKeys([]);
     setDisabledColumnType('2');
     setIsLoading(true);
-    const res = await requestSyncSpcontentdel({ corpId: (location.state as { [key: string]: string }).corpId });
+    const res = await requestSyncSpcontentdel({ corpId });
     if (res) {
       form.resetFields();
       getStaffList(1);
@@ -258,8 +264,7 @@ const StaffList: React.FC = () => {
   };
   // 导出表格
   const downLoad = async () => {
-    const res = await requestLeadingOutExcel({ corpId: (location.state as { [key: string]: unknown }).corpId });
-    console.log(res);
+    const res = await requestLeadingOutExcel({ corpId });
     if (res) {
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
@@ -274,9 +279,6 @@ const StaffList: React.FC = () => {
     }
   };
   useEffect(() => {
-    if (!(location.state as { [key: string]: string }) || !(location.state as { [key: string]: string }).corpId) {
-      return history.push('/orgManage');
-    }
     getStaffList();
   }, []);
   return (
@@ -303,7 +305,7 @@ const StaffList: React.FC = () => {
             <Form.Item name="staffName" label="员工姓名">
               <Input placeholder="待输入" className={style.inputBox} allowClear />
             </Form.Item>
-            <Form.Item name="mangerName" label="经理姓名">
+            <Form.Item name="mangerName" label="直属上级">
               <Input placeholder="待输入" className={style.inputBox} allowClear />
             </Form.Item>
           </Space>

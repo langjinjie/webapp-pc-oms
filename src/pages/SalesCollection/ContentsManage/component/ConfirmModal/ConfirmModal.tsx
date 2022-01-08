@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Modal } from 'antd';
 import { IFirmModalParam } from 'src/utils/interface';
 import style from './style.module.less';
@@ -10,9 +10,6 @@ interface IConfirmModalProps {
 const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam }) => {
   const { visible, title, content, onOk, onCancel } = firmModalParam;
   const [okBtnDisabled, setOnBtnDsiabled] = useState(false);
-  useEffect(() => {
-    console.log('ConfirmModal加载了');
-  }, []);
   const cancel = () => {
     onCancel?.();
     setOnBtnDsiabled(false);

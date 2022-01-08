@@ -216,6 +216,10 @@ export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
   {
     path: '/statistics-free',
     component: lazy(() => import('src/pages/OrgManage/StatisticsFree/List'))
+  },
+  {
+    path: '/customer-statistics-free',
+    component: lazy(() => import('src/pages/OrgManage/CustomerStatisticsFree'))
   }
 ];
 
@@ -227,7 +231,8 @@ export const menus: Menu[] = [
     children: [
       {
         name: '账号管理',
-        path: '/orgManage'
+        // path: '/orgManage'
+        path: '/orgManage/detail'
       },
       {
         name: '敏感词管理',
@@ -240,6 +245,10 @@ export const menus: Menu[] = [
       {
         name: '数据免统计名单',
         path: '/statistics-free'
+      },
+      {
+        name: '客户免统计名单',
+        path: '/customer-statistics-free'
       }
     ]
   },

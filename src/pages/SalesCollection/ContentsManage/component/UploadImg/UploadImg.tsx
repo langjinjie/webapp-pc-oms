@@ -46,7 +46,7 @@ const UploadImg: React.FC<IUploadImgProps> = ({
     });
     const suffixType = suffix.includes(file.name.split('.')[file.name.split('.').length - 1]);
     const imgType = type.includes(file.type) && suffixType;
-    if (!imgType) message.error('请上传正确的图片格式');
+    if (!imgType) message.error('请上传.' + suffix[0] + '的图片格式');
     const isSize = file.size / 1024 / 1024 < size;
     if (!isSize) message.error(`图片大小不能超过${size}MB!`);
     // 不限制等宽高

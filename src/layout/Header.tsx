@@ -22,6 +22,7 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
   const [changeVisible, setChangeVisible] = useState<boolean>(false);
 
   const history = useHistory();
+  const envName = window.localStorage.getItem('envName');
 
   const logoutHandle = async () => {
     await logout();
@@ -40,10 +41,15 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
     const res: any = await chooseInst({ corpId });
     sessionStorage.removeItem('tagOptions');
     if (res) {
-      // window.location.reload();
-      window.location.href = window.location.origin + '/tenacity-oms/orgManage'; // 切换机构强行跳转到机构列表
+      window.location.reload();
+      // window.location.href = window.location.origin + '/tenacity-oms/orgManage'; // 切换机构强行跳转到机构列表
     }
   };
+
+  /* const getEnvName = () => {
+    const env: string = (window.location.origin.match(/(?<=\/\/)[a-zA-Z]+(?=\.)/) || ['local'])[0];
+    return envNames[env] || '本地';
+  }; */
 
   useEffect(() => {
     if (instList.length === 0) {
@@ -60,16 +66,19 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
 
   return (
     <header className="header-wrap">
-      <img
-        className="header-logo"
-        src={require('src/assets/images/corp_logo.png')}
-        alt=""
-        onClick={() => {
-          history.push('/index');
-          setMenuIndex(null);
-          setSubMenus([]);
-        }}
-      />
+      <div className="header-logo-wrap">
+        <img
+          className="header-logo"
+          src={require('src/assets/images/corp_logo.png')}
+          alt=""
+          onClick={() => {
+            history.push('/index');
+            setMenuIndex(null);
+            setSubMenus([]);
+          }}
+        />
+        {envName && <span>({envName})</span>}
+      </div>
       <div className="header-info">
         <img className="header-avatar" src={userInfo.avatar} alt="" />
         <span className="user-name">
