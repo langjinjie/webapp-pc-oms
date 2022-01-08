@@ -12,6 +12,7 @@ const TableColumns = (): ColumnsType<any> => {
   const [isEdit, setIsEdit] = useState('');
   const [remark, setRemark] = useState('');
   const inputRef: MutableRefObject<any> = useRef(null);
+  // 功能模块
   const businessType2NameList = [
     '朋友圈',
     '加好友',
@@ -22,6 +23,7 @@ const TableColumns = (): ColumnsType<any> => {
     '客户雷达',
     '删好友'
   ];
+  // 行为
   const action2NameList = [
     '发送',
     '点赞',
@@ -35,6 +37,11 @@ const TableColumns = (): ColumnsType<any> => {
     '点击客户雷达',
     '客户经理主动删除'
   ];
+  // 添加黑名单
+  const addBlackListHandle = (isBlackList: boolean) => {
+    console.log(isBlackList);
+    // if (isBlackList) return;
+  };
   // popoverTable
   const popovercolums: ColumnsType<any> = [
     {
@@ -43,8 +50,11 @@ const TableColumns = (): ColumnsType<any> => {
         return (
           <div className={style.clientNickName}>
             <span>{row.clientNickName}</span>
-            <span className={classNames(style.addBlackList, { [style.blackList]: row.clientInBlack })}>
-              添加进黑名单
+            <span
+              className={classNames(style.addBlackList, { [style.blackList]: row.clientInBlack })}
+              onClick={() => addBlackListHandle(!!row.clientInBlack)}
+            >
+              {row.clientInBlack ? '客户黑名单' : '添加进黑名单'}
             </span>
           </div>
         );
@@ -84,7 +94,11 @@ const TableColumns = (): ColumnsType<any> => {
     {
       title: '任务名称',
       render (row: ISendPointsDetail) {
-        return <span>{row.taskName || UNKNOWN}</span>;
+        return (
+          <span>
+            {`${row.taskName}${row.actionNum > 1 ? `（${row.realActionNum}/${row.actionNum}）` : ''}` || UNKNOWN}
+          </span>
+        );
       }
     },
     {
@@ -101,13 +115,17 @@ const TableColumns = (): ColumnsType<any> => {
             {row.flowList.slice(0, 3).map((item) => (
               <div className={style.clientNickName} key={item.flowId}>
                 <span>{item.clientNickName}</span>
-                <span className={classNames(style.addBlackList, { [style.blackList]: item.clientInBlack })}>
-                  添加进黑名单
+                <span
+                  className={classNames(style.addBlackList, { [style.blackList]: item.clientInBlack })}
+                  onClick={() => addBlackListHandle(!!item.clientInBlack)}
+                >
+                  {item.clientInBlack ? '客户黑名单' : '添加进黑名单'}
                 </span>
               </div>
             ))}
             {row.flowList.length > 3 && (
               <Popover
+                placement="rightBottom"
                 content={
                   <>
                     <div className={style.title}>客户明细</div>
@@ -122,7 +140,7 @@ const TableColumns = (): ColumnsType<any> => {
                 }
                 trigger="click"
               >
-                <span>查看客户明细</span>
+                <span className={style.checkAllClient}>查看客户明细</span>
               </Popover>
             )}
           </>
@@ -159,14 +177,20 @@ const TableColumns = (): ColumnsType<any> => {
     },
     {
       title: '奖励积分',
+      width: 88,
       render (row: ISendPointsDetail) {
         return <span>{row.rewardPoints || UNKNOWN}</span>;
       }
     },
     {
       title: '积分发放状态',
-      render (row: ISendPointsDetail) {
-        return <span>{row.sendStatus || UNKNOWN}</span>;
+      width: 116,
+      render (row) {
+        return (
+          <span className={classNames(style.sendStatus, { [style.sended]: row.sendStatus })}>
+            {row.sendStatus ? '已发放' : '未发放'}
+          </span>
+        );
       }
     },
     {
@@ -198,15 +222,7 @@ const TableColumns = (): ColumnsType<any> => {
 };
 
 const TablePagination = (arg: { [key: string]: any }): any => {
-  const {
-    dataSource,
-    paginationParam,
-    setPaginationParam,
-    selectedRowKeys,
-    setSelectedRowKeys,
-    disabledColumnType,
-    setDisabledColumnType
-  } = arg;
+  const { dataSource, paginationParam, setPaginationParam, selectedRowKeys, setSelectedRowKeys } = arg;
   // 分页器参数
   const pagination = {
     total: dataSource.total,
@@ -219,29 +235,8 @@ const TablePagination = (arg: { [key: string]: any }): any => {
   };
   // 点击选择框
   const onSelectChange = async (newSelectedRowKeys: any[]) => {
-    // 判断是取消选择还是开始选择
-    if (newSelectedRowKeys.length) {
-      let filterRowKeys: string[] = newSelectedRowKeys;
-      // 判断是否是首次选择
-      if (disabledColumnType === -1) {
-        // 获取第一个的状态作为全选筛选条件
-        const disabledColumnType = dataSource?.list.find((item: any) => item.staffId === newSelectedRowKeys[0])
-          ?.isDeleted as number;
-        setDisabledColumnType(disabledColumnType);
-        // 判断是否是点击的全选
-        if (newSelectedRowKeys.length > 1) {
-          // 过滤得到需要被全选的
-          filterRowKeys = dataSource.list
-            .filter((item: any) => item.isDeleted === disabledColumnType)
-            .map((item: any) => item.staffId);
-        }
-      }
-      setSelectedRowKeys(filterRowKeys as string[]);
-    } else {
-      // 取消全选
-      setSelectedRowKeys([]);
-      setDisabledColumnType(-1);
-    }
+    setSelectedRowKeys([newSelectedRowKeys]);
+    console.log(newSelectedRowKeys);
   };
   const rowSelection = {
     selectedRowKeys,
@@ -250,11 +245,7 @@ const TablePagination = (arg: { [key: string]: any }): any => {
       console.log('选中了');
       console.log(row);
     },
-    hideSelectAll: false, // 是否隐藏全选
-    getCheckboxProps: (record: any) => ({
-      disabled: disabledColumnType === -1 ? false : record.isDeleted !== disabledColumnType,
-      name: record.name
-    })
+    hideSelectAll: false // 是否隐藏全选
   };
   return { pagination, rowSelection, paginationChange };
 };
