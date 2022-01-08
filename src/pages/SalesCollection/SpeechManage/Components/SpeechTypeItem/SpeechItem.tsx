@@ -5,6 +5,7 @@ import NgUpload from 'src/pages/Marketing/Components/Upload/Upload';
 import styles from './styles.module.less';
 import InputShowLength from '../InputShowLength/InputShowLength';
 import { RcFile } from 'antd/lib/upload';
+import NgUploadFile from 'src/pages/Marketing/Components/UploadFile/UploadFile';
 
 interface SpeechItemProps {
   type?: number;
@@ -193,6 +194,27 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
           <Form.Item name="summary" label="小程序摘要" rules={[{ required: true }, { max: 30 }]}>
+            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
+          </Form.Item>
+        </>
+      )}
+      {type === 10 && (
+        <>
+          <Form.Item
+            label={'上传图片'}
+            name="thumbnail"
+            rules={[{ required: true }]}
+            extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
+          >
+            <NgUpload beforeUpload={beforeUploadSmallPic}></NgUpload>
+          </Form.Item>
+          <Form.Item label={'上传PDF'} name="contentUrl" rules={[{ required: true }]}>
+            <NgUploadFile />
+          </Form.Item>
+          <Form.Item name="title" label="PDF标题" rules={[{ required: true }, { max: 30 }]}>
+            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
+          </Form.Item>
+          <Form.Item name="summary" label="PDF摘要" rules={[{ required: true }, { max: 30 }]}>
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
         </>
