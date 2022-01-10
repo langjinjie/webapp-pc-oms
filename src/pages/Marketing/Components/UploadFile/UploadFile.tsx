@@ -34,9 +34,11 @@ const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }
     }
   }, [value]);
   const uploadButton = (
-    <div className={styles.uploadWrap}>
-      {states.loading ? <LoadingOutlined /> : <Icon name="shangchuanwenjian" />}
-      将文件拖拽至此区域，或<span>点此上传</span>
+    <div className={styles.uploadBtn}>
+      {states.loading ? <LoadingOutlined /> : <Icon className="text-primary font18" name="shangchuanwenjian" />}
+      <span className="ml10">
+        将文件拖拽至此区域，或<span className="text-primary ml10">点此上传</span>
+      </span>
     </div>
   );
   const handleBeforeUpload = async (file: RcFile) => {
@@ -105,17 +107,18 @@ const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }
         </div>
           )
         : (
-        <Upload.Dragger
-          onChange={handleChange}
-          listType="picture-card"
-          maxCount={1}
-          beforeUpload={handleBeforeUpload}
-          showUploadList={false}
-          className={styles.uploadWrap}
-          customRequest={posterUploadFile}
-        >
-          {uploadButton}
-        </Upload.Dragger>
+        <div className={styles.uploadWrap}>
+          <Upload.Dragger
+            onChange={handleChange}
+            listType="picture-card"
+            maxCount={1}
+            beforeUpload={handleBeforeUpload}
+            showUploadList={false}
+            customRequest={posterUploadFile}
+          >
+            {uploadButton}
+          </Upload.Dragger>
+        </div>
           )}
     </>
   );
