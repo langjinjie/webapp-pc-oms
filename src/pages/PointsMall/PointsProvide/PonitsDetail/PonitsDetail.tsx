@@ -11,6 +11,10 @@ interface IPonitsParam {
   ponitsRow: IPointsProvideList;
 }
 
+interface IProviderPointsParams extends ISendPointsDetail {
+  isProvider?: boolean;
+}
+
 interface IPonitsDetail {
   ponitsParam: IPonitsParam;
   setPonitsParam: (param: IPonitsParam) => void;
@@ -26,8 +30,14 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [tableHeight, setTableHeight] = useState(0);
-  const [renderedList, setRenderedList] = useState<{ [key: string]: ISendPointsDetail }>({});
+  const [renderedList, setRenderedList] = useState<{ [key: string]: IProviderPointsParams }>({});
   const wrapRef: MutableRefObject<any> = useRef(null);
+  // 重置
+  const onResetHandle = () => {
+    setRenderedList({});
+    setPonitsParam({ ...ponitsParam, visible: false });
+    setPaginationParam({ pageNum: 1, pageSize: 10 });
+  };
   // 获取发放积分详情接口
   const getSendPonitsDetail = async () => {
     setIsLoading(true);
@@ -41,22 +51,31 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
         .map((item: ISendPointsDetail) => item.rewardId);
       setSelectedRowKeys((keys) => Array.from(new Set([...keys, ...initSelectedRowKeys])));
       setRenderedList(
-        res.list.reduce((now: ISendPointsDetail, prev: { [key: string]: ISendPointsDetail }) => {
-          prev[now.rewardId] = now;
-          return prev;
-        }, renderedList)
+        res.list.reduce(
+          (prev: { [key: string]: IProviderPointsParams }, now: ISendPointsDetail) => {
+            prev[now.rewardId] = now;
+            prev[now.rewardId].isProvider = !now.isBlackTask;
+            return prev;
+          },
+          { ...renderedList }
+        )
       );
     }
     setIsLoading(false);
   };
   // 关闭抽屉
   const onCloseHandle = () => {
-    setPonitsParam({ ...ponitsParam, visible: false });
+    onResetHandle();
   };
   // 一键发放
   const sendedAllHandle = () => {
-    console.log('selectedRowKeys', selectedRowKeys);
-    // console.log('renderedKeys', renderedKeys);
+    const selectedRewardldList = Object.values(renderedList)
+      .filter((item) => item.isProvider)
+      .map((item) => item.rewardId);
+    const unSelectedRewardldList = Object.values(renderedList)
+      .filter((item) => !item.isProvider)
+      .map((item) => item.rewardId);
+    console.log('selectedRewardldList', selectedRewardldList, 'unSelectedRewardldList', unSelectedRewardldList);
   };
   useEffect(() => {
     ponitsParam.visible && getSendPonitsDetail();
@@ -94,7 +113,8 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
             paginationParam,
             setPaginationParam,
             selectedRowKeys,
-            setSelectedRowKeys
+            setSelectedRowKeys,
+            setRenderedList
           })}
         />
       </Drawer>

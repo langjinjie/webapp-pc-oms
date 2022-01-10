@@ -8,6 +8,10 @@ import style from './style.module.less';
 import classNames from 'classnames';
 // import classNames from 'classnames';
 
+interface IProviderPointsParams extends ISendPointsDetail {
+  isProvider?: boolean;
+}
+
 const TableColumns = (): ColumnsType<any> => {
   const [isEdit, setIsEdit] = useState('');
   const [remark, setRemark] = useState('');
@@ -222,7 +226,7 @@ const TableColumns = (): ColumnsType<any> => {
 };
 
 const TablePagination = (arg: { [key: string]: any }): any => {
-  const { dataSource, paginationParam, setPaginationParam, selectedRowKeys, setSelectedRowKeys } = arg;
+  const { dataSource, paginationParam, setPaginationParam, selectedRowKeys, setSelectedRowKeys, setRenderedList } = arg;
   // 分页器参数
   const pagination = {
     total: dataSource.total,
@@ -236,15 +240,33 @@ const TablePagination = (arg: { [key: string]: any }): any => {
   // 点击选择框
   const onSelectChange = async (newSelectedRowKeys: any[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
-    console.log(newSelectedRowKeys);
   };
   const rowSelection = {
     selectedRowKeys,
+    // 选择框改变
     onChange: onSelectChange,
-    onSelect (record: ISendPointsDetail, selected: any, selectedRows: any) {
-      console.log('record', record);
-      console.log('selected', selected);
-      console.log('selectedRows', selectedRows);
+    // 单选操作
+    onSelect (record: IProviderPointsParams, selected: boolean) {
+      setRenderedList((list: IProviderPointsParams) => ({
+        ...list,
+        [record.rewardId]: { ...record, isProvider: selected }
+      }));
+    },
+    // 全选操作
+    onSelectAll (record: boolean, selected: IProviderPointsParams[], selectedRows: IProviderPointsParams[]) {
+      let newRenderedParam: { [key: string]: IProviderPointsParams } = {};
+      let renderedList: IProviderPointsParams[] = [];
+      if (record) {
+        renderedList = selected;
+      } else {
+        renderedList = selectedRows;
+      }
+      newRenderedParam = renderedList.reduce((prev, now) => {
+        prev[now.rewardId] = now;
+        prev[now.rewardId].isProvider = record;
+        return prev;
+      }, newRenderedParam);
+      setRenderedList((list: IProviderPointsParams) => ({ ...list, ...newRenderedParam }));
     },
     hideSelectAll: false // 是否隐藏全选
   };

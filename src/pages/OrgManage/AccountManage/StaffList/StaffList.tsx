@@ -284,6 +284,7 @@ const StaffList: React.FC = () => {
   return (
     <div className={style.wrap}>
       <Modal
+        className={style.modalWrap}
         title={modalParam.modalType}
         closeIcon={<span />}
         visible={modalParam.isModalVisible}

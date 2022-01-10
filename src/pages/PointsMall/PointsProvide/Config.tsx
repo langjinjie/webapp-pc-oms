@@ -16,7 +16,6 @@ interface ITableColumns {
 const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
   // 点击查看
   const clickCheckHandle = (row: any) => {
-    console.log('点击查看~');
     setPonitsParam({ visible: true, ponitsRow: row });
   };
   return [
