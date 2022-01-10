@@ -380,7 +380,8 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       onOk={onOkHandle}
       destroyOnClose={true}
       okButtonProps={{
-        disabled: !selectList.filter((item) => item.staffId).length
+        disabled:
+          chooseTreeParam.title === '选择员工' ? !selectList.filter((item) => item.staffId).length : !selectList.length
       }}
     >
       <div className={style.treeWrap}>
