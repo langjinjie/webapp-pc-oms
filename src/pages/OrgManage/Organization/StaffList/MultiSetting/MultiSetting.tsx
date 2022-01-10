@@ -187,7 +187,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
         <div className={style.chooseStaff}>
           {!!staffInfo.staffList?.length && (
             <div className={style.choosedInfo}>
-              <span className={style.choosedCount}>已选则{staffInfo.staffList?.length}人</span>
+              <span className={style.choosedCount}>已选择{staffInfo.staffList?.length}人</span>
               <span className={style.cancel} onClick={() => setStaffInfo({ ...staffInfo, staffList: [] })}>
                 全部取消
               </span>

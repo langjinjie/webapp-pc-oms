@@ -86,9 +86,9 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
           return { ...item, parentId, name: item.deptName, id: item.deptId };
         }
       });
-      setFlatTreeData([...flatTreeData, ...res1, ...res2]);
+      setFlatTreeData([...flatTreeData, ...res2, ...res1]);
     }
-    return [...res1, ...res2];
+    return [...res2, ...res1];
   };
 
   // 向树结构添加子节点
@@ -313,7 +313,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
   const onOkHandle = () => {
     // 判断是选中员工还是选择部门
     if (chooseTreeParam.title === '选择员工') {
-      setStaffInfo((staffInfo: any) => ({ ...staffInfo, staffList: selectList }));
+      setStaffInfo((staffInfo: any) => ({ ...staffInfo, staffList: selectList.filter((item) => item.staffId) }));
     } else {
       setStaffInfo((staffInfo: any) => ({
         ...staffInfo,
@@ -380,7 +380,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       onOk={onOkHandle}
       destroyOnClose={true}
       okButtonProps={{
-        disabled: !selectList.length
+        disabled: !selectList.filter((item) => item.staffId).length
       }}
     >
       <div className={style.treeWrap}>
