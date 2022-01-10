@@ -106,8 +106,8 @@ const TablePagination = (arg: { [key: string]: any }): any => {
     dataSource,
     paginationParam,
     setPaginationParam,
-    selectedRowKeys
-    // setSelectedRowKeys,
+    selectedRowKeys,
+    setSelectedRowKeys
     // disabledColumnType
   } = arg;
   // 分页器参数
@@ -121,37 +121,13 @@ const TablePagination = (arg: { [key: string]: any }): any => {
     setPaginationParam({ pageNum: value, pageSize: pageSize as number });
   };
   // 点击选择框
-  const onSelectChange = async (newSelectedRowKeys: any[]) => {
+  const onSelectChange = async (newSelectedRowKeys: string[]) => {
     console.log(newSelectedRowKeys);
-    // // 判断是取消选择还是开始选择
-    // if (newSelectedRowKeys.length) {
-    //   let filterRowKeys: string[] = newSelectedRowKeys;
-    //   // 判断是否是首次选择
-    //   if (disabledColumnType === -1) {
-    //     // 获取第一个的状态作为全选筛选条件
-    //     const disabledColumnType = dataSource?.list.find((item: any) => item.staffId === newSelectedRowKeys[0])
-    //       ?.isDeleted as number;
-    //     // 判断是否是点击的全选
-    //     if (newSelectedRowKeys.length > 1) {
-    //       // 过滤得到需要被全选的
-    //       filterRowKeys = dataSource.list
-    //         .filter((item: any) => item.isDeleted === disabledColumnType)
-    //         .map((item: any) => item.staffId);
-    //     }
-    //   }
-    //   setSelectedRowKeys(filterRowKeys as string[]);
-    // } else {
-    //   // 取消全选
-    //   setSelectedRowKeys([]);
-    // }
+    setSelectedRowKeys(newSelectedRowKeys);
   };
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
-    onSelect (row: any) {
-      console.log('选中了');
-      console.log(row);
-    },
     hideSelectAll: false, // 是否隐藏全选
     getCheckboxProps: (record: IPointsProvideList) => ({
       disabled: record.sendStatus === 1 // 已发放积分的不能被选中

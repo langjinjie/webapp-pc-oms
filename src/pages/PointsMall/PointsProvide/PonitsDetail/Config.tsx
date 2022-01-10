@@ -40,7 +40,7 @@ const TableColumns = (): ColumnsType<any> => {
   // 添加黑名单
   const addBlackListHandle = (isBlackList: boolean) => {
     console.log(isBlackList);
-    // if (isBlackList) return;
+    if (isBlackList) return false;
   };
   // popoverTable
   const popovercolums: ColumnsType<any> = [
@@ -125,7 +125,7 @@ const TableColumns = (): ColumnsType<any> => {
             ))}
             {row.flowList.length > 3 && (
               <Popover
-                placement="rightBottom"
+                placement="rightTop"
                 content={
                   <>
                     <div className={style.title}>客户明细</div>
@@ -235,15 +235,16 @@ const TablePagination = (arg: { [key: string]: any }): any => {
   };
   // 点击选择框
   const onSelectChange = async (newSelectedRowKeys: any[]) => {
-    setSelectedRowKeys([newSelectedRowKeys]);
+    setSelectedRowKeys(newSelectedRowKeys);
     console.log(newSelectedRowKeys);
   };
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
-    onSelect (row: any) {
-      console.log('选中了');
-      console.log(row);
+    onSelect (record: ISendPointsDetail, selected: any, selectedRows: any) {
+      console.log('record', record);
+      console.log('selected', selected);
+      console.log('selectedRows', selectedRows);
     },
     hideSelectAll: false // 是否隐藏全选
   };

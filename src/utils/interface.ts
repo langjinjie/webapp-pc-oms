@@ -268,6 +268,7 @@ export interface IPointsProvideList {
 // 积分发放详情列表
 export interface ISendPointsDetail {
   rewardId: string;
+  isBlackTask: number;
   staffId: string;
   date: string;
   taskFinishTime: string;
