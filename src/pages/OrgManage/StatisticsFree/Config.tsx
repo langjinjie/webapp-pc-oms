@@ -57,9 +57,9 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     render: (value: string) => {
       return value.split(',').map((item, index: number) => {
         if (item === '1') {
-          return <span>排行榜 {index + 1 < value.length ? '、' : ''}</span>;
+          return <span key={index + 'freeType'}>排行榜 {index + 1 < value.length ? '、' : ''}</span>;
         } else {
-          return <span>战报</span>;
+          return <span key={index + 'freeType'}>战报</span>;
         }
       });
     }

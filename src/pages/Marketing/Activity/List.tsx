@@ -104,6 +104,13 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
           copyData[index].offlineTime = moment().format();
           copyData[index].status = 3;
           setDataSource(copyData);
+        } else {
+          copyData.splice(index, 1);
+          if (copyData.length === 0) {
+            getList({ pageNum: pagination.current - 1 || 1, pageSize: pagination.pageSize });
+          }
+          setPagination((pagination) => ({ ...pagination, total: pagination.total - 1 || 0 }));
+          setDataSource(copyData);
         }
       }
     }
@@ -203,7 +210,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
 
   const handleToggleOnlineState = (type: number) => {
     Modal.confirm({
-      content: '确认上架？',
+      content: type === 1 ? '确认上架？' : '确定下架？',
       cancelText: '取消',
       okText: '确定',
       onOk: async () => {

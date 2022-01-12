@@ -18,6 +18,7 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
     // @ts-ignore
     const res = await login({ userName, password: md5(password).slice(8, 24) });
     if (res) {
+      window.localStorage.setItem('envName', res.env);
       history.push('/chooseInst');
       const resInfo: any = (await queryUserInfo()) || {};
       setUserInfo(resInfo);
