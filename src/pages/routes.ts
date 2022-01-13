@@ -73,6 +73,10 @@ export const routes: (RouteProps & expandRoute)[] = [
   },
   {
     path: '/notice',
+    component: lazy(() => import('src/pages/Marketing/Notice/NoticeList'))
+  },
+  {
+    path: '/notice/edit',
     component: lazy(() => import('src/pages/Marketing/Notice/Notice'))
   },
   /**
@@ -211,6 +215,11 @@ export const menus: Menu[] = [
         path: '/orgManage/detail'
       },
       {
+        name: '企业接入',
+        path: '/company',
+        onlyMain: true
+      },
+      {
         name: '敏感词管理',
         path: '/sensitiveManage'
       },
@@ -254,7 +263,7 @@ export const menus: Menu[] = [
         path: '/marketingIndex'
       },
       {
-        name: '上新通知',
+        name: '公告配置',
         path: '/notice'
       }
     ]

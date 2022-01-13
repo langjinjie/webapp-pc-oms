@@ -71,7 +71,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled }) 
       beforeUpload={beforeUpload}
       onChange={fileChange}
     >
-      {value ? <img className={style.img} src={value} alt="" /> : uploadButton}
+      {value ? <img className={style.img} src={value} alt="加载中..." /> : uploadButton}
     </Upload>
   );
 };
