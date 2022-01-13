@@ -19,7 +19,7 @@ const { TextArea } = Input;
 const { Group } = Radio;
 
 const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
-  const [isPush, setIsPush] = useState<number>(0);
+  const [isPush, setIsPush] = useState<number>(1);
 
   const [form] = useForm();
   const { noticeId, type }: any = location.state || {};
@@ -108,7 +108,7 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
             format="YYYY-MM-DD HH:mm:ss"
           />
         </Item>
-        <Item name="pushStatus" label="消息推送" initialValue={0}>
+        <Item name="pushStatus" label="消息推送" initialValue={1}>
           <Group disabled={type === 1} onChange={(e) => setIsPush(e.target.value)}>
             <Radio value={1}>是</Radio>
             <Radio value={0}>否</Radio>
