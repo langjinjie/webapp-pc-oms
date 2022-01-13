@@ -3,13 +3,14 @@
  * @author Lester
  * @date 2021-12-23 10:54
  */
-import http, { Void2Promise, HttpFunction } from 'src/utils/http';
+import http, { HttpFunction } from 'src/utils/http';
 
 /**
  * 查询公司列表
+ * @param param
  */
-export const queryCompanyList: Void2Promise = () => {
-  return http.post('/tenacity-admin/api/corp/list');
+export const queryCompanyList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/corp/list', param);
 };
 
 /**

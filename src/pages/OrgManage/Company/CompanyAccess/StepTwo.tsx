@@ -3,20 +3,22 @@
  * @author Lester
  * @date 2021-12-23 15:44
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, message, FormProps } from 'antd';
 import classNames from 'classnames';
 import { copy } from 'lester-tools';
+import { queryCompanyInfo, saveCompanyInfo, updateCompanyStep } from 'src/apis/company';
 import style from './style.module.less';
 
 interface StepTwoProps {
+  corpId: string;
   nextStep: () => void;
   prevStep: () => void;
 }
 
 const { Item, useForm } = Form;
 
-const StepTwo: React.FC<StepTwoProps> = ({ nextStep, prevStep }) => {
+const StepTwo: React.FC<StepTwoProps> = ({ nextStep, prevStep, corpId }) => {
   const [form] = useForm();
 
   const formLayout: FormProps = {
@@ -25,9 +27,32 @@ const StepTwo: React.FC<StepTwoProps> = ({ nextStep, prevStep }) => {
     wrapperCol: { span: 8 }
   };
 
-  const onSubmit = (values: any) => {
-    console.log(values);
+  const onNext = () => {
+    updateCompanyStep({ corpId, opStep: 3 });
+    nextStep();
   };
+
+  const onSubmit = async (values: any) => {
+    const res: any = await saveCompanyInfo({
+      corpId,
+      opStep: 2,
+      corpContacts: values
+    });
+    if (res) {
+      onNext();
+    }
+  };
+
+  const getCompanyInfo = async () => {
+    const res: any = await queryCompanyInfo({ corpId, opStep: 2 });
+    if (res) {
+      form.setFieldsValue(res.corpContacts);
+    }
+  };
+
+  useEffect(() => {
+    getCompanyInfo();
+  }, []);
 
   return (
     <Form form={form} {...formLayout} onFinish={onSubmit}>
@@ -48,13 +73,13 @@ const StepTwo: React.FC<StepTwoProps> = ({ nextStep, prevStep }) => {
         a.点击设置接收事件服务器，复制以下URL前往企微后台填写保存
       </div>
       <Item
-        name="url"
+        name="callBackUrl"
         label="URL"
         rules={[{ required: true, message: '请输入' }]}
         extra={
           <Button
             onClick={() => {
-              const url: string = form.getFieldValue('url');
+              const url: string = form.getFieldValue('callBackUrl');
               if (url) {
                 copy(url, false);
                 message.success('复制成功');
@@ -75,15 +100,15 @@ const StepTwo: React.FC<StepTwoProps> = ({ nextStep, prevStep }) => {
       <Item name="token" label="Token" rules={[{ required: true, message: '请输入' }]}>
         <Input placeholder="请输入" />
       </Item>
-      <Item name="encodingAESkey" label="EncodingAESkey" rules={[{ required: true, message: '请输入' }]}>
+      <Item name="encodingAesKey" label="EncodingAESkey" rules={[{ required: true, message: '请输入' }]}>
         <Input placeholder="请输入" />
       </Item>
       <div className={style.btnWrap}>
         <Button onClick={prevStep}>上一步</Button>
-        <Button type="primary" htmlType="submit" onClick={nextStep}>
+        <Button type="primary" htmlType="submit">
           下一步
         </Button>
-        <span className={style.linkText} onClick={nextStep}>
+        <span className={style.linkText} onClick={onNext}>
           跳过 》》
         </span>
       </div>

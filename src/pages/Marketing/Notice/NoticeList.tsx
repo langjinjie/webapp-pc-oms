@@ -7,9 +7,9 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Button, Card, message, Modal, PaginationProps, Table, TableColumnType } from 'antd';
 import { setTitle } from 'lester-tools';
+import { Icon } from 'lester-ui';
 import classNames from 'classnames';
-import qs from 'qs';
-import { Form, Icon } from 'src/components';
+import { Form } from 'src/components';
 import { ItemProps } from 'src/utils/interface';
 import { delNotice, queryNoticeList } from 'src/apis/notice';
 import style from './style.module.less';
@@ -103,21 +103,23 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
    * @param type 0-修改 1-查看
    */
   const operateHandle = (noticeId: string, type: number) => {
-    history.push(`/notice/edit?${qs.stringify({ noticeId, type })}`);
+    history.push('/notice/edit', { noticeId, type });
   };
 
   /**
    * 删除公告
    * @param noticeId
+   * @param opStatus 操作类型 1停止 9删除
    */
-  const deleteNotice = (noticeId: string) => {
+  const deleteNotice = (noticeId: string, opStatus: number) => {
+    const text = opStatus === 1 ? '停止' : '删除';
     confirm({
       title: '提示',
-      content: '确定要删除？',
+      content: `确定要${text}？`,
       async onOk () {
-        const res: any = await delNotice({ noticeId });
+        const res: any = await delNotice({ noticeId, opStatus });
         if (res) {
-          message.success('删除成功!');
+          message.success(`${text}成功!`);
           getNoticeList();
         }
       }
@@ -127,19 +129,19 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
   const columns: TableColumnType<NoticeItem>[] = [
     {
       title: '标题',
-      dataIndex: 'noticeTitle'
+      dataIndex: 'title'
     },
     {
       title: '状态',
-      dataIndex: 'paperStatus',
+      dataIndex: 'status',
       render: (text: number) => (
         <div>
           <span
             className={classNames(style.circle, {
-              [style.active]: text === 2
+              [style.active]: text === 1
             })}
           />
-          {['待生效', '生效中', '已失效'][text - 1]}
+          {['生效中', '待生效', '已失效'][text - 1]}
         </div>
       )
     },
@@ -153,14 +155,19 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
       render: (text: string, record: NoticeItem) => (
         <>
           {record.status === 1 && (
-            <Button type="link" onClick={() => operateHandle(text, 0)}>
-              编辑
+            <Button type="link" onClick={() => deleteNotice(text, 1)}>
+              停止
             </Button>
           )}
           {record.status === 2 && (
-            <Button type="link" onClick={() => deleteNotice(text)}>
-              删除
-            </Button>
+            <>
+              <Button type="link" onClick={() => operateHandle(text, 0)}>
+                编辑
+              </Button>
+              <Button type="link" onClick={() => deleteNotice(text, 9)}>
+                删除
+              </Button>
+            </>
           )}
           <Button type="link" onClick={() => operateHandle(text, 1)}>
             查看
@@ -193,7 +200,10 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
       params.startTime = time[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       params.endTime = time[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-    setSearchParam(values);
+    setSearchParam({
+      ...params,
+      pageNum: pagination.current
+    });
     getNoticeList(params, true);
   };
 
@@ -211,7 +221,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
       <Form itemData={formItemData} onSubmit={onSubmit} />
       <Table
         style={{ marginTop: 20 }}
-        rowKey="paperId"
+        rowKey="noticeId"
         columns={columns}
         dataSource={noticeList}
         pagination={{

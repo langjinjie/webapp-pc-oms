@@ -4,20 +4,22 @@
  * @date 2021-12-24 17:58
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, message, FormProps } from 'antd';
 import classNames from 'classnames';
 import { copy } from 'lester-tools';
+import { queryCompanyInfo, saveCompanyInfo, updateCompanyStep } from 'src/apis/company';
 import style from './style.module.less';
 
 interface StepThreeProps {
+  corpId: string;
   nextStep: () => void;
   prevStep: () => void;
 }
 
 const { Item, useForm } = Form;
 
-const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep }) => {
+const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep, corpId }) => {
   const [form] = useForm();
 
   const formLayout: FormProps = {
@@ -26,9 +28,32 @@ const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep }) => {
     wrapperCol: { span: 8 }
   };
 
-  const onSubmit = (values: any) => {
-    console.log(values);
+  const onNext = () => {
+    updateCompanyStep({ corpId, opStep: 4 });
+    nextStep();
   };
+
+  const onSubmit = async (values: any) => {
+    const res: any = await saveCompanyInfo({
+      corpId,
+      opStep: 3,
+      customer: values
+    });
+    if (res) {
+      onNext();
+    }
+  };
+
+  const getCompanyInfo = async () => {
+    const res: any = await queryCompanyInfo({ corpId, opStep: 3 });
+    if (res) {
+      form.setFieldsValue(res.customer);
+    }
+  };
+
+  useEffect(() => {
+    getCompanyInfo();
+  }, []);
 
   return (
     <Form form={form} {...formLayout} onFinish={onSubmit}>
@@ -80,10 +105,10 @@ const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep }) => {
       <div className={classNames(style.mainText, style.mb12)}>3.绑定微信开发者ID</div>
       <div className={style.btnWrap}>
         <Button onClick={prevStep}>上一步</Button>
-        <Button type="primary" htmlType="submit" onClick={nextStep}>
+        <Button type="primary" htmlType="submit">
           下一步
         </Button>
-        <span className={style.linkText} onClick={nextStep}>
+        <span className={style.linkText} onClick={onNext}>
           跳过 》》
         </span>
       </div>

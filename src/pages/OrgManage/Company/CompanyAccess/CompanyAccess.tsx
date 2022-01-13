@@ -5,8 +5,10 @@
  */
 import React, { useEffect, useState } from 'react';
 import { setTitle } from 'lester-tools';
+import { RouteComponentProps } from 'react-router-dom';
 import { Steps } from 'antd';
-import { DrawerItem } from 'src/components';
+import { DrawerItem } from 'lester-ui';
+import { queryCompanyStep } from 'src/apis/company';
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 import StepThree from './StepThree';
@@ -22,8 +24,12 @@ interface StepItem {
 
 const { Step } = Steps;
 
-const CompanyAccess: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState<number>(5);
+const CompanyAccess: React.FC<RouteComponentProps> = ({ history, location }) => {
+  const [currentStep, setCurrentStep] = useState<number>(-1);
+  const [companyStep, setCompanyStep] = useState<number>(0);
+  const [loadedIndexes, setLoadedIndexes] = useState<number[]>([]);
+
+  const { corpId }: any = location.state || {};
 
   const steps: StepItem[] = [
     {
@@ -52,36 +58,79 @@ const CompanyAccess: React.FC = () => {
     }
   ];
 
+  /**
+   * 获取企业当前信息步骤
+   */
+  const getCompanyStep = async () => {
+    const res: any = await queryCompanyStep({ corpId });
+    if (res) {
+      const step = res - 1;
+      setCurrentStep(step);
+      setCompanyStep(step);
+      setLoadedIndexes([step]);
+    }
+  };
+
+  /**
+   * 添加懒加载步骤
+   * @param index
+   */
+  useEffect(() => {
+    if (!loadedIndexes.includes(currentStep)) {
+      setLoadedIndexes([...loadedIndexes, currentStep]);
+    }
+    if (currentStep > companyStep) {
+      setCompanyStep(currentStep);
+    }
+  }, [currentStep]);
+
   useEffect(() => {
     setTitle('企业接入');
+    if (corpId) {
+      getCompanyStep();
+    } else {
+      setCurrentStep(0);
+    }
   }, []);
 
   return (
     <div className={style.wrap}>
       <Steps current={currentStep} onChange={(index) => setCurrentStep(index)}>
         {steps.map((item: StepItem, index) => (
-          <Step key={item.name} title={item.name} description={item.desc} disabled={index > 3} />
+          <Step key={item.name} title={item.name} description={item.desc} disabled={index > companyStep} />
         ))}
       </Steps>
       <div className={style.contentWrap}>
-        <DrawerItem visible={currentStep === 0}>
-          <StepOne nextStep={() => setCurrentStep(1)} />
-        </DrawerItem>
-        <DrawerItem visible={currentStep === 1}>
-          <StepTwo nextStep={() => setCurrentStep(2)} prevStep={() => setCurrentStep(0)} />
-        </DrawerItem>
-        <DrawerItem visible={currentStep === 2}>
-          <StepThree nextStep={() => setCurrentStep(3)} prevStep={() => setCurrentStep(1)} />
-        </DrawerItem>
-        <DrawerItem visible={currentStep === 3}>
-          <StepFour nextStep={() => setCurrentStep(4)} prevStep={() => setCurrentStep(2)} />
-        </DrawerItem>
-        <DrawerItem visible={currentStep === 4}>
-          <StepFive nextStep={() => setCurrentStep(5)} prevStep={() => setCurrentStep(3)} />
-        </DrawerItem>
-        <DrawerItem visible={currentStep === 5}>
-          <StepSix nextStep={() => setCurrentStep(5)} prevStep={() => setCurrentStep(4)} />
-        </DrawerItem>
+        {loadedIndexes.includes(0) && (
+          <DrawerItem visible={currentStep === 0}>
+            <StepOne corpId={corpId} nextStep={() => setCurrentStep(1)} />
+          </DrawerItem>
+        )}
+        {loadedIndexes.includes(1) && (
+          <DrawerItem visible={currentStep === 1}>
+            <StepTwo corpId={corpId} nextStep={() => setCurrentStep(2)} prevStep={() => setCurrentStep(0)} />
+          </DrawerItem>
+        )}
+        {loadedIndexes.includes(2) && (
+          <DrawerItem visible={currentStep === 2}>
+            <StepThree corpId={corpId} nextStep={() => setCurrentStep(3)} prevStep={() => setCurrentStep(1)} />
+          </DrawerItem>
+        )}
+        {loadedIndexes.includes(3) && (
+          <DrawerItem visible={currentStep === 3}>
+            <StepFour corpId={corpId} nextStep={() => setCurrentStep(4)} prevStep={() => setCurrentStep(2)} />
+          </DrawerItem>
+        )}
+        {loadedIndexes.includes(4) && (
+          <DrawerItem visible={currentStep === 4}>
+            <StepFive corpId={corpId} nextStep={() => setCurrentStep(5)} prevStep={() => setCurrentStep(3)} />
+          </DrawerItem>
+        )}
+        {loadedIndexes.includes(5) && (
+          <DrawerItem visible={currentStep === 5}>
+            <StepSix corpId={corpId} prevStep={() => setCurrentStep(4)} nextStep={() => history.goBack()} />
+          </DrawerItem>
+        )}
       </div>
     </div>
   );

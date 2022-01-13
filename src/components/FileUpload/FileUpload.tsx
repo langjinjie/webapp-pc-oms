@@ -28,9 +28,9 @@ const FileUpload: React.FC<FileUploadProps> = ({ value, onChange, extraData }) =
       return setLoading(true);
     }
     if (info.file.status === 'done') {
-      console.log(info.file);
       if (info.file.response.ret === 0) {
-        onChange && onChange(info.file.response.retdata.filePath);
+        message.success('上次成功');
+        onChange && onChange(info.file.response.retdata?.filePath);
       } else {
         message.error(info.file.response.retmsg || '上传失败');
       }
@@ -41,7 +41,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ value, onChange, extraData }) =
 
   return (
     <Upload
-      accept="*"
+      accept=".txt"
       showUploadList={false}
       action="/tenacity-admin/api/corp/open/uploaddomain"
       data={extraData}

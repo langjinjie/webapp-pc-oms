@@ -204,7 +204,6 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSubmit = (values: any) => {
-    console.log(values);
     const { sendTime, status } = values;
     const params: any = {
       status,
@@ -214,7 +213,10 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
       params.startTime = sendTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       params.endTime = sendTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-    setSearchParam(values);
+    setSearchParam({
+      ...params,
+      pageNum: pagination.current
+    });
     getWeeklyList(params, true);
   };
 
