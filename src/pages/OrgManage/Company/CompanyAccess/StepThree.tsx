@@ -72,13 +72,13 @@ const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep, corpId }) => 
         a.点击设置接收事件服务器，复制以下URL前往企微后台填写保存
       </div>
       <Item
-        name="url"
+        name="callBackUrl"
         label="URL"
         rules={[{ required: true, message: '请输入' }]}
         extra={
           <Button
             onClick={() => {
-              const url: string = form.getFieldValue('url');
+              const url: string = form.getFieldValue('callBackUrl');
               if (url) {
                 copy(url, false);
                 message.success('复制成功');
@@ -99,7 +99,7 @@ const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep, corpId }) => 
       <Item name="token" label="Token" rules={[{ required: true, message: '请输入' }]}>
         <Input placeholder="请输入" />
       </Item>
-      <Item name="encodingAESkey" label="EncodingAESkey" rules={[{ required: true, message: '请输入' }]}>
+      <Item name="encodingAesKey" label="EncodingAESkey" rules={[{ required: true, message: '请输入' }]}>
         <Input placeholder="请输入" />
       </Item>
       <div className={classNames(style.mainText, style.mb12)}>3.绑定微信开发者ID</div>
