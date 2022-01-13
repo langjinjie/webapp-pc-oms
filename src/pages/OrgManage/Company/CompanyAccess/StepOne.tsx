@@ -40,7 +40,7 @@ const StepOne: React.FC<StepOneProps> = ({ nextStep, corpId }) => {
       if (!corpId) {
         history.replace('/company/access', { corpId: values.corpId });
       }
-      updateCompanyStep({ corpId, opStep: 2 });
+      updateCompanyStep({ corpId: corpId || values.corpId, opStep: 2 });
       nextStep();
     }
   };
