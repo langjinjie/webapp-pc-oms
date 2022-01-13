@@ -43,7 +43,10 @@ const StepSix: React.FC<StepSixProps> = ({ prevStep, corpId }) => {
     const res: any = await saveCompanyInfo({
       corpId,
       opStep: 6,
-      corpAccount: values
+      corpAccount: {
+        ...values,
+        licenseExpTime: values.licenseExpTime.valueOf()
+      }
     });
     if (res) {
       message.success('保存成功！');
