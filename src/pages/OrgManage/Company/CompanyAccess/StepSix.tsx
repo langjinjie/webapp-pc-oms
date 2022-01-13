@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { Form, Input, Button, DatePicker, FormProps, message } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
+import { useHistory } from 'react-router-dom';
 import { queryCompanyInfo, saveCompanyInfo } from 'src/apis/company';
 import style from './style.module.less';
 
@@ -20,6 +21,7 @@ const { Item, useForm } = Form;
 
 const StepSix: React.FC<StepSixProps> = ({ prevStep, corpId }) => {
   const [form] = useForm();
+  const history = useHistory();
 
   const formLayout: FormProps = {
     labelAlign: 'right',
@@ -45,6 +47,7 @@ const StepSix: React.FC<StepSixProps> = ({ prevStep, corpId }) => {
     });
     if (res) {
       message.success('保存成功！');
+      history.goBack();
     }
   };
 

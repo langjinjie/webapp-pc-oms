@@ -19,7 +19,7 @@ const { TextArea } = Input;
 const { Group } = Radio;
 
 const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
-  const [isPush, setIsPush] = useState<number>(0);
+  const [isPush, setIsPush] = useState<number>(1);
 
   const [form] = useForm();
   const { noticeId, type }: any = location.state || {};
@@ -28,6 +28,16 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
     labelAlign: 'right',
     labelCol: { span: 3 },
     wrapperCol: { span: 8 }
+  };
+
+  const typeName = () => {
+    let name = '';
+    if (noticeId) {
+      name = type === 0 ? '编辑' : '查看';
+    } else {
+      name = '新增';
+    }
+    return name;
   };
 
   const onSubmit = async (values: any) => {
@@ -69,11 +79,11 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   useEffect(() => {
     noticeId && getNoticeData();
-    setTitle('新增公告');
+    setTitle(`${typeName()}公告`);
   }, []);
 
   return (
-    <Card title="新增公告">
+    <Card title={`${typeName()}公告`}>
       <Form className={style.formWrap} form={form} onFinish={onSubmit} {...formLayout}>
         <Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}>
           <Input disabled={type === 1} placeholder="请输入" maxLength={60} />
@@ -98,7 +108,7 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
             format="YYYY-MM-DD HH:mm:ss"
           />
         </Item>
-        <Item name="pushStatus" label="消息推送" initialValue={0}>
+        <Item name="pushStatus" label="消息推送" initialValue={1}>
           <Group disabled={type === 1} onChange={(e) => setIsPush(e.target.value)}>
             <Radio value={1}>是</Radio>
             <Radio value={0}>否</Radio>

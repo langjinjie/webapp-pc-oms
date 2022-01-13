@@ -67,7 +67,7 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
     <div className={style.wrap}>
       <div className={style.addBtn} onClick={() => history.push('/company/access')}>
         <Icon className={style.addIcon} name="xinjian" />
-        添加机构
+        添加企业
       </div>
       <Form itemData={formData} onSubmit={onSubmit} />
       <Table rowKey="corpId" dataSource={companyList} columns={columns} className={style.taleWrap} pagination={false} />

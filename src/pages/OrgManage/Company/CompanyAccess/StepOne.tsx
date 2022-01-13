@@ -31,20 +31,17 @@ const StepOne: React.FC<StepOneProps> = ({ nextStep, corpId }) => {
   const types: string[] = ['企业', '政府以及事业单位', '其他组织', '团队号'];
 
   const onSubmit = async (values: any) => {
-    history.replace('/company/access', { corpId: values.corpId });
     const res: any = await saveCompanyInfo({
       corpId,
       opStep: 1,
       corpInfo: values
     });
     if (res) {
-      if (corpId) {
-        updateCompanyStep({ corpId, opStep: 2 });
-        nextStep();
-      } else {
-        await updateCompanyStep({ corpId, opStep: 2 });
+      if (!corpId) {
         history.replace('/company/access', { corpId: values.corpId });
       }
+      updateCompanyStep({ corpId, opStep: 2 });
+      nextStep();
     }
   };
 
