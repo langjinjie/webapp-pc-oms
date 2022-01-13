@@ -104,6 +104,13 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
           copyData[index].offlineTime = moment().format();
           copyData[index].status = 3;
           setDataSource(copyData);
+        } else {
+          copyData.splice(index, 1);
+          if (copyData.length === 0) {
+            getList({ pageNum: pagination.current - 1 || 1, pageSize: pagination.pageSize });
+          }
+          setPagination((pagination) => ({ ...pagination, total: pagination.total - 1 || 0 }));
+          setDataSource(copyData);
         }
       }
     }

@@ -211,7 +211,8 @@ export const menus: Menu[] = [
     children: [
       {
         name: '账号管理',
-        path: '/orgManage'
+        // path: '/orgManage'
+        path: '/orgManage/detail'
       },
       {
         name: '企业接入',
