@@ -15,6 +15,7 @@ import style from './style.module.less';
 interface CompanyItem {
   corpId: string;
   corpName: string;
+  corpFullName: string;
   status: number;
 }
 
@@ -24,7 +25,7 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   const columns: TableColumnProps<CompanyItem>[] = [
     {
       title: '企业名称',
-      dataIndex: 'corpName'
+      dataIndex: 'corpFullName'
     },
     {
       title: '企业ID',
