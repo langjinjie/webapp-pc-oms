@@ -178,6 +178,30 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/organization/staff-detail',
     component: lazy(() => import('src/pages/OrgManage/Organization/StaffDetail/StaffDetail'))
+  },
+  /**
+   * 积分商城
+   */
+  {
+    path: '/pointsProvide',
+    component: lazy(() => import('src/pages/PointsMall/PointsProvide/PointsProvide'))
+  },
+  {
+    path: '/pointsDeduction',
+    component: lazy(() => import('src/pages/PointsMall/PointsDeduction/List'))
+  },
+  // 积分扣除记录
+  {
+    path: '/pointsDeduction/record',
+    component: lazy(() => import('src/pages/PointsMall/PointsDeduction/Record/Record'))
+  },
+  {
+    path: '/addSubPoints',
+    component: lazy(() => import('src/pages/PointsMall/AddSubPoints/List'))
+  },
+  {
+    path: '/addSubPoints/record',
+    component: lazy(() => import('src/pages/PointsMall/AddSubPoints/Record/Record'))
   }
 ];
 
@@ -314,6 +338,16 @@ export const menus: Menu[] = [
     children: [
       { name: '话术管理', path: '/speechManage' },
       { name: '目录管理', path: '/contentsManage' }
+    ]
+  },
+  {
+    name: '积分管理',
+    icon: 'icon_daohang_28_biaoqianxitong',
+    path: 'pointsMall',
+    children: [
+      { name: '积分发放', path: '/pointsProvide' },
+      { name: '积分扣减', path: '/pointsDeduction' },
+      { name: '加减积分', path: '/addSubPoints' }
     ]
   }
 ];

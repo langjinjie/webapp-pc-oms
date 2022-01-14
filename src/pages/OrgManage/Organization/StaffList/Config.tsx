@@ -109,6 +109,8 @@ const TablePagination = (arg: { [key: string]: any }): any => {
   // 切换分页
   const paginationChange = (value: number, pageSize?: number) => {
     setPaginationParam({ pageNum: value, pageSize: pageSize as number });
+    setDisabledColumnType(-1);
+    setSelectedRowKeys([]);
   };
   // 点击选择框
   const onSelectChange = async (newSelectedRowKeys: any[]) => {
