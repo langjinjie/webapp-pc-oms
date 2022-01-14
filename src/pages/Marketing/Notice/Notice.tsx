@@ -44,8 +44,8 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
     const { time, ...others } = values;
     const params: any = { ...others };
     if (time && time.length > 0) {
-      if (time[0].valueOf() < moment().add(1, 'hours').valueOf()) {
-        return message.error('生效时间请选择一小时以后');
+      if (time[0].valueOf() < moment().add(20, 'minutes').valueOf()) {
+        return message.error('生效时间请选择20分钟以后');
       } else {
         params.startTime = time[0].format('YYYY-MM-DD HH:mm:ss');
         params.endTime = time[1].format('YYYY-MM-DD HH:mm:ss');
