@@ -60,7 +60,7 @@ const StepSix: React.FC<StepSixProps> = ({ prevStep, corpId }) => {
       const { licenseExpTime, ...otherValue } = res.corpAccount || {};
       form.setFieldsValue({
         ...otherValue,
-        licenseExpTime: moment(licenseExpTime)
+        licenseExpTime: licenseExpTime ? moment(licenseExpTime) : undefined
       });
     }
   };
