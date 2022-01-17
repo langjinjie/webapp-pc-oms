@@ -33,8 +33,8 @@ export const catalogType2Name = [
   { value: 6, label: '音频' },
   { value: 7, label: '视频' },
   // { value: 8, label: '第三方链接' },
-  { value: 9, label: '小程序' }
-  // { value: 10, label: 'PDF' }
+  { value: 9, label: '小程序' },
+  { value: 10, label: 'PDF' }
 ];
 
 // 销售宝典目录字数限制 一维数组代表目录类型,二维数组代表目录级数

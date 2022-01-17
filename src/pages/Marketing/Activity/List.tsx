@@ -65,7 +65,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
     const res: any = await activityList({ ...params, ...queryParams });
     setLoading(false);
     if (res) {
-      setDataSource(res.list);
+      setDataSource(res.list || []);
 
       setPagination((pagination) => ({ ...pagination, total: res.total }));
     }

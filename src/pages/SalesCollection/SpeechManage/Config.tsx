@@ -19,7 +19,8 @@ export const speechContentTypes = [
   { id: 5, name: '图文链接' },
   { id: 6, name: '音频' },
   { id: 7, name: '视频' },
-  { id: 9, name: '小程序' }
+  { id: 9, name: '小程序' },
+  { id: 10, name: 'PDF' }
 ];
 export const excelDemoUrl =
   'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/smart_content_import_template.xlsx';

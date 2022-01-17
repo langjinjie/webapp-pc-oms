@@ -1,0 +1,76 @@
+.wrap {
+  padding: 30px;
+  .form {
+    .antSpace {
+      margin-bottom: 20px;
+    }
+    .antBtnSpace {
+      width: 100%;
+      justify-content: space-between;
+      .resetBtn,
+      .searchBtn {
+        width: 88px;
+        height: 36px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+      }
+      .searchBtn {
+        margin-right: 10px;
+      }
+      .provideAllBtn {
+        width: 128px;
+        height: 40px;
+        border-radius: 20px;
+      }
+    }
+    :global {
+      .ant-form-item {
+        align-items: center;
+      }
+    }
+  }
+  .tableWrap {
+    margin-top: 30px;
+    // Config样式
+    .check {
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #318cf5;
+      cursor: pointer;
+    }
+    .sendStatus {
+      &::before {
+        content: '';
+        display: inline-block;
+        margin-right: 8px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ccccd0;
+        vertical-align: middle;
+      }
+      &.sended::before {
+        background: #33cdb8;
+      }
+    }
+  }
+  .sendPonits {
+    margin: 16px 0;
+    margin-top: -52px;
+    height: 36px;
+    .sendPonitsBtn {
+      width: 110px;
+      height: 32px;
+      border-radius: 20px;
+      border-color: #40a9ff;
+      color: #40a9ff;
+      &:disabled {
+        border-color: #d9d9d9;
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+  }
+}

@@ -243,3 +243,50 @@ export interface IStaffImpList {
   successCount: number;
   totalCount: number;
 }
+
+/**
+ * 积分商城
+ */
+// 积分发放列表
+export interface IPointsProvideList {
+  summaryId: string;
+  staffId: string;
+  points: number;
+  staffName: string;
+  staffUserId: string;
+  date: string;
+  blackClientNum: number;
+  sendPoints: number;
+  blackPoints: number;
+  mustSendPoints: number;
+  sendedPoints: number;
+  recoveryPoints: number;
+  sendStatus: number;
+  sendTime: string;
+  opName: string;
+}
+// 积分发放详情列表
+export interface ISendPointsDetail {
+  rewardId: string;
+  staffId: string;
+  date: string;
+  taskFinishTime: string;
+  businessType: number;
+  pointsTaskId: string;
+  taskName: string;
+  actionNum: number;
+  realActionNum: number;
+  action: number;
+  rewardPoints: number;
+  sendStatus: number;
+  remark: string;
+  flowList: IFlowList[];
+}
+// 积分奖励流水列表
+export interface IFlowList {
+  flowId: string;
+  clientNickName: string;
+  externalUserid: string;
+  clientInBlack: number;
+  cotent: string;
+}
