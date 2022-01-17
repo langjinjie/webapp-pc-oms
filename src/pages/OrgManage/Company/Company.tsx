@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { setTitle } from 'lester-tools';
 import { Table, TableColumnProps, Button } from 'antd';
 import { Form, Icon } from 'src/components';
-import { queryCompanyList } from 'src/apis/company';
+import { queryCompanyList, queryAuthUrl } from 'src/apis/company';
 import { ItemProps } from 'src/utils/interface';
 import style from './style.module.less';
 
@@ -22,6 +22,17 @@ interface CompanyItem {
 const Company: React.FC<RouteComponentProps> = ({ history }) => {
   const [companyList, setCompanyList] = useState([]);
 
+  const getAuthUrl = async (corpId: string) => {
+    const res: any = await queryAuthUrl({
+      corpId,
+      urlType: 1,
+      authType: 1
+    });
+    if (res) {
+      window.open(res);
+    }
+  };
+
   const columns: TableColumnProps<CompanyItem>[] = [
     {
       title: '企业名称',
@@ -34,9 +45,14 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
     {
       title: '操作',
       render: (text, record) => (
-        <Button type="link" onClick={() => history.push('/company/access', { corpId: record.corpId })}>
-          查看
-        </Button>
+        <>
+          <Button type="link" onClick={() => history.push('/company/access', { corpId: record.corpId })}>
+            查看
+          </Button>
+          <Button type="link" onClick={() => getAuthUrl(record.corpId)}>
+            授权
+          </Button>
+        </>
       )
     }
   ];
