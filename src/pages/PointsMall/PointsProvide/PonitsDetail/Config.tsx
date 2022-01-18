@@ -52,13 +52,12 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
   ];
   // 添加黑名单
   const addBlackListHandle = async (row: IFlowList, rewardId: string) => {
-    console.log(row);
     const { clientInBlack, externalUserid } = row;
     if (clientInBlack) return false;
     const res = await requestAddBlackList({ externalUserid, rewardId });
     if (res) {
       message.success('添加黑名单成功');
-      setPonitsParam((param) => param);
+      setPonitsParam((param) => ({ ...param }));
     }
   };
   // popoverTable
@@ -87,8 +86,11 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
   // 输入框失去焦点
   const inputOnblurHandle = async (row: ISendPointsDetail) => {
     if (remark !== row.remark) {
-      const res = await requestModifyRemark({ rewardId: row.rewardId, remark });
-      res && (row.remark = remark);
+      const res = await requestModifyRemark({ rewardId: row.rewardId, remark: remark || ' ' });
+      if (res) {
+        row.remark = remark;
+        message.success('备注修改成功');
+      }
     }
     setIsEdit('');
   };
