@@ -61,7 +61,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
         },
         {
           id: '3',
-          name: '已生效'
+          name: '已失效'
         }
       ]
     },
