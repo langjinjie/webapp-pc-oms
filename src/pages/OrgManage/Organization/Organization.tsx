@@ -580,8 +580,8 @@ const Organization: React.FC = () => {
           onOk={(leaderInfo) => {
             const newNode: OrganizationItem = {
               ...currentNode,
-              leaderId: leaderInfo.staffId,
-              leaderName: leaderInfo.staffName
+              leaderId: leaderInfo.staffId || '',
+              leaderName: leaderInfo.staffName || ''
             };
             setCurrentNode(newNode);
             setOrganization(updateNodeInfo(organization, newNode));
