@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
-import { Form, Space, Input, Select, Button, DatePicker } from 'antd';
+import { Form, Space, Input, Select, Button, DatePicker, message } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import { requestGetPonitsSendList, requestSendAllPonits, requestSendPonits } from 'src/apis/pointsMall';
-import { IPointsProvideList } from 'src/utils/interface';
+import { IPointsProvideList, IConfirmModalParam } from 'src/utils/interface';
+import { Context } from 'src/store';
 import PonitsDetail from './PonitsDetail/PonitsDetail';
 import style from './style.module.less';
 
@@ -15,17 +16,19 @@ interface IPonitsList {
 
 interface IPonitsParam {
   visible: boolean;
-  ponitsRow: any;
+  ponitsRow?: IPointsProvideList;
+  sendStatus: boolean;
 }
 
 const PointsProvide: React.FC = () => {
+  const { setConfirmModalParam } = useContext(Context);
   const [ponitsList, setPonitsList] = useState<IPonitsList>({ total: 0, list: [] });
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
   const [searchParam, setSearchParam] = useState<{ [key: string]: any }>({});
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [disabledColumnType, setDisabledColumnType] = useState(-1);
   const [isLoading, setIsloading] = useState(true);
-  const [ponitsParam, setPonitsParam] = useState<IPonitsParam>({ visible: false, ponitsRow: {} });
+  const [ponitsParam, setPonitsParam] = useState<IPonitsParam>({ visible: false, sendStatus: false });
   const [form] = Form.useForm();
   const { RangePicker } = DatePicker;
   // 处理查询参数
@@ -45,9 +48,9 @@ const PointsProvide: React.FC = () => {
     if (res) {
       setPonitsList({ total: res.total, list: res.list });
     }
-    setSelectedRowKeys([]);
     setDisabledColumnType(-1);
     setIsloading(false);
+    ponitsParam.sendStatus || setSelectedRowKeys([]);
   };
   const resetHandle = () => {
     setSearchParam(searchParamHandle());
@@ -69,19 +72,66 @@ const PointsProvide: React.FC = () => {
   ];
   // 一键发放积分
   const sendAllPonitsHandle = async () => {
-    console.log(searchParamHandle());
     const res = await requestSendAllPonits(searchParamHandle());
-    console.log(res);
+    if (res) {
+      message.success('一键发放成功');
+      // 本地维护发放积分状态;
+      setPonitsList(({ total, list }) => ({
+        total,
+        list: list.map((item) => ({ ...item, sendStatus: 1, sendedPoints: item.mustSendPoints }))
+      }));
+      setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
+    }
+  };
+  // 取消ConfirmModal
+  const onCancel = () => {
+    setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
+  };
+  // 点击一键发放
+  const clickSendAllPonitsHandle = () => {
+    setConfirmModalParam({
+      visible: true,
+      title: '发放提醒',
+      tips: '您确定要一键群发当前积分吗？',
+      onOk: sendAllPonitsHandle,
+      onCancel
+    });
   };
   // 发放积分
   const sendPoints = async () => {
-    const res = await requestSendPonits({ list: selectedRowKeys });
-    console.log(res);
+    const list = selectedRowKeys.map((item) => ({ summaryId: item }));
+    const res = await requestSendPonits({ list });
+    if (res) {
+      message.success('积分发放成功');
+      const list = ponitsList.list;
+      list.forEach((item) => {
+        if (selectedRowKeys.includes(item.summaryId)) {
+          item.sendStatus = 1;
+          item.sendedPoints = item.mustSendPoints;
+        }
+      });
+      setPonitsList(({ total, list }) => ({ total, list }));
+      setSelectedRowKeys([]);
+      setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
+    }
+  };
+  // 点击发放积分
+  const clickSendPonitsHandle = () => {
+    setConfirmModalParam({
+      visible: true,
+      title: '发放提醒',
+      tips: '您确定要发放当前选中的积分吗？',
+      onOk: sendPoints,
+      onCancel
+    });
   };
   useDocumentTitle('积分商城-积分发放');
   useEffect(() => {
-    getPointsList();
+    ponitsParam.visible || getPointsList();
   }, [paginationParam, searchParam]);
+  useEffect(() => {
+    ponitsParam.sendStatus && getPointsList();
+  }, [ponitsParam]);
   return (
     <div className={style.wrap}>
       <Form name="base" className={style.form} layout="inline" form={form} onReset={resetHandle}>
@@ -114,10 +164,16 @@ const PointsProvide: React.FC = () => {
               </Select>
             </Form.Item>
             <Form.Item style={{ width: 186 }}>
-              <Button className={style.searchBtn} type="primary" onClick={onSearchHandle}>
+              <Button
+                className={style.searchBtn}
+                type="primary"
+                onClick={onSearchHandle}
+                disabled={isLoading}
+                loading={isLoading}
+              >
                 查询
               </Button>
-              <Button className={style.resetBtn} htmlType="reset">
+              <Button className={style.resetBtn} htmlType="reset" disabled={isLoading} loading={isLoading}>
                 重置
               </Button>
             </Form.Item>
@@ -126,7 +182,7 @@ const PointsProvide: React.FC = () => {
             <Button
               className={style.provideAllBtn}
               type="primary"
-              onClick={sendAllPonitsHandle}
+              onClick={clickSendAllPonitsHandle}
               disabled={!!selectedRowKeys.length}
             >
               一键群发积分
@@ -136,7 +192,7 @@ const PointsProvide: React.FC = () => {
       </Form>
       <NgTable
         className={style.tableWrap}
-        setRowKey={(record: any) => record.staffId}
+        setRowKey={(record: any) => record.summaryId}
         dataSource={ponitsList.list}
         columns={TableColumns({ setPonitsParam })}
         loading={isLoading}
@@ -154,7 +210,7 @@ const PointsProvide: React.FC = () => {
       />
       {!!ponitsList.total && (
         <div className={style.sendPonits}>
-          <Button disabled={!selectedRowKeys.length} className={style.sendPonitsBtn} onClick={sendPoints}>
+          <Button disabled={!selectedRowKeys.length} className={style.sendPonitsBtn} onClick={clickSendPonitsHandle}>
             发放积分
           </Button>
         </div>

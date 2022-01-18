@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useRef, MutableRefObject } from 'react';
+import React, { useState, useEffect, useRef, MutableRefObject, useContext } from 'react';
 import { Drawer, Button } from 'antd';
-import { requestGetSendPonitsDetail } from 'src/apis/pointsMall';
+import { requestGetSendPonitsDetail, requestSendAllPonitsDetail } from 'src/apis/pointsMall';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
-import { IPointsProvideList, ISendPointsDetail } from 'src/utils/interface';
+import { IPointsProvideList, ISendPointsDetail, IConfirmModalParam } from 'src/utils/interface';
+import { Context } from 'src/store';
 import style from './style.module.less';
 
 interface IPonitsParam {
   visible: boolean;
-  ponitsRow: IPointsProvideList;
+  ponitsRow?: IPointsProvideList;
+  sendStatus: boolean;
 }
 
 interface IProviderPointsParams extends ISendPointsDetail {
@@ -17,10 +19,11 @@ interface IProviderPointsParams extends ISendPointsDetail {
 
 interface IPonitsDetail {
   ponitsParam: IPonitsParam;
-  setPonitsParam: (param: IPonitsParam) => void;
+  setPonitsParam: React.Dispatch<React.SetStateAction<IPonitsParam>>;
 }
 
 const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) => {
+  const { setConfirmModalParam } = useContext(Context);
   const { ponitsRow, visible } = ponitsParam;
   const [sendPointsDetail, setSendPointsDetail] = useState<{ total: number; list: ISendPointsDetail[] }>({
     total: 0,
@@ -31,51 +34,76 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   const [isLoading, setIsLoading] = useState(true);
   const [tableHeight, setTableHeight] = useState(0);
   const [renderedList, setRenderedList] = useState<{ [key: string]: IProviderPointsParams }>({});
+  const [sendStatus, setSendStatus] = useState(false);
   const wrapRef: MutableRefObject<any> = useRef(null);
   // 重置
   const onResetHandle = () => {
     setRenderedList({});
-    setPonitsParam({ ...ponitsParam, visible: false });
+    setPonitsParam((param) => ({ ...param, visible: false, sendStatus }));
     setPaginationParam({ pageNum: 1, pageSize: 10 });
+    setSelectedRowKeys([]);
+    setSendStatus(false);
   };
   // 获取发放积分详情接口
   const getSendPonitsDetail = async () => {
     setIsLoading(true);
-    setSelectedRowKeys([]);
-    const res = await requestGetSendPonitsDetail({});
+    const res = await requestGetSendPonitsDetail({ summaryId: ponitsRow?.summaryId, ...paginationParam });
     if (res) {
       setSendPointsDetail({ total: res.total, list: res.list });
       // 默认选中非黑名单任务
       const initSelectedRowKeys = res.list
-        .filter((item: ISendPointsDetail) => !item.isBlackTask)
+        .filter((item: ISendPointsDetail) => !item.blackTask && !item.sendStatus)
         .map((item: ISendPointsDetail) => item.rewardId);
-      setSelectedRowKeys((keys) => Array.from(new Set([...keys, ...initSelectedRowKeys])));
+      ponitsRow?.sendStatus || setSelectedRowKeys(initSelectedRowKeys);
       setRenderedList(
         res.list.reduce(
           (prev: { [key: string]: IProviderPointsParams }, now: ISendPointsDetail) => {
             prev[now.rewardId] = now;
-            prev[now.rewardId].isProvider = !now.isBlackTask;
+            prev[now.rewardId].isProvider = !now.blackTask;
             return prev;
           },
           { ...renderedList }
         )
       );
+      setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
     }
     setIsLoading(false);
   };
-  // 关闭抽屉
-  const onCloseHandle = () => {
-    onResetHandle();
-  };
   // 一键发放
-  const sendedAllHandle = () => {
-    const selectedRewardldList = Object.values(renderedList)
-      .filter((item) => item.isProvider)
+  const sendedAllHandle = async () => {
+    const selectedRewardIdList = Object.values(renderedList)
+      .filter((item) => !item.sendStatus && item.isProvider)
       .map((item) => item.rewardId);
-    const unSelectedRewardldList = Object.values(renderedList)
-      .filter((item) => !item.isProvider)
+    const unSelectedRewardIdList = Object.values(renderedList)
+      .filter((item) => !item.sendStatus && !item.isProvider)
       .map((item) => item.rewardId);
-    console.log('selectedRewardldList', selectedRewardldList, 'unSelectedRewardldList', unSelectedRewardldList);
+    const res = await requestSendAllPonitsDetail({
+      summaryId: ponitsRow?.summaryId,
+      selectedRewardIdList,
+      unSelectedRewardIdList
+    });
+    if (res) {
+      const list = sendPointsDetail.list;
+      list.forEach((item) => ({ ...item, sendStatus: 1 }));
+      setSendPointsDetail(({ total }) => ({ total, list }));
+      setSelectedRowKeys([]);
+      setPonitsParam((param) => ({ ...param }));
+      setSendStatus(true);
+    }
+  };
+  // 取消ConfirmModal
+  const onCancel = () => {
+    setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
+  };
+  // 点击一键发放
+  const clickSendPonitsHandle = () => {
+    setConfirmModalParam({
+      visible: true,
+      title: '发放提醒',
+      tips: '您确定要一键发放积分吗？',
+      onOk: sendedAllHandle,
+      onCancel
+    });
   };
   useEffect(() => {
     ponitsParam.visible && getSendPonitsDetail();
@@ -87,24 +115,29 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   return (
     <div className={style.wrap} ref={wrapRef}>
       <Drawer
-        title={ponitsRow.staffName + ponitsRow.date + '的积分奖励明细'}
+        title={ponitsRow?.staffName || '' + ponitsRow?.date || '' + '的积分奖励明细'}
         className={style.drawerWrap}
         placement="right"
-        onClose={onCloseHandle}
+        onClose={onResetHandle}
         visible={visible}
         width={'90%'}
       >
         <div className={style.btnWrap}>
-          <Button className={style.sendPoints} onClick={sendedAllHandle}>
+          <Button
+            type={'primary'}
+            className={style.sendPoints}
+            onClick={clickSendPonitsHandle}
+            disabled={!!ponitsRow?.sendStatus}
+          >
             一键发放积分
           </Button>
-          <span className={style.tip}>温馨提醒：发放的是该客户经理当天所有的积分（剔除黑名单客户）。</span>
+          <span className={style.tip}>温馨提醒：默认发放的是该客户经理当天所有的积分（剔除黑名单客户）。</span>
         </div>
         <NgTable
           className={style.tableWrap}
           setRowKey={(record: ISendPointsDetail) => record.rewardId}
           dataSource={sendPointsDetail.list}
-          columns={TableColumns()}
+          columns={TableColumns(setPonitsParam)}
           loading={isLoading}
           tableLayout={'fixed'}
           scroll={{ x: 'max-content', y: tableHeight }}

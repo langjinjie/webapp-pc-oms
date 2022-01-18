@@ -7,7 +7,8 @@ import classNames from 'classnames';
 
 interface IPonitsParam {
   visible: boolean;
-  ponitsRow: any;
+  ponitsRow?: IPointsProvideList;
+  sendStatus: boolean;
 }
 interface ITableColumns {
   setPonitsParam: (param: IPonitsParam) => void;
@@ -15,8 +16,8 @@ interface ITableColumns {
 
 const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
   // 点击查看
-  const clickCheckHandle = (row: any) => {
-    setPonitsParam({ visible: true, ponitsRow: row });
+  const clickCheckHandle = (row: IPointsProvideList) => {
+    setPonitsParam({ visible: true, ponitsRow: row, sendStatus: false });
   };
   return [
     {
@@ -34,7 +35,10 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
     },
     {
       title: '是否有黑名单',
-      dataIndex: 'blackClientNum'
+      dataIndex: 'blackTaskNum',
+      render (text) {
+        return <span className={classNames({ [style.blackList]: !!text })}>{text}</span>;
+      }
     },
     {
       title: '待发积分',
@@ -44,7 +48,10 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
     },
     {
       title: '黑名单积分',
-      dataIndex: 'blackPoints'
+      dataIndex: 'blackPoints',
+      render (text) {
+        return <span className={classNames({ [style.blackList]: !!text })}>{text}</span>;
+      }
     },
     {
       title: '应发积分',

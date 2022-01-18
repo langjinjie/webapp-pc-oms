@@ -268,7 +268,7 @@ export interface IPointsProvideList {
 // 积分发放详情列表
 export interface ISendPointsDetail {
   rewardId: string;
-  isBlackTask: number;
+  blackTask: number;
   staffId: string;
   date: string;
   taskFinishTime: string;
@@ -290,4 +290,13 @@ export interface IFlowList {
   externalUserid: string;
   clientInBlack: number;
   cotent: string;
+  rewardId?: string;
+}
+
+export interface IConfirmModalParam {
+  visible: boolean;
+  title: string;
+  tips: string;
+  onOk?: () => void;
+  onCancel?: () => void;
 }

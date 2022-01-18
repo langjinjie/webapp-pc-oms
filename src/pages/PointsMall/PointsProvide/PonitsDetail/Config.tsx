@@ -2,8 +2,9 @@ import React, { useState, useRef, MutableRefObject } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN } from 'src/utils/base';
 import { Icon } from 'src/components';
-import { ISendPointsDetail, IFlowList } from 'src/utils/interface';
-import { Popover, Table } from 'antd';
+import { IPointsProvideList, ISendPointsDetail, IFlowList } from 'src/utils/interface';
+import { message, Popover, Table } from 'antd';
+import { requestModifyRemark, requestAddBlackList } from 'src/apis/pointsMall';
 import style from './style.module.less';
 import classNames from 'classnames';
 // import classNames from 'classnames';
@@ -12,10 +13,18 @@ interface IProviderPointsParams extends ISendPointsDetail {
   isProvider?: boolean;
 }
 
-const TableColumns = (): ColumnsType<any> => {
+interface IPonitsParam {
+  visible: boolean;
+  ponitsRow?: IPointsProvideList;
+  sendStatus: boolean;
+}
+
+const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonitsParam>>): ColumnsType<any> => {
   const [isEdit, setIsEdit] = useState('');
   const [remark, setRemark] = useState('');
   const inputRef: MutableRefObject<any> = useRef(null);
+  // 解决input框宽度自适应问题
+  const [inputWidth, setInputWidth] = useState(0);
   // 功能模块
   const businessType2NameList = [
     '朋友圈',
@@ -42,9 +51,15 @@ const TableColumns = (): ColumnsType<any> => {
     '客户经理主动删除'
   ];
   // 添加黑名单
-  const addBlackListHandle = (isBlackList: boolean) => {
-    console.log(isBlackList);
-    if (isBlackList) return false;
+  const addBlackListHandle = async (row: IFlowList, rewardId: string) => {
+    console.log(row);
+    const { clientInBlack, externalUserid } = row;
+    if (clientInBlack) return false;
+    const res = await requestAddBlackList({ externalUserid, rewardId });
+    if (res) {
+      message.success('添加黑名单成功');
+      setPonitsParam((param) => param);
+    }
   };
   // popoverTable
   const popovercolums: ColumnsType<any> = [
@@ -56,7 +71,7 @@ const TableColumns = (): ColumnsType<any> => {
             <span>{row.clientNickName}</span>
             <span
               className={classNames(style.addBlackList, { [style.blackList]: row.clientInBlack })}
-              onClick={() => addBlackListHandle(!!row.clientInBlack)}
+              onClick={() => addBlackListHandle(row, row?.rewardId as string)}
             >
               {row.clientInBlack ? '客户黑名单' : '添加进黑名单'}
             </span>
@@ -70,19 +85,30 @@ const TableColumns = (): ColumnsType<any> => {
     }
   ];
   // 输入框失去焦点
-  const inputOnblurHandle = (row: ISendPointsDetail) => {
+  const inputOnblurHandle = async (row: ISendPointsDetail) => {
+    if (remark !== row.remark) {
+      const res = await requestModifyRemark({ rewardId: row.rewardId, remark });
+      res && (row.remark = remark);
+    }
     setIsEdit('');
-    row.remark = remark;
+  };
+  const onkeydownHandle = (e: React.KeyboardEvent<HTMLInputElement>, row: ISendPointsDetail) => {
+    if (e.keyCode === 13) {
+      inputOnblurHandle(row);
+    }
   };
   // 点击编辑
   const clickEditHandle = async (row: ISendPointsDetail) => {
-    setRemark(row.remark);
+    const remarkWidth = document.getElementsByClassName(style.remark)[0].clientWidth;
+    setInputWidth(remarkWidth || 0);
+    setRemark(row.remark || '');
     await setIsEdit(row.rewardId);
     inputRef.current.focus();
   };
   // 输入框的onchange事件
   const inputOnChangeHnadle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRemark(event.target.value.trim());
+    setInputWidth(event.target.value.trim().length * 14);
   };
   return [
     {
@@ -116,12 +142,12 @@ const TableColumns = (): ColumnsType<any> => {
       render (row: ISendPointsDetail) {
         return (
           <>
-            {row.flowList.slice(0, 3).map((item) => (
+            {row.flowList.slice(0, 3).map((item, index) => (
               <div className={style.clientNickName} key={item.flowId}>
                 <span>{item.clientNickName}</span>
                 <span
                   className={classNames(style.addBlackList, { [style.blackList]: item.clientInBlack })}
-                  onClick={() => addBlackListHandle(!!item.clientInBlack)}
+                  onClick={() => addBlackListHandle(row.flowList[index], row.rewardId)}
                 >
                   {item.clientInBlack ? '客户黑名单' : '添加进黑名单'}
                 </span>
@@ -136,7 +162,7 @@ const TableColumns = (): ColumnsType<any> => {
                     <Table
                       className={style.popoverTableWrap}
                       rowKey={'flowId'}
-                      dataSource={row.flowList}
+                      dataSource={row.flowList.map((item) => ({ ...item, rewardId: row.rewardId }))}
                       columns={popovercolums}
                       pagination={false}
                     />
@@ -201,7 +227,7 @@ const TableColumns = (): ColumnsType<any> => {
       title: '备注',
       render (row: ISendPointsDetail) {
         return (
-          <span className={style.remark}>
+          <span className={style.remark} style={isEdit === row.rewardId ? { width: inputWidth } : { width: '100%' }}>
             {isEdit === row.rewardId
               ? (
               <input
@@ -210,12 +236,13 @@ const TableColumns = (): ColumnsType<any> => {
                 onBlur={() => inputOnblurHandle(row)}
                 className={style.input}
                 type="text"
-                readOnly={isEdit !== row.rewardId}
                 onChange={inputOnChangeHnadle}
+                style={{ width: inputWidth }}
+                onKeyDown={(e) => onkeydownHandle(e, row)}
               />
                 )
               : (
-              <span>{row.remark}</span>
+              <span className={style.text}>{row.remark}</span>
                 )}
             {isEdit !== row.rewardId && <Icon name="bianji" onClick={() => clickEditHandle(row)} />}
           </span>
@@ -268,7 +295,10 @@ const TablePagination = (arg: { [key: string]: any }): any => {
       }, newRenderedParam);
       setRenderedList((list: IProviderPointsParams) => ({ ...list, ...newRenderedParam }));
     },
-    hideSelectAll: false // 是否隐藏全选
+    hideSelectAll: false, // 是否隐藏全选
+    getCheckboxProps: (record: IProviderPointsParams) => ({
+      disabled: record.sendStatus === 1 // 已发放积分的不能被选中
+    })
   };
   return { pagination, rowSelection, paginationChange };
 };
