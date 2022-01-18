@@ -65,9 +65,6 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
    * 保存
    */
   const onSave = async () => {
-    if (!chooseUser.staffId || !chooseUser.staffName) {
-      return message.error('请选择上级！');
-    }
     const res: any = await saveDepartmentLeader({ staffId: chooseUser.staffId, deptId });
     if (res) {
       onClose();
@@ -119,9 +116,12 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
         </section>
         <section className={style.right}>
           <div className={style.chooseHeader}>已选</div>
-          <div className={style.leaderName}>
-            {chooseUser.staffName} {chooseUser.userId ? `(${chooseUser.userId})` : ''}
-          </div>
+          {chooseUser.staffId && (
+            <div className={style.leaderName}>
+              {chooseUser.staffName} ({chooseUser.userId})
+              <Icon className={style.closeIcon} name="guanbi" onClick={() => setChooseUser({})} />
+            </div>
+          )}
         </section>
       </div>
     </Modal>

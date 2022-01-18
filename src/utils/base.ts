@@ -99,3 +99,21 @@ export const debounce = (fn: { apply: (arg0: any, arg1: any) => void }, delay: n
     }, delay);
   };
 };
+
+/**
+ * 导出文件
+ * @param data
+ * @param fileName
+ */
+export const exportFile = (data: BlobPart, fileName: string): void => {
+  const blob = new Blob([data]);
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.style.display = 'none';
+  link.href = url;
+  link.setAttribute('download', fileName + '.xlsx');
+  document.body.appendChild(link);
+  link.click(); // 点击下载
+  link.remove(); // 下载完成移除元素
+  window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
+};

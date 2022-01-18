@@ -52,3 +52,10 @@ export const saveDepartmentLeader: HttpFunction = (param: Object) => {
 export const operateDepartment: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/stafforg/opstatus', param);
 };
+
+/**
+ * 导出组织架构
+ */
+export const exportOrganization: VoidFunction = () => {
+  return http.post('/tenacity-admin/api/stafforg/export');
+};

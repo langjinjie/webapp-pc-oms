@@ -8,7 +8,14 @@ import { Input, Tree, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
 import { Icon, Modal, Empty } from 'src/components';
-import { queryDepartmentList, searchStaffAndDepart, saveDepartment, operateDepartment } from 'src/apis/organization';
+import {
+  queryDepartmentList,
+  searchStaffAndDepart,
+  saveDepartment,
+  operateDepartment,
+  exportOrganization
+} from 'src/apis/organization';
+import { exportFile } from 'src/utils/base';
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
@@ -66,8 +73,8 @@ const Organization: React.FC = () => {
    */
   const handlePosition = (x: number, y: number) => {
     let top = y + 30;
-    if (window.innerHeight - y - 35 < 228) {
-      top = y - 30 - 232;
+    if (window.innerHeight - y - 35 < 260) {
+      top = y - 30 - 264;
     }
     setPosition({
       left: 445,
@@ -352,6 +359,16 @@ const Organization: React.FC = () => {
    */
   const hideDepart = () => setShowDepart(false);
 
+  /**
+   * 导出组织架构
+   */
+  const onExport = async () => {
+    const res: any = await exportOrganization();
+    if (res) {
+      exportFile(res.data, `${currentNode.deptName}组织架构`);
+    }
+  };
+
   useEffect(() => {
     setTitle('组织架构管理');
     initCorpOrgData();
@@ -450,6 +467,19 @@ const Organization: React.FC = () => {
         className={style.departmentOperation}
         onClick={(e) => e.stopPropagation()}
       >
+        <li
+          className={classNames(style.operationItem, {
+            [style.disabled]: currentNode.deptType !== 1
+          })}
+          onClick={() => {
+            if (currentNode.deptType === 1) {
+              console.log('导出');
+              onExport();
+            }
+          }}
+        >
+          导出
+        </li>
         <li
           className={style.operationItem}
           title={currentNode.deptId}
