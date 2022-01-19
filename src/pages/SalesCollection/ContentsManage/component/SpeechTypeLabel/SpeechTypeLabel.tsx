@@ -248,9 +248,9 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
           <UploadFile
             type={'PDF'}
             fileList={fileList}
-            imgLimitParam={{ type: ['application/pdf'], size: 100 }}
-            rules={[{ required: true, message: '请上传大小不超过100MB的.pdf文件' }]}
-            extra={'仅支持.pdf格式，最大100MB'}
+            imgLimitParam={{ type: ['application/pdf'], size: 50 }}
+            rules={[{ required: true, message: '请上传大小不超过50MB的.pdf文件' }]}
+            extra={'仅支持.pdf格式，最大50MB'}
           />
           <Form.Item
             className={style.formItem}
