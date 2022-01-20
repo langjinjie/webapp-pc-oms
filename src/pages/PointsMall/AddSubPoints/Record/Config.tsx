@@ -36,6 +36,7 @@ export const searchCols: SearchCol[] = [
   }
 ];
 export interface StaffProps {
+  adjustId: string;
   name: string; // 坐席姓名
   userId: string; // 企微账号
   seatsId: string; // 工号

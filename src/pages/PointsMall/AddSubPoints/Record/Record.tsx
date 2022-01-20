@@ -101,7 +101,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
           dataSource={dataSource}
           paginationChange={onPaginationChange}
           setRowKey={(record: StaffProps) => {
-            return record.staffId;
+            return record.adjustId;
           }}
         />
       </div>
