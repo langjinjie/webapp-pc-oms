@@ -473,7 +473,6 @@ const Organization: React.FC = () => {
           })}
           onClick={() => {
             if (currentNode.deptType === 1) {
-              console.log('导出');
               onExport();
             }
           }}

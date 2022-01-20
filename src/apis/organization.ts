@@ -57,5 +57,11 @@ export const operateDepartment: HttpFunction = (param: Object) => {
  * 导出组织架构
  */
 export const exportOrganization: VoidFunction = () => {
-  return http.post('/tenacity-admin/api/stafforg/export');
+  return http.post(
+    '/tenacity-admin/api/stafforg/depexport',
+    {},
+    {
+      responseType: 'blob'
+    }
+  );
 };

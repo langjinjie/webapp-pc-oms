@@ -53,8 +53,6 @@ const SetLeader: React.FC<SetLeaderProps> = (props) => {
       setUserList(resList);
       if (leaderInfo?.staffId) {
         setChooseUser(resList.find((item: UserItem) => item.staffId === leaderInfo?.staffId) || {});
-      } else if (resList.length > 0) {
-        setChooseUser(resList[0]);
       } else {
         setChooseUser({});
       }
