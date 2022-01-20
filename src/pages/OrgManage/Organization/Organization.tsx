@@ -3,7 +3,7 @@
  * @author Lester
  * @date 2021-12-10 10:36
  */
-import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
+import React, { useEffect, useState, useContext, useRef, MutableRefObject } from 'react';
 import { Input, Tree, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
@@ -16,6 +16,7 @@ import {
   exportOrganization
 } from 'src/apis/organization';
 import { exportFile } from 'src/utils/base';
+import { Context } from 'src/store';
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
@@ -50,6 +51,7 @@ interface PositionValue {
 type Key = string | number;
 
 const Organization: React.FC = () => {
+  const { userInfo } = useContext(Context);
   const [organization, setOrganization] = useState<OrganizationItem[]>([]);
   const [expandIds, setExpandIds] = useState<Key[]>([]);
   const [position, setPosition] = useState<PositionValue>({ left: 0, top: 0 });
@@ -481,13 +483,13 @@ const Organization: React.FC = () => {
         </li>
         <li
           className={style.operationItem}
-          title={currentNode.deptId}
+          title={userInfo.depPrefix + String(currentNode.deptId)}
           onClick={() => {
-            copy(currentNode.deptId!, false);
+            copy(userInfo.depPrefix + currentNode.deptId!, false);
             message.success('部门id已复制');
           }}
         >
-          部门ID：{currentNode.deptId}
+          部门ID：{userInfo.depPrefix + currentNode.deptId}
         </li>
         <li
           className={style.operationItem}
