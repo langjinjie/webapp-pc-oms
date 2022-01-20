@@ -3,17 +3,26 @@ import { useDocumentTitle } from 'src/utils/base';
 import { Breadcrumb, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
-import { getFreeStaffList } from 'src/apis/orgManage';
+import { getWaitDeductPointsList } from 'src/apis/integral';
 import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './style.module.less';
+import { Moment } from 'moment';
 
 const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('积分管理-积分扣减');
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<StaffProps[]>([]);
-  const [formParams, setFormParams] = useState({
-    name: ''
+  const [formParams, setFormParams] = useState<{
+    staffName: string;
+    type: number;
+    beginTime: null | number;
+    endTime: null | number;
+  }>({
+    type: 2,
+    staffName: '',
+    beginTime: null,
+    endTime: null
   });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -25,7 +34,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
 
   const getList = async (params?: any) => {
     setIsLoading(true);
-    const res = await getFreeStaffList({
+    const res = await getWaitDeductPointsList({
       ...formParams,
       pageSize: 10,
       pageNum: 1,
@@ -39,9 +48,17 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const handleSearch = ({ name = '' }: { name: string }) => {
-    setFormParams({ name });
-    getList({ pageNum: 1, name });
+  const handleSearch = ({ staffName = '', time }: { staffName: string; time: [Moment, Moment] }) => {
+    let beginTime!: number;
+    let endTime!: number;
+    if (time) {
+      beginTime = time[0].startOf('day').valueOf();
+      endTime = time[1].endOf('day').valueOf();
+    }
+
+    setFormParams((formParams) => ({ ...formParams, staffName, beginTime, endTime }));
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
+    getList({ pageNum: 1, staffName, beginTime, endTime });
   };
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
-import { Button, Tooltip } from 'antd';
+import { Avatar, Button, Popconfirm, Tooltip } from 'antd';
 
 export const searchCols: SearchCol[] = [
   {
@@ -35,7 +35,7 @@ export interface DeductProps {
   freeType: string; // 免统计模块 1、排行榜，2、战报 多个用,分开
 }
 
-export const tableColumns = (): ColumnsType<DeductProps> => [
+export const tableColumns = (batchDeduct: (record: DeductProps) => void): ColumnsType<DeductProps> => [
   {
     title: '客户经理姓名',
     dataIndex: 'staffName',
@@ -80,12 +80,21 @@ export const tableColumns = (): ColumnsType<DeductProps> => [
   {
     title: '删除的客户昵称',
     align: 'left',
-    dataIndex: 'deptName',
+    dataIndex: 'clientNickName',
     width: 200,
-    render: (value) => <span>{value || UNKNOWN}</span>
+    render: (value, record) => (
+      <div>
+        <Avatar className="margin-right10" src={record.clientAvatar} alt="头像" />
+        <span>{value}</span>
+      </div>
+    )
   },
   {
     title: '操作',
-    render: () => <Button type="link">扣减</Button>
+    render: (value, record) => (
+      <Popconfirm title="确定扣减?" onConfirm={() => batchDeduct(record)}>
+        <Button type="link">扣减</Button>
+      </Popconfirm>
+    )
   }
 ];

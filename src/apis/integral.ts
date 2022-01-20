@@ -3,26 +3,20 @@ import http from 'src/utils/http';
 type HttpFunction<T = any> = (param: T) => Promise<any>;
 
 /**
- * 积分待扣减列表
+ * 积分待扣减列表,记录列表
  * @param param
  */
 export const getWaitDeductPointsList: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/points/rest/points/deduct/list', param);
+  return http.post('/tenacity-admin/api/points/rest/deduct/list', param);
 };
 /**
  * 批量扣减积分
  * @param param
  */
 export const batchDeductIntegral: HttpFunction<Object> = (param) => {
-  return http.post('/tenacity-admin/api/points/rest/points/deduct/batch', param);
+  return http.post('/tenacity-admin/api/points/rest/deduct/batch', param);
 };
-/**
- * 积分扣减记录
- * @param param
- */
-export const getRecordListOfPoints: HttpFunction<Object> = (param) => {
-  return http.post('/tenacity-admin/api/points/rest/points/deduct/record/list', param);
-};
+
 /**
  * 删除积分扣减记录
  * @param param
