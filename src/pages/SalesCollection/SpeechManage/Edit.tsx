@@ -215,7 +215,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     };
     if (
       (originSpeech?.contentType === 2 && contentUrl !== originSpeech.contentUrl) ||
-      ((originSpeech?.contentType === 7 || originSpeech?.contentType === 6) &&
+      ((originSpeech?.contentType === 7 || originSpeech?.contentType === 6 || originSpeech?.contentType === 10) &&
         (title !== originSpeech?.title ||
           originSpeech.contentUrl !== contentUrl ||
           summary !== originSpeech.summary ||

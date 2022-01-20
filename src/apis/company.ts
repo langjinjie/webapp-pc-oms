@@ -44,3 +44,11 @@ export const saveCompanyInfo: HttpFunction = (param: Object) => {
 export const queryCompanyInfo: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/corp/open/queryCorpStep', param);
 };
+
+/**
+ * 查询授权url
+ * @param param
+ */
+export const queryAuthUrl: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/corp/open/queryAuthCode', param);
+};
