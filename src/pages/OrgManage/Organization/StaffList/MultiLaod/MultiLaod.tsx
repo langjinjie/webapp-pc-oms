@@ -137,7 +137,10 @@ const MultiLaod: React.FC = () => {
         </Button>
         <a
           className={style.btn}
-          href="https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/%E7%BB%84%E7%BB%87%E6%9E%B6%E6%9E%84%E4%BF%A1%E6%81%AF%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF.xlsx"
+          href={
+            'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/%E7%BB%84%E7%BB%87%E6%9E%B6%E6%9E%84%E4%BF%A1%E6%81%AF%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF.xlsx?' +
+            Date.now().toString(16)
+          }
         >
           下载模板
         </a>

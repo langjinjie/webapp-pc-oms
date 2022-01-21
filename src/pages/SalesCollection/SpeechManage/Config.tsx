@@ -19,10 +19,11 @@ export const speechContentTypes = [
   { id: 5, name: '图文链接' },
   { id: 6, name: '音频' },
   { id: 7, name: '视频' },
-  { id: 9, name: '小程序' }
+  { id: 9, name: '小程序' },
+  { id: 10, name: 'PDF' }
 ];
 export const excelDemoUrl =
-  'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/smart_content_import_template.xlsx';
+  'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/%E5%90%8E%E7%AE%A1%E7%AB%AF%E8%AF%9D%E6%9C%AF%E6%A8%A1%E6%9D%BF.xlsx';
 
 export const statusOptions = [
   { id: 0, name: '待上架' },

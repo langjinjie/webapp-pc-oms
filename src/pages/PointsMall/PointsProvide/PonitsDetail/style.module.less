@@ -1,0 +1,127 @@
+.drawerWrap {
+  .btnWrap {
+    margin-bottom: 20px;
+    .sendPoints {
+      margin-right: 14px;
+      width: 128px;
+      height: 40px;
+      background: #318cf5;
+      border-radius: 20px;
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: #ffffff;
+    }
+    .tip {
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #999999;
+    }
+  }
+  .tableWrap {
+    // config样式
+    .checkAllClient {
+      font-size: 12px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #495770;
+      line-height: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #495770;
+    }
+    .sendStatus {
+      &::before {
+        content: '';
+        display: inline-block;
+        margin-right: 8px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ccccd0;
+        vertical-align: middle;
+      }
+      &.sended::before {
+        background: #33cdb8;
+      }
+    }
+    .remark {
+      display: inline-block;
+      min-width: 30px;
+      width: 100%;
+      .input {
+        min-width: 30px;
+        width: 100%;
+        border: none;
+        outline: none;
+      }
+    }
+  }
+  :global {
+    // drawer默认样式
+    .ant-drawer-header {
+      border: none;
+    }
+    .ant-drawer-title {
+      font-weight: 500;
+      text-align: center;
+    }
+    .ant-drawer-body {
+      padding-top: 4px;
+      padding-bottom: 0;
+    }
+    // table默认样式
+    .ant-table-cell {
+      vertical-align: top;
+      border: none;
+    }
+    .ant-drawer-title {
+      font-weight: 500;
+      text-align: center;
+    }
+  }
+}
+
+// popoverTableWrap样式
+.popoverTableWrap {
+  :global {
+    .ant-table-cell {
+      border: none;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+  }
+}
+
+// popoverTableWrap以及tableWrap的客户昵称/客户id/内容样式
+.clientNickName,
+.externalUserid,
+.cotent {
+  display: flex;
+  justify-content: space-between;
+  &:not(:last-child) {
+    margin-bottom: 16px;
+  }
+  .addBlackList {
+    display: inline-block;
+    margin-left: 14px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #318cf5;
+    font-size: 12px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #318cf5;
+    line-height: 12px;
+    vertical-align: top;
+    cursor: pointer;
+    &.blackList {
+      margin-right: 12px;
+      border-color: #2a2a2a;
+      background: #2a2a2a;
+      border-radius: 4px;
+      color: #ffffff;
+      cursor: not-allowed;
+    }
+  }
+}
