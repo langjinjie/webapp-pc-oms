@@ -1,62 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
-import { PaginationProps } from 'antd';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
-import { getFreeStaffList } from 'src/apis/orgManage';
 import { RouteComponentProps } from 'react-router-dom';
 import ModalUpdatePoints from './Components/ModalUpdatePonits';
 
 import styles from './style.module.less';
 import classNames from 'classnames';
-import { updateStaffPoints } from 'src/apis/integral';
+import { updateStaffPoints, searchStaffWithPointsUpdate } from 'src/apis/integral';
+import { message } from 'antd';
 
 const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('积分商城-积分扣减');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [dataSource, setDataSource] = useState<StaffProps[]>([]);
   const [adjustType, setAdjustType] = useState(1);
-  const [formParams, setFormParams] = useState({
-    staffName: ''
-  });
   const [visible, setVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
-  const [pagination, setPagination] = useState<PaginationProps>({
-    current: 1,
-    total: 0,
-    showTotal: (total) => {
-      return `共 ${total} 条记录`;
-    }
-  });
+  const [currentStaff, setCurrentStaff] = useState<StaffProps | null>();
 
-  const getList = async (params?: any) => {
+  const handleSearch = async ({ staffName = '' }: { staffName: string }) => {
     setIsLoading(true);
-    const res = await getFreeStaffList({
-      ...formParams,
-      pageSize: 10,
-      pageNum: 1,
-      ...params
+    const res = await searchStaffWithPointsUpdate({
+      staffName
     });
     setIsLoading(false);
     if (res) {
-      const { list, total } = res;
-      setPagination((pagination) => ({ ...pagination, total }));
-      setDataSource(list || []);
+      setDataSource(res || []);
     }
-  };
-
-  const handleSearch = ({ staffName = '' }: { staffName: string }) => {
-    setFormParams({ staffName });
-    getList({ pageNum: 1, staffName });
-  };
-
-  useEffect(() => {
-    getList();
-  }, []);
-
-  const onPaginationChange = (pageNum: number, pageSize?: number) => {
-    setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize }));
-    getList({ pageNum, pageSize });
   };
 
   const navigateToRecord = () => {
@@ -67,24 +38,26 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     setModalTitle(`给${staff.staffName}增加积分`);
     setVisible(true);
     setAdjustType(1);
-
-    console.log(staff);
+    setCurrentStaff(staff);
   };
 
   const minusPoints = (staff: StaffProps) => {
     setModalTitle(`给${staff.staffName}扣减积分`);
-    console.log(staff);
     setAdjustType(2);
     setVisible(true);
+    setCurrentStaff(staff);
   };
 
   const confirmChangeStaffPoints = async (values: any) => {
     setVisible(false);
     const res = await updateStaffPoints({
       ...values,
-      adjustType
+      adjustType,
+      staffId: currentStaff?.staffId
     });
-    console.log(res);
+    if (res) {
+      message.success(adjustType === 1 ? '增加成功' : '扣减成功');
+    }
   };
   return (
     <div className="container">
@@ -102,9 +75,8 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
         <NgTable
           columns={tableColumns(addPoints, minusPoints)}
           loading={isLoading}
-          pagination={pagination}
+          pagination={undefined}
           dataSource={dataSource}
-          paginationChange={onPaginationChange}
           setRowKey={(record: StaffProps) => {
             return record.staffId;
           }}

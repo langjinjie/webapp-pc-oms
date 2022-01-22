@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
-import { Button, PaginationProps } from 'antd';
+import { Button, message, PaginationProps } from 'antd';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, DeductProps, tableColumns } from './Config';
 import { RouteComponentProps } from 'react-router-dom';
@@ -8,17 +8,21 @@ import { batchDeductIntegral, getWaitDeductPointsList } from 'src/apis/integral'
 import { Moment } from 'moment';
 import classNames from 'classnames';
 import styles from './style.module.less';
+import { NgModal } from 'src/pages/OrgManage/StatisticsFree/Components/NgModal/NgModal';
 
 const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('积分管理-积分扣减');
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<DeductProps[]>([]);
+  const [visible, setVisible] = useState(false);
   const [formParams, setFormParams] = useState<{
     staffName: string;
+    type: number;
     beginTime: null | number;
     endTime: null | number;
   }>({
+    type: 1,
     staffName: '',
     beginTime: null,
     endTime: null
@@ -26,7 +30,8 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     total: 0,
-    showTotal: (total) => {
+    pageSize: 10,
+    showTotal: (total: number) => {
       return `共 ${total} 条记录`;
     }
   });
@@ -36,7 +41,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     setIsLoading(true);
     const res = await getWaitDeductPointsList({
       ...formParams,
-      pageSize: 10,
+      pageSize: pagination.pageSize,
       pageNum: 1,
       ...params
     });
@@ -56,8 +61,8 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
       endTime = time[1].endOf('day').valueOf();
     }
 
-    setFormParams({ staffName, beginTime, endTime });
-    setPagination({ current: 1 });
+    setFormParams((formParams) => ({ ...formParams, staffName, beginTime, endTime }));
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
     getList({ pageNum: 1, staffName, beginTime, endTime });
   };
 
@@ -93,10 +98,32 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     history.push('/pointsDeduction/record');
   };
 
-  const batchDeduct = async () => {
-    console.log('扣减了呀');
-    const res = await batchDeductIntegral({});
-    console.log(res);
+  const batchDeduct = async (record?: DeductProps) => {
+    if (record) {
+      const [...copyData] = [...dataSource];
+      const res = await batchDeductIntegral({ deductId: [record.deductId] });
+      if (res) {
+        message.success('扣减成功');
+        const index = dataSource.indexOf(record);
+        copyData.splice(index, 1);
+        if (copyData.length === 0) {
+          getList({ pageNum: pagination.current - 1 || 1 });
+        }
+        setPagination((pagination) => ({ ...pagination, total: pagination.total - 1 || 0 }));
+        setDataSource(copyData);
+      }
+    } else {
+      const res = await batchDeductIntegral({ deductId: selectedRowKeys });
+      if (res) {
+        message.success('扣减成功');
+        const data = dataSource.filter((item) => !selectedRowKeys.includes(item.deductId));
+        setDataSource(data);
+        if (data.length === 0) {
+          getList({ pageNum: pagination.current - 1 || 1 });
+        }
+        setPagination((pagination) => ({ ...pagination, total: pagination.total - selectedRowKeys.length }));
+      }
+    }
   };
 
   return (
@@ -113,7 +140,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
       </div>
       <div className="pt20">
         <NgTable
-          columns={tableColumns()}
+          columns={tableColumns(batchDeduct)}
           loading={isLoading}
           rowSelection={rowSelection}
           pagination={pagination}
@@ -126,13 +153,30 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
         {dataSource.length > 0
           ? (
           <div className={'operationWrap'}>
-            <Button type="primary" shape={'round'} ghost disabled={selectedRowKeys.length === 0} onClick={batchDeduct}>
+            <Button
+              type="primary"
+              shape={'round'}
+              ghost
+              disabled={selectedRowKeys.length === 0}
+              onClick={() => setVisible(true)}
+            >
               批量扣减
             </Button>
           </div>
             )
           : null}
       </div>
+      <NgModal
+        visible={visible}
+        title="扣减提醒"
+        onCancel={() => setVisible(false)}
+        onOk={() => {
+          batchDeduct();
+          setVisible(false);
+        }}
+      >
+        <p className="text-center">确定扣减吗？</p>
+      </NgModal>
     </div>
   );
 };

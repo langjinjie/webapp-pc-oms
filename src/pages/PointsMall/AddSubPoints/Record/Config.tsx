@@ -2,6 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
+import { Tooltip } from 'antd';
 
 export const searchCols: SearchCol[] = [
   {
@@ -35,6 +36,7 @@ export const searchCols: SearchCol[] = [
   }
 ];
 export interface StaffProps {
+  adjustId: string;
   name: string; // 坐席姓名
   userId: string; // 企微账号
   seatsId: string; // 工号
@@ -57,7 +59,7 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     width: 200,
     render (text, record) {
       return (
-        <span>
+        <span style={{ color: record.adjustType === 1 ? '#FB851C' : '#111' }}>
           {record.adjustType === 1 ? '+' : '-'}
           {text}
         </span>
@@ -90,6 +92,13 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     align: 'left',
     dataIndex: 'remark',
     width: 200,
-    render: (value) => <span>{value || UNKNOWN}</span>
+    ellipsis: {
+      showTitle: false
+    },
+    render: (remark) => (
+      <Tooltip placement="topLeft" title={remark}>
+        {remark || UNKNOWN}
+      </Tooltip>
+    )
   }
 ];

@@ -3,7 +3,7 @@ import { useDocumentTitle } from 'src/utils/base';
 import { Breadcrumb, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
-import { getFreeStaffList } from 'src/apis/orgManage';
+import { getUpdateStaffPointHistory } from 'src/apis/integral';
 import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './style.module.less';
@@ -34,7 +34,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
 
   const getList = async (params?: any) => {
     setIsLoading(true);
-    const res = await getFreeStaffList({
+    const res = await getUpdateStaffPointHistory({
       ...formParams,
       pageSize: 10,
       pageNum: 1,
@@ -101,7 +101,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
           dataSource={dataSource}
           paginationChange={onPaginationChange}
           setRowKey={(record: StaffProps) => {
-            return record.staffId;
+            return record.adjustId;
           }}
         />
       </div>
