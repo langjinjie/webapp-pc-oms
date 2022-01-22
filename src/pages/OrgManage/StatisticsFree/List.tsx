@@ -28,7 +28,7 @@ const StatisticsFreeList: React.FC = () => {
     setIsLoading(true);
     const res = await getFreeStaffList({
       ...formParams,
-      pageSize: 10,
+      pageSize: pagination.pageSize,
       pageNum: 1,
       ...params
     });

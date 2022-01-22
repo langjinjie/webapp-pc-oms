@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
-import { Button, message } from 'antd';
+import { Button, message, PaginationProps } from 'antd';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, DeductProps, tableColumns } from './Config';
 import { RouteComponentProps } from 'react-router-dom';
@@ -27,9 +27,10 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     beginTime: null,
     endTime: null
   });
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     total: 0,
+    pageSize: 10,
     showTotal: (total: number) => {
       return `共 ${total} 条记录`;
     }
@@ -40,7 +41,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     setIsLoading(true);
     const res = await getWaitDeductPointsList({
       ...formParams,
-      pageSize: 10,
+      pageSize: pagination.pageSize,
       pageNum: 1,
       ...params
     });

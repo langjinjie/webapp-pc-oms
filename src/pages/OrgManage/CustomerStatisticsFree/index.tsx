@@ -30,7 +30,7 @@ const CustomerStatisticsFree: React.FC = () => {
     setSelectRowKeys([]);
     const res = await getCustomerFreeList({
       ...formParams,
-      pageSize: 10,
+      pageSize: pagination.pageSize,
       pageNum: 1,
       ...params
     });
