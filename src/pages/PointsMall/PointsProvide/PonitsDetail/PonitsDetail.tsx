@@ -99,8 +99,8 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   const clickSendPonitsHandle = () => {
     setConfirmModalParam({
       visible: true,
-      title: '发放提醒',
-      tips: '您确定要发放积分吗？',
+      title: '积分发放提醒',
+      tips: '是否确定发放积分？',
       onOk: sendedAllHandle,
       onCancel
     });

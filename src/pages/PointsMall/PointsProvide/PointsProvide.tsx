@@ -91,8 +91,8 @@ const PointsProvide: React.FC = () => {
   const clickSendAllPonitsHandle = () => {
     setConfirmModalParam({
       visible: true,
-      title: '发放提醒',
-      tips: '您确定要群发当前积分吗？',
+      title: '积分发放提醒',
+      tips: '是否确定群发积分？',
       onOk: sendAllPonitsHandle,
       onCancel
     });
@@ -119,8 +119,8 @@ const PointsProvide: React.FC = () => {
   const clickSendPonitsHandle = () => {
     setConfirmModalParam({
       visible: true,
-      title: '发放提醒',
-      tips: '您确定要发放当前选中的积分吗？',
+      title: '积分发放提醒',
+      tips: '是否确定群发选中的积分？',
       onOk: sendPoints,
       onCancel
     });

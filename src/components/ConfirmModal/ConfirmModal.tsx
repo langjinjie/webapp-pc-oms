@@ -21,6 +21,7 @@ const ConfirmModal: React.FC = () => {
     <Modal
       className={style.modalWrap}
       centered
+      closable={false}
       visible={visible}
       width={300}
       title={title}
