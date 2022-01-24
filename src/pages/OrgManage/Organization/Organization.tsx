@@ -3,12 +3,20 @@
  * @author Lester
  * @date 2021-12-10 10:36
  */
-import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
+import React, { useEffect, useState, useContext, useRef, MutableRefObject } from 'react';
 import { Input, Tree, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
 import { Icon, Modal, Empty } from 'src/components';
-import { queryDepartmentList, searchStaffAndDepart, saveDepartment, operateDepartment } from 'src/apis/organization';
+import {
+  queryDepartmentList,
+  searchStaffAndDepart,
+  saveDepartment,
+  operateDepartment,
+  exportOrganization
+} from 'src/apis/organization';
+import { exportFile } from 'src/utils/base';
+import { Context } from 'src/store';
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
@@ -43,6 +51,7 @@ interface PositionValue {
 type Key = string | number;
 
 const Organization: React.FC = () => {
+  const { userInfo } = useContext(Context);
   const [organization, setOrganization] = useState<OrganizationItem[]>([]);
   const [expandIds, setExpandIds] = useState<Key[]>([]);
   const [position, setPosition] = useState<PositionValue>({ left: 0, top: 0 });
@@ -66,8 +75,8 @@ const Organization: React.FC = () => {
    */
   const handlePosition = (x: number, y: number) => {
     let top = y + 30;
-    if (window.innerHeight - y - 35 < 228) {
-      top = y - 30 - 232;
+    if (window.innerHeight - y - 35 < 260) {
+      top = y - 30 - 264;
     }
     setPosition({
       left: 445,
@@ -352,6 +361,16 @@ const Organization: React.FC = () => {
    */
   const hideDepart = () => setShowDepart(false);
 
+  /**
+   * 导出组织架构
+   */
+  const onExport = async () => {
+    const res: any = await exportOrganization();
+    if (res) {
+      exportFile(res.data, `${currentNode.deptName}组织架构`);
+    }
+  };
+
   useEffect(() => {
     setTitle('组织架构管理');
     initCorpOrgData();
@@ -451,14 +470,26 @@ const Organization: React.FC = () => {
         onClick={(e) => e.stopPropagation()}
       >
         <li
-          className={style.operationItem}
-          title={currentNode.deptId}
+          className={classNames(style.operationItem, {
+            [style.disabled]: currentNode.deptType !== 1
+          })}
           onClick={() => {
-            copy(currentNode.deptId!, false);
+            if (currentNode.deptType === 1) {
+              onExport();
+            }
+          }}
+        >
+          导出
+        </li>
+        <li
+          className={style.operationItem}
+          title={userInfo.depPrefix + String(currentNode.deptId)}
+          onClick={() => {
+            copy(userInfo.depPrefix + currentNode.deptId!, false);
             message.success('部门id已复制');
           }}
         >
-          部门ID：{currentNode.deptId}
+          部门ID：{userInfo.depPrefix + currentNode.deptId}
         </li>
         <li
           className={style.operationItem}
@@ -550,8 +581,8 @@ const Organization: React.FC = () => {
           onOk={(leaderInfo) => {
             const newNode: OrganizationItem = {
               ...currentNode,
-              leaderId: leaderInfo.staffId,
-              leaderName: leaderInfo.staffName
+              leaderId: leaderInfo.staffId || '',
+              leaderName: leaderInfo.staffName || ''
             };
             setCurrentNode(newNode);
             setOrganization(updateNodeInfo(organization, newNode));
