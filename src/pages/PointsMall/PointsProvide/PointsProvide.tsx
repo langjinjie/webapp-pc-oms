@@ -164,16 +164,10 @@ const PointsProvide: React.FC = () => {
               </Select>
             </Form.Item>
             <Form.Item style={{ width: 186 }}>
-              <Button
-                className={style.searchBtn}
-                type="primary"
-                onClick={onSearchHandle}
-                disabled={isLoading}
-                loading={isLoading}
-              >
+              <Button className={style.searchBtn} type="primary" onClick={onSearchHandle} disabled={isLoading}>
                 查询
               </Button>
-              <Button className={style.resetBtn} htmlType="reset" disabled={isLoading} loading={isLoading}>
+              <Button className={style.resetBtn} htmlType="reset" disabled={isLoading}>
                 重置
               </Button>
             </Form.Item>

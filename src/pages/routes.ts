@@ -339,17 +339,17 @@ export const menus: Menu[] = [
       { name: '话术管理', path: '/speechManage' },
       { name: '目录管理', path: '/contentsManage' }
     ]
+  },
+  {
+    name: '积分管理',
+    icon: 'icon_daohang_28_biaoqianxitong',
+    path: 'pointsMall',
+    children: [
+      { name: '积分发放', path: '/pointsProvide' },
+      { name: '积分扣减', path: '/pointsDeduction' },
+      { name: '加减积分', path: '/addSubPoints' }
+    ]
   }
-  // {
-  //   name: '积分管理',
-  //   icon: 'icon_daohang_28_biaoqianxitong',
-  //   path: 'pointsMall',
-  //   children: [
-  //     { name: '积分发放', path: '/pointsProvide' },
-  //     { name: '积分扣减', path: '/pointsDeduction' },
-  //     { name: '加减积分', path: '/addSubPoints' }
-  //   ]
-  // }
 ];
 
 if (process.env.NODE_ENV === 'development') {
