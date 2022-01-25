@@ -110,7 +110,6 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
     ponitsParam.visible && getSendPonitsDetail();
   }, [ponitsParam, paginationParam]);
   useEffect(() => {
-    console.log('更新了~');
     const drawerHeight = document.getElementsByClassName(style.drawerWrap)[0] as HTMLDivElement;
     setTableHeight(drawerHeight?.offsetHeight - 236 || 0);
   }, [sendPointsDetail]);
