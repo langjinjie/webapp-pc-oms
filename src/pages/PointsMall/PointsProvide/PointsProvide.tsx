@@ -6,6 +6,7 @@ import { TableColumns, TablePagination } from './Config';
 import { requestGetPonitsSendList, requestSendAllPonits, requestSendPonits } from 'src/apis/pointsMall';
 import { IPointsProvideList, IConfirmModalParam } from 'src/utils/interface';
 import { Context } from 'src/store';
+import moment from 'moment';
 import PonitsDetail from './PonitsDetail/PonitsDetail';
 import style from './style.module.less';
 
@@ -122,6 +123,10 @@ const PointsProvide: React.FC = () => {
       onCancel
     });
   };
+  // 禁止选择今天之后的日期
+  const disabledDate = (current: moment.Moment) => {
+    return current >= moment().startOf('day');
+  };
   useDocumentTitle('积分商城-积分发放');
   useEffect(() => {
     ponitsParam.visible || getPointsList();
@@ -137,7 +142,7 @@ const PointsProvide: React.FC = () => {
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />
           </Form.Item>
           <Form.Item className={style.label} name="date" label="日期：">
-            <RangePicker style={{ width: 280 }} />
+            <RangePicker style={{ width: 280 }} disabledDate={disabledDate} />
           </Form.Item>
         </Space>
         <Space className={style.antBtnSpace}>
