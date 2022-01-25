@@ -52,10 +52,7 @@ const PointsProvide: React.FC = () => {
     setIsloading(false);
     ponitsParam.sendStatus || setSelectedRowKeys([]);
   };
-  const resetHandle = () => {
-    setSearchParam(searchParamHandle());
-  };
-  // 查询
+  // 查询/重置
   const onSearchHandle = () => {
     setPaginationParam({ ...paginationParam, pageNum: 1 });
     setSearchParam(searchParamHandle());
@@ -134,7 +131,7 @@ const PointsProvide: React.FC = () => {
   }, [ponitsParam]);
   return (
     <div className={style.wrap}>
-      <Form name="base" className={style.form} layout="inline" form={form} onReset={resetHandle}>
+      <Form name="base" className={style.form} layout="inline" form={form} onReset={onSearchHandle}>
         <Space className={style.antSpace}>
           <Form.Item className={style.label} name="staffName" label="客户经理姓名：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />

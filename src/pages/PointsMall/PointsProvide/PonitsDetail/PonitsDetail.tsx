@@ -34,7 +34,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   const [isLoading, setIsLoading] = useState(true);
   const [tableHeight, setTableHeight] = useState(0);
   const [renderedList, setRenderedList] = useState<{ [key: string]: IProviderPointsParams }>({});
-  const [sendStatus, setSendStatus] = useState(false);
+  const [sendStatus, setSendStatus] = useState(false); // 告诉发放列表是否发生了一键发放
   const wrapRef: MutableRefObject<any> = useRef(null);
   // 重置
   const onResetHandle = () => {
@@ -65,7 +65,6 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
           { ...renderedList }
         )
       );
-      setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
     }
     setIsLoading(false);
   };
@@ -83,11 +82,13 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
       unSelectedRewardIdList
     });
     if (res) {
-      const list = sendPointsDetail.list;
-      list.forEach((item) => ({ ...item, sendStatus: 1 }));
+      const list = sendPointsDetail.list.map((item) => ({
+        ...item,
+        sendStatus: selectedRowKeys.includes(item.rewardId) ? 1 : item.sendStatus
+      }));
       setSendPointsDetail(({ total }) => ({ total, list }));
       setSelectedRowKeys([]);
-      setPonitsParam((param) => ({ ...param }));
+      setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
       setSendStatus(true);
     }
   };
@@ -109,6 +110,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
     ponitsParam.visible && getSendPonitsDetail();
   }, [ponitsParam, paginationParam]);
   useEffect(() => {
+    console.log('更新了~');
     const drawerHeight = document.getElementsByClassName(style.drawerWrap)[0] as HTMLDivElement;
     setTableHeight(drawerHeight?.offsetHeight - 236 || 0);
   }, [sendPointsDetail]);

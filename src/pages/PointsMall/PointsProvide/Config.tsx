@@ -42,34 +42,23 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
     },
     {
       title: '待发积分',
-      render (row: IPointsProvideList) {
-        return <span>{row.sendPoints || UNKNOWN}</span>;
-      }
+      dataIndex: 'sendPoints'
     },
     {
       title: '黑名单积分',
-      dataIndex: 'blackPoints',
-      render (text) {
-        return <span className={classNames({ [style.blackList]: !!text })}>{text}</span>;
-      }
+      dataIndex: 'blackPoints'
     },
     {
       title: '应发积分',
-      render (row: IPointsProvideList) {
-        return <span>{row.mustSendPoints || UNKNOWN}</span>;
-      }
+      dataIndex: 'mustSendPoints'
     },
     {
       title: '已发积分',
-      render (row) {
-        return <span>{row.sendedPoints || UNKNOWN}</span>;
-      }
+      dataIndex: 'sendedPoints'
     },
     {
       title: '积分回收',
-      render (row: IPointsProvideList) {
-        return <span>{row.recoveryPoints || UNKNOWN}</span>;
-      }
+      dataIndex: 'recoveryPoints'
     },
     {
       title: '积分发放状态',
