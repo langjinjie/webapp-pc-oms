@@ -55,7 +55,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
       menu.children?.some((subMenu: Menu) => subMenu.path.includes(currentMenu))
     );
     if (currentMenuIndex > -1) {
-      const subMenus = menus[currentMenuIndex].children || [];
+      const subMenus = (menus[currentMenuIndex].children || []).filter(({ onlyMain }) => !onlyMain || isMainCorp);
       setMenuIndex(currentMenuIndex);
       setSubMenus(subMenus);
       setSubMenuIndex(subMenus.findIndex((subMenu: Menu) => subMenu.path.includes(currentMenu)));
@@ -129,6 +129,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
                 })}
                 key={subMenu.path}
                 onClick={() => {
+                  console.log(index);
                   history.push(subMenu.path);
                 }}
               >

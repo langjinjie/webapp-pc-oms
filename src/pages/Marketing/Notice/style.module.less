@@ -4,6 +4,12 @@
 * @date 2021-11-18 17:10
 */
 .formWrap {
+  :global {
+    .ant-form-item-label {
+      margin-right: 20px;
+    }
+  }
+
   .btnWrap {
     margin-top: 40px;
     display: flex;
@@ -18,5 +24,81 @@
         font-size: 16px;
       }
     }
+  }
+}
+
+.listWrap {
+  .addBtn {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 128px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 16px;
+    background-color: @primary-color;
+    border-radius: 20px;
+    cursor: pointer;
+    color: white;
+
+    .addIcon {
+      font-size: 20px;
+      margin-right: 4px;
+    }
+  }
+}
+
+.msgTypeWrap {
+  width: 100%;
+  display: flex;
+
+  .msgTypeItem {
+    position: relative;
+    cursor: pointer;
+
+    .msgImg {
+      width: 280px;
+    }
+
+    .msgDesc {
+      margin-top: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .checkMask {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 118px;
+      background-color: rgba(0, 0, 0, 0.5);
+
+      .checkIcon {
+        color: white;
+        font-size: 30px;
+      }
+    }
+  }
+
+  .msgTypeItem + .msgTypeItem {
+    margin-left: 30px;
+  }
+}
+
+.circle {
+  margin-right: 8px;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #d1d1d1;
+  border-radius: 50%;
+
+  &.active {
+    background-color: #52c41a;
   }
 }

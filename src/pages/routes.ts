@@ -73,6 +73,10 @@ export const routes: (RouteProps & expandRoute)[] = [
   },
   {
     path: '/notice',
+    component: lazy(() => import('src/pages/Marketing/Notice/NoticeList'))
+  },
+  {
+    path: '/notice/edit',
     component: lazy(() => import('src/pages/Marketing/Notice/Notice'))
   },
   /**
@@ -235,6 +239,11 @@ export const menus: Menu[] = [
         path: '/orgManage/detail'
       },
       {
+        name: '企业接入',
+        path: '/company',
+        onlyMain: true
+      },
+      {
         name: '敏感词管理',
         path: '/sensitiveManage'
       },
@@ -278,7 +287,7 @@ export const menus: Menu[] = [
         path: '/marketingIndex'
       },
       {
-        name: '上新通知',
+        name: '公告配置',
         path: '/notice'
       }
     ]
@@ -330,17 +339,17 @@ export const menus: Menu[] = [
       { name: '话术管理', path: '/speechManage' },
       { name: '目录管理', path: '/contentsManage' }
     ]
-  },
-  {
-    name: '积分管理',
-    icon: 'icon_daohang_28_biaoqianxitong',
-    path: 'pointsMall',
-    children: [
-      { name: '积分发放', path: '/pointsProvide' },
-      { name: '积分扣减', path: '/pointsDeduction' },
-      { name: '加减积分', path: '/addSubPoints' }
-    ]
   }
+  // {
+  //   name: '积分管理',
+  //   icon: 'icon_daohang_28_biaoqianxitong',
+  //   path: 'pointsMall',
+  //   children: [
+  //     { name: '积分发放', path: '/pointsProvide' },
+  //     { name: '积分扣减', path: '/pointsDeduction' },
+  //     { name: '加减积分', path: '/addSubPoints' }
+  //   ]
+  // }
 ];
 
 if (process.env.NODE_ENV === 'development') {

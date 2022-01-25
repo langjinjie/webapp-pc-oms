@@ -86,7 +86,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
           }
         });
         if (isMaxLengthError) {
-          return Promise.reject(new Error('单一标签最多12个字'));
+          return Promise.reject(new Error('单一标签最多12个字符'));
         }
       }
       if (lightsArr.length > 4) {
