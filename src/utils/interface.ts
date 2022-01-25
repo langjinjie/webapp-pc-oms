@@ -289,7 +289,7 @@ export interface IFlowList {
   clientNickName: string;
   externalUserid: string;
   clientInBlack: number;
-  cotent: string;
+  content: string;
   rewardId?: string;
 }
 

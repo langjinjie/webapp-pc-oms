@@ -342,7 +342,7 @@ export const menus: Menu[] = [
   },
   {
     name: '积分管理',
-    icon: 'icon_daohang_28_biaoqianxitong',
+    icon: 'jifenguanli',
     path: 'pointsMall',
     children: [
       { name: '积分发放', path: '/pointsProvide' },

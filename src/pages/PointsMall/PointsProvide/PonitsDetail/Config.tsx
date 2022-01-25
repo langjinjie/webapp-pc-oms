@@ -25,6 +25,7 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
   const inputRef: MutableRefObject<any> = useRef(null);
   // 解决input框宽度自适应问题
   const [inputWidth, setInputWidth] = useState(0);
+  const [spanNode, setSpanNode] = useState<HTMLSpanElement>();
   // 功能模块
   const businessType2NameList = [
     '朋友圈',
@@ -93,6 +94,8 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
       }
     }
     setIsEdit('');
+    document.body.removeChild(spanNode as HTMLSpanElement);
+    setSpanNode(undefined);
   };
   const onkeydownHandle = (e: React.KeyboardEvent<HTMLInputElement>, row: ISendPointsDetail) => {
     if (e.keyCode === 13) {
@@ -106,11 +109,19 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
     setRemark(row.remark || '');
     await setIsEdit(row.rewardId);
     inputRef.current.focus();
+    // 创建一个span
+    const spanNode = document.createElement('span');
+    spanNode.style.visibility = 'hidden';
+    spanNode.style.fontSize = '14px';
+    spanNode.style.display = 'inline-block';
+    document.body.appendChild(spanNode);
+    setSpanNode(spanNode);
   };
   // 输入框的onchange事件
   const inputOnChangeHnadle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRemark(event.target.value.trim());
-    setInputWidth(event.target.value.trim().length * 14);
+    (spanNode as HTMLSpanElement).textContent = event.target.value.trim();
+    setInputWidth(spanNode?.clientWidth as number);
   };
   return [
     {
@@ -199,8 +210,8 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
         return (
           <>
             {row.flowList.slice(0, 3).map((item) => (
-              <div className={style.cotent} key={item.flowId}>
-                {item.cotent}
+              <div className={style.content} key={item.flowId}>
+                {item.content}
               </div>
             ))}
           </>
