@@ -209,7 +209,12 @@ const PointsProvide: React.FC = () => {
       />
       {!!ponitsList.total && (
         <div className={style.sendPonits}>
-          <Button disabled={!selectedRowKeys.length} className={style.sendPonitsBtn} onClick={clickSendPonitsHandle}>
+          <Button
+            disabled={!selectedRowKeys.length}
+            type="primary"
+            className={style.sendPonitsBtn}
+            onClick={clickSendPonitsHandle}
+          >
             发放积分
           </Button>
         </div>
