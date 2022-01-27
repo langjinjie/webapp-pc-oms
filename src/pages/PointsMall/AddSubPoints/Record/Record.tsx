@@ -85,7 +85,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
         <span>当前位置：</span>
         <Breadcrumb>
           <Breadcrumb.Item className="pointer" onClick={navigatorToList}>
-            积分加减
+            加减积分
           </Breadcrumb.Item>
           <Breadcrumb.Item>积分加减记录</Breadcrumb.Item>
         </Breadcrumb>

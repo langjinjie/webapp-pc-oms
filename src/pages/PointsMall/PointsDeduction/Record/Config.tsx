@@ -6,7 +6,7 @@ import { Avatar } from 'antd';
 
 export const searchCols: SearchCol[] = [
   {
-    name: 'name',
+    name: 'staffName',
     type: 'input',
     label: '客户经理姓名',
     placeholder: '请输入',

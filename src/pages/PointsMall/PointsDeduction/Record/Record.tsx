@@ -16,8 +16,8 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   const [formParams, setFormParams] = useState<{
     staffName: string;
     type: number;
-    beginTime: null | number;
-    endTime: null | number;
+    beginTime: null | string;
+    endTime: null | string;
   }>({
     type: 2,
     staffName: '',
@@ -49,13 +49,12 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const handleSearch = ({ staffName = '', time }: { staffName: string; time: [Moment, Moment] }) => {
-    let beginTime!: number;
-    let endTime!: number;
+    let beginTime!: string;
+    let endTime!: string;
     if (time) {
-      beginTime = time[0].startOf('day').valueOf();
-      endTime = time[1].endOf('day').valueOf();
+      beginTime = time[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      endTime = time[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-
     setFormParams((formParams) => ({ ...formParams, staffName, beginTime, endTime }));
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     getList({ pageNum: 1, staffName, beginTime, endTime });
@@ -80,7 +79,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
         <span>当前位置：</span>
         <Breadcrumb>
           <Breadcrumb.Item className="pointer" onClick={navigatorToList}>
-            组织架构管理
+            积分扣减
           </Breadcrumb.Item>
           <Breadcrumb.Item>积分扣减记录</Breadcrumb.Item>
         </Breadcrumb>

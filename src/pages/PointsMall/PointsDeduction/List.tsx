@@ -19,8 +19,8 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   const [formParams, setFormParams] = useState<{
     staffName: string;
     type: number;
-    beginTime: null | number;
-    endTime: null | number;
+    beginTime: null | string;
+    endTime: null | string;
   }>({
     type: 1,
     staffName: '',
@@ -54,13 +54,12 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const handleSearch = ({ staffName = '', time }: { staffName: string; time: [Moment, Moment] }) => {
-    let beginTime!: number;
-    let endTime!: number;
+    let beginTime!: string;
+    let endTime!: string;
     if (time) {
-      beginTime = time[0].startOf('day').valueOf();
-      endTime = time[1].endOf('day').valueOf();
+      beginTime = time[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      endTime = time[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-
     setFormParams((formParams) => ({ ...formParams, staffName, beginTime, endTime }));
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     getList({ pageNum: 1, staffName, beginTime, endTime });
