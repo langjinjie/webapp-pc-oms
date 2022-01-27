@@ -30,6 +30,7 @@ const PointsProvide: React.FC = () => {
   const [disabledColumnType, setDisabledColumnType] = useState(-1);
   const [isLoading, setIsloading] = useState(true);
   const [ponitsParam, setPonitsParam] = useState<IPonitsParam>({ visible: false, sendStatus: false });
+  const [allSendStatus, setAllSendStatus] = useState(false); // 当前列表是否点击一键发放成功
   const [form] = Form.useForm();
   const { RangePicker } = DatePicker;
   // 处理查询参数
@@ -48,10 +49,11 @@ const PointsProvide: React.FC = () => {
     const res = await requestGetPonitsSendList({ ...searchParam, ...paginationParam });
     if (res) {
       setPonitsList({ total: res.total, list: res.list });
+      setDisabledColumnType(-1);
+      setIsloading(false);
+      ponitsParam.sendStatus || setSelectedRowKeys([]);
+      setAllSendStatus(false);
     }
-    setDisabledColumnType(-1);
-    setIsloading(false);
-    ponitsParam.sendStatus || setSelectedRowKeys([]);
   };
   // 查询/重置
   const onSearchHandle = () => {
@@ -79,6 +81,7 @@ const PointsProvide: React.FC = () => {
         list: list.map((item) => ({ ...item, sendStatus: 1, sendedPoints: item.mustSendPoints }))
       }));
       setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
+      setAllSendStatus(true);
     }
   };
   // 取消ConfirmModal
@@ -179,7 +182,7 @@ const PointsProvide: React.FC = () => {
               className={style.provideAllBtn}
               type="primary"
               onClick={clickSendAllPonitsHandle}
-              disabled={!!selectedRowKeys.length}
+              disabled={!!selectedRowKeys.length || allSendStatus}
             >
               一键群发积分
             </Button>

@@ -34,7 +34,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   const [isLoading, setIsLoading] = useState(true);
   const [tableHeight, setTableHeight] = useState(0);
   const [renderedList, setRenderedList] = useState<{ [key: string]: IProviderPointsParams }>({});
-  const [sendStatus, setSendStatus] = useState(false); // 告诉发放列表是否发生了一键发放
+  const [sendStatus, setSendStatus] = useState(false); // 告诉发放列表详情页是否发生了一键发放
   const wrapRef: MutableRefObject<any> = useRef(null);
   // 重置
   const onResetHandle = () => {
@@ -90,6 +90,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
       setSelectedRowKeys([]);
       setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
       setSendStatus(true);
+      console.log(true);
     }
   };
   // 取消ConfirmModal
@@ -122,6 +123,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
         onClose={onResetHandle}
         visible={visible}
         width={'90%'}
+        zIndex={999} // 比Moadl低一级
       >
         <div className={style.btnWrap}>
           <Button
@@ -148,7 +150,8 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
             setPaginationParam,
             selectedRowKeys,
             setSelectedRowKeys,
-            setRenderedList
+            setRenderedList,
+            rowSendStatus: ponitsRow?.sendStatus
           })}
         />
       </Drawer>
