@@ -22,8 +22,10 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
   return [
     {
       title: '客户经理姓名',
-      dataIndex: 'staffName',
-      fixed: 'left'
+      fixed: 'left',
+      render (row: IPointsProvideList) {
+        return <span>{`${row.staffName}（${row.points}）`}</span>;
+      }
     },
     { title: '客户经理ID', dataIndex: 'staffId' },
     {

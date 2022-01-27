@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, MutableRefObject, useContext } from 'react';
-import { Drawer, Button } from 'antd';
+import { Drawer, Button, message } from 'antd';
 import { requestGetSendPonitsDetail, requestSendAllPonitsDetail } from 'src/apis/pointsMall';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
@@ -82,6 +82,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
       unSelectedRewardIdList
     });
     if (res) {
+      message.success('积分发放成功');
       const list = sendPointsDetail.list.map((item) => ({
         ...item,
         sendStatus: selectedRowKeys.includes(item.rewardId) ? 1 : item.sendStatus

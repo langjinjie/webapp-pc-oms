@@ -202,6 +202,11 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/addSubPoints/record',
     component: lazy(() => import('src/pages/PointsMall/AddSubPoints/Record/Record'))
+  },
+  // 发放手机
+  {
+    path: '/providePhone',
+    component: lazy(() => import('src/pages/PointsMall/ProvidePhone/ProvidePhone'))
   }
 ];
 
@@ -347,7 +352,8 @@ export const menus: Menu[] = [
     children: [
       { name: '积分发放', path: '/pointsProvide' },
       { name: '积分扣减', path: '/pointsDeduction' },
-      { name: '加减积分', path: '/addSubPoints' }
+      { name: '加减积分', path: '/addSubPoints' },
+      { name: '手机发放', path: '/providePhone' }
     ]
   }
 ];

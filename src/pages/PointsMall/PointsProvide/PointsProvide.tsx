@@ -137,6 +137,9 @@ const PointsProvide: React.FC = () => {
   useEffect(() => {
     ponitsParam.sendStatus && getPointsList();
   }, [ponitsParam]);
+  useEffect(() => {
+    console.log(ponitsList.list);
+  }, [ponitsList]);
   return (
     <div className={style.wrap}>
       <Form name="base" className={style.form} layout="inline" form={form} onReset={onSearchHandle}>

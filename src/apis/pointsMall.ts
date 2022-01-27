@@ -3,6 +3,7 @@
  *  */
 import http from 'src/utils/http';
 type HttpFC<T = { [key: string]: unknown }> = (param: T) => Promise<any>;
+type VoidFC = () => Promise<any>;
 
 // 查询积分分发列表接口
 export const requestGetPonitsSendList: HttpFC = (param) => {
@@ -31,4 +32,8 @@ export const requestModifyRemark: HttpFC = (param) => {
 // 添加黑名单
 export const requestAddBlackList: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/points/rest/client/black/add', param);
+};
+// 发放手机
+export const requestProviderPhone: VoidFC = () => {
+  return http.post('/tenacity-admin/api/lottery/prize/phone/send');
 };
