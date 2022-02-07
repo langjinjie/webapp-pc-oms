@@ -61,6 +61,7 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
     if (res) {
       message.success('添加黑名单成功');
       setPonitsParam((param) => ({ ...param }));
+      setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
     }
   };
   // 点击添加黑名单
@@ -252,7 +253,7 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
       title: '奖励积分',
       width: 88,
       render (row: ISendPointsDetail) {
-        return <span>{row.rewardPoints || UNKNOWN}</span>;
+        return <span className={row.blackTask ? style.backPonits : ''}>{row.rewardPoints || UNKNOWN}</span>;
       }
     },
     {
@@ -315,6 +316,7 @@ const TablePagination = (arg: { [key: string]: any }): any => {
   const pagination = {
     total: dataSource.total,
     current: paginationParam.pageNum,
+    pageSize: paginationParam.pageSize,
     showTotal: (total: number) => `共 ${total} 条`
   };
   // 切换分页

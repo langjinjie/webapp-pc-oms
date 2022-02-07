@@ -91,12 +91,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
       setSelectedRowKeys([]);
       setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
       setSendStatus(true);
-      console.log(true);
     }
-  };
-  // 取消ConfirmModal
-  const onCancel = () => {
-    setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
   };
   // 点击一键发放
   const clickSendPonitsHandle = () => {
@@ -105,7 +100,9 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
       title: '积分发放提醒',
       tips: '是否确定发放积分？',
       onOk: sendedAllHandle,
-      onCancel
+      onCancel () {
+        setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
+      }
     });
   };
   useEffect(() => {
@@ -113,7 +110,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   }, [ponitsParam, paginationParam]);
   useEffect(() => {
     const drawerHeight = document.getElementsByClassName(style.drawerWrap)[0] as HTMLDivElement;
-    setTableHeight(drawerHeight?.offsetHeight - 236 || 0);
+    setTableHeight(drawerHeight?.offsetHeight - 237 || 0);
   }, [sendPointsDetail]);
   return (
     <div className={style.wrap} ref={wrapRef}>
@@ -143,7 +140,6 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
           dataSource={sendPointsDetail.list}
           columns={TableColumns(setPonitsParam)}
           loading={isLoading}
-          tableLayout={'fixed'}
           scroll={{ x: 'max-content', y: tableHeight }}
           {...TablePagination({
             dataSource: sendPointsDetail,

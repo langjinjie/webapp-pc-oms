@@ -75,11 +75,8 @@ const PointsProvide: React.FC = () => {
     const res = await requestSendAllPonits(searchParamHandle());
     if (res) {
       message.success('一键发放成功');
-      // 本地维护发放积分状态;
-      setPonitsList(({ total, list }) => ({
-        total,
-        list: list.map((item) => ({ ...item, sendStatus: 1, sendedPoints: item.mustSendPoints }))
-      }));
+      // 发放完成重新获取列表最新数据
+      setSearchParam((param) => ({ ...param }));
       setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
       setAllSendStatus(true);
     }
