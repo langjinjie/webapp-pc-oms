@@ -37,3 +37,7 @@ export const requestAddBlackList: HttpFC = (param) => {
 export const requestProviderPhone: VoidFC = () => {
   return http.post('/tenacity-admin/api/lottery/prize/phone/send');
 };
+// 查询发放手机列表
+export const requestGetProviderPhoneList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/lottery/prize/phone/sended/list', param);
+};

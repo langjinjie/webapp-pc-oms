@@ -46,16 +46,15 @@ const StatisticsFreeList: React.FC = () => {
     getList({ pageNum: 1, name });
   };
 
-  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: StaffProps[]) => {
+  const onSelectChange = (selectedRowKeys: React.Key[]) => {
     setSelectRowKeys(selectedRowKeys);
-    console.log(selectedRows);
   };
   // 表格RowSelection配置项
   const rowSelection = {
     hideSelectAll: false,
     selectedRowKeys: selectedRowKeys,
-    onChange: (selectedRowKeys: React.Key[], selectedRows: StaffProps[]) => {
-      onSelectChange(selectedRowKeys, selectedRows);
+    onChange: (selectedRowKeys: React.Key[]) => {
+      onSelectChange(selectedRowKeys);
     },
     getCheckboxProps: (record: StaffProps) => {
       return {

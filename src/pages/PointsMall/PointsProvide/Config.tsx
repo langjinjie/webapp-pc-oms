@@ -119,7 +119,6 @@ const TablePagination = (arg: { [key: string]: any }): any => {
   };
   // 点击选择框
   const onSelectChange = async (newSelectedRowKeys: string[]) => {
-    console.log(newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
   const rowSelection = {
