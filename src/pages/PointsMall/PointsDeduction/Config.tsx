@@ -3,6 +3,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { Avatar, Button, Popconfirm, Tooltip } from 'antd';
+import moment from 'moment';
 
 export const searchCols: SearchCol[] = [
   {
@@ -46,8 +47,13 @@ export const tableColumns = (batchDeduct: (record: DeductProps) => void): Column
     dataIndex: 'staffId',
     align: 'left',
     width: 200,
-    ellipsis: {
-      showTitle: false
+    ellipsis: { showTitle: false },
+    render: (text) => {
+      return (
+        <Tooltip placement="topLeft" title={text}>
+          {text || UNKNOWN}
+        </Tooltip>
+      );
     }
   },
   {
@@ -55,7 +61,7 @@ export const tableColumns = (batchDeduct: (record: DeductProps) => void): Column
     dataIndex: 'date',
     align: 'left',
     width: 180,
-    render: (value) => <span>{value || UNKNOWN}</span>
+    render: (value) => <span>{moment(value).format('YYYY-MM-DD') || UNKNOWN}</span>
   },
   {
     title: '积分扣减',
@@ -91,6 +97,7 @@ export const tableColumns = (batchDeduct: (record: DeductProps) => void): Column
   },
   {
     title: '操作',
+    fixed: 'right',
     render: (value, record) => (
       <Popconfirm title="确定扣减?" onConfirm={() => batchDeduct(record)}>
         <Button type="link">扣减</Button>

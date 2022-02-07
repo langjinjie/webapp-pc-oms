@@ -7,6 +7,7 @@ type HttpFunction<T = any> = (param: T) => Promise<any>;
  * @param param
  */
 export const getWaitDeductPointsList: HttpFunction = (param) => {
+  // return http.post('/tenacity-admin/api/points/rest/deduct/list', param);
   return http.post('/tenacity-admin/api/points/rest/deduct/list', param);
 };
 /**

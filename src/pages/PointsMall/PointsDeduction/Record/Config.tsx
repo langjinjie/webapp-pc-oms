@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
-import { Avatar } from 'antd';
+import { Avatar, Tooltip } from 'antd';
 
 export const searchCols: SearchCol[] = [
   {
@@ -46,7 +46,14 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     dataIndex: 'staffId',
     align: 'left',
     width: 200,
-    ellipsis: true
+    ellipsis: { showTitle: false },
+    render: (text) => {
+      return (
+        <Tooltip placement="topLeft" title={text}>
+          {text || UNKNOWN}
+        </Tooltip>
+      );
+    }
   },
   {
     title: '积分扣减',
@@ -59,7 +66,14 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     dataIndex: 'reason',
     align: 'left',
     width: 200,
-    ellipsis: true
+    ellipsis: { showTitle: false },
+    render: (text) => {
+      return (
+        <Tooltip placement="topLeft" title={text}>
+          {text || UNKNOWN}
+        </Tooltip>
+      );
+    }
   },
   {
     title: '删除的客户昵称',

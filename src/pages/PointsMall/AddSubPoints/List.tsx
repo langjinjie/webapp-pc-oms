@@ -9,6 +9,7 @@ import styles from './style.module.less';
 import classNames from 'classnames';
 import { updateStaffPoints, searchStaffWithPointsUpdate } from 'src/apis/integral';
 import { message } from 'antd';
+import { isArray } from 'src/utils/tools';
 
 const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('积分商城-积分扣减');
@@ -25,8 +26,9 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
       staffName
     });
     setIsLoading(false);
+    console.log(res);
     if (res) {
-      setDataSource(res || []);
+      setDataSource(isArray(res) ? res : []);
     }
   };
 

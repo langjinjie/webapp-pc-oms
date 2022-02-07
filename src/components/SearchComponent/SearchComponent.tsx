@@ -90,7 +90,12 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             return (
               (col.type === 'input' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Input maxLength={col.maxLength || 50} placeholder={col.placeholder} style={{ width: col.width }} />
+                  <Input
+                    maxLength={col.maxLength || 50}
+                    placeholder={col.placeholder}
+                    style={{ width: col.width }}
+                    allowClear
+                  />
                 </Form.Item>
               )) ||
               (col.type === 'select' && (
@@ -152,7 +157,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder} style={{ width: col.width }} />
+                    <Input placeholder={col.placeholder} style={{ width: col.width }} allowClear />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (
@@ -180,7 +185,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder} style={{ width: col.width }} />
+                    <Input placeholder={col.placeholder} style={{ width: col.width }} allowClear />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (

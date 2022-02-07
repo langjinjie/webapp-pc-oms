@@ -26,6 +26,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
+    pageSize: 10,
     total: 0,
     showTotal: (total) => {
       return `共 ${total} 条记录`;
@@ -36,7 +37,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     setIsLoading(true);
     const res = await getUpdateStaffPointHistory({
       ...formParams,
-      pageSize: 10,
+      pageSize: pagination.pageSize,
       pageNum: 1,
       ...params
     });

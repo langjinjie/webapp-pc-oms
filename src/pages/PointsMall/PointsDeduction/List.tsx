@@ -106,9 +106,9 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
         const index = dataSource.indexOf(record);
         copyData.splice(index, 1);
         if (copyData.length === 0) {
-          getList({ pageNum: pagination.current - 1 || 1 });
+          getList({ pageNum: pagination.current! - 1 || 1 });
         }
-        setPagination((pagination) => ({ ...pagination, total: pagination.total - 1 || 0 }));
+        setPagination((pagination) => ({ ...pagination, total: pagination.total! - 1 || 0 }));
         setDataSource(copyData);
       }
     } else {
@@ -118,9 +118,9 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
         const data = dataSource.filter((item) => !selectedRowKeys.includes(item.deductId));
         setDataSource(data);
         if (data.length === 0) {
-          getList({ pageNum: pagination.current - 1 || 1 });
+          getList({ pageNum: pagination.current! - 1 || 1 });
         }
-        setPagination((pagination) => ({ ...pagination, total: pagination.total - selectedRowKeys.length }));
+        setPagination((pagination) => ({ ...pagination, total: pagination.total! - selectedRowKeys.length }));
       }
     }
   };
