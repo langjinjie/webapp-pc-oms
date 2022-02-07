@@ -191,7 +191,6 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       if (currentItem.parentId) {
         newSelectList = cancelChecked(currentItem.parentId, newSelectList);
       }
-      console.log(newSelectList);
       // 判断当前节点是否已经在treeData中(在则表示该treeData已经被加载)
       if (flatTreeData.some((flatTreeItem) => flatTreeItem.id === item.id)) {
         newSelectedKeys = [...selectedKeys.filter((key) => key !== item.id)];

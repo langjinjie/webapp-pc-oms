@@ -195,7 +195,6 @@ const PointsProvide: React.FC = () => {
         dataSource={ponitsList.list}
         columns={TableColumns({ setPonitsParam })}
         loading={isLoading}
-        tableLayout={'fixed'}
         scroll={{ x: 'max-content' }}
         {...TablePagination({
           dataSource: ponitsList,
