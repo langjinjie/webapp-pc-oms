@@ -118,7 +118,7 @@ const PointsProvide: React.FC = () => {
     setConfirmModalParam({
       visible: true,
       title: '积分发放提醒',
-      tips: '是否确定群发选中的积分？',
+      tips: `是否确定${selectedRowKeys.length === 1 ? '发放' : '群发'}选中的积分？`,
       onOk: sendPoints,
       onCancel
     });
