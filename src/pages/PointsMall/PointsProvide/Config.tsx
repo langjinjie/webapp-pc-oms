@@ -32,7 +32,7 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
       title: '日期',
       // width: 100,
       render (row: IPointsProvideList) {
-        return <span>{row.date || UNKNOWN}</span>;
+        return <span>{row.date.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') || UNKNOWN}</span>;
       }
     },
     {
