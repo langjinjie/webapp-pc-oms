@@ -119,7 +119,11 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   return (
     <div className={style.wrap} ref={wrapRef}>
       <Drawer
-        title={ponitsRow?.staffName || '' + ponitsRow?.date || '' + '的积分奖励明细'}
+        title={
+          (ponitsRow?.staffName || '') +
+          (ponitsRow?.date || '').replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') +
+          '的积分奖励明细'
+        }
         className={style.drawerWrap}
         placement="right"
         onClose={onResetHandle}
