@@ -87,6 +87,10 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
         ...item,
         sendStatus: selectedRowKeys.includes(item.rewardId) ? 1 : item.sendStatus
       }));
+      setPonitsParam((ponitsParam) => {
+        const { ponitsRow } = ponitsParam;
+        return { ...ponitsParam, ponitsRow: { ...ponitsRow, sendStatus: 1 } as IPointsProvideList };
+      });
       setSendPointsDetail(({ total }) => ({ total, list }));
       setSelectedRowKeys([]);
       setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
@@ -107,7 +111,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   };
   useEffect(() => {
     ponitsParam.visible && getSendPonitsDetail();
-  }, [ponitsParam, paginationParam]);
+  }, [ponitsParam.visible, paginationParam]);
   useEffect(() => {
     const drawerHeight = document.getElementsByClassName(style.drawerWrap)[0] as HTMLDivElement;
     setTableHeight(drawerHeight?.offsetHeight - 237 || 0);
