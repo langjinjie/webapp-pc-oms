@@ -174,7 +174,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
           setVisible(false);
         }}
       >
-        <p className="text-center">确定扣减吗？</p>
+        <p className="text-center">积分扣减提醒，是否确定扣减选中的积分？</p>
       </NgModal>
     </div>
   );

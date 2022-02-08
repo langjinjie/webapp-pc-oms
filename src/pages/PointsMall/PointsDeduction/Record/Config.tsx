@@ -15,7 +15,8 @@ export const searchCols: SearchCol[] = [
   {
     name: 'time',
     type: 'rangePicker',
-    label: '日期'
+    label: '操作时间',
+    placeholder: ['开始时间', '结束时间']
   }
 ];
 export interface StaffProps {

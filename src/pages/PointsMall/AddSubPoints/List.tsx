@@ -19,14 +19,15 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   const [visible, setVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [currentStaff, setCurrentStaff] = useState<StaffProps | null>();
+  const [oldStaffName, setStaffName] = useState('');
 
   const handleSearch = async ({ staffName = '' }: { staffName: string }) => {
+    setStaffName(staffName);
     setIsLoading(true);
     const res = await searchStaffWithPointsUpdate({
       staffName
     });
     setIsLoading(false);
-    console.log(res);
     if (res) {
       setDataSource(isArray(res) ? res : []);
     }
@@ -59,6 +60,7 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     });
     if (res) {
       message.success(adjustType === 1 ? '增加成功' : '扣减成功');
+      handleSearch({ staffName: oldStaffName });
     }
   };
   return (
