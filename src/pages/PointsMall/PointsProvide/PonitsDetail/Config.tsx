@@ -190,7 +190,7 @@ const TableColumns = (
                 placement="rightTop"
                 content={
                   <>
-                    <div className={style.title}>客户明细</div>
+                    <div style={{ textAlign: 'center', marginBottom: '20px', marginTop: '8px' }}>客户明细</div>
                     <Table
                       className={style.popoverTableWrap}
                       rowKey={'flowId'}
