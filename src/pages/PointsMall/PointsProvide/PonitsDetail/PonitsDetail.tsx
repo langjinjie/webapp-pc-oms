@@ -129,7 +129,6 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
         onClose={onResetHandle}
         visible={visible}
         width={'90%'}
-        zIndex={999} // 比Moadl低一级
       >
         <div className={style.btnWrap}>
           <Button
@@ -146,7 +145,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
           className={style.tableWrap}
           setRowKey={(record: ISendPointsDetail) => record.rewardId}
           dataSource={sendPointsDetail.list}
-          columns={TableColumns(setPonitsParam)}
+          columns={TableColumns(setPaginationParam)}
           loading={isLoading}
           scroll={{ x: 'max-content', y: tableHeight }}
           {...TablePagination({

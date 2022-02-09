@@ -2,7 +2,7 @@ import React, { useState, useRef, MutableRefObject, useContext } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN } from 'src/utils/base';
 import { Icon } from 'src/components';
-import { IPointsProvideList, ISendPointsDetail, IFlowList, IConfirmModalParam } from 'src/utils/interface';
+import { ISendPointsDetail, IFlowList, IConfirmModalParam } from 'src/utils/interface';
 import { message, Popover, Table, Tooltip } from 'antd';
 import { requestModifyRemark, requestAddBlackList } from 'src/apis/pointsMall';
 import { Context } from 'src/store';
@@ -14,13 +14,9 @@ interface IProviderPointsParams extends ISendPointsDetail {
   isProvider?: boolean;
 }
 
-interface IPonitsParam {
-  visible: boolean;
-  ponitsRow?: IPointsProvideList;
-  sendStatus: boolean;
-}
-
-const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonitsParam>>): ColumnsType<any> => {
+const TableColumns = (
+  setPaginationParam: React.Dispatch<React.SetStateAction<{ pageNum: number; pageSize: number }>>
+): ColumnsType<any> => {
   const { setConfirmModalParam } = useContext(Context);
   const [isEdit, setIsEdit] = useState('');
   const [remark, setRemark] = useState('');
@@ -55,17 +51,18 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
   ];
   // 提交添加黑名单
   const addBlackListHandle = async (row: IFlowList, rewardId: string) => {
-    const { clientInBlack, externalUserid } = row;
-    if (clientInBlack) return false;
+    const { externalUserid } = row;
     const res = await requestAddBlackList({ externalUserid, rewardId });
     if (res) {
       message.success('添加黑名单成功');
-      setPonitsParam((param) => ({ ...param }));
+      setPaginationParam((param) => ({ ...param }));
       setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
     }
   };
   // 点击添加黑名单
   const clickAddBlackListHandle = (row: IFlowList, rewardId: string) => {
+    const { clientInBlack } = row;
+    if (clientInBlack) return false;
     setConfirmModalParam({
       visible: true,
       title: '温馨提醒',
@@ -87,7 +84,7 @@ const TableColumns = (setPonitsParam: React.Dispatch<React.SetStateAction<IPonit
             {row.clientNickName && (
               <span
                 className={classNames(style.addBlackList, { [style.blackList]: row.clientInBlack })}
-                onClick={() => addBlackListHandle(row, row?.rewardId as string)}
+                onClick={() => clickAddBlackListHandle(row, row?.rewardId as string)}
               >
                 {row.clientInBlack ? '客户黑名单' : '添加进黑名单'}
               </span>
