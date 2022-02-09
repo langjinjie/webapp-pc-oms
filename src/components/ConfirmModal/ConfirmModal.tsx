@@ -28,7 +28,7 @@ const ConfirmModal: React.FC = () => {
       onOk={Ok}
       onCancel={cancel}
       maskClosable={false}
-      zIndex={99999} // 层级最高
+      zIndex={9999} // 层级仅次于 message(99999)
       okButtonProps={{
         loading: isLoading
       }}
