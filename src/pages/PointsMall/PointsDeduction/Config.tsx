@@ -100,7 +100,7 @@ export const tableColumns = (batchDeduct: (record: DeductProps) => void): Column
     title: '操作',
     fixed: 'right',
     render: (value, record) => (
-      <Popconfirm title="积分扣减提醒，是否确定扣减选中的积分?" onConfirm={() => batchDeduct(record)}>
+      <Popconfirm title="积分扣减提醒，是否确定扣减该客户经理积分？" onConfirm={() => batchDeduct(record)}>
         <Button type="link">扣减</Button>
       </Popconfirm>
     )
