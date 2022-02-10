@@ -116,6 +116,27 @@ const TableColumns = (
       inputOnblurHandle(row);
     }
   };
+  // 定义一个滚动条过度效果
+  const scrollTransitionHandle = (srcollNode: HTMLElement, duration: number) => {
+    const prevScroll = srcollNode.scrollLeft;
+    const needScroll = srcollNode.scrollWidth - srcollNode.clientWidth;
+    const allCount = Math.ceil(duration / 16.67);
+    // 计算平均每一步的scroll距离
+    const everyScroll = (needScroll - prevScroll) / allCount;
+    let timerId: number;
+    let count = 0;
+    const fn = () => {
+      count += 1;
+      srcollNode.scrollLeft = prevScroll + everyScroll * count;
+      if (count >= allCount) {
+        cancelAnimationFrame(timerId);
+        count = 0;
+      } else {
+        timerId = requestAnimationFrame(fn);
+      }
+    };
+    timerId = requestAnimationFrame(fn);
+  };
   // 点击编辑
   const clickEditHandle = async (row: ISendPointsDetail) => {
     const remarkWidth = document.getElementsByClassName(style.remark)[0].clientWidth;
@@ -132,6 +153,11 @@ const TableColumns = (
     document.body.appendChild(spanNode);
     setInputWidth(spanNode?.clientWidth as number);
     setSpanNode(spanNode);
+    // 让表格滚动条移动到最右边
+    // setTimeout(() => {
+    const tabBodyNode = document.querySelector(`.${style.tableWrap} .ant-table-body`) as HTMLElement;
+    scrollTransitionHandle(tabBodyNode, 300);
+    // }, 100);
   };
   // 输入框的onchange事件
   const inputOnChangeHnadle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,6 +179,7 @@ const TableColumns = (
     },
     {
       title: '任务名称',
+      ellipsis: true,
       render (row: ISendPointsDetail) {
         return (
           <span className={style.maskName}>
