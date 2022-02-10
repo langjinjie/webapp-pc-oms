@@ -48,7 +48,10 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
     },
     {
       title: '黑名单积分',
-      dataIndex: 'blackPoints'
+      dataIndex: 'blackPoints',
+      render (text: number) {
+        return <span className={!text || style.blackPoints}>{text}</span>;
+      }
     },
     {
       title: '应发积分',
