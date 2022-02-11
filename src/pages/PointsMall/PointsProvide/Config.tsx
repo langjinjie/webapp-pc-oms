@@ -43,7 +43,7 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
       }
     },
     {
-      title: '待发积分',
+      title: '完成积分',
       dataIndex: 'sendPoints'
     },
     {

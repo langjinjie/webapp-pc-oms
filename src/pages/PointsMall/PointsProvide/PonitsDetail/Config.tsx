@@ -77,6 +77,7 @@ const TableColumns = (
   const popovercolums: ColumnsType<any> = [
     {
       title: '客户昵称',
+      ellipsis: true,
       render (row: IFlowList) {
         return (
           <div className={style.clientNickName}>
@@ -96,6 +97,15 @@ const TableColumns = (
     {
       title: '客户id',
       dataIndex: 'externalUserid'
+    },
+    {
+      title: '内容',
+      width: 266,
+      ellipsis: true,
+      dataIndex: 'content',
+      render (text: string) {
+        return <span className={style.content}>{text}</span>;
+      }
     }
   ];
   // 输入框失去焦点
@@ -179,7 +189,6 @@ const TableColumns = (
     },
     {
       title: '任务名称',
-      ellipsis: true,
       render (row: ISendPointsDetail) {
         return (
           <span className={style.maskName}>
@@ -221,6 +230,7 @@ const TableColumns = (
                     <Table
                       className={style.popoverTableWrap}
                       rowKey={'flowId'}
+                      scroll={{ x: 'max-content' }}
                       dataSource={row.flowList.map((item) => ({ ...item, rewardId: row.rewardId }))}
                       columns={popovercolums}
                       pagination={false}
@@ -258,10 +268,11 @@ const TableColumns = (
           <>
             {row.flowList.slice(0, 3).map((item) => (
               <Tooltip
-                placement="bottomLeft"
+                placement="rightTop"
+                color={'white'}
                 key={item.flowId}
                 title={item.content}
-                destroyTooltipOnHide={true}
+                destroyTooltipOnHide={{ keepParent: false }}
                 overlayClassName={style.contentTooltip}
               >
                 <div className={style.content} key={item.flowId}>
@@ -312,7 +323,13 @@ const TableColumns = (
               />
                 )
               : (
-              <Tooltip placement="bottomLeft" title={row.remark} destroyTooltipOnHide={true}>
+              <Tooltip
+                placement="rightTop"
+                color={'white'}
+                title={row.remark}
+                destroyTooltipOnHide={{ keepParent: false }}
+                overlayClassName={style.contentTooltip}
+              >
                 <span className={style.text}>
                   {(row.remark || '').slice(0, 10) + ((row.remark || '').length > 10 ? '...' : '')}
                 </span>

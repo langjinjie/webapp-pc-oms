@@ -123,6 +123,11 @@
 // 内容Tooltip样式
 .contentTooltip {
   max-width: 300px;
+  :global {
+    .ant-tooltip-inner {
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
 }
 
 // popoverTableWrap以及tableWrap的客户昵称/客户id/内容样式
@@ -137,6 +142,7 @@
   }
   &.content {
     display: block;
+    width: max-content;
     max-width: 266px;
     overflow: hidden;
     text-overflow: ellipsis;
