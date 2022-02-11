@@ -182,7 +182,7 @@ const PointsProvide: React.FC = () => {
               className={style.provideAllBtn}
               type="primary"
               onClick={clickSendAllPonitsHandle}
-              disabled={!!selectedRowKeys.length || allSendStatus}
+              disabled={!!selectedRowKeys.length || allSendStatus || searchParam.sendStatus}
             >
               一键群发积分
             </Button>
