@@ -81,7 +81,7 @@ const TableColumns = (
       render (row: IFlowList) {
         return (
           <div className={style.clientNickName}>
-            <span>{row.clientNickName || '/'}</span>
+            <span className={style.name}>{row.clientNickName || '/'}</span>
             {row.clientNickName && (
               <span
                 className={classNames(style.addBlackList, { [style.blackList]: row.clientInBlack })}
@@ -205,12 +205,13 @@ const TableColumns = (
     },
     {
       title: '客户昵称',
+      ellipsis: true,
       render (row: ISendPointsDetail) {
         return (
           <>
             {row.flowList.slice(0, 3).map((item, index) => (
               <div className={style.clientNickName} key={item.flowId}>
-                <span>{item.clientNickName || UNKNOWN}</span>
+                <span className={style.name}>{item.clientNickName || UNKNOWN}</span>
                 {item.clientNickName && (
                   <span
                     className={classNames(style.addBlackList, { [style.blackList]: item.clientInBlack })}

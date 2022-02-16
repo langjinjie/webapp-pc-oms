@@ -154,10 +154,16 @@
   &:not(:last-child) {
     margin-bottom: 16px;
   }
+  .name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .addBlackList {
     display: inline-block;
     margin-left: 14px;
     width: 86px;
+    min-width: 86px;
     padding: 4px 6px;
     border-radius: 4px;
     border: 1px solid #318cf5;
