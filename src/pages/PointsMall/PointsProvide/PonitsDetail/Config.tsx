@@ -325,7 +325,7 @@ const TableColumns = (
                 )
               : (
               <Tooltip
-                placement="rightTop"
+                placement="bottomLeft"
                 color={'white'}
                 title={row.remark}
                 destroyTooltipOnHide={{ keepParent: false }}
