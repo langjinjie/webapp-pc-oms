@@ -125,7 +125,7 @@ const PointsProvide: React.FC = () => {
   };
   // 禁止选择今天之后的日期
   const disabledDate = (current: moment.Moment) => {
-    return current > moment().startOf('day');
+    return current > moment().endOf('day');
   };
   useDocumentTitle('积分商城-积分发放');
   useEffect(() => {
