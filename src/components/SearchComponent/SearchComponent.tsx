@@ -15,7 +15,7 @@ export interface SearchCol {
   label: string;
   width?: number | string;
   maxLength?: number;
-  placeholder?: string;
+  placeholder?: string | [string, string];
   options?: OptionProps[] | null;
   cascaderOptions?: any[];
 
@@ -90,7 +90,12 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             return (
               (col.type === 'input' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Input maxLength={col.maxLength || 50} placeholder={col.placeholder} style={{ width: col.width }} />
+                  <Input
+                    maxLength={col.maxLength || 50}
+                    placeholder={col.placeholder as string}
+                    style={{ width: col.width }}
+                    allowClear
+                  />
                 </Form.Item>
               )) ||
               (col.type === 'select' && (
@@ -107,7 +112,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               )) ||
               (col.type === 'rangePicker' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <RangePicker format="YYYY-MM-DD" style={{ width: '320px' }} />
+                  <RangePicker
+                    format="YYYY-MM-DD"
+                    style={{ width: '320px' }}
+                    placeholder={col.placeholder as [string, string]}
+                  />
                 </Form.Item>
               )) ||
               (col.type === 'cascader' && (
@@ -152,7 +161,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder} style={{ width: col.width }} />
+                    <Input placeholder={col.placeholder} style={{ width: col.width }} allowClear />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (
@@ -180,7 +189,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder} style={{ width: col.width }} />
+                    <Input placeholder={col.placeholder} style={{ width: col.width }} allowClear />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (

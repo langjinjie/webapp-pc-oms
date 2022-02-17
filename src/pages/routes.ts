@@ -202,6 +202,11 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/addSubPoints/record',
     component: lazy(() => import('src/pages/PointsMall/AddSubPoints/Record/Record'))
+  },
+  // 发放手机
+  {
+    path: '/providePhone',
+    component: lazy(() => import('src/pages/PointsMall/ProvidePhone/ProvidePhone'))
   }
 ];
 
@@ -339,17 +344,18 @@ export const menus: Menu[] = [
       { name: '话术管理', path: '/speechManage' },
       { name: '目录管理', path: '/contentsManage' }
     ]
+  },
+  {
+    name: '积分管理',
+    icon: 'jifenguanli',
+    path: 'pointsMall',
+    children: [
+      { name: '积分发放', path: '/pointsProvide' },
+      { name: '积分扣减', path: '/pointsDeduction' },
+      { name: '加减积分', path: '/addSubPoints' },
+      { name: '手机发放', path: '/providePhone' }
+    ]
   }
-  // {
-  //   name: '积分管理',
-  //   icon: 'icon_daohang_28_biaoqianxitong',
-  //   path: 'pointsMall',
-  //   children: [
-  //     { name: '积分发放', path: '/pointsProvide' },
-  //     { name: '积分扣减', path: '/pointsDeduction' },
-  //     { name: '加减积分', path: '/addSubPoints' }
-  //   ]
-  // }
 ];
 
 if (process.env.NODE_ENV === 'development') {

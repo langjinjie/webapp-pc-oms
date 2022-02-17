@@ -120,7 +120,6 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   };
   // 上/下移 -1上移 1下移
   const moveClickHandle = (e: React.MouseEvent, type: number, hidden: boolean) => {
-    console.log({ corpId, sceneId: catalog.sceneId, catalogId: parentId });
     e.stopPropagation();
     if (hidden) return;
     setFirmModalParam({

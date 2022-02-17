@@ -2,10 +2,11 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
+import { Avatar, Tooltip } from 'antd';
 
 export const searchCols: SearchCol[] = [
   {
-    name: 'name',
+    name: 'staffName',
     type: 'input',
     label: '客户经理姓名',
     placeholder: '请输入',
@@ -14,10 +15,19 @@ export const searchCols: SearchCol[] = [
   {
     name: 'time',
     type: 'rangePicker',
-    label: '日期'
+    label: '操作时间',
+    placeholder: ['开始时间', '结束时间']
   }
 ];
 export interface StaffProps {
+  deductId: string;
+  points: number;
+  date: string;
+  externalUserid: string;
+  clientNickName: string;
+  clientAvatar: string;
+  deductPoints: number;
+  reason: string;
   name: string; // 坐席姓名
   userId: string; // 企微账号
   seatsId: string; // 工号
@@ -29,55 +39,64 @@ export interface StaffProps {
 export const tableColumns = (): ColumnsType<StaffProps> => [
   {
     title: '客户经理姓名',
-    dataIndex: 'name',
+    dataIndex: 'staffName',
     width: 130
   },
   {
     title: '客户经理ID',
-    dataIndex: 'userId',
+    dataIndex: 'staffId',
     align: 'left',
     width: 200,
-    ellipsis: {
-      showTitle: false
+    ellipsis: { showTitle: false },
+    render: (text) => {
+      return (
+        <Tooltip placement="topLeft" title={text}>
+          {text || UNKNOWN}
+        </Tooltip>
+      );
     }
   },
   {
     title: '积分扣减',
-    dataIndex: 'userId',
+    dataIndex: 'deductPoints',
     align: 'left',
-    width: 200,
-    ellipsis: {
-      showTitle: false
-    }
+    width: 100
   },
   {
     title: '积分扣减原因',
-    dataIndex: 'userId',
+    dataIndex: 'reason',
     align: 'left',
     width: 200,
-    ellipsis: {
-      showTitle: false
+    ellipsis: { showTitle: false },
+    render: (text) => {
+      return (
+        <Tooltip placement="topLeft" title={text}>
+          {text || UNKNOWN}
+        </Tooltip>
+      );
     }
   },
   {
     title: '删除的客户昵称',
-    dataIndex: 'userId',
-    align: 'left',
+    dataIndex: 'clientNickName',
     width: 200,
-    ellipsis: {
-      showTitle: false
-    }
+    render: (value, record) => (
+      <div>
+        <Avatar className="margin-right10" src={record.clientAvatar} alt="头像" />
+        <span>{value}</span>
+      </div>
+    )
   },
   {
     title: '操作人',
     align: 'left',
-    dataIndex: 'position',
+    dataIndex: 'opName',
     width: 200,
     render: (value) => <span>{value || UNKNOWN}</span>
   },
   {
     title: '操作时间',
-    dataIndex: 'jobNumber',
+    dataIndex: 'opTime',
     align: 'left',
     width: 180,
     render: (value) => <span>{value || UNKNOWN}</span>

@@ -17,3 +17,4 @@ export { default as Modal } from './Modal/Modal';
 export { default as ImageUpload } from './ImageUpload/ImageUpload';
 export { default as FileUpload } from './FileUpload/FileUpload';
 export { default as Video } from './Video/Video';
+export { default as ConfirmModal } from './ConfirmModal/ConfirmModal';
