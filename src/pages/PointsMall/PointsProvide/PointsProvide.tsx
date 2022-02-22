@@ -57,7 +57,6 @@ const PointsProvide: React.FC = () => {
   };
   // 查询/重置
   const onSearchHandle = () => {
-    console.log(form.getFieldsValue());
     setPaginationParam({ ...paginationParam, pageNum: 1 });
     setSearchParam(searchParamHandle());
   };

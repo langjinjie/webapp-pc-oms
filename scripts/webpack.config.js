@@ -89,8 +89,11 @@ const getBabelLoader = (isTs = false) => {
 module.exports = function () {
   const ROOT_PATH = path.resolve(__dirname, '../');
 
+  const fix = (num, length) => {
+    return ('' + num).length < length ? (new Array(length + 1).join('0') + num).slice(-length) : '' + num;
+  };
   const date = new Date();
-  const time = `${date.getFullYear()}${date.getMonth() + 1}${date.getDay()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+  const time = `${date.getFullYear()}${fix(date.getMonth() + 1, 2)}${fix(date.getDate(), 2)}${fix(date.getHours(), 2)}${fix(date.getMinutes(), 2)}${fix(date.getSeconds(), 2)}`;
 
   return {
     entry: {
