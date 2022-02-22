@@ -143,12 +143,13 @@ const PointsProvide: React.FC = () => {
           <Form.Item className={style.label} name="staffName" label="客户经理姓名：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />
           </Form.Item>
-          <Form.Item className={style.label} name="date" label="日期：">
-            <RangePicker
-              style={{ width: 280 }}
-              disabledDate={disabledDate}
-              defaultValue={[moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')]}
-            />
+          <Form.Item
+            className={style.label}
+            name="date"
+            label="日期："
+            initialValue={[moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')]}
+          >
+            <RangePicker style={{ width: 280 }} disabledDate={disabledDate} />
           </Form.Item>
         </Space>
         <Space className={style.antBtnSpace}>
