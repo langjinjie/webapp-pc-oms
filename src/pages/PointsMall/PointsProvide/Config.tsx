@@ -50,7 +50,7 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
       title: '黑名单积分',
       dataIndex: 'blackPoints',
       render (text: number) {
-        return <span className={!text || style.blackPoints}>{text}</span>;
+        return <span className={!text ? '' : style.blackPoints}>{text}</span>;
       }
     },
     {
@@ -69,7 +69,7 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
       title: '积分发放状态',
       render (row: IPointsProvideList) {
         return (
-          <span className={classNames(style.sendStatus, { [style.sended]: row.sendStatus })}>
+          <span className={classNames(style.sendStatus, { [style.sended]: !!row.sendStatus })}>
             {row.sendStatus ? '已发放' : '未发放'}
           </span>
         );

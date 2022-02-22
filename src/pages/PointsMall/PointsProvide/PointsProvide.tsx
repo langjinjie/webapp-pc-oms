@@ -39,8 +39,8 @@ const PointsProvide: React.FC = () => {
     let beginTime = '';
     let endTime = '';
     if (date) {
-      beginTime = date[0].format('YYYY-MM-DD') + ' 00:00:00';
-      endTime = date[1].format('YYYY-MM-DD') + ' 23:59:59';
+      beginTime = date[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      endTime = date[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
     return { staffName, beginTime, endTime, isBlackClient, sendStatus };
   };
@@ -57,6 +57,7 @@ const PointsProvide: React.FC = () => {
   };
   // 查询/重置
   const onSearchHandle = () => {
+    console.log(form.getFieldsValue());
     setPaginationParam({ ...paginationParam, pageNum: 1 });
     setSearchParam(searchParamHandle());
   };
@@ -132,11 +133,9 @@ const PointsProvide: React.FC = () => {
     ponitsParam.visible || getPointsList();
   }, [paginationParam, searchParam]);
   useEffect(() => {
+    // 从详情返回,如果详情发生了发放操作,需要重新请求一次列表
     ponitsParam.sendStatus && getPointsList();
   }, [ponitsParam]);
-  useEffect(() => {
-    console.log(ponitsList.list);
-  }, [ponitsList]);
   return (
     <div className={style.wrap}>
       <Form name="base" className={style.form} layout="inline" form={form} onReset={onSearchHandle}>
@@ -145,7 +144,11 @@ const PointsProvide: React.FC = () => {
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />
           </Form.Item>
           <Form.Item className={style.label} name="date" label="日期：">
-            <RangePicker style={{ width: 280 }} disabledDate={disabledDate} />
+            <RangePicker
+              style={{ width: 280 }}
+              disabledDate={disabledDate}
+              defaultValue={[moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')]}
+            />
           </Form.Item>
         </Space>
         <Space className={style.antBtnSpace}>
