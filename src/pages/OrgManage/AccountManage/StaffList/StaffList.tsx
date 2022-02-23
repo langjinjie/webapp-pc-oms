@@ -279,8 +279,9 @@ const StaffList: React.FC = () => {
     }
   };
   useEffect(() => {
-    getStaffList();
-  }, []);
+    // 确保corpId有值再请求数据
+    corpId && getStaffList();
+  }, [corpId]);
   return (
     <div className={style.wrap}>
       <Modal
