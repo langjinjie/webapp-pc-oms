@@ -5,12 +5,12 @@
       margin-right: 14px;
       width: 128px;
       height: 40px;
-      background: #318cf5;
+      // background: #318cf5;
       border-radius: 20px;
       font-size: 16px;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
-      color: #ffffff;
+      // color: #ffffff;
     }
     .tip {
       font-size: 14px;
@@ -21,6 +21,11 @@
   }
   .tableWrap {
     // config样式
+    .funModule,
+    .maskName {
+      display: inline-block;
+      min-width: 50px;
+    }
     .checkAllClient {
       font-size: 12px;
       font-family: PingFangSC-Regular, PingFang SC;
@@ -49,12 +54,19 @@
       display: inline-block;
       min-width: 30px;
       width: 100%;
+      .text {
+        margin-right: 5px;
+      }
       .input {
         min-width: 30px;
         width: 100%;
         border: none;
         outline: none;
       }
+    }
+    // 黑名单积分样式
+    .backPonits {
+      color: #f25555;
     }
   }
   :global {
@@ -75,9 +87,24 @@
       vertical-align: top;
       border: none;
     }
+    .ant-table {
+      border-bottom: 1px solid #f0f0f0 !important;
+    }
     .ant-drawer-title {
       font-weight: 500;
       text-align: center;
+    }
+    .ant-select-selector > .ant-select-selection-item {
+      line-height: 30px !important;
+    }
+  }
+}
+
+.popoverWrap {
+  :global {
+    .title {
+      text-align: center;
+      margin-bottom: 20px;
     }
   }
 }
@@ -93,18 +120,50 @@
   }
 }
 
+// 内容Tooltip样式
+.contentTooltip {
+  max-width: 300px;
+  :global {
+    .ant-tooltip-inner {
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+}
+
 // popoverTableWrap以及tableWrap的客户昵称/客户id/内容样式
 .clientNickName,
 .externalUserid,
-.cotent {
+.content {
+  position: relative;
   display: flex;
   justify-content: space-between;
+  &.clientNickName {
+    max-width: 200px;
+  }
+  &.content {
+    display: block;
+    width: max-content;
+    max-width: 266px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    // display: -webkit-box;
+    // -webkit-line-clamp: 1;
+    // -webkit-box-orient: vertical;
+  }
   &:not(:last-child) {
     margin-bottom: 16px;
+  }
+  .name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .addBlackList {
     display: inline-block;
     margin-left: 14px;
+    width: 86px;
+    min-width: 86px;
     padding: 4px 6px;
     border-radius: 4px;
     border: 1px solid #318cf5;
@@ -114,9 +173,9 @@
     color: #318cf5;
     line-height: 12px;
     vertical-align: top;
+    text-align: center;
     cursor: pointer;
     &.blackList {
-      margin-right: 12px;
       border-color: #2a2a2a;
       background: #2a2a2a;
       border-radius: 4px;

@@ -8,7 +8,7 @@ import React, { useState, useEffect, useContext, Suspense } from 'react';
 import { Redirect, Route, withRouter, RouteProps, RouteComponentProps } from 'react-router-dom';
 import CacheRoute, { CacheRouteProps, CacheSwitch } from 'react-router-cache-route';
 import classNames from 'classnames';
-import { Icon } from 'src/components';
+import { Icon, ConfirmModal } from 'src/components';
 import { Context } from 'src/store';
 import { routes, menus, Menu, cacheRoutes } from 'src/pages/routes';
 import { queryUserInfo } from 'src/apis';
@@ -143,6 +143,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
           </div>
         </div>
       </div>
+      <ConfirmModal />
     </div>
   );
 };

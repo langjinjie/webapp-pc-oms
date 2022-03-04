@@ -31,3 +31,20 @@ export const isPhoneNo = (phone: string): boolean => {
     return false;
   }
 };
+
+/**
+ * 判断是否为数组
+ * []
+ */
+export const isArray = (arr: unknown): boolean => {
+  return Object.prototype.toString.call(arr) === '[object Array]';
+};
+
+/**
+ * @description 是否是一个对象
+ * {}
+ * @return boolean
+ */
+export const isObject = (abj: unknown): boolean => {
+  return Object.prototype.toString.call(abj) === '[object Array]';
+};

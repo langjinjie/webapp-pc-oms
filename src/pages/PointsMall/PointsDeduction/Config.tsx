@@ -2,7 +2,8 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
-import { Button, Tooltip } from 'antd';
+import { Avatar, Button, Popconfirm, Tooltip } from 'antd';
+import moment from 'moment';
 
 export const searchCols: SearchCol[] = [
   {
@@ -15,7 +16,8 @@ export const searchCols: SearchCol[] = [
   {
     name: 'time',
     type: 'rangePicker',
-    label: '日期'
+    label: '日期',
+    placeholder: ['开始时间', '结束时间']
   }
 ];
 export interface DeductProps {
@@ -35,7 +37,7 @@ export interface DeductProps {
   freeType: string; // 免统计模块 1、排行榜，2、战报 多个用,分开
 }
 
-export const tableColumns = (): ColumnsType<DeductProps> => [
+export const tableColumns = (batchDeduct: (record: DeductProps) => void): ColumnsType<DeductProps> => [
   {
     title: '客户经理姓名',
     dataIndex: 'staffName',
@@ -46,8 +48,13 @@ export const tableColumns = (): ColumnsType<DeductProps> => [
     dataIndex: 'staffId',
     align: 'left',
     width: 200,
-    ellipsis: {
-      showTitle: false
+    ellipsis: { showTitle: false },
+    render: (text) => {
+      return (
+        <Tooltip placement="topLeft" title={text}>
+          {text || UNKNOWN}
+        </Tooltip>
+      );
     }
   },
   {
@@ -55,7 +62,7 @@ export const tableColumns = (): ColumnsType<DeductProps> => [
     dataIndex: 'date',
     align: 'left',
     width: 180,
-    render: (value) => <span>{value || UNKNOWN}</span>
+    render: (value) => <span>{moment(value).format('YYYY-MM-DD') || UNKNOWN}</span>
   },
   {
     title: '积分扣减',
@@ -80,12 +87,22 @@ export const tableColumns = (): ColumnsType<DeductProps> => [
   {
     title: '删除的客户昵称',
     align: 'left',
-    dataIndex: 'deptName',
+    dataIndex: 'clientNickName',
     width: 200,
-    render: (value) => <span>{value || UNKNOWN}</span>
+    render: (value, record) => (
+      <div>
+        <Avatar className="margin-right10" src={record.clientAvatar} alt="头像" />
+        <span>{value}</span>
+      </div>
+    )
   },
   {
     title: '操作',
-    render: () => <Button type="link">扣减</Button>
+    fixed: 'right',
+    render: (value, record) => (
+      <Popconfirm title="积分扣减提醒，是否确定扣减该客户经理积分？" onConfirm={() => batchDeduct(record)}>
+        <Button type="link">扣减</Button>
+      </Popconfirm>
+    )
   }
 ];

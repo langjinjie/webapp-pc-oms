@@ -86,7 +86,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
           }
         });
         if (isMaxLengthError) {
-          return Promise.reject(new Error('单一标签最多12个字'));
+          return Promise.reject(new Error('单一标签最多12个字符'));
         }
       }
       if (lightsArr.length > 4) {
@@ -292,8 +292,18 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                   </div>
                   <ul className={styles.infoList}>
                     <li className={styles.infoItem}>
-                      <Form.Item label="姓名" required name="staffName">
-                        <EditText readOnly={true} />
+                      <Form.Item
+                        label="姓名"
+                        rules={[
+                          {
+                            required: true,
+                            type: 'string',
+                            max: 100
+                          }
+                        ]}
+                        name="staffName"
+                      >
+                        <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
