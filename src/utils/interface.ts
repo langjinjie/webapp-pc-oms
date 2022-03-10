@@ -300,3 +300,21 @@ export interface IConfirmModalParam {
   onOk?: () => void;
   onCancel?: () => void;
 }
+// 积分管理->抽奖设置 部门列表
+export interface ITreeDate {
+  deptId: string;
+  fullDeptId: string;
+  deptName: string;
+  fullDeptName: string;
+  level: number;
+  isLeaf: number;
+}
+// 可见范围部门
+export interface IDeptRecord {
+  scopeDeptIds: string;
+  scopeFullDeptIds: string;
+  scopeDeptNames: string;
+  scopeFullDeptNames: string;
+  opName: string;
+  opTime: string;
+}

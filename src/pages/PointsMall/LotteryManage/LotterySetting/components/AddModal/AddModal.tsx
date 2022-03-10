@@ -1,13 +1,13 @@
 import React, { useState, useEffect, Key } from 'react';
 import { Modal, Tree } from 'antd';
-import { requestGetLotteryDeptList } from 'src/apis/pointsMall';
+import { requestGetLotteryDeptList, requestAddLotteryScope } from 'src/apis/pointsMall';
+import { ITreeDate, IDeptRecord } from 'src/utils/interface';
 import style from './style.module.less';
 
 interface IAddLotteryListProps {
-  visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  depLsit: { deptId: number; deptName: string }[];
-  setDepList: React.Dispatch<React.SetStateAction<{ deptId: number; deptName: string }[]>>;
+  addScopeParam: { visible: boolean; added: boolean };
+  setAddScopeParam: React.Dispatch<React.SetStateAction<{ visible: boolean; added: boolean }>>;
+  depLsit: IDeptRecord;
 }
 
 interface ItreeProps {
@@ -21,11 +21,11 @@ interface ItreeProps {
   selectedKeys?: Key[];
 }
 
-const AddModal: React.FC<IAddLotteryListProps> = ({ visible, setVisible, depLsit, setDepList }) => {
-  const [treeData, setTreeData] = useState<any[]>([]);
+const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopeParam, depLsit }) => {
+  const [treeData, setTreeData] = useState<ITreeDate[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
-  const [flatTreeData, setFlatTreeData] = useState<{ deptId: number; deptName: string }[]>([]);
-  // const [checkedList, setCheckedList] = useState<{ deptId: number; deptName: string }[]>([]);
+  const [flatTreeData, setFlatTreeData] = useState<ITreeDate[]>([]);
+  const [autoExpand, setAutoExpand] = useState(true);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -42,14 +42,12 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ visible, setVisible, depLsit
     setCheckedKeys([]);
     // setCheckedList([]);
     setFlatTreeData([]);
+    setAutoExpand(true);
   };
   // 获取组织架构部门
-  const getCorpOrg = async (deptId?: number) => {
+  const getCorpOrg = async (deptId?: string) => {
     // 获取部门,并且过滤掉未完善员工
-    const res1: {
-      deptId: number;
-      deptName: string;
-    }[] = (await requestGetLotteryDeptList({ deptId })).filter((item: any) => item.deptId !== -1);
+    const res1: ITreeDate[] = (await requestGetLotteryDeptList({ deptId })).filter((item: any) => item.deptId !== -1);
     // 将树结构添加到扁平结构中
     setFlatTreeData([...flatTreeData, ...res1]);
     res1.forEach((item: any) => {
@@ -57,14 +55,14 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ visible, setVisible, depLsit
     });
     return [...res1];
   };
-  const onOk = () => {
-    setVisible(false);
-    // const allDepList = flatTreeData.filter((item) => checkedKeys.includes(item.deptId));
-    // const childDepList = [];
-    setDepList(flatTreeData.filter((item) => checkedKeys.includes(item.deptId)));
+  const onOk = async () => {
+    const res = await requestAddLotteryScope({ deptIds: checkedKeys.toString().replace(/,/g, ';') });
+    if (res) {
+      setAddScopeParam({ visible: false, added: true });
+    }
   };
   const onCancel = () => {
-    setVisible(false);
+    setAddScopeParam({ visible: false, added: false });
   };
   // 向树结构添加子节点
   const updateTreeData = (list: any[], key: React.Key, children: any[]): any[] => {
@@ -93,6 +91,7 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ visible, setVisible, depLsit
   };
   // 展开/折叠触发
   const onExpandHandle = (expandedKeys: Key[]) => {
+    setAutoExpand(false);
     setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
   };
   // 选中节点
@@ -107,26 +106,38 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ visible, setVisible, depLsit
     setCheckedKeys(checked as Key[]);
   };
   useEffect(() => {
-    if (visible) {
+    if (addScopeParam.visible) {
       (async () => {
         setTreeData(await getCorpOrg());
       })();
     } else {
       onResetHandle();
     }
-  }, [visible]);
+  }, [addScopeParam.visible]);
   useEffect(() => {
-    console.log(flatTreeData);
-    const keys = flatTreeData.filter((item) => depLsit.some((depItem) => depItem.deptId === item.deptId));
-    setCheckedKeys((keysItem) => [...keysItem, ...keys.map((filterItem) => filterItem.deptId)]);
+    if (flatTreeData.length) {
+      autoExpand &&
+        setTreeProps({
+          ...treeProps,
+          autoExpandParent: true,
+          expandedKeys: flatTreeData
+            .filter((item) =>
+              Array.from(new Set(depLsit.scopeFullDeptIds.replace(/,/g, ';').split(';'))).includes(item.deptId)
+            )
+            .map((filterItem) => filterItem.deptId)
+        });
+      console.log(depLsit.scopeDeptIds);
+      console.log(flatTreeData.filter((item) => depLsit.scopeDeptIds.split(';').includes(item.deptId)));
+      const keys = flatTreeData
+        .filter((item) => depLsit.scopeDeptIds.split(';').includes(item.deptId))
+        .map((filterItem) => filterItem.deptId);
+      setCheckedKeys(Array.from(new Set(keys)));
+    }
   }, [flatTreeData]);
-  useEffect(() => {
-    console.log(treeData);
-  }, [treeData]);
   return (
     <Modal
       className={style.modalWrap}
-      visible={visible}
+      visible={addScopeParam.visible}
       centered
       maskClosable={false}
       closable={false}
@@ -140,6 +151,7 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ visible, setVisible, depLsit
         {...treeProps}
         fieldNames={{ title: 'deptName', key: 'deptId' }}
         loadData={onLoadDataHandle}
+        // @ts-ignore
         treeData={treeData}
         onExpand={onExpandHandle}
         checkedKeys={checkedKeys}

@@ -3,14 +3,26 @@ import { Button, Tag } from 'antd';
 import { Icon } from 'src/components';
 import { AddModal, List } from './components';
 import { useDocumentTitle } from 'src/utils/base';
+import { IDeptRecord } from 'src/utils/interface';
+import { requestAddLotteryScope } from 'src/apis/pointsMall';
 import style from './style.module.less';
 
 const LotterySetting: React.FC = () => {
-  const [depLsit, setDepList] = useState<{ deptId: number; deptName: string }[]>([]);
+  const [depLsit, setDepList] = useState<IDeptRecord>();
   // const [choosedLsit, setChoosedList] = useState<{ deptId: number; deptName: string }[]>([]);
-  const [visible, setVisible] = useState(false);
+  const [addScopeParam, setAddScopeParam] = useState({ visible: false, added: false });
   const clickAddBtn = () => {
-    setVisible(true);
+    setAddScopeParam({ added: false, visible: true });
+  };
+  // 删除抽奖可见名单
+  const onClose = async (event: React.MouseEvent<HTMLElement, MouseEvent>, index: number) => {
+    event.preventDefault();
+    const deptIds = depLsit?.scopeDeptIds.split(';') || [];
+    deptIds.splice(index);
+    const res = await requestAddLotteryScope({ deptIds: deptIds.toString().replace(/,/g, ';') });
+    if (res) {
+      setAddScopeParam({ ...addScopeParam, added: true });
+    }
   };
   useDocumentTitle('积分管理-抽奖管理');
   return (
@@ -19,16 +31,18 @@ const LotterySetting: React.FC = () => {
         <div className={style.list}>
           <div className={style.name}>添加抽奖可见名单：</div>
           <div className={style.chooseList}>
-            {depLsit.map((item) => (
-              <Tag
-                key={item.deptId}
-                closeIcon={<Icon name="icon_common_Line_Close" className={style.tagIcon} />}
-                className={style.tagItem}
-                closable
-              >
-                {item.deptName}
-              </Tag>
-            ))}
+            {depLsit?.scopeDeptNames &&
+              depLsit?.scopeDeptNames.split(';').map((item, index) => (
+                <Tag
+                  key={item + index}
+                  closeIcon={<Icon name="icon_common_Line_Close" className={style.tagIcon} />}
+                  className={style.tagItem}
+                  closable
+                  onClose={(event) => onClose(event, index)}
+                >
+                  {item}
+                </Tag>
+              ))}
           </div>
           <Button
             className={style.addBtn}
@@ -39,8 +53,8 @@ const LotterySetting: React.FC = () => {
         <div className={style.tip}>温馨提醒：未在可见名单的坐席，进入a端抽奖页面时，抽奖按钮置灰。</div>
       </div>
       {/* 组织架构 */}
-      <AddModal visible={visible} setVisible={setVisible} depLsit={depLsit} setDepList={setDepList} />
-      <List />
+      <AddModal addScopeParam={addScopeParam} setAddScopeParam={setAddScopeParam} depLsit={depLsit as IDeptRecord} />
+      <List addScopeParam={addScopeParam} setDepList={setDepList} />
     </div>
   );
 };
