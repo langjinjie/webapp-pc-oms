@@ -55,13 +55,14 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     dataIndex: 'freeType',
     width: 200,
     render: (value: string) => {
-      return value.split(',').map((item, index: number) => {
-        if (item === '1') {
-          return <span key={index + 'freeType'}>排行榜 {index + 1 < value.length ? '、' : ''}</span>;
-        } else {
-          return <span key={index + 'freeType'}>战报</span>;
-        }
-      });
+      const freeType2Name = ['排行榜', '战报', '抽奖黑名单'];
+      return value
+        .split(',')
+        .map((item) => {
+          return freeType2Name[Number(item) - 1];
+        })
+        .toString()
+        .replace(',', '、');
     }
     // <span>
     //   {value.indexOf('1') > -1 ? '排行榜 ' : null} {value.indexOf('2') > -1 ? ' 战报' : null}
