@@ -62,7 +62,7 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
           return freeType2Name[Number(item) - 1];
         })
         .toString()
-        .replace(',', '、');
+        .replace(/,/g, '、');
     }
     // <span>
     //   {value.indexOf('1') > -1 ? '排行榜 ' : null} {value.indexOf('2') > -1 ? ' 战报' : null}
