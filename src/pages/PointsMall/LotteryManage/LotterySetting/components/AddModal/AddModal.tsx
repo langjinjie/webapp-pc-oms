@@ -47,7 +47,10 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
   // 获取组织架构部门
   const getCorpOrg = async (deptId?: string) => {
     // 获取部门,并且过滤掉未完善员工
-    const res1: ITreeDate[] = (await requestGetLotteryDeptList({ deptId })).filter((item: any) => item.deptId !== -1);
+    const res1: ITreeDate[] = (await requestGetLotteryDeptList({ deptId })).map((item: ITreeDate) => ({
+      ...item,
+      parentId: deptId
+    }));
     // 将树结构添加到扁平结构中
     setFlatTreeData([...flatTreeData, ...res1]);
     res1.forEach((item: any) => {
@@ -55,8 +58,30 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
     });
     return [...res1];
   };
+
+  // 处理字符节点
+  const filterChildren = (arr: ITreeDate[]) => {
+    const newArr = [...arr];
+    const newArr1: string[] = [];
+    newArr.forEach((item) => {
+      newArr.forEach((childrenItem) => {
+        if (childrenItem.fullDeptId.split(',').includes(item.deptId)) {
+          if (item !== childrenItem) {
+            newArr1.push(childrenItem.deptId);
+          }
+        }
+      });
+    });
+    return newArr.filter((item) => !newArr1.includes(item.deptId));
+  };
   const onOk = async () => {
-    const res = await requestAddLotteryScope({ deptIds: checkedKeys.toString().replace(/,/g, ';') });
+    const deptIdList = flatTreeData.filter((item) => checkedKeys.includes(item.deptId));
+    const res = await requestAddLotteryScope({
+      deptIds: filterChildren(deptIdList)
+        .map((item) => item.deptId)
+        .toString()
+        .replace(/,/g, ';')
+    });
     if (res) {
       setAddScopeParam({ visible: false, added: true });
     }
@@ -114,6 +139,8 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
       onResetHandle();
     }
   }, [addScopeParam.visible]);
+
+  // 自动展开以及自动勾选
   useEffect(() => {
     if (flatTreeData.length) {
       autoExpand &&
@@ -126,12 +153,10 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
             )
             .map((filterItem) => filterItem.deptId)
         });
-      console.log(depLsit.scopeDeptIds);
-      console.log(flatTreeData.filter((item) => depLsit.scopeDeptIds.split(';').includes(item.deptId)));
       const keys = flatTreeData
         .filter((item) => depLsit.scopeDeptIds.split(';').includes(item.deptId))
         .map((filterItem) => filterItem.deptId);
-      setCheckedKeys(Array.from(new Set(keys)));
+      setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...keys])));
     }
   }, [flatTreeData]);
   return (
