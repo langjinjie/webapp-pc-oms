@@ -9,7 +9,7 @@ const LotteryManage: React.FC = () => {
   const tabsComponentsList = [<ProvidePhone key={0} />, <LotterySetting key={1} />];
   return (
     <div className={style.wrap}>
-      <Tabs defaultActiveKey="1" animated={true}>
+      <Tabs defaultActiveKey="0" animated={true}>
         {tabsNavList.map((item, index) => (
           <Tabs.TabPane tab={item} key={index}>
             {tabsComponentsList[index]}
