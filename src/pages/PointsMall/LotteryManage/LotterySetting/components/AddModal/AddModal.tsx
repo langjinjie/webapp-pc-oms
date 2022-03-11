@@ -128,7 +128,9 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
           halfChecked: Key[];
         }
   ) => {
+    setAutoExpand(false);
     setCheckedKeys(checked as Key[]);
+    console.log('checked', checked);
   };
   useEffect(() => {
     if (addScopeParam.visible) {
@@ -142,8 +144,8 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
 
   // 自动展开以及自动勾选
   useEffect(() => {
-    if (flatTreeData.length) {
-      autoExpand &&
+    setTimeout(() => {
+      if (flatTreeData.length && autoExpand) {
         setTreeProps({
           ...treeProps,
           autoExpandParent: true,
@@ -153,11 +155,12 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
             )
             .map((filterItem) => filterItem.deptId)
         });
-      const keys = flatTreeData
-        .filter((item) => depLsit.scopeDeptIds.split(';').includes(item.deptId))
-        .map((filterItem) => filterItem.deptId);
-      setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...keys])));
-    }
+        const keys = flatTreeData
+          .filter((item) => depLsit.scopeDeptIds.split(';').includes(item.deptId))
+          .map((filterItem) => filterItem.deptId);
+        setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...keys])));
+      }
+    }, 200);
   }, [flatTreeData]);
   return (
     <Modal
