@@ -203,10 +203,10 @@ export const routes: (RouteProps & expandRoute)[] = [
     path: '/addSubPoints/record',
     component: lazy(() => import('src/pages/PointsMall/AddSubPoints/Record/Record'))
   },
-  // 发放手机
+  // 抽奖管理
   {
-    path: '/providePhone',
-    component: lazy(() => import('src/pages/PointsMall/ProvidePhone/ProvidePhone'))
+    path: '/lotteryManage',
+    component: lazy(() => import('src/pages/PointsMall/LotteryManage/LotteryManage'))
   }
 ];
 
@@ -353,7 +353,7 @@ export const menus: Menu[] = [
       { name: '积分发放', path: '/pointsProvide' },
       { name: '积分扣减', path: '/pointsDeduction' },
       { name: '加减积分', path: '/addSubPoints' },
-      { name: '手机发放', path: '/providePhone' }
+      { name: '抽奖管理', path: '/lotteryManage' }
     ]
   }
 ];

@@ -31,7 +31,6 @@ const ConfirmModal: React.FC<IConfirmModalProps> = ({ firmModalParam }) => {
       onOk={ok}
       maskClosable={false}
       okButtonProps={{
-        disabled: okBtnDisabled,
         loading: okBtnDisabled
       }}
     >

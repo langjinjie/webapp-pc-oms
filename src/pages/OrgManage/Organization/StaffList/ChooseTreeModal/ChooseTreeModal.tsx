@@ -63,6 +63,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     let res1 = await requestGetDeptList({ parentId });
     let res2 = [];
     if (chooseTreeParam.title === '选择员工' && parentId) {
+      console.log('获取员工列表');
       const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId });
       res2 = res.list.map((item: any) => ({
         ...item,
@@ -73,19 +74,23 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       }));
     }
     if (res1) {
+      // 过滤掉未完善员工
       res1 = res1.filter((item: any) => item.deptId !== -1);
-      const productTagRequestList = res1.map((item: any) =>
-        requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId })
+      res1 = await Promise.all(
+        res1.map(async (item: any) => {
+          // 判断叶子部门节点下是否还有员工，有员工则不能作为叶子节点
+          if (
+            chooseTreeParam.title === '选择员工' &&
+            item.isLeaf &&
+            (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId })).list.length
+          ) {
+            return { ...item, parentId, name: item.deptName, id: item.deptId, isLeaf: false };
+          } else {
+            return { ...item, parentId, name: item.deptName, id: item.deptId };
+          }
+        })
       );
-      const productTagResponseList = await Promise.all(productTagRequestList);
       // 将树结构添加到扁平结构中
-      res1 = res1.map((item: any, index: number) => {
-        if (chooseTreeParam.title === '选择员工' && productTagResponseList[index].list.length) {
-          return { ...item, parentId, name: item.deptName, id: item.deptId, isLeaf: false };
-        } else {
-          return { ...item, parentId, name: item.deptName, id: item.deptId };
-        }
-      });
       setFlatTreeData([...flatTreeData, ...res2, ...res1]);
     }
     return [...res2, ...res1];
@@ -332,6 +337,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       setTreeProps({ ...treeProps, checkable: chooseTreeParam.isShowStaff });
       (async () => {
         setTreeData(await getCorpOrg(''));
+        console.log(1);
       })();
     }
     !chooseTreeParam.visible && onResetHandle();
@@ -372,12 +378,12 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
       className={style.modalWrap}
       title={chooseTreeParam.title}
       visible={chooseTreeParam.visible}
-      centered={true}
+      centered
       maskClosable={false}
       closeIcon={<Icon className={style.closeIcon} name={'biaoqian_quxiao'} />}
       onCancel={onCancelHandle}
       onOk={onOkHandle}
-      destroyOnClose={true}
+      destroyOnClose
       okButtonProps={{
         disabled:
           chooseTreeParam.title === '选择员工' ? !selectList.filter((item) => item.staffId).length : !selectList.length
