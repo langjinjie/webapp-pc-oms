@@ -2,7 +2,7 @@
   padding-top: 14px;
   .lotteryList {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     .list {
       display: flex;
@@ -30,6 +30,7 @@
         }
       }
       .addBtn {
+        flex-shrink: 0;
         margin-left: 12px;
         width: 90px;
         height: 36px;
@@ -45,7 +46,7 @@
     }
     .tip {
       flex-shrink: 0;
-      margin-left: 20px;
+      margin-left: 30px;
       font-size: 12px;
       font-weight: 400;
       color: #999aa1;

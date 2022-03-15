@@ -5,8 +5,8 @@ import LotterySetting from './LotterySetting/LotterySetting';
 import style from './style.module.less';
 
 const LotteryManage: React.FC = () => {
-  const tabsNavList = ['手机发放', '抽奖设置'];
-  const tabsComponentsList = [<ProvidePhone key={0} />, <LotterySetting key={1} />];
+  const tabsNavList = ['抽奖设置', '手机发放'];
+  const tabsComponentsList = [<LotterySetting key={0} />, <ProvidePhone key={1} />];
   return (
     <div className={style.wrap}>
       <Tabs defaultActiveKey="0" animated={true}>
