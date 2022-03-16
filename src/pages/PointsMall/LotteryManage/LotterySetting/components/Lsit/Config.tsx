@@ -7,8 +7,9 @@ const TableColumns = (): ColumnsType<any> => {
     {
       title: '抽奖可见名单',
       dataIndex: 'scopeDeptNames',
+      ellipsis: true,
       render (text: string) {
-        return <span>{text.replace(/;/g, '，') || '无'}</span>;
+        return <>{text.replace(/;/g, '，') || '无'}</>;
       }
     },
     { title: '操作时间', dataIndex: 'opTime' },
