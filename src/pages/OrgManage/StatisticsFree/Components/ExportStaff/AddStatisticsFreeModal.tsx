@@ -74,6 +74,7 @@ export const AddStatisticsFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ 
           <Select mode="multiple" placeholder="请选择免统计模块">
             <Select.Option value={1}>排行榜</Select.Option>
             <Select.Option value={2}>战报</Select.Option>
+            <Select.Option value={3}>抽奖黑名单</Select.Option>
           </Select>
         </Form.Item>
       </Form>

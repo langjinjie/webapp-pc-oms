@@ -41,3 +41,15 @@ export const requestProviderPhone: VoidFC = () => {
 export const requestGetProviderPhoneList: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/lottery/prize/phone/sended/list', param);
 };
+// 查询抽奖可见范围操作记录
+export const requestGetLotteryScopeRecord: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/lottery/scope/op/record', param);
+};
+// 设置抽奖可见范围接口
+export const requestAddLotteryScope: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/lottery/scope/add', param);
+};
+// 查询部门列表接口
+export const requestGetLotteryDeptList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/lottery/dept/list', param);
+};
