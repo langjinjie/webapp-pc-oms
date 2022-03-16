@@ -43,7 +43,7 @@ const List: React.FC<IListProps> = ({ addScopeParam, setDepList }) => {
         dataSource={provideList.list}
         columns={TableColumns()}
         loading={isLoading}
-        scroll={{ x: 'max-content' }}
+        // scroll={{ x: 'max-content' }}
         {...TablePagination({
           dataSource: provideList,
           paginationParam,
