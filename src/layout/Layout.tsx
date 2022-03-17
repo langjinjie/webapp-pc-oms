@@ -39,7 +39,7 @@ const Routes = withRouter(({ location }) => {
 });
 
 const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
-  const { isMainCorp, setUserInfo, setIsMainCorp, setCurrentCorpId } = useContext(Context);
+  const { isMainCorp, userInfo, setUserInfo, setIsMainCorp, setCurrentCorpId } = useContext(Context);
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
   const [subMenus, setSubMenus] = useState<Menu[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -48,14 +48,15 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   /**
    * 刷新时获取激活菜单
    */
-  const initMenu = () => {
+  const initMenu = (isMain: boolean): void => {
     const pathArr: string[] = window.location.pathname.split('/');
     const currentMenu: string = pathArr.length > 3 ? pathArr[pathArr.length - 2] : pathArr[pathArr.length - 1];
     const currentMenuIndex = menus.findIndex((menu: Menu) =>
       menu.children?.some((subMenu: Menu) => subMenu.path.includes(currentMenu))
     );
     if (currentMenuIndex > -1) {
-      const subMenus = (menus[currentMenuIndex].children || []).filter(({ onlyMain }) => !onlyMain || isMainCorp);
+      const subMenus = (menus[currentMenuIndex].children || []).filter(({ onlyMain }) => !onlyMain || isMain);
+      console.log('subMenus', subMenus);
       setMenuIndex(currentMenuIndex);
       setSubMenus(subMenus);
       setSubMenuIndex(subMenus.findIndex((subMenu: Menu) => subMenu.path.includes(currentMenu)));
@@ -71,17 +72,17 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
       setUserInfo(res);
       setIsMainCorp(res.isMainCorp === 1);
       setCurrentCorpId(res.corpId);
+      initMenu(res.isMainCorp === 1);
     }
   };
 
   useEffect(() => {
-    initMenu();
+    Object.keys(userInfo).length > 0 && initMenu(userInfo.isMainCorp);
   }, [location]);
 
   useEffect(() => {
     const token = getCookie('b2632ff42e4a58b67f37c8c1f322b213');
     if (token) {
-      initMenu();
       getUserInfo();
     } else if (window.location.pathname !== '/tenacity-oms/login') {
       history.push('/login');
