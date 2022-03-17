@@ -1,0 +1,63 @@
+.modalWrap {
+  width: 600px !important;
+  height: 424px;
+  overflow: hidden;
+  :global {
+    .ant-modal-content {
+      padding: 0 30px;
+      .ant-modal-header,
+      .ant-modal-footer {
+        padding: 20px 0;
+      }
+      .ant-modal-header {
+        .ant-modal-title {
+          height: 16px;
+          line-height: 16px;
+          font-size: 16px;
+          font-weight: 500;
+          color: #000000;
+        }
+      }
+      .ant-modal-body {
+        height: 290px;
+      }
+      .ant-modal-footer {
+        display: flex;
+        flex-direction: row-reverse;
+        .ant-btn + .ant-btn {
+          margin-right: 10px;
+        }
+        .ant-btn {
+          width: 88px;
+          height: 36px;
+          border-radius: 20px;
+        }
+      }
+    }
+    // 自定义滚动条
+    .ant-tree-list-holder {
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 5px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: rgb(239, 239, 239);
+        border-radius: 2px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #bfbfbf;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: #318cf5;
+      }
+
+      &::-webkit-scrollbar-corner {
+        background-color: #e6e7eb;
+      }
+    }
+  }
+}

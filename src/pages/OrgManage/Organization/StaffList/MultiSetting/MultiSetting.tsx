@@ -172,7 +172,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
         className={style.modalWrap}
         title={'批量设置信息'}
         visible={visible}
-        centered={true}
+        centered
         maskClosable={false}
         closeIcon={<Icon className={style.closeIcon} name={'biaoqian_quxiao'} />}
         width={620}

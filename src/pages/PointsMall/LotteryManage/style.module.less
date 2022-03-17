@@ -1,0 +1,24 @@
+.wrap {
+  padding: 26px;
+  :global {
+    // 修改tabs样式
+    .ant-tabs-tab {
+      height: 64px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #111111;
+      line-height: 22px;
+      > .ant-tabs-tab-btn {
+        height: 22px;
+      }
+    }
+    .ant-tabs-ink-bar {
+      height: 4px !important;
+      background: #318cf5;
+      border-radius: 2px;
+    }
+    .ant-tabs-tab-active {
+      color: #318cf5;
+    }
+  }
+}
