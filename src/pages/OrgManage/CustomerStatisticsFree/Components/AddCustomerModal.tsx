@@ -39,9 +39,7 @@ export const AddCustomerFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ vi
   }, [visible]);
 
   const handleSearch = async (value: string) => {
-    console.log(value);
     const res = await getCustomerByExternalUserId({ externalUserId: value });
-    console.log(res);
     if (res) {
       setCustomer(res);
     }
