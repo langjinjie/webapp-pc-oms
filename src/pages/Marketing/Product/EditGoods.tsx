@@ -7,6 +7,7 @@ import style from './style.module.less';
 import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
+import { UploadFile } from 'src/components';
 
 interface productConfigProps {
   id: number;
@@ -123,6 +124,14 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     setCurrency(newCurrency);
   };
 
+  // 配置类型列表
+  const displayTypeList = [
+    { value: 1, label: '添加链接' },
+    { value: 2, label: '小程序ID' },
+    { value: 3, label: '上传图片' },
+    { value: 4, label: '上传视频' }
+  ];
+
   /** 海报图片 */
   const posterBeforeUpload = (file: any) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -134,6 +143,17 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
       message.error('图片大小不能超出 2MB!');
     }
     return isJpgOrPng && isLt2M;
+  };
+  const beforeUploadMp4 = (file: any) => {
+    const isMp4 = file.type === 'video/mp4';
+    if (!isMp4) {
+      message.error('你只可以上传 MP4 格式视频!');
+    }
+    const isLt100M = file.size / 1024 / 1024 < 100;
+    if (!isLt100M) {
+      message.error('视频大小不能超过 100MB!');
+    }
+    return isMp4 && isLt100M;
   };
   /** 分享图片 */
   const shareCoverBeforeUpload = (file: any) => {
@@ -250,10 +270,13 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         >
           <Input placeholder="请输入产品ID" className="width320" maxLength={40} />
         </Form.Item>
-        <Form.Item label="展示类型" name="displayType" required initialValue={1}>
+        <Form.Item label="配置类型" name="displayType" required initialValue={1}>
           <Group onChange={(e) => setDisplayType(e.target.value)}>
-            <Radio value={1}>链接</Radio>
-            <Radio value={2}>小程序</Radio>
+            {displayTypeList.map((item) => (
+              <Radio key={item.value + item.label} value={item.value}>
+                {item.label}
+              </Radio>
+            ))}
           </Group>
         </Form.Item>
         {displayType === 1 && (
@@ -275,6 +298,30 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             </Form.Item>
             <Form.Item label="页面路径" name="path">
               <Input className="width320" placeholder="待输入，不填默认跳转小程序首页" />
+            </Form.Item>
+          </>
+        )}
+        {displayType === 3 && (
+          <>
+            <Form.Item
+              label="图片文件"
+              name="sourceUrl"
+              rules={[{ required: true, message: '请上传图片' }]}
+              extra="为确保最佳展示效果，请上传宽度为750像素高清图片，仅支持.jpg格式"
+            >
+              <NgUpload beforeUpload={posterBeforeUpload} />
+            </Form.Item>
+          </>
+        )}
+        {displayType === 4 && (
+          <>
+            <Form.Item
+              label="视频文件"
+              name="sourceUrl"
+              rules={[{ required: true, message: '请上传视频' }]}
+              extra="仅支持.mp4格式, 最大100MB"
+            >
+              <UploadFile bizKey="media" beforeUpload={beforeUploadMp4} />
             </Form.Item>
           </>
         )}
