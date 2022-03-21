@@ -26,7 +26,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload,
   };
   const beforeUploadFileHandle = (file: RcFile) => {
     setShowUploadBtn(true);
-    beforeUpload?.(file);
+    return beforeUpload?.(file);
   };
   const onChangeHandle = (info: any) => {
     if (info.file.status === 'done') {
