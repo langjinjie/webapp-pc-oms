@@ -9,6 +9,7 @@ interface NumberInputProps {
   onChange: (value: string) => void;
   onBlur?: () => void;
   value: string;
+  readOnly?: boolean;
 }
 const NumberInput: React.FC<NumberInputProps> = (props) => {
   const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -40,6 +41,7 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
       placeholder="请输入"
       maxLength={10}
       style={{ width: '100px' }}
+      readOnly={props.readOnly}
     />
   );
 };

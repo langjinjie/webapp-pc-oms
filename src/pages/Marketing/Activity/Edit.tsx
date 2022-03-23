@@ -54,7 +54,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
       setActive(res);
       const {
         activityName,
-        corpActivityId,
+        activityId,
         corpActivityLink,
         speechcraft,
         shareCoverImgUrl,
@@ -70,7 +70,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
 
       form.setFieldsValue({
         activityName,
-        corpActivityId,
+        activityId,
         corpActivityLink,
         speechcraft,
         tags: tags?.split(','),
@@ -172,7 +172,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
         >
           <Input placeholder="请输入" readOnly={isReadOnly} className="width320" />
         </Form.Item>
-        <Form.Item label="活动ID：" name="corpActivityId">
+        <Form.Item label="活动ID：" name="activityId">
           <Input
             placeholder="活动ID非必填字段，如无填写可用系统随机生成的活动ID"
             readOnly={isReadOnly}
@@ -197,10 +197,10 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
         {displayType === 2 && (
           <>
             <Form.Item label="小程序ID" name="username" rules={[{ required: true, message: '请输入小程序ID' }]}>
-              <Input className="width320" placeholder="待添加" />
+              <Input className="width320" placeholder="待添加" readOnly={isReadOnly} />
             </Form.Item>
             <Form.Item label="页面路径" name="path">
-              <Input className="width320" placeholder="待输入，不填默认跳转小程序首页" />
+              <Input className="width320" placeholder="待输入，不填默认跳转小程序首页" readOnly={isReadOnly} />
             </Form.Item>
           </>
         )}
@@ -224,7 +224,11 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
               rules={[{ required: true, message: '请上传视频' }]}
               extra="仅支持.mp4格式, 最大100MB"
             >
-              <UploadFile bizKey="media" beforeUpload={beforeUploadMp4} />
+              <UploadFile
+                bizKey="media"
+                beforeUpload={beforeUploadMp4}
+                onRemove={() => form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' })}
+              />
             </Form.Item>
           </>
         )}
@@ -234,7 +238,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
           label="活动标签："
           rules={[{ type: 'array', required: true, message: '请选择活动标签' }]}
         >
-          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags">
+          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags" disabled={isReadOnly}>
             {tags?.map((tag, index) => {
               return (
                 <Select.Option key={index} value={tag.name}>

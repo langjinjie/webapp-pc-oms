@@ -9,51 +9,55 @@ interface IUploadFileProps {
   value?: string;
   beforeUpload?: (file: RcFile) => void;
   bizKey?: string;
+  onRemove?: () => void;
 }
 
-const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload, bizKey = 'media' }) => {
-  const [showUploadBtn, setShowUploadBtn] = useState(true);
-  const props = {
-    name: 'file',
-    maxCount: 1,
-    action: '/tenacity-admin/api/file/upload',
-    data: { bizKey },
-    defaultFileList: value
-      ? ([
-          { uid: '1', name: value.split('/')[value.split('/').length - 1].split('?')[0], status: 'done', url: value }
-        ] as any[])
-      : []
-  };
+const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload, bizKey = 'media', onRemove }) => {
+  const [props, setProps] = useState<any>();
   const beforeUploadFileHandle = (file: RcFile) => {
-    setShowUploadBtn(true);
     return beforeUpload?.(file);
   };
   const onChangeHandle = (info: any) => {
     if (info.file.status === 'done') {
       message.success(`${info.file.name} 上传成功`);
       onChange?.(info.file.response.retdata?.filePath);
-      setShowUploadBtn(false);
       return info.fileList;
     } else if (info.file.status === 'error') {
       message.error(`${info.file.name} 上传失败`);
     }
   };
   const onRemoveHandle = () => {
-    setShowUploadBtn(true);
+    onRemove?.();
   };
   useEffect(() => {
-    value && setShowUploadBtn(false);
+    console.log('value', value);
+    setProps(
+      value && {
+        fileList: [
+          {
+            uid: '1',
+            name: value.split('/')[value.split('/').length - 1].split('?')[0],
+            status: 'done',
+            url: value
+          }
+        ]
+      }
+    );
   }, [value]);
   return (
     <>
       <Upload
         {...props}
+        name={'file'}
+        maxCount={1}
+        action={'/tenacity-admin/api/file/upload'}
+        data={{ bizKey }}
         className={style.uploadFile}
         onChange={onChangeHandle}
         beforeUpload={beforeUploadFileHandle}
         onRemove={onRemoveHandle}
       >
-        {showUploadBtn && (
+        {!value && (
           <Button className={style.uploadBtn}>
             <Icon className={style.uploadIcon} name="shangchuanwenjian" />
             将文件拖拽至此区域，或<span className={style.uploadText}>点此上传</span>

@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
 import { UploadFile } from 'src/components';
+import { getQueryParam } from 'lester-tools';
 
 interface productConfigProps {
   id: number;
@@ -31,7 +32,7 @@ const { Group } = Radio;
 const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const { userInfo } = useContext(Context);
   const [form] = Form.useForm();
-
+  const [isReadOnly, setIsReadOnly] = useState(false);
   const [premiumValue, setPremiumValue] = useState('0');
   const [shareInfo, setShareInfo] = useState({
     shareCoverImgUrl: '',
@@ -68,7 +69,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     if (res) {
       const {
         productName,
-        corpProductId,
+        productId,
         categoryId,
         familyEnsureId,
         ensureTargetId,
@@ -84,7 +85,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         tags = '',
         displayType,
         username,
-        path
+        path,
+        sourceUrl
       } = res;
 
       setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl });
@@ -95,7 +97,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
 
       form.setFieldsValue({
         productName,
-        corpProductId,
+        productId,
         corpProductLink,
         categoryId,
         familyEnsureId,
@@ -111,7 +113,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         tags: tags?.split(',') || undefined,
         displayType,
         username,
-        path
+        path,
+        sourceUrl
       });
     }
   };
@@ -220,6 +223,10 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   useEffect(() => {
     getProductConfig();
     propsState.id && getProductDetail();
+    const isView = getQueryParam('isView');
+    if (isView) {
+      setIsReadOnly(isView === 'true');
+    }
   }, []);
   const validatorProductId = (_: any, value: string): any => {
     const reg = /^[^\u4e00-\u9fa5]+$/g;
@@ -245,7 +252,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         name="validate_other"
         onFinish={onFinish}
         scrollToFirstError
-        onValuesChange={(changeValues, values) => onFormValuesChange(values)}
+        onValuesChange={(_, values) => onFormValuesChange(values)}
       >
         <Form.Item
           label="产品名称："
@@ -255,11 +262,11 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             { max: 40, message: '最多40个字符，不区分中英文' }
           ]}
         >
-          <Input maxLength={50} className="width320" placeholder="请输入" />
+          <Input maxLength={50} className="width320" placeholder="请输入" readOnly={isReadOnly} />
         </Form.Item>
         <Form.Item
           label="产品ID："
-          name="corpProductId"
+          name="productId"
           rules={[
             { validator: validatorProductId },
             {
@@ -268,10 +275,10 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             }
           ]}
         >
-          <Input placeholder="请输入产品ID" className="width320" maxLength={40} />
+          <Input placeholder="请输入产品ID" className="width320" maxLength={40} readOnly={isReadOnly} />
         </Form.Item>
         <Form.Item label="配置类型" name="displayType" required initialValue={1}>
-          <Group onChange={(e) => setDisplayType(e.target.value)}>
+          <Group onChange={(e) => setDisplayType(e.target.value)} disabled={isReadOnly}>
             {displayTypeList.map((item) => (
               <Radio key={item.value + item.label} value={item.value}>
                 {item.label}
@@ -288,13 +295,13 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
               { type: 'url', message: '请输入正确的链接' }
             ]}
           >
-            <Input className="width320" placeholder="待添加" />
+            <Input className="width320" placeholder="待添加" readOnly={isReadOnly} />
           </Form.Item>
         )}
         {displayType === 2 && (
           <>
             <Form.Item label="小程序ID" name="username" rules={[{ required: true, message: '请输入小程序ID' }]}>
-              <Input className="width320" placeholder="待添加" />
+              <Input className="width320" placeholder="待添加" readOnly={isReadOnly} />
             </Form.Item>
             <Form.Item label="页面路径" name="path">
               <Input className="width320" placeholder="待输入，不填默认跳转小程序首页" />
@@ -321,12 +328,16 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
               rules={[{ required: true, message: '请上传视频' }]}
               extra="仅支持.mp4格式, 最大100MB"
             >
-              <UploadFile bizKey="media" beforeUpload={beforeUploadMp4} />
+              <UploadFile
+                bizKey="media"
+                beforeUpload={beforeUploadMp4}
+                onRemove={() => form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' })}
+              />
             </Form.Item>
           </>
         )}
         <Form.Item name="categoryId" label="产品分类：" rules={[{ required: true, message: '请选择产品分类' }]}>
-          <Select placeholder="请选择" allowClear className="width320">
+          <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
             {config.productTypeList.map((item, index) => {
               return (
                 <Option key={index} value={item.id}>
@@ -342,7 +353,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           label="产品标签："
           rules={[{ type: 'array', required: true, message: '请选择产品标签' }]}
         >
-          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags">
+          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags" disabled={isReadOnly}>
             {config.tagList?.map((item, index) => {
               return (
                 <Option key={index} value={item.name}>
@@ -353,7 +364,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           </Select>
         </Form.Item>
         <Form.Item name="familyEnsureId" label="家庭保障：">
-          <Select placeholder="请选择" allowClear className="width320">
+          <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
             {config?.areaList.map((item, index) => {
               return (
                 <Option key={index} value={item.id}>
@@ -364,7 +375,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           </Select>
         </Form.Item>
         <Form.Item name="ensureSceneId" label="保障场景：">
-          <Select placeholder="请选择" allowClear className="width320">
+          <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
             {config.sceneList.map((item, index) => {
               return (
                 <Option key={index} value={item.id}>
@@ -375,7 +386,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           </Select>
         </Form.Item>
         <Form.Item name="ensureTargetId" label="保障对象：">
-          <Select placeholder="请选择" allowClear className="width320">
+          <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
             {config?.objectList.map((item, index) => {
               return (
                 <Option key={index} value={item.id}>
@@ -387,10 +398,15 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         </Form.Item>
         <Form.Item name="premium" label="保费金额：">
           <Space direction="horizontal">
-            <NumberInput value={premiumValue} onChange={onNumberChange} />
+            <NumberInput value={premiumValue} onChange={onNumberChange} readOnly={isReadOnly} />
             {/* <Input type="text" onChange={onNumberChange} value={premiumValue} style={{ width: 100 }} /> */}
             元起
-            <Select style={{ width: 80, margin: '0 8px' }} value={currency} onChange={onCurrencyChange}>
+            <Select
+              style={{ width: 80, margin: '0 8px' }}
+              value={currency}
+              onChange={onCurrencyChange}
+              disabled={isReadOnly}
+            >
               {config.premiumTypeList.map((item, index) => {
                 return (
                   <Option key={index} value={item.id}>
@@ -421,6 +437,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             autoSize={{ minRows: 4 }}
             onInput={handleInput}
             className="width400"
+            readOnly={isReadOnly}
           />
         </Form.Item>
         <Form.Item name="speechcraft" label="营销话术：" rules={[{ required: true, message: '请输入营销话术' }]}>
@@ -430,6 +447,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             placeholder="请输入营销话术"
             autoSize={{ minRows: 4 }}
             className="width400"
+            readOnly={isReadOnly}
           />
         </Form.Item>
         {/* </Form> */}
@@ -451,7 +469,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           name="posterName"
           rules={[{ max: 20, message: '最多20位字符' }]}
         >
-          <Input className="width320" maxLength={30} placeholder="待添加" />
+          <Input className="width320" maxLength={30} placeholder="待添加" readOnly={isReadOnly} />
         </Form.Item>
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
           <span className="bold margin-right20">分享设置</span>
@@ -475,7 +493,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
                 { max: 32, message: '最多32位字符' }
               ]}
             >
-              <Input className="width320" placeholder="请输入" maxLength={40} />
+              <Input className="width320" placeholder="请输入" maxLength={40} readOnly={isReadOnly} />
             </Form.Item>
           </Col>
           <Col span="12">
