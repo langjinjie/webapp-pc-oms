@@ -19,9 +19,13 @@ const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload,
   };
   const onChangeHandle = (info: any) => {
     if (info.file.status === 'done') {
-      message.success(`${info.file.name} 上传成功`);
-      onChange?.(info.file.response.retdata?.filePath);
-      return info.fileList;
+      if (info.file.response.ret === 0) {
+        message.success(`${info.file.name} 上传成功`);
+        onChange?.(info.file.response.retdata?.filePath);
+        return info.fileList;
+      } else {
+        message.error(info.file.response.retmsg);
+      }
     } else if (info.file.status === 'error') {
       message.error(`${info.file.name} 上传失败`);
     }
