@@ -34,6 +34,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const [form] = Form.useForm();
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [premiumValue, setPremiumValue] = useState('0');
+
   const [shareInfo, setShareInfo] = useState({
     shareCoverImgUrl: '',
     shareTitle: '',
@@ -56,6 +57,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     type: '0'
   });
   const [displayType, setDisplayType] = useState<number>(1);
+  const [oldSourceUrl, setOldSourceUrl] = useState('');
 
   useMemo(() => {
     const state = location.state || {};
@@ -152,11 +154,11 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     if (!isJpg) {
       message.error('只能上传 JPG 格式的图片!');
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('图片大小不能超出 2MB!');
-    }
-    if (!isLt2M) message.error('图片大小不能超过2MB!');
+    // const isLt2M = file.size / 1024 / 1024 < 2;
+    // if (!isLt2M) {
+    //   message.error('图片大小不能超出 2MB!');
+    // }
+    // if (!isLt2M) message.error('图片大小不能超过2MB!');
     // 获取图片的真实尺寸
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -172,7 +174,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           if (!(width === 750)) {
             message.error('请上传正确的图片尺寸');
           }
-          resolve(width === 750 && isJpg && isLt2M);
+          resolve(width === 750 && isJpg);
         };
       };
       reader.readAsDataURL(file);
@@ -276,6 +278,11 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     const { shareTitle, activityName, productName, shareCoverImgUrl } = values;
     setShareInfo((active) => ({ ...active, shareTitle, activityName, productName, shareCoverImgUrl }));
   };
+  const onChangeDisplayType = (e: any) => {
+    setOldSourceUrl(form.getFieldValue('sourceUrl'));
+    form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: oldSourceUrl });
+    setDisplayType(e.target.value);
+  };
   return (
     <Card title="新增产品" className="edit">
       <Form
@@ -309,7 +316,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           <Input placeholder="请输入产品ID" className="width320" maxLength={40} readOnly={isReadOnly} />
         </Form.Item>
         <Form.Item label="配置类型" name="displayType" required initialValue={1}>
-          <Group onChange={(e) => setDisplayType(e.target.value)} disabled={isReadOnly}>
+          <Group onChange={onChangeDisplayType} disabled={isReadOnly}>
             {displayTypeList.map((item) => (
               <Radio key={item.value + item.label} value={item.value}>
                 {item.label}
