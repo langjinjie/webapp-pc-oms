@@ -134,7 +134,37 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
     }
     return isJpg && isLt2M;
   };
-
+  const beforeUploadImgHandle = (file: File): Promise<boolean> | boolean => {
+    const isJpg = file.type === 'image/jpeg';
+    if (!isJpg) {
+      message.error('只能上传 JPG 格式的图片!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不能超出 2MB!');
+    }
+    if (!isLt2M) message.error('图片大小不能超过2MB!');
+    // 获取图片的真实尺寸
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          if (!(width === 750)) {
+            message.error('请上传正确的图片尺寸');
+          }
+          resolve(width === 750 && isJpg && isLt2M);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
   const beforeUploadMp4 = (file: any) => {
     const isMp4 = file.type === 'video/mp4';
     if (!isMp4) {
@@ -212,7 +242,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
               rules={[{ required: true, message: '请上传图片' }]}
               extra="为确保最佳展示效果，请上传宽度为750像素高清图片，仅支持.jpg格式"
             >
-              <NgUpload beforeUpload={beforeUpload} />
+              <NgUpload beforeUpload={beforeUploadImgHandle} />
             </Form.Item>
           </>
         )}
