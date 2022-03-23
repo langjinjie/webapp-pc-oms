@@ -76,13 +76,6 @@ const UploadImg: React.FC<IUploadImgProps> = ({
             }
             resolve(width === limitWidth && imgType && isSize);
           }
-          // } else {
-          // 限制等宽高
-          //   if (!(width === height)) {
-          //     message.error('请上传正方形的图片');
-          //   }
-          //   resolve(width === height && imgType && isSize);
-          // }
         };
       };
       reader.readAsDataURL(file);

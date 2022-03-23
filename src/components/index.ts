@@ -18,3 +18,4 @@ export { default as ImageUpload } from './ImageUpload/ImageUpload';
 export { default as FileUpload } from './FileUpload/FileUpload';
 export { default as Video } from './Video/Video';
 export { default as ConfirmModal } from './ConfirmModal/ConfirmModal';
+export { default as UploadFile } from 'src/components/UploadFile/UploadFile';
