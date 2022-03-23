@@ -46,6 +46,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [displayType, setDisplayType] = useState<number>(1);
+  const [oldSourceUrl, setOldSourceUrl] = useState('');
   const [form] = Form.useForm();
 
   const getDetail = async (activityId: string) => {
@@ -139,11 +140,11 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
     if (!isJpg) {
       message.error('只能上传 JPG 格式的图片!');
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('图片大小不能超出 2MB!');
-    }
-    if (!isLt2M) message.error('图片大小不能超过2MB!');
+    // const isLt2M = file.size / 1024 / 1024 < 2;
+    // if (!isLt2M) {
+    //   message.error('图片大小不能超出 2MB!');
+    // }
+    // if (!isLt2M) message.error('图片大小不能超过2MB!');
     // 获取图片的真实尺寸
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -159,7 +160,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
           if (!(width === 750)) {
             message.error('请上传正确的图片尺寸');
           }
-          resolve(width === 750 && isJpg && isLt2M);
+          resolve(width === 750 && isJpg);
         };
       };
       reader.readAsDataURL(file);
@@ -180,6 +181,12 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
   const onFormValuesChange = (values: ActivityProps) => {
     const { shareTitle, activityName, shareCoverImgUrl } = values;
     setActive((active) => ({ ...active, shareTitle, activityName, shareCoverImgUrl }));
+  };
+  const onChangeDisplayType = (e: any) => {
+    setOldSourceUrl(form.getFieldValue('sourceUrl'));
+    form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: oldSourceUrl });
+    form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' });
+    setDisplayType(e.target.value);
   };
   return (
     <Card title="活动配置" bordered={false} className="edit">
@@ -211,7 +218,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
           />
         </Form.Item>
         <Form.Item label="配置类型" name="displayType" required initialValue={1}>
-          <Group onChange={(e) => setDisplayType(e.target.value)}>
+          <Group onChange={onChangeDisplayType}>
             {displayTypeList.map((item) => (
               <Radio key={item.value + item.label} value={item.value}>
                 {item.label}
