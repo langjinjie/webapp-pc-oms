@@ -5,9 +5,9 @@
  */
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Button, Card, message, Modal, PaginationProps, Table, TableColumnType } from 'antd';
+import { Button as AntdBtn, Card, message, Modal, PaginationProps, Table, TableColumnType } from 'antd';
 import { setTitle } from 'lester-tools';
-import { Icon } from 'lester-ui';
+import { Icon, Button } from 'lester-ui';
 import classNames from 'classnames';
 import { Form } from 'src/components';
 import { ItemProps } from 'src/utils/interface';
@@ -39,6 +39,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
     showTotal: (total: number) => `共 ${total} 条`
   });
   const [searchParam, setSearchParam] = useState<SearchParam>({});
+  const [noticeIds, setNoticeIds] = useState<string[]>([]);
 
   const formItemData: ItemProps[] = [
     {
@@ -108,18 +109,15 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
 
   /**
    * 删除公告
-   * @param noticeId
-   * @param opStatus 操作类型 1停止 9删除
    */
-  const deleteNotice = (noticeId: string, opStatus: number) => {
-    const text = opStatus === 1 ? '停止' : '删除';
+  const deleteNotice = () => {
     confirm({
       title: '提示',
-      content: `确定要${text}？`,
+      content: '确定要删除？',
       async onOk () {
-        const res: any = await delNotice({ noticeId, opStatus });
+        const res: any = await delNotice({ list: noticeIds });
         if (res) {
-          message.success(`${text}成功!`);
+          message.success('删除成功!');
           getNoticeList();
         }
       }
@@ -147,31 +145,21 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
     },
     {
       title: '生效时间',
-      render: (_, item) => `${item.startTime} ${item.endTime}`
+      dataIndex: 'startTime'
     },
     {
       title: '操作',
       dataIndex: 'noticeId',
       render: (text: string, record: NoticeItem) => (
         <>
-          {record.status === 1 && (
-            <Button type="link" onClick={() => deleteNotice(text, 1)}>
-              停止
-            </Button>
-          )}
           {record.status === 2 && (
-            <>
-              <Button type="link" onClick={() => operateHandle(text, 0)}>
-                编辑
-              </Button>
-              <Button type="link" onClick={() => deleteNotice(text, 9)}>
-                删除
-              </Button>
-            </>
+            <AntdBtn type="link" onClick={() => operateHandle(text, 0)}>
+              编辑
+            </AntdBtn>
           )}
-          <Button type="link" onClick={() => operateHandle(text, 1)}>
+          <AntdBtn type="link" onClick={() => operateHandle(text, 1)}>
             查看
-          </Button>
+          </AntdBtn>
         </>
       )
     }
@@ -207,6 +195,13 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
     getNoticeList(params, true);
   };
 
+  const rowSelection = {
+    type: 'checkbox',
+    onChange: (selectedRowKeys: string[]) => {
+      setNoticeIds(selectedRowKeys);
+    }
+  };
+
   useEffect(() => {
     setTitle('公告配置');
     getNoticeList();
@@ -224,6 +219,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
         rowKey="noticeId"
         columns={columns}
         dataSource={noticeList}
+        rowSelection={rowSelection}
         pagination={{
           ...pagination,
           showQuickJumper: true,
@@ -231,6 +227,9 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
           onShowSizeChange: pageChange
         }}
       />
+      <Button disabled={noticeIds.length === 0} onClick={() => deleteNotice()}>
+        删除
+      </Button>
     </Card>
   );
 };

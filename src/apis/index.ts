@@ -42,3 +42,10 @@ export const queryInstList: Void2Promise = () => {
 export const chooseInst: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/user/selectcorp', param);
 };
+
+/**
+ * 查询功能模块列表
+ */
+export const queryFuncList: Void2Promise = () => {
+  return http.post('/tenacity-admin/api/bizconfig/func/config/list');
+};
