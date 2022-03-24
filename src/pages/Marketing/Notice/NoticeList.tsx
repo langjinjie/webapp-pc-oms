@@ -59,10 +59,6 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
         {
           id: '1',
           name: '生效中'
-        },
-        {
-          id: '3',
-          name: '已失效'
         }
       ]
     },
