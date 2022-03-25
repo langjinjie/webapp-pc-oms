@@ -46,7 +46,8 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [displayType, setDisplayType] = useState<number>(1);
-  const [oldSourceUrl, setOldSourceUrl] = useState('');
+  const [oldSourceUrlParam, setOldSourceUrlParam] = useState({ displayType: 0, sourceUrl: '' });
+  const [oldUrlParam, setOldUrlParam] = useState({ displayType: 0, url: '' });
   const [form] = Form.useForm();
 
   const getDetail = async (activityId: string) => {
@@ -140,11 +141,11 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
     if (!isJpg) {
       message.error('只能上传 JPG 格式的图片!');
     }
-    // const isLt2M = file.size / 1024 / 1024 < 2;
-    // if (!isLt2M) {
-    //   message.error('图片大小不能超出 2MB!');
-    // }
-    // if (!isLt2M) message.error('图片大小不能超过2MB!');
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error('图片大小不能超出 2MB!');
+    }
+    if (!isLt5M) message.error('图片大小不能超过2MB!');
     // 获取图片的真实尺寸
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -160,7 +161,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
           if (!(width === 750)) {
             message.error('请上传正确的图片尺寸');
           }
-          resolve(width === 750 && isJpg);
+          resolve(width === 750 && isJpg && isLt5M);
         };
       };
       reader.readAsDataURL(file);
@@ -183,9 +184,37 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
     setActive((active) => ({ ...active, shareTitle, activityName, shareCoverImgUrl }));
   };
   const onChangeDisplayType = (e: any) => {
-    setOldSourceUrl(form.getFieldValue('sourceUrl'));
-    form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: oldSourceUrl });
-    form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' });
+    if (e.target.value === 1) {
+      form.setFieldsValue({ ...form.getFieldsValue(), corpActivityLink: oldUrlParam.url });
+    }
+    if (displayType === 1) {
+      setOldUrlParam({ displayType, url: form.getFieldsValue().corpActivityLink });
+    }
+    // 3,4 来回切换
+    if ([3, 4].includes(displayType) && [3, 4].includes(e.target.value)) {
+      // 将现在的sourceUrl保存起来,异步，不会立即生效
+      setOldSourceUrlParam({ displayType, sourceUrl: form.getFieldsValue().sourceUrl });
+      // 将上次保存的oldSourceUrlParam赋值
+      if (oldSourceUrlParam.displayType === e.target.value) {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: oldSourceUrlParam.sourceUrl });
+      } else {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' });
+      }
+    }
+    // 从非3，4进入3，4
+    if ([3, 4].includes(e.target.value) && ![3, 4].includes(displayType)) {
+      if (oldSourceUrlParam.displayType !== e.target.value) {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' });
+      } else {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: oldSourceUrlParam.sourceUrl });
+      }
+    }
+    // 从3，4切换到外面
+    if ([3, 4].includes(displayType) && ![3, 4].includes(e.target.value)) {
+      if (form.getFieldsValue().sourceUrl) {
+        setOldSourceUrlParam({ displayType, sourceUrl: form.getFieldsValue().sourceUrl });
+      }
+    }
     setDisplayType(e.target.value);
   };
   return (

@@ -34,7 +34,6 @@ const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload,
     onRemove?.();
   };
   useEffect(() => {
-    console.log('value', value);
     setProps(
       value && {
         fileList: [
