@@ -26,7 +26,7 @@ interface FunctionItem {
 
 const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [isPush, setIsPush] = useState<number>(1);
-  const [jumpType, setJumpType] = useState<number>(1);
+  const [jumpType, setJumpType] = useState<number>(0);
   const [funcList, setFuncList] = useState<FunctionItem[]>([]);
 
   const [form] = useForm();
@@ -108,7 +108,7 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
   return (
     <Card title={`${typeName()}公告`}>
       <Form className={style.formWrap} form={form} onFinish={onSubmit} {...formLayout}>
-        <Item name="jumpType" label="跳转方式" initialValue={1} rules={[{ required: true, message: '请选择跳转方式' }]}>
+        <Item name="jumpType" label="跳转方式" initialValue={0} rules={[{ required: true, message: '请选择跳转方式' }]}>
           <Group disabled={type === 1} onChange={(e) => setJumpType(e.target.value)}>
             <Radio value={0}>无需跳转到功能模块</Radio>
             <Radio value={1}>需跳转到功能模块</Radio>
