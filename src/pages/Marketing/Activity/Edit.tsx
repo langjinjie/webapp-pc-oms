@@ -143,9 +143,9 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
     }
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
-      message.error('图片大小不能超出 2MB!');
+      message.error('图片大小不能超出 5MB!');
     }
-    if (!isLt5M) message.error('图片大小不能超过2MB!');
+    if (!isLt5M) message.error('图片大小不能超过5MB!');
     // 获取图片的真实尺寸
     return new Promise((resolve) => {
       const reader = new FileReader();
