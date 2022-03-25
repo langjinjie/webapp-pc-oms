@@ -34,5 +34,5 @@ export const queryNoticeList: HttpFunction = (param: Object) => {
  * @param param
  */
 export const delNotice: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-admin/api/notice/opStatus', param);
+  return http.post('/tenacity-admin/api/notice/del', param);
 };

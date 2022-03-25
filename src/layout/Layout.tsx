@@ -56,7 +56,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
     );
     if (currentMenuIndex > -1) {
       const subMenus = (menus[currentMenuIndex].children || []).filter(({ onlyMain }) => !onlyMain || isMain);
-      console.log('subMenus', subMenus);
       setMenuIndex(currentMenuIndex);
       setSubMenus(subMenus);
       setSubMenuIndex(subMenus.findIndex((subMenu: Menu) => subMenu.path.includes(currentMenu)));
