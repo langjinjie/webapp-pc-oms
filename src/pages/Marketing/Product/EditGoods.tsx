@@ -156,9 +156,6 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
       message.error('只能上传 JPG 格式的图片!');
     }
     const isLt5M = file.size / 1024 / 1024 < 5;
-    if (!isLt5M) {
-      message.error('图片大小不能超出 5MB!');
-    }
     if (!isLt5M) message.error('图片大小不能超过5MB!');
     // 获取图片的真实尺寸
     return new Promise((resolve) => {
