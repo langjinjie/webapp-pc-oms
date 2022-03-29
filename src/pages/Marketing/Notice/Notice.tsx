@@ -117,13 +117,13 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
         <Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}>
           <Input disabled={type === 1} placeholder="请输入" maxLength={60} />
         </Item>
-        <Item name="content" label="公告" rules={[{ required: true, message: '请输入公告' }]}>
+        <Item name="content" label="内容" rules={[{ required: true, message: '请输入公告' }]}>
           <TextArea
             disabled={type === 1}
             placeholder="请输入"
             showCount
-            maxLength={100}
-            autoSize={{ minRows: 4, maxRows: 6 }}
+            maxLength={300}
+            autoSize={{ minRows: 4, maxRows: 8 }}
           />
         </Item>
         <Item name="imageUrl" label="图片">
