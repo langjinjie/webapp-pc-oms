@@ -13,7 +13,7 @@ interface IPonitsList {
   list: IPointsProvideList[];
 }
 
-const ProvidePhone: React.FC = () => {
+const ProvideSuperprize: React.FC = () => {
   const { setConfirmModalParam, currentCorpId: corpId } = useContext(Context);
   const [provideList, setProvideList] = useState<IPonitsList>({ total: 0, list: [] });
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
@@ -44,8 +44,8 @@ const ProvidePhone: React.FC = () => {
   const clickSendPhoneHandle = () => {
     setConfirmModalParam({
       visible: true,
-      title: '手机发放提醒',
-      tips: '是否确定发放手机？',
+      title: '大奖发放提醒',
+      tips: '是否确定发放大奖？',
       onOk: sendPhone,
       onCancel
     });
@@ -57,7 +57,7 @@ const ProvidePhone: React.FC = () => {
   return (
     <div className={style.wrap}>
       <Button className={style.provideAllBtn} type="primary" onClick={clickSendPhoneHandle}>
-        一键发放手机
+        一键发放大奖
       </Button>
       <NgTable
         className={style.tableWrap}
@@ -75,4 +75,4 @@ const ProvidePhone: React.FC = () => {
     </div>
   );
 };
-export default ProvidePhone;
+export default ProvideSuperprize;

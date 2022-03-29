@@ -5,7 +5,7 @@ import { ColumnsType } from 'antd/es/table';
 const TableColumns = (): ColumnsType<any> => {
   return [
     {
-      title: '手机发放时间',
+      title: '大奖发放时间',
       dataIndex: 'sendTime'
     },
     { title: '操作人', dataIndex: 'opName' }
