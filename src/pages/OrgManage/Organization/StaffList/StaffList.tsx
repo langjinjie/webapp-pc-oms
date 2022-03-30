@@ -155,6 +155,9 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
         <Button type="primary" className={style.btn} onClick={downLoadStaffList}>
           批量导出信息
         </Button>
+        <Button type="primary" className={style.btn} onClick={downLoadStaffList}>
+          导出运营专属报表
+        </Button>
         <Button
           type="primary"
           className={style.btn}
