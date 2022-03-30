@@ -1,5 +1,5 @@
 import http from 'src/utils/http';
-type HttpFC<T = any> = (param: T) => Promise<any>;
+type HttpFC<T = any> = (param: T, fn?: Function) => Promise<any>;
 type HttpVoid = () => Promise<any>;
 /* 机构管理 */
 // 获取机构列表
@@ -160,4 +160,24 @@ export const getCustomerByExternalUserId: HttpFC<{ externalUserId: string }> = (
 // 新增免统计
 export const addFreeCustomer: HttpFC<{ externalUserId: string; addReason: string }> = (param) => {
   return http.post('/tenacity-admin/api/free/clientFreeStats/add', param);
+};
+
+// 批量新增免统计
+export const batchAddFreeCustomer: HttpFC = (param, fn) => {
+  return http.post('/tenacity-admin/api/free/clientFreeStats/upload', param, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    timeout: 200000,
+    transformRequest: [
+      function (data: any) {
+        return data;
+      }
+    ],
+    onUploadProgress: (progressEvent: any) => {
+      const persent = ((progressEvent.loaded / progressEvent.total) * 100) | 0; // 上传进度百分比
+      fn?.(persent);
+      console.log('persent', persent);
+    }
+  });
 };

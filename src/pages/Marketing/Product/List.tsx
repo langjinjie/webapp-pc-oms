@@ -87,7 +87,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const viewItem = (record: ProductProps) => {
-    history.push('/marketingProduct/edit', { id: record.productId, type: '1' });
+    history.push('/marketingProduct/edit' + '?isView=' + true, { id: record.productId, type: '1' });
   };
   const changeItemStatus = async (record: ProductProps, index: number) => {
     const res = await productManage({

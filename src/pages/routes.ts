@@ -184,29 +184,29 @@ export const routes: (RouteProps & expandRoute)[] = [
    */
   {
     path: '/pointsProvide',
-    component: lazy(() => import('src/pages/PointsMall/PointsProvide/PointsProvide'))
+    component: lazy(() => import('src/pages/PointsManage/PointsProvide/PointsProvide'))
   },
   {
     path: '/pointsDeduction',
-    component: lazy(() => import('src/pages/PointsMall/PointsDeduction/List'))
+    component: lazy(() => import('src/pages/PointsManage/PointsDeduction/List'))
   },
   // 积分扣除记录
   {
     path: '/pointsDeduction/record',
-    component: lazy(() => import('src/pages/PointsMall/PointsDeduction/Record/Record'))
+    component: lazy(() => import('src/pages/PointsManage/PointsDeduction/Record/Record'))
   },
   {
     path: '/addSubPoints',
-    component: lazy(() => import('src/pages/PointsMall/AddSubPoints/List'))
+    component: lazy(() => import('src/pages/PointsManage/AddSubPoints/List'))
   },
   {
     path: '/addSubPoints/record',
-    component: lazy(() => import('src/pages/PointsMall/AddSubPoints/Record/Record'))
+    component: lazy(() => import('src/pages/PointsManage/AddSubPoints/Record/Record'))
   },
   // 抽奖管理
   {
     path: '/lotteryManage',
-    component: lazy(() => import('src/pages/PointsMall/LotteryManage/LotteryManage'))
+    component: lazy(() => import('src/pages/PointsManage/LotteryManage/LotteryManage'))
   }
 ];
 

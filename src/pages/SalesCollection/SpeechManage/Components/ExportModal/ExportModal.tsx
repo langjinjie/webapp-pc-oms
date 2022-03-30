@@ -13,6 +13,7 @@ interface ExportModalProps {
   onCancel: () => void;
   onDownLoad?: () => void;
   isShowDownLoad?: boolean;
+  confirmLoading?: boolean;
 }
 const ExportModal: React.FC<ExportModalProps> = ({
   visible,
@@ -20,7 +21,8 @@ const ExportModal: React.FC<ExportModalProps> = ({
   onOK,
   onCancel,
   onDownLoad,
-  isShowDownLoad = true
+  isShowDownLoad = true,
+  confirmLoading
 }) => {
   const [fileList, setFileList] = useState<any[]>([]);
   const props = {
@@ -54,6 +56,7 @@ const ExportModal: React.FC<ExportModalProps> = ({
       onOk={() => onOK(fileList[0])}
       onCancel={() => onCancel()}
       width={640}
+      confirmLoading={confirmLoading}
       className={styles.exportWrap}
       okButtonProps={{
         disabled: !fileList.length

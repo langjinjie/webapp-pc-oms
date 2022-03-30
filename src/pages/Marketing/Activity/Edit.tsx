@@ -7,6 +7,7 @@ import style from './style.module.less';
 import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
+import { UploadFile } from 'src/components';
 
 interface ActivityPageProps {
   id: number;
@@ -45,6 +46,8 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
   const [tags, setTags] = useState<Tag[]>([]);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [displayType, setDisplayType] = useState<number>(1);
+  const [oldSourceUrlParam, setOldSourceUrlParam] = useState({ displayType: 0, sourceUrl: '' });
+  const [oldUrlParam, setOldUrlParam] = useState({ displayType: 0, url: '' });
   const [form] = Form.useForm();
 
   const getDetail = async (activityId: string) => {
@@ -53,7 +56,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
       setActive(res);
       const {
         activityName,
-        corpActivityId,
+        activityId,
         corpActivityLink,
         speechcraft,
         shareCoverImgUrl,
@@ -61,14 +64,15 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
         tags = '',
         displayType,
         username,
-        path
+        path,
+        sourceUrl
       } = res;
 
       setDisplayType(displayType);
 
       form.setFieldsValue({
         activityName,
-        corpActivityId,
+        activityId,
         corpActivityLink,
         speechcraft,
         tags: tags?.split(','),
@@ -76,10 +80,18 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
         shareTitle,
         displayType,
         username,
-        path
+        path,
+        sourceUrl
       });
     }
   };
+  // 配置类型列表
+  const displayTypeList = [
+    { value: 1, label: '添加链接' },
+    { value: 2, label: '小程序ID' },
+    { value: 3, label: '上传图片' },
+    { value: 4, label: '上传视频' }
+  ];
   const getSystemAcTagConfig = async () => {
     const res = await productConfig({ type: [7] });
     const { acTagList = [] } = res;
@@ -93,7 +105,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
       getDetail(activityId);
     }
     if (isView) {
-      setIsReadOnly(isView);
+      setIsReadOnly(isView === 'true');
     }
     getSystemAcTagConfig();
   }, []);
@@ -124,10 +136,83 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
     }
     return isJpg && isLt2M;
   };
+  const beforeUploadImgHandle = (file: File): Promise<boolean> | boolean => {
+    const isJpg = file.type === 'image/jpeg';
+    if (!isJpg) {
+      message.error('只能上传 JPG 格式的图片!');
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) message.error('图片大小不能超过5MB!');
+    // 获取图片的真实尺寸
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          if (!(width === 750)) {
+            message.error('请上传正确的图片尺寸');
+          }
+          resolve(width === 750 && isJpg && isLt5M);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+  const beforeUploadMp4 = (file: any) => {
+    const isMp4 = file.type === 'video/mp4';
+    if (!isMp4) {
+      message.error('你只可以上传 MP4 格式视频!');
+    }
+    const isLt100M = file.size / 1024 / 1024 < 100;
+    if (!isLt100M) {
+      message.error('视频大小不能超过 100MB!');
+    }
+    return isMp4 && isLt100M;
+  };
 
   const onFormValuesChange = (values: ActivityProps) => {
     const { shareTitle, activityName, shareCoverImgUrl } = values;
     setActive((active) => ({ ...active, shareTitle, activityName, shareCoverImgUrl }));
+  };
+  const onChangeDisplayType = (e: any) => {
+    if (e.target.value === 1) {
+      form.setFieldsValue({ ...form.getFieldsValue(), corpActivityLink: oldUrlParam.url });
+    }
+    if (displayType === 1) {
+      setOldUrlParam({ displayType, url: form.getFieldsValue().corpActivityLink });
+    }
+    // 3,4 来回切换
+    if ([3, 4].includes(displayType) && [3, 4].includes(e.target.value)) {
+      // 将现在的sourceUrl保存起来,异步，不会立即生效
+      setOldSourceUrlParam({ displayType, sourceUrl: form.getFieldsValue().sourceUrl });
+      // 将上次保存的oldSourceUrlParam赋值
+      if (oldSourceUrlParam.displayType === e.target.value) {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: oldSourceUrlParam.sourceUrl });
+      } else {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' });
+      }
+    }
+    // 从非3，4进入3，4
+    if ([3, 4].includes(e.target.value) && ![3, 4].includes(displayType)) {
+      if (oldSourceUrlParam.displayType !== e.target.value) {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' });
+      } else {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: oldSourceUrlParam.sourceUrl });
+      }
+    }
+    // 从3，4切换到外面
+    if ([3, 4].includes(displayType) && ![3, 4].includes(e.target.value)) {
+      if (form.getFieldsValue().sourceUrl) {
+        setOldSourceUrlParam({ displayType, sourceUrl: form.getFieldsValue().sourceUrl });
+      }
+    }
+    setDisplayType(e.target.value);
   };
   return (
     <Card title="活动配置" bordered={false} className="edit">
@@ -150,7 +235,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
         >
           <Input placeholder="请输入" readOnly={isReadOnly} className="width320" />
         </Form.Item>
-        <Form.Item label="活动ID：" name="corpActivityId">
+        <Form.Item label="活动ID：" name="activityId">
           <Input
             placeholder="活动ID非必填字段，如无填写可用系统随机生成的活动ID"
             readOnly={isReadOnly}
@@ -158,10 +243,13 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
             maxLength={40}
           />
         </Form.Item>
-        <Form.Item label="展示类型" name="displayType" required initialValue={1}>
-          <Group onChange={(e) => setDisplayType(e.target.value)}>
-            <Radio value={1}>链接</Radio>
-            <Radio value={2}>小程序</Radio>
+        <Form.Item label="配置类型" name="displayType" required initialValue={1}>
+          <Group onChange={onChangeDisplayType}>
+            {displayTypeList.map((item) => (
+              <Radio key={item.value + item.label} value={item.value}>
+                {item.label}
+              </Radio>
+            ))}
           </Group>
         </Form.Item>
         {displayType === 1 && (
@@ -172,10 +260,38 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
         {displayType === 2 && (
           <>
             <Form.Item label="小程序ID" name="username" rules={[{ required: true, message: '请输入小程序ID' }]}>
-              <Input className="width320" placeholder="待添加" />
+              <Input className="width320" placeholder="待添加" readOnly={isReadOnly} />
             </Form.Item>
             <Form.Item label="页面路径" name="path">
-              <Input className="width320" placeholder="待输入，不填默认跳转小程序首页" />
+              <Input className="width320" placeholder="待输入，不填默认跳转小程序首页" readOnly={isReadOnly} />
+            </Form.Item>
+          </>
+        )}
+        {displayType === 3 && (
+          <>
+            <Form.Item
+              label="图片文件"
+              name="sourceUrl"
+              rules={[{ required: true, message: '请上传图片' }]}
+              extra="为确保最佳展示效果，请上传宽度为750像素高清图片，仅支持.jpg格式"
+            >
+              <NgUpload beforeUpload={beforeUploadImgHandle} />
+            </Form.Item>
+          </>
+        )}
+        {displayType === 4 && (
+          <>
+            <Form.Item
+              label="视频文件"
+              name="sourceUrl"
+              rules={[{ required: true, message: '请上传视频' }]}
+              extra="仅支持.mp4格式, 最大100MB"
+            >
+              <UploadFile
+                bizKey="media"
+                beforeUpload={beforeUploadMp4}
+                onRemove={() => form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' })}
+              />
             </Form.Item>
           </>
         )}
@@ -185,7 +301,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
           label="活动标签："
           rules={[{ type: 'array', required: true, message: '请选择活动标签' }]}
         >
-          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags">
+          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags" disabled={isReadOnly}>
             {tags?.map((tag, index) => {
               return (
                 <Select.Option key={index} value={tag.name}>
@@ -250,7 +366,16 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
         {/* </Form> */}
         <div style={{ textAlign: 'center', width: 1000, marginTop: 32 }}>
           {!isReadOnly && (
-            <Button type="primary" shape="round" htmlType="submit" size="large" style={{ width: 128 }}>
+            <Button
+              type="primary"
+              shape="round"
+              htmlType="submit"
+              size="large"
+              style={{ width: 128 }}
+              onClick={() => {
+                console.log(form.getFieldsValue());
+              }}
+            >
               确定
             </Button>
           )}

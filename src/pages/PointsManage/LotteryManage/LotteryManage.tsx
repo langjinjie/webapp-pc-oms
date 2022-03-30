@@ -1,11 +1,11 @@
 import React from 'react';
 import { Tabs } from 'antd';
-import ProvidePhone from './ProvidePhone/ProvidePhone';
+import ProvidePhone from './ProvideSuperprize/ProvideSuperprize';
 import LotterySetting from './LotterySetting/LotterySetting';
 import style from './style.module.less';
 
 const LotteryManage: React.FC = () => {
-  const tabsNavList = ['抽奖设置', '手机发放'];
+  const tabsNavList = ['抽奖设置', '大奖发放'];
   const tabsComponentsList = [<LotterySetting key={0} />, <ProvidePhone key={1} />];
   return (
     <div className={style.wrap}>

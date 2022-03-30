@@ -9,9 +9,11 @@ interface NgModalProps extends Omit<ModalProps, 'onCancel'> {
   onCancel: () => void;
 }
 
-export const NgModal: React.FC<NgModalProps> = ({ visible, title, children, onOk, onCancel }) => {
+export const NgModal: React.FC<NgModalProps> = ({ visible, title, children, onOk, onCancel, footer, ...props }) => {
   return (
     <Modal
+      {...props}
+      footer={footer}
       className={styles.customModal}
       visible={visible}
       centered

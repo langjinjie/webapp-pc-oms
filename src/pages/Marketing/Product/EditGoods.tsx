@@ -7,6 +7,8 @@ import style from './style.module.less';
 import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
+import { UploadFile } from 'src/components';
+import { getQueryParam } from 'lester-tools';
 
 interface productConfigProps {
   id: number;
@@ -30,8 +32,9 @@ const { Group } = Radio;
 const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const { userInfo } = useContext(Context);
   const [form] = Form.useForm();
-
+  const [isReadOnly, setIsReadOnly] = useState(false);
   const [premiumValue, setPremiumValue] = useState('0');
+
   const [shareInfo, setShareInfo] = useState({
     shareCoverImgUrl: '',
     shareTitle: '',
@@ -54,6 +57,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     type: '0'
   });
   const [displayType, setDisplayType] = useState<number>(1);
+  const [oldSourceUrlParam, setOldSourceUrlParam] = useState({ displayType: 0, sourceUrl: '' });
+  const [oldUrlParam, setOldUrlParam] = useState({ displayType: 0, url: '' });
 
   useMemo(() => {
     const state = location.state || {};
@@ -67,7 +72,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     if (res) {
       const {
         productName,
-        corpProductId,
+        productId,
         categoryId,
         familyEnsureId,
         ensureTargetId,
@@ -83,7 +88,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         tags = '',
         displayType,
         username,
-        path
+        path,
+        sourceUrl
       } = res;
 
       setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl });
@@ -94,7 +100,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
 
       form.setFieldsValue({
         productName,
-        corpProductId,
+        productId,
         corpProductLink,
         categoryId,
         familyEnsureId,
@@ -110,7 +116,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         tags: tags?.split(',') || undefined,
         displayType,
         username,
-        path
+        path,
+        sourceUrl
       });
     }
   };
@@ -123,6 +130,14 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     setCurrency(newCurrency);
   };
 
+  // 配置类型列表
+  const displayTypeList = [
+    { value: 1, label: '添加链接' },
+    { value: 2, label: '小程序ID' },
+    { value: 3, label: '上传图片' },
+    { value: 4, label: '上传视频' }
+  ];
+
   /** 海报图片 */
   const posterBeforeUpload = (file: any) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -134,6 +149,45 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
       message.error('图片大小不能超出 2MB!');
     }
     return isJpgOrPng && isLt2M;
+  };
+  const beforeUploadImgHandle = (file: File): Promise<boolean> | boolean => {
+    const isJpg = file.type === 'image/jpeg';
+    if (!isJpg) {
+      message.error('只能上传 JPG 格式的图片!');
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) message.error('图片大小不能超过5MB!');
+    // 获取图片的真实尺寸
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          if (!(width === 750)) {
+            message.error('请上传正确的图片尺寸');
+          }
+          resolve(width === 750 && isJpg && isLt5M);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+  const beforeUploadMp4 = (file: any) => {
+    const isMp4 = file.type === 'video/mp4';
+    if (!isMp4) {
+      message.error('你只可以上传 MP4 格式视频!');
+    }
+    const isLt100M = file.size / 1024 / 1024 < 100;
+    if (!isLt100M) {
+      message.error('视频大小不能超过 100MB!');
+    }
+    return isMp4 && isLt100M;
   };
   /** 分享图片 */
   const shareCoverBeforeUpload = (file: any) => {
@@ -200,6 +254,10 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   useEffect(() => {
     getProductConfig();
     propsState.id && getProductDetail();
+    const isView = getQueryParam('isView');
+    if (isView) {
+      setIsReadOnly(isView === 'true');
+    }
   }, []);
   const validatorProductId = (_: any, value: string): any => {
     const reg = /^[^\u4e00-\u9fa5]+$/g;
@@ -218,6 +276,40 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     const { shareTitle, activityName, productName, shareCoverImgUrl } = values;
     setShareInfo((active) => ({ ...active, shareTitle, activityName, productName, shareCoverImgUrl }));
   };
+  const onChangeDisplayType = (e: any) => {
+    if (e.target.value === 1) {
+      form.setFieldsValue({ ...form.getFieldsValue(), corpProductLink: oldUrlParam.url });
+    }
+    if (displayType === 1) {
+      setOldUrlParam({ displayType, url: form.getFieldsValue().corpProductLink });
+    }
+    // 3,4 来回切换
+    if ([3, 4].includes(displayType) && [3, 4].includes(e.target.value)) {
+      // 将现在的sourceUrl保存起来,异步，不会立即生效
+      setOldSourceUrlParam({ displayType, sourceUrl: form.getFieldsValue().sourceUrl });
+      // 将上次保存的oldSourceUrlParam赋值
+      if (oldSourceUrlParam.displayType === e.target.value) {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: oldSourceUrlParam.sourceUrl });
+      } else {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' });
+      }
+    }
+    // 从非3，4进入3，4
+    if ([3, 4].includes(e.target.value) && ![3, 4].includes(displayType)) {
+      if (oldSourceUrlParam.displayType !== e.target.value) {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' });
+      } else {
+        form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: oldSourceUrlParam.sourceUrl });
+      }
+    }
+    // 从3，4切换到外面
+    if ([3, 4].includes(displayType) && ![3, 4].includes(e.target.value)) {
+      if (form.getFieldsValue().sourceUrl) {
+        setOldSourceUrlParam({ displayType, sourceUrl: form.getFieldsValue().sourceUrl });
+      }
+    }
+    setDisplayType(e.target.value);
+  };
   return (
     <Card title="新增产品" className="edit">
       <Form
@@ -225,7 +317,9 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         name="validate_other"
         onFinish={onFinish}
         scrollToFirstError
-        onValuesChange={(changeValues, values) => onFormValuesChange(values)}
+        onValuesChange={(_, values) => {
+          onFormValuesChange(values);
+        }}
       >
         <Form.Item
           label="产品名称："
@@ -235,11 +329,11 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             { max: 40, message: '最多40个字符，不区分中英文' }
           ]}
         >
-          <Input maxLength={50} className="width320" placeholder="请输入" />
+          <Input maxLength={50} className="width320" placeholder="请输入" readOnly={isReadOnly} />
         </Form.Item>
         <Form.Item
           label="产品ID："
-          name="corpProductId"
+          name="productId"
           rules={[
             { validator: validatorProductId },
             {
@@ -248,12 +342,15 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             }
           ]}
         >
-          <Input placeholder="请输入产品ID" className="width320" maxLength={40} />
+          <Input placeholder="请输入产品ID" className="width320" maxLength={40} readOnly={isReadOnly} />
         </Form.Item>
-        <Form.Item label="展示类型" name="displayType" required initialValue={1}>
-          <Group onChange={(e) => setDisplayType(e.target.value)}>
-            <Radio value={1}>链接</Radio>
-            <Radio value={2}>小程序</Radio>
+        <Form.Item label="配置类型" name="displayType" required initialValue={1}>
+          <Group onChange={onChangeDisplayType} disabled={isReadOnly}>
+            {displayTypeList.map((item) => (
+              <Radio key={item.value + item.label} value={item.value}>
+                {item.label}
+              </Radio>
+            ))}
           </Group>
         </Form.Item>
         {displayType === 1 && (
@@ -265,21 +362,49 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
               { type: 'url', message: '请输入正确的链接' }
             ]}
           >
-            <Input className="width320" placeholder="待添加" />
+            <Input className="width320" placeholder="待添加" readOnly={isReadOnly} />
           </Form.Item>
         )}
         {displayType === 2 && (
           <>
             <Form.Item label="小程序ID" name="username" rules={[{ required: true, message: '请输入小程序ID' }]}>
-              <Input className="width320" placeholder="待添加" />
+              <Input className="width320" placeholder="待添加" readOnly={isReadOnly} />
             </Form.Item>
             <Form.Item label="页面路径" name="path">
               <Input className="width320" placeholder="待输入，不填默认跳转小程序首页" />
             </Form.Item>
           </>
         )}
+        {displayType === 3 && (
+          <>
+            <Form.Item
+              label="图片文件"
+              name="sourceUrl"
+              rules={[{ required: true, message: '请上传图片' }]}
+              extra="为确保最佳展示效果，请上传宽度为750像素高清图片，仅支持.jpg格式"
+            >
+              <NgUpload beforeUpload={beforeUploadImgHandle} />
+            </Form.Item>
+          </>
+        )}
+        {displayType === 4 && (
+          <>
+            <Form.Item
+              label="视频文件"
+              name="sourceUrl"
+              rules={[{ required: true, message: '请上传视频' }]}
+              extra="仅支持.mp4格式, 最大100MB"
+            >
+              <UploadFile
+                bizKey="media"
+                beforeUpload={beforeUploadMp4}
+                onRemove={() => form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' })}
+              />
+            </Form.Item>
+          </>
+        )}
         <Form.Item name="categoryId" label="产品分类：" rules={[{ required: true, message: '请选择产品分类' }]}>
-          <Select placeholder="请选择" allowClear className="width320">
+          <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
             {config.productTypeList.map((item, index) => {
               return (
                 <Option key={index} value={item.id}>
@@ -295,7 +420,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           label="产品标签："
           rules={[{ type: 'array', required: true, message: '请选择产品标签' }]}
         >
-          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags">
+          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags" disabled={isReadOnly}>
             {config.tagList?.map((item, index) => {
               return (
                 <Option key={index} value={item.name}>
@@ -306,7 +431,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           </Select>
         </Form.Item>
         <Form.Item name="familyEnsureId" label="家庭保障：">
-          <Select placeholder="请选择" allowClear className="width320">
+          <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
             {config?.areaList.map((item, index) => {
               return (
                 <Option key={index} value={item.id}>
@@ -317,7 +442,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           </Select>
         </Form.Item>
         <Form.Item name="ensureSceneId" label="保障场景：">
-          <Select placeholder="请选择" allowClear className="width320">
+          <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
             {config.sceneList.map((item, index) => {
               return (
                 <Option key={index} value={item.id}>
@@ -328,7 +453,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           </Select>
         </Form.Item>
         <Form.Item name="ensureTargetId" label="保障对象：">
-          <Select placeholder="请选择" allowClear className="width320">
+          <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
             {config?.objectList.map((item, index) => {
               return (
                 <Option key={index} value={item.id}>
@@ -340,10 +465,15 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         </Form.Item>
         <Form.Item name="premium" label="保费金额：">
           <Space direction="horizontal">
-            <NumberInput value={premiumValue} onChange={onNumberChange} />
+            <NumberInput value={premiumValue} onChange={onNumberChange} readOnly={isReadOnly} />
             {/* <Input type="text" onChange={onNumberChange} value={premiumValue} style={{ width: 100 }} /> */}
             元起
-            <Select style={{ width: 80, margin: '0 8px' }} value={currency} onChange={onCurrencyChange}>
+            <Select
+              style={{ width: 80, margin: '0 8px' }}
+              value={currency}
+              onChange={onCurrencyChange}
+              disabled={isReadOnly}
+            >
               {config.premiumTypeList.map((item, index) => {
                 return (
                   <Option key={index} value={item.id}>
@@ -374,6 +504,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             autoSize={{ minRows: 4 }}
             onInput={handleInput}
             className="width400"
+            readOnly={isReadOnly}
           />
         </Form.Item>
         <Form.Item name="speechcraft" label="营销话术：" rules={[{ required: true, message: '请输入营销话术' }]}>
@@ -383,6 +514,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             placeholder="请输入营销话术"
             autoSize={{ minRows: 4 }}
             className="width400"
+            readOnly={isReadOnly}
           />
         </Form.Item>
         {/* </Form> */}
@@ -404,7 +536,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           name="posterName"
           rules={[{ max: 20, message: '最多20位字符' }]}
         >
-          <Input className="width320" maxLength={30} placeholder="待添加" />
+          <Input className="width320" maxLength={30} placeholder="待添加" readOnly={isReadOnly} />
         </Form.Item>
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
           <span className="bold margin-right20">分享设置</span>
@@ -428,7 +560,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
                 { max: 32, message: '最多32位字符' }
               ]}
             >
-              <Input className="width320" placeholder="请输入" maxLength={40} />
+              <Input className="width320" placeholder="请输入" maxLength={40} readOnly={isReadOnly} />
             </Form.Item>
           </Col>
           <Col span="12">

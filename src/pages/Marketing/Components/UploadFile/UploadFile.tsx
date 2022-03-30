@@ -16,6 +16,7 @@ interface NgUploadProps {
   beforeUpload?: (file: RcFile) => void;
   btnText?: string;
   showDeleteBtn?: boolean;
+  bizKey?: string;
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -23,7 +24,7 @@ const getBase64 = (img: any, callback: (str: any) => void) => {
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 };
-const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }) => {
+const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, bizKey = 'pdf' }) => {
   const [states, setStates] = useState({
     loading: false,
     imageUrl: ''
@@ -53,7 +54,7 @@ const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }
     }
     const isLt100M = file.size / 1024 / 1024 < 100;
     if (!isLt100M) {
-      message.error('图片大小不能超过 100MB!');
+      message.error('文件大小不能超过 100MB!');
     }
     return isPdf && isLt100M;
   };
@@ -78,7 +79,7 @@ const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload }
     const uploadData = new FormData();
     // 调用append()方法来添加数据
     uploadData.append('file', options.file);
-    uploadData.append('bizKey', 'pdf');
+    uploadData.append('bizKey', bizKey);
     const res: any = await uploadImage(uploadData);
     if (res) {
       onChange?.(res.filePath);
