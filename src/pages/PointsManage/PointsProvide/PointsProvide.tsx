@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
-import { Form, Space, Input, Select, Button, DatePicker, message } from 'antd';
+import { Form, Space, Input, Select, Button, DatePicker, message, TreeSelect } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import { requestGetPonitsSendList, requestSendAllPonits, requestSendPonits } from 'src/apis/pointsMall';
 import { IPointsProvideList, IConfirmModalParam } from 'src/utils/interface';
 import { Context } from 'src/store';
+import { queryCorpOrg } from 'src/apis/stationConfig';
 import moment from 'moment';
 import PonitsDetail from './PonitsDetail/PonitsDetail';
 import style from './style.module.less';
@@ -31,6 +32,7 @@ const PointsProvide: React.FC = () => {
   const [isLoading, setIsloading] = useState(true);
   const [ponitsParam, setPonitsParam] = useState<IPonitsParam>({ visible: false, sendStatus: false });
   const [allSendStatus, setAllSendStatus] = useState(false); // 当前列表是否点击一键发放成功
+  const [organization, setOrganization] = useState<any[]>([]);
   const [form] = Form.useForm();
   const { RangePicker } = DatePicker;
   // 处理查询参数
@@ -57,6 +59,7 @@ const PointsProvide: React.FC = () => {
   };
   // 查询/重置
   const onSearchHandle = () => {
+    console.log(form.getFieldsValue());
     setPaginationParam({ ...paginationParam, pageNum: 1 });
     setSearchParam(searchParamHandle());
   };
@@ -127,6 +130,39 @@ const PointsProvide: React.FC = () => {
   const disabledDate = (current: moment.Moment) => {
     return current > moment().endOf('day');
   };
+  /**
+   * 获取组织架构初始数据
+   */
+  const initCorpOrgData = async () => {
+    const res: any = await queryCorpOrg({});
+    if (res) {
+      setOrganization(res);
+    }
+  };
+  /**
+   * 树组件渲染-组织架构
+   * @param data
+   */
+  const renderNode = (data: any) =>
+    data.map((item: any) => {
+      if (item.children && item.children.length > 0) {
+        return (
+          <TreeSelect.TreeNode nodeData={item} value={item.id} title={item.name} key={item.id}>
+            {renderNode(item.children)}
+          </TreeSelect.TreeNode>
+        );
+      } else {
+        return (
+          <TreeSelect.TreeNode
+            nodeData={item}
+            isLeaf={!item.isParent}
+            value={item.id}
+            title={item.name}
+            key={item.id}
+          />
+        );
+      }
+    });
   useDocumentTitle('积分商城-积分发放');
   useEffect(() => {
     ponitsParam.visible || getPointsList();
@@ -135,6 +171,9 @@ const PointsProvide: React.FC = () => {
     // 从详情返回,如果详情发生了发放操作,需要重新请求一次列表
     ponitsParam.sendStatus && getPointsList();
   }, [ponitsParam]);
+  useEffect(() => {
+    initCorpOrgData();
+  }, []);
   return (
     <div className={style.wrap}>
       <Form name="base" className={style.form} layout="inline" form={form} onReset={onSearchHandle}>
@@ -142,17 +181,28 @@ const PointsProvide: React.FC = () => {
           <Form.Item className={style.label} name="staffName" label="客户经理姓名：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />
           </Form.Item>
-          <Form.Item
-            className={style.label}
-            name="date"
-            label="日期："
-            initialValue={[moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')]}
-          >
-            <RangePicker style={{ width: 280 }} disabledDate={disabledDate} />
+          <Form.Item name="deptId" label="部门">
+            <TreeSelect
+              className={style.treeSelect}
+              multiple
+              allowClear
+              placeholder="请选择可见范围"
+              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            >
+              {renderNode(organization)}
+            </TreeSelect>
           </Form.Item>
         </Space>
         <Space className={style.antBtnSpace}>
           <Space size="small">
+            <Form.Item
+              className={style.label}
+              name="date"
+              label="日期："
+              initialValue={[moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')]}
+            >
+              <RangePicker style={{ width: 280 }} disabledDate={disabledDate} />
+            </Form.Item>
             <Form.Item className={style.label} name="isBlackClient" label="是否有黑名单客户：">
               <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
                 {isBlackClientList.map((item) => (
