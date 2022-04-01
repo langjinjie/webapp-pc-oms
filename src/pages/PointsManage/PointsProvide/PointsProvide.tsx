@@ -131,20 +131,15 @@ const PointsProvide: React.FC = () => {
   const disabledDate = (current: moment.Moment) => {
     return current > moment().endOf('day');
   };
-  // 获取组织架构初始数据
-  // const initCorpOrgData = async () => {
-  //   const res: any = await queryDepartmentList({});
-  //   if (res) {
-  //     setTreeData(res);
-  //   }
-  // };
   // 获取组织架构部门
   const getCorpOrg = async (deptId?: Key) => {
-    // 获取部门,并且过滤掉未完善员工
-    const res1: ITreeDate[] = (await queryDepartmentList({ parentId: deptId })).map((item: ITreeDate) => ({
+    // 获取部门
+    let res1: ITreeDate[] = (await queryDepartmentList({ parentId: deptId })).map((item: ITreeDate) => ({
       ...item,
       parentId: deptId
     }));
+    // ,并且过滤掉未完善员工
+    res1 = res1.filter((item: any) => item.deptId !== -1);
     return [...res1];
   };
   // 向树结构添加子节点
