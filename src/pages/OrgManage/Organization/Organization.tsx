@@ -4,7 +4,7 @@
  * @date 2021-12-10 10:36
  */
 import React, { useEffect, useState, useContext, useRef, MutableRefObject } from 'react';
-import { Input, Tree, message, Form, Select, FormProps } from 'antd';
+import { Input, Tree, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
 import { Icon, Modal, Empty } from 'src/components';
@@ -13,18 +13,16 @@ import {
   searchStaffAndDepart,
   saveDepartment,
   operateDepartment,
-  exportOrganization,
-  queryDepartTypes
+  exportOrganization
 } from 'src/apis/organization';
 import { exportFile } from 'src/utils/base';
 import { Context } from 'src/store';
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
+import EditDepart from './components/EditDepart';
 import style from './style.module.less';
 
-const { useForm, Item } = Form;
-const { Option } = Select;
 const { Search } = Input;
 
 interface StaffItem {
@@ -36,6 +34,7 @@ interface OrganizationItem {
   deptId?: string;
   deptName?: string;
   deptType?: number;
+  dType?: number;
   effCount?: number;
   isLeaf?: boolean;
   index?: number;
@@ -44,11 +43,6 @@ interface OrganizationItem {
   leaderName?: string;
   total?: number;
   children?: OrganizationItem[];
-}
-
-interface DepartType {
-  id: number;
-  name: string;
 }
 
 interface PositionValue {
@@ -65,7 +59,6 @@ const Organization: React.FC = () => {
   const [position, setPosition] = useState<PositionValue>({ left: 0, top: 0 });
   const [showDepart, setShowDepart] = useState<boolean>(false);
   const [departmentVisible, setDepartmentVisible] = useState<boolean>(false);
-  const [departmentName, setDepartmentName] = useState<string>('');
   const [isAddDepart, setIsAddDepart] = useState<boolean>(true);
   const [currentNode, setCurrentNode] = useState<OrganizationItem & StaffItem>({});
   const [deleteVisible, setDeleteVisible] = useState<boolean>(false);
@@ -73,16 +66,8 @@ const Organization: React.FC = () => {
   const [staffList, setStaffList] = useState<StaffItem[]>([]);
   const [displayType, setDisplayType] = useState<number>(0);
   const [leaderVisible, setLeaderVisible] = useState<boolean>(false);
-  const [departTypes, setDepartTypes] = useState<DepartType[]>([]);
 
   const staffListRef: MutableRefObject<any> = useRef(null);
-  const [form] = useForm();
-
-  const formLayout: FormProps = {
-    labelAlign: 'right',
-    labelCol: { span: 6 },
-    wrapperCol: { span: 16 }
-  };
 
   /**
    * 处理/计算左边位置
@@ -231,16 +216,6 @@ const Organization: React.FC = () => {
   };
 
   /**
-   * 获取部门类型数据
-   */
-  const getDepartTypes = async () => {
-    const res: any = await queryDepartTypes();
-    if (Array.isArray(res)) {
-      setDepartTypes(res);
-    }
-  };
-
-  /**
    * 添加节点-新增部门
    * @param data
    * @param node
@@ -286,11 +261,8 @@ const Organization: React.FC = () => {
    */
   const saveDepart = async (values: any) => {
     console.log(values);
-    if (!departmentName) {
-      return message.error('请输入部门名称！');
-    }
     const param: any = {
-      deptName: departmentName,
+      ...values,
       parentId: isAddDepart ? currentNode.deptId : '',
       deptId: isAddDepart ? '' : currentNode.deptId
     };
@@ -302,7 +274,7 @@ const Organization: React.FC = () => {
         if ((currentNode.isLeaf || (currentNode.children || []).length > 0) && typeof res === 'number') {
           const newDepart: OrganizationItem = {
             deptId: String(res),
-            deptName: departmentName,
+            ...values,
             deptType: 0,
             effCount: 0,
             isLeaf: true
@@ -313,7 +285,7 @@ const Organization: React.FC = () => {
         setOrganization(
           updateNodeInfo(organization, {
             ...currentNode,
-            deptName: departmentName
+            ...values
           })
         );
         message.success('修改成功');
@@ -399,13 +371,8 @@ const Organization: React.FC = () => {
   };
 
   useEffect(() => {
-    !departmentVisible && form.resetFields();
-  }, [departmentVisible]);
-
-  useEffect(() => {
     setTitle('组织架构管理');
     initCorpOrgData();
-    getDepartTypes();
 
     window.addEventListener('click', hideDepart);
 
@@ -528,7 +495,6 @@ const Organization: React.FC = () => {
           onClick={() => {
             setDepartmentVisible(true);
             setIsAddDepart(true);
-            setDepartmentName('');
           }}
         >
           添加子部门
@@ -540,7 +506,6 @@ const Organization: React.FC = () => {
           onClick={() => {
             if (currentNode.deptType === 0) {
               setDepartmentVisible(true);
-              setDepartmentName(currentNode.deptName!);
               setIsAddDepart(false);
             }
           }}
@@ -576,33 +541,14 @@ const Organization: React.FC = () => {
         </li>
       </ul>
       <div onClick={(e) => e.stopPropagation()}>
-        <Modal
+        <EditDepart
+          deptName={currentNode.deptName}
+          dType={currentNode.dType}
           visible={departmentVisible}
           onClose={() => setDepartmentVisible(false)}
-          title={`${isAddDepart ? '添加' : '修改'}部门`}
-          onOk={() => form.submit()}
-        >
-          <Form form={form} {...formLayout} onFinish={saveDepart}>
-            <Item name="departName" label="部门名称" rules={[{ required: true, message: '请输入部门名称' }]}>
-              <Input
-                className={style.inputRadius}
-                placeholder="请输入部门名称"
-                maxLength={40}
-                value={departmentName}
-                onChange={(e) => setDepartmentName(e.target.value)}
-              />
-            </Item>
-            <Item name="departType" label="部门类型" rules={[{ required: true, message: '请选择部门类型' }]}>
-              <Select placeholder="请选择部门类型">
-                {departTypes.map((item) => (
-                  <Option key={item.id} value={item.id}>
-                    {item.name}
-                  </Option>
-                ))}
-              </Select>
-            </Item>
-          </Form>
-        </Modal>
+          isAddDepart={isAddDepart}
+          onOk={saveDepart}
+        />
         <Modal
           title="提示"
           visible={deleteVisible}
