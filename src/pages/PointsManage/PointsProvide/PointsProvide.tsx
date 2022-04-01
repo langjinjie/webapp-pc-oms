@@ -1,12 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { Key, useContext, useEffect, useState } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
 import { Form, Space, Input, Select, Button, DatePicker, message, TreeSelect } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import { requestGetPonitsSendList, requestSendAllPonits, requestSendPonits } from 'src/apis/pointsMall';
-import { IPointsProvideList, IConfirmModalParam } from 'src/utils/interface';
+import { IPointsProvideList, IConfirmModalParam, ITreeDate } from 'src/utils/interface';
 import { Context } from 'src/store';
-import { queryCorpOrg } from 'src/apis/stationConfig';
+import { queryDepartmentList } from 'src/apis/organization';
+import { LegacyDataNode } from 'rc-tree-select/lib/TreeSelect';
+
 import moment from 'moment';
 import PonitsDetail from './PonitsDetail/PonitsDetail';
 import style from './style.module.less';
@@ -32,19 +34,19 @@ const PointsProvide: React.FC = () => {
   const [isLoading, setIsloading] = useState(true);
   const [ponitsParam, setPonitsParam] = useState<IPonitsParam>({ visible: false, sendStatus: false });
   const [allSendStatus, setAllSendStatus] = useState(false); // 当前列表是否点击一键发放成功
-  const [organization, setOrganization] = useState<any[]>([]);
+  const [treeData, setTreeData] = useState<any[]>([]);
   const [form] = Form.useForm();
   const { RangePicker } = DatePicker;
   // 处理查询参数
   const searchParamHandle = () => {
-    const { staffName, date, isBlackClient, sendStatus } = form.getFieldsValue();
+    const { staffName, date, isBlackClient, sendStatus, deptIds } = form.getFieldsValue();
     let beginTime = '';
     let endTime = '';
     if (date) {
       beginTime = date[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       endTime = date[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-    return { staffName, beginTime, endTime, isBlackClient, sendStatus };
+    return { staffName, beginTime, endTime, isBlackClient, sendStatus, deptIds };
   };
   const getPointsList = async () => {
     setIsloading(true);
@@ -59,7 +61,6 @@ const PointsProvide: React.FC = () => {
   };
   // 查询/重置
   const onSearchHandle = () => {
-    console.log(form.getFieldsValue());
     setPaginationParam({ ...paginationParam, pageNum: 1 });
     setSearchParam(searchParamHandle());
   };
@@ -130,39 +131,43 @@ const PointsProvide: React.FC = () => {
   const disabledDate = (current: moment.Moment) => {
     return current > moment().endOf('day');
   };
-  /**
-   * 获取组织架构初始数据
-   */
-  const initCorpOrgData = async () => {
-    const res: any = await queryCorpOrg({});
+  // 获取组织架构部门
+  const getCorpOrg = async (deptId?: Key) => {
+    // 获取部门
+    let res1: ITreeDate[] = (await queryDepartmentList({ parentId: deptId })).map((item: ITreeDate) => ({
+      ...item,
+      parentId: deptId
+    }));
+    // ,并且过滤掉未完善员工
+    res1 = res1.filter((item: any) => item.deptId !== -1);
+    return [...res1];
+  };
+  // 向树结构添加子节点
+  const updateTreeData = (list: any[], key: React.Key, children: any[]): any[] => {
+    return list.map((node) => {
+      if (node.deptId === key) {
+        return {
+          ...node,
+          children
+        };
+      }
+      if (node.children) {
+        return {
+          ...node,
+          children: updateTreeData(node.children, key, children)
+        };
+      }
+      return node;
+    });
+  };
+  // 异步获取组织架构及当前目录下的员工
+  const onLoadData = async ({ key }: LegacyDataNode) => {
+    // 获取对应的子节点
+    const res: any = await getCorpOrg(key);
     if (res) {
-      setOrganization(res);
+      setTreeData((treeData) => updateTreeData(treeData, key as Key, res));
     }
   };
-  /**
-   * 树组件渲染-组织架构
-   * @param data
-   */
-  const renderNode = (data: any) =>
-    data.map((item: any) => {
-      if (item.children && item.children.length > 0) {
-        return (
-          <TreeSelect.TreeNode nodeData={item} value={item.id} title={item.name} key={item.id}>
-            {renderNode(item.children)}
-          </TreeSelect.TreeNode>
-        );
-      } else {
-        return (
-          <TreeSelect.TreeNode
-            nodeData={item}
-            isLeaf={!item.isParent}
-            value={item.id}
-            title={item.name}
-            key={item.id}
-          />
-        );
-      }
-    });
   useDocumentTitle('积分商城-积分发放');
   useEffect(() => {
     ponitsParam.visible || getPointsList();
@@ -172,7 +177,9 @@ const PointsProvide: React.FC = () => {
     ponitsParam.sendStatus && getPointsList();
   }, [ponitsParam]);
   useEffect(() => {
-    initCorpOrgData();
+    (async () => {
+      setTreeData(await getCorpOrg());
+    })();
   }, []);
   return (
     <div className={style.wrap}>
@@ -181,16 +188,19 @@ const PointsProvide: React.FC = () => {
           <Form.Item className={style.label} name="staffName" label="客户经理姓名：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />
           </Form.Item>
-          <Form.Item name="deptId" label="部门">
+          <Form.Item name="deptIds" label="部门">
             <TreeSelect
+              virtual={false}
+              fieldNames={{ label: 'deptName', value: 'deptId', children: 'children' }}
               className={style.treeSelect}
+              dropdownClassName={style.treeSelectDropdown}
               multiple
               allowClear
               placeholder="请选择可见范围"
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-            >
-              {renderNode(organization)}
-            </TreeSelect>
+              loadData={onLoadData}
+              treeData={treeData}
+            />
           </Form.Item>
         </Space>
         <Space className={style.antBtnSpace}>
