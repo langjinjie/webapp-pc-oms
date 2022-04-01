@@ -17,6 +17,20 @@ const TableColumns = (): ColumnsType<any> => [
       );
     }
   },
+  {
+    title: '部门',
+    // width: 100,
+    render (row) {
+      return <span>{row.deptName || UNKNOWN}</span>;
+    }
+  },
+  {
+    title: '职位',
+    // width: 150,
+    render (row) {
+      return <span>{row.position || UNKNOWN}</span>;
+    }
+  },
   { title: '企微账号', dataIndex: 'userId', width: 150 },
   {
     title: '员工工号',
@@ -26,24 +40,10 @@ const TableColumns = (): ColumnsType<any> => [
     }
   },
   {
-    title: '部门',
-    // width: 100,
-    render (row) {
-      return <span>{row.deptName || UNKNOWN}</span>;
-    }
-  },
-  {
     title: '资源',
     // width: 100,
     render (row) {
       return <span>{row.resource || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '职位',
-    // width: 150,
-    render (row) {
-      return <span>{row.position || UNKNOWN}</span>;
     }
   },
   {

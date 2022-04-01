@@ -4,7 +4,7 @@
  * @date 2021-12-10 10:36
  */
 import React, { useEffect, useState, useContext, useRef, MutableRefObject } from 'react';
-import { Input, Tree, message } from 'antd';
+import { Input, Tree, message, Form, Select, FormProps } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
 import { Icon, Modal, Empty } from 'src/components';
@@ -13,7 +13,8 @@ import {
   searchStaffAndDepart,
   saveDepartment,
   operateDepartment,
-  exportOrganization
+  exportOrganization,
+  queryDepartTypes
 } from 'src/apis/organization';
 import { exportFile } from 'src/utils/base';
 import { Context } from 'src/store';
@@ -22,6 +23,8 @@ import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
 import style from './style.module.less';
 
+const { useForm, Item } = Form;
+const { Option } = Select;
 const { Search } = Input;
 
 interface StaffItem {
@@ -41,6 +44,11 @@ interface OrganizationItem {
   leaderName?: string;
   total?: number;
   children?: OrganizationItem[];
+}
+
+interface DepartType {
+  id: number;
+  name: string;
 }
 
 interface PositionValue {
@@ -65,8 +73,16 @@ const Organization: React.FC = () => {
   const [staffList, setStaffList] = useState<StaffItem[]>([]);
   const [displayType, setDisplayType] = useState<number>(0);
   const [leaderVisible, setLeaderVisible] = useState<boolean>(false);
+  const [departTypes, setDepartTypes] = useState<DepartType[]>([]);
 
   const staffListRef: MutableRefObject<any> = useRef(null);
+  const [form] = useForm();
+
+  const formLayout: FormProps = {
+    labelAlign: 'right',
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 }
+  };
 
   /**
    * 处理/计算左边位置
@@ -215,6 +231,16 @@ const Organization: React.FC = () => {
   };
 
   /**
+   * 获取部门类型数据
+   */
+  const getDepartTypes = async () => {
+    const res: any = await queryDepartTypes();
+    if (Array.isArray(res)) {
+      setDepartTypes(res);
+    }
+  };
+
+  /**
    * 添加节点-新增部门
    * @param data
    * @param node
@@ -258,7 +284,8 @@ const Organization: React.FC = () => {
   /**
    * 保存部门
    */
-  const saveDepart = async () => {
+  const saveDepart = async (values: any) => {
+    console.log(values);
     if (!departmentName) {
       return message.error('请输入部门名称！');
     }
@@ -372,8 +399,13 @@ const Organization: React.FC = () => {
   };
 
   useEffect(() => {
+    !departmentVisible && form.resetFields();
+  }, [departmentVisible]);
+
+  useEffect(() => {
     setTitle('组织架构管理');
     initCorpOrgData();
+    getDepartTypes();
 
     window.addEventListener('click', hideDepart);
 
@@ -513,7 +545,7 @@ const Organization: React.FC = () => {
             }
           }}
         >
-          修改名称
+          修改部门
         </li>
         <li className={style.operationItem} onClick={() => setLeaderVisible(true)}>
           设置上级
@@ -548,15 +580,28 @@ const Organization: React.FC = () => {
           visible={departmentVisible}
           onClose={() => setDepartmentVisible(false)}
           title={`${isAddDepart ? '添加' : '修改'}部门`}
-          onOk={() => saveDepart()}
+          onOk={() => form.submit()}
         >
-          <Input
-            className={style.inputRadius}
-            placeholder="请输入部门名称"
-            maxLength={40}
-            value={departmentName}
-            onChange={(e) => setDepartmentName(e.target.value)}
-          />
+          <Form form={form} {...formLayout} onFinish={saveDepart}>
+            <Item name="departName" label="部门名称" rules={[{ required: true, message: '请输入部门名称' }]}>
+              <Input
+                className={style.inputRadius}
+                placeholder="请输入部门名称"
+                maxLength={40}
+                value={departmentName}
+                onChange={(e) => setDepartmentName(e.target.value)}
+              />
+            </Item>
+            <Item name="departType" label="部门类型" rules={[{ required: true, message: '请选择部门类型' }]}>
+              <Select placeholder="请选择部门类型">
+                {departTypes.map((item) => (
+                  <Option key={item.id} value={item.id}>
+                    {item.name}
+                  </Option>
+                ))}
+              </Select>
+            </Item>
+          </Form>
         </Modal>
         <Modal
           title="提示"
