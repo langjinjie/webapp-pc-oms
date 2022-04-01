@@ -340,6 +340,14 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
             allowClear
           />
         </Item>
+        <Item name="paperDoc" label="推送文案">
+          <Input
+            disabled={+type === 1}
+            placeholder="本周火爆内容出炉，精选内容更容易撩客户哦"
+            maxLength={50}
+            allowClear
+          />
+        </Item>
         <section className={style.sectionWrap}>
           <div className={style.titleWrap}>
             <Item
