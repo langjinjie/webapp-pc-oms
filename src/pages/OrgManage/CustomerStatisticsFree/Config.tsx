@@ -46,6 +46,19 @@ export const tableColumns = (): ColumnsType<CustomerProps> => [
     render: (value) => <span>{value || UNKNOWN}</span>
   },
   {
+    title: '外部联系人Id',
+    dataIndex: 'externalUserId',
+    width: 160,
+    ellipsis: {
+      showTitle: false
+    },
+    render: (name) => (
+      <Tooltip placement="topLeft" title={name}>
+        {name || UNKNOWN}
+      </Tooltip>
+    )
+  },
+  {
     title: '昵称',
     dataIndex: 'name',
     align: 'left',
