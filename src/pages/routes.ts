@@ -234,7 +234,7 @@ export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
   // 好友迁移
   {
     path: '/enterprise',
-    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
+    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/List/List'))
   },
   {
     path: '/enterprise/addTask',
