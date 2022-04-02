@@ -232,13 +232,17 @@ export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
   },
 
   // 好友迁移
-  // {
-  //   path: '/enterprise',
-  //   component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
-  // },
+  {
+    path: '/enterprise',
+    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
+  },
   {
     path: '/enterprise/addTask',
     component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
+  },
+  {
+    path: '/personal',
+    component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
   },
   {
     path: '/personal/addTask',
