@@ -72,17 +72,17 @@ export const exportOrganization: VoidFunction = () => {
 export const queryDepartTypes: VoidFunction = () => {
   return Promise.resolve([
     {
-      id: 1,
-      name: '保司'
+      dType: 1,
+      dName: '保司'
     },
     {
-      id: 2,
-      name: '省公司'
+      dType: 2,
+      dName: '省公司'
     },
     {
-      id: 3,
-      name: '团队'
+      dType: 3,
+      dName: '团队'
     }
   ]);
-  return http.post('/tenacity-admin/api/stafforg/type');
+  return http.post('/tenacity-admin/api/stafforg/getdepttype');
 };
