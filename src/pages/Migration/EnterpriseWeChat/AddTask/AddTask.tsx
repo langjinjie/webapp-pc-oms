@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Form, Input, Button } from 'antd';
+import { ChoosedStaffList } from './component';
 import style from './style.module.less';
-import { Icon } from 'src/components';
 
 const AddTask: React.FC = () => {
-  const [selectedStaff, setSelectedStaff] = useState<any[]>([]);
   const [form] = Form.useForm();
   const { Item } = Form;
-  useEffect(() => {
-    setSelectedStaff([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-  }, []);
   return (
     <>
       <header className={style.addTask}>创建任务</header>
@@ -19,16 +15,9 @@ const AddTask: React.FC = () => {
             <Input className={style.input} showCount={true} maxLength={50} placeholder="请输入任务名称"></Input>
           </Item>
           <Item name="staffList" className={style.formItem} label="执行人员：">
-            <div className={style.addStaffWrap}>
-              <Icon className={style.addStaff} name="xinjian" />
-              {selectedStaff.length && (
-                <div className={style.selected}>
-                  已选中{selectedStaff.length}人<Icon className={style.clearSelected} name="biaoqian_quxiao" />
-                </div>
-              )}
-            </div>
+            <ChoosedStaffList />
           </Item>
-          <Item></Item>
+          <Item name="clientType" label="客户类型"></Item>
           <Button type="primary" onClick={() => console.log(form.getFieldsValue())}>
             保存
           </Button>
