@@ -1,0 +1,64 @@
+.wrap {
+  .inputWrp {
+    position: relative;
+    margin-bottom: 30px;
+    .input {
+      width: 380px;
+      height: 40px;
+      padding-left: 44px;
+    }
+    .inputIcon {
+      position: absolute;
+      top: 13px;
+      left: 20px;
+      color: #ccccd0;
+    }
+  }
+  .checkAllWrap {
+    margin-bottom: 30px;
+    .checkAll {
+      margin-right: 30px;
+    }
+  }
+  .checkboxGroupWrap {
+    display: flex;
+    flex-wrap: wrap;
+    :global {
+      label.ant-checkbox-group-item {
+        margin: 0 0 20px 0;
+        flex: 0 0 50%;
+      }
+    }
+  }
+  .hideCheckbox {
+    :global {
+      label.ant-checkbox-group-item {
+        cursor: auto;
+        .ant-checkbox {
+          display: none;
+        }
+      }
+    }
+  }
+  .paginationWrap {
+    :global {
+      .ant-pagination {
+        display: flex;
+        justify-content: center;
+      }
+    }
+  }
+  :global {
+    .ant-modal-header,
+    .ant-modal-footer {
+      padding: 20px 30px;
+      border: none;
+    }
+    .ant-modal-body {
+      margin: 0 30px;
+      padding: 30px 30px 20px 30px;
+      border-radius: 10px;
+      border: 1px solid #e6e7eb;
+    }
+  }
+}

@@ -14,9 +14,10 @@ interface ImageUploadProps {
   value?: string;
   onChange?: (val: string) => void;
   disabled?: boolean;
+  onRemove?: () => void;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, onRemove }) => {
   const [loading, setLoading] = useState(false);
 
   const beforeUpload = (file: any) => {
@@ -59,6 +60,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled }) 
           )}
     </div>
   );
+  // 点击删除文件
+  const onRemoveHandle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRemove?.();
+  };
 
   return (
     <Upload
@@ -71,7 +77,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled }) 
       beforeUpload={beforeUpload}
       onChange={fileChange}
     >
-      {value ? <img className={style.img} src={value} alt="加载中..." /> : uploadButton}
+      {value
+        ? (
+        <div className={style.imgWrap}>
+          <div className={style.iconWrap}>
+            <Icon className={style.delIcon} name="shanchu" onClick={onRemoveHandle} />
+          </div>
+          <img className={style.img} src={value} alt="缩略图" />
+        </div>
+          )
+        : (
+            uploadButton
+          )}
     </Upload>
   );
 };

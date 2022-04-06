@@ -13,19 +13,26 @@
     .formItem {
       margin-bottom: 30px;
       .input {
-        box-sizing: content-box;
         width: 560px;
-        height: 24px;
         border-radius: 18px;
+      }
+      .titleInput {
+        width: 400px;
+      }
+      :global {
+        .ant-form-item-label {
+          width: 70px;
+          text-align: right;
+        }
       }
     }
   }
   // 修改ant默认样式
   :global {
     .ant-form-item {
-      align-items: center;
       .ant-form-item-label {
         margin-right: 10px;
+        vertical-align: middle;
       }
     }
   }

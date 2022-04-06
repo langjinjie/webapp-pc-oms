@@ -380,7 +380,7 @@ export const menus: Menu[] = [
     path: 'migration',
     children: [
       { name: '企微好友', path: '/enterprise' },
-      { name: '个位好友', path: '/personal' }
+      { name: '个微好友', path: '/personal' }
     ]
   }
 ];

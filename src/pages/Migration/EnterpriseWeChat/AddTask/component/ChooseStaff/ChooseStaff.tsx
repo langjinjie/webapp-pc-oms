@@ -31,7 +31,7 @@ const ChoosedStaffList: React.FC<IChoosedStaffListProps> = ({ value, onChange })
           <Icon className={style.clearSelected} name="biaoqian_quxiao" onClick={() => onChangeHandle([])} />
         </div>
       )}
-      <StaffModal visible={visible} onClose={() => setVisible(false)} onChange={onChangeHandle} />
+      <StaffModal visible={visible} showCheckbox onClose={() => setVisible(false)} onChange={onChangeHandle} />
     </div>
   );
 };

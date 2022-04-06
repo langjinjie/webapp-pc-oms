@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 
 import styles from './style.module.less';
@@ -14,6 +15,7 @@ const EnterPriseWechatList: React.FC = () => {
   useDocumentTitle('好友迁移-企微好友');
   const [isEmpty, setIsEmpty] = useState(false);
   const [visibleDetail, setVisibleDetail] = useState(false);
+  const history = useHistory();
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -90,7 +92,7 @@ const EnterPriseWechatList: React.FC = () => {
           </header>
 
           <div className={classNames(styles.addTask, 'flex align-center')}>
-            <Button type="primary" shape="round" size="large">
+            <Button type="primary" shape="round" size="large" onClick={() => history.push('/enterprise/addTask')}>
               创建群发任务
             </Button>
             <div className="ml30 color-text-placeholder">
