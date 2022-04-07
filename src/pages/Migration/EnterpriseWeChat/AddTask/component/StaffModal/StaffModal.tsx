@@ -28,15 +28,15 @@ const StaffModal: React.FC<IStaffModalProps> = ({ visible, onClose, onChange, sh
   // 获取执行人员列表
   const getStaffList = () => {
     const list = [
-      { value: '1', label: '李斯（产研中心-研发部）' },
-      { value: '2', label: '张珊（策略中心-策略部）' },
-      { value: '3', label: '李斯（产研中心-研发部）' },
-      { value: '4', label: '张珊（策略中心-策略部）' },
-      { value: '5', label: '李斯（产研中心-研发部）' },
-      { value: '6', label: '张珊（策略中心-策略部）' },
-      { value: '7', label: '李斯（产研中心-研发部）' },
-      { value: '8', label: '张珊（策略中心-策略部）' },
-      { value: '9', label: '李斯（产研中心-研发部）' },
+      { value: '01', label: '李斯（产研中心-研发部）' },
+      { value: '02', label: '张珊（策略中心-策略部）' },
+      { value: '03', label: '李斯（产研中心-研发部）' },
+      { value: '04', label: '张珊（策略中心-策略部）' },
+      { value: '05', label: '李斯（产研中心-研发部）' },
+      { value: '06', label: '张珊（策略中心-策略部）' },
+      { value: '07', label: '李斯（产研中心-研发部）' },
+      { value: '08', label: '张珊（策略中心-策略部）' },
+      { value: '09', label: '李斯（产研中心-研发部）' },
       { value: '10', label: '张珊（策略中心-策略部）' },
       { value: '11', label: '李斯（产研中心-研发部）' },
       { value: '12', label: '张珊（策略中心-策略部）' },
@@ -50,12 +50,20 @@ const StaffModal: React.FC<IStaffModalProps> = ({ visible, onClose, onChange, sh
     setStaffList({ total: 66, list });
   };
   const onCheckAllChange = (e: any) => {
-    setCheckedList(e.target.checked ? staffList.list.map((item) => item.value) : []);
+    const currentList = staffList.list.map((item) => item.value);
+    if (e.target.checked) {
+      setCheckedList((checkedList) => Array.from(new Set([...checkedList, ...currentList])));
+    } else {
+      setCheckedList((checkedList) => checkedList.filter((item) => !currentList.includes(item)));
+    }
     setIndeterminate(false);
     setCheckAll(e.target.checked);
   };
   const onChangeHandle = (list: CheckboxValueType[]) => {
-    setCheckedList(list);
+    const unCheckedList = staffList.list.map((item) => item.value).filter((item) => !list.includes(item));
+    setCheckedList((checkedList) =>
+      Array.from(new Set([...checkedList, ...list])).filter((item) => !unCheckedList.includes(item))
+    );
     setIndeterminate(!!list.length && list.length < staffList.list.length);
     setCheckAll(list.length === staffList.list.length);
   };
