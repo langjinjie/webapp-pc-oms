@@ -1,18 +1,16 @@
 /**
  * @name SeatReport
  * @author Lester
- * @date 2021-10-22 14:03
+ * @date 2022-04-06 10:14
  */
-import React, { useState, useEffect } from 'react';
-import { Select, Button, Table, TableColumnType } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Select } from 'antd';
 import Dom2Img from 'dom-to-image';
-import classNames from 'classnames';
-import { queryReportList, queryReportDetail } from 'src/apis/seatReport';
-import { downloadImage } from 'src/utils/base';
-import style from './style.module.less';
+import { Button } from 'lester-ui';
 import { setTitle } from 'lester-tools';
-
-const { Option } = Select;
+import { downloadImage } from 'src/utils/base';
+import { queryReportList, queryReportStyle, queryReportDetail, queryReportAreaData } from 'src/apis/seatReport';
+import style from './style.module.less';
 
 interface ReportItem {
   reportId?: string;
@@ -22,306 +20,61 @@ interface ReportItem {
   weekDay?: number;
 }
 
-interface areaGroupItem {
-  id: string;
-  areaName: string;
-  dayAddFriendCount: number;
-  totalAddFriendCount: number;
-  addFriendRate: string;
-  avgCircleCount: number;
-  markCarNumRate: string;
-  market: number;
-  smart: number;
+interface IndicatorDesc {
+  name: string;
+  value: string;
 }
 
-interface LevelItem {
-  leveName: string;
-  percount: number;
-  mark: number;
+interface FooterConfig {
+  footTitle: string;
+  leftParam: IndicatorDesc[];
+  rightParam: IndicatorDesc[];
 }
 
-interface StatisticsItem {
-  id: string;
-  order: number;
-  teamName: string;
-  staffName?: string;
-  dayUsedMark: number;
-  multiuseMark: number;
-  dayAddFriendCount: number;
-  totalAddFriendCount: number;
-  addFriendRate: string;
-  avgCircleCount: number;
-  markCarNumRate: string;
-  dayMarket: number;
-  daySmart: number;
-  percount?: number;
-  trialStarDate?: string;
+interface ReportStyle {
+  headBannUrl: string;
+  headBannColor: string;
+  titleUrl: string;
+  useDesc: string;
+  footBannUrl: string;
 }
 
-interface ClientManagerItem {
-  teamName: string;
-  teamShowName: string;
-  staffOrderList: StatisticsItem[];
+interface ReportConfig {
+  reportStyle?: ReportStyle;
+  footDesc?: FooterConfig;
 }
 
-interface RePort {
-  areaGroupList?: {
-    areaReportList?: areaGroupItem[];
-    ageGroupList?: LevelItem[];
-    leveGroupList?: LevelItem[];
-    corpGroupList?: LevelItem[];
-  };
-  teamOrderList?: StatisticsItem[];
-  teamDetailResVO?: ClientManagerItem[];
+interface ReportBaseInfo {
+  reportId: string;
+  reportName: string;
+  updateTime: string;
+  totalWorkDay: number;
+  weekDay: number;
 }
+
+interface AreaItem {
+  moduleName: string;
+  moduleType: number;
+  areaId: string;
+  modulLogoUrl: string;
+  modulBackColor: string;
+  modulLineColor: string;
+  modulTextColor: string;
+  areaList?: string[][];
+}
+
+interface ReportDetail {
+  reportBaseInfo?: ReportBaseInfo;
+  bodyList?: AreaItem[];
+}
+
+const { Option } = Select;
 
 const SeatReport: React.FC = () => {
   const [reportList, setReportList] = useState<ReportItem[]>([]);
-  const [currentReport, setCurrentReport] = useState<ReportItem>({});
-  const [reportData, setReportData] = useState<RePort>({});
-  const [reportId, setReportId] = useState<string | undefined>(undefined);
-
-  /**
-   * 判断是否显示火的图标
-   * @param value
-   * @param type
-   */
-  const isHot = (value: number, type: number) => {
-    if (type === 0) {
-      return (
-        +value ===
-        Math.max(
-          ...(reportData.areaGroupList!.ageGroupList || [])
-            .filter((item) => item.leveName !== '合计')
-            .map((item) => item.mark)
-        )
-      );
-    } else {
-      const levelData = type === 1 ? reportData.areaGroupList!.leveGroupList : reportData.areaGroupList!.corpGroupList;
-      return (levelData || [])
-        .map((item) => item.mark)
-        .sort((a, b) => b - a)
-        .slice(0, 2)
-        .includes(value);
-    }
-  };
-
-  /**
-   * 判断是否标红
-   * @param value
-   * @param data
-   * @param key
-   */
-  const showRed = (value: number, data: any[], key: string) => {
-    if (value === 0) {
-      return true;
-    }
-    return Math.min(...(data || []).map((item) => +item[key])) === value;
-  };
-
-  const tdRender = (val: number | string, data: any[], key: string) => {
-    const value = val || 0;
-    return (
-      <dt className={showRed(+value, data, key) ? style.red : ''}>
-        {['addFriendRate', 'markCarNumRate'].includes(key) ? `${value}%` : value}
-      </dt>
-    );
-  };
-
-  const areaGroupColumns: TableColumnType<areaGroupItem>[] = [
-    {
-      title: '',
-      dataIndex: 'areaName',
-      align: 'center'
-    },
-    {
-      title: '当日加好友',
-      dataIndex: 'dayAddFriendCount',
-      align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'dayAddFriendCount')
-    },
-    {
-      title: '累计加好友',
-      dataIndex: 'totalAddFriendCount',
-      align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'totalAddFriendCount')
-    },
-    {
-      title: '好友通过率',
-      dataIndex: 'addFriendRate',
-      align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'addFriendRate')
-    },
-    {
-      title: '人均朋友圈',
-      dataIndex: 'avgCircleCount',
-      align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'avgCircleCount')
-    },
-    {
-      title: '备注车牌率',
-      dataIndex: 'markCarNumRate',
-      align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'markCarNumRate')
-    },
-    {
-      title: '营销平台',
-      dataIndex: 'market',
-      align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'market')
-    },
-    {
-      title: '销售宝典',
-      dataIndex: 'smart',
-      align: 'center',
-      render: (value) => tdRender(value, reportData.areaGroupList!.areaReportList!, 'smart')
-    }
-  ];
-
-  const statisticsColumns: TableColumnType<StatisticsItem>[] = [
-    {
-      title: '实力排名',
-      dataIndex: 'order',
-      align: 'center'
-    },
-    {
-      title: '团队经理',
-      dataIndex: 'teamName',
-      align: 'center',
-      render: (text: string, record) => text || record.staffName
-    },
-    {
-      title: '当日使用分',
-      dataIndex: 'dayUsedMark',
-      align: 'center'
-    },
-    {
-      title: '综合使用分',
-      dataIndex: 'multiuseMark',
-      align: 'center'
-    },
-    {
-      title: '当日加好友',
-      dataIndex: 'dayAddFriendCount',
-      align: 'center'
-    },
-    {
-      title: '累计加好友',
-      dataIndex: 'totalAddFriendCount',
-      align: 'center'
-    },
-    {
-      title: '好友通过率',
-      dataIndex: 'addFriendRate',
-      align: 'center'
-    },
-    {
-      title: '人均朋友圈',
-      dataIndex: 'avgCircleCount',
-      align: 'center'
-    },
-    {
-      title: '备注车牌率',
-      dataIndex: 'markCarNumRate',
-      align: 'center'
-    },
-    {
-      title: '日营销平台',
-      dataIndex: 'dayMarket',
-      align: 'center'
-    },
-    {
-      title: '日销售宝典',
-      dataIndex: 'daySmart',
-      align: 'center'
-    }
-  ];
-
-  const teamColumns: TableColumnType<StatisticsItem>[] = [
-    ...statisticsColumns.map((col, index) => {
-      if (index === 0) {
-        return {
-          ...col,
-          render: (value: number, record: any, tableIndex: number) => (
-            <div className={style.hotImgWrap}>
-              <div
-                className={classNames(style.hotWrap, {
-                  [style.hotImg]: tableIndex === 0
-                })}
-              >
-                {value}
-              </div>
-            </div>
-          )
-        };
-      } else if (index === 1) {
-        return col;
-      } else {
-        return {
-          ...col,
-          render: (value: number | string) => tdRender(+value, reportData.teamOrderList || [], col.dataIndex as string)
-        };
-      }
-    }),
-    {
-      title: '团队人力',
-      dataIndex: 'percount',
-      align: 'center'
-    },
-    {
-      title: '试点日期',
-      dataIndex: 'trialStarDate',
-      align: 'center'
-    }
-  ];
-
-  const getStaffColumns = (staffOrderList: StatisticsItem[]): TableColumnType<StatisticsItem>[] =>
-    statisticsColumns.map((col, colIndex) => {
-      if (colIndex === 0) {
-        return {
-          ...col,
-          render: (value: number, record: any, tableIndex: number) => (
-            <div className={style.hotImgWrap}>
-              <div
-                className={classNames(style.hotWrap, {
-                  [style.hotImg]: tableIndex < 3
-                })}
-              >
-                {value}
-              </div>
-            </div>
-          )
-        };
-      } else if (colIndex === 1) {
-        return col;
-      } else {
-        if (col.dataIndex === 'addFriendRate') {
-          return {
-            ...col,
-            render: (value: number | string) => <dt className={+value < 50 ? style.red : ''}>{value || 0}%</dt>
-          };
-        } else if (col.dataIndex === 'markCarNumRate') {
-          return {
-            ...col,
-            render: (value: number | string) => <dt className={+value < 80 ? style.red : ''}>{value || 0}%</dt>
-          };
-        } else if (col.dataIndex === 'avgCircleCount') {
-          return {
-            ...col,
-            title: '朋友圈发送',
-            dataIndex: 'circleSendCount',
-            render: (value: number | string) => tdRender(+value, staffOrderList || [], col.dataIndex as string)
-          };
-        } else {
-          return {
-            ...col,
-            render: (value: number | string) => tdRender(+value, staffOrderList, col.dataIndex as string)
-          };
-        }
-      }
-    });
-
-  const imgNames: string[] = ['rocket', 'target', 'earth'];
+  const [reportId, setReportId] = useState<string>('');
+  const [reportConfig, setReportConfig] = useState<ReportConfig>({});
+  const [reportDetail, setReportDetail] = useState<ReportDetail>({});
 
   /**
    * dom转换成图片
@@ -333,15 +86,43 @@ const SeatReport: React.FC = () => {
   };
 
   /**
-   * 获取战报详情数据
+   * 获取战报样式数据
+   * @param reportId
+   */
+  const getReportStyle = async (reportId: string) => {
+    const res: any = await queryReportStyle({ reportId });
+    if (res) {
+      setReportConfig(res);
+    }
+  };
+
+  /**
+   * 获取周报详情数据
    * @param reportId
    */
   const getReportDetail = async (reportId: string) => {
     const res: any = await queryReportDetail({ reportId });
     if (res) {
-      setReportData(res);
-      Array.from(document.getElementsByTagName('td')).forEach((ele) => {
-        ele.contentEditable = 'true';
+      setReportDetail(res);
+      const promiseList: Promise<any>[] = [];
+      const areaIndexes: number[] = [];
+      const moduleList: AreaItem[] = res.bodyList || [];
+      moduleList.forEach((item: AreaItem, index: number) => {
+        if ([3, 4, 5].includes(item.moduleType)) {
+          areaIndexes.push(index);
+          promiseList.push(queryReportAreaData({ reportId, areaId: item.areaId }));
+        }
+      });
+      const allSettledPromise = Promise.allSettled(promiseList);
+      const allRes: any = await allSettledPromise;
+      allRes.forEach((item: any, index: number) => {
+        if (item.value) {
+          moduleList[areaIndexes[index]].areaList = item.value.bodyList || [];
+        }
+      });
+      setReportDetail({
+        reportBaseInfo: res.reportBaseInfo,
+        bodyList: moduleList
       });
       Array.from(document.getElementsByTagName('dt')).forEach((ele) => {
         ele.contentEditable = 'true';
@@ -356,9 +137,99 @@ const SeatReport: React.FC = () => {
     const res: any = await queryReportList();
     if (Array.isArray(res) && res.length > 0) {
       setReportList(res);
-      setCurrentReport(res[0]);
-      getReportDetail(res[0].reportId);
-      setReportId(res[0].reportId);
+      const id = res[0].reportId;
+      setReportId(id);
+      getReportDetail(id);
+      getReportStyle(id);
+    }
+  };
+
+  /**
+   * 获取列宽
+   * @param count
+   */
+  const getColWidth = (count: number) => {
+    const fonSize = 12;
+    return {
+      width: fonSize * count
+    };
+  };
+
+  /**
+   * 渲染行列
+   * @param areaList
+   */
+  const renderCommonRow = (areaList: string[][]) => {
+    return (
+      <ul className={style.areaData}>
+        {areaList.map((area: string[], index) => (
+          <li key={index} className={style.areaRow}>
+            {area.map((val, i) => (
+              <dt key={i} className={style.areaCol} style={getColWidth(areaList[0][i].length)}>
+                {val}
+              </dt>
+            ))}
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  /**
+   * 渲染区域
+   * @param item
+   */
+  const renderArea = (item: AreaItem) => {
+    switch (item.moduleType) {
+      case 1:
+        return (
+          <div
+            key={item.areaId}
+            style={{
+              color: item.modulTextColor,
+              backgroundColor: item.modulBackColor,
+              borderBottom: `4px solid ${item.modulLineColor}`
+            }}
+            className={style.areaTitle}
+          >
+            <img className={style.areaLogo} src={item.modulLogoUrl} alt="" />
+            <span>{item.moduleName}</span>
+          </div>
+        );
+      case 2:
+        return (
+          <div key={item.areaId} className={style.areaLineWrap}>
+            <div className={style.areaLine} style={{ backgroundColor: item.modulLineColor }} />
+          </div>
+        );
+      case 3:
+        return (
+          <div key={item.areaId} className={style.areaItem}>
+            <dt className={style.areaMark}>{item.moduleName}</dt>
+            {renderCommonRow(item.areaList || [])}
+          </div>
+        );
+      case 4:
+        return (
+          <div key={item.areaId} className={style.areaItem}>
+            <dt className={style.areaMark} />
+            {renderCommonRow(item.areaList || [])}
+          </div>
+        );
+      case 5:
+        return (
+          <div key={item.areaId} className={style.teamArea}>
+            <div className={style.teamName} style={{ backgroundImage: `url(${item.modulLogoUrl})` }}>
+              {item.moduleName}
+            </div>
+            <div className={style.areaItem}>
+              <dt className={style.areaMark} />
+              {renderCommonRow(item.areaList || [])}
+            </div>
+          </div>
+        );
+      default:
+        return null;
     }
   };
 
@@ -377,8 +248,8 @@ const SeatReport: React.FC = () => {
             value={reportId}
             onChange={(val) => {
               setReportId(val);
-              setCurrentReport(reportList.find((item) => item.reportId === val) || {});
               getReportDetail(val);
+              getReportStyle(val);
             }}
           >
             {reportList.map((item) => (
@@ -388,148 +259,49 @@ const SeatReport: React.FC = () => {
             ))}
           </Select>
         </div>
-        <Button type="primary" onClick={domToImage}>
+        <Button className={style.btn} type="primary" onClick={domToImage}>
+          下载数据源
+        </Button>
+        <Button className={style.btn} type="primary" onClick={domToImage}>
           导出图片
         </Button>
       </div>
       <div className={style.content}>
-        <header className={style.header}>
-          <img className={style.reportImg} src={require('src/assets/images/statistics/report_text.png')} alt="" />
-        </header>
-        <div className={style.timeInfo}>
-          <dt>更新时间：{currentReport.updateTime}</dt>
-          <dt>累计试点工作日：{currentReport.totalWorkDay}</dt>
-          <dt>本周已过工作日：{currentReport.weekDay}</dt>
+        <img className={style.headerImg} src={reportConfig?.reportStyle?.headBannUrl} alt="" />
+        <div className={style.timeInfo} style={{ backgroundColor: reportConfig?.reportStyle?.headBannColor }}>
+          <dt>更新时间：{reportDetail?.reportBaseInfo?.updateTime}</dt>
+          <dt>累计试点工作日：{reportDetail?.reportBaseInfo?.totalWorkDay}</dt>
+          <dt>本周已过工作日：{reportDetail?.reportBaseInfo?.weekDay}</dt>
         </div>
         <div className={style.reportTitle}>
-          <img className={style.titleImg} src={require('src/assets/images/statistics/report_title.png')} alt="" />
-          <div className={style.titleTips}>
-            说明：使用实力分为加好友量+朋友圈发送情况+累计好友通过率+累计车牌备注率+调用营销平台次数+调用销售宝典次数的综合情况，
-            <span className={style.red}>营销平台和销售宝典会放大倍数哦！</span>
-          </div>
+          <img className={style.titleImg} src={reportConfig?.reportStyle?.titleUrl} alt="" />
+          <div
+            className={style.titleTips}
+            dangerouslySetInnerHTML={{ __html: reportConfig?.reportStyle?.useDesc || '' }}
+          />
         </div>
-        <section className={style.sectionWrap}>
-          <div className={style.sectionTitle}>
-            <img className={style.msgImg} src={require('src/assets/images/statistics/message.png')} alt="" />
-            <img className={style.titleImg} src={require('src/assets/images/statistics/title1.png')} alt="" />
-          </div>
-          <Table
-            bordered={false}
-            rowKey="areaName"
-            columns={areaGroupColumns}
-            pagination={false}
-            dataSource={reportData.areaGroupList?.areaReportList || []}
-          />
-          <div className={style.levelWrap}>
-            <ul className={style.levelList}>
-              <li className={style.levelItem} key="header">
-                <span className={style.levelColOne}>分年龄段</span>
-                <span className={style.levelColTwo}>人力</span>
-                <span className={style.levelColThree}>使用分</span>
-              </li>
-              {((reportData.areaGroupList || {}).ageGroupList || []).map((item) => (
-                <li key={item.leveName} className={style.levelItem}>
-                  <dt className={style.levelColOne}>
-                    <div
-                      className={classNames(style.hotWrap, {
-                        [style.hotImg]: isHot(item.mark, 0)
-                      })}
-                    >
-                      {item.leveName}
-                    </div>
-                  </dt>
-                  <dt className={style.levelColTwo}>{item.percount}</dt>
-                  <dt className={style.levelColThree}>{item.mark}</dt>
+        <div className={style.areaWrap}>{(reportDetail.bodyList || []).map((item) => renderArea(item))}</div>
+        <img className={style.footerImg} src={reportConfig?.reportStyle?.footBannUrl} alt="" />
+        <div className={style.indicatorWrap}>
+          <div className={style.indicatorTitle}>【{reportConfig?.footDesc?.footTitle}】</div>
+          <div className={style.indicatorContent}>
+            <ul className={style.indicatorList}>
+              {(reportConfig?.footDesc?.leftParam || []).map((item) => (
+                <li className={style.indicatorItem} key={item.name}>
+                  <span className={style.indicatorName}>{item.name}：</span>
+                  <span className={style.indicatorValue}>{item.value}</span>
                 </li>
               ))}
             </ul>
-            <ul className={style.levelList}>
-              <li className={style.levelItem} key="header">
-                <span className={style.levelColOne}>分级别</span>
-                <span className={style.levelColTwo}>人力</span>
-                <span className={style.levelColThree}>使用分</span>
-              </li>
-              {((reportData.areaGroupList || {}).leveGroupList || []).map((item) => (
-                <li key={item.leveName} className={style.levelItem}>
-                  <dt className={style.levelColOne}>
-                    <div
-                      className={classNames(style.hotWrap, {
-                        [style.hotImg]: isHot(item.mark, 1)
-                      })}
-                    >
-                      {item.leveName}
-                    </div>
-                  </dt>
-                  <dt className={style.levelColTwo}>{item.percount}</dt>
-                  <dt className={style.levelColThree}>{item.mark}</dt>
-                </li>
-              ))}
-            </ul>
-            <ul className={style.levelList}>
-              <li className={style.levelItem} key="header">
-                <span className={style.levelColOne}>分司龄段</span>
-                <span className={style.levelColTwo}>人力</span>
-                <span className={style.levelColThree}>使用分</span>
-              </li>
-              {((reportData.areaGroupList || {}).corpGroupList || []).map((item) => (
-                <li key={item.leveName} className={style.levelItem}>
-                  <dt className={style.levelColOne}>
-                    <div
-                      className={classNames(style.hotWrap, {
-                        [style.hotImg]: isHot(item.mark, 2)
-                      })}
-                    >
-                      {item.leveName}
-                    </div>
-                  </dt>
-                  <dt className={style.levelColTwo}>{item.percount}</dt>
-                  <dt className={style.levelColThree}>{item.mark}</dt>
+            <ul className={style.indicatorList}>
+              {(reportConfig?.footDesc?.rightParam || []).map((item) => (
+                <li className={style.indicatorItem} key={item.name}>
+                  <span className={style.indicatorName}>{item.name}：</span>
+                  <span className={style.indicatorValue}>{item.value}</span>
                 </li>
               ))}
             </ul>
           </div>
-        </section>
-        <section className={style.sectionWrap}>
-          <div className={style.sectionTitle}>
-            <img className={style.msgImg} src={require('src/assets/images/statistics/message.png')} alt="" />
-            <img className={style.titleImg} src={require('src/assets/images/statistics/title2.png')} alt="" />
-          </div>
-          <Table
-            bordered={false}
-            rowKey="teamName"
-            columns={teamColumns}
-            pagination={false}
-            dataSource={reportData.teamOrderList || []}
-          />
-        </section>
-        <section className={style.sectionWrap}>
-          <div className={style.sectionTitle}>
-            <img className={style.msgImg} src={require('src/assets/images/statistics/message.png')} alt="" />
-            <img className={style.titleImg} src={require('src/assets/images/statistics/title3.png')} alt="" />
-          </div>
-          {(reportData.teamDetailResVO || []).map((item, index) => (
-            <div key={item.teamShowName} className={style.teamItem}>
-              <div className={style.teamName}>{item.teamShowName}</div>
-              <div className={style.teamTableWrap}>
-                <Table
-                  bordered={false}
-                  rowKey="staffName"
-                  columns={getStaffColumns(item.staffOrderList || [])}
-                  pagination={false}
-                  dataSource={item.staffOrderList || []}
-                />
-                <img
-                  className={style.tableImg}
-                  src={require(`src/assets/images/statistics/${imgNames[index % 3]}.png`)}
-                  alt=""
-                />
-              </div>
-            </div>
-          ))}
-        </section>
-        <div className={style.footerWrap}>
-          <span className={style.footerItem}>做保险专家，和客户交朋友</span>
-          <span className={style.footerItem}>出单宝，保出单！</span>
         </div>
       </div>
     </div>

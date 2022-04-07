@@ -21,6 +21,14 @@
       flex: 1;
     }
 
+    .btn {
+      padding: 9px 40px;
+    }
+
+    .btn + .btn {
+      margin-left: 10px;
+    }
+
     :global {
       .ant-select {
         width: 240px;
@@ -39,20 +47,9 @@
     color: #305496;
     background-color: white;
 
-    .header {
-      position: relative;
+    .headerImg {
       width: 100%;
       height: 280px;
-      background: url('src/assets/images/statistics/report_header.jpg') no-repeat center;
-      background-size: cover;
-
-      .reportImg {
-        position: absolute;
-        left: 74px;
-        top: 102px;
-        width: 649px;
-        height: 114px;
-      }
     }
 
     .timeInfo {
@@ -63,12 +60,11 @@
       padding: 0 40px;
       width: 100%;
       height: 46px;
-      background-color: #8ea9db;
       color: white;
     }
 
     .reportTitle {
-      margin: 38px 0 30px;
+      margin-top: 38px;
 
       .titleImg {
         display: block;
@@ -80,6 +76,8 @@
         margin-top: 18px;
         padding: 0 40px;
         line-height: 22px;
+        font-size: 16px;
+        text-align: center;
 
         .red {
           color: #ff0000;
@@ -87,145 +85,152 @@
       }
     }
 
-    .sectionWrap {
+    .footerImg {
+      margin-top: 30px;
       width: 100%;
-      margin-bottom: 60px;
+      height: 66px;
+    }
 
-      .sectionTitle {
+    .indicatorWrap {
+      padding: 30px 40px 0;
+
+      .indicatorTitle {
+        font-size: 16px;
+        font-weight: 500;
+        color: #111111;
+        line-height: 22px;
+      }
+
+      .indicatorContent {
+        margin-top: 16px;
+        display: flex;
+        justify-content: space-between;
+
+        .indicatorList {
+          width: 50%;
+
+          .indicatorItem {
+            font-size: 14px;
+            line-height: 24px;
+            display: inline-flex;
+            align-items: flex-start;
+
+            .indicatorName {
+              display: inline-block;
+              width: 112px;
+              color: #111111;
+              text-align: right;
+            }
+
+            .indicatorValue {
+              display: inline-block;
+              width: 528px;
+              color: #808080;
+            }
+          }
+        }
+
+        .indicatorList + .indicatorList {
+          .indicatorItem {
+            .indicatorName {
+              width: 228px;
+            }
+          }
+        }
+      }
+    }
+
+    .areaWrap {
+      .areaTitle {
+        margin-top: 30px;
         display: flex;
         align-items: center;
         width: 100%;
         height: 54px;
-        background-color: #ddebf7;
-        border-bottom: 4px solid #305496;
-
-        .msgImg {
-          margin-left: 2px;
-          width: 50px;
-        }
-
-        .titleImg {
-          margin-left: 21px;
-          height: 32px;
-        }
-      }
-
-      :global {
-        .ant-table-wrapper {
-          margin-top: 10px;
-        }
-      }
-
-      .levelWrap {
-        margin-top: 20px;
-        padding: 0 30px;
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .levelList {
-          width: 280px;
-          padding: 12px 24px;
-          border-radius: 12px;
-          border: 2px dashed #2f518f;
-
-          .levelItem {
-            width: 100%;
-            padding: 4px 0;
-
-            &:first-child {
-              font-weight: bold;
-            }
-
-            .levelColOne {
-              display: inline-flex;
-              justify-content: center;
-              width: 40%;
-            }
-
-            .levelColTwo {
-              display: inline-flex;
-              justify-content: center;
-              width: 25%;
-            }
-
-            .levelColThree {
-              display: inline-flex;
-              justify-content: center;
-              width: 35%;
-            }
-          }
-        }
-      }
-    }
-
-    .footerWrap {
-      display: flex;
-      width: 100%;
-      height: 66px;
-      line-height: 66px;
-      color: white;
-      font-size: 32px;
-      font-weight: bold;
-      text-align: center;
-      background-color: #305496;
-
-      .footerItem {
-        width: 50%;
+        font-weight: bold;
+        font-size: 28px;
+        line-height: 32px;
 
         &:first-child {
-          position: relative;
+          margin-top: 52px;
+        }
 
-          &::after {
-            position: absolute;
-            top: 20px;
-            right: -2px;
-            content: '';
-            width: 4px;
-            height: 26px;
-            background-color: white;
-          }
+        .areaLogo {
+          margin-right: 10px;
+          width: 50px;
         }
       }
-    }
 
-    .teamItem {
-      .teamName {
-        margin-top: 30px;
-        padding: 7px 0 0 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 274px;
-        height: 49px;
-        background: url('src/assets/images/statistics/area_bg.png') no-repeat;
-        background-size: cover;
-        font-size: 20px;
-        font-weight: bold;
-        color: white;
-      }
-
-      .teamTableWrap {
+      .areaLineWrap {
         width: 100%;
-        display: flex;
-        align-items: center;
+        padding: 0 20px 0 30px;
 
-        :global {
-          .ant-table-wrapper {
-            flex: 1;
-          }
-        }
-
-        .tableImg {
-          margin-left: 20px;
-          width: 155px;
+        .areaLine {
+          width: 100%;
+          height: 1px;
         }
       }
-    }
 
-    .teamItem + .teamItem {
-      padding-top: 30px;
+      .areaItem {
+        display: flex;
+        padding: 29px 30px;
+
+        .areaMark {
+          width: 65px;
+          font-weight: bold;
+          font-size: 16px;
+          color: #252f61;
+          line-height: 19px;
+        }
+
+        .areaData {
+          flex: 1;
+
+          .areaRow {
+            display: flex;
+
+            &:first-child {
+              margin-bottom: 18px;
+            }
+
+            .areaCol {
+              margin: 0 10px;
+              min-width: 28px;
+              font-size: 12px;
+              color: #305496;
+              line-height: 18px;
+              text-align: center;
+
+              &:first-child {
+                margin-left: 0;
+              }
+            }
+          }
+
+          .areaRow + .areaRow {
+            margin-top: 16px;
+          }
+        }
+      }
+
+      .teamArea {
+        margin-top: 30px;
+
+        .teamName {
+          margin-left: 29px;
+          padding: 7px 0 0 10px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 274px;
+          height: 49px;
+          background-repeat: no-repeat;
+          background-size: cover;
+          font-size: 20px;
+          font-weight: bold;
+          color: white;
+        }
+      }
     }
   }
 }

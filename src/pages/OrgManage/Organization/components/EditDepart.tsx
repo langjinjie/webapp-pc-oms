@@ -71,8 +71,8 @@ const EditDepart: React.FC<EditDepartProps> = (props) => {
         <Item name="deptName" label="部门名称" rules={[{ required: true, message: '请输入部门名称' }]}>
           <Input className={style.inputRadius} placeholder="请输入部门名称" maxLength={40} />
         </Item>
-        <Item name="dType" label="部门类型" rules={[{ required: true, message: '请选择部门类型' }]}>
-          <Select placeholder="请选择部门类型">
+        <Item name="dType" label="部门类型">
+          <Select placeholder="请选择部门类型" allowClear>
             {departTypes.map((item) => (
               <Option key={item.dType} value={item.dType}>
                 {item.dName}
