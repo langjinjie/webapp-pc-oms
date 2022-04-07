@@ -5,6 +5,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Select } from 'antd';
+import classNames from 'classnames';
 import Dom2Img from 'dom-to-image';
 import { Button } from 'lester-ui';
 import { setTitle } from 'lester-tools';
@@ -165,7 +166,14 @@ const SeatReport: React.FC = () => {
         {areaList.map((area: string[], index) => (
           <li key={index} className={style.areaRow}>
             {area.map((val, i) => (
-              <dt key={i} className={style.areaCol} style={getColWidth(areaList[0][i].length)}>
+              <dt
+                key={i}
+                className={classNames(style.areaCol, {
+                  [style.hot]: areaList.length > 2 && index === 1 && i === 0,
+                  [style.grey]: i === area.length - 1 && areaList[0][areaList[0]?.length - 1] === '团队人力'
+                })}
+                style={getColWidth(areaList[0][i].length)}
+              >
                 {val}
               </dt>
             ))}

@@ -204,6 +204,25 @@
               &:first-child {
                 margin-left: 0;
               }
+
+              &.hot {
+                position: relative;
+
+                &::before {
+                  position: absolute;
+                  left: 0;
+                  top: -3px;
+                  content: '';
+                  width: 15px;
+                  height: 20px;
+                  background: url('src/assets/images/statistics/hot.png') no-repeat;
+                  background-size: cover;
+                }
+              }
+
+              &.grey {
+                color: #808080;
+              }
             }
           }
 
@@ -238,26 +257,4 @@
 .red {
   font-weight: bold;
   color: #c00000;
-}
-
-.hotImgWrap {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.hotWrap.hotImg {
-  position: relative;
-  width: fit-content;
-
-  &::before {
-    position: absolute;
-    left: -23px;
-    top: 0;
-    content: '';
-    width: 15px;
-    height: 20px;
-    background: url('src/assets/images/statistics/hot.png') no-repeat;
-    background-size: cover;
-  }
 }
