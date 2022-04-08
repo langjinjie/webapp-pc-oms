@@ -57,6 +57,7 @@ interface AreaItem {
   modulBackColor: string;
   modulLineColor: string;
   modulTextColor: string;
+  sort: number;
   areaList?: string[][];
 }
 
@@ -188,7 +189,7 @@ const SeatReport: React.FC = () => {
       case 1:
         return (
           <div
-            key={item.areaId}
+            key={item.sort}
             style={{
               color: item.modulTextColor,
               backgroundColor: item.modulBackColor,
@@ -202,27 +203,27 @@ const SeatReport: React.FC = () => {
         );
       case 2:
         return (
-          <div key={item.areaId} className={style.areaLineWrap}>
+          <div key={item.sort} className={style.areaLineWrap}>
             <div className={style.areaLine} style={{ backgroundColor: item.modulLineColor }} />
           </div>
         );
       case 3:
         return (
-          <div key={item.areaId} className={style.areaItem}>
+          <div key={item.sort} className={style.areaItem}>
             <dt className={style.areaMark}>{item.moduleName}</dt>
             {renderCommonRow(item.areaList || [])}
           </div>
         );
       case 4:
         return (
-          <div key={item.areaId} className={style.areaItem}>
+          <div key={item.sort} className={style.areaItem}>
             <dt className={style.areaMark} />
             {renderCommonRow(item.areaList || [])}
           </div>
         );
       case 5:
         return (
-          <div key={item.areaId} className={style.teamArea}>
+          <div key={item.sort} className={style.teamArea}>
             <div className={style.teamName} style={{ backgroundImage: `url(${item.modulLogoUrl})` }}>
               {item.moduleName}
             </div>
