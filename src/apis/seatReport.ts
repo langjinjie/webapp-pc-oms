@@ -17,7 +17,7 @@ export const queryReportList: Void2Promise = () => {
  * @param param
  */
 export const queryReportDetail: HttpFunction = (param: Object) => {
-  return Promise.resolve({
+  /* return Promise.resolve({
     reportBaseInfo: {
       totalWorkDay: 154,
       updateTime: '04月06日 10:30',
@@ -99,7 +99,7 @@ export const queryReportDetail: HttpFunction = (param: Object) => {
         modulLogoUrl: require('src/assets/images/statistics/area_bg.png')
       }
     ]
-  });
+  }); */
   return http.post('/tenacity-admin/api/data/reportframe', param);
 };
 
@@ -107,7 +107,7 @@ export const queryReportDetail: HttpFunction = (param: Object) => {
  * 查询战报样式数据
  */
 export const queryReportStyle: HttpFunction = (param: Object) => {
-  return Promise.resolve({
+  /* return Promise.resolve({
     reportStyle: {
       headBannUrl: require('src/assets/images/statistics/report_header.jpg'),
       headBannColor: '#262966',
@@ -140,7 +140,7 @@ export const queryReportStyle: HttpFunction = (param: Object) => {
         }
       ]
     }
-  });
+  }); */
   return http.post('/tenacity-admin/api/data/reportstyle', param);
 };
 
@@ -150,7 +150,7 @@ export const queryReportStyle: HttpFunction = (param: Object) => {
  */
 export const queryReportAreaData: HttpFunction = (param: Object) => {
   // @ts-ignore
-  if (param.areaId === '456') {
+  /* if (param.areaId === '456') {
     return Promise.resolve({
       bodyList: [
         [
@@ -244,6 +244,6 @@ export const queryReportAreaData: HttpFunction = (param: Object) => {
         ]
       ]
     });
-  }
+  } */
   return http.post('/tenacity-admin/api/data/reportdata', param);
 };

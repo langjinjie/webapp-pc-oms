@@ -32,16 +32,12 @@ interface FooterConfig {
   rightParam: IndicatorDesc[];
 }
 
-interface ReportStyle {
-  headBannUrl: string;
-  headBannColor: string;
-  titleUrl: string;
-  useDesc: string;
-  footBannUrl: string;
-}
-
 interface ReportConfig {
-  reportStyle?: ReportStyle;
+  headBannUrl?: string;
+  headBannColor?: string;
+  titleUrl?: string;
+  useDesc?: string;
+  footBannUrl?: string;
   footDesc?: FooterConfig;
 }
 
@@ -169,8 +165,8 @@ const SeatReport: React.FC = () => {
               <dt
                 key={i}
                 className={classNames(style.areaCol, {
-                  [style.hot]: areaList.length > 2 && index === 1 && i === 0,
-                  [style.grey]: i === area.length - 1 && areaList[0][areaList[0]?.length - 1] === '团队人力'
+                  [style.hot]: areaList.length > 2 && index === 1 && i === 0
+                  // [style.grey]: i === area.length - 1 && areaList[0][areaList[0]?.length - 1] === '团队人力'
                 })}
                 style={getColWidth(areaList[0][i].length)}
               >
@@ -267,29 +263,26 @@ const SeatReport: React.FC = () => {
             ))}
           </Select>
         </div>
-        <Button className={style.btn} type="primary" onClick={domToImage}>
+        {/* <Button className={style.btn} type="primary" onClick={domToImage}>
           下载数据源
-        </Button>
+        </Button> */}
         <Button className={style.btn} type="primary" onClick={domToImage}>
           导出图片
         </Button>
       </div>
       <div className={style.content}>
-        <img className={style.headerImg} src={reportConfig?.reportStyle?.headBannUrl} alt="" />
-        <div className={style.timeInfo} style={{ backgroundColor: reportConfig?.reportStyle?.headBannColor }}>
+        <img className={style.headerImg} src={reportConfig?.headBannUrl} alt="" />
+        <div className={style.timeInfo} style={{ backgroundColor: reportConfig?.headBannColor }}>
           <dt>更新时间：{reportDetail?.reportBaseInfo?.updateTime}</dt>
           <dt>累计试点工作日：{reportDetail?.reportBaseInfo?.totalWorkDay}</dt>
           <dt>本周已过工作日：{reportDetail?.reportBaseInfo?.weekDay}</dt>
         </div>
         <div className={style.reportTitle}>
-          <img className={style.titleImg} src={reportConfig?.reportStyle?.titleUrl} alt="" />
-          <div
-            className={style.titleTips}
-            dangerouslySetInnerHTML={{ __html: reportConfig?.reportStyle?.useDesc || '' }}
-          />
+          <img className={style.titleImg} src={reportConfig?.titleUrl} alt="" />
+          <div className={style.titleTips} dangerouslySetInnerHTML={{ __html: reportConfig?.useDesc || '' }} />
         </div>
         <div className={style.areaWrap}>{(reportDetail.bodyList || []).map((item) => renderArea(item))}</div>
-        <img className={style.footerImg} src={reportConfig?.reportStyle?.footBannUrl} alt="" />
+        <img className={style.footerImg} src={reportConfig?.footBannUrl} alt="" />
         <div className={style.indicatorWrap}>
           <div className={style.indicatorTitle}>【{reportConfig?.footDesc?.footTitle}】</div>
           <div className={style.indicatorContent}>
