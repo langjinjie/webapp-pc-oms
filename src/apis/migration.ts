@@ -33,3 +33,7 @@ export const operationTransferTask: HttpFC = (param) => {
 export const exportTransferTask: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/transfer/task/export', param);
 };
+// 1.8 创建群发任务
+export const requestCreateTransferTask: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/transfer/task/create', param);
+};
