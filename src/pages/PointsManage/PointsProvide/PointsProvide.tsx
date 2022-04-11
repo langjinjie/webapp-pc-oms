@@ -37,6 +37,7 @@ const PointsProvide: React.FC = () => {
   const [treeData, setTreeData] = useState<any[]>([]);
   const [form] = Form.useForm();
   const { RangePicker } = DatePicker;
+  const { SHOW_ALL } = TreeSelect;
   // 处理查询参数
   const searchParamHandle = () => {
     const { staffName, date, isBlackClient, sendStatus, deptIds } = form.getFieldsValue();
@@ -195,6 +196,7 @@ const PointsProvide: React.FC = () => {
               className={style.treeSelect}
               dropdownClassName={style.treeSelectDropdown}
               multiple
+              showCheckedStrategy={SHOW_ALL}
               allowClear
               placeholder="请选择可见范围"
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
