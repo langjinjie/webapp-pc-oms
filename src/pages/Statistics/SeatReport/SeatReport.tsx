@@ -111,11 +111,11 @@ const SeatReport: React.FC = () => {
           promiseList.push(queryReportAreaData({ reportId, areaId: item.areaId }));
         }
       });
-      const allSettledPromise = Promise.allSettled(promiseList);
+      const allSettledPromise = Promise.all(promiseList);
       const allRes: any = await allSettledPromise;
       allRes.forEach((item: any, index: number) => {
-        if (item.value) {
-          moduleList[areaIndexes[index]].areaList = item.value.bodyList || [];
+        if (item) {
+          moduleList[areaIndexes[index]].areaList = item.bodyList || [];
         }
       });
       setReportDetail({
@@ -197,7 +197,7 @@ const SeatReport: React.FC = () => {
             }}
             className={style.areaTitle}
           >
-            <img className={style.areaLogo} src={item.modulLogoUrl} alt="" />
+            <img className={style.areaLogo} src={item.modulLogoUrl} crossOrigin="anonymous" alt="" />
             <span>{item.moduleName}</span>
           </div>
         );
@@ -272,18 +272,18 @@ const SeatReport: React.FC = () => {
         </Button>
       </div>
       <div className={style.content}>
-        <img className={style.headerImg} src={reportConfig?.headBannUrl} alt="" />
+        <img className={style.headerImg} src={reportConfig?.headBannUrl} crossOrigin="anonymous" alt="" />
         <div className={style.timeInfo} style={{ backgroundColor: reportConfig?.headBannColor }}>
           <dt>更新时间：{reportDetail?.reportBaseInfo?.updateTime}</dt>
           <dt>累计试点工作日：{reportDetail?.reportBaseInfo?.totalWorkDay}</dt>
           <dt>本周已过工作日：{reportDetail?.reportBaseInfo?.weekDay}</dt>
         </div>
         <div className={style.reportTitle}>
-          <img className={style.titleImg} src={reportConfig?.titleUrl} alt="" />
+          <img className={style.titleImg} src={reportConfig?.titleUrl} crossOrigin="anonymous" alt="" />
           <div className={style.titleTips} dangerouslySetInnerHTML={{ __html: reportConfig?.useDesc || '' }} />
         </div>
         <div className={style.areaWrap}>{(reportDetail.bodyList || []).map((item) => renderArea(item))}</div>
-        <img className={style.footerImg} src={reportConfig?.footBannUrl} alt="" />
+        <img className={style.footerImg} src={reportConfig?.footBannUrl} crossOrigin="anonymous" alt="" />
         <div className={style.indicatorWrap}>
           <div className={style.indicatorTitle}>【{reportConfig?.footDesc?.footTitle}】</div>
           <div className={style.indicatorContent}>
