@@ -229,25 +229,25 @@ export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
   {
     path: '/customer-statistics-free',
     component: lazy(() => import('src/pages/OrgManage/CustomerStatisticsFree'))
-  },
+  }
 
   // 好友迁移
-  {
-    path: '/enterprise',
-    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
-  },
-  {
-    path: '/enterprise/addTask',
-    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
-  },
-  {
-    path: '/personal',
-    component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
-  },
-  {
-    path: '/personal/addTask',
-    component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
-  }
+  // {
+  //   path: '/enterprise',
+  //   component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
+  // },
+  // {
+  //   path: '/enterprise/addTask',
+  //   component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
+  // },
+  // {
+  //   path: '/personal',
+  //   component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
+  // },
+  // {
+  //   path: '/personal/addTask',
+  //   component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
+  // }
 ];
 
 export const menus: Menu[] = [
@@ -373,16 +373,16 @@ export const menus: Menu[] = [
       { name: '加减积分', path: '/addSubPoints' },
       { name: '抽奖管理', path: '/lotteryManage' }
     ]
-  },
-  {
-    name: '好友迁移',
-    icon: 'a-bianzu101',
-    path: 'migration',
-    children: [
-      { name: '企微好友', path: '/enterprise' },
-      { name: '个位好友', path: '/personal' }
-    ]
   }
+  // {
+  //   name: '好友迁移',
+  //   icon: 'a-bianzu101',
+  //   path: 'migration',
+  //   children: [
+  //     { name: '企微好友', path: '/enterprise' },
+  //     { name: '个位好友', path: '/personal' }
+  //   ]
+  // }
 ];
 
 if (process.env.NODE_ENV === 'development') {
