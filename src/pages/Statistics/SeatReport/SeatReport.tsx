@@ -284,9 +284,9 @@ const SeatReport: React.FC = () => {
           alt=""
         />
         <div className={style.timeInfo} style={{ backgroundColor: reportConfig?.headBannColor }}>
-          <dt>更新时间：{reportDetail?.reportBaseInfo?.updateTime}</dt>
-          <dt>累计试点工作日：{reportDetail?.reportBaseInfo?.totalWorkDay}</dt>
-          <dt>本周已过工作日：{reportDetail?.reportBaseInfo?.weekDay}</dt>
+          <dt className={style.timeText}>更新时间：{reportDetail?.reportBaseInfo?.updateTime}</dt>
+          <dt className={style.timeText}>累计试点工作日：{reportDetail?.reportBaseInfo?.totalWorkDay}</dt>
+          <dt className={style.timeText}>本周已过工作日：{reportDetail?.reportBaseInfo?.weekDay}</dt>
         </div>
         <div className={style.reportTitle}>
           <img
