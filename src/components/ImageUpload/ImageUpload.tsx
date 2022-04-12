@@ -9,6 +9,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { UploadChangeParam } from 'antd/lib/upload/interface';
 import { Icon } from 'src/components';
 import style from './style.module.less';
+import classNames from 'classnames';
 
 interface ImageUploadProps {
   value?: string;
@@ -62,6 +63,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
   );
   // 点击删除文件
   const onRemoveHandle = (e: React.MouseEvent) => {
+    if (disabled) return;
     e.stopPropagation();
     onRemove?.();
   };
@@ -81,7 +83,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
         ? (
         <div className={style.imgWrap}>
           <div className={style.iconWrap}>
-            <Icon className={style.delIcon} name="shanchu" onClick={onRemoveHandle} />
+            <Icon
+              className={classNames(style.delIcon, { [style.disabled]: disabled })}
+              name="shanchu"
+              onClick={onRemoveHandle}
+            />
           </div>
           <img className={style.img} src={value} alt="缩略图" />
         </div>
