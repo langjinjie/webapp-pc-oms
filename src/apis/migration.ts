@@ -1,10 +1,10 @@
 import http from 'src/utils/http';
 type HttpFC<T = any> = (param: T, fn?: Function) => Promise<any>;
-// type HttpVoid = () => Promise<any>;
+type HttpVoid = () => Promise<any>;
 
 // 1.1、查询迁移前后机构
-export const queryTransferCorp: HttpFC = (param) => {
-  return http.post('/tenacity-admin/api/transfer/corp/query', param);
+export const queryTransferCorp: HttpVoid = () => {
+  return http.post('/tenacity-admin/api/transfer/corp/query');
 };
 
 // 1.2 设置迁移目标机构

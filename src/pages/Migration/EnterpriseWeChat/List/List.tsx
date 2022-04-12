@@ -5,16 +5,23 @@ import classNames from 'classnames';
 import styles from './style.module.less';
 import { Button, PaginationProps } from 'antd';
 import PieChart from './PieChart';
-import { NgTable } from 'src/components';
+import { Icon, NgTable } from 'src/components';
 import { columns } from './Config';
 import { useDocumentTitle } from 'src/utils/base';
 import EmptyTask from '../components/EmptyTask/EmptyTask';
 import DetailModal from '../components/DetailModal/DetailModal';
+import { queryTransferCorp } from 'src/apis/migration';
 
 const EnterPriseWechatList: React.FC = () => {
   useDocumentTitle('好友迁移-企微好友');
   const [isEmpty, setIsEmpty] = useState(false);
   const [visibleDetail, setVisibleDetail] = useState(false);
+  const [transferInfo, setTransferInfo] = useState({
+    corpId: '',
+    corpName: '年高-深圳分部',
+    targetCorpId: '',
+    targetCorpName: '年高总部'
+  });
   const history = useHistory();
 
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -43,20 +50,55 @@ const EnterPriseWechatList: React.FC = () => {
   };
   useEffect(() => {
     setLoading(false);
-    setIsEmpty(false);
   }, []);
+
+  const getPieInfo = () => {
+    console.log('获取饼图信息');
+  };
+
+  const getTaskList = () => {
+    console.log('查询列表');
+  };
+
+  const getTransferInfo = async () => {
+    const res = await queryTransferCorp();
+    if (res) {
+      setTransferInfo(res);
+      getPieInfo();
+      getTaskList();
+    } else {
+      setIsEmpty(false);
+    }
+  };
+
+  useEffect(() => {
+    getTransferInfo();
+  }, []);
+
+  // 创建任务成功
+  const createdTaskSuccess = async () => {
+    // 查询迁移机构信息
+    console.log('aas');
+    const transferInfo = await queryTransferCorp();
+    console.log(transferInfo);
+  };
+
   const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus });
   return (
     <div className={classNames(styles.migration, 'container')}>
       {isEmpty
         ? (
-        <EmptyTask />
+        <EmptyTask createdSuccess={createdTaskSuccess} />
           )
         : (
         <div>
           <header>
-            <h2 className={classNames('color-text-regular', styles.page_title)}>
-              企微好友迁移，从未如此简单！ <span>（国寿财省分 国寿财总部）</span>
+            <h2 className={classNames('color-text-regular flex align-center', styles.page_title)}>
+              企微好友迁移，从未如此简单！
+              <span className="flex">
+                （{transferInfo.corpName} <Icon name="jiantou" className={styles.arrow}></Icon>{' '}
+                {transferInfo.targetCorpName}）
+              </span>
             </h2>
             <section className={classNames(styles.kanban, 'flex')}>
               <div className={classNames(styles.kanbanLeft, 'flex vertical justify-between')}>

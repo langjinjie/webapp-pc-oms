@@ -1,14 +1,45 @@
-import { Button, Select } from 'antd';
+import { Button, message, Select } from 'antd';
 import classNames from 'classnames';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { setTransferCorp } from 'src/apis/migration';
 import { Icon } from 'src/components';
+import { Context } from 'src/store';
 import styles from './style.module.less';
 
-const EmptyTask: React.FC = () => {
+interface EmptyTaskProps {
+  createdSuccess: () => void;
+}
+const EmptyTask: React.FC<EmptyTaskProps> = ({ createdSuccess }) => {
   const [isNext, setIsNext] = useState(false);
+  const { instList, currentCorpId } = useContext(Context);
+  const [targetCorp, setTargetCorp] = useState<undefined | string>();
+
+  const [targetCorpStatus, setTargetCorpStatus] = useState<any>(undefined);
   useEffect(() => {
     setIsNext(true);
   }, []);
+
+  const onSubmit = async () => {
+    if (!targetCorp) {
+      setTargetCorpStatus('error');
+      return false;
+    }
+    const res = await setTransferCorp({
+      targetCorpId: targetCorp
+    });
+    if (res) {
+      message.success('设置成功');
+      // 刷新页面
+      createdSuccess();
+    }
+    // setTargetCorpStatus('');
+    console.log();
+  };
+
+  const selectChange = (value: string) => {
+    setTargetCorpStatus('');
+    setTargetCorp(value);
+  };
   return (
     <div className={styles.emptyWrap}>
       {isNext
@@ -20,23 +51,41 @@ const EmptyTask: React.FC = () => {
             <div className="flex">
               <div className="flex vertical">
                 <span className={styles.choiceItemLabel}>迁移前机构</span>
-                <Select placeholder="请选择" defaultValue={'1'} className="width240">
-                  <Select.Option value="1">贵州人保</Select.Option>
-                </Select>
+                <div className={styles.currentCorp}>
+                  {instList?.filter((item: any) => item.corpId === currentCorpId)[0].corpName}
+                </div>
               </div>
-              <div className="flex align-end">
+              <div className={styles.arrowWrap}>
                 <Icon className={styles.arrow} name="jiantou"></Icon>
               </div>
 
               <div className="flex vertical">
                 <span className={styles.choiceItemLabel}>迁移后机构</span>
-                <Select placeholder="请选择" className="width240">
-                  <Select.Option value="1">贵州人保</Select.Option>
+                <Select
+                  placeholder="请选择"
+                  className="width240"
+                  value={targetCorp}
+                  onChange={selectChange}
+                  status={targetCorpStatus}
+                  allowClear
+                >
+                  {instList.map((option: any) => {
+                    if (option.corpId !== currentCorpId) {
+                      return (
+                        <Select.Option value={option.corpId} key={option.corpId}>
+                          {option.corpName}
+                        </Select.Option>
+                      );
+                    } else {
+                      return null;
+                    }
+                  })}
                 </Select>
+                {targetCorpStatus === 'error' && <p className="color-danger">请选择迁移后的机构</p>}
               </div>
             </div>
             <div className="flex justify-center">
-              <Button type="primary" shape="round" className={styles.btnConfirm}>
+              <Button type="primary" shape="round" className={styles.btnConfirm} onClick={onSubmit}>
                 确定
               </Button>
             </div>
