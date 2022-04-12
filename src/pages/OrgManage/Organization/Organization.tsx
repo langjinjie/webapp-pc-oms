@@ -17,6 +17,7 @@ import {
 } from 'src/apis/organization';
 import { exportFile } from 'src/utils/base';
 import { Context } from 'src/store';
+import { IOrganizationItem } from 'src/utils/interface';
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
@@ -30,21 +31,6 @@ interface StaffItem {
   staffName?: string;
 }
 
-interface OrganizationItem {
-  deptId?: string;
-  deptName?: string;
-  deptType?: number;
-  dType?: number;
-  effCount?: number;
-  isLeaf?: boolean;
-  index?: number;
-  totalCount?: number;
-  leaderId?: string;
-  leaderName?: string;
-  total?: number;
-  children?: OrganizationItem[];
-}
-
 interface PositionValue {
   left: number;
   top: number;
@@ -54,15 +40,15 @@ type Key = string | number;
 
 const Organization: React.FC = () => {
   const { userInfo } = useContext(Context);
-  const [organization, setOrganization] = useState<OrganizationItem[]>([]);
+  const [organization, setOrganization] = useState<IOrganizationItem[]>([]);
   const [expandIds, setExpandIds] = useState<Key[]>([]);
   const [position, setPosition] = useState<PositionValue>({ left: 0, top: 0 });
   const [showDepart, setShowDepart] = useState<boolean>(false);
   const [departmentVisible, setDepartmentVisible] = useState<boolean>(false);
   const [isAddDepart, setIsAddDepart] = useState<boolean>(true);
-  const [currentNode, setCurrentNode] = useState<OrganizationItem & StaffItem>({});
+  const [currentNode, setCurrentNode] = useState<IOrganizationItem & StaffItem>({});
   const [deleteVisible, setDeleteVisible] = useState<boolean>(false);
-  const [searchList, setSearchList] = useState<OrganizationItem[]>([]);
+  const [searchList, setSearchList] = useState<IOrganizationItem[]>([]);
   const [staffList, setStaffList] = useState<StaffItem[]>([]);
   const [displayType, setDisplayType] = useState<number>(0);
   const [leaderVisible, setLeaderVisible] = useState<boolean>(false);
@@ -91,10 +77,10 @@ const Organization: React.FC = () => {
    * @param key
    * @param type
    */
-  const moveData = (data: OrganizationItem[], key: string, type: string): OrganizationItem[] => {
+  const moveData = (data: IOrganizationItem[], key: string, type: string): IOrganizationItem[] => {
     const copyData = data.slice(0);
     const isNewStaffDepart = Number(copyData[0].deptId) === -1;
-    let newStaffDepart: OrganizationItem[] = [];
+    let newStaffDepart: IOrganizationItem[] = [];
     if (isNewStaffDepart) {
       newStaffDepart = copyData.splice(0, 1);
     }
@@ -134,7 +120,7 @@ const Organization: React.FC = () => {
    * 格式化数据源
    * @param data
    */
-  const formatData = (data: OrganizationItem[]): OrganizationItem[] => {
+  const formatData = (data: IOrganizationItem[]): IOrganizationItem[] => {
     if (data.length === 0) {
       return [];
     }
@@ -153,7 +139,7 @@ const Organization: React.FC = () => {
    * @param key
    * @param children
    */
-  const updateData = (list: OrganizationItem[], key: string, children: OrganizationItem[]): OrganizationItem[] => {
+  const updateData = (list: IOrganizationItem[], key: string, children: IOrganizationItem[]): IOrganizationItem[] => {
     return list.map((item) => {
       if (item.deptId === key) {
         return {
@@ -190,7 +176,7 @@ const Organization: React.FC = () => {
    * @param data
    * @param node
    */
-  const updateNodeInfo = (data: OrganizationItem[], node: OrganizationItem): OrganizationItem[] => {
+  const updateNodeInfo = (data: IOrganizationItem[], node: IOrganizationItem): IOrganizationItem[] => {
     return data.map((item) => {
       if (item.deptId === node.deptId) {
         return node;
@@ -220,10 +206,10 @@ const Organization: React.FC = () => {
    * @param data
    * @param node
    */
-  const addData = (data: OrganizationItem[], node: OrganizationItem): OrganizationItem[] => {
+  const addData = (data: IOrganizationItem[], node: IOrganizationItem): IOrganizationItem[] => {
     return data.map((item) => {
       if (item.deptId === currentNode.deptId) {
-        const parentNode: OrganizationItem = {
+        const parentNode: IOrganizationItem = {
           ...currentNode,
           isLeaf: false,
           children: formatData([...(item.children || []), node])
@@ -272,7 +258,7 @@ const Organization: React.FC = () => {
       if (isAddDepart) {
         message.success('添加成功');
         if ((currentNode.isLeaf || (currentNode.children || []).length > 0) && typeof res === 'number') {
-          const newDepart: OrganizationItem = {
+          const newDepart: IOrganizationItem = {
             deptId: String(res),
             ...values,
             deptType: 0,
@@ -297,7 +283,7 @@ const Organization: React.FC = () => {
    * 删除节点
    * @param data
    */
-  const deleteData = (data: OrganizationItem[]): OrganizationItem[] => {
+  const deleteData = (data: IOrganizationItem[]): IOrganizationItem[] => {
     return data.map((item) => {
       const index: number = (item.children || []).findIndex((item) => item.deptId === currentNode.deptId);
       if (index > -1) {
@@ -441,7 +427,7 @@ const Organization: React.FC = () => {
               {item.staffName}
             </li>
           ))}
-          {searchList.map((item: OrganizationItem) => (
+          {searchList.map((item: IOrganizationItem) => (
             <li
               key={item.deptId}
               className={classNames(style.searchItem, {
@@ -460,7 +446,11 @@ const Organization: React.FC = () => {
           <StaffDetail staffId={currentNode.staffId} />
             )
           : (
-          <StaffList staffListRef={staffListRef} departmentId={currentNode.deptId!} deptType={currentNode.deptType!} />
+          <StaffList
+            staffListRef={staffListRef}
+            department={currentNode as IOrganizationItem}
+            deptType={currentNode.deptType!}
+          />
             )}
       </div>
       <ul
@@ -570,7 +560,7 @@ const Organization: React.FC = () => {
           visible={leaderVisible}
           onClose={() => setLeaderVisible(false)}
           onOk={(leaderInfo) => {
-            const newNode: OrganizationItem = {
+            const newNode: IOrganizationItem = {
               ...currentNode,
               leaderId: leaderInfo.staffId || '',
               leaderName: leaderInfo.staffName || ''

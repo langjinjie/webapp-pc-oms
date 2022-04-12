@@ -201,16 +201,17 @@ export interface ISensitiveSearchParam {
 
 // 组织架构
 export interface IOrganizationItem {
-  id?: string;
-  name?: string;
-  key?: string;
-  title?: string;
-  isParent?: boolean;
+  deptId?: string;
+  deptName?: string;
+  deptType?: number;
+  dType?: number;
+  effCount?: number;
   isLeaf?: boolean;
   index?: number;
-  total?: number;
+  totalCount?: number;
   leaderId?: string;
-  isRoot?: boolean;
+  leaderName?: string;
+  total?: number;
   children?: IOrganizationItem[];
 }
 // 组织架构员工列表
@@ -231,6 +232,7 @@ export interface IDepStaffList {
   accountStartTime?: string;
   accountEndTime?: string;
   isDeleted: number;
+  sign?: boolean;
 }
 // 批量导入员工历史记录
 export interface IStaffImpList {
