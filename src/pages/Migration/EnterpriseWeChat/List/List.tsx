@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 import classNames from 'classnames';
 
 import styles from './style.module.less';
 import { Button, PaginationProps } from 'antd';
-import PieChart from './PieChart';
+import PieChart, { PieDataItem } from './PieChart';
 import { Icon, NgTable } from 'src/components';
 import { columns } from './Config';
 import { useDocumentTitle } from 'src/utils/base';
 import EmptyTask from '../components/EmptyTask/EmptyTask';
 import DetailModal from '../components/DetailModal/DetailModal';
-import { queryTransferCorp } from 'src/apis/migration';
+import { queryTransferCorp, queryTransferSummary } from 'src/apis/migration';
+import { percentage } from 'src/utils/tools';
 
-const EnterPriseWechatList: React.FC = () => {
+const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('好友迁移-企微好友');
   const [isEmpty, setIsEmpty] = useState(false);
   const [visibleDetail, setVisibleDetail] = useState(false);
@@ -22,7 +23,13 @@ const EnterPriseWechatList: React.FC = () => {
     targetCorpId: '',
     targetCorpName: '年高总部'
   });
-  const history = useHistory();
+  const [pieChartData, setPieCharData] = useState<PieDataItem[]>([]);
+  const [pieInfo, setPieInfo] = useState({
+    transferSuccNum: 0,
+    unTransferNum: 0,
+    updateTime: '2022-04-11 12:00:00',
+    totalNum: 0
+  });
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -34,16 +41,14 @@ const EnterPriseWechatList: React.FC = () => {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [tableSource] = useState([{}]);
-  const handleEdit = () => {
-    console.log('edit');
-    setPagination((pagination) => ({ ...pagination }));
-  };
+
   const deleteItem = () => {
     console.log('edit');
   };
-  const viewItem = () => {
+  const viewItem = (taskId: string) => {
     console.log('edit');
-    setVisibleDetail(true);
+    history.push('/enterprise/addTask?taskId=' + taskId);
+    // setVisibleDetail(true);
   };
   const changeItemStatus = () => {
     console.log('edit');
@@ -52,8 +57,18 @@ const EnterPriseWechatList: React.FC = () => {
     setLoading(false);
   }, []);
 
-  const getPieInfo = () => {
+  const getPieInfo = async () => {
     console.log('获取饼图信息');
+    const res = await queryTransferSummary();
+    setPieInfo(res || {});
+    console.log(res);
+    setPieCharData([
+      { value: 41, name: '迁移成功' },
+      {
+        value: 64,
+        name: '待迁移'
+      }
+    ]);
   };
 
   const getTaskList = () => {
@@ -73,6 +88,8 @@ const EnterPriseWechatList: React.FC = () => {
 
   useEffect(() => {
     getTransferInfo();
+    // 测试用的
+    getPieInfo();
   }, []);
 
   // 创建任务成功
@@ -83,7 +100,10 @@ const EnterPriseWechatList: React.FC = () => {
     console.log(transferInfo);
   };
 
-  const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus });
+  const onPaginationChange = () => {
+    setPagination(pagination);
+  };
+  const myColumns = columns({ deleteItem, viewItem, changeItemStatus });
   return (
     <div className={classNames(styles.migration, 'container')}>
       {isEmpty
@@ -109,7 +129,7 @@ const EnterPriseWechatList: React.FC = () => {
               </div>
 
               <div className={classNames(styles.kanbanRight, 'flex cell')}>
-                <PieChart></PieChart>
+                <PieChart data={pieChartData}></PieChart>
                 <div className={classNames(styles.pieInfo, 'flex cell vertical justify-between')}>
                   <div className={classNames(styles.pieData, 'flex')}>
                     <div>
@@ -117,17 +137,17 @@ const EnterPriseWechatList: React.FC = () => {
                         <i className={classNames(styles.pieTag, styles.pieTag_success)}></i>
                         <span className="font12 color-text-regular">迁移成功</span>
                       </div>
-                      <div className="mt10 font16">550（55.0%）</div>
+                      <div className="mt10 font16">41（{percentage(41, 101)}）</div>
                     </div>
                     <div className="ml50">
                       <div className={styles.pieBar}>
                         <i className={classNames(styles.pieTag, styles.pieTag_wait)}></i>
                         <span className="font12 color-text-regular">待迁移</span>
                       </div>
-                      <div className="mt10 font16">550（55.0%）</div>
+                      <div className="mt10 font16">60（{percentage(60, 101)}）</div>
                     </div>
                   </div>
-                  <div className="mt6 font12 color-text-placeholder">饼状图数据更新于 2022-03-12 17:29:17</div>
+                  <div className="mt6 font12 color-text-placeholder">饼状图数据更新于 {pieInfo.updateTime}</div>
                 </div>
               </div>
             </section>
@@ -142,7 +162,13 @@ const EnterPriseWechatList: React.FC = () => {
             </div>
           </div>
 
-          <NgTable loading={loading} pagination={pagination} columns={myColumns} dataSource={tableSource} />
+          <NgTable
+            loading={loading}
+            pagination={pagination}
+            columns={myColumns}
+            dataSource={tableSource}
+            paginationChange={onPaginationChange}
+          />
         </div>
           )}
 

@@ -21,9 +21,18 @@ type ECOption = echarts.ComposeOption<
   PieSeriesOption | TitleComponentOption | TooltipComponentOption | LegendComponentOption
 >;
 
-const MyPieChart: React.FC = () => {
+export interface PieDataItem {
+  value: number;
+  name: string;
+}
+
+interface pieChartProps {
+  data: PieDataItem[];
+}
+const MyPieChart: React.FC<pieChartProps> = ({ data }) => {
   const chartRef: React.LegacyRef<HTMLDivElement> = useRef(null);
   useEffect(() => {
+    console.log(data);
     echarts.use([
       TitleComponent,
       TooltipComponent,
@@ -56,15 +65,12 @@ const MyPieChart: React.FC = () => {
           radius: 50,
           width: 120,
           color: ['#a1cdff', '#bbe7d9'],
-          data: [
-            { value: 12, name: '迁移成功' },
-            { value: 100, name: '待迁移' }
-          ]
+          data: data
         }
       ]
     };
     myChart.setOption(option);
-  }, []);
+  }, [data]);
   return (
     <div ref={chartRef} style={{ height: '146px', width: '146px' }}>
       饼图

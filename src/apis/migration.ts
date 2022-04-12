@@ -18,8 +18,8 @@ export const queryTransferStaffList: HttpFC = (param) => {
 };
 
 // 1.4、查询客户迁移数据概要
-export const queryTransferSummary: HttpFC = (param) => {
-  return http.post('/tenacity-admin/api/transfer/data/summary', param);
+export const queryTransferSummary: HttpVoid = () => {
+  return http.post('/tenacity-admin/api/transfer/data/summary');
 };
 // 1.5 查询群发任务列表
 export const getTransferTaskList: HttpFC = (param) => {
