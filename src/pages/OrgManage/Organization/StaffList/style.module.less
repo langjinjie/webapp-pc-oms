@@ -38,10 +38,13 @@
         padding-right: 16px;
       }
     }
-    .sign {
+    tr.sign {
       :global {
         td {
-          border-bottom: 37px solid #f4f7fe !important;
+          border-bottom: 37px solid #f4f7fe;
+          &::after {
+            bottom: -37px;
+          }
         }
       }
     }
