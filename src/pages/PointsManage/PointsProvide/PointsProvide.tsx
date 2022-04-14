@@ -189,7 +189,7 @@ const PointsProvide: React.FC = () => {
           <Form.Item className={style.label} name="staffName" label="客户经理姓名：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />
           </Form.Item>
-          <Form.Item name="deptIds" label="部门">
+          <Form.Item name="deptIds" label="选择部门">
             <TreeSelect
               virtual={false}
               fieldNames={{ label: 'deptName', value: 'deptId', children: 'children' }}
