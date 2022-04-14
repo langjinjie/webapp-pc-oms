@@ -110,7 +110,7 @@ const TableColumns = (
   ];
   // 输入框失去焦点
   const inputOnblurHandle = async (row: ISendPointsDetail) => {
-    if (remark !== row.remark) {
+    if (remark !== (row.remark || '')) {
       const res = await requestModifyRemark({ rewardId: row.rewardId, remark: remark || ' ' });
       if (res) {
         row.remark = remark;

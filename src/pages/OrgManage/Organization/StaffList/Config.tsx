@@ -12,7 +12,7 @@ const TableColumns = (): ColumnsType<any> => [
       return (
         <span>
           {row.staffName}
-          {!!row.isLeader && <span className={style.isLeader}>上级</span>}
+          {!!row.isLeader && <span className={style.isLeader}>{row.deptLeaderTag || '上级'}</span>}
         </span>
       );
     }

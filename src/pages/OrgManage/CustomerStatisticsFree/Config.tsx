@@ -42,14 +42,20 @@ export const tableColumns = (): ColumnsType<CustomerProps> => [
   {
     title: '客户姓名',
     dataIndex: 'remarkName',
-    width: 160,
+    width: 130,
+    render: (value) => <span>{value || UNKNOWN}</span>
+  },
+  {
+    title: '外部联系人Id',
+    dataIndex: 'externalUserId',
+    width: 320,
     render: (value) => <span>{value || UNKNOWN}</span>
   },
   {
     title: '昵称',
     dataIndex: 'name',
     align: 'left',
-    width: 200,
+    width: 140,
     ellipsis: {
       showTitle: false
     }
@@ -58,7 +64,7 @@ export const tableColumns = (): ColumnsType<CustomerProps> => [
     title: '车牌号码',
     dataIndex: 'carNumber',
     align: 'left',
-    width: 200,
+    width: 140,
     ellipsis: {
       showTitle: false
     },
@@ -99,7 +105,7 @@ export const tableColumns = (): ColumnsType<CustomerProps> => [
   {
     title: '添加理由',
     dataIndex: 'addReason',
-    width: 200,
+    width: 180,
     ellipsis: {
       showTitle: false
     },

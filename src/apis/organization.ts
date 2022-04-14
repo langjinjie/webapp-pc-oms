@@ -70,19 +70,5 @@ export const exportOrganization: VoidFunction = () => {
  * 查询部门类型
  */
 export const queryDepartTypes: VoidFunction = () => {
-  return Promise.resolve([
-    {
-      id: 1,
-      name: '保司'
-    },
-    {
-      id: 2,
-      name: '省公司'
-    },
-    {
-      id: 3,
-      name: '团队'
-    }
-  ]);
-  return http.post('/tenacity-admin/api/stafforg/type');
+  return http.post('/tenacity-admin/api/stafforg/getdepttype');
 };

@@ -141,7 +141,11 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                   </dd>
                   <dd className={styles.staffTag}>
                     <span className={styles.staffTag_primary}>{staffInfo.isDeleted ? '离职' : '在职'}</span>
-                    {staffInfo.isLeader ? <span className={styles.staffTag_warning}>上级</span> : null}
+                    {staffInfo.isLeader
+                      ? (
+                      <span className={styles.staffTag_warning}>{staffInfo.deptLeaderTag || '上级'}</span>
+                        )
+                      : null}
                   </dd>
                 </dl>
                 <ul className={styles.infoList}>
@@ -235,7 +239,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="部门类型" name="businessModel">
+                      <Form.Item label="部门类型" name="dName">
                         <EditText readOnly={true} />
                       </Form.Item>
                     </li>
