@@ -138,7 +138,6 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
     if (addScopeParam.visible) {
       (async () => {
         setTreeData(await getCorpOrg());
-        setFlatTreeData(await getCorpOrg());
       })();
     } else {
       onResetHandle();
