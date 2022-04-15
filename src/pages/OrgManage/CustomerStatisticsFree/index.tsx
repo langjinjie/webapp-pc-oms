@@ -3,10 +3,17 @@ import { Button, message, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, CustomerProps, tableColumns } from './Config';
 import { AddCustomerFreeModal } from './Components/AddCustomerModal';
-import { addFreeCustomer, batchAddFreeCustomer, delFreeCustomer, getCustomerFreeList } from 'src/apis/orgManage';
+import {
+  addFreeCustomer,
+  batchAddFreeCustomer,
+  delFreeCustomer,
+  exportFreeList,
+  getCustomerFreeList
+} from 'src/apis/orgManage';
 import DeleteModal from '../StatisticsFree/Components/DeleteModal/DeleteModal';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import BatchAddResult from './Components/BatchAddResultModal';
+import { exportFile } from 'src/utils/base';
 
 interface BatchAddResultProps {
   successCount: number;
@@ -151,6 +158,12 @@ const CustomerStatisticsFree: React.FC = () => {
       'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/%E5%AE%A2%E6%88%B7%E5%85%8D%E7%BB%9F%E8%AE%A1%E5%90%8D%E5%8D%95-%E6%89%B9%E9%87%8F%E4%B8%8A%E4%BC%A0%E6%A8%A1%E6%9D%BF.xlsx';
   };
 
+  const exportList = async () => {
+    console.log('导出');
+    const { data } = await exportFreeList(formParams);
+    exportFile(data, '客户免统计名单');
+  };
+
   return (
     <div className="container">
       <div className="header">
@@ -185,6 +198,10 @@ const CustomerStatisticsFree: React.FC = () => {
             disabled={selectedRowKeys.length === 0}
           >
             删除
+          </Button>
+
+          <Button type="primary" shape="round" size="large" onClick={exportList}>
+            导出
           </Button>
         </div>
         <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
