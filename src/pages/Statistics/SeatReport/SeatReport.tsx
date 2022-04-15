@@ -221,8 +221,14 @@ const SeatReport: React.FC = () => {
       case 5:
         return (
           <div key={item.sort} className={style.teamArea}>
-            <div className={style.teamName} style={{ backgroundImage: `url(${item.modulLogoUrl})` }}>
-              {item.moduleName}
+            <div className={style.teamName}>
+              <img
+                className={style.teamImg}
+                src={`${item.modulLogoUrl}?t=${Date.now()}`}
+                crossOrigin="anonymous"
+                alt=""
+              />
+              <span className={style.teamNameText}>{item.moduleName}</span>
             </div>
             <div className={style.areaItem}>
               <dt className={style.areaMark} />
