@@ -1,12 +1,18 @@
 .wrap {
   padding: 30px;
+  min-width: 1240px;
   .form {
     .antSpace {
+      flex-wrap: wrap;
       margin-bottom: 20px;
+      .treeSelect {
+        width: 455px;
+      }
     }
     .antBtnSpace {
       width: 100%;
       justify-content: space-between;
+      flex-wrap: wrap;
       .resetBtn,
       .searchBtn {
         width: 88px;
@@ -72,5 +78,42 @@
   }
   .blackPoints {
     color: #f25555;
+  }
+}
+// 下拉菜单样式
+.treeSelectDropdown {
+  :global {
+    // 自定义滚动条
+    .ant-select-tree-list-holder {
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 5px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: rgb(239, 239, 239);
+        border-radius: 2px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #bfbfbf;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: #318cf5;
+      }
+
+      &::-webkit-scrollbar-corner {
+        background-color: #e6e7eb;
+      }
+    }
+    .ant-select-tree-treenode {
+      width: auto;
+      > span {
+        // flex-shrink: 0;
+        white-space: nowrap;
+      }
+    }
   }
 }

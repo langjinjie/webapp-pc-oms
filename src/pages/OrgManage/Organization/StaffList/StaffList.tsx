@@ -2,9 +2,15 @@ import React, { useEffect, useState, useImperativeHandle, MutableRefObject } fro
 import { useHistory } from 'react-router-dom';
 import { Button, Form, Space, Select, Input, message, Modal } from 'antd';
 import { NgTable } from 'src/components';
+import { exportFile } from 'src/utils/base';
 import { TableColumns, TablePagination } from './Config';
 import MultiSetting from './MultiSetting/MultiSetting';
-import { requestGetDepStaffList, requestDownStaffList, requestDelStaffList } from 'src/apis/orgManage';
+import {
+  requestGetDepStaffList,
+  requestDownStaffList,
+  requestDelStaffList,
+  exportSpecialList
+} from 'src/apis/orgManage';
 import { IDepStaffList } from 'src/utils/interface';
 import style from './style.module.less';
 
@@ -113,6 +119,18 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
     }
   };
 
+  const downloadSpecialList = async () => {
+    const res = await exportSpecialList({
+      deptType,
+      deptId,
+      staffIds: selectedRowKeys,
+      ...searchParam
+    });
+    if (res) {
+      exportFile(res.data, '运营专属报表');
+    }
+  };
+
   // 确认删除
   const delOnOkHandle = async () => {
     const res = await requestDelStaffList({ staffIds: selectedRowKeys });
@@ -154,6 +172,9 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
         </Button>
         <Button type="primary" className={style.btn} onClick={downLoadStaffList}>
           批量导出信息
+        </Button>
+        <Button type="primary" className={style.btn} onClick={downloadSpecialList}>
+          导出运营专属报表
         </Button>
         <Button
           type="primary"

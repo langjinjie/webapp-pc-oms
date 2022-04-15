@@ -45,6 +45,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
   const [form] = useForm();
+  const { SHOW_ALL } = TreeSelect;
   const type: string = getQueryParam('type');
 
   /**
@@ -251,6 +252,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
             disabled={+type === 1}
             multiple
             allowClear
+            showCheckedStrategy={SHOW_ALL}
             placeholder="请选择可见范围"
             dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
             // loadData={onLoadData}

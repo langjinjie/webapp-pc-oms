@@ -20,6 +20,7 @@ import { Context } from 'src/store';
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
+import EditDepart from './components/EditDepart';
 import style from './style.module.less';
 
 const { Search } = Input;
@@ -33,6 +34,7 @@ interface OrganizationItem {
   deptId?: string;
   deptName?: string;
   deptType?: number;
+  dType?: number;
   effCount?: number;
   isLeaf?: boolean;
   index?: number;
@@ -57,7 +59,6 @@ const Organization: React.FC = () => {
   const [position, setPosition] = useState<PositionValue>({ left: 0, top: 0 });
   const [showDepart, setShowDepart] = useState<boolean>(false);
   const [departmentVisible, setDepartmentVisible] = useState<boolean>(false);
-  const [departmentName, setDepartmentName] = useState<string>('');
   const [isAddDepart, setIsAddDepart] = useState<boolean>(true);
   const [currentNode, setCurrentNode] = useState<OrganizationItem & StaffItem>({});
   const [deleteVisible, setDeleteVisible] = useState<boolean>(false);
@@ -258,12 +259,10 @@ const Organization: React.FC = () => {
   /**
    * 保存部门
    */
-  const saveDepart = async () => {
-    if (!departmentName) {
-      return message.error('请输入部门名称！');
-    }
+  const saveDepart = async (values: any) => {
+    console.log(values);
     const param: any = {
-      deptName: departmentName,
+      ...values,
       parentId: isAddDepart ? currentNode.deptId : '',
       deptId: isAddDepart ? '' : currentNode.deptId
     };
@@ -275,7 +274,7 @@ const Organization: React.FC = () => {
         if ((currentNode.isLeaf || (currentNode.children || []).length > 0) && typeof res === 'number') {
           const newDepart: OrganizationItem = {
             deptId: String(res),
-            deptName: departmentName,
+            ...values,
             deptType: 0,
             effCount: 0,
             isLeaf: true
@@ -286,7 +285,7 @@ const Organization: React.FC = () => {
         setOrganization(
           updateNodeInfo(organization, {
             ...currentNode,
-            deptName: departmentName
+            ...values
           })
         );
         message.success('修改成功');
@@ -496,7 +495,6 @@ const Organization: React.FC = () => {
           onClick={() => {
             setDepartmentVisible(true);
             setIsAddDepart(true);
-            setDepartmentName('');
           }}
         >
           添加子部门
@@ -508,12 +506,11 @@ const Organization: React.FC = () => {
           onClick={() => {
             if (currentNode.deptType === 0) {
               setDepartmentVisible(true);
-              setDepartmentName(currentNode.deptName!);
               setIsAddDepart(false);
             }
           }}
         >
-          修改名称
+          修改部门
         </li>
         <li className={style.operationItem} onClick={() => setLeaderVisible(true)}>
           设置上级
@@ -544,20 +541,14 @@ const Organization: React.FC = () => {
         </li>
       </ul>
       <div onClick={(e) => e.stopPropagation()}>
-        <Modal
+        <EditDepart
+          deptName={currentNode.deptName}
+          dType={currentNode.dType}
           visible={departmentVisible}
           onClose={() => setDepartmentVisible(false)}
-          title={`${isAddDepart ? '添加' : '修改'}部门`}
-          onOk={() => saveDepart()}
-        >
-          <Input
-            className={style.inputRadius}
-            placeholder="请输入部门名称"
-            maxLength={40}
-            value={departmentName}
-            onChange={(e) => setDepartmentName(e.target.value)}
-          />
-        </Modal>
+          isAddDepart={isAddDepart}
+          onOk={saveDepart}
+        />
         <Modal
           title="提示"
           visible={deleteVisible}

@@ -65,3 +65,10 @@ export const exportOrganization: VoidFunction = () => {
     }
   );
 };
+
+/**
+ * 查询部门类型
+ */
+export const queryDepartTypes: VoidFunction = () => {
+  return http.post('/tenacity-admin/api/stafforg/getdepttype');
+};

@@ -104,10 +104,14 @@ export const requestDelStaffList: HttpFC = (param) => {
 /**
  * 部门员工搜索接口
  */
-export const searchStaffList: HttpFC<{ keyWords: string; searchType?: 1 | 2; isDeleted?: boolean; isFull?: boolean }> =
-  (param) => {
-    return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
-  };
+export const searchStaffList: HttpFC<{
+  keyWords: string;
+  searchType?: 1 | 2;
+  isDeleted?: boolean;
+  isFull?: boolean;
+}> = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
+};
 /**
  * 坐席详情模块
  ********************************************/
@@ -179,5 +183,25 @@ export const batchAddFreeCustomer: HttpFC = (param, fn) => {
       fn?.(persent);
       console.log('persent', persent);
     }
+  });
+};
+
+/**
+ * 导出运营专属报表
+ * @param param
+ */
+export const exportSpecialList: HttpFC = (param: object) => {
+  return http.post('/tenacity-admin/api/stafforg/saffspecialexport', param, {
+    responseType: 'blob'
+  });
+};
+
+/**
+ * 导出客户免统计名单
+ *
+ */
+export const exportFreeList: HttpFC = (param: object) => {
+  return http.post('/tenacity-admin/api/free/clientFreeStats/downClientStat', param, {
+    responseType: 'blob'
   });
 };
