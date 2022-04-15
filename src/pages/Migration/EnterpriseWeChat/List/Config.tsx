@@ -16,6 +16,7 @@ export interface TaskProps {
   syncBank: number;
   isTop: boolean;
   tags?: string[];
+  corpId: string;
   corpNames: string[];
   staffTotalNum: number; // 需执行群发任务的员工总数
 
@@ -32,12 +33,12 @@ export interface PaginationProps {
 }
 // 表哥配置项
 type colargsType = {
-  changeItemStatus: (record: any) => void;
-  viewItem: (taskId: string) => void;
-  deleteItem: (record: any) => void;
+  exportData: (taskId: string) => void;
+  viewItem: (task: TaskProps) => void;
+  operateItem: (taskId: string, operateType: number) => void;
 };
 const columns = (args: colargsType): ColumnsType<TaskProps> => {
-  const { changeItemStatus, viewItem, deleteItem } = args;
+  const { exportData, viewItem, operateItem } = args;
 
   return [
     { title: '任务名称', dataIndex: 'newsId', key: 'newsId', width: 100 },
@@ -109,13 +110,13 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
         <Space size="small">
           <a onClick={() => viewItem(record.taskId)}>查看</a>
           {record.syncBank === 1 && (
-            <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => changeItemStatus(record)}>
+            <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => operateItem(record, 1)}>
               <a>关闭</a>
             </Popconfirm>
           )}
-          {record.syncBank === 2 && <a onClick={() => changeItemStatus(record)}>明细</a>}
+          {record.syncBank === 2 && <a onClick={() => exportData(record.taskId)}>数据</a>}
           {record.taskStatus === 0 && (
-            <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => deleteItem(record)}>
+            <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => operateItem(record, 0)}>
               <a>删除</a>
             </Popconfirm>
           )}

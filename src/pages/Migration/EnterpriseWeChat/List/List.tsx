@@ -6,11 +6,11 @@ import styles from './style.module.less';
 import { Button, PaginationProps } from 'antd';
 import PieChart, { PieDataItem } from './PieChart';
 import { Icon, NgTable } from 'src/components';
-import { columns } from './Config';
-import { useDocumentTitle } from 'src/utils/base';
+import { columns, TaskProps } from './Config';
+import { exportFile, useDocumentTitle } from 'src/utils/base';
 import EmptyTask from '../components/EmptyTask/EmptyTask';
 import DetailModal from '../components/DetailModal/DetailModal';
-import { queryTransferCorp, queryTransferSummary } from 'src/apis/migration';
+import { exportTransferTask, operationTransferTask, queryTransferCorp, queryTransferSummary } from 'src/apis/migration';
 import { percentage } from 'src/utils/tools';
 
 const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
@@ -42,17 +42,22 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [tableSource] = useState([{}]);
 
-  const deleteItem = () => {
+  const operateItem = async (task: TaskProps, operateType: number) => {
     console.log('edit');
+    const res = await operationTransferTask({ taskId: task.taskId, corpId: task.corpId, operateType });
+
+    console.log(res);
   };
   const viewItem = (taskId: string) => {
     console.log('edit');
     history.push('/enterprise/addTask?taskId=' + taskId);
-    // setVisibleDetail(true);
   };
-  const changeItemStatus = () => {
-    console.log('edit');
+  const exportData = async (taskId: string) => {
+    const { data } = await exportTransferTask({ taskId });
+    exportFile(data, '客户免统计名单');
   };
+  const myColumns = columns({ operateItem, viewItem, exportData });
+
   useEffect(() => {
     setLoading(false);
   }, []);
@@ -103,7 +108,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   const onPaginationChange = () => {
     setPagination(pagination);
   };
-  const myColumns = columns({ deleteItem, viewItem, changeItemStatus });
+
   return (
     <div className={classNames(styles.migration, 'container')}>
       {isEmpty

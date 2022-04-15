@@ -201,6 +201,17 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     }
     return isJpgOrPng && isLt2M;
   };
+  const recommendPicBeforeUpload = (file: any) => {
+    const isJpgOrPng = file.type === 'image/jpeg';
+    if (!isJpgOrPng) {
+      message.error('只可以上传 JPG 格式的图片!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不可以超过 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+  };
 
   const onFinish = async (values: any) => {
     const { highlights, tags, ...otherValues } = values;
@@ -575,6 +586,18 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             </div>
           </Col>
         </Row>
+
+        <div className="sectionTitle" style={{ marginTop: '60px' }}>
+          <span className="bold margin-right20">推荐设置</span>
+        </div>
+        <Form.Item
+          label="推荐展示图片"
+          name="recommendImgUrl"
+          rules={[{ message: '请上传推荐图片' }]}
+          extra="为确保最佳展示效果，请上传 690*200像素高清图片，仅支持.jpg格式"
+        >
+          <NgUpload beforeUpload={recommendPicBeforeUpload} />
+        </Form.Item>
 
         {propsState.type !== '1' && (
           <div style={{ textAlign: 'center', width: 1000, marginTop: 32 }}>
