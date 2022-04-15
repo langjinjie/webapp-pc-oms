@@ -189,7 +189,7 @@ const PointsProvide: React.FC = () => {
           <Form.Item className={style.label} name="staffName" label="客户经理姓名：">
             <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />
           </Form.Item>
-          <Form.Item name="deptIds" label="请选择部门">
+          <Form.Item name="deptIds" label="部门">
             <TreeSelect
               virtual={false}
               fieldNames={{ label: 'deptName', value: 'deptId', children: 'children' }}
@@ -198,7 +198,7 @@ const PointsProvide: React.FC = () => {
               multiple
               showCheckedStrategy={SHOW_ALL}
               allowClear
-              placeholder="请选择可见范围"
+              placeholder="请选择部门"
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
               loadData={onLoadData}
               treeData={treeData}
