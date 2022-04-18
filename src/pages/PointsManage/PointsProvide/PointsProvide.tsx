@@ -198,7 +198,7 @@ const PointsProvide: React.FC = () => {
               multiple
               showCheckedStrategy={SHOW_ALL}
               allowClear
-              placeholder="请选择可见范围"
+              placeholder="请选择部门"
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
               loadData={onLoadData}
               treeData={treeData}
