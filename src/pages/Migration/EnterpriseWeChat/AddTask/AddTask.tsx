@@ -4,8 +4,8 @@ import { Form, Input, Button, Radio, DatePicker } from 'antd';
 import { ChoosedStaffList } from './component';
 import { ImageUpload } from 'src/components';
 import { getQueryParam } from 'lester-tools';
+import moment, { Moment } from 'moment';
 import DetailModal from 'src/pages/Migration/EnterpriseWeChat/components/DetailModal/DetailModal';
-import moment from 'moment';
 import style from './style.module.less';
 import classNames from 'classnames';
 
@@ -36,8 +36,26 @@ const AddTask: React.FC = () => {
     { value: 2, label: '全部' }
   ];
   // 禁止选择今天及之前的日期
-  const disabledDate = (current: moment.Moment) => {
-    return current < moment().endOf('day');
+  const disabledDate = (current: Moment) => {
+    return current < moment().startOf('days');
+  };
+  const range = (start: number, end: number) => {
+    const result = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  };
+  // 禁止选中此刻之前的时间
+  const disabledDataTime = (date: any, type: string) => {
+    if (type === 'start') {
+      if (date && date.format('YY-MM-DD') === moment().format('YY-MM-DD')) {
+        return {
+          disabledHours: () => range(0, moment().hours()),
+          disabledMinutes: () => range(0, moment().minutes())
+        };
+      }
+    }
   };
   const onRemoveHandle = () => {
     form.setFieldsValue({ ...form.getFieldsValue(), thumbnail: '' });
@@ -57,7 +75,10 @@ const AddTask: React.FC = () => {
         summary: '加我好友可以吗？有奖励哦',
         speechcraft: '为了更好地为您服务，请添加我的好友'
       };
-      const executionTime = [moment(res.startTime, 'YY年MM月DD日 HH:mm'), moment(res.endTime, 'YY年MM月DD日 HH:mm')];
+      const executionTime = [
+        moment(res.startTime, 'YYYY年MM月DD日 HH:mm'),
+        moment(res.endTime, 'YYYY年MM月DD日 HH:mm')
+      ];
       form.setFieldsValue({ ...res, executionTime, staffTotalNum: res.staffTotalNum + '人' });
     }, 100);
   };
@@ -67,17 +88,16 @@ const AddTask: React.FC = () => {
   };
   const onFinish = (value: any) => {
     console.log(value);
-    console.log(isReadOnly);
     if (isReadOnly) {
       history.goBack();
     } else {
       history.push('/enterprise');
     }
+    form.resetFields();
   };
   useEffect(() => {
-    if (!getQueryParam().isView) {
+    if (getQueryParam().taskId) {
       getTaskDetail();
-      console.log(setIsReadOnly);
       setIsReadOnly(true);
     }
   }, []);
@@ -124,8 +144,10 @@ const AddTask: React.FC = () => {
             <RangePicker
               showTime
               className={style.rangePicker}
-              format={'YY年MM月DD日 HH:mm'}
+              format={'YYYY年MM月DD日 HH:mm'}
               disabledDate={disabledDate}
+              // @ts-ignore
+              disabledTime={disabledDataTime}
               disabled={isReadOnly}
             />
           </Item>

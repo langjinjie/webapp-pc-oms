@@ -207,6 +207,15 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/lotteryManage',
     component: lazy(() => import('src/pages/PointsManage/LotteryManage/LotteryManage'))
+  },
+  // 好友迁移
+  {
+    path: '/enterprise',
+    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/List/List'))
+  },
+  {
+    path: '/personal',
+    component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
   }
 ];
 
@@ -233,16 +242,8 @@ export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
 
   // 好友迁移
   {
-    path: '/enterprise',
-    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/List/List'))
-  },
-  {
     path: '/enterprise/addTask',
     component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
-  },
-  {
-    path: '/personal',
-    component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
   },
   {
     path: '/personal/addTask',
