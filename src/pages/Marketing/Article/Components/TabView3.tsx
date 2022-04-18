@@ -1,20 +1,30 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Form, Input, Select, Button, message, Spin } from 'antd';
+import { Form, Input, Select, Button, message, Spin, Radio, RadioChangeEvent } from 'antd';
 import { getNewsDetail, saveNews, getTagsOrCategorys } from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import { NgEditor } from 'src/components';
 import NgUpload from '../../Components/Upload/Upload';
 import { WechatShare } from '../../Components/WechatShare/WechatShare';
+import { Icon } from 'lester-ui';
+import { DataItem } from 'src/utils/interface';
 
+import style from './style.module.less';
 interface TabView3Props {
   isEdit: boolean;
   newsId: string;
 }
+
 interface TypeProps {
   id: string;
   name: string;
   type: string;
+}
+
+interface recommendMarketProps {
+  marketId: string;
+  title: string;
+  recommendImgUrl?: string;
 }
 const TabView3: React.FC<TabView3Props> = (props) => {
   const [isGetDetailLoading, changeGetDetailLoading] = useState(false);
@@ -28,6 +38,22 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     editorHtml: '',
     editorHtmlChanged: ''
   });
+  const materialTypes: DataItem[] = [
+    {
+      id: '0',
+      name: '文章'
+    },
+    {
+      id: '2',
+      name: '产品'
+    },
+    {
+      id: '1',
+      name: '活动'
+    }
+  ];
+  const [recommendList, setRecommendList] = useState<recommendMarketProps[]>([]);
+  const [recomendType, setRecommendType] = useState(0);
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList, userInfo } =
     useContext(Context);
   // const { data, dispatch } = useContext(GlobalContent);
@@ -92,7 +118,26 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         {
           name: 'corpId',
           value: res.corpId || undefined
+        },
+        {
+          name: 'recommendType',
+          value: 0
+        },
+        {
+          name: 'recommendList',
+          value: [
+            { marketId: '12110', title: 'test', recommendImgUrl: 'http:baidu.com/test.png' },
+            {
+              marketId: '12111',
+              title: 'test',
+              recommendImgUrl: 'http:baidu.com/test.png'
+            }
+          ]
         }
+      ]);
+      setRecommendList([
+        { marketId: '12110', title: 'tes1t', recommendImgUrl: 'http:baidu.com/test.png' },
+        { marketId: '12111', title: 'tes2t', recommendImgUrl: 'http:baidu.com/test.png' }
       ]);
       changeGetDetailLoading(false);
     } catch (e) {
@@ -101,6 +146,8 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   };
 
   const onFinish = async (values: any) => {
+    console.log(values);
+    // return;
     try {
       const submitHTML = formData.editorHtmlChanged || formData.editorHtml;
       if (!submitHTML || submitHTML.length <= 7) {
@@ -144,6 +191,32 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     const { defaultImg, summary } = values;
     setFormData((formData) => ({ ...formData, defaultImg, summary }));
   };
+
+  const onRecommendTypeChange = (e: RadioChangeEvent) => {
+    console.log(e.target.value);
+    setRecommendType(+e.target.value);
+    setRecommendList([
+      { marketId: '1210', title: '测试文章1', recommendImgUrl: 'http:baidu.com/test.png' },
+      { marketId: '1211', title: '测试文章2', recommendImgUrl: 'http:baidu.com/test.png' }
+    ]);
+  };
+
+  const onRecommendSearch = (value: string) => {
+    console.log(value);
+  };
+
+  const recommendPicBeforeUpload = (file: any) => {
+    const isJpgOrPng = file.type === 'image/jpeg';
+    if (!isJpgOrPng) {
+      message.error('只可以上传 JPG 格式的图片!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不可以超过 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
   return (
     <Spin spinning={isGetDetailLoading} tip="加载中...">
       <Form
@@ -260,8 +333,85 @@ const TabView3: React.FC<TabView3Props> = (props) => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 3 }}>
-          <Button type="primary" shape="round" htmlType="submit" loading={isSubmitting}>
+        <Form.Item name={'recommendType'} label="推荐类型">
+          <Radio.Group onChange={onRecommendTypeChange}>
+            {materialTypes.map((item) => (
+              <Radio key={item.id} value={+item.id}>
+                {item.name}
+              </Radio>
+            ))}
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item label="推荐内容">
+          <Form.List name="recommendList">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, ...restFiled }, index) => {
+                  console.log(restFiled);
+                  return (
+                    <Form.Item key={key} required className={style.formListWrap} label={'素材' + (index + 1)}>
+                      {/* 缓存是否上下上下架数据 */}
+                      <Form.Item
+                        hidden
+                        name={[name, 'whetherDelete']}
+                        rules={[
+                          {
+                            validator: (rule, value, callback) => {
+                              console.log(rule, value, callback);
+                            }
+                          }
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+
+                      <Form.Item
+                        {...restFiled}
+                        name={[name, 'marketId']}
+                        rules={[{ required: true, message: '请重新选择' }]}
+                      >
+                        <Select
+                          placeholder="搜索对应素材标题在下拉框进行选择"
+                          allowClear
+                          showSearch
+                          onChange={(value) => console.log({ select: value })}
+                          onSearch={onRecommendSearch}
+                        >
+                          {recommendList.map((option) => (
+                            <Select.Option key={option.marketId} value={option.marketId}>
+                              {option.title}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      {/* 当是商品时展示图片模块 */}
+                      {recomendType === 2 && (
+                        <Form.Item
+                          {...restFiled}
+                          rules={[{ required: true, message: '请上传推荐图片' }]}
+                          extra="为确保最佳展示效果，请上传 690*200像素高清图片，仅支持.jpg格式"
+                          name={[name, 'recommendImgUrl']}
+                        >
+                          <NgUpload beforeUpload={recommendPicBeforeUpload} />
+                        </Form.Item>
+                      )}
+                      <Icon className={style.removeBtn} name="cangpeitubiao_shanchu" onClick={() => remove(name)} />
+                    </Form.Item>
+                  );
+                })}
+                {fields.length < 5 && (
+                  <Form.Item>
+                    <Button className={style.addBtn} onClick={() => add()}>
+                      <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" /> 添加
+                    </Button>
+                  </Form.Item>
+                )}
+              </>
+            )}
+          </Form.List>
+        </Form.Item>
+        <Form.Item wrapperCol={{ offset: 6 }}>
+          <Button type="primary" shape="round" className={style.submitBtn} htmlType="submit" loading={isSubmitting}>
             保存
           </Button>
         </Form.Item>

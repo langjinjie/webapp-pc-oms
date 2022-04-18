@@ -195,3 +195,13 @@ export const exportSpecialList: HttpFC = (param: object) => {
     responseType: 'blob'
   });
 };
+
+/**
+ * 导出客户免统计名单
+ *
+ */
+export const exportFreeList: HttpFC = (param: object) => {
+  return http.post('/tenacity-admin/api/free/clientFreeStats/downClientStat', param, {
+    responseType: 'blob'
+  });
+};

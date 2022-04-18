@@ -5,9 +5,10 @@ import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { UNKNOWN } from 'src/utils/base';
 import { Popconfirm, Space } from 'antd';
+import { percentage } from 'src/utils/tools';
 
 export interface TaskProps {
-  newsId: string;
+  taskId: string;
   title: string;
   key: string;
   age: number;
@@ -15,7 +16,14 @@ export interface TaskProps {
   syncBank: number;
   isTop: boolean;
   tags?: string[];
+  corpId: string;
   corpNames: string[];
+  staffTotalNum: number; // 需执行群发任务的员工总数
+
+  staffExecNum: number; // 已执行群发任务的员工数
+  clientTotalNum: number; // 客户总数
+  clientTransferNum: number; // 迁移成功的客户数
+  taskStatus: number; // 任务状态 0-未开始；1-进行中；2-已结束
 }
 export interface PaginationProps {
   current: number;
@@ -25,13 +33,12 @@ export interface PaginationProps {
 }
 // 表哥配置项
 type colargsType = {
-  handleEdit: (record: any) => void;
-  changeItemStatus: (record: any) => void;
-  viewItem: (record: any) => void;
-  deleteItem: (record: any) => void;
+  exportData: (taskId: string) => void;
+  viewItem: (task: TaskProps) => void;
+  operateItem: (taskId: string, operateType: number) => void;
 };
 const columns = (args: colargsType): ColumnsType<TaskProps> => {
-  const { handleEdit, changeItemStatus, viewItem, deleteItem } = args;
+  const { exportData, viewItem, operateItem } = args;
 
   return [
     { title: '任务名称', dataIndex: 'newsId', key: 'newsId', width: 100 },
@@ -46,24 +53,14 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
     },
     {
       title: '创建人',
-      dataIndex: 'title',
-      key: 'title',
-      width: 196,
-      ellipsis: { showTitle: true },
-      render: (text: string, record: any) => (
-        <a
-          onClick={() => {
-            viewItem(record);
-          }}
-        >
-          {record.title}
-        </a>
-      )
+      dataIndex: 'opName',
+      key: 'opName',
+      width: 196
     },
     {
       title: '开始时间',
-      key: 'createTime',
-      dataIndex: 'createTime',
+      key: 'startTime',
+      dataIndex: 'startTime',
       width: 160,
       render: (text: string) => {
         return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
@@ -71,8 +68,8 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
     },
     {
       title: '结束时间',
-      key: 'createTime',
-      dataIndex: 'createTime',
+      key: 'endTime',
+      dataIndex: 'endTime',
       width: 160,
       render: (text: string) => {
         return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
@@ -80,18 +77,28 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
     },
 
     {
-      title: '人员执行进度',
-      dataIndex: 'categoryName',
+      title: '员工执行进度',
       width: 140,
       key: 'categoryName',
       align: 'center',
-      render: (categoryName: string) => categoryName || UNKNOWN
+      render: (text, record) => {
+        return <span>{percentage(record.staffExecNum, record.staffTotalNum)}</span>;
+      }
     },
     {
       title: '客户迁移进度',
-      dataIndex: 'fromSource',
       width: 260,
-      align: 'center'
+      align: 'center',
+      render: (text, record) => <span>{percentage(record.clientTransferNum, record.clientTotalNum)}</span>
+    },
+    {
+      title: '任务状态',
+      width: 140,
+      key: 'taskStatus',
+      dataIndex: 'taskStatus',
+      render: (status: number) => {
+        return <span>{status === 0 ? '未开始' : status === 1 ? '进行中' : '已结束'}</span>;
+      }
     },
 
     {
@@ -101,17 +108,15 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       width: 220,
       render: (text, record) => (
         <Space size="small">
-          <a onClick={() => handleEdit(record)}>查看</a>
-          <a onClick={() => viewItem(record)}>查看</a>
-          {record.syncBank !== 1 && <a onClick={() => changeItemStatus(record)}>上架</a>}
-
+          <a onClick={() => viewItem(record.taskId)}>查看</a>
           {record.syncBank === 1 && (
-            <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => changeItemStatus(record)}>
-              <a>下架</a>
+            <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => operateItem(record, 1)}>
+              <a>关闭</a>
             </Popconfirm>
           )}
-          {record.syncBank !== 1 && (
-            <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => deleteItem(record)}>
+          {record.syncBank === 2 && <a onClick={() => exportData(record.taskId)}>数据</a>}
+          {record.taskStatus === 0 && (
+            <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => operateItem(record, 0)}>
               <a>删除</a>
             </Popconfirm>
           )}
