@@ -52,26 +52,27 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
       parentId: deptId
     }));
     // 将树结构添加到扁平结构中
-    setFlatTreeData([...flatTreeData, ...res1]);
+    setFlatTreeData((flatTreeData) => [...flatTreeData, ...res1]);
     res1.forEach((item: any) => {
       item.isLeaf = item.isLeaf ? 0 : 1;
     });
     return [...res1];
   };
 
-  // 处理字符节点
+  // 将已被选中的节点的所有后代节点过滤掉
   const filterChildren = (arr: ITreeDate[]) => {
     const newArr = [...arr];
     const newArr1: string[] = [];
     newArr.forEach((item) => {
       newArr.forEach((childrenItem) => {
+        if (item === childrenItem) return;
+        // 找出该选中节点的所有后代节点
         if (childrenItem.fullDeptId.split(',').includes(item.deptId)) {
-          if (item !== childrenItem) {
-            newArr1.push(childrenItem.deptId);
-          }
+          newArr1.push(childrenItem.deptId);
         }
       });
     });
+    // 过滤掉所有选中节点的后代节点
     return newArr.filter((item) => !newArr1.includes(item.deptId));
   };
   const onOk = async () => {
@@ -112,7 +113,9 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
   const onLoadDataHandle = async ({ key }: any) => {
     // 获取对应的子节点
     const res: any = await getCorpOrg(key);
-    res && setTreeData((treeData) => updateTreeData(treeData, key, res));
+    if (res) {
+      setTreeData((treeData) => updateTreeData(treeData, key, res));
+    }
   };
   // 展开/折叠触发
   const onExpandHandle = (expandedKeys: Key[]) => {
@@ -130,7 +133,6 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
   ) => {
     setAutoExpand(false);
     setCheckedKeys(checked as Key[]);
-    console.log('checked', checked);
   };
   useEffect(() => {
     if (addScopeParam.visible) {
@@ -144,23 +146,23 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
 
   // 自动展开以及自动勾选
   useEffect(() => {
-    setTimeout(() => {
-      if (flatTreeData.length && autoExpand) {
-        setTreeProps({
-          ...treeProps,
-          autoExpandParent: true,
-          expandedKeys: flatTreeData
-            .filter((item) =>
-              Array.from(new Set(depLsit.scopeFullDeptIds.replace(/,/g, ';').split(';'))).includes(item.deptId)
-            )
-            .map((filterItem) => filterItem.deptId)
-        });
-        const keys = flatTreeData
-          .filter((item) => depLsit.scopeDeptIds.split(';').includes(item.deptId))
-          .map((filterItem) => filterItem.deptId);
-        setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...keys])));
-      }
-    }, 200);
+    // setTimeout(() => {
+    if (flatTreeData.length && autoExpand) {
+      setTreeProps({
+        ...treeProps,
+        autoExpandParent: true,
+        expandedKeys: flatTreeData
+          .filter((item) =>
+            Array.from(new Set(depLsit.scopeFullDeptIds.replace(/,/g, ';').split(';'))).includes(item.deptId)
+          )
+          .map((filterItem) => filterItem.deptId)
+      });
+      const keys = flatTreeData
+        .filter((item) => depLsit.scopeDeptIds.split(';').includes(item.deptId))
+        .map((filterItem) => filterItem.deptId);
+      setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...keys])));
+    }
+    // }, 200);
   }, [flatTreeData]);
   return (
     <Modal
