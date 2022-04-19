@@ -370,6 +370,68 @@ const Organization: React.FC = () => {
     }
   };
 
+  /* const onDrop = (info: any) => {
+    console.log(info, 'onDrop');
+    const dropKey = info.node.deptId;
+    const dragKey = info.dragNode.deptId;
+    const dropPos = info.node.pos.split('-');
+    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+
+    const loop = (data: OrganizationItem[], key: string, callback: Function) => {
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].deptId === key) {
+          return callback(data[i], i, data);
+        }
+        if (data[i].children) {
+          loop(data[i].children || [], key, callback);
+        }
+      }
+    };
+    const data = [...organization];
+
+    // Find dragObject
+    let dragObj: OrganizationItem;
+    loop(data, dragKey, (item: OrganizationItem, index: number, arr: OrganizationItem[]) => {
+      arr.splice(index, 1);
+      dragObj = item;
+    });
+
+    if (!info.dropToGap) {
+      // Drop on the content
+      loop(data, dropKey, (item: OrganizationItem) => {
+        item.children = item.children || [];
+        // where to insert 示例添加到头部，可以是随意位置
+        item.children.unshift(dragObj);
+      });
+    } else if (
+      (info.node.props.children || []).length > 0 && // Has children
+      info.node.props.expanded && // Is expanded
+      dropPosition === 1 // On the bottom gap
+    ) {
+      loop(data, dropKey, (item: OrganizationItem) => {
+        item.children = item.children || [];
+        // where to insert 示例添加到头部，可以是随意位置
+        item.children.unshift(dragObj);
+        // in previous version, we use item.children.push(dragObj) to insert the
+        // item to the tail of the children
+      });
+    } else {
+      let ar: OrganizationItem[];
+      let i: number;
+      loop(data, dropKey, (item: OrganizationItem, index: number, arr: OrganizationItem[]) => {
+        ar = arr;
+        i = index;
+      });
+      if (dropPosition === -1) {
+        ar.splice(i, 0, dragObj);
+      } else {
+        ar.splice(i + 1, 0, dragObj);
+      }
+    }
+
+    setOrganization(data);
+  }; */
+
   useEffect(() => {
     setTitle('组织架构管理');
     initCorpOrgData();
@@ -426,6 +488,11 @@ const Organization: React.FC = () => {
                 setCurrentNode(selectedNodes[0]);
               }
             }}
+            /* draggable={(node: any) => node.deptType === 0}
+            onDragEnter={(info) => {
+              console.log(info, 'onDragEnter');
+            }}
+            onDrop={onDrop} */
           />
         </div>
         <ul style={{ display: displayType === 1 ? 'block' : 'none' }} className={style.searchList}>
