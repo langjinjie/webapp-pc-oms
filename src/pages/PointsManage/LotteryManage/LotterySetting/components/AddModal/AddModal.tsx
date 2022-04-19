@@ -147,7 +147,7 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
   // 自动展开以及自动勾选
   useEffect(() => {
     // setTimeout(() => {
-    if (flatTreeData.length && autoExpand) {
+    if (depLsit && flatTreeData.length && autoExpand) {
       setTreeProps({
         ...treeProps,
         autoExpandParent: true,
