@@ -61,12 +61,33 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
           )}
     </div>
   );
+
   // 点击删除文件
   const onRemoveHandle = (e: React.MouseEvent) => {
     if (disabled) return;
     e.stopPropagation();
     onRemove?.();
   };
+  const uploadImg = (
+    <div className={style.imgWrap}>
+      {loading
+        ? (
+        <LoadingOutlined />
+          )
+        : (
+        <div className={style.imgWrap}>
+          <div className={style.iconWrap}>
+            <Icon
+              className={classNames(style.delIcon, { [style.disabled]: disabled })}
+              name="shanchu"
+              onClick={onRemoveHandle}
+            />
+          </div>
+          <img className={style.img} src={value} alt="缩略图" />
+        </div>
+          )}
+    </div>
+  );
 
   return (
     <Upload
@@ -79,22 +100,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
       beforeUpload={beforeUpload}
       onChange={fileChange}
     >
-      {value
-        ? (
-        <div className={style.imgWrap}>
-          <div className={style.iconWrap}>
-            <Icon
-              className={classNames(style.delIcon, { [style.disabled]: disabled })}
-              name="shanchu"
-              onClick={onRemoveHandle}
-            />
-          </div>
-          <img className={style.img} src={value} alt="缩略图" />
-        </div>
-          )
-        : (
-            uploadButton
-          )}
+      {value ? uploadImg : uploadButton}
     </Upload>
   );
 };
