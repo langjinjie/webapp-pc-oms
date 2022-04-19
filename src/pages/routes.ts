@@ -207,6 +207,19 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/lotteryManage',
     component: lazy(() => import('src/pages/PointsManage/LotteryManage/LotteryManage'))
+  },
+  // 角色管理
+  {
+    path: '/roleOms',
+    component: lazy(() => import('src/pages/RoleManage/RoleOms/RoleOms'))
+  },
+  {
+    path: '/roleB',
+    component: lazy(() => import('src/pages/RoleManage/RoleB/RoleB'))
+  },
+  {
+    path: '/roleA',
+    component: lazy(() => import('src/pages/RoleManage/RoleA/RoleA'))
   }
 ];
 
@@ -373,7 +386,7 @@ export const menus: Menu[] = [
       { name: '加减积分', path: '/addSubPoints' },
       { name: '抽奖管理', path: '/lotteryManage' }
     ]
-  }
+  },
   // {
   //   name: '好友迁移',
   //   icon: 'a-bianzu101',
@@ -382,7 +395,18 @@ export const menus: Menu[] = [
   //     { name: '企微好友', path: '/enterprise' },
   //     { name: '个位好友', path: '/personal' }
   //   ]
-  // }
+  // },
+
+  {
+    name: '角色管理',
+    icon: 'icon_daohang_28_jigouguanli',
+    path: 'role',
+    children: [
+      { name: '后管角色管理', path: '/roleOms' },
+      { name: 'B端角色管理', path: '/roleB' },
+      { name: 'A端角色管理', path: '/roleA' }
+    ]
+  }
 ];
 
 if (process.env.NODE_ENV === 'development') {
