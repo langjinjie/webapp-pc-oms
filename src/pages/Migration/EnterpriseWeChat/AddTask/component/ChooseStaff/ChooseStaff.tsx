@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Icon } from 'src/components';
 import { StaffModal } from 'src/pages/Migration/EnterpriseWeChat/AddTask/component';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import style from './style.module.less';
+import { Context } from 'src/store';
 
 interface IChoosedStaffListProps {
   value?: CheckboxValueType[];
@@ -10,6 +11,7 @@ interface IChoosedStaffListProps {
 }
 
 const ChoosedStaffList: React.FC<IChoosedStaffListProps> = ({ value, onChange }) => {
+  const { setConfirmModalParam } = useContext(Context);
   const [selectedStaff, setSelectedStaff] = useState<any[]>([]);
   const [visible, setVisible] = useState(false);
   // 点击添加按钮
@@ -17,10 +19,20 @@ const ChoosedStaffList: React.FC<IChoosedStaffListProps> = ({ value, onChange })
     setVisible(true);
   };
   const onChangeHandle = (staffList: any[]) => {
-    onChange?.(staffList);
+    setConfirmModalParam({
+      visible: true,
+      title: '温馨提示',
+      tips: '是否需要全部删除已选中的执行人员？',
+      onOk () {
+        onChange?.(staffList);
+        setConfirmModalParam((param: any) => ({ ...param, visible: false }));
+      },
+      onCancel () {
+        setConfirmModalParam((param: any) => ({ ...param, visible: false }));
+      }
+    });
   };
   useEffect(() => {
-    console.log('value', value);
     setSelectedStaff(value || []);
   }, [value]);
   return (
@@ -32,13 +44,7 @@ const ChoosedStaffList: React.FC<IChoosedStaffListProps> = ({ value, onChange })
           <Icon className={style.clearSelected} name="biaoqian_quxiao" onClick={() => onChangeHandle([])} />
         </div>
       )}
-      <StaffModal
-        value={value}
-        visible={visible}
-        showCheckbox
-        onClose={() => setVisible(false)}
-        onChange={onChangeHandle}
-      />
+      <StaffModal value={value} visible={visible} showCheckbox onClose={() => setVisible(false)} onChange={onChange} />
     </div>
   );
 };

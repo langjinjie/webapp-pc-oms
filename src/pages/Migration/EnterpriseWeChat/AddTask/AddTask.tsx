@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Form, Input, Button, Radio, DatePicker } from 'antd';
+import { Form, Input, Button, Radio, DatePicker, message } from 'antd';
 import { ChoosedStaffList } from './component';
 import { ImageUpload } from 'src/components';
 import { getQueryParam } from 'lester-tools';
-import { requestCreateTransferTask } from 'src/apis/migration';
+import { requestCreateTransferTask, requestGetTaskDetail } from 'src/apis/migration';
 import moment, { Moment } from 'moment';
 import DetailModal from 'src/pages/Migration/EnterpriseWeChat/components/DetailModal/DetailModal';
 import style from './style.module.less';
@@ -50,7 +50,7 @@ const AddTask: React.FC = () => {
   // 禁止选中此刻之前的时间
   const disabledDataTime = (date: any, type: string) => {
     if (type === 'start') {
-      if (date && date.format('YY-MM-DD') === moment().format('YY-MM-DD')) {
+      if (!date || date.format('YY-MM-DD') === moment().format('YY-MM-DD')) {
         return {
           disabledHours: () => range(0, moment().hours()),
           disabledMinutes: () => range(0, moment().minutes())
@@ -62,40 +62,27 @@ const AddTask: React.FC = () => {
     form.setFieldsValue({ ...form.getFieldsValue(), thumbnail: '' });
   };
   // 获取任务详情
-  const getTaskDetail = () => {
-    setTimeout(() => {
-      const res = {
-        taskName: '理赔客户第一次迁移',
-        staffTotalNum: 9999,
-        clientType: 1,
-        startTime: '2022年3月16日 10:00',
-        endTime: '2022年3月18 24:00',
-        thumbnail:
-          'https://lanhu.oss-cn-beijing.aliyuncs.com/SketchPng01cbe22331317bc8ab6cb16e669d58876a01e744c78f1fefb4bdf567b44a283f',
-        title: '点我有惊喜',
-        summary: '加我好友可以吗？有奖励哦',
-        speechcraft: '为了更好地为您服务，请添加我的好友'
-      };
-      const executionTime = [
-        moment(res.startTime, 'YYYY年MM月DD日 HH:mm'),
-        moment(res.endTime, 'YYYY年MM月DD日 HH:mm')
-      ];
-      form.setFieldsValue({ ...res, executionTime, staffTotalNum: res.staffTotalNum + '人' });
-    }, 100);
+  const getTaskDetail = async (taskId: string) => {
+    const res = await requestGetTaskDetail({ taskId });
+    const executionTime = [
+      moment(res.startTime || '', 'YYYY年MM月DD日 HH:mm'),
+      moment(res.endTime || '', 'YYYY年MM月DD日 HH:mm')
+    ];
+    form.setFieldsValue({ ...res, executionTime, staffTotalNum: res.staffTotalNum + '人' });
   };
   // 查看任务明细
   const clickTaskDetail = () => {
     setDetailVisible(true);
   };
   const onFinish = async (value: any) => {
-    console.log(value);
     if (isReadOnly) {
       history.goBack();
+      form.resetFields();
     } else {
       const { taskName, clientType, executionTime, thumbnail, title, summary, speechcraft, staffList } = value;
       const startTime = executionTime[0].format('YYYY-MM-DD HH:mm:ss');
       const endTime = executionTime[1].format('YYYY-MM-DD HH:mm:ss');
-      await requestCreateTransferTask({
+      const res = await requestCreateTransferTask({
         taskName,
         clientType,
         startTime,
@@ -106,13 +93,16 @@ const AddTask: React.FC = () => {
         speechcraft,
         staffList
       });
-      // history.push('/enterprise');
+      if (res) {
+        form.resetFields();
+        message.success('创建任务成功');
+        history.push('/enterprise');
+      }
     }
-    form.resetFields();
   };
   useEffect(() => {
     if (getQueryParam().taskId) {
-      getTaskDetail();
+      getTaskDetail(getQueryParam().taskId);
       setIsReadOnly(true);
     }
   }, [location]);
@@ -194,7 +184,12 @@ const AddTask: React.FC = () => {
           >
             <ImageUpload onRemove={onRemoveHandle} disabled={isReadOnly} />
           </Item>
-          <Item name="title" className={style.formItem} label="链接标题：">
+          <Item
+            name="title"
+            className={style.formItem}
+            label="链接标题："
+            rules={[{ required: true, message: '请输入链接标题' }]}
+          >
             <Input
               className={classNames(style.input, style.titleInput)}
               showCount={!isReadOnly}
@@ -203,7 +198,12 @@ const AddTask: React.FC = () => {
               readOnly={isReadOnly}
             />
           </Item>
-          <Item name="summary" className={style.formItem} label="链接摘要：">
+          <Item
+            name="summary"
+            className={style.formItem}
+            label="链接摘要："
+            rules={[{ required: true, message: '请输入链接摘要' }]}
+          >
             <Input
               className={style.input}
               showCount={!isReadOnly}
@@ -212,9 +212,14 @@ const AddTask: React.FC = () => {
               readOnly={isReadOnly}
             />
           </Item>
-          <Item name="speechcraft" className={style.formItem} label="群发话术：">
+          <Item
+            name="speechcraft"
+            className={style.formItem}
+            label="群发话术："
+            rules={[{ required: true, message: '请输入链接标题' }]}
+          >
             <TextArea
-              className={style.input}
+              className={style.inputTextArea}
               showCount={!isReadOnly}
               maxLength={300}
               placeholder="请输入群发话术"

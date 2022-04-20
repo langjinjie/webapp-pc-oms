@@ -32,11 +32,12 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
   const getStaffList = async () => {
     const res = await queryTransferStaffList({ name, ...paginationParam });
     if (res) {
-      res.list = res.list.map((item: { staffId: string; staffName: string }) => ({
+      const list = res.list.map((item: { staffId: string; staffName: string; targetStaffId: string }) => ({
         value: item.staffId,
-        label: item.staffName
+        label: item.staffName,
+        disabled: !item.targetStaffId
       }));
-      setStaffList(res);
+      setStaffList({ total: res.total, list });
     }
   };
   const inputOnchange = (value: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,11 +46,12 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
   // 输入框按下回车键
   const inputOnKeyDownHandle = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      setPaginationParam((param) => ({ ...param }));
+      setPaginationParam((param) => ({ ...param, pageNum: 1 }));
     }
   };
+  // 全选
   const onCheckAllChange = (e: any) => {
-    const currentList = staffList.list.map((item) => item.value);
+    const currentList = staffList.list.filter((filterItem) => !filterItem.disabled).map((item) => item.value);
     if (e.target.checked) {
       setCheckedList((checkedList) => Array.from(new Set([...checkedList, ...currentList])));
     } else {
@@ -58,13 +60,17 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
     setIndeterminate(false);
     setCheckAll(e.target.checked);
   };
+  // 选中
   const onChangeHandle = (list: CheckboxValueType[]) => {
-    const unCheckedList = staffList.list.map((item) => item.value).filter((item) => !list.includes(item));
+    const unCheckedList = staffList.list
+      .filter((filterItem) => !filterItem.disabled)
+      .map((item) => item.value)
+      .filter((item) => !list.includes(item));
     setCheckedList((checkedList) =>
       Array.from(new Set([...checkedList, ...list])).filter((item) => !unCheckedList.includes(item))
     );
-    setIndeterminate(!!list.length && list.length < staffList.list.length);
-    setCheckAll(list.length === staffList.list.length);
+    setIndeterminate(!!list.length && list.length < staffList.list.filter((filterItem) => !filterItem.disabled).length);
+    setCheckAll(list.length === staffList.list.filter((filterItem) => !filterItem.disabled).length);
   };
   const paginationOnchange = (pageNum: number) => {
     setPaginationParam((param) => ({ ...param, pageNum }));
@@ -75,14 +81,21 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
   };
   const onOk = () => {
     onChange?.(checkedList);
-    onClose();
+    onCloseHandle();
   };
   useEffect(() => {
-    if (value && value?.length) {
-      setCheckedList(value);
-    } else {
+    // 重置参数
+    if (visible) {
+      setPaginationParam((param) => ({ ...param, pageNum: 1 }));
+      setName('');
+    }
+  }, [visible]);
+  useEffect(() => {
+    // 取消已选中
+    if (!(value && value?.length)) {
       setCheckedList([]);
       setCheckAll(false);
+      setIndeterminate(false);
     }
   }, [value]);
   useEffect(() => {
@@ -91,8 +104,12 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
   useEffect(() => {
     // 全选样式控制
     if (showCheckbox) {
-      const checkAll = staffList.list.every((item) => checkedList.includes(item.value));
-      const indeterminate = staffList.list.some((item) => checkedList.includes(item.value));
+      const checkAll = staffList.list
+        .filter((filterItem) => !filterItem.disabled)
+        .every((item) => checkedList.includes(item.value));
+      const indeterminate = staffList.list
+        .filter((filterItem) => !filterItem.disabled)
+        .some((item) => checkedList.includes(item.value));
       setCheckAll(checkAll);
       setIndeterminate(!checkAll && indeterminate);
     }
@@ -101,6 +118,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
     <Modal
       width={680}
       centered
+      destroyOnClose
       className={style.wrap}
       onClose={onCloseHandle}
       visible={visible}
@@ -149,6 +167,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
           size="small"
           simple
           total={staffList.total}
+          current={paginationParam.pageNum}
           pageSize={paginationParam.pageSize}
           onChange={paginationOnchange}
           showSizeChanger={false}

@@ -75,7 +75,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
         <LoadingOutlined />
           )
         : (
-        <div className={style.imgWrap}>
+        <>
           <div className={style.iconWrap}>
             <Icon
               className={classNames(style.delIcon, { [style.disabled]: disabled })}
@@ -84,7 +84,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
             />
           </div>
           <img className={style.img} src={value} alt="缩略图" />
-        </div>
+        </>
           )}
     </div>
   );
