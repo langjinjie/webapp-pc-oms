@@ -21,20 +21,47 @@
     }
   }
   .checkboxGroupWrap {
-    min-height: 378px;
+    height: 378px;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
-    :global {
-      label.ant-checkbox-group-item {
-        margin: 0 0 20px 0;
-        flex: 0 0 50%;
+    .checkboxItemWrap {
+      position: relative;
+      height: 22px;
+      margin: 0 0 20px 0;
+      flex: 0 0 50%;
+      .checkboxItem {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        :global {
+          span + span {
+            display: inline-block;
+            width: 260px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+        }
+      }
+      .allLabel {
+        display: none;
+        padding: 5px;
+        background-color: #fff;
+        position: absolute;
+        bottom: 22px;
+        left: 0;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px rgb(143, 133, 133);
+      }
+      &:hover > .allLabel {
+        display: block;
       }
     }
   }
   .hideCheckbox {
     :global {
-      label.ant-checkbox-group-item {
+      label.ant-checkbox-wrapper {
         cursor: auto;
         .ant-checkbox {
           display: none;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Key, useEffect, useState } from 'react';
 import { Modal, Icon } from 'src/components';
 import { Checkbox, Input, Pagination } from 'antd';
 import { CheckboxValueType, CheckboxOptionType } from 'antd/lib/checkbox/Group';
@@ -19,6 +19,13 @@ interface IStaffList {
   list: CheckboxOptionType[];
 }
 
+interface IStaffInfo {
+  staffId: string;
+  staffName: string;
+  deptName: string;
+  targetStaffId: string;
+}
+
 const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onChange, showCheckbox }) => {
   const [staffList, setStaffList] = useState<IStaffList>({ total: 0, list: [] });
   const [name, setName] = useState('');
@@ -32,11 +39,20 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
   const getStaffList = async () => {
     const res = await queryTransferStaffList({ name, ...paginationParam });
     if (res) {
-      const list = res.list.map((item: { staffId: string; staffName: string; targetStaffId: string }) => ({
-        value: item.staffId,
-        label: item.staffName,
-        disabled: !item.targetStaffId
-      }));
+      const list = res.list.map((item: IStaffInfo) => {
+        if (showCheckbox) {
+          return {
+            value: item.staffId,
+            label: `${item.staffName}（${item.deptName.split('/').slice(1).join('-')}）`,
+            disabled: !item.targetStaffId
+          };
+        } else {
+          return {
+            value: item.staffId,
+            label: `${item.staffName}（${item.deptName.split('/').slice(1).join('-')}）`
+          };
+        }
+      });
       setStaffList({ total: res.total, list });
     }
   };
@@ -75,19 +91,22 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
   const paginationOnchange = (pageNum: number) => {
     setPaginationParam((param) => ({ ...param, pageNum }));
   };
-  // 关闭
-  const onCloseHandle = () => {
-    onClose();
-  };
+  // 提交;
   const onOk = () => {
     onChange?.(checkedList);
-    onCloseHandle();
+    onClose();
   };
   useEffect(() => {
     // 重置参数
     if (visible) {
       setPaginationParam((param) => ({ ...param, pageNum: 1 }));
       setName('');
+      setCheckedList(value || []);
+      // 清空执行人员时取消已选中
+      if (!(value && value?.length)) {
+        setCheckAll(false);
+        setIndeterminate(false);
+      }
     }
   }, [visible]);
   useEffect(() => {
@@ -122,7 +141,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
       centered
       destroyOnClose
       className={style.wrap}
-      onClose={onCloseHandle}
+      onClose={onClose}
       visible={visible}
       closable
       title="选择执行人员"
@@ -160,10 +179,18 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
       </div>
       <CheckboxGroup
         className={classNames(style.checkboxGroupWrap, { [style.hideCheckbox]: !showCheckbox })}
-        options={staffList.list}
-        value={checkedList}
         onChange={onChangeHandle}
-      />
+        value={checkedList}
+      >
+        {staffList.list.map((item) => (
+          <div key={item.value as Key} className={style.checkboxItemWrap}>
+            <Checkbox className={style.checkboxItem} value={item.value} disabled={item.disabled}>
+              {item.label}
+            </Checkbox>
+            <div className={style.allLabel}>{item.label}</div>
+          </div>
+        ))}
+      </CheckboxGroup>
       <div className={style.paginationWrap}>
         <Pagination
           size="small"
