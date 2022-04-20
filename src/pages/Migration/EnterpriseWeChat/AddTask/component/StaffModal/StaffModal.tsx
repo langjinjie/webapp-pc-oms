@@ -91,29 +91,24 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
   const paginationOnchange = (pageNum: number) => {
     setPaginationParam((param) => ({ ...param, pageNum }));
   };
-  // 关闭
-  const onCloseHandle = () => {
-    onClose();
-  };
+  // 提交;
   const onOk = () => {
     onChange?.(checkedList);
-    onCloseHandle();
+    onClose();
   };
   useEffect(() => {
     // 重置参数
     if (visible) {
       setPaginationParam((param) => ({ ...param, pageNum: 1 }));
       setName('');
+      setCheckedList(value || []);
+      // 清空执行人员时取消已选中
+      if (!(value && value?.length)) {
+        setCheckAll(false);
+        setIndeterminate(false);
+      }
     }
   }, [visible]);
-  useEffect(() => {
-    // 取消已选中
-    if (!(value && value?.length)) {
-      setCheckedList([]);
-      setCheckAll(false);
-      setIndeterminate(false);
-    }
-  }, [value]);
   useEffect(() => {
     getStaffList();
   }, [paginationParam]);
@@ -136,7 +131,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
       centered
       destroyOnClose
       className={style.wrap}
-      onClose={onCloseHandle}
+      onClose={onClose}
       visible={visible}
       closable
       title="选择执行人员"
