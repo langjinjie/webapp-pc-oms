@@ -226,7 +226,15 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     handleToggleOnlineState(type, record);
   };
 
-  const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleTop });
+  const myColumns = () => {
+    const res = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleTop });
+    // 根据时候为机构来过滤col
+    if (isMainCorp) {
+      return res;
+    } else {
+      return res.filter((column) => column.key !== 'corpNames');
+    }
+  };
   const isDisabled = (operationType: number | null, status: number) => {
     let _isDisabled = false;
     if (operationType) {
@@ -298,7 +306,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
       <div className={'pt5'}>
         <NgTable
           loading={loading}
-          columns={myColumns}
+          columns={myColumns()}
           rowSelection={rowSelection}
           dataSource={tableSource}
           pagination={pagination}

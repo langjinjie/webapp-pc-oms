@@ -4,7 +4,7 @@ import { ColumnsType } from 'antd/lib/table';
 
 import moment from 'moment';
 import { UNKNOWN } from 'src/utils/base';
-import { Popconfirm, Space } from 'antd';
+import { Popconfirm, Space, Tooltip } from 'antd';
 import { percentage } from 'src/utils/tools';
 
 export interface TaskProps {
@@ -35,13 +35,26 @@ export interface PaginationProps {
 type colargsType = {
   exportData: (taskId: string) => void;
   viewItem: (task: TaskProps) => void;
-  operateItem: (taskId: string, operateType: number) => void;
+  operateItem: (task: TaskProps, operateType: number) => void;
 };
 const columns = (args: colargsType): ColumnsType<TaskProps> => {
   const { exportData, viewItem, operateItem } = args;
 
   return [
-    { title: '任务名称', dataIndex: 'newsId', key: 'newsId', width: 100 },
+    {
+      title: '任务名称',
+      dataIndex: 'taskName',
+      key: 'taskName',
+      width: 100,
+      ellipsis: {
+        showTitle: false
+      },
+      render: (name) => (
+        <Tooltip placement="topLeft" title={name}>
+          {name || UNKNOWN}
+        </Tooltip>
+      )
+    },
     {
       title: '创建任务时间',
       key: 'createTime',
@@ -82,14 +95,24 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       key: 'categoryName',
       align: 'center',
       render: (text, record) => {
-        return <span>{percentage(record.staffExecNum, record.staffTotalNum)}</span>;
+        return (
+          <span>
+            <span>{`${record.staffExecNum}/${record.staffTotalNum}`}</span>
+            <span className="ml10">{`(${percentage(record.staffExecNum, record.staffTotalNum)})`}</span>
+          </span>
+        );
       }
     },
     {
       title: '客户迁移进度',
       width: 260,
       align: 'center',
-      render: (text, record) => <span>{percentage(record.clientTransferNum, record.clientTotalNum)}</span>
+      render: (text, record) => (
+        <span>
+          <span>{`${record.clientTransferNum}/${record.clientTotalNum}`}</span>
+          <span className="ml10">{`(${percentage(record.clientTransferNum, record.clientTotalNum)})`}</span>
+        </span>
+      )
     },
     {
       title: '任务状态',
@@ -105,18 +128,18 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 220,
+      width: 120,
       render: (text, record) => (
         <Space size="small">
           <a onClick={() => viewItem(record.taskId)}>查看</a>
-          {record.syncBank === 1 && (
-            <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => operateItem(record, 1)}>
+          {record.taskStatus === 1 && (
+            <Popconfirm title="任务关闭后数据统计截止当前，确定操作吗？ " onConfirm={() => operateItem(record, 1)}>
               <a>关闭</a>
             </Popconfirm>
           )}
-          {record.syncBank === 2 && <a onClick={() => exportData(record.taskId)}>数据</a>}
+          {record.taskStatus === 2 && <a onClick={() => exportData(record.taskId)}>数据</a>}
           {record.taskStatus === 0 && (
-            <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => operateItem(record, 0)}>
+            <Popconfirm title="：删除后不给客户经理下发此任务，确定操作吗？ " onConfirm={() => operateItem(record, 0)}>
               <a>删除</a>
             </Popconfirm>
           )}

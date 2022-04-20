@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Form, Input, Select, Button, message, Spin, Radio, RadioChangeEvent } from 'antd';
-import { getNewsDetail, saveNews, getTagsOrCategorys } from 'src/apis/marketing';
+import { getNewsDetail, saveNews, getTagsOrCategorys, searchRecommendGoodsList } from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import { NgEditor } from 'src/components';
@@ -36,7 +36,8 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     defaultImg: '',
     crawl: 0,
     editorHtml: '',
-    editorHtmlChanged: ''
+    editorHtmlChanged: '',
+    recommendType: 3
   });
   const materialTypes: DataItem[] = [
     {
@@ -50,10 +51,14 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     {
       id: '1',
       name: '活动'
+    },
+    {
+      id: '3',
+      name: '无'
     }
   ];
   const [recommendList, setRecommendList] = useState<recommendMarketProps[]>([]);
-  const [recomendType, setRecommendType] = useState(0);
+  const [recommendType, setRecommendType] = useState(0);
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList, userInfo } =
     useContext(Context);
   // const { data, dispatch } = useContext(GlobalContent);
@@ -107,38 +112,32 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         ...resdata,
         editorHtml: content || ''
       }));
-      form.setFields([
-        { name: 'title', value: res.title },
-        { name: 'originalCreator', value: res.originalCreator },
-        { name: 'fromSource', value: res.fromSource },
-        { name: 'summary', value: res.summary },
-        { name: 'categoryId', value: res.categoryId || '' },
-        { name: 'tagIdList', value: res.tagIdList || [] },
-        { name: 'defaultImg', value: res.defaultImg },
-        {
-          name: 'corpId',
-          value: res.corpId || undefined
-        },
-        {
-          name: 'recommendType',
-          value: 0
-        },
-        {
-          name: 'recommendList',
-          value: [
-            { marketId: '12110', title: 'test', recommendImgUrl: 'http:baidu.com/test.png' },
-            {
-              marketId: '12111',
-              title: 'test',
-              recommendImgUrl: 'http:baidu.com/test.png'
-            }
-          ]
-        }
-      ]);
-      setRecommendList([
-        { marketId: '12110', title: 'tes1t', recommendImgUrl: 'http:baidu.com/test.png' },
-        { marketId: '12111', title: 'tes2t', recommendImgUrl: 'http:baidu.com/test.png' }
-      ]);
+      const {
+        title,
+        originalCreator,
+        fromSource,
+        summary,
+        categoryId,
+        tagIdList,
+        defaultImg,
+        corpId,
+        recommendType,
+        recommendList
+      } = res;
+      form.setFieldsValue({
+        title,
+        originalCreator,
+        fromSource,
+        summary,
+        categoryId,
+        tagIdList,
+        defaultImg,
+        corpId,
+        recommendType: recommendType || 3,
+        recommendList
+      });
+      setRecommendType(recommendType || 3);
+      setRecommendList(recommendList || []);
       changeGetDetailLoading(false);
     } catch (e) {
       changeGetDetailLoading(false);
@@ -153,13 +152,14 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       if (!submitHTML || submitHTML.length <= 7) {
         return message.error('请输入文章内容');
       }
-      setSubmitting(true);
+      setSubmitting(false);
       const res = await saveNews({
         ...values,
         newsId: newsId,
         content: submitHTML,
         corpId: currentCorpId
       });
+      setSubmitting(false);
       if (res) {
         message.success('添加成功！').then(() => {
           setSubmitting(false);
@@ -188,21 +188,28 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     };
   }, []);
   const onFormValuesChange = (changeValues: any, values: any) => {
-    const { defaultImg, summary } = values;
-    setFormData((formData) => ({ ...formData, defaultImg, summary }));
+    const { defaultImg, summary, recommendType } = values;
+    setFormData((formData) => ({ ...formData, defaultImg, summary, recommendType }));
   };
 
-  const onRecommendTypeChange = (e: RadioChangeEvent) => {
-    console.log(e.target.value);
+  const onRecommendTypeChange = async (e: RadioChangeEvent) => {
     setRecommendType(+e.target.value);
-    setRecommendList([
-      { marketId: '1210', title: '测试文章1', recommendImgUrl: 'http:baidu.com/test.png' },
-      { marketId: '1211', title: '测试文章2', recommendImgUrl: 'http:baidu.com/test.png' }
-    ]);
+    const res = await searchRecommendGoodsList({
+      title: '',
+      recommendType: +e.target.value
+    });
+    setRecommendList(res || []);
+    form.setFieldsValue({
+      recommendList: []
+    });
   };
 
-  const onRecommendSearch = (value: string) => {
-    console.log(value);
+  const onRecommendSearch = async (value: string) => {
+    const res = await searchRecommendGoodsList({
+      title: value,
+      recommendType: formData.recommendType
+    });
+    console.log(res);
   };
 
   const recommendPicBeforeUpload = (file: any) => {
@@ -342,7 +349,11 @@ const TabView3: React.FC<TabView3Props> = (props) => {
             ))}
           </Radio.Group>
         </Form.Item>
-        <Form.Item label="推荐内容">
+        <Form.Item
+          label="推荐内容"
+          name={'recommendList'}
+          rules={[{ required: formData.recommendType !== 3, message: '请选择推荐内容' }]}
+        >
           <Form.List name="recommendList">
             {(fields, { add, remove }) => (
               <>
@@ -351,19 +362,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                   return (
                     <Form.Item key={key} required className={style.formListWrap} label={'素材' + (index + 1)}>
                       {/* 缓存是否上下上下架数据 */}
-                      <Form.Item
-                        hidden
-                        name={[name, 'whetherDelete']}
-                        rules={[
-                          {
-                            validator: (rule, value, callback) => {
-                              console.log(rule, value, callback);
-                            }
-                          }
-                        ]}
-                      >
-                        <Input />
-                      </Form.Item>
 
                       <Form.Item
                         {...restFiled}
@@ -385,7 +383,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                         </Select>
                       </Form.Item>
                       {/* 当是商品时展示图片模块 */}
-                      {recomendType === 2 && (
+                      {recommendType === 2 && (
                         <Form.Item
                           {...restFiled}
                           rules={[{ required: true, message: '请上传推荐图片' }]}

@@ -10,7 +10,13 @@ import { columns, TaskProps } from './Config';
 import { exportFile, useDocumentTitle } from 'src/utils/base';
 import EmptyTask from '../components/EmptyTask/EmptyTask';
 import DetailModal from '../components/DetailModal/DetailModal';
-import { exportTransferTask, operationTransferTask, queryTransferCorp, queryTransferSummary } from 'src/apis/migration';
+import {
+  exportTransferTask,
+  getTransferTaskList,
+  operationTransferTask,
+  queryTransferCorp,
+  queryTransferSummary
+} from 'src/apis/migration';
 import { percentage } from 'src/utils/tools';
 
 const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
@@ -19,15 +25,22 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visibleDetail, setVisibleDetail] = useState(false);
   const [transferInfo, setTransferInfo] = useState({
     corpId: '',
-    corpName: '年高-深圳分部',
+    corpName: '',
     targetCorpId: '',
-    targetCorpName: '年高总部'
+    targetCorpName: ''
   });
+
+  interface TransferDataProps {
+    transferSuccNum: number;
+    unTransferNum: number;
+    updateTime: string;
+    totalNum: number;
+  }
   const [pieChartData, setPieCharData] = useState<PieDataItem[]>([]);
-  const [pieInfo, setPieInfo] = useState({
+  const [pieInfo, setPieInfo] = useState<TransferDataProps>({
     transferSuccNum: 0,
     unTransferNum: 0,
-    updateTime: '2022-04-11 12:00:00',
+    updateTime: '',
     totalNum: 0
   });
 
@@ -40,11 +53,11 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   });
   const [loading, setLoading] = useState<boolean>(false);
-  const [tableSource] = useState([{}]);
+  const [tableSource, setTableSource] = useState<TaskProps[]>([]);
 
   const operateItem = async (task: TaskProps, operateType: number) => {
     console.log('edit');
-    const res = await operationTransferTask({ taskId: task.taskId, corpId: task.corpId, operateType });
+    const res = await operationTransferTask({ taskId: task.taskId, corpId: transferInfo.corpId, opType: operateType });
 
     console.log(res);
   };
@@ -52,8 +65,8 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     console.log('edit');
     history.push('/enterprise/addTask?taskId=' + taskId);
   };
-  const exportData = async (taskId: string) => {
-    const { data } = await exportTransferTask({ taskId });
+  const exportData = async (task: TaskProps) => {
+    const { data } = await exportTransferTask({ taskId: task.taskId });
     exportFile(data, '客户免统计名单');
   };
   const myColumns = columns({ operateItem, viewItem, exportData });
@@ -64,20 +77,23 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const getPieInfo = async () => {
     console.log('获取饼图信息');
-    const res = await queryTransferSummary();
+    const res: TransferDataProps = await queryTransferSummary();
     setPieInfo(res || {});
     console.log(res);
     setPieCharData([
-      { value: 41, name: '迁移成功' },
+      { value: res.transferSuccNum, name: '迁移成功' },
       {
-        value: 64,
+        value: res.unTransferNum,
         name: '待迁移'
       }
     ]);
   };
 
-  const getTaskList = () => {
-    console.log('查询列表');
+  const getTaskList = async () => {
+    const { list, total } = await getTransferTaskList({});
+    setTableSource(list || []);
+    setPagination((pagination) => ({ ...pagination, total }));
+    console.log('查询列表', list);
   };
 
   const getTransferInfo = async () => {
@@ -94,7 +110,6 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   useEffect(() => {
     getTransferInfo();
     // 测试用的
-    getPieInfo();
   }, []);
 
   // 创建任务成功
@@ -142,14 +157,18 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
                         <i className={classNames(styles.pieTag, styles.pieTag_success)}></i>
                         <span className="font12 color-text-regular">迁移成功</span>
                       </div>
-                      <div className="mt10 font16">41（{percentage(41, 101)}）</div>
+                      <div className="mt10 font16">
+                        {pieInfo.transferSuccNum}（{percentage(pieInfo.transferSuccNum, pieInfo.totalNum)}）
+                      </div>
                     </div>
                     <div className="ml50">
                       <div className={styles.pieBar}>
                         <i className={classNames(styles.pieTag, styles.pieTag_wait)}></i>
                         <span className="font12 color-text-regular">待迁移</span>
                       </div>
-                      <div className="mt10 font16">60（{percentage(60, 101)}）</div>
+                      <div className="mt10 font16">
+                        {pieInfo.unTransferNum}（{percentage(pieInfo.unTransferNum, pieInfo.totalNum)}）
+                      </div>
                     </div>
                   </div>
                   <div className="mt6 font12 color-text-placeholder">饼状图数据更新于 {pieInfo.updateTime}</div>
