@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Form, Input, Button, Radio, DatePicker, message } from 'antd';
 import { ChoosedStaffList } from './component';
 import { ImageUpload } from 'src/components';
@@ -10,18 +10,6 @@ import DetailModal from 'src/pages/Migration/EnterpriseWeChat/components/DetailM
 import style from './style.module.less';
 import classNames from 'classnames';
 
-// interface ITaskDetail {
-//   taskName: string;
-//   staffTotalNum: number;
-//   clientType: number;
-//   startTime: string;
-//   endTime: string;
-//   thumbnail: string;
-//   title: string;
-//   summary: string;
-//   speechcraft: string;
-// }
-
 const AddTask: React.FC = () => {
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
@@ -31,6 +19,8 @@ const AddTask: React.FC = () => {
   const { TextArea } = Input;
   const { RangePicker } = DatePicker;
   const history = useHistory();
+  const location = useLocation();
+  let noSubmitForm: any = null;
   const displayTypeList = [
     { value: 0, label: '发送迁移客户' },
     { value: 1, label: '发送迁移成功客户' },
@@ -77,7 +67,6 @@ const AddTask: React.FC = () => {
   const onFinish = async (value: any) => {
     if (isReadOnly) {
       history.goBack();
-      form.resetFields();
     } else {
       const { taskName, clientType, executionTime, thumbnail, title, summary, speechcraft, staffList } = value;
       const startTime = executionTime[0].format('YYYY-MM-DD HH:mm:ss');
@@ -101,10 +90,19 @@ const AddTask: React.FC = () => {
     }
   };
   useEffect(() => {
-    if (getQueryParam().taskId) {
+    if (location.pathname === '/enterprise/addTask' && getQueryParam().taskId) {
+      noSubmitForm = form.getFieldsValue();
       getTaskDetail(getQueryParam().taskId);
       setIsReadOnly(true);
+    } else {
+      setIsReadOnly(false);
     }
+    return () => {
+      console.log(location.pathname, location.search);
+      if (location.pathname === '/enterprise/addTask' && location.search.includes('taskId')) {
+        form.setFieldsValue(noSubmitForm);
+      }
+    };
   }, [location]);
   return (
     <>
