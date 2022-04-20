@@ -7,9 +7,9 @@ import { NgEditor } from 'src/components';
 import NgUpload from '../../Components/Upload/Upload';
 import { WechatShare } from '../../Components/WechatShare/WechatShare';
 import { Icon } from 'lester-ui';
-import { DataItem } from 'src/utils/interface';
 
 import style from './style.module.less';
+import { recommendTypeList } from '../Config';
 interface TabView3Props {
   isEdit: boolean;
   newsId: string;
@@ -26,10 +26,11 @@ interface recommendMarketProps {
   title: string;
   recommendImgUrl?: string;
 }
+
 const TabView3: React.FC<TabView3Props> = (props) => {
   const [isGetDetailLoading, changeGetDetailLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{ recommendList: recommendMarketProps[]; [prop: string]: any }>({
     title: '',
     originalCreator: '',
     summary: '',
@@ -37,26 +38,9 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     crawl: 0,
     editorHtml: '',
     editorHtmlChanged: '',
-    recommendType: 3
+    recommendType: 3,
+    recommendList: []
   });
-  const materialTypes: DataItem[] = [
-    {
-      id: '0',
-      name: '文章'
-    },
-    {
-      id: '2',
-      name: '产品'
-    },
-    {
-      id: '1',
-      name: '活动'
-    },
-    {
-      id: '3',
-      name: '无'
-    }
-  ];
   const [recommendList, setRecommendList] = useState<recommendMarketProps[]>([]);
   const [recommendType, setRecommendType] = useState(0);
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList, userInfo } =
@@ -133,10 +117,10 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         tagIdList,
         defaultImg,
         corpId,
-        recommendType: recommendType || 3,
+        recommendType: recommendType,
         recommendList
       });
-      setRecommendType(recommendType || 3);
+      setRecommendType(recommendType);
       setRecommendList(recommendList || []);
       changeGetDetailLoading(false);
     } catch (e) {
@@ -145,8 +129,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   };
 
   const onFinish = async (values: any) => {
-    console.log(values);
-    // return;
     try {
       const submitHTML = formData.editorHtmlChanged || formData.editorHtml;
       if (!submitHTML || submitHTML.length <= 7) {
@@ -188,28 +170,56 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     };
   }, []);
   const onFormValuesChange = (changeValues: any, values: any) => {
+    console.log('2++');
     const { defaultImg, summary, recommendType } = values;
     setFormData((formData) => ({ ...formData, defaultImg, summary, recommendType }));
   };
 
+  // 推荐类型发生变化时
   const onRecommendTypeChange = async (e: RadioChangeEvent) => {
     setRecommendType(+e.target.value);
-    const res = await searchRecommendGoodsList({
-      title: '',
-      recommendType: +e.target.value
-    });
-    setRecommendList(res || []);
+    const type = +e.target.value;
+    if (type !== 3) {
+      const res = await searchRecommendGoodsList({
+        title: '',
+        recommendType: +e.target.value
+      });
+      setRecommendList(res || []);
+    }
     form.setFieldsValue({
       recommendList: []
     });
+    setFormData((formData) => ({ ...formData, recommendList: [] }));
   };
 
   const onRecommendSearch = async (value: string) => {
-    const res = await searchRecommendGoodsList({
+    const res: recommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
       recommendType: formData.recommendType
     });
-    console.log(res);
+    const resList = [...formData.recommendList.filter((item) => item !== undefined), ...res];
+    const obj: any = {};
+    const arr = resList.reduce((newArr: recommendMarketProps[], next) => {
+      if (obj[next.marketId]) {
+        console.log(obj);
+      } else {
+        obj[next.marketId] = true && newArr.push(next);
+      }
+      return newArr;
+    }, []);
+    setRecommendList(arr);
+  };
+
+  // 当选中select素材时处理的东西
+  const onRecommendSelected = (value: string, index: number) => {
+    const selectedItem = recommendList.filter((item) => item.marketId === value)[0];
+    const oldSelectedList = [...formData.recommendList];
+    oldSelectedList.splice(index, 1, selectedItem);
+    console.log(oldSelectedList);
+    form.setFieldsValue({
+      recommendList: oldSelectedList
+    });
+    setFormData((formData) => ({ ...formData, recommendList: oldSelectedList }));
   };
 
   const recommendPicBeforeUpload = (file: any) => {
@@ -342,7 +352,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         </Form.Item>
         <Form.Item name={'recommendType'} label="推荐类型">
           <Radio.Group onChange={onRecommendTypeChange}>
-            {materialTypes.map((item) => (
+            {recommendTypeList.map((item) => (
               <Radio key={item.id} value={+item.id}>
                 {item.name}
               </Radio>
@@ -352,13 +362,12 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         <Form.Item
           label="推荐内容"
           name={'recommendList'}
-          rules={[{ required: formData.recommendType !== 3, message: '请选择推荐内容' }]}
+          rules={[{ required: recommendType !== 3, message: '请选择推荐内容，或者将推荐类型设置为无' }]}
         >
           <Form.List name="recommendList">
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ key, name, ...restFiled }, index) => {
-                  console.log(restFiled);
                   return (
                     <Form.Item key={key} required className={style.formListWrap} label={'素材' + (index + 1)}>
                       {/* 缓存是否上下上下架数据 */}
@@ -372,11 +381,22 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                           placeholder="搜索对应素材标题在下拉框进行选择"
                           allowClear
                           showSearch
-                          onChange={(value) => console.log({ select: value })}
+                          defaultActiveFirstOption={false}
+                          showArrow={false}
+                          filterOption={false}
+                          notFoundContent={null}
+                          onChange={(value) => onRecommendSelected(value, index)}
                           onSearch={onRecommendSearch}
                         >
                           {recommendList.map((option) => (
-                            <Select.Option key={option.marketId} value={option.marketId}>
+                            <Select.Option
+                              key={option.marketId}
+                              value={option.marketId}
+                              disabled={
+                                formData?.recommendList.filter((item: any) => item?.marketId === option.marketId)
+                                  .length > 0
+                              }
+                            >
                               {option.title}
                             </Select.Option>
                           ))}

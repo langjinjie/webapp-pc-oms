@@ -34,7 +34,7 @@ export interface PaginationProps {
 // 表哥配置项
 type colargsType = {
   exportData: (taskId: string) => void;
-  viewItem: (task: TaskProps) => void;
+  viewItem: (taskId: string) => void;
   operateItem: (task: TaskProps, operateType: number) => void;
 };
 const columns = (args: colargsType): ColumnsType<TaskProps> => {

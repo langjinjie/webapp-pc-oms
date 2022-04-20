@@ -16,7 +16,7 @@ export interface SearchParamsProps {
   corpId: string;
 }
 
-const recommendTypeList = [
+export const recommendTypeList = [
   {
     id: 0,
     name: '文章'

@@ -9,7 +9,6 @@ import { Icon, NgTable } from 'src/components';
 import { columns, TaskProps } from './Config';
 import { exportFile, useDocumentTitle } from 'src/utils/base';
 import EmptyTask from '../components/EmptyTask/EmptyTask';
-import DetailModal from '../components/DetailModal/DetailModal';
 import {
   exportTransferTask,
   getTransferTaskList,
@@ -18,12 +17,20 @@ import {
   queryTransferSummary
 } from 'src/apis/migration';
 import { percentage } from 'src/utils/tools';
+import { StaffModal } from '../AddTask/component';
 
+interface TransferInfoProps {
+  corpId: string;
+  corpName: string;
+  targetCorpId: string;
+  targetCorpName: string;
+}
 const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('好友迁移-企微好友');
   const [isEmpty, setIsEmpty] = useState(false);
   const [visibleDetail, setVisibleDetail] = useState(false);
-  const [transferInfo, setTransferInfo] = useState({
+
+  const [transferInfo, setTransferInfo] = useState<TransferInfoProps>({
     corpId: '',
     corpName: '',
     targetCorpId: '',
@@ -55,20 +62,24 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [tableSource, setTableSource] = useState<TaskProps[]>([]);
 
+  // 操作任务
   const operateItem = async (task: TaskProps, operateType: number) => {
-    console.log('edit');
     const res = await operationTransferTask({ taskId: task.taskId, corpId: transferInfo.corpId, opType: operateType });
-
-    console.log(res);
+    if (res) {
+      console.log(res);
+    }
   };
+  // 查看任务详情
   const viewItem = (taskId: string) => {
-    console.log('edit');
     history.push('/enterprise/addTask?taskId=' + taskId);
   };
-  const exportData = async (task: TaskProps) => {
-    const { data } = await exportTransferTask({ taskId: task.taskId });
+  // 导出任务详情数据
+  const exportData = async (taskId: string) => {
+    const { data } = await exportTransferTask({ taskId });
     exportFile(data, '客户免统计名单');
   };
+
+  //
   const myColumns = columns({ operateItem, viewItem, exportData });
 
   useEffect(() => {
@@ -96,28 +107,28 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     console.log('查询列表', list);
   };
 
-  const getTransferInfo = async () => {
-    const res = await queryTransferCorp();
-    if (res) {
+  const getTransferData = async () => {
+    const res: TransferInfoProps = await queryTransferCorp();
+    if (res.corpId) {
+      setIsEmpty(false);
       setTransferInfo(res);
       getPieInfo();
       getTaskList();
     } else {
-      setIsEmpty(false);
+      setIsEmpty(true);
     }
   };
 
   useEffect(() => {
-    getTransferInfo();
+    getTransferData();
     // 测试用的
   }, []);
 
   // 创建任务成功
   const createdTaskSuccess = async () => {
     // 查询迁移机构信息
-    console.log('aas');
-    const transferInfo = await queryTransferCorp();
-    console.log(transferInfo);
+    setIsEmpty(false);
+    await getTransferData();
   };
 
   const onPaginationChange = () => {
@@ -128,7 +139,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     <div className={classNames(styles.migration, 'container')}>
       {isEmpty
         ? (
-        <EmptyTask createdSuccess={createdTaskSuccess} />
+        <EmptyTask createdSuccess={() => createdTaskSuccess()} />
           )
         : (
         <div>
@@ -143,7 +154,13 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
             <section className={classNames(styles.kanban, 'flex')}>
               <div className={classNames(styles.kanbanLeft, 'flex vertical justify-between')}>
                 <div className="font16 color-text-primary bold">全部客户经理迁移进度</div>
-                <Button type="default" size="large" shape="round" className={styles.btnViewRange}>
+                <Button
+                  type="default"
+                  size="large"
+                  shape="round"
+                  className={styles.btnViewRange}
+                  onClick={() => setVisibleDetail(true)}
+                >
                   查看可见范围
                 </Button>
               </div>
@@ -191,12 +208,13 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
             pagination={pagination}
             columns={myColumns}
             dataSource={tableSource}
+            rowKey={(scope) => scope.taskId}
             paginationChange={onPaginationChange}
           />
         </div>
           )}
 
-      <DetailModal visible={visibleDetail} onClose={() => setVisibleDetail(false)}></DetailModal>
+      <StaffModal visible={visibleDetail} onClose={() => setVisibleDetail(false)} />
     </div>
   );
 };

@@ -99,8 +99,10 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
     }
   }, [value]);
   useEffect(() => {
-    getStaffList();
-  }, [paginationParam]);
+    if (visible) {
+      getStaffList();
+    }
+  }, [paginationParam, visible]);
   useEffect(() => {
     // 全选样式控制
     if (showCheckbox) {
