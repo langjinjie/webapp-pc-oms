@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Icon } from 'src/components';
 import { Checkbox, Input, Pagination } from 'antd';
 import { CheckboxValueType, CheckboxOptionType } from 'antd/lib/checkbox/Group';
+import { queryTransferStaffList } from 'src/apis/migration';
 import style from './style.module.less';
 import classNames from 'classnames';
 
 interface IStaffModalProps {
+  value?: CheckboxValueType[];
   visible: boolean;
   onClose: () => void;
   onChange?: (param: any[]) => void;
@@ -17,37 +19,34 @@ interface IStaffList {
   list: CheckboxOptionType[];
 }
 
-const StaffModal: React.FC<IStaffModalProps> = ({ visible, onClose, onChange, showCheckbox }) => {
+const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onChange, showCheckbox }) => {
   const [staffList, setStaffList] = useState<IStaffList>({ total: 0, list: [] });
+  const [name, setName] = useState('');
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 18 });
   const [indeterminate, setIndeterminate] = useState(false);
   const [checkAll, setCheckAll] = useState(false);
-  const [checkedList, setCheckedList] = useState<any[]>([]);
+  const [checkedList, setCheckedList] = useState<CheckboxValueType[]>([]);
 
   const CheckboxGroup = Checkbox.Group;
   // 获取执行人员列表
-  const getStaffList = () => {
-    const list = [
-      { value: '01', label: '李斯（产研中心-研发部）' },
-      { value: '02', label: '张珊（策略中心-策略部）' },
-      { value: '03', label: '李斯（产研中心-研发部）' },
-      { value: '04', label: '张珊（策略中心-策略部）' },
-      { value: '05', label: '李斯（产研中心-研发部）' },
-      { value: '06', label: '张珊（策略中心-策略部）' },
-      { value: '07', label: '李斯（产研中心-研发部）' },
-      { value: '08', label: '张珊（策略中心-策略部）' },
-      { value: '09', label: '李斯（产研中心-研发部）' },
-      { value: '10', label: '张珊（策略中心-策略部）' },
-      { value: '11', label: '李斯（产研中心-研发部）' },
-      { value: '12', label: '张珊（策略中心-策略部）' },
-      { value: '13', label: '李斯（产研中心-研发部）' },
-      { value: '14', label: '张珊（策略中心-策略部）' },
-      { value: '15', label: '李斯（产研中心-研发部）' },
-      { value: '16', label: '张珊（策略中心-策略部）' },
-      { value: '17', label: '张珊（策略中心-策略部）' },
-      { value: '18', label: '张珊（策略中心-策略部）' }
-    ];
-    setStaffList({ total: 66, list });
+  const getStaffList = async () => {
+    const res = await queryTransferStaffList({ name, ...paginationParam });
+    if (res) {
+      res.list = res.list.map((item: { staffId: string; staffName: string }) => ({
+        value: item.staffId,
+        label: item.staffName
+      }));
+      setStaffList(res);
+    }
+  };
+  const inputOnchange = (value: React.ChangeEvent<HTMLInputElement>) => {
+    setName(value.target.value.trim());
+  };
+  // 输入框按下回车键
+  const inputOnKeyDownHandle = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setPaginationParam((param) => ({ ...param }));
+    }
   };
   const onCheckAllChange = (e: any) => {
     const currentList = staffList.list.map((item) => item.value);
@@ -70,25 +69,53 @@ const StaffModal: React.FC<IStaffModalProps> = ({ visible, onClose, onChange, sh
   const paginationOnchange = (pageNum: number) => {
     setPaginationParam((param) => ({ ...param, pageNum }));
   };
+  // 关闭
+  const onCloseHandle = () => {
+    onClose();
+  };
   const onOk = () => {
     onChange?.(checkedList);
     onClose();
   };
   useEffect(() => {
+    if (value && value?.length) {
+      setCheckedList(value);
+    } else {
+      setCheckedList([]);
+      setCheckAll(false);
+    }
+  }, [value]);
+  useEffect(() => {
     getStaffList();
   }, [paginationParam]);
+  useEffect(() => {
+    // 全选样式控制
+    if (showCheckbox) {
+      const checkAll = staffList.list.every((item) => checkedList.includes(item.value));
+      const indeterminate = staffList.list.some((item) => checkedList.includes(item.value));
+      setCheckAll(checkAll);
+      setIndeterminate(!checkAll && indeterminate);
+    }
+  }, [staffList]);
   return (
     <Modal
       width={680}
       centered
       className={style.wrap}
-      onClose={onClose}
+      onClose={onCloseHandle}
       visible={visible}
+      closable
       title="选择执行人员"
       onOk={onOk}
     >
       <div className={style.inputWrp}>
-        <Input className={style.input} placeholder="搜索成员" />
+        <Input
+          value={name}
+          className={style.input}
+          placeholder="搜索成员"
+          onChange={inputOnchange}
+          onKeyDown={inputOnKeyDownHandle}
+        />
         <Icon className={style.inputIcon} name="icon_common_16_seach" />
       </div>
       <div className={style.checkAllWrap}>

@@ -4,6 +4,7 @@ import { Form, Input, Button, Radio, DatePicker } from 'antd';
 import { ChoosedStaffList } from './component';
 import { ImageUpload } from 'src/components';
 import { getQueryParam } from 'lester-tools';
+import { requestCreateTransferTask } from 'src/apis/migration';
 import moment, { Moment } from 'moment';
 import DetailModal from 'src/pages/Migration/EnterpriseWeChat/components/DetailModal/DetailModal';
 import style from './style.module.less';
@@ -31,9 +32,9 @@ const AddTask: React.FC = () => {
   const { RangePicker } = DatePicker;
   const history = useHistory();
   const displayTypeList = [
-    { value: 0, label: '待迁移' },
-    { value: 1, label: '迁移成功' },
-    { value: 2, label: '全部' }
+    { value: 0, label: '发送迁移客户' },
+    { value: 1, label: '发送迁移成功客户' },
+    { value: 2, label: '发送全部客户' }
   ];
   // 禁止选择今天及之前的日期
   const disabledDate = (current: Moment) => {
@@ -86,12 +87,26 @@ const AddTask: React.FC = () => {
   const clickTaskDetail = () => {
     setDetailVisible(true);
   };
-  const onFinish = (value: any) => {
+  const onFinish = async (value: any) => {
     console.log(value);
     if (isReadOnly) {
       history.goBack();
     } else {
-      history.push('/enterprise');
+      const { taskName, clientType, executionTime, thumbnail, title, summary, speechcraft, staffList } = value;
+      const startTime = executionTime[0].format('YYYY-MM-DD HH:mm:ss');
+      const endTime = executionTime[1].format('YYYY-MM-DD HH:mm:ss');
+      await requestCreateTransferTask({
+        taskName,
+        clientType,
+        startTime,
+        endTime,
+        thumbnail,
+        title,
+        summary,
+        speechcraft,
+        staffList
+      });
+      // history.push('/enterprise');
     }
     form.resetFields();
   };
@@ -100,13 +115,18 @@ const AddTask: React.FC = () => {
       getTaskDetail();
       setIsReadOnly(true);
     }
-  }, []);
+  }, [location]);
   return (
     <>
       <header className={style.addTask}>创建任务</header>
       <div className={style.content}>
         <Form form={form} className={style.form} onFinish={onFinish}>
-          <Item name="taskName" className={style.formItem} label="任务名称：">
+          <Item
+            name="taskName"
+            className={style.formItem}
+            label="任务名称："
+            rules={[{ required: true, message: '请输入任务名称' }]}
+          >
             <Input
               className={style.input}
               showCount={!isReadOnly}
@@ -127,11 +147,21 @@ const AddTask: React.FC = () => {
             </Item>
               )
             : (
-            <Item name="staffList" className={style.formItem} label="执行人员：">
+            <Item
+              name="staffList"
+              className={style.formItem}
+              label="执行人员："
+              rules={[{ required: true, message: '请选择执行人员' }]}
+            >
               <ChoosedStaffList />
             </Item>
               )}
-          <Item name="clientType" className={style.formItem} label="客户类型" initialValue={0}>
+          <Item
+            name="clientType"
+            className={style.formItem}
+            label="客户类型"
+            rules={[{ required: true, message: '请选择客户类型' }]}
+          >
             <Group disabled={isReadOnly}>
               {displayTypeList.map((item) => (
                 <Radio key={item.value + item.label} value={item.value}>
@@ -140,7 +170,12 @@ const AddTask: React.FC = () => {
               ))}
             </Group>
           </Item>
-          <Item name="executionTime" className={style.formItem} label="执行时间">
+          <Item
+            name="executionTime"
+            className={style.formItem}
+            label="执行时间"
+            rules={[{ required: true, message: '请选择执行时间' }]}
+          >
             <RangePicker
               showTime
               className={style.rangePicker}
@@ -151,7 +186,12 @@ const AddTask: React.FC = () => {
               disabled={isReadOnly}
             />
           </Item>
-          <Item name="thumbnail" className={style.formItem} label="缩略图：">
+          <Item
+            name="thumbnail"
+            className={style.formItem}
+            label="缩略图："
+            rules={[{ required: true, message: '请上传图片' }]}
+          >
             <ImageUpload onRemove={onRemoveHandle} disabled={isReadOnly} />
           </Item>
           <Item name="title" className={style.formItem} label="链接标题：">
@@ -159,7 +199,7 @@ const AddTask: React.FC = () => {
               className={classNames(style.input, style.titleInput)}
               showCount={!isReadOnly}
               maxLength={30}
-              placeholder="请输入任务名称"
+              placeholder="请输入链接标题"
               readOnly={isReadOnly}
             />
           </Item>
@@ -168,7 +208,7 @@ const AddTask: React.FC = () => {
               className={style.input}
               showCount={!isReadOnly}
               maxLength={50}
-              placeholder="请输入任务名称"
+              placeholder="请输入链接摘要"
               readOnly={isReadOnly}
             />
           </Item>
@@ -177,7 +217,7 @@ const AddTask: React.FC = () => {
               className={style.input}
               showCount={!isReadOnly}
               maxLength={300}
-              placeholder="请输入任务名称"
+              placeholder="请输入群发话术"
               readOnly={isReadOnly}
             />
           </Item>

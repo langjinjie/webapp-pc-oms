@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'src/components';
 import { StaffModal } from 'src/pages/Migration/EnterpriseWeChat/AddTask/component';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import style from './style.module.less';
 
 interface IChoosedStaffListProps {
-  value?: any[];
+  value?: CheckboxValueType[];
   onChange?: (value: any[]) => void;
 }
 
@@ -19,7 +20,7 @@ const ChoosedStaffList: React.FC<IChoosedStaffListProps> = ({ value, onChange })
     onChange?.(staffList);
   };
   useEffect(() => {
-    console.log(value);
+    console.log('value', value);
     setSelectedStaff(value || []);
   }, [value]);
   return (
@@ -31,7 +32,13 @@ const ChoosedStaffList: React.FC<IChoosedStaffListProps> = ({ value, onChange })
           <Icon className={style.clearSelected} name="biaoqian_quxiao" onClick={() => onChangeHandle([])} />
         </div>
       )}
-      <StaffModal visible={visible} showCheckbox onClose={() => setVisible(false)} onChange={onChangeHandle} />
+      <StaffModal
+        value={value}
+        visible={visible}
+        showCheckbox
+        onClose={() => setVisible(false)}
+        onChange={onChangeHandle}
+      />
     </div>
   );
 };
