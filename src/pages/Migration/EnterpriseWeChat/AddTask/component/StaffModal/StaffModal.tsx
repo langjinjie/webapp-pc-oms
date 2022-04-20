@@ -172,15 +172,10 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
           </>
         )}
       </div>
-      {/* <CheckboxGroup
-        className={classNames(style.checkboxGroupWrap, { [style.hideCheckbox]: !showCheckbox })}
-        options={staffList.list}
-        value={checkedList}
-        onChange={onChangeHandle}
-      /> */}
       <CheckboxGroup
         className={classNames(style.checkboxGroupWrap, { [style.hideCheckbox]: !showCheckbox })}
         onChange={onChangeHandle}
+        value={checkedList}
       >
         {staffList.list.map((item) => (
           <div key={item.value as Key} className={style.checkboxItemWrap}>

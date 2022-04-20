@@ -11,7 +11,7 @@ import style from './style.module.less';
 import classNames from 'classnames';
 
 const AddTask: React.FC = () => {
-  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(true);
   const [detailVisible, setDetailVisible] = useState(false);
   const [form] = Form.useForm();
   const { Item } = Form;
@@ -91,14 +91,13 @@ const AddTask: React.FC = () => {
   };
   useEffect(() => {
     if (location.pathname === '/enterprise/addTask' && getQueryParam().taskId) {
+      setIsReadOnly(true);
       noSubmitForm = form.getFieldsValue();
       getTaskDetail(getQueryParam().taskId);
-      setIsReadOnly(true);
     } else {
       setIsReadOnly(false);
     }
     return () => {
-      console.log(location.pathname, location.search);
       if (location.pathname === '/enterprise/addTask' && location.search.includes('taskId')) {
         form.setFieldsValue(noSubmitForm);
       }
@@ -229,7 +228,11 @@ const AddTask: React.FC = () => {
           </Button>
         </Form>
       </div>
-      <DetailModal visible={detailVisible} onClose={() => setDetailVisible(false)} />
+      <DetailModal
+        taskId={getQueryParam().taskId || ''}
+        visible={detailVisible}
+        onClose={() => setDetailVisible(false)}
+      />
     </>
   );
 };

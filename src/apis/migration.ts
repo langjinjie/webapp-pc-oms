@@ -43,3 +43,7 @@ export const requestCreateTransferTask: HttpFC = (param) => {
 export const requestGetTaskDetail: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/transfer/task/detail', param);
 };
+// 1.10 查询群发任务员工明细
+export const requestGetTaskStaffDetail: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/transfer/task/staff/list', param);
+};
