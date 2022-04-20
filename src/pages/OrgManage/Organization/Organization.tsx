@@ -42,6 +42,7 @@ interface OrganizationItem {
   leaderId?: string;
   leaderName?: string;
   total?: number;
+  path?: string[];
   children?: OrganizationItem[];
 }
 
@@ -133,8 +134,9 @@ const Organization: React.FC = () => {
   /**
    * 格式化数据源
    * @param data
+   * @param path
    */
-  const formatData = (data: OrganizationItem[]): OrganizationItem[] => {
+  const formatData = (data: OrganizationItem[], path?: string[]): OrganizationItem[] => {
     if (data.length === 0) {
       return [];
     }
@@ -143,7 +145,8 @@ const Organization: React.FC = () => {
       ...item,
       index: isNewStaffDepart ? index - 1 : index,
       total: isNewStaffDepart ? data.length - 1 : data.length,
-      children: formatData(item.children || [])
+      path: path || item.path || [],
+      children: formatData(item.children || [], [...(path || []), item.deptId!])
     }));
   };
 
@@ -158,7 +161,7 @@ const Organization: React.FC = () => {
       if (item.deptId === key) {
         return {
           ...item,
-          children: formatData(children)
+          children: formatData(children, [...(item.path || []), item.deptId])
         };
       }
       if (item.children && item.children.length > 0) {
@@ -226,7 +229,7 @@ const Organization: React.FC = () => {
         const parentNode: OrganizationItem = {
           ...currentNode,
           isLeaf: false,
-          children: formatData([...(item.children || []), node])
+          children: formatData([...(item.children || []), node], [...(currentNode.path || []), currentNode.deptId!])
         };
         return parentNode;
       }
@@ -567,14 +570,12 @@ const Organization: React.FC = () => {
           添加子部门
         </li>
         <li
-          className={classNames(style.operationItem, {
-            [style.disabled]: currentNode.deptType !== 0
-          })}
+          className={style.operationItem}
           onClick={() => {
-            if (currentNode.deptType === 0) {
-              setDepartmentVisible(true);
-              setIsAddDepart(false);
-            }
+            console.log(currentNode);
+            console.log(organization);
+            setDepartmentVisible(true);
+            setIsAddDepart(false);
           }}
         >
           修改部门
