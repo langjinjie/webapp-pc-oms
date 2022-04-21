@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import classNames from 'classnames';
 
 import styles from './style.module.less';
-import { Button, PaginationProps } from 'antd';
+import { Button, message, PaginationProps } from 'antd';
 import PieChart, { PieDataItem } from './PieChart';
 import { Icon, NgTable } from 'src/components';
 import { columns, TaskProps } from './Config';
@@ -62,10 +62,39 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [tableSource, setTableSource] = useState<TaskProps[]>([]);
 
+  const getTaskList = async (params?: any) => {
+    const { list, total } = await getTransferTaskList({
+      pageNum: pagination.current,
+      pageSize: pagination.pageSize,
+      ...params
+    });
+    setTableSource(list || []);
+    setPagination((pagination) => ({ ...pagination, total }));
+    console.log('查询列表', list);
+  };
+
   // 操作任务
-  const operateItem = async (task: TaskProps, operateType: number) => {
+  const operateItem = async (task: TaskProps, operateType: number, index: number) => {
     const res = await operationTransferTask({ taskId: task.taskId, corpId: transferInfo.corpId, opType: operateType });
     if (res) {
+      if (operateType === 1) {
+        message.success('关闭成功');
+        const copyTableData = [...tableSource];
+        copyTableData[index].taskStatus = 2;
+        setTableSource(copyTableData);
+      } else {
+        message.success('删除成功！');
+        const resData = tableSource.splice(index, 1);
+        if (resData.length > 1) {
+          setTableSource(resData);
+          setPagination((pagination) => ({ ...pagination, total: (pagination?.total as number) - 1 }));
+        } else {
+          getTaskList({
+            pageNum: 1,
+            pageSize: pagination.pageSize
+          });
+        }
+      }
       console.log(res);
     }
   };
@@ -100,13 +129,6 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     ]);
   };
 
-  const getTaskList = async () => {
-    const { list, total } = await getTransferTaskList({});
-    setTableSource(list || []);
-    setPagination((pagination) => ({ ...pagination, total }));
-    console.log('查询列表', list);
-  };
-
   const getTransferData = async () => {
     const res: TransferInfoProps = await queryTransferCorp();
     if (res.corpId) {
@@ -131,8 +153,9 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     await getTransferData();
   };
 
-  const onPaginationChange = () => {
-    setPagination(pagination);
+  const onPaginationChange = (pageNum: number) => {
+    setPagination((pagination) => ({ ...pagination, current: pageNum }));
+    getTaskList({ pageNum });
   };
 
   return (
