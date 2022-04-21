@@ -35,7 +35,7 @@ export interface PaginationProps {
 type colargsType = {
   exportData: (taskId: string) => void;
   viewItem: (taskId: string) => void;
-  operateItem: (task: TaskProps, operateType: number) => void;
+  operateItem: (task: TaskProps, operateType: number, index: number) => void;
 };
 const columns = (args: colargsType): ColumnsType<TaskProps> => {
   const { exportData, viewItem, operateItem } = args;
@@ -129,17 +129,23 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       key: 'operation',
       fixed: 'right',
       width: 120,
-      render: (text, record) => (
+      render: (text, record, index) => (
         <Space size="small">
           <a onClick={() => viewItem(record.taskId)}>查看</a>
           {record.taskStatus === 1 && (
-            <Popconfirm title="任务关闭后数据统计截止当前，确定操作吗？ " onConfirm={() => operateItem(record, 1)}>
+            <Popconfirm
+              title="任务关闭后数据统计截止当前，确定操作吗？ "
+              onConfirm={() => operateItem(record, 1, index)}
+            >
               <a>关闭</a>
             </Popconfirm>
           )}
           {record.taskStatus === 2 && <a onClick={() => exportData(record.taskId)}>数据</a>}
           {record.taskStatus === 0 && (
-            <Popconfirm title="：删除后不给客户经理下发此任务，确定操作吗？ " onConfirm={() => operateItem(record, 0)}>
+            <Popconfirm
+              title="删除后不给客户经理下发此任务，确定操作吗？ "
+              onConfirm={() => operateItem(record, 0, index)}
+            >
               <a>删除</a>
             </Popconfirm>
           )}
