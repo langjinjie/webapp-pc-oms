@@ -212,7 +212,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
         </>
           )
         : (
-        <div className={style.emptyWrap}>
+        <div className={classNames(style.emptyWrap, { [style.hideCheckboxEmptyWrap]: !showCheckbox })}>
           <Empty />
         </div>
           )}
