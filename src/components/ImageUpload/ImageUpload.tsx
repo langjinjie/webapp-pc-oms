@@ -16,12 +16,17 @@ interface ImageUploadProps {
   onChange?: (val: string) => void;
   disabled?: boolean;
   onRemove?: () => void;
+  beforeUpload?: (file: any) => void;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, onRemove }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, onRemove, beforeUpload }) => {
   const [loading, setLoading] = useState(false);
 
-  const beforeUpload = (file: any) => {
+  const beforeUploadHandle = (file: any) => {
+    // 自定义beforeUpload
+    if (beforeUpload) {
+      return beforeUpload(file);
+    }
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
       message.error('只允许上传JPG/PNG文件!');
@@ -97,7 +102,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
       showUploadList={false}
       action="/tenacity-admin/api/file/upload"
       data={{ bizKey: 'news' }}
-      beforeUpload={beforeUpload}
+      beforeUpload={beforeUploadHandle}
       onChange={fileChange}
     >
       {value ? uploadImg : uploadButton}

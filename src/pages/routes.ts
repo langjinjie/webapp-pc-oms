@@ -380,8 +380,8 @@ export const menus: Menu[] = [
     icon: 'a-bianzu101',
     path: 'migration',
     children: [
-      { name: '企微好友', path: '/enterprise' },
-      { name: '个微好友', path: '/personal' }
+      { name: '企微好友', path: '/enterprise' }
+      // { name: '个微好友', path: '/personal' }
     ]
   }
 ];

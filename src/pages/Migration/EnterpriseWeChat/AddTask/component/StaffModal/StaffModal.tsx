@@ -1,8 +1,9 @@
 import React, { Key, useEffect, useState } from 'react';
-import { Modal, Icon } from 'src/components';
+import { Modal, Icon, Empty } from 'src/components';
 import { Checkbox, Input, Pagination } from 'antd';
 import { CheckboxValueType, CheckboxOptionType } from 'antd/lib/checkbox/Group';
 import { queryTransferStaffList } from 'src/apis/migration';
+// import { debounce } from 'src/utils/base';
 import style from './style.module.less';
 import classNames from 'classnames';
 
@@ -25,6 +26,7 @@ interface IStaffInfo {
   deptName: string;
   targetStaffId: string;
 }
+let timerId: NodeJS.Timeout;
 
 const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onChange, showCheckbox }) => {
   const [staffList, setStaffList] = useState<IStaffList>({ total: 0, list: [] });
@@ -58,6 +60,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
   };
   const inputOnchange = (value: React.ChangeEvent<HTMLInputElement>) => {
     setName(value.target.value.trim());
+    // setPaginationParam((param) => ({ ...param, pageNum: 1 }));
   };
   // 输入框按下回车键
   const inputOnKeyDownHandle = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -110,14 +113,6 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
     }
   }, [visible]);
   useEffect(() => {
-    // 取消已选中
-    if (!(value && value?.length)) {
-      setCheckedList([]);
-      setCheckAll(false);
-      setIndeterminate(false);
-    }
-  }, [value]);
-  useEffect(() => {
     if (visible) {
       getStaffList();
     }
@@ -131,10 +126,18 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
       const indeterminate = staffList.list
         .filter((filterItem) => !filterItem.disabled)
         .some((item) => checkedList.includes(item.value));
-      setCheckAll(checkAll);
+      setCheckAll(!!staffList.list.length && checkAll);
       setIndeterminate(!checkAll && indeterminate);
     }
   }, [staffList]);
+  useEffect(() => {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+    timerId = setTimeout(() => {
+      setPaginationParam((param) => ({ ...param, pageNum: 1 }));
+    }, 500);
+  }, [name]);
   return (
     <Modal
       width={680}
@@ -157,51 +160,59 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
         />
         <Icon className={style.inputIcon} name="icon_common_16_seach" />
       </div>
-      <div className={style.checkAllWrap}>
-        {showCheckbox && (
-          <>
-            <Checkbox
-              className={style.checkAll}
-              indeterminate={indeterminate}
-              onChange={onCheckAllChange}
-              checked={checkAll}
-            >
-              全选
-            </Checkbox>
-            {!!checkedList.length && (
-              <>
-                <span>已选{checkedList.length}人</span>
-                <span>（共{staffList.total}人）</span>
-              </>
-            )}
-          </>
-        )}
-      </div>
-      <CheckboxGroup
-        className={classNames(style.checkboxGroupWrap, { [style.hideCheckbox]: !showCheckbox })}
-        onChange={onChangeHandle}
-        value={checkedList}
-      >
-        {staffList.list.map((item) => (
-          <div key={item.value as Key} className={style.checkboxItemWrap}>
-            <Checkbox className={style.checkboxItem} value={item.value} disabled={item.disabled}>
-              {item.label}
-            </Checkbox>
-            <div className={style.allLabel}>{item.label}</div>
-          </div>
-        ))}
-      </CheckboxGroup>
-      <div className={style.paginationWrap}>
-        <Pagination
-          size="small"
-          simple
-          total={staffList.total}
-          current={paginationParam.pageNum}
-          pageSize={paginationParam.pageSize}
-          onChange={paginationOnchange}
-          showSizeChanger={false}
-        />
-      </div>
+      {!staffList.list.length || (
+        <div className={style.checkAllWrap}>
+          {showCheckbox && (
+            <>
+              <Checkbox
+                className={style.checkAll}
+                indeterminate={indeterminate}
+                onChange={onCheckAllChange}
+                checked={checkAll}
+              >
+                全选
+              </Checkbox>
+              {!!checkedList.length && (
+                <>
+                  <span>已选{checkedList.length}人</span>
+                  <span>（共{staffList.total}人）</span>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      )}
+      {staffList.list.length
+        ? (
+        <>
+          <CheckboxGroup
+            className={classNames(style.checkboxGroupWrap, { [style.hideCheckbox]: !showCheckbox })}
+            onChange={onChangeHandle}
+            value={checkedList}
+          >
+            {staffList.list.map((item) => (
+              <div key={item.value as Key} className={style.checkboxItemWrap}>
+                <Checkbox className={style.checkboxItem} value={item.value} disabled={item.disabled}>
+                  {item.label}
+                </Checkbox>
+                <div className={style.allLabel}>{item.label}</div>
+              </div>
+            ))}
+          </CheckboxGroup>
+          <Pagination
+            size="small"
+            simple
+            total={staffList.total}
+            current={paginationParam.pageNum}
+            pageSize={paginationParam.pageSize}
+            onChange={paginationOnchange}
+            showSizeChanger={false}
+          />
+        </>
+          )
+        : (
+        <Empty />
+          )}
     </Modal>
   );
 };
