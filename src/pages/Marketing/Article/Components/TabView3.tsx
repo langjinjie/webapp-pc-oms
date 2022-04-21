@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Form, Input, Select, Button, message, Spin, Radio, RadioChangeEvent } from 'antd';
+import { Form, Input, Select, Button, message, Spin, Radio, RadioChangeEvent, Image } from 'antd';
 import { getNewsDetail, saveNews, getTagsOrCategorys, searchRecommendGoodsList } from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
@@ -22,7 +22,7 @@ interface TypeProps {
   type: string;
 }
 
-interface RecommendMarketProps {
+export interface RecommendMarketProps {
   marketId: string;
   title: string;
   recommendImgUrl?: string;
@@ -30,6 +30,7 @@ interface RecommendMarketProps {
 }
 
 const TabView3: React.FC<TabView3Props> = (props) => {
+  const [visibleImage, setVisibleImage] = useState(false);
   const [isGetDetailLoading, changeGetDetailLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<{ recommendList: RecommendMarketProps[]; [prop: string]: any }>({
@@ -396,86 +397,91 @@ const TabView3: React.FC<TabView3Props> = (props) => {
           name={'recommendList'}
           rules={[{ required: recommendType !== 3, message: '请选择推荐内容，或者将推荐类型设置为无' }]}
         >
-          <Form.List name="recommendList">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, ...restFiled }, index) => {
-                  return (
-                    <Form.Item key={key} required className={style.formListWrap} label={'素材' + (index + 1)}>
-                      {/* 缓存是否上下上下架数据 */}
-                      <Form.Item hidden name={[name, 'whetherDelete']}>
-                        <Input type="text" />
-                      </Form.Item>
-                      <Form.Item
-                        {...restFiled}
-                        name={[name, 'marketId']}
-                        rules={[
-                          { required: true, message: '请重新选择' },
-                          ({ getFieldValue }) => ({
-                            validator (_, value) {
-                              const itemValue = getFieldValue('recommendList')[index];
-                              if (!value || itemValue.whetherDelete !== 1) {
-                                return Promise.resolve();
-                              }
-                              return Promise.reject(new Error('当前素材已经下线，请选择其他素材!'));
-                            }
-                          })
-                        ]}
-                      >
-                        <Select
-                          placeholder="搜索对应素材标题在下拉框进行选择"
-                          allowClear
-                          showSearch={true}
-                          defaultActiveFirstOption={false}
-                          showArrow={false}
-                          filterOption={false}
-                          notFoundContent={false}
-                          onChange={(value) => onRecommendSelected(value, index)}
-                          onSearch={debounceFetcher}
-                        >
-                          {recommendList.map((option) => (
-                            <Select.Option
-                              key={option.marketId}
-                              value={option.marketId}
-                              disabled={
-                                formData?.recommendList.filter((item: any) => item?.marketId === option.marketId)
-                                  .length > 0
-                              }
-                            >
-                              {option.title}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                      {/* 当是商品时展示图片模块 */}
-                      {recommendType === 2 && (
+          <div className={style.customerAddWrap}>
+            <Button className={style.btnDemo} type="link" onClick={() => setVisibleImage(true)}>
+              示例图
+            </Button>
+            <Form.List name="recommendList">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restFiled }, index) => {
+                    return (
+                      <Form.Item key={key} required className={style.formListWrap} label={'素材' + (index + 1)}>
+                        {/* 缓存是否上下上下架数据 */}
+                        <Form.Item hidden name={[name, 'whetherDelete']}>
+                          <Input type="text" />
+                        </Form.Item>
                         <Form.Item
                           {...restFiled}
-                          rules={[{ required: true, message: '请上传推荐图片' }]}
-                          extra="为确保最佳展示效果，请上传 690*200像素高清图片，仅支持.jpg格式"
-                          name={[name, 'recommendImgUrl']}
+                          name={[name, 'marketId']}
+                          rules={[
+                            { required: true, message: '请重新选择' },
+                            ({ getFieldValue }) => ({
+                              validator (_, value) {
+                                const itemValue = getFieldValue('recommendList')[index];
+                                if (!value || itemValue.whetherDelete !== 1) {
+                                  return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('当前素材已经下线，请选择其他素材!'));
+                              }
+                            })
+                          ]}
                         >
-                          <NgUpload
-                            disabled={isUploadDisabled(index)}
-                            onChange={(url) => customerUploadChange(url, index)}
-                            beforeUpload={recommendPicBeforeUpload}
-                          />
+                          <Select
+                            placeholder="搜索对应素材标题在下拉框进行选择"
+                            allowClear
+                            showSearch={true}
+                            defaultActiveFirstOption={false}
+                            showArrow={false}
+                            filterOption={false}
+                            notFoundContent={false}
+                            onChange={(value) => onRecommendSelected(value, index)}
+                            onSearch={debounceFetcher}
+                          >
+                            {recommendList.map((option) => (
+                              <Select.Option
+                                key={option.marketId}
+                                value={option.marketId}
+                                disabled={
+                                  formData?.recommendList.filter((item: any) => item?.marketId === option.marketId)
+                                    .length > 0
+                                }
+                              >
+                                {option.title}
+                              </Select.Option>
+                            ))}
+                          </Select>
                         </Form.Item>
-                      )}
-                      <Icon className={style.removeBtn} name="cangpeitubiao_shanchu" onClick={() => remove(name)} />
+                        {/* 当是商品时展示图片模块 */}
+                        {recommendType === 2 && (
+                          <Form.Item
+                            {...restFiled}
+                            rules={[{ required: true, message: '请上传推荐图片' }]}
+                            extra="为确保最佳展示效果，请上传 690*200像素高清图片，仅支持.jpg格式"
+                            name={[name, 'recommendImgUrl']}
+                          >
+                            <NgUpload
+                              disabled={isUploadDisabled(index)}
+                              onChange={(url) => customerUploadChange(url, index)}
+                              beforeUpload={recommendPicBeforeUpload}
+                            />
+                          </Form.Item>
+                        )}
+                        <Icon className={style.removeBtn} name="cangpeitubiao_shanchu" onClick={() => remove(name)} />
+                      </Form.Item>
+                    );
+                  })}
+                  {fields.length < 5 && (
+                    <Form.Item>
+                      <Button className={style.addBtn} onClick={() => add()}>
+                        <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" /> 添加
+                      </Button>
                     </Form.Item>
-                  );
-                })}
-                {fields.length < 5 && (
-                  <Form.Item>
-                    <Button className={style.addBtn} onClick={() => add()}>
-                      <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" /> 添加
-                    </Button>
-                  </Form.Item>
-                )}
-              </>
-            )}
-          </Form.List>
+                  )}
+                </>
+              )}
+            </Form.List>
+          </div>
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 6 }}>
           <Button type="primary" shape="round" className={style.submitBtn} htmlType="submit" loading={isSubmitting}>
@@ -483,6 +489,25 @@ const TabView3: React.FC<TabView3Props> = (props) => {
           </Button>
         </Form.Item>
       </Form>
+      <Image
+        width={200}
+        style={{ display: 'none' }}
+        src={
+          recommendType === 2
+            ? require('src/assets/images/marketing/productDemo.png')
+            : require('src/assets/images/marketing/newsDemo.png')
+        }
+        preview={{
+          visible: visibleImage,
+          src:
+            recommendType === 2
+              ? require('src/assets/images/marketing/productDemo.png')
+              : require('src/assets/images/marketing/newsDemo.png'),
+          onVisibleChange: (value) => {
+            setVisibleImage(value);
+          }
+        }}
+      />
     </Spin>
   );
 };
