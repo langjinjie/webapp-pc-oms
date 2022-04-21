@@ -4,7 +4,7 @@
  * @date 2021-12-10 10:36
  */
 import React, { useEffect, useState, useContext, useRef, MutableRefObject } from 'react';
-import { Input, Tree, message } from 'antd';
+import { Input, Tree, TreeSelect, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
 import { Icon, Modal, Empty } from 'src/components';
@@ -43,6 +43,7 @@ interface OrganizationItem {
   leaderName?: string;
   total?: number;
   path?: string[];
+  disabled?: boolean;
   children?: OrganizationItem[];
 }
 
@@ -67,6 +68,9 @@ const Organization: React.FC = () => {
   const [staffList, setStaffList] = useState<StaffItem[]>([]);
   const [displayType, setDisplayType] = useState<number>(0);
   const [leaderVisible, setLeaderVisible] = useState<boolean>(false);
+  const [transferVisible, setTransferVisible] = useState<boolean>(false);
+  const [transferId, setTransferId] = useState<string>('');
+  const [parentDepartName, setParentDepartName] = useState<string>('');
 
   const staffListRef: MutableRefObject<any> = useRef(null);
 
@@ -77,8 +81,8 @@ const Organization: React.FC = () => {
    */
   const handlePosition = (x: number, y: number) => {
     let top = y + 30;
-    if (window.innerHeight - y - 35 < 260) {
-      top = y - 30 - 264;
+    if (window.innerHeight - y - 35 < 292) {
+      top = y - 30 - 296;
     }
     setPosition({
       left: 445,
@@ -435,6 +439,51 @@ const Organization: React.FC = () => {
     setOrganization(data);
   }; */
 
+  /**
+   * 获取当前部门父部门名称
+   * @param data
+   */
+  const getParentDepartName = (data: OrganizationItem[]) => {
+    data.forEach((item) => {
+      const index: number = (item.children || []).findIndex((item) => item.deptId === currentNode.deptId);
+      if (index > -1) {
+        setParentDepartName(item.deptName!);
+      } else if (item.children && item.children.length > 0) {
+        getParentDepartName(item.children);
+      }
+    });
+  };
+
+  /**
+   * 格式化禁用节点
+   * @param data
+   */
+  const formatDisabled = (data: OrganizationItem[]): OrganizationItem[] => {
+    if (data.length === 0) {
+      return [];
+    }
+    return data.map((item) => {
+      const path = currentNode.path || [];
+      return {
+        ...item,
+        disabled:
+          (item.path || []).includes(currentNode.deptId!) ||
+          item.deptId === currentNode.deptId ||
+          path[path.length - 1] === item.deptId ||
+          item.deptType === 2,
+        children: formatDisabled(item.children || [])
+      };
+    });
+  };
+
+  useEffect(() => {
+    !transferVisible && setTransferId('');
+  }, [transferVisible]);
+
+  useEffect(() => {
+    getParentDepartName(organization);
+  }, [currentNode]);
+
   useEffect(() => {
     setTitle('组织架构管理');
     initCorpOrgData();
@@ -572,8 +621,6 @@ const Organization: React.FC = () => {
         <li
           className={style.operationItem}
           onClick={() => {
-            console.log(currentNode);
-            console.log(organization);
             setDepartmentVisible(true);
             setIsAddDepart(false);
           }}
@@ -582,6 +629,18 @@ const Organization: React.FC = () => {
         </li>
         <li className={style.operationItem} onClick={() => setLeaderVisible(true)}>
           设置上级
+        </li>
+        <li
+          className={classNames(style.operationItem, {
+            [style.disabled]: currentNode.deptType !== 0
+          })}
+          onClick={() => {
+            if (currentNode.deptType === 0) {
+              setTransferVisible(true);
+            }
+          }}
+        >
+          转移团队
         </li>
         <li
           className={classNames(style.operationItem, {
@@ -648,6 +707,40 @@ const Organization: React.FC = () => {
             staffListRef.current?.resetHandle();
           }}
         />
+        <Modal
+          title="转移团队"
+          visible={transferVisible}
+          onClose={() => setTransferVisible(false)}
+          onOk={() => {
+            setTransferVisible(false);
+            console.log(transferId);
+          }}
+        >
+          <div className={style.transferWrap}>
+            <div className={style.transferRow}>
+              <span className={style.transferLabel}>目前上级部门：</span>
+              <span className={style.transferValue}>{parentDepartName}</span>
+            </div>
+            <div className={style.transferRow}>
+              <span className={style.transferLabel}>修改上级部门：</span>
+              <span className={style.transferValue}>
+                <TreeSelect
+                  showSearch
+                  filterTreeNode={(val, node) => node.deptName?.includes(val)}
+                  style={{ width: '100%' }}
+                  fieldNames={{ label: 'deptName', value: 'deptId' }}
+                  treeData={formatDisabled(organization)}
+                  loadData={onLoadData}
+                  treeDefaultExpandAll
+                  placeholder="请选择部门"
+                  allowClear
+                  value={transferId || undefined}
+                  onChange={(val) => setTransferId(val)}
+                />
+              </span>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );
