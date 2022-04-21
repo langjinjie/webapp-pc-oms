@@ -200,6 +200,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
             ))}
           </CheckboxGroup>
           <Pagination
+            className={'flex justify-center'}
             size="small"
             simple
             total={staffList.total}
@@ -211,7 +212,9 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
         </>
           )
         : (
-        <Empty />
+        <div className={classNames(style.emptyWrap, { [style.hideCheckboxEmptyWrap]: !showCheckbox })}>
+          <Empty />
+        </div>
           )}
     </Modal>
   );
