@@ -81,12 +81,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
           )
         : (
         <>
-          <div className={style.iconWrap}>
-            <Icon
-              className={classNames(style.delIcon, { [style.disabled]: disabled })}
-              name="shanchu"
-              onClick={onRemoveHandle}
-            />
+          <div className={classNames(style.iconWrap, { [style.disabled]: disabled })}>
+            <Icon className={style.delIcon} name="shanchu" onClick={onRemoveHandle} />
           </div>
           <img className={style.img} src={value} alt="缩略图" />
         </>

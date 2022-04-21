@@ -29,7 +29,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('好友迁移-企微好友');
   const [isEmpty, setIsEmpty] = useState(false);
   const [visibleDetail, setVisibleDetail] = useState(false);
-
+  const [btnDisabled, setBtnDisabled] = useState(false);
   const [transferInfo, setTransferInfo] = useState<TransferInfoProps>({
     corpId: '',
     corpName: '',
@@ -158,6 +158,11 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     getTaskList({ pageNum, pageSize });
   };
 
+  // 点击创建任务
+  const clickCreateTask = () => {
+    if (btnDisabled) return message.info('请联系迁移前机构的企微管理员，配置好友传送门的可见范围');
+    history.push('/enterprise/addTask');
+  };
   return (
     <div className={classNames(styles.migration, 'container')}>
       {isEmpty
@@ -218,7 +223,13 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
           </header>
 
           <div className={classNames(styles.addTask, 'flex align-center')}>
-            <Button type="primary" shape="round" size="large" onClick={() => history.push('/enterprise/addTask')}>
+            <Button
+              className={classNames({ [styles.disabled]: btnDisabled })}
+              type="primary"
+              shape="round"
+              size="large"
+              onClick={clickCreateTask}
+            >
               创建群发任务
             </Button>
             <div className="ml30 color-text-placeholder">
@@ -237,7 +248,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
         </div>
           )}
 
-      <StaffModal visible={visibleDetail} onClose={() => setVisibleDetail(false)} />
+      <StaffModal setBtnDisabled={setBtnDisabled} visible={visibleDetail} onClose={() => setVisibleDetail(false)} />
     </div>
   );
 };

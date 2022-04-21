@@ -1,4 +1,4 @@
-import React, { Key, useEffect, useState } from 'react';
+import React, { Key, useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { Modal, Icon, Empty } from 'src/components';
 import { Checkbox, Input, Pagination } from 'antd';
 import { CheckboxValueType, CheckboxOptionType } from 'antd/lib/checkbox/Group';
@@ -13,6 +13,7 @@ interface IStaffModalProps {
   onClose: () => void;
   onChange?: (param: any[]) => void;
   showCheckbox?: boolean;
+  setBtnDisabled?: Dispatch<SetStateAction<boolean>>;
 }
 
 interface IStaffList {
@@ -28,7 +29,14 @@ interface IStaffInfo {
 }
 let timerId: NodeJS.Timeout;
 
-const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onChange, showCheckbox }) => {
+const StaffModal: React.FC<IStaffModalProps> = ({
+  value,
+  visible,
+  onClose,
+  onChange,
+  showCheckbox,
+  setBtnDisabled
+}) => {
   const [staffList, setStaffList] = useState<IStaffList>({ total: 0, list: [] });
   const [name, setName] = useState('');
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 18 });
@@ -55,6 +63,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
           };
         }
       });
+      setBtnDisabled?.(!list.length);
       setStaffList({ total: res.total, list });
     }
   };
@@ -113,9 +122,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
     }
   }, [visible]);
   useEffect(() => {
-    if (visible) {
-      getStaffList();
-    }
+    getStaffList();
   }, [paginationParam]);
   useEffect(() => {
     // 全选样式控制
@@ -131,12 +138,14 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
     }
   }, [staffList]);
   useEffect(() => {
-    if (timerId) {
-      clearTimeout(timerId);
+    if (visible) {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+      timerId = setTimeout(() => {
+        setPaginationParam((param) => ({ ...param, pageNum: 1 }));
+      }, 500);
     }
-    timerId = setTimeout(() => {
-      setPaginationParam((param) => ({ ...param, pageNum: 1 }));
-    }, 500);
   }, [name]);
   return (
     <Modal
