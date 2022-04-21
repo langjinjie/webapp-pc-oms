@@ -153,9 +153,9 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     await getTransferData();
   };
 
-  const onPaginationChange = (pageNum: number) => {
-    setPagination((pagination) => ({ ...pagination, current: pageNum }));
-    getTaskList({ pageNum });
+  const onPaginationChange = (pageNum: number, pageSize?: number) => {
+    setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize }));
+    getTaskList({ pageNum, pageSize });
   };
 
   return (

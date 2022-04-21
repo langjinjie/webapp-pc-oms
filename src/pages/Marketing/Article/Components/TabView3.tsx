@@ -21,16 +21,17 @@ interface TypeProps {
   type: string;
 }
 
-interface recommendMarketProps {
+interface RecommendMarketProps {
   marketId: string;
   title: string;
   recommendImgUrl?: string;
+  whetherDelete?: number;
 }
 
 const TabView3: React.FC<TabView3Props> = (props) => {
   const [isGetDetailLoading, changeGetDetailLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState<{ recommendList: recommendMarketProps[]; [prop: string]: any }>({
+  const [formData, setFormData] = useState<{ recommendList: RecommendMarketProps[]; [prop: string]: any }>({
     title: '',
     originalCreator: '',
     summary: '',
@@ -41,7 +42,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     recommendType: 3,
     recommendList: []
   });
-  const [recommendList, setRecommendList] = useState<recommendMarketProps[]>([]);
+  const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
   const [recommendType, setRecommendType] = useState(0);
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList, userInfo } =
     useContext(Context);
@@ -108,6 +109,12 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         recommendType,
         recommendList
       } = res;
+      // recommendList.map((item: RecommendMarketProps) => {
+      //   if (item.whetherDelete) {
+      //     console.log(item);
+      //     return item;
+      //   }
+      // });
       form.setFieldsValue({
         title,
         originalCreator,
@@ -123,6 +130,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       setRecommendType(recommendType);
       setRecommendList(recommendList || []);
       changeGetDetailLoading(false);
+      form.validateFields();
     } catch (e) {
       changeGetDetailLoading(false);
     }
@@ -193,13 +201,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   };
 
   const onRecommendSearch = async (value: string) => {
-    const res: recommendMarketProps[] = await searchRecommendGoodsList({
+    const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
       recommendType: formData.recommendType
     });
     const resList = [...formData.recommendList.filter((item) => item !== undefined), ...res];
     const obj: any = {};
-    const arr = resList.reduce((newArr: recommendMarketProps[], next) => {
+    const arr = resList.reduce((newArr: RecommendMarketProps[], next) => {
       if (obj[next.marketId]) {
         console.log(obj);
       } else {
@@ -215,7 +223,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     const selectedItem = recommendList.filter((item) => item.marketId === value)[0];
     const oldSelectedList = [...formData.recommendList];
     oldSelectedList.splice(index, 1, selectedItem);
-    console.log(oldSelectedList);
     form.setFieldsValue({
       recommendList: oldSelectedList
     });
@@ -371,11 +378,24 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                   return (
                     <Form.Item key={key} required className={style.formListWrap} label={'素材' + (index + 1)}>
                       {/* 缓存是否上下上下架数据 */}
-
+                      <Form.Item hidden name={[name, 'whetherDelete']}>
+                        <Input type="text" />
+                      </Form.Item>
                       <Form.Item
                         {...restFiled}
                         name={[name, 'marketId']}
-                        rules={[{ required: true, message: '请重新选择' }]}
+                        rules={[
+                          { required: true, message: '请重新选择' },
+                          ({ getFieldValue }) => ({
+                            validator (_, value) {
+                              const itemValue = getFieldValue('recommendList')[index];
+                              if (!value || itemValue.whetherDelete !== 1) {
+                                return Promise.resolve();
+                              }
+                              return Promise.reject(new Error('当前素材已经下线，请选择其他素材!'));
+                            }
+                          })
+                        ]}
                       >
                         <Select
                           placeholder="搜索对应素材标题在下拉框进行选择"
