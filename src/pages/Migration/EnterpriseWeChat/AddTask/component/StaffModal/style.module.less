@@ -25,6 +25,16 @@
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
+    &.hideCheckbox {
+      :global {
+        label.ant-checkbox-wrapper {
+          cursor: auto;
+          .ant-checkbox {
+            display: none;
+          }
+        }
+      }
+    }
     .checkboxItemWrap {
       position: relative;
       height: 22px;
@@ -59,15 +69,8 @@
       }
     }
   }
-  .hideCheckbox {
-    :global {
-      label.ant-checkbox-wrapper {
-        cursor: auto;
-        .ant-checkbox {
-          display: none;
-        }
-      }
-    }
+  .emptyWrap {
+    height: 454px;
   }
   .paginationWrap {
     :global {
