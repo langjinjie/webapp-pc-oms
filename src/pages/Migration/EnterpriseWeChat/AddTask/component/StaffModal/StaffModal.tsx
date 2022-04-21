@@ -116,7 +116,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
     if (visible) {
       getStaffList();
     }
-  }, [paginationParam, visible]);
+  }, [paginationParam]);
   useEffect(() => {
     // 全选样式控制
     if (showCheckbox) {
@@ -147,7 +147,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
       onClose={onClose}
       visible={visible}
       closable
-      title="选择执行人员"
+      title={showCheckbox ? '选择执行人员' : '查看可见范围'}
       onOk={onOk}
     >
       <div className={style.inputWrp}>
@@ -191,11 +191,10 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
             value={checkedList}
           >
             {staffList.list.map((item) => (
-              <div key={item.value as Key} className={style.checkboxItemWrap}>
+              <div key={item.value as Key} title={item.label as string} className={style.checkboxItemWrap}>
                 <Checkbox className={style.checkboxItem} value={item.value} disabled={item.disabled}>
                   {item.label}
                 </Checkbox>
-                <div className={style.allLabel}>{item.label}</div>
               </div>
             ))}
           </CheckboxGroup>
