@@ -10,6 +10,7 @@ import { Icon } from 'lester-ui';
 
 import style from './style.module.less';
 import { recommendTypeList } from '../Config';
+import { debounce } from 'src/utils/base';
 interface TabView3Props {
   isEdit: boolean;
   newsId: string;
@@ -44,6 +45,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   });
   const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
   const [recommendType, setRecommendType] = useState(0);
+  const [newUploadProductIdList, setNewUploadProductIdList] = useState<string[]>([]);
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList, userInfo } =
     useContext(Context);
   // const { data, dispatch } = useContext(GlobalContent);
@@ -178,7 +180,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     };
   }, []);
   const onFormValuesChange = (changeValues: any, values: any) => {
-    console.log('2++');
     const { defaultImg, summary, recommendType } = values;
     setFormData((formData) => ({ ...formData, defaultImg, summary, recommendType }));
   };
@@ -218,6 +219,11 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     setRecommendList(arr);
   };
 
+  // 防抖处理
+  const debounceFetcher = debounce(async (value: string) => {
+    await onRecommendSearch(value);
+  }, 800);
+
   // 当选中select素材时处理的东西
   const onRecommendSelected = (value: string, index: number) => {
     const selectedItem = recommendList.filter((item) => item.marketId === value)[0];
@@ -239,6 +245,25 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       message.error('图片大小不可以超过 2MB!');
     }
     return isJpgOrPng && isLt2M;
+  };
+
+  const isUploadDisabled = (index: number): boolean => {
+    const currentItem: RecommendMarketProps = form.getFieldValue('recommendList')[index];
+    if (!currentItem) {
+      return false;
+    }
+    return !!currentItem?.recommendImgUrl && !newUploadProductIdList.includes(currentItem.marketId);
+  };
+
+  const customerUploadChange = (url: string, index: number) => {
+    const currentItem: RecommendMarketProps = form.getFieldValue('recommendList')[index];
+    const list = [...newUploadProductIdList];
+    if (!list.includes(currentItem.marketId)) {
+      list.push(currentItem.marketId);
+      setNewUploadProductIdList(list);
+    }
+    console.log(currentItem);
+    console.log(url);
   };
 
   return (
@@ -400,13 +425,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                         <Select
                           placeholder="搜索对应素材标题在下拉框进行选择"
                           allowClear
-                          showSearch
+                          showSearch={true}
                           defaultActiveFirstOption={false}
                           showArrow={false}
                           filterOption={false}
-                          notFoundContent={null}
+                          notFoundContent={false}
                           onChange={(value) => onRecommendSelected(value, index)}
-                          onSearch={onRecommendSearch}
+                          onSearch={debounceFetcher}
                         >
                           {recommendList.map((option) => (
                             <Select.Option
@@ -430,7 +455,11 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                           extra="为确保最佳展示效果，请上传 690*200像素高清图片，仅支持.jpg格式"
                           name={[name, 'recommendImgUrl']}
                         >
-                          <NgUpload beforeUpload={recommendPicBeforeUpload} />
+                          <NgUpload
+                            disabled={isUploadDisabled(index)}
+                            onChange={(url) => customerUploadChange(url, index)}
+                            beforeUpload={recommendPicBeforeUpload}
+                          />
                         </Form.Item>
                       )}
                       <Icon className={style.removeBtn} name="cangpeitubiao_shanchu" onClick={() => remove(name)} />

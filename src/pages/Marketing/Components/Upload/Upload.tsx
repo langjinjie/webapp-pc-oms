@@ -17,6 +17,7 @@ interface NgUploadProps {
   btnText?: string;
   type?: 'video' | 'audio';
   showDeleteBtn?: boolean;
+  disabled?: boolean;
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -30,7 +31,8 @@ const NgUpload: React.FC<NgUploadProps> = ({
   beforeUpload,
   btnText = '上传图片',
   type,
-  showDeleteBtn
+  showDeleteBtn,
+  disabled
 }) => {
   const [states, setStates] = useState<{
     loading: boolean;
@@ -109,6 +111,7 @@ const NgUpload: React.FC<NgUploadProps> = ({
     <>
       {!type && (
         <Upload
+          disabled={disabled}
           onChange={handleChange}
           listType="picture-card"
           beforeUpload={beforeUpload}
