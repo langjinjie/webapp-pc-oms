@@ -11,55 +11,52 @@
   padding: 30px 0 0 122px;
   .form {
     .formItem {
-      margin-bottom: 30px;
-      .input {
-        box-sizing: content-box;
+      // margin-bottom: 30px;
+      .input,
+      .inputTextArea {
         width: 560px;
-        height: 24px;
         border-radius: 18px;
       }
-      .addStaffWrap {
-        display: flex;
-
-        .addStaff {
-          margin-right: 20px;
-          width: 36px;
-          height: 36px;
-          padding: 5px;
-          background: #ffffff;
-          border-radius: 10px;
-          border: 1px solid #e6e7eb;
-          color: #999aa1;
-        }
-        .selected {
-          position: relative;
-          width: 134px;
-          height: 36px;
-          padding-left: 14px;
-          background: #f5f5f5;
-          border-radius: 2px;
-          border: 1px solid #f0f0f0;
-          line-height: 36px;
-          .clearSelected {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            right: 14px;
-            margin: auto;
-            width: 12px;
-            height: 12px;
-            color: #999aa1;
-          }
+      .titleInput {
+        width: 400px;
+      }
+      .readOnlyInput {
+        width: 70px;
+        border: none;
+        box-shadow: none;
+      }
+      .readDetail {
+        font-size: 14px;
+        font-weight: 400;
+        color: #318cf5;
+        line-height: 16px;
+        cursor: pointer;
+      }
+      .rangePicker {
+        width: 380px;
+      }
+      :global {
+        .ant-form-item-label {
+          width: 70px;
+          text-align: right;
         }
       }
+    }
+    .btn {
+      display: block;
+      margin: 0 auto;
+      width: 120px;
+      height: 36px;
+      background: #318cf5;
+      border-radius: 20px;
     }
   }
   // 修改ant默认样式
   :global {
     .ant-form-item {
-      align-items: center;
       .ant-form-item-label {
         margin-right: 10px;
+        vertical-align: middle;
       }
     }
   }

@@ -9,17 +9,24 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { UploadChangeParam } from 'antd/lib/upload/interface';
 import { Icon } from 'src/components';
 import style from './style.module.less';
+import classNames from 'classnames';
 
 interface ImageUploadProps {
   value?: string;
   onChange?: (val: string) => void;
   disabled?: boolean;
+  onRemove?: () => void;
+  beforeUpload?: (file: any) => void;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, onRemove, beforeUpload }) => {
   const [loading, setLoading] = useState(false);
 
-  const beforeUpload = (file: any) => {
+  const beforeUploadHandle = (file: any) => {
+    // 自定义beforeUpload
+    if (beforeUpload) {
+      return beforeUpload(file);
+    }
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
       message.error('只允许上传JPG/PNG文件!');
@@ -60,6 +67,33 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled }) 
     </div>
   );
 
+  // 点击删除文件
+  const onRemoveHandle = (e: React.MouseEvent) => {
+    if (disabled) return;
+    e.stopPropagation();
+    onRemove?.();
+  };
+  const uploadImg = (
+    <div className={style.imgWrap}>
+      {loading
+        ? (
+        <LoadingOutlined />
+          )
+        : (
+        <>
+          <div className={style.iconWrap}>
+            <Icon
+              className={classNames(style.delIcon, { [style.disabled]: disabled })}
+              name="shanchu"
+              onClick={onRemoveHandle}
+            />
+          </div>
+          <img className={style.img} src={value} alt="缩略图" />
+        </>
+          )}
+    </div>
+  );
+
   return (
     <Upload
       accept="image/*"
@@ -68,10 +102,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled }) 
       showUploadList={false}
       action="/tenacity-admin/api/file/upload"
       data={{ bizKey: 'news' }}
-      beforeUpload={beforeUpload}
+      beforeUpload={beforeUploadHandle}
       onChange={fileChange}
     >
-      {value ? <img className={style.img} src={value} alt="加载中..." /> : uploadButton}
+      {value ? uploadImg : uploadButton}
     </Upload>
   );
 };

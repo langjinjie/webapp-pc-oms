@@ -1,33 +1,49 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Form, Input, Select, Button, message, Spin } from 'antd';
-import { getNewsDetail, saveNews, getTagsOrCategorys } from 'src/apis/marketing';
+import { Form, Input, Select, Button, message, Spin, Radio, RadioChangeEvent } from 'antd';
+import { getNewsDetail, saveNews, getTagsOrCategorys, searchRecommendGoodsList } from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import { NgEditor } from 'src/components';
 import NgUpload from '../../Components/Upload/Upload';
 import { WechatShare } from '../../Components/WechatShare/WechatShare';
+import { Icon } from 'lester-ui';
 
+import style from './style.module.less';
+import { recommendTypeList } from '../Config';
 interface TabView3Props {
   isEdit: boolean;
   newsId: string;
 }
+
 interface TypeProps {
   id: string;
   name: string;
   type: string;
 }
+
+interface RecommendMarketProps {
+  marketId: string;
+  title: string;
+  recommendImgUrl?: string;
+  whetherDelete?: number;
+}
+
 const TabView3: React.FC<TabView3Props> = (props) => {
   const [isGetDetailLoading, changeGetDetailLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{ recommendList: RecommendMarketProps[]; [prop: string]: any }>({
     title: '',
     originalCreator: '',
     summary: '',
     defaultImg: '',
     crawl: 0,
     editorHtml: '',
-    editorHtmlChanged: ''
+    editorHtmlChanged: '',
+    recommendType: 3,
+    recommendList: []
   });
+  const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
+  const [recommendType, setRecommendType] = useState(0);
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList, userInfo } =
     useContext(Context);
   // const { data, dispatch } = useContext(GlobalContent);
@@ -81,20 +97,40 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         ...resdata,
         editorHtml: content || ''
       }));
-      form.setFields([
-        { name: 'title', value: res.title },
-        { name: 'originalCreator', value: res.originalCreator },
-        { name: 'fromSource', value: res.fromSource },
-        { name: 'summary', value: res.summary },
-        { name: 'categoryId', value: res.categoryId || '' },
-        { name: 'tagIdList', value: res.tagIdList || [] },
-        { name: 'defaultImg', value: res.defaultImg },
-        {
-          name: 'corpId',
-          value: res.corpId || undefined
-        }
-      ]);
+      const {
+        title,
+        originalCreator,
+        fromSource,
+        summary,
+        categoryId,
+        tagIdList,
+        defaultImg,
+        corpId,
+        recommendType,
+        recommendList
+      } = res;
+      // recommendList.map((item: RecommendMarketProps) => {
+      //   if (item.whetherDelete) {
+      //     console.log(item);
+      //     return item;
+      //   }
+      // });
+      form.setFieldsValue({
+        title,
+        originalCreator,
+        fromSource,
+        summary,
+        categoryId,
+        tagIdList,
+        defaultImg,
+        corpId,
+        recommendType: recommendType,
+        recommendList
+      });
+      setRecommendType(recommendType);
+      setRecommendList(recommendList || []);
       changeGetDetailLoading(false);
+      form.validateFields();
     } catch (e) {
       changeGetDetailLoading(false);
     }
@@ -106,13 +142,14 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       if (!submitHTML || submitHTML.length <= 7) {
         return message.error('请输入文章内容');
       }
-      setSubmitting(true);
+      setSubmitting(false);
       const res = await saveNews({
         ...values,
         newsId: newsId,
         content: submitHTML,
         corpId: currentCorpId
       });
+      setSubmitting(false);
       if (res) {
         message.success('添加成功！').then(() => {
           setSubmitting(false);
@@ -141,9 +178,69 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     };
   }, []);
   const onFormValuesChange = (changeValues: any, values: any) => {
-    const { defaultImg, summary } = values;
-    setFormData((formData) => ({ ...formData, defaultImg, summary }));
+    console.log('2++');
+    const { defaultImg, summary, recommendType } = values;
+    setFormData((formData) => ({ ...formData, defaultImg, summary, recommendType }));
   };
+
+  // 推荐类型发生变化时
+  const onRecommendTypeChange = async (e: RadioChangeEvent) => {
+    setRecommendType(+e.target.value);
+    const type = +e.target.value;
+    if (type !== 3) {
+      const res = await searchRecommendGoodsList({
+        title: '',
+        recommendType: +e.target.value
+      });
+      setRecommendList(res || []);
+    }
+    form.setFieldsValue({
+      recommendList: []
+    });
+    setFormData((formData) => ({ ...formData, recommendList: [] }));
+  };
+
+  const onRecommendSearch = async (value: string) => {
+    const res: RecommendMarketProps[] = await searchRecommendGoodsList({
+      title: value,
+      recommendType: formData.recommendType
+    });
+    const resList = [...formData.recommendList.filter((item) => item !== undefined), ...res];
+    const obj: any = {};
+    const arr = resList.reduce((newArr: RecommendMarketProps[], next) => {
+      if (obj[next.marketId]) {
+        console.log(obj);
+      } else {
+        obj[next.marketId] = true && newArr.push(next);
+      }
+      return newArr;
+    }, []);
+    setRecommendList(arr);
+  };
+
+  // 当选中select素材时处理的东西
+  const onRecommendSelected = (value: string, index: number) => {
+    const selectedItem = recommendList.filter((item) => item.marketId === value)[0];
+    const oldSelectedList = [...formData.recommendList];
+    oldSelectedList.splice(index, 1, selectedItem);
+    form.setFieldsValue({
+      recommendList: oldSelectedList
+    });
+    setFormData((formData) => ({ ...formData, recommendList: oldSelectedList }));
+  };
+
+  const recommendPicBeforeUpload = (file: any) => {
+    const isJpgOrPng = file.type === 'image/jpeg';
+    if (!isJpgOrPng) {
+      message.error('只可以上传 JPG 格式的图片!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不可以超过 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
   return (
     <Spin spinning={isGetDetailLoading} tip="加载中...">
       <Form
@@ -260,8 +357,99 @@ const TabView3: React.FC<TabView3Props> = (props) => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 3 }}>
-          <Button type="primary" shape="round" htmlType="submit" loading={isSubmitting}>
+        <Form.Item name={'recommendType'} label="推荐类型">
+          <Radio.Group onChange={onRecommendTypeChange}>
+            {recommendTypeList.map((item) => (
+              <Radio key={item.id} value={+item.id}>
+                {item.name}
+              </Radio>
+            ))}
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          label="推荐内容"
+          name={'recommendList'}
+          rules={[{ required: recommendType !== 3, message: '请选择推荐内容，或者将推荐类型设置为无' }]}
+        >
+          <Form.List name="recommendList">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, ...restFiled }, index) => {
+                  return (
+                    <Form.Item key={key} required className={style.formListWrap} label={'素材' + (index + 1)}>
+                      {/* 缓存是否上下上下架数据 */}
+                      <Form.Item hidden name={[name, 'whetherDelete']}>
+                        <Input type="text" />
+                      </Form.Item>
+                      <Form.Item
+                        {...restFiled}
+                        name={[name, 'marketId']}
+                        rules={[
+                          { required: true, message: '请重新选择' },
+                          ({ getFieldValue }) => ({
+                            validator (_, value) {
+                              const itemValue = getFieldValue('recommendList')[index];
+                              if (!value || itemValue.whetherDelete !== 1) {
+                                return Promise.resolve();
+                              }
+                              return Promise.reject(new Error('当前素材已经下线，请选择其他素材!'));
+                            }
+                          })
+                        ]}
+                      >
+                        <Select
+                          placeholder="搜索对应素材标题在下拉框进行选择"
+                          allowClear
+                          showSearch
+                          defaultActiveFirstOption={false}
+                          showArrow={false}
+                          filterOption={false}
+                          notFoundContent={null}
+                          onChange={(value) => onRecommendSelected(value, index)}
+                          onSearch={onRecommendSearch}
+                        >
+                          {recommendList.map((option) => (
+                            <Select.Option
+                              key={option.marketId}
+                              value={option.marketId}
+                              disabled={
+                                formData?.recommendList.filter((item: any) => item?.marketId === option.marketId)
+                                  .length > 0
+                              }
+                            >
+                              {option.title}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      {/* 当是商品时展示图片模块 */}
+                      {recommendType === 2 && (
+                        <Form.Item
+                          {...restFiled}
+                          rules={[{ required: true, message: '请上传推荐图片' }]}
+                          extra="为确保最佳展示效果，请上传 690*200像素高清图片，仅支持.jpg格式"
+                          name={[name, 'recommendImgUrl']}
+                        >
+                          <NgUpload beforeUpload={recommendPicBeforeUpload} />
+                        </Form.Item>
+                      )}
+                      <Icon className={style.removeBtn} name="cangpeitubiao_shanchu" onClick={() => remove(name)} />
+                    </Form.Item>
+                  );
+                })}
+                {fields.length < 5 && (
+                  <Form.Item>
+                    <Button className={style.addBtn} onClick={() => add()}>
+                      <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" /> 添加
+                    </Button>
+                  </Form.Item>
+                )}
+              </>
+            )}
+          </Form.List>
+        </Form.Item>
+        <Form.Item wrapperCol={{ offset: 6 }}>
+          <Button type="primary" shape="round" className={style.submitBtn} htmlType="submit" loading={isSubmitting}>
             保存
           </Button>
         </Form.Item>
