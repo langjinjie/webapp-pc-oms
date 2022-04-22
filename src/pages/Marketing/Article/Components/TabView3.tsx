@@ -41,7 +41,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     crawl: 0,
     editorHtml: '',
     editorHtmlChanged: '',
-    recommendType: 3,
+    recommendType: 0,
     recommendList: []
   });
   const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
@@ -112,12 +112,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         recommendType,
         recommendList
       } = res;
-      // recommendList.map((item: RecommendMarketProps) => {
-      //   if (item.whetherDelete) {
-      //     console.log(item);
-      //     return item;
-      //   }
-      // });
+
       form.setFieldsValue({
         title,
         originalCreator,
@@ -127,7 +122,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         tagIdList,
         defaultImg,
         corpId,
-        recommendType: recommendType,
+        recommendType: recommendType || 0,
         recommendList
       });
       setRecommendType(recommendType);
@@ -392,7 +387,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
             ))}
           </Radio.Group>
         </Form.Item>
-        <Form.Item className={style.customerAddWrap} labelCol={{ span: 3 }} wrapperCol={{ span: 12 }} label="推荐内容">
+        <Form.Item
+          className={style.customerAddWrap}
+          required={recommendType !== 3}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 12 }}
+          label="推荐内容"
+        >
           <Button className={style.btnDemo} type="link" onClick={() => setVisibleImage(true)}>
             示例图
           </Button>
@@ -421,7 +422,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                                 if (!value || itemValue.whetherDelete !== 1) {
                                   return Promise.resolve();
                                 }
-                                return Promise.reject(new Error('当前素材已经下线，请选择其他素材!'));
+                                return Promise.reject(new Error('相关内容存在已下架/删除，请检查'));
                               }
                             })
                           ]}

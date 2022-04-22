@@ -53,7 +53,7 @@ const setSearchCols = (options: any[]): SearchCol[] => {
     {
       name: 'recommendType',
       type: 'select',
-      label: '推荐',
+      label: '推荐内容',
       width: 160,
       options: recommendTypeList
     },
@@ -146,10 +146,10 @@ const columns = (args: colargsType): ColumnsType<Article> => {
       align: 'center'
     },
     {
-      title: '推荐',
+      title: '推荐内容',
       dataIndex: 'recommendType',
       key: 'recommendType',
-      width: 80,
+      width: 110,
       render: (text) => {
         return <span>{recommendTypeList.filter((type) => type.id === text)[0]?.name || '无'}</span>;
       },
