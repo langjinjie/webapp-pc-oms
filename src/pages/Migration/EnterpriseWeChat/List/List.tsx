@@ -27,7 +27,7 @@ interface TransferInfoProps {
 }
 const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('好友迁移-企微好友');
-  const [isEmpty, setIsEmpty] = useState(false);
+  const [isEmpty, setIsEmpty] = useState<boolean>();
   const [visibleDetail, setVisibleDetail] = useState(false);
   const [btnDisabled, setBtnDisabled] = useState(false);
   const [transferInfo, setTransferInfo] = useState<TransferInfoProps>({
@@ -160,11 +160,12 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   return (
     <div className={classNames(styles.migration, 'container')}>
-      {isEmpty
+      {isEmpty === true
         ? (
         <EmptyTask createdSuccess={() => createdTaskSuccess()} />
           )
-        : (
+        : isEmpty === false
+          ? (
         <div>
           <header>
             <h2 className={classNames('color-text-regular flex align-center', styles.page_title)}>
@@ -256,10 +257,10 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
             rowKey={(scope) => scope.taskId}
             paginationChange={onPaginationChange}
           />
+          <StaffModal setBtnDisabled={setBtnDisabled} visible={visibleDetail} onClose={() => setVisibleDetail(false)} />
         </div>
-          )}
-
-      <StaffModal setBtnDisabled={setBtnDisabled} visible={visibleDetail} onClose={() => setVisibleDetail(false)} />
+            )
+          : null}
     </div>
   );
 };
