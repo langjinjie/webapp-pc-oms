@@ -114,6 +114,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({
         setCheckAll(false);
         setIndeterminate(false);
       }
+      // 判断当前的
     }
   }, [visible]);
   useEffect(() => {
@@ -165,7 +166,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({
                 onChange={onCheckAllChange}
                 checked={checkAll}
               >
-                全选
+                {checkAll ? '取消全选' : '全选'}
               </Checkbox>
               {!!checkedList.length && (
                 <>

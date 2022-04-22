@@ -52,15 +52,23 @@ const AddTask: React.FC = () => {
   const disabledDataTime = (date: any) => {
     if (!date) {
       return {
-        disabledHours: () => range(0, 23),
-        disabledMinutes: () => range(0, 59)
+        disabledHours: () => range(0, 24),
+        disabledMinutes: () => range(0, 60)
       };
     }
+    // 判断日期是否选中的是当前
     if (date.format('YY-MM-DD') === moment().format('YY-MM-DD')) {
-      return {
-        disabledHours: () => range(0, moment().hours()),
-        disabledMinutes: () => range(0, moment().minutes())
-      };
+      // 判断小时是否选中的当前小时
+      if (date.format('YY-MM-DD HH') === moment().format('YY-MM-DD HH')) {
+        return {
+          disabledHours: () => range(0, moment().hours()),
+          disabledMinutes: () => range(0, moment().minutes())
+        };
+      } else {
+        return {
+          disabledHours: () => range(0, moment().hours())
+        };
+      }
     }
   };
   const onRemoveHandle = () => {
