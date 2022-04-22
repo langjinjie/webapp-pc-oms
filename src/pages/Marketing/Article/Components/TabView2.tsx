@@ -18,7 +18,7 @@ const TabView2: React.FC = () => {
   const [visibleImage, setVisibleImage] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
   const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
-  const [recommendType, setRecommendType] = useState(0);
+  const [recommendType, setRecommendType] = useState(3);
 
   const [formData, setFormData] = useState<{ recommendList: RecommendMarketProps[]; [prop: string]: any }>({
     title: '',
@@ -177,6 +177,10 @@ const TabView2: React.FC = () => {
     }
     return isJpgOrPng && isLt2M;
   };
+  const onFormValuesChange = (changeValues: any, values: any) => {
+    const { recommendType } = values;
+    setFormData((formData) => ({ ...formData, recommendType }));
+  };
 
   return (
     <>
@@ -188,6 +192,7 @@ const TabView2: React.FC = () => {
         name="control-hooks"
         initialValues={formData}
         scrollToFirstError={true}
+        onValuesChange={onFormValuesChange}
       >
         <Form.Item
           name="newsUrl"
@@ -274,15 +279,14 @@ const TabView2: React.FC = () => {
             ))}
           </Radio.Group>
         </Form.Item>
-        <Form.Item
-          label="推荐内容"
-          name={'recommendList'}
-          rules={[{ required: recommendType !== 3, message: '请选择推荐内容，或者将推荐类型设置为无' }]}
-        >
-          <div className={style.customerAddWrap}>
-            <Button className={style.btnDemo} type="link" onClick={() => setVisibleImage(true)}>
-              示例图
-            </Button>
+        <Form.Item className={style.customerAddWrap} labelCol={{ span: 3 }} wrapperCol={{ span: 12 }} label="推荐内容">
+          <Button className={style.btnDemo} type="link" onClick={() => setVisibleImage(true)}>
+            示例图
+          </Button>
+          <Form.Item
+            name={'recommendList'}
+            rules={[{ required: recommendType !== 3, message: '请选择推荐内容，或者将推荐类型设置为无' }]}
+          >
             <Form.List name="recommendList">
               {(fields, { add, remove }) => (
                 <>
@@ -325,7 +329,7 @@ const TabView2: React.FC = () => {
                                 key={option.marketId}
                                 value={option.marketId}
                                 disabled={
-                                  formData?.recommendList.filter((item: any) => item?.marketId === option.marketId)
+                                  formData?.recommendList?.filter((item: any) => item?.marketId === option.marketId)
                                     .length > 0
                                 }
                               >
@@ -355,7 +359,15 @@ const TabView2: React.FC = () => {
                   })}
                   {fields.length < 5 && (
                     <Form.Item>
-                      <Button className={style.addBtn} onClick={() => add()}>
+                      <Button
+                        className={style.addBtn}
+                        onClick={() => {
+                          if (recommendType === 3) {
+                            return message.warning('请选择推荐类型后再进行添加');
+                          }
+                          add();
+                        }}
+                      >
                         <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" /> 添加
                       </Button>
                     </Form.Item>
@@ -363,8 +375,9 @@ const TabView2: React.FC = () => {
                 </>
               )}
             </Form.List>
-          </div>
+          </Form.Item>
         </Form.Item>
+
         <Form.Item wrapperCol={{ offset: 3 }}>
           <Button type="primary" shape="round" htmlType="submit" loading={isSubmitting}>
             添加

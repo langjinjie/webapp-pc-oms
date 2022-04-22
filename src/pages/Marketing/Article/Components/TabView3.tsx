@@ -30,9 +30,9 @@ export interface RecommendMarketProps {
 }
 
 const TabView3: React.FC<TabView3Props> = (props) => {
-  const [visibleImage, setVisibleImage] = useState(false);
   const [isGetDetailLoading, changeGetDetailLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
+  const [visibleImage, setVisibleImage] = useState(false);
   const [formData, setFormData] = useState<{ recommendList: RecommendMarketProps[]; [prop: string]: any }>({
     title: '',
     originalCreator: '',
@@ -392,15 +392,14 @@ const TabView3: React.FC<TabView3Props> = (props) => {
             ))}
           </Radio.Group>
         </Form.Item>
-        <Form.Item
-          label="推荐内容"
-          name={'recommendList'}
-          rules={[{ required: recommendType !== 3, message: '请选择推荐内容，或者将推荐类型设置为无' }]}
-        >
-          <div className={style.customerAddWrap}>
-            <Button className={style.btnDemo} type="link" onClick={() => setVisibleImage(true)}>
-              示例图
-            </Button>
+        <Form.Item className={style.customerAddWrap} labelCol={{ span: 3 }} wrapperCol={{ span: 12 }} label="推荐内容">
+          <Button className={style.btnDemo} type="link" onClick={() => setVisibleImage(true)}>
+            示例图
+          </Button>
+          <Form.Item
+            name={'recommendList'}
+            rules={[{ required: recommendType !== 3, message: '请选择推荐内容，或者将推荐类型设置为无' }]}
+          >
             <Form.List name="recommendList">
               {(fields, { add, remove }) => (
                 <>
@@ -443,7 +442,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                                 key={option.marketId}
                                 value={option.marketId}
                                 disabled={
-                                  formData?.recommendList.filter((item: any) => item?.marketId === option.marketId)
+                                  formData?.recommendList?.filter((item: any) => item?.marketId === option.marketId)
                                     .length > 0
                                 }
                               >
@@ -471,24 +470,34 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                       </Form.Item>
                     );
                   })}
-                  {fields.length < 5 && (
-                    <Form.Item>
-                      <Button className={style.addBtn} onClick={() => add()}>
+                  <Form.Item>
+                    {fields.length < 5 && (
+                      <Button
+                        className={style.addBtn}
+                        onClick={() => {
+                          if (recommendType === 3) {
+                            return message.warning('请选择推荐类型后再进行添加');
+                          }
+                          add();
+                        }}
+                      >
                         <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" /> 添加
                       </Button>
-                    </Form.Item>
-                  )}
+                    )}
+                  </Form.Item>
                 </>
               )}
             </Form.List>
-          </div>
+          </Form.Item>
         </Form.Item>
+
         <Form.Item wrapperCol={{ offset: 6 }}>
           <Button type="primary" shape="round" className={style.submitBtn} htmlType="submit" loading={isSubmitting}>
             保存
           </Button>
         </Form.Item>
       </Form>
+
       <Image
         width={200}
         style={{ display: 'none' }}

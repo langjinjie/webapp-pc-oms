@@ -47,7 +47,8 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     maxTime: '',
     categoryId: '',
     syncBank: '',
-    corpId: ''
+    corpId: '',
+    recommendType: ''
   });
 
   const getList = async (args: any | null) => {
@@ -89,16 +90,26 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 获取列表数据
   const onSearch = (values: SearchParamsProps) => {
-    const { title, categoryId, fromSource, rangePicker, syncBank, corpId } = values;
+    const { title, categoryId, fromSource, rangePicker, syncBank, corpId, recommendType } = values;
     let minTime = '';
     let maxTime = '';
     if (rangePicker && rangePicker.length > 0) {
       minTime = rangePicker[0].format('YYYY-MM-DD');
       maxTime = rangePicker[1].format('YYYY-MM-DD');
     }
-    setQueryForm((queryForm) => ({ ...queryForm, title, categoryId, fromSource, minTime, maxTime, syncBank, corpId }));
+    setQueryForm((queryForm) => ({
+      ...queryForm,
+      title,
+      categoryId,
+      fromSource,
+      minTime,
+      maxTime,
+      syncBank,
+      corpId,
+      recommendType
+    }));
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    getList({ title, categoryId, fromSource, minTime, maxTime, syncBank, pageNum: 1, corpId });
+    getList({ title, categoryId, fromSource, minTime, maxTime, syncBank, pageNum: 1, corpId, recommendType });
   };
   const onValuesChange = (changeVals: any, values: SearchParamsProps) => {
     const { title, categoryId, fromSource, rangePicker, syncBank, corpId } = values;
@@ -296,6 +307,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
       <div className={'pt20'}>
         <NgFormSearch
           isInline={false}
+          firstRowChildCount={3}
           searchCols={setSearchCols(articleCategoryList)}
           onSearch={onSearch}
           onValuesChange={onValuesChange}
