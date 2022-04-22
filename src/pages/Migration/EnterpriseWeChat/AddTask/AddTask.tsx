@@ -10,6 +10,17 @@ import DetailModal from 'src/pages/Migration/EnterpriseWeChat/components/DetailM
 import style from './style.module.less';
 import classNames from 'classnames';
 
+interface IFormValues {
+  taskName: string;
+  clientType: number;
+  executionTime: Moment[];
+  thumbnail: string;
+  title: string;
+  summary: string;
+  speechcraft: string;
+  staffList: string;
+}
+
 const AddTask: React.FC = () => {
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [detailVisible, setDetailVisible] = useState(false);
@@ -38,14 +49,18 @@ const AddTask: React.FC = () => {
     return result;
   };
   // 禁止选中此刻之前的时间
-  const disabledDataTime = (date: any, type: string) => {
-    if (type === 'start') {
-      if (!date || date.format('YY-MM-DD') === moment().format('YY-MM-DD')) {
-        return {
-          disabledHours: () => range(0, moment().hours()),
-          disabledMinutes: () => range(0, moment().minutes())
-        };
-      }
+  const disabledDataTime = (date: any) => {
+    if (!date) {
+      return {
+        disabledHours: () => range(0, 23),
+        disabledMinutes: () => range(0, 59)
+      };
+    }
+    if (date.format('YY-MM-DD') === moment().format('YY-MM-DD')) {
+      return {
+        disabledHours: () => range(0, moment().hours()),
+        disabledMinutes: () => range(0, moment().minutes())
+      };
     }
   };
   const onRemoveHandle = () => {
@@ -64,13 +79,15 @@ const AddTask: React.FC = () => {
   const clickTaskDetail = () => {
     setDetailVisible(true);
   };
-  const onFinish = async (value: any) => {
+  const onFinish = async (value: IFormValues) => {
     if (isReadOnly) {
       history.goBack();
     } else {
       const { taskName, clientType, executionTime, thumbnail, title, summary, speechcraft, staffList } = value;
       const startTime = executionTime[0].format('YYYY-MM-DD HH:mm:ss');
+      // const startTime = executionTime[0].startOf('minute').format('YYYY-MM-DD HH:mm:ss');
       const endTime = executionTime[1].format('YYYY-MM-DD HH:mm:ss');
+      // const endTime = executionTime[1].endOf('minute').format('YYYY-MM-DD HH:mm:ss');
       const res = await requestCreateTransferTask({
         taskName,
         clientType,
