@@ -3,7 +3,7 @@ import { Modal, Icon, Empty } from 'src/components';
 import { Checkbox, Input, Pagination } from 'antd';
 import { CheckboxValueType, CheckboxOptionType } from 'antd/lib/checkbox/Group';
 import { queryTransferStaffList } from 'src/apis/migration';
-// import { debounce } from 'src/utils/base';
+import { debounce } from 'src/utils/base';
 import style from './style.module.less';
 import classNames from 'classnames';
 
@@ -26,7 +26,7 @@ interface IStaffInfo {
   deptName: string;
   targetStaffId: string;
 }
-let timerId: NodeJS.Timeout;
+// let timerId: NodeJS.Timeout;
 
 const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onChange, showCheckbox }) => {
   const [staffList, setStaffList] = useState<IStaffList>({ total: 0, list: [] });
@@ -60,14 +60,9 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
   };
   const inputOnchange = (value: React.ChangeEvent<HTMLInputElement>) => {
     setName(value.target.value.trim());
-    // setPaginationParam((param) => ({ ...param, pageNum: 1 }));
+    setPaginationParam((param) => ({ ...param, pageNum: 1 }));
   };
-  // 输入框按下回车键
-  const inputOnKeyDownHandle = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      setPaginationParam((param) => ({ ...param, pageNum: 1 }));
-    }
-  };
+  const searchStaffList = debounce(inputOnchange, 300);
   // 全选
   const onCheckAllChange = (e: any) => {
     const currentList = staffList.list.filter((filterItem) => !filterItem.disabled).map((item) => item.value);
@@ -130,14 +125,6 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
       setIndeterminate(!checkAll && indeterminate);
     }
   }, [staffList]);
-  useEffect(() => {
-    if (timerId) {
-      clearTimeout(timerId);
-    }
-    timerId = setTimeout(() => {
-      setPaginationParam((param) => ({ ...param, pageNum: 1 }));
-    }, 500);
-  }, [name]);
   return (
     <Modal
       width={680}
@@ -149,14 +136,14 @@ const StaffModal: React.FC<IStaffModalProps> = ({ value, visible, onClose, onCha
       closable
       title="选择执行人员"
       onOk={onOk}
+      // onChange={inputOnchange}
     >
       <div className={style.inputWrp}>
         <Input
-          value={name}
+          // value={name}
           className={style.input}
           placeholder="搜索成员"
-          onChange={inputOnchange}
-          onKeyDown={inputOnKeyDownHandle}
+          onChange={searchStaffList}
         />
         <Icon className={style.inputIcon} name="icon_common_16_seach" />
       </div>
