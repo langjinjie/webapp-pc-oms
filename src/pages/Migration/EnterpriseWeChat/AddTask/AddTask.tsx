@@ -52,8 +52,8 @@ const AddTask: React.FC = () => {
   const disabledDataTime = (date: any) => {
     if (!date) {
       return {
-        disabledHours: () => range(0, 23),
-        disabledMinutes: () => range(0, 59)
+        disabledHours: () => range(0, 24),
+        disabledMinutes: () => range(0, 60)
       };
     }
     // 判断日期是否选中的是当前
