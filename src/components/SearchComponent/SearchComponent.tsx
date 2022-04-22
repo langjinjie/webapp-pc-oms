@@ -29,6 +29,7 @@ export interface SearchCol {
 interface SearchComponentProps {
   searchCols: SearchCol[];
   isInline?: boolean;
+  firstRowChildCount?: number;
   onSearch: (params: any) => void;
   onReset?: () => void;
   onValuesChange?: (changeValues: any, values: any) => void;
@@ -41,7 +42,16 @@ interface SearchComponentProps {
 const { RangePicker } = DatePicker;
 
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
-  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader, onReset } = props;
+  const {
+    searchCols,
+    onSearch,
+    onValuesChange,
+    isInline = true,
+    loadData,
+    onChangeOfCascader,
+    onReset,
+    firstRowChildCount
+  } = props;
   const [from] = Form.useForm();
   const handleReset = () => {
     if (onReset) {
@@ -157,7 +167,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           onValuesChange={onValuesChange}
         >
           <Row>
-            {searchCols?.slice(0, 2).map((col) => {
+            {searchCols?.slice(0, firstRowChildCount || 2).map((col) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
@@ -185,7 +195,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             })}
           </Row>
           <Row>
-            {searchCols?.slice(2).map((col) => {
+            {searchCols?.slice(firstRowChildCount || 2).map((col) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>

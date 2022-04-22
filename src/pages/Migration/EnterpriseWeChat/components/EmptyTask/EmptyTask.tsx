@@ -1,4 +1,4 @@
-import { Button, message, Select } from 'antd';
+import { Button, message, Modal, Select } from 'antd';
 import classNames from 'classnames';
 import React, { useContext, useEffect, useState } from 'react';
 import { setTransferCorp } from 'src/apis/migration';
@@ -24,16 +24,20 @@ const EmptyTask: React.FC<EmptyTaskProps> = ({ createdSuccess }) => {
       setTargetCorpStatus('error');
       return false;
     }
-    const res = await setTransferCorp({
-      targetCorpId: targetCorp
+    Modal.confirm({
+      title: '温馨提示',
+      content: '本次选择关系到机构客户数据安全，确定后不可更改，请核对迁移机构是否无误',
+      onOk: async () => {
+        const res = await setTransferCorp({
+          targetCorpId: targetCorp
+        });
+        if (res) {
+          message.success('设置成功');
+          // 刷新页面
+          createdSuccess();
+        }
+      }
     });
-    if (res) {
-      message.success('设置成功');
-      // 刷新页面
-      createdSuccess();
-    }
-    // setTargetCorpStatus('');
-    console.log();
   };
 
   const selectChange = (value: string) => {

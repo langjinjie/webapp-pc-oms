@@ -51,6 +51,13 @@ const setSearchCols = (options: any[]): SearchCol[] => {
       options: options
     },
     {
+      name: 'recommendType',
+      type: 'select',
+      label: '推荐',
+      width: 160,
+      options: recommendTypeList
+    },
+    {
       name: 'fromSource',
       type: 'input',
       label: '渠道来源',
