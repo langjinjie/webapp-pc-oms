@@ -18,7 +18,7 @@ const TabView2: React.FC = () => {
   const [visibleImage, setVisibleImage] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
   const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
-  const [recommendType, setRecommendType] = useState(3);
+  const [recommendType, setRecommendType] = useState(0);
 
   const [formData, setFormData] = useState<{ recommendList: RecommendMarketProps[]; [prop: string]: any }>({
     title: '',
@@ -28,7 +28,7 @@ const TabView2: React.FC = () => {
     crawl: 0,
     editorHtml: '',
     editorHtmlChanged: '',
-    recommendType: 3,
+    recommendType: 0,
     recommendList: []
   });
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList } =
@@ -79,24 +79,20 @@ const TabView2: React.FC = () => {
   }, []);
 
   const onFinish = async (values: any) => {
-    console.log(values);
-    try {
-      setSubmitting(true);
-      const res = await peerNews({ ...values, corpId: currentCorpId });
-      if (!res) {
-        setSubmitting(false);
-        return false;
-      }
-      message.success('添加成功！').then(() => {
-        form.resetFields();
-        setSubmitting(false);
-        form.resetFields();
-        RouterHistory.push('/marketingArticle');
-      });
-    } catch (e) {
+    setSubmitting(true);
+    const res = await peerNews({ ...values, corpId: currentCorpId });
+    if (!res) {
       setSubmitting(false);
-      console.log(e);
+      return false;
     }
+    message.success('添加成功！').then(() => {
+      form.resetFields();
+      setSubmitting(false);
+      form.resetFields();
+      RouterHistory.push('/marketingArticle');
+    });
+
+    setSubmitting(false);
   };
 
   const onRecommendSearch = async (value: string) => {
@@ -162,8 +158,6 @@ const TabView2: React.FC = () => {
       list.push(currentItem.marketId);
       setNewUploadProductIdList(list);
     }
-    console.log(currentItem);
-    console.log(url);
   };
 
   const recommendPicBeforeUpload = (file: any) => {
@@ -279,7 +273,13 @@ const TabView2: React.FC = () => {
             ))}
           </Radio.Group>
         </Form.Item>
-        <Form.Item className={style.customerAddWrap} labelCol={{ span: 3 }} wrapperCol={{ span: 12 }} label="推荐内容">
+        <Form.Item
+          className={style.customerAddWrap}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 12 }}
+          required={recommendType !== 3}
+          label="推荐内容"
+        >
           <Button className={style.btnDemo} type="link" onClick={() => setVisibleImage(true)}>
             示例图
           </Button>
@@ -308,7 +308,7 @@ const TabView2: React.FC = () => {
                                 if (!value || itemValue.whetherDelete !== 1) {
                                   return Promise.resolve();
                                 }
-                                return Promise.reject(new Error('当前素材已经下线，请选择其他素材!'));
+                                return Promise.reject(new Error('相关内容存在已下架/删除，请检查'));
                               }
                             })
                           ]}
