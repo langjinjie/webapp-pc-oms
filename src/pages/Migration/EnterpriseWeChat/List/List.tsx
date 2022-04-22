@@ -44,12 +44,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     totalNum: number;
   }
   const [pieChartData, setPieCharData] = useState<PieDataItem[]>([]);
-  const [pieInfo, setPieInfo] = useState<TransferDataProps>({
-    transferSuccNum: 0,
-    unTransferNum: 0,
-    updateTime: '',
-    totalNum: 0
-  });
+  const [pieInfo, setPieInfo] = useState<TransferDataProps>();
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -203,7 +198,15 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
                         <span className="font12 color-text-regular">迁移成功</span>
                       </div>
                       <div className="mt10 font16">
-                        {pieInfo.transferSuccNum}（{percentage(pieInfo.transferSuccNum, pieInfo.totalNum)}）
+                        {pieInfo
+                          ? (
+                          <span>
+                            {pieInfo?.transferSuccNum}（{percentage(pieInfo?.transferSuccNum, pieInfo?.totalNum)}）
+                          </span>
+                            )
+                          : (
+                          <span>暂无数据</span>
+                            )}
                       </div>
                     </div>
                     <div className="ml50">
@@ -212,11 +215,19 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
                         <span className="font12 color-text-regular">待迁移</span>
                       </div>
                       <div className="mt10 font16">
-                        {pieInfo.unTransferNum}（{percentage(pieInfo.unTransferNum, pieInfo.totalNum)}）
+                        {pieInfo
+                          ? (
+                          <span>
+                            {pieInfo?.unTransferNum}（{percentage(pieInfo.unTransferNum!, pieInfo.totalNum!)}）
+                          </span>
+                            )
+                          : (
+                          <span>暂无异常</span>
+                            )}
                       </div>
                     </div>
                   </div>
-                  <div className="mt6 font12 color-text-placeholder">饼状图数据更新于 {pieInfo.updateTime}</div>
+                  <div className="mt6 font12 color-text-placeholder">饼状图数据更新于 {pieInfo?.updateTime}</div>
                 </div>
               </div>
             </section>
