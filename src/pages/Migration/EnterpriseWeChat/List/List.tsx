@@ -111,17 +111,17 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   const getPieInfo = async () => {
-    console.log('获取饼图信息');
     const res: TransferDataProps = await queryTransferSummary();
     setPieInfo(res || {});
-    console.log(res);
-    setPieCharData([
-      { value: res.transferSuccNum, name: '迁移成功' },
-      {
-        value: res.unTransferNum,
-        name: '待迁移'
-      }
-    ]);
+    if (res) {
+      setPieCharData([
+        { value: res.transferSuccNum, name: '迁移成功' },
+        {
+          value: res.unTransferNum,
+          name: '待迁移'
+        }
+      ]);
+    }
   };
 
   const getTransferData = async () => {

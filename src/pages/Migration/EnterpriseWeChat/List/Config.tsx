@@ -45,7 +45,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       title: '任务名称',
       dataIndex: 'taskName',
       key: 'taskName',
-      width: 100,
+      width: 200,
       ellipsis: {
         showTitle: false
       },
@@ -68,7 +68,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       title: '创建人',
       dataIndex: 'opName',
       key: 'opName',
-      width: 196
+      width: 140
     },
     {
       title: '开始时间',
@@ -128,7 +128,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 120,
+      width: 100,
       render: (text, record, index) => (
         <Space size="small">
           <a onClick={() => viewItem(record.taskId)}>查看</a>
