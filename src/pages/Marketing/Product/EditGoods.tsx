@@ -206,15 +206,34 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     return isJpgOrPng && isLt2M;
   };
   const recommendPicBeforeUpload = (file: any) => {
-    const isJpgOrPng = file.type === 'image/jpeg';
-    if (!isJpgOrPng) {
+    const isJpg = file.type === 'image/jpeg';
+    if (!isJpg) {
       message.error('只可以上传 JPG 格式的图片!');
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
       message.error('图片大小不可以超过 2MB!');
     }
-    return isJpgOrPng && isLt2M;
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          const height = image.height;
+          if (!(width === 690 && height === 200)) {
+            message.error('请上传正确的图片尺寸');
+          }
+          resolve(width === 690 && height === 200 && isJpg && isLt2M);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const onFinish = async (values: any) => {
