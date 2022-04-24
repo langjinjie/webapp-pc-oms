@@ -34,7 +34,7 @@ const AddTask: React.FC = () => {
   const location = useLocation();
   let noSubmitForm: any = null;
   const displayTypeList = [
-    { value: 0, label: '发送迁移客户' },
+    { value: 0, label: '发送待迁移客户' },
     { value: 1, label: '发送迁移成功客户' },
     { value: 2, label: '发送全部客户' }
   ];
