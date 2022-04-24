@@ -24,6 +24,7 @@ interface IFormValues {
 const AddTask: React.FC = () => {
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [defaultValue, setDefaultValue] = useState(moment());
   const [form] = Form.useForm();
   const { Item } = Form;
   const { Group } = Radio;
@@ -48,12 +49,28 @@ const AddTask: React.FC = () => {
     }
     return result;
   };
+  // 选中时间的回调
+  const onCalendarChange: (value: any) => void = (value) => {
+    if (value && value[0]) {
+      setDefaultValue(value[0]);
+    }
+  };
   // 禁止选中此刻之前的时间
-  const disabledDataTime = (date: any) => {
+  const disabledDataTime = (date: any, type: string) => {
     if (!date) {
       return {
         disabledHours: () => range(0, 24),
         disabledMinutes: () => range(0, 60)
+      };
+    }
+    if (type === 'end') {
+      return {
+        disabledHours: () => range(0, defaultValue.hours()),
+        disabledMinutes: (selectHours: number) => {
+          if (selectHours === defaultValue.hours()) {
+            return range(0, defaultValue.minutes());
+          }
+        }
       };
     }
     // 判断日期是否选中的是当前
@@ -189,13 +206,15 @@ const AddTask: React.FC = () => {
             rules={[{ required: true, message: '请选择执行时间' }]}
           >
             <RangePicker
-              showTime
+              showTime={{ defaultValue: [moment(), defaultValue] }}
               className={style.rangePicker}
               format={'YYYY年MM月DD日 HH:mm'}
               disabledDate={disabledDate}
               // @ts-ignore
               disabledTime={disabledDataTime}
+              onCalendarChange={onCalendarChange}
               disabled={isReadOnly}
+              order={false}
             />
           </Item>
           <Item
