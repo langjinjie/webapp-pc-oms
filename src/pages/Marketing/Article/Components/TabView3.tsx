@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Form, Input, Select, Button, message, Spin, Radio, RadioChangeEvent, Image } from 'antd';
+import { Form, Input, Select, Button, message, Spin, Radio, RadioChangeEvent, Image as AntImage } from 'antd';
 import { getNewsDetail, saveNews, getTagsOrCategorys, searchRecommendGoodsList } from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
@@ -45,6 +45,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     recommendList: []
   });
   const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
+  const [fetching, setFetching] = useState(false);
   const [recommendType, setRecommendType] = useState(0);
   const [newUploadProductIdList, setNewUploadProductIdList] = useState<string[]>([]);
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList, userInfo } =
@@ -185,11 +186,14 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     setRecommendType(+e.target.value);
     const type = +e.target.value;
     if (type !== 3) {
+      setFetching(true);
       const res = await searchRecommendGoodsList({
         title: '',
         recommendType: +e.target.value
       });
+
       setRecommendList(res || []);
+      setFetching(false);
     }
     form.setFieldsValue({
       recommendList: []
@@ -198,6 +202,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   };
 
   const onRecommendSearch = async (value: string) => {
+    setFetching(true);
     const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
       recommendType: formData.recommendType
@@ -213,6 +218,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       return newArr;
     }, []);
     setRecommendList(arr);
+    setFetching(false);
   };
 
   // 防抖处理
@@ -232,15 +238,34 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   };
 
   const recommendPicBeforeUpload = (file: any) => {
-    const isJpgOrPng = file.type === 'image/jpeg';
-    if (!isJpgOrPng) {
+    const isJpg = file.type === 'image/jpeg';
+    if (!isJpg) {
       message.error('只可以上传 JPG 格式的图片!');
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
       message.error('图片大小不可以超过 2MB!');
     }
-    return isJpgOrPng && isLt2M;
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          const height = image.height;
+          if (!(width === 690 && height === 200)) {
+            message.error('请上传正确的图片尺寸');
+          }
+          resolve(width === 690 && height === 200 && isJpg && isLt2M);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const isUploadDisabled = (index: number): boolean => {
@@ -434,7 +459,9 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                             defaultActiveFirstOption={false}
                             showArrow={false}
                             filterOption={false}
-                            notFoundContent={false}
+                            notFoundContent={
+                              fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>
+                            }
                             onChange={(value) => onRecommendSelected(value, index)}
                             onSearch={debounceFetcher}
                           >
@@ -499,7 +526,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         </Form.Item>
       </Form>
 
-      <Image
+      <AntImage
         width={200}
         style={{ display: 'none' }}
         src={
