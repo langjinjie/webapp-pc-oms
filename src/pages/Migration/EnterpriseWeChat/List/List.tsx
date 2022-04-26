@@ -18,6 +18,7 @@ import {
 } from 'src/apis/migration';
 import { percentage } from 'src/utils/tools';
 import { StaffModal } from '../AddTask/component';
+import moment from 'moment';
 
 interface TransferInfoProps {
   corpId: string;
@@ -98,9 +99,10 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     history.push('/enterprise/addTask?taskId=' + taskId);
   };
   // 导出任务详情数据
-  const exportData = async (taskId: string) => {
-    const { data } = await exportTransferTask({ taskId });
-    exportFile(data, '客户免统计名单');
+  const exportData = async (task: TaskProps) => {
+    const { data } = await exportTransferTask({ taskId: task.taskId });
+    const fileName = task.taskName + moment().format('YYYY-MM-DD');
+    exportFile(data, fileName);
   };
 
   //
@@ -111,17 +113,17 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   const getPieInfo = async () => {
-    console.log('获取饼图信息');
     const res: TransferDataProps = await queryTransferSummary();
     setPieInfo(res || {});
-    console.log(res);
-    setPieCharData([
-      { value: res.transferSuccNum, name: '迁移成功' },
-      {
-        value: res.unTransferNum,
-        name: '待迁移'
-      }
-    ]);
+    if (res) {
+      setPieCharData([
+        { value: res.transferSuccNum, name: '迁移成功' },
+        {
+          value: res.unTransferNum,
+          name: '待迁移'
+        }
+      ]);
+    }
   };
 
   const getTransferData = async () => {
