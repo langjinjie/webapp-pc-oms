@@ -13,7 +13,8 @@ import {
   searchStaffAndDepart,
   saveDepartment,
   operateDepartment,
-  exportOrganization
+  exportOrganization,
+  transferDepartment
 } from 'src/apis/organization';
 import { exportFile } from 'src/utils/base';
 import { Context } from 'src/store';
@@ -165,7 +166,7 @@ const Organization: React.FC = () => {
       if (item.deptId === key) {
         return {
           ...item,
-          children: formatData(children, [...(item.path || []), item.deptId])
+          children: formatData((item.children || []).concat(children), [...(item.path || []), item.deptId])
         };
       }
       if (item.children && item.children.length > 0) {
@@ -476,6 +477,49 @@ const Organization: React.FC = () => {
     });
   };
 
+  /**
+   * 转移部门
+   * @param data
+   */
+  const transferData = (data: OrganizationItem[]): OrganizationItem[] => {
+    return data.map((item) => {
+      if (item.deptId === transferId) {
+        const isRoot = ((item.children || [])[0] || {}).deptType === 2;
+        const children = item.children || [];
+        if (isRoot) {
+          children.splice(1, 0, currentNode);
+        } else {
+          children.unshift(currentNode);
+        }
+        return {
+          ...item,
+          isLeaf: false,
+          children: formatData(children, [...(item.path || []), transferId])
+        };
+      }
+      if (item.children && item.children.length > 0) {
+        return {
+          ...item,
+          children: transferData(item.children)
+        };
+      }
+      return item;
+    });
+  };
+
+  /**
+   * 确定转移部门
+   */
+  const transferDepart = async () => {
+    const res: any = await transferDepartment({ deptId: currentNode.deptId, newParentId: transferId });
+    if (res) {
+      message.success('转移部门成功！');
+      setOrganization(transferData(deleteData(organization)));
+      setTransferVisible(false);
+      setShowDepart(false);
+    }
+  };
+
   useEffect(() => {
     !transferVisible && setTransferId('');
   }, [transferVisible]);
@@ -637,6 +681,7 @@ const Organization: React.FC = () => {
           onClick={() => {
             if (currentNode.deptType === 0) {
               setTransferVisible(true);
+              console.log(currentNode);
             }
           }}
         >
@@ -711,10 +756,7 @@ const Organization: React.FC = () => {
           title="转移团队"
           visible={transferVisible}
           onClose={() => setTransferVisible(false)}
-          onOk={() => {
-            setTransferVisible(false);
-            console.log(transferId);
-          }}
+          onOk={transferDepart}
         >
           <div className={style.transferWrap}>
             <div className={style.transferRow}>
