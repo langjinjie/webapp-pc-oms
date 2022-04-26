@@ -53,13 +53,13 @@ const StaffModal: React.FC<IStaffModalProps> = ({
         if (showCheckbox) {
           return {
             value: item.staffId,
-            label: `${item.staffName}（${item.deptName.split('/').slice(1).join('-')}）`,
+            label: `${item.staffName}（${item.deptName ? item.deptName.split('/').slice(1).join('-') : ''}）`,
             disabled: !item.targetStaffId
           };
         } else {
           return {
             value: item.staffId,
-            label: `${item.staffName}（${item.deptName.split('/').slice(1).join('-')}）`
+            label: `${item.staffName}（${item.deptName ? item.deptName.split('/').slice(1).join('-') : ''}）`
           };
         }
       });
