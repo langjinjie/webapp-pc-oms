@@ -256,6 +256,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSubmit = async (values: any) => {
+    console.log(values);
     const { startTime, ...otherValue } = values;
     const params = { ...otherValue };
     if (startTime) {

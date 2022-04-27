@@ -95,6 +95,7 @@ export const debounce = (fn: { apply: (arg0: any, arg1: any) => void }, delay: n
     }
     // 设立新定时器
     timer = setTimeout(() => {
+      console.log(args);
       fn.apply(this, args);
     }, delay);
   };
@@ -116,4 +117,12 @@ export const exportFile = (data: BlobPart, fileName: string): void => {
   link.click(); // 点击下载
   link.remove(); // 下载完成移除元素
   window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
+};
+
+// 小数点后两位百分比
+export const percentage = (num: number, total: number): number | string => {
+  if (num === 0 || total === 0) {
+    return 0;
+  }
+  return Math.round((num / total) * 10000) / 100 + '%';
 };

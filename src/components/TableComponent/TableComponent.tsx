@@ -34,7 +34,8 @@ const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.El
     rowSelection,
     onRow,
     scroll,
-    tableLayout
+    tableLayout,
+    ...otherProps
   } = props;
   return (
     <Table
@@ -44,6 +45,7 @@ const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.El
       scroll={scroll || { x: 1300 }}
       rowKey={setRowKey}
       loading={loading}
+      {...otherProps}
       tableLayout={tableLayout}
       rowSelection={
         rowSelection
