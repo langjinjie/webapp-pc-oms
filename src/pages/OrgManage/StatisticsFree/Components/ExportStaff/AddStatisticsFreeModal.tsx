@@ -2,7 +2,7 @@ import { Form, Select } from 'antd';
 import React, { useEffect } from 'react';
 import { searchStaffList } from 'src/apis/orgManage';
 import DebounceSelect from '../DebounceSelect/DebounceSelect';
-import { NgModal } from '../NgModal/NgModal';
+import { NgModal } from 'src/components/NgModal/NgModal';
 
 interface AddStatisticsFreeModalProps {
   visible: boolean;

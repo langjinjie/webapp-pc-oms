@@ -1,3 +1,6 @@
+/**
+ * 积分管理--积分发放
+ */
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN } from 'src/utils/base';

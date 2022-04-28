@@ -53,3 +53,11 @@ export const requestAddLotteryScope: HttpFC = (param) => {
 export const requestGetLotteryDeptList: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/lottery/dept/list', param);
 };
+
+// 积分发放配置接口
+export const getPointsSendConfig: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/points/rest/points/send/config', param);
+};
+export const savePointsSendConfig: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/points/rest/send/config/save', param);
+};
