@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import React from 'react';
-import { NgModal } from '../../StatisticsFree/Components/NgModal/NgModal';
+import { NgModal } from '../../../../components/NgModal/NgModal';
 
 interface BatchResultProps {
   onCancel: () => void;

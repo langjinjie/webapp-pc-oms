@@ -9,7 +9,7 @@ import { percentage } from 'src/utils/tools';
 
 export interface TaskProps {
   taskId: string;
-  title: string;
+  taskName: string;
   key: string;
   age: number;
   address: string;
@@ -33,7 +33,7 @@ export interface PaginationProps {
 }
 // 表哥配置项
 type colargsType = {
-  exportData: (taskId: string) => void;
+  exportData: (task: TaskProps) => void;
   viewItem: (taskId: string) => void;
   operateItem: (task: TaskProps, operateType: number, index: number) => void;
 };
@@ -140,7 +140,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
               <a>关闭</a>
             </Popconfirm>
           )}
-          {record.taskStatus === 2 && <a onClick={() => exportData(record.taskId)}>数据</a>}
+          {record.taskStatus === 2 && <a onClick={() => exportData(record)}>数据</a>}
           {record.taskStatus === 0 && (
             <Popconfirm
               title="删除后不给客户经理下发此任务，确定操作吗？ "

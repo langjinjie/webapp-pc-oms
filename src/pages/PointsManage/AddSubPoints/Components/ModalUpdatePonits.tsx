@@ -1,7 +1,7 @@
 import { Form, InputNumber, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import React, { useEffect } from 'react';
-import { NgModal } from 'src/pages/OrgManage/StatisticsFree/Components/NgModal/NgModal';
+import { NgModal } from 'src/components/NgModal/NgModal';
 
 interface ModalUpdatePointsProps {
   title: string;

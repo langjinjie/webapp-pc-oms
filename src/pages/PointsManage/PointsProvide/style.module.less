@@ -117,3 +117,50 @@
     }
   }
 }
+
+.autoSendForm {
+  margin-left: 50px;
+  :global {
+    .ant-form-item-label > label {
+      font-size: 14px;
+      color: #111 !important;
+    }
+    .ant-input-number {
+      line-height: 36px;
+      width: 110px !important;
+      border-radius: 18px !important;
+    }
+    .ant-input-number-group-addon {
+      border: none;
+      background: #fff;
+      color: #111;
+    }
+    .ant-switch {
+      height: 36px;
+      line-height: 36px;
+      width: 100px;
+    }
+    .ant-switch-handle {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 54px;
+      height: 28px;
+      &::before {
+        border-radius: 15px;
+      }
+    }
+    .ant-switch-inner {
+      margin-left: 56px;
+      font-size: 16px;
+    }
+    .ant-switch-checked {
+      .ant-switch-inner {
+        margin-left: -26px;
+      }
+      .ant-switch-handle {
+        left: calc(100% - 54px - 4px);
+      }
+    }
+  }
+}

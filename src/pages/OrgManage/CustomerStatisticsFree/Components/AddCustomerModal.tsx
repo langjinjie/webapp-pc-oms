@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { getCustomerByExternalUserId } from 'src/apis/orgManage';
 import { Icon } from 'src/components';
-import { NgModal } from '../../StatisticsFree/Components/NgModal/NgModal';
+import { NgModal } from 'src/components/NgModal/NgModal';
 import styles from './style.module.less';
 interface AddStatisticsFreeModalProps {
   visible: boolean;
