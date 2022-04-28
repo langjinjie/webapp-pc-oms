@@ -194,18 +194,15 @@ const PointsProvide: React.FC = () => {
   const [autoConfigForm] = Form.useForm();
   // 显示自动配置窗口
   const showAutoSendWrap = async () => {
-    // const [autoSendConfig, setAutoSendConfig] = useState<{ weekChainRatio: number; autoSend: number }>({});
     setAutoSendSetVisible(true);
     const { weekChainRatio, autoSend } = await getPointsSendConfig({});
     autoConfigForm.setFieldsValue({
-      weekChainRatio,
+      weekChainRatio: weekChainRatio || undefined,
       autoSend: !!autoSend
     });
   };
 
   const saveAutoConfig = () => {
-    const res = autoConfigForm.getFieldsValue();
-    console.log(res);
     autoConfigForm
       .validateFields()
       .then(async ({ weekChainRatio, autoSend }) => {
