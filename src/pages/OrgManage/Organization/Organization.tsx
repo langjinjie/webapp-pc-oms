@@ -485,17 +485,17 @@ const Organization: React.FC = () => {
   const transferData = (data: OrganizationItem[]): OrganizationItem[] => {
     return data.map((item) => {
       if (item.deptId === transferId) {
-        const isRoot = ((item.children || [])[0] || {}).deptType === 2;
+        /* const isRoot = ((item.children || [])[0] || {}).deptType === 2;
         const children = item.children || [];
         if (isRoot) {
           children.splice(1, 0, currentNode);
         } else {
-          children.unshift(currentNode);
-        }
+          children.push(currentNode);
+        } */
         return {
           ...item,
           isLeaf: false,
-          children: formatData(children, [...(item.path || []), transferId])
+          children: formatData([...(item.children || []), currentNode], [...(item.path || []), transferId])
         };
       }
       if (item.children && item.children.length > 0) {
