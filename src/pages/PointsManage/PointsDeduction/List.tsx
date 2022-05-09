@@ -8,7 +8,7 @@ import { batchDeductIntegral, getWaitDeductPointsList } from 'src/apis/integral'
 import { Moment } from 'moment';
 import classNames from 'classnames';
 import styles from './style.module.less';
-import { NgModal } from 'src/pages/OrgManage/StatisticsFree/Components/NgModal/NgModal';
+import { NgModal } from 'src/components/NgModal/NgModal';
 
 const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('积分管理-积分扣减');

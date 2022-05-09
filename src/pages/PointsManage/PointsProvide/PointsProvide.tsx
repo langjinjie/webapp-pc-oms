@@ -1,9 +1,15 @@
 import React, { Key, useContext, useEffect, useState } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
-import { Form, Space, Input, Select, Button, DatePicker, message, TreeSelect } from 'antd';
+import { Form, Space, Input, Select, Button, DatePicker, message, TreeSelect, Switch, InputNumber } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
-import { requestGetPonitsSendList, requestSendAllPonits, requestSendPonits } from 'src/apis/pointsMall';
+import {
+  getPointsSendConfig,
+  requestGetPonitsSendList,
+  requestSendAllPonits,
+  requestSendPonits,
+  savePointsSendConfig
+} from 'src/apis/pointsMall';
 import { IPointsProvideList, IConfirmModalParam, ITreeDate } from 'src/utils/interface';
 import { Context } from 'src/store';
 import { queryDepartmentList } from 'src/apis/organization';
@@ -12,6 +18,7 @@ import { LegacyDataNode } from 'rc-tree-select/lib/TreeSelect';
 import moment from 'moment';
 import PonitsDetail from './PonitsDetail/PonitsDetail';
 import style from './style.module.less';
+import { NgModal } from 'src/components/NgModal/NgModal';
 
 interface IPonitsList {
   total: number;
@@ -25,7 +32,9 @@ interface IPonitsParam {
 }
 
 const PointsProvide: React.FC = () => {
+  const [autoSendSetVisible, setAutoSendSetVisible] = useState(false);
   const { setConfirmModalParam } = useContext(Context);
+
   const [ponitsList, setPonitsList] = useState<IPonitsList>({ total: 0, list: [] });
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
   const [searchParam, setSearchParam] = useState<{ [key: string]: any }>({});
@@ -182,6 +191,31 @@ const PointsProvide: React.FC = () => {
       setTreeData(await getCorpOrg());
     })();
   }, []);
+  const [autoConfigForm] = Form.useForm();
+  // 显示自动配置窗口
+  const showAutoSendWrap = async () => {
+    setAutoSendSetVisible(true);
+    const { weekChainRatio, autoSend } = await getPointsSendConfig({});
+    autoConfigForm.setFieldsValue({
+      weekChainRatio: weekChainRatio || undefined,
+      autoSend: !!autoSend
+    });
+  };
+
+  const saveAutoConfig = () => {
+    autoConfigForm
+      .validateFields()
+      .then(async ({ weekChainRatio, autoSend }) => {
+        const res = await savePointsSendConfig({ weekChainRatio, autoSend: autoSend ? 1 : 0 });
+        if (res) {
+          setAutoSendSetVisible(false);
+          message.success('设置成功');
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
   return (
     <div className={style.wrap}>
       <Form name="base" className={style.form} layout="inline" form={form} onReset={onSearchHandle}>
@@ -242,14 +276,17 @@ const PointsProvide: React.FC = () => {
               </Button>
             </Form.Item>
           </Space>
-          <Space>
+          <Space size={10}>
             <Button
-              className={style.provideAllBtn}
+              shape="round"
               type="primary"
               onClick={clickSendAllPonitsHandle}
               disabled={!!selectedRowKeys.length || allSendStatus || searchParam.sendStatus}
             >
               一键群发积分
+            </Button>
+            <Button type="primary" shape="round" onClick={showAutoSendWrap}>
+              积分自动发放配置
             </Button>
           </Space>
         </Space>
@@ -285,6 +322,37 @@ const PointsProvide: React.FC = () => {
       )}
       {/* 积分详情 */}
       <PonitsDetail ponitsParam={ponitsParam} setPonitsParam={setPonitsParam} />
+
+      <NgModal
+        title="积分自动发送配置"
+        visible={autoSendSetVisible}
+        onOk={saveAutoConfig}
+        width={400}
+        onCancel={() => {
+          setAutoSendSetVisible(false);
+        }}
+      >
+        <Form className={style.autoSendForm} labelCol={{ span: 6 }} form={autoConfigForm}>
+          <Form.Item
+            label="周环比"
+            name="weekChainRatio"
+            rules={[{ required: true, message: '请设置周环比，必须大于0' }]}
+          >
+            <InputNumber
+              width={80}
+              min={1}
+              controls={false}
+              addonAfter={<span>%</span>}
+              onChange={(value) => {
+                console.log(typeof value);
+              }}
+            />
+          </Form.Item>
+          <Form.Item label="自动发放" valuePropName="checked" name={'autoSend'}>
+            <Switch checkedChildren="开" unCheckedChildren="关" />
+          </Form.Item>
+        </Form>
+      </NgModal>
     </div>
   );
 };

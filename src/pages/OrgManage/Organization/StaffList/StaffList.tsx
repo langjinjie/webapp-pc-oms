@@ -11,11 +11,11 @@ import {
   requestDelStaffList,
   exportSpecialList
 } from 'src/apis/orgManage';
-import { IDepStaffList } from 'src/utils/interface';
+import { IDepStaffList, IOrganizationItem } from 'src/utils/interface';
 import style from './style.module.less';
 
 interface IStaffListProps {
-  departmentId: string;
+  department: IOrganizationItem;
   deptType: number;
   staffListRef?: MutableRefObject<any>;
 }
@@ -28,7 +28,7 @@ interface ISearchParam {
   isDeleted?: number;
 }
 
-const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', deptType = 1, staffListRef }) => {
+const StaffList: React.FC<IStaffListProps> = ({ department, deptType = 1, staffListRef }) => {
   const [staffList, setStaffList] = useState<{ total: number; list: any[] }>({ total: 0, list: [] });
   const [isLoading, setIsLoading] = useState(false);
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
@@ -52,8 +52,19 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
   // 获取员工列表
   const getStaffList = async (searchParam: ISearchParam) => {
     setIsLoading(true);
-    const res = await requestGetDepStaffList({ ...searchParam, ...paginationParam, deptId, deptType, queryType: 1 });
+    const res = await requestGetDepStaffList({
+      ...searchParam,
+      ...paginationParam,
+      deptId: department.deptId || '1',
+      deptType,
+      queryType: 1
+    });
     if (res) {
+      // 找出第一个不是当前部门下的员工
+      const index = res.list.findIndex((item: IDepStaffList) => item.deptId !== +(department.deptId || '1'));
+      if (index > 0) {
+        res.list[index - 1].sign = true;
+      }
       setStaffList(res);
     } else {
       setStaffList({ total: 0, list: [] });
@@ -101,7 +112,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
   const downLoadStaffList = async () => {
     const res = await requestDownStaffList({
       deptType,
-      deptId,
+      deptId: department.deptId || '1',
       staffIds: selectedRowKeys,
       ...searchParam
     });
@@ -122,7 +133,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
   const downloadSpecialList = async () => {
     const res = await exportSpecialList({
       deptType,
-      deptId,
+      deptId: department.deptId || '1',
       staffIds: selectedRowKeys,
       ...searchParam
     });
@@ -159,7 +170,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
 
   useEffect(() => {
     resetHandle();
-  }, [deptId, deptType]);
+  }, [department, deptType]);
 
   return (
     <div className={style.wrap}>
@@ -230,7 +241,7 @@ const StaffList: React.FC<IStaffListProps> = ({ departmentId: deptId = '1', dept
         loading={isLoading}
         tableLayout={'fixed'}
         scroll={{ x: 'max-content' }}
-        // scroll={{ x: 1300 }}
+        rowClassName={(row: IDepStaffList) => (row.sign ? style.sign : undefined)}
         {...TablePagination({
           staffList,
           paginationParam,

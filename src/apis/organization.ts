@@ -72,3 +72,11 @@ export const exportOrganization: VoidFunction = () => {
 export const queryDepartTypes: VoidFunction = () => {
   return http.post('/tenacity-admin/api/stafforg/getdepttype');
 };
+
+/**
+ * 转移部门
+ * @param param
+ */
+export const transferDepartment: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/stafforg/moveDeptSave', param);
+};

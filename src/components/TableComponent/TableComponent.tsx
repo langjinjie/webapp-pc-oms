@@ -23,30 +23,12 @@ interface TableComponentProps<T> extends TableProps<T> {
 }
 
 const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.Element => {
-  const {
-    className,
-    columns,
-    dataSource,
-    paginationChange,
-    pagination,
-    loading,
-    setRowKey,
-    rowSelection,
-    onRow,
-    scroll,
-    tableLayout,
-    ...otherProps
-  } = props;
+  const { className, paginationChange, pagination, setRowKey, rowSelection, scroll, ...otherPorps } = props;
   return (
     <Table
       className={classNames('table-container', className)}
-      columns={columns}
-      dataSource={dataSource}
       scroll={scroll || { x: 1300 }}
       rowKey={setRowKey}
-      loading={loading}
-      {...otherProps}
-      tableLayout={tableLayout}
       rowSelection={
         rowSelection
           ? {
@@ -65,7 +47,7 @@ const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.El
             }
           : false
       }
-      onRow={onRow}
+      {...otherPorps}
     />
   );
 };
