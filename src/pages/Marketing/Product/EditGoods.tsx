@@ -92,7 +92,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         path,
         sourceUrl,
         recommendImgUrl,
-        whetherAssociated
+        whetherAssociated,
+        specType
       } = res;
 
       setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl, whetherAssociated });
@@ -104,6 +105,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
       form.setFieldsValue({
         productName,
         productId,
+        specType,
         corpProductLink,
         categoryId,
         familyEnsureId,
@@ -377,6 +379,12 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           ]}
         >
           <Input placeholder="请输入产品ID" className="width320" maxLength={40} readOnly={isReadOnly} />
+        </Form.Item>
+        <Form.Item label="产品类型" name="specType" required initialValue={0}>
+          <Group>
+            <Radio value={0}>通用产品</Radio>
+            <Radio value={1}>分坐席个性化产品</Radio>
+          </Group>
         </Form.Item>
         <Form.Item label="配置类型" name="displayType" required initialValue={1}>
           <Group onChange={onChangeDisplayType} disabled={isReadOnly}>
