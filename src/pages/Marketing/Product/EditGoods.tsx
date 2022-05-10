@@ -380,7 +380,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         >
           <Input placeholder="请输入产品ID" className="width320" maxLength={40} readOnly={isReadOnly} />
         </Form.Item>
-        <Form.Item label="产品类型" name="specType" required initialValue={0}>
+        <Form.Item label="产品类型" name="specType" initialValue={0}>
           <Group>
             <Radio value={0}>通用产品</Radio>
             <Radio value={1}>分坐席个性化产品</Radio>
