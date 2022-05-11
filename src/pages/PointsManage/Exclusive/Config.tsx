@@ -3,6 +3,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { OptionProps, SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { Button, Image, Tooltip } from 'antd';
 import { UNKNOWN } from 'src/utils/base';
+import classNames from 'classnames';
 const sendStatusOptions = [
   { id: 0, name: '未发放' },
   { id: 1, name: '已发放' }
@@ -157,12 +158,19 @@ export const tableColumns = (
       title: '积分发放状态',
       dataIndex: 'sendStatus',
       width: 120,
-      render: (text) => {
-        return sendStatusOptions.filter((status) => status.id === text)[0]?.name;
+      render: (sendStatus) => {
+        return (
+          <>
+            <i
+              className={classNames('status-point', sendStatus === 1 ? 'status-point-green' : 'status-point-gray')}
+            ></i>
+            {sendStatusOptions.filter((status) => status.id === sendStatus)[0]?.name}
+          </>
+        );
       }
     },
     {
-      title: '已发放',
+      title: '奖励积分',
       dataIndex: 'pointsCount',
       width: 120,
       render: (pointsCount) => {
