@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { setTitle } from 'lester-tools';
 import { Table, TableColumnProps, Button } from 'antd';
-import { Form, Icon } from 'src/components';
+import { Form, Icon, Modal } from 'src/components';
 import { queryCompanyList, queryAuthUrl } from 'src/apis/company';
 import { ItemProps } from 'src/utils/interface';
 import style from './style.module.less';
@@ -20,7 +20,9 @@ interface CompanyItem {
 }
 
 const Company: React.FC<RouteComponentProps> = ({ history }) => {
-  const [companyList, setCompanyList] = useState([]);
+  const [companyList, setCompanyList] = useState<CompanyItem[]>([]);
+  const [adminVisible, setAdminVisible] = useState<boolean>(true);
+  const [currentCorpId, setCurrentCorpId] = useState<string>('');
 
   const getAuthUrl = async (corpId: string) => {
     const res: any = await queryAuthUrl({
@@ -52,6 +54,18 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
           <Button type="link" onClick={() => getAuthUrl(record.corpId)}>
             授权
           </Button>
+          <Button type="link" onClick={() => history.push('/company/access', { corpId: record.corpId })}>
+            查看功能
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setCurrentCorpId(record.corpId);
+              setAdminVisible(true);
+            }}
+          >
+            设置企业超级管理员
+          </Button>
         </>
       )
     }
@@ -78,6 +92,7 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   useEffect(() => {
     getCompanyList();
     setTitle('企业管理');
+    console.log(currentCorpId);
   }, []);
 
   return (
@@ -88,6 +103,14 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
       </div>
       <Form itemData={formData} onSubmit={onSubmit} />
       <Table rowKey="corpId" dataSource={companyList} columns={columns} className={style.taleWrap} pagination={false} />
+      <Modal
+        title="设置企业超级管理员"
+        visible={adminVisible}
+        onClose={() => setAdminVisible(false)}
+        onOk={() => console.log('123')}
+      >
+        13
+      </Modal>
     </div>
   );
 };
