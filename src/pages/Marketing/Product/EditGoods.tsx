@@ -397,7 +397,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         </Form.Item>
         {displayType === 1 && (
           <Form.Item
-            label="产品链接"
+            label="通用产品链接"
             name="corpProductLink"
             rules={[
               { required: true, message: '请输入产品链接' },
