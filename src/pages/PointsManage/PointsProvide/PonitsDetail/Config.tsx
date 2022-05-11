@@ -47,7 +47,7 @@ const TableColumns = (
     '新增标签',
     '服务建议发送',
     '点击客户雷达',
-    '客户经理主动删除'
+    '参与年高活动'
   ];
   // 提交添加黑名单
   const addBlackListHandle = async (row: IFlowList, rewardId: string) => {

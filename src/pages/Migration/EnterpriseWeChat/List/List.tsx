@@ -247,7 +247,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
               创建群发任务
             </Button>
             <div className="ml30 color-text-placeholder">
-              温馨提示：同一个企业每个自然月内，可对同一个客户/客户群发送4条消息，超过上限，客户当月将无法再收到群发消息。
+              温馨提示：企业每天可对同一个客户发送1条消息，超过上限，客户当天将无法再收到群发消息。
             </div>
           </div>
 
