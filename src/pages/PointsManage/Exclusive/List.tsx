@@ -126,7 +126,6 @@ const ExclusiveList: React.FC = () => {
         });
       })
       .catch((err) => {
-        message.error('表单信息错误');
         console.error(err);
       });
   };
@@ -188,7 +187,7 @@ const ExclusiveList: React.FC = () => {
                     return Promise.reject(Error('奖励积分不可以为空'));
                   }
                   if (value > Number(currentItem?.maxPoints)) {
-                    return Promise.reject(new Error('该案例类型最多简历' + currentItem.maxPoints));
+                    return Promise.reject(new Error('该案例类型最多奖励' + currentItem.maxPoints));
                   }
                   return Promise.resolve();
                 }
