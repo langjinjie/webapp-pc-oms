@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { Button, Image } from 'antd';
+import { OptionProps, SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { Button, Image, Tooltip } from 'antd';
 import { UNKNOWN } from 'src/utils/base';
-
-export const searchCols: SearchCol[] = [
+const sendStatusOptions = [
+  { id: 0, name: '未发放' },
+  { id: 1, name: '已发放' }
+];
+export const setSearchCols = (options: OptionProps[]): SearchCol[] => [
   {
-    name: 'staffName',
+    name: 'likeStaffName',
     type: 'input',
     label: '客户经理姓名',
     placeholder: '请输入',
-    width: 320
+    width: 200
   },
   {
     name: 'dateList',
@@ -24,7 +27,8 @@ export const searchCols: SearchCol[] = [
     type: 'select',
     label: '案例类型',
     placeholder: '请输入',
-    width: 200
+    width: 200,
+    options: options
   },
   {
     name: 'sendStatus',
@@ -32,10 +36,7 @@ export const searchCols: SearchCol[] = [
     label: '积分发放状态',
     placeholder: '请输入',
     width: 200,
-    options: [
-      { id: 0, name: '未发放' },
-      { id: 1, name: '已发放' }
-    ]
+    options: sendStatusOptions
   }
 ];
 
@@ -59,9 +60,10 @@ interface ExclusiveProps {
 
 export const tableColumns = (
   viewContent: (text: string) => void,
-  checkedItem: (record: ExclusiveProps) => void
+  checkedItem: (record: ExclusiveProps) => void,
+  typeOptions: OptionProps[],
+  previewPic: (taskUrls: string[]) => void
 ): ColumnsType<ExclusiveProps> => {
-  const [visible, setVisible] = useState(false);
   return [
     {
       title: '客户经理姓名',
@@ -71,7 +73,15 @@ export const tableColumns = (
     {
       title: '客户经理id',
       dataIndex: 'staffId',
-      width: 120
+      width: 180,
+      ellipsis: { showTitle: false },
+      render: (text) => {
+        return (
+          <Tooltip placement="topLeft" title={text}>
+            {text || UNKNOWN}
+          </Tooltip>
+        );
+      }
     },
     {
       title: '团队长姓名',
@@ -85,8 +95,11 @@ export const tableColumns = (
     },
     {
       title: '案例类型',
-      dataIndex: 'sendStatus',
-      width: 120
+      dataIndex: 'spconfId',
+      width: 180,
+      render: (text: string) => {
+        return typeOptions.filter((item) => item.id === text)[0]?.name;
+      }
     },
     {
       title: '案例内容',
@@ -94,12 +107,20 @@ export const tableColumns = (
       width: 250,
       render: (text) => {
         return (
-          <div className="flex">
-            <div className="cell ellipsis">{text}</div>
-            <Button className="ml10" type="primary" ghost size="small" onClick={() => viewContent(text)}>
-              查看
-            </Button>
-          </div>
+          <>
+            {text
+              ? (
+              <div className="flex">
+                <div className="cell ellipsis">{text}</div>
+                <Button className="ml10" type="primary" ghost size="small" onClick={() => viewContent(text)}>
+                  查看
+                </Button>
+              </div>
+                )
+              : (
+              <span>{UNKNOWN}</span>
+                )}
+          </>
         );
       }
     },
@@ -112,16 +133,13 @@ export const tableColumns = (
           <div>
             {taskUrls
               ? (
-              <>
-                <Image preview={{ visible: false }} width={80} src={taskUrls[0]} onClick={() => setVisible(true)} />
-                <div style={{ display: 'none' }}>
-                  <Image.PreviewGroup preview={{ visible, onVisibleChange: (vis) => setVisible(vis) }}>
-                    {taskUrls.map((taskUrl, index) => (
-                      <Image key={index} src={taskUrl} />
-                    ))}
-                  </Image.PreviewGroup>
-                </div>
-              </>
+              <Image
+                preview={{ visible: false }}
+                width={20}
+                height={30}
+                src={taskUrls[0]}
+                onClick={() => previewPic(taskUrls)}
+              />
                 )
               : (
                   UNKNOWN
@@ -133,22 +151,35 @@ export const tableColumns = (
     {
       title: '案例提交时间',
       dataIndex: 'dateCreated',
-      width: 120
+      width: 180
     },
     {
       title: '积分发放状态',
       dataIndex: 'sendStatus',
-      width: 120
+      width: 120,
+      render: (text) => {
+        return sendStatusOptions.filter((status) => status.id === text)[0]?.name;
+      }
+    },
+    {
+      title: '已发放',
+      dataIndex: 'pointsCount',
+      width: 120,
+      render: (pointsCount) => {
+        return pointsCount || 0;
+      }
     },
     {
       title: '操作人',
       dataIndex: 'sender',
-      width: 120
+      width: 120,
+      render: (text) => <span>{text || UNKNOWN}</span>
     },
     {
       title: '积分发放时间',
       dataIndex: 'sendDate',
-      width: 180
+      width: 180,
+      render: (text) => <span>{text || UNKNOWN}</span>
     },
     {
       title: '操作',
@@ -157,6 +188,7 @@ export const tableColumns = (
       render: (text, record) => {
         return (
           <Button
+            disabled={record.sendStatus === 1}
             type="link"
             key={record.trecordId}
             onClick={() => {

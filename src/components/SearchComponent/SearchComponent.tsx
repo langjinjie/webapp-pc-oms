@@ -4,10 +4,12 @@ import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'a
 import style from './style.module.less';
 import { CascaderOptionType, CascaderValueType } from 'antd/lib/cascader';
 import { NamePath } from 'rc-field-form/lib/interface';
+import { Moment } from 'moment';
 
 export interface OptionProps {
   id: string | number;
   name: string;
+  [prop: string]: any;
 }
 export interface SearchCol {
   type: 'input' | 'select' | 'date' | 'rangePicker' | 'cascader';
@@ -82,6 +84,23 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
       from.setFieldsValue({ catalogIds: props.defaultValues.catalogIds });
     }
   }, [props.defaultValues]);
+  const handleFinish = (values: any) => {
+    // const {} = values;
+    const rangePickerName = searchCols.filter((col) => col.type === 'rangePicker')[0]?.name;
+    console.log(rangePickerName);
+    if (rangePickerName) {
+      const rangePickerData: [Moment, Moment] = values[rangePickerName];
+      if (rangePickerData?.length > 0) {
+        console.log('');
+        const beginTime = rangePickerData[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+        const endTime = rangePickerData[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+        values.beginTime = beginTime;
+        values.endTime = endTime;
+      }
+    }
+
+    onSearch(values);
+  };
   return (
     <>
       {isInline
@@ -89,7 +108,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         <Form
           form={from}
           layout="inline"
-          onFinish={onSearch}
+          onFinish={handleFinish}
           onReset={() => {
             handleReset();
           }}
@@ -161,7 +180,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         : (
         <Form
           form={from}
-          onFinish={onSearch}
+          onFinish={handleFinish}
           onReset={handleReset}
           className={style.customLayout}
           onValuesChange={onValuesChange}

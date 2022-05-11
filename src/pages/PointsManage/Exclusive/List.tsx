@@ -1,108 +1,127 @@
 import React, { useEffect, useState } from 'react';
 import { NgFormSearch, NgTable } from 'src/components';
-import { searchCols, tableColumns } from './Config';
+import { setSearchCols, tableColumns } from './Config';
 import { useAsync } from 'src/utils/use-async';
-import moment from 'moment';
-import { getExclusiveTypeList } from 'src/apis/pointsMall';
+// import moment from 'moment';
+import { getExclusiveList, getExclusiveTypeList, setPointsOfExclusive } from 'src/apis/pointsMall';
 import { NgModal } from 'src/components/NgModal/NgModal';
 
 import styles from './style.module.less';
-import { Form, Input, InputNumber, message, Modal } from 'antd';
+import { Form, Image, Input, InputNumber, message, Modal, PaginationProps } from 'antd';
+import { OptionProps } from 'src/components/SearchComponent/SearchComponent';
 
 const ExclusiveList: React.FC = () => {
-  const { isLoading } = useAsync();
+  const { isLoading, run } = useAsync();
   const [visibleViewContent, setVisibleViewContent] = useState(false);
-  const [visibleSendModal, setVisibleSendModal] = useState(true);
+  const [visibleSendModal, setVisibleSendModal] = useState(false);
   const [content, setContent] = useState('');
   const [sendForm] = Form.useForm();
   const [formValues, setFormValues] = useState({
-    spconfId: '',
-    pointsCount: 0,
+    pointsCount: null,
     responseBy: '年高老师',
-    taskResponse: undefined
+    taskResponse: undefined,
+    spconfName: ''
   });
-  const [dataSource] = useState([
-    {
-      trecordId: '1',
-      spconfId: '1',
-      corpId: '1',
-      staffId: '1',
-      staffName: '李斯',
-      taskContent:
-        '    Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia perferendis, quidem accusantium perspiciatis quae eligendi soluta similique, natus in quasi consequuntur molestiae repellendus earum, ratione nesciunt. Dolores perferendis cumque facere!',
-
-      sendStatus: 0,
-      sendDate: moment().format('YYYY-MM-DD HH:MM:ss'),
-      sender: '马保国',
-      taskResponse: 'as',
-      pointsCount: '1000',
-      taskUrls: [
-        'https://gw.alipayobjects.com/zos/antfincdn/cV16ZqzMjW/photo-1473091540282-9b846e7965e3.webp',
-        'https://ie.bjd.com.cn/images/202005/27/5ece0207e4b0be621be3fb79.jpeg'
-      ],
-      leaderName: '你是',
-      dateCreated: moment().format('YYYY-MM-DD HH:MM:ss'),
-      bossName: '李松超'
-    },
-    {
-      trecordId: '12',
-      spconfId: '1',
-      corpId: '1',
-      staffId: '1',
-      staffName: '李斯',
-      taskContent:
-        '    Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia perferendis, quidem accusantium perspiciatis quae eligendi soluta similique, natus in quasi consequuntur molestiae repellendus earum, ratione nesciunt. Dolores perferendis cumque facere!',
-
-      sendStatus: 0,
-      sendDate: moment().format('YYYY-MM-DD HH:MM:ss'),
-      sender: '马保国',
-      taskResponse: 'as',
-      pointsCount: '1000',
-      dateCreated: moment().format('YYYY-MM-DD HH:MM:ss'),
-      taskUrls: [
-        'https://ie.bjd.com.cn/images/202005/27/5ece0207e4b0be621be3fb79.jpeg',
-        'https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp'
-      ],
-      leaderName: '你是',
-      bossName: '李松超'
+  const [queryParams, setQueryParams] = useState({
+    likeStaffName: '',
+    spconfId: '',
+    sendStatus: '',
+    startTime: '',
+    endTime: ''
+  });
+  const [pagination, setPagination] = useState<PaginationProps>({
+    current: 1,
+    total: 0,
+    pageSize: 10,
+    showTotal: (total: number) => {
+      return `共 ${total} 条记录`;
     }
-  ]);
+  });
+  const [exclusiveList, setExclusiveList] = useState<OptionProps[]>([]);
+  const [dataSource, setDataSource] = useState([]);
+  const [currentItem, setCurrentItem] = useState<any>({});
+  const [picList, setPicList] = useState<string[]>([]);
+  const [visible, setVisible] = useState(false);
+
+  const getList = async (params?: any) => {
+    const { current: pageNum, pageSize } = pagination;
+    const res = await run(
+      getExclusiveList({
+        ...queryParams,
+        pageNum,
+        pageSize,
+        ...params
+      })
+    );
+    if (res) {
+      const { total, list } = res;
+      setPagination((pagination) => ({
+        ...pagination,
+        total,
+        current: params?.pageNum || pageNum,
+        pageSize: params?.pageSize || pageSize
+      }));
+      setDataSource(list || []);
+    }
+  };
   const onSearch = (values: any) => {
-    console.log(values);
+    const { likeStaffName, spconfId, sendStatus, beginTime: startTime = '', endTime = '' } = values;
+    getList({ likeStaffName, pageNum: 1, spconfId, sendStatus, startTime, endTime });
+    setQueryParams({ likeStaffName, spconfId, sendStatus, startTime, endTime });
   };
 
   const getTaskTypeList = async () => {
     const res = await getExclusiveTypeList();
-    console.log(res);
+    if (res) {
+      const typeList = res.map((item: any) => ({
+        id: item.spconfId,
+        name: item.groupType + '-' + item.confName,
+        ...item
+      }));
+      setExclusiveList(typeList || []);
+    }
   };
   useEffect(() => {
     getTaskTypeList();
+    getList();
   }, []);
   const viewContent = (text: string) => {
     setContent(text);
     setVisibleViewContent(true);
   };
   const checkedItem = (record: any) => {
-    console.log(record);
     setVisibleSendModal(true);
-    setFormValues({
-      spconfId: '',
-      pointsCount: 0,
+    const exclusiveType = exclusiveList.filter((item) => item.id === record.spconfId)[0];
+    setFormValues((formValues) => ({
+      ...formValues,
+      spconfName: exclusiveType.name,
       responseBy: '年高老师',
       taskResponse: undefined
-    });
+    }));
+    setCurrentItem({ ...record, ...exclusiveType });
   };
 
   const onSubmit = () => {
     sendForm
       .validateFields()
       .then((values) => {
-        console.log(values);
+        const { spconfName, ...postData } = values;
+        console.log(spconfName);
         Modal.confirm({
           title: '积分发放提醒',
           content: '是否确定发放积分？',
-          onOk: () => {
-            console.log('ok');
+          onOk: async () => {
+            const res = await setPointsOfExclusive({
+              trecordId: currentItem.trecordId,
+              ...postData
+            });
+            if (res) {
+              setVisibleSendModal(false);
+              sendForm.resetFields();
+              message.success('积分发放成功');
+              // 更新列表
+              getList({ pageNum: 1 });
+            }
           }
         });
       })
@@ -111,13 +130,29 @@ const ExclusiveList: React.FC = () => {
         console.error(err);
       });
   };
+
+  const paginationChange = (pageNum: number, pageSize?: number) => {
+    getList({ pageNum, pageSize });
+  };
+
+  const previewPic = (picList: string[]) => {
+    setPicList(picList);
+    setVisible(true);
+  };
+
+  const cancelSendModal = () => {
+    setVisibleSendModal(false);
+    sendForm.resetFields();
+  };
   return (
     <div className="container">
-      <NgFormSearch isInline={false} searchCols={searchCols} onSearch={onSearch} />
+      <NgFormSearch isInline={false} searchCols={setSearchCols(exclusiveList)} onSearch={onSearch} />
       <NgTable
         loading={isLoading}
-        columns={tableColumns(viewContent, checkedItem)}
+        columns={tableColumns(viewContent, checkedItem, exclusiveList, previewPic)}
+        paginationChange={paginationChange}
         dataSource={dataSource}
+        pagination={pagination}
         rowKey="trecordId"
       ></NgTable>
       <NgModal
@@ -134,12 +169,12 @@ const ExclusiveList: React.FC = () => {
         title="发送积分与评价"
         visible={visibleSendModal}
         okText="确定发放"
-        onCancel={() => setVisibleSendModal(false)}
+        onCancel={cancelSendModal}
         onOk={onSubmit}
       >
         <Form form={sendForm} labelCol={{ span: 5 }} wrapperCol={{ span: 16 }} initialValues={formValues}>
-          <Form.Item label="案例类型" name={'spconfId'}>
-            <Input></Input>
+          <Form.Item label="案例类型">
+            <Input readOnly value={currentItem?.name} />
           </Form.Item>
           <Form.Item
             label="奖励积分"
@@ -149,19 +184,19 @@ const ExclusiveList: React.FC = () => {
                 required: true,
                 type: 'number',
                 validator: (_, value) => {
-                  console.log(value);
                   if (Object.prototype.toString.call(value) === '[object Null]') {
                     return Promise.reject(Error('奖励积分不可以为空'));
                   }
-                  if (value > 1000) {
-                    return Promise.reject(new Error('最大1000'));
+                  if (value > Number(currentItem?.maxPoints)) {
+                    return Promise.reject(new Error('该案例类型最多简历' + currentItem.maxPoints));
                   }
                   return Promise.resolve();
                 }
               }
             ]}
+            extra={currentItem.confTitle}
           >
-            <InputNumber min={0} max={10000} precision={0} controls={false} />
+            <InputNumber min={1} precision={0} controls={false} placeholder="请输入" />
           </Form.Item>
           <Form.Item label="昵称" name={'responseBy'}>
             <Input></Input>
@@ -171,6 +206,14 @@ const ExclusiveList: React.FC = () => {
           </Form.Item>
         </Form>
       </NgModal>
+
+      <div style={{ display: 'none' }}>
+        <Image.PreviewGroup preview={{ visible, onVisibleChange: (vis) => setVisible(vis) }}>
+          {picList.map((taskUrl, index) => (
+            <Image key={index} src={taskUrl} />
+          ))}
+        </Image.PreviewGroup>
+      </div>
     </div>
   );
 };
