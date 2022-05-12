@@ -395,11 +395,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
               rules={[{ required: true, message: '请上传视频' }]}
               extra="仅支持.mp4格式, 最大100MB"
             >
-              <UploadFile
-                bizKey="media"
-                beforeUpload={beforeUploadMp4}
-                onRemove={() => form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' })}
-              />
+              <UploadFile bizKey="media" beforeUpload={beforeUploadMp4} />
             </Form.Item>
           </>
         )}

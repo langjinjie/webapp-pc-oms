@@ -210,16 +210,28 @@ export const routes: (RouteProps & expandRoute)[] = [
   },
   // 角色管理
   {
-    path: '/roleOms',
-    component: lazy(() => import('src/pages/RoleManage/RoleOms/RoleOms'))
+    path: '/roleMangeOms',
+    component: lazy(() => import('src/pages/RoleManage/RoleOms/List/List'))
   },
   {
-    path: '/roleB',
-    component: lazy(() => import('src/pages/RoleManage/RoleB/RoleB'))
+    path: '/roleMangeOms/add',
+    component: lazy(() => import('src/pages/RoleManage/RoleOms/Add/Add'))
   },
   {
-    path: '/roleA',
-    component: lazy(() => import('src/pages/RoleManage/RoleA/RoleA'))
+    path: '/roleMangeB',
+    component: lazy(() => import('src/pages/RoleManage/RoleB/List/List'))
+  },
+  {
+    path: '/roleMangeB/add',
+    component: lazy(() => import('src/pages/RoleManage/RoleB/Add/Add'))
+  },
+  {
+    path: '/roleMangeA',
+    component: lazy(() => import('src/pages/RoleManage/RoleA/List/List'))
+  },
+  {
+    path: '/roleMangeA/add',
+    component: lazy(() => import('src/pages/RoleManage/RoleA/Add/Add'))
   }
 ];
 
@@ -400,11 +412,11 @@ export const menus: Menu[] = [
   {
     name: '角色管理',
     icon: 'icon_daohang_28_jigouguanli',
-    path: 'role',
+    path: 'roleMange',
     children: [
-      { name: '后管角色管理', path: '/roleOms' },
-      { name: 'B端角色管理', path: '/roleB' },
-      { name: 'A端角色管理', path: '/roleA' }
+      { name: '后管角色管理', path: '/roleMangeOms' },
+      { name: 'B端角色管理', path: '/roleMangeB' },
+      { name: 'A端角色管理', path: '/roleMangeA' }
     ]
   }
 ];

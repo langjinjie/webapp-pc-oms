@@ -81,3 +81,6 @@ export const catalogLmitLengtgTip = [
 ];
 
 export const catalogLastLeve = [2, 3, 2, 4, 4];
+
+// 角色管理: 增加角色类型的角色类型和路由对照表
+export const roleTypeRouteList = ['/roleMangeOms/add', '/roleMangeB/add', '/roleMangeA/add'];

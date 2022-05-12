@@ -117,3 +117,19 @@ export const exportFile = (data: BlobPart, fileName: string): void => {
   link.remove(); // 下载完成移除元素
   window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
 };
+
+/**
+ * @param arr
+ * @return arr
+ */
+export const tree2Arry = (arr: any[]): any[] => {
+  const res = [];
+  res.push(...arr); // chilren插入结果数组
+  for (const item of arr) {
+    // 遍历子元素，若包含children则递归调用
+    if (item.children && item.children.length) {
+      res.push(...tree2Arry(item.children));
+    }
+  }
+  return res;
+};
