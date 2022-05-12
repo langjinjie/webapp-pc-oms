@@ -174,6 +174,11 @@ export const routes: (RouteProps & expandRoute)[] = [
     component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess')),
     onlyMain: true
   },
+  {
+    // 系统菜单管理
+    path: '/menu',
+    component: lazy(() => import('src/pages/OrgManage/Menu/List'))
+  },
   // 坐席详情
   {
     path: '/organization/staff-detail',
@@ -306,6 +311,10 @@ export const menus: Menu[] = [
       {
         name: '客户免统计名单',
         path: '/customer-statistics-free'
+      },
+      {
+        name: '系统菜单管理',
+        path: '/menu'
       }
     ]
   },

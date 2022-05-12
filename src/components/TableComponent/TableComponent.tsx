@@ -34,7 +34,8 @@ const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.El
     rowSelection,
     onRow,
     scroll,
-    tableLayout
+    tableLayout,
+    ...otherProps
   } = props;
   return (
     <Table
@@ -64,6 +65,7 @@ const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.El
           : false
       }
       onRow={onRow}
+      {...otherProps}
     />
   );
 };
