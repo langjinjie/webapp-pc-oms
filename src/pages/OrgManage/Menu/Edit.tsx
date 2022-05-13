@@ -35,6 +35,11 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
     setFormParams(formParams);
   }, []);
 
+  const onValuesChange = (changeValues: any, values: any) => {
+    const { menuType } = values;
+    setFormParams((formParams) => ({ ...formParams, menuType }));
+  };
+
   return (
     <div className="container">
       <div className="breadcrumbWrap">
@@ -48,17 +53,18 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
       </div>
 
       <div className="mt30">
-        <Form wrapperCol={{ span: 8 }} className="edit" initialValues={formParams}>
+        <Form wrapperCol={{ span: 8 }} className="edit" initialValues={formParams} onValuesChange={onValuesChange}>
           <Form.Item label="系统端">
             {systemList.filter((system) => system.value === menu?.sysType)[0]?.label}
           </Form.Item>
+
           <Form.Item label="菜单类型" name={'menuType'}>
             <Radio.Group>
               <Radio value={1}>菜单</Radio>
               <Radio value={2}>按钮</Radio>
             </Radio.Group>
           </Form.Item>
-          {
+          {formParams.menuType === 2 && (
             <Form.Item label="按钮类型" name={'buttonType'}>
               <Radio.Group>
                 {btnTypes.map((btn) => (
@@ -68,8 +74,8 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
                 ))}
               </Radio.Group>
             </Form.Item>
-          }
-          <Form.Item label="菜单层级"></Form.Item>
+          )}
+          <Form.Item label="菜单级别">{menu?.pathList?.length || '一级菜单'}</Form.Item>
           <Form.Item label="菜单名称" name={'menuName'}>
             <Input placeholder="请输入" className="width480" />
           </Form.Item>

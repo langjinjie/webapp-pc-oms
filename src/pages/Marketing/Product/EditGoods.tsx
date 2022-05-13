@@ -39,7 +39,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     shareCoverImgUrl: '',
     shareTitle: '',
     productName: '',
-    posterImgUrl: ''
+    posterImgUrl: '',
+    whetherAssociated: 1 // 是否被推荐 0 已推荐，1 未推荐
   });
 
   const [config, setConfig] = useState<Config>({
@@ -89,10 +90,13 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         displayType,
         username,
         path,
-        sourceUrl
+        sourceUrl,
+        recommendImgUrl,
+        whetherAssociated,
+        specType
       } = res;
 
-      setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl });
+      setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl, whetherAssociated });
       const premium = (res.premium as number) / 100;
       setPremiumValue(premium + '');
       setCurrency(res.premiumTypeId);
@@ -101,6 +105,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
       form.setFieldsValue({
         productName,
         productId,
+        specType,
         corpProductLink,
         categoryId,
         familyEnsureId,
@@ -117,7 +122,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         displayType,
         username,
         path,
-        sourceUrl
+        sourceUrl,
+        recommendImgUrl
       });
     }
   };
@@ -200,6 +206,36 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
       message.error('图片大小不可以超过 2MB!');
     }
     return isJpgOrPng && isLt2M;
+  };
+  const recommendPicBeforeUpload = (file: any) => {
+    const isJpg = file.type === 'image/jpeg';
+    if (!isJpg) {
+      message.error('只可以上传 JPG 格式的图片!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不可以超过 2MB!');
+    }
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          const height = image.height;
+          if (!(width === 690 && height === 200)) {
+            message.error('请上传正确的图片尺寸');
+          }
+          resolve(width === 690 && height === 200 && isJpg && isLt2M);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const onFinish = async (values: any) => {
@@ -344,6 +380,12 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         >
           <Input placeholder="请输入产品ID" className="width320" maxLength={40} readOnly={isReadOnly} />
         </Form.Item>
+        <Form.Item label="产品类型" name="specType" initialValue={0}>
+          <Group>
+            <Radio value={0}>通用产品</Radio>
+            <Radio value={1}>分坐席个性化产品</Radio>
+          </Group>
+        </Form.Item>
         <Form.Item label="配置类型" name="displayType" required initialValue={1}>
           <Group onChange={onChangeDisplayType} disabled={isReadOnly}>
             {displayTypeList.map((item) => (
@@ -355,7 +397,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         </Form.Item>
         {displayType === 1 && (
           <Form.Item
-            label="产品链接"
+            label="通用产品链接"
             name="corpProductLink"
             rules={[
               { required: true, message: '请输入产品链接' },
@@ -516,24 +558,18 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         {/* </Form> */}
 
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
-          <span className="bold margin-right20">产品海报设置</span>
-          <span className="color-text-regular">说明：如无配置，则该模块不展示</span>
+          <span className="bold margin-right20">文章推荐设置</span>
+          <span className="color-text-secondary">说明：如无票配置，则无法在文章末尾配置推荐产品</span>
         </div>
         <Form.Item
-          label="海报："
-          name="posterImgUrl"
-          extra="为确保最佳展示效果，请上传750*1334像素高清图片，仅支持.jpg格式"
+          label="推荐展示图片"
+          name="recommendImgUrl"
+          rules={[{ message: '请上传推荐图片' }]}
+          extra="限制上传JPG格式，图片大小690*200，产品上架后推荐图不能更改"
         >
-          <NgUpload beforeUpload={posterBeforeUpload} />
+          <NgUpload beforeUpload={recommendPicBeforeUpload} showDeleteBtn={shareInfo.whetherAssociated !== 0} />
         </Form.Item>
-        <Form.Item
-          label="海报名称："
-          labelAlign="right"
-          name="posterName"
-          rules={[{ max: 20, message: '最多20位字符' }]}
-        >
-          <Input className="width320" maxLength={30} placeholder="待添加" readOnly={isReadOnly} />
-        </Form.Item>
+
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
           <span className="bold margin-right20">分享设置</span>
         </div>
@@ -571,6 +607,26 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             </div>
           </Col>
         </Row>
+
+        <div className="sectionTitle" style={{ marginTop: '60px' }}>
+          <span className="bold margin-right20">产品海报设置</span>
+          <span className="color-text-regular">说明：如无配置，则该模块不展示</span>
+        </div>
+        <Form.Item
+          label="海报："
+          name="posterImgUrl"
+          extra="为确保最佳展示效果，请上传750*1334像素高清图片，仅支持.jpg格式"
+        >
+          <NgUpload beforeUpload={posterBeforeUpload} />
+        </Form.Item>
+        <Form.Item
+          label="海报名称："
+          labelAlign="right"
+          name="posterName"
+          rules={[{ max: 20, message: '最多20位字符' }]}
+        >
+          <Input className="width320" maxLength={30} placeholder="待添加" readOnly={isReadOnly} />
+        </Form.Item>
 
         {propsState.type !== '1' && (
           <div style={{ textAlign: 'center', width: 1000, marginTop: 32 }}>

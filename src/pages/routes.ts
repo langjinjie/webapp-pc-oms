@@ -241,6 +241,19 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/roleMangeA/add',
     component: lazy(() => import('src/pages/RoleManage/RoleA/Add/Add'))
+  },
+  // 好友迁移
+  {
+    path: '/enterprise',
+    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/List/List'))
+  },
+  {
+    path: '/personal',
+    component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
+  },
+  {
+    path: '/exclusive',
+    component: lazy(() => import('src/pages/PointsManage/Exclusive/List'))
   }
 ];
 
@@ -263,25 +276,17 @@ export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
   {
     path: '/customer-statistics-free',
     component: lazy(() => import('src/pages/OrgManage/CustomerStatisticsFree'))
-  }
+  },
 
   // 好友迁移
-  // {
-  //   path: '/enterprise',
-  //   component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
-  // },
-  // {
-  //   path: '/enterprise/addTask',
-  //   component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
-  // },
-  // {
-  //   path: '/personal',
-  //   component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
-  // },
-  // {
-  //   path: '/personal/addTask',
-  //   component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
-  // }
+  {
+    path: '/enterprise/addTask',
+    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/AddTask/AddTask'))
+  },
+  {
+    path: '/personal/addTask',
+    component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
+  }
 ];
 
 export const menus: Menu[] = [
@@ -409,7 +414,17 @@ export const menus: Menu[] = [
       { name: '积分发放', path: '/pointsProvide' },
       { name: '积分扣减', path: '/pointsDeduction' },
       { name: '加减积分', path: '/addSubPoints' },
-      { name: '抽奖管理', path: '/lotteryManage' }
+      { name: '抽奖管理', path: '/lotteryManage' },
+      { name: '专属奖励管理', path: '/exclusive' }
+    ]
+  },
+  {
+    name: '好友迁移',
+    icon: 'a-bianzu101',
+    path: 'migration',
+    children: [
+      { name: '企微好友', path: '/enterprise' }
+      // { name: '个微好友', path: '/personal' }
     ]
   },
   // {

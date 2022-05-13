@@ -106,6 +106,9 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
     console.log(result);
     history.push('/menu/edit', { pathList: result, type: 'edit', sysType: currentTab });
   };
+  const deleteItem = (menuId: string) => {
+    console.log(menuId);
+  };
 
   const onTapsChange = (value: string) => {
     setCurrentTab(+value);
@@ -163,7 +166,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
               );
             }
           }}
-          columns={setTableColumns({ addSubMenu, editMenu })}
+          columns={setTableColumns({ addSubMenu, editMenu, deleteItem })}
           loading={false}
           dataSource={dataSource}
         ></NgTable>

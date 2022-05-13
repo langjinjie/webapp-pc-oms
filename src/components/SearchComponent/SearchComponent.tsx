@@ -5,10 +5,12 @@ import style from './style.module.less';
 import { CascaderOptionType, CascaderValueType } from 'antd/lib/cascader';
 import { NamePath } from 'rc-field-form/lib/interface';
 import classNames from 'classnames';
+import { Moment } from 'moment';
 
 export interface OptionProps {
   id: string | number;
   name: string;
+  [prop: string]: any;
 }
 export interface SearchCol {
   type: 'input' | 'select' | 'date' | 'rangePicker' | 'cascader';
@@ -30,6 +32,7 @@ export interface SearchCol {
 interface SearchComponentProps {
   searchCols: SearchCol[];
   isInline?: boolean;
+  firstRowChildCount?: number;
   onSearch: (params: any) => void;
   onReset?: () => void;
   onValuesChange?: (changeValues: any, values: any) => void;
@@ -43,7 +46,16 @@ interface SearchComponentProps {
 const { RangePicker } = DatePicker;
 
 const SearchComponent: React.FC<SearchComponentProps> = (props) => {
-  const { searchCols, onSearch, onValuesChange, isInline = true, loadData, onChangeOfCascader, onReset } = props;
+  const {
+    searchCols,
+    onSearch,
+    onValuesChange,
+    isInline = true,
+    loadData,
+    onChangeOfCascader,
+    onReset,
+    firstRowChildCount
+  } = props;
   const [from] = Form.useForm();
   const handleReset = () => {
     if (onReset) {
@@ -74,6 +86,23 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
       from.setFieldsValue({ catalogIds: props.defaultValues.catalogIds });
     }
   }, [props.defaultValues]);
+  const handleFinish = (values: any) => {
+    // const {} = values;
+    const rangePickerName = searchCols.filter((col) => col.type === 'rangePicker')[0]?.name;
+    console.log(rangePickerName);
+    if (rangePickerName) {
+      const rangePickerData: [Moment, Moment] = values[rangePickerName];
+      if (rangePickerData?.length > 0) {
+        console.log('');
+        const beginTime = rangePickerData[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+        const endTime = rangePickerData[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+        values.beginTime = beginTime;
+        values.endTime = endTime;
+      }
+    }
+
+    onSearch(values);
+  };
   return (
     <>
       {isInline
@@ -81,7 +110,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         <Form
           form={from}
           layout="inline"
-          onFinish={onSearch}
+          onFinish={handleFinish}
           onReset={() => {
             handleReset();
           }}
@@ -153,13 +182,13 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         : (
         <Form
           form={from}
-          onFinish={onSearch}
+          onFinish={handleFinish}
           onReset={handleReset}
           className={style.customLayout}
           onValuesChange={onValuesChange}
         >
           <Row>
-            {searchCols?.slice(0, 2).map((col) => {
+            {searchCols?.slice(0, firstRowChildCount || 2).map((col) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
@@ -187,7 +216,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
             })}
           </Row>
           <Row>
-            {searchCols?.slice(2).map((col) => {
+            {searchCols?.slice(firstRowChildCount || 2).map((col) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>

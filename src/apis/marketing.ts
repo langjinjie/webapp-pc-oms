@@ -373,3 +373,8 @@ export const batchOperateActivity: HttpFunction = (param) => {
 export const batchOperateProduct: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/product/batch/manage', param);
 };
+
+// 查询推荐内容（文章，活动，产品），
+export const searchRecommendGoodsList: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/market/query', param);
+};

@@ -98,8 +98,8 @@ const TinyEidtor: React.FC<EditorProps> = (props) => {
       <Editor
         apiKey="jv782ngskqvvejx3o8u7gjyw310tgqkt0j4vrluu0tk13tac"
         tinymceScriptSrc={
-          // 'https://insure-prod-web-1305111576.cos.ap-guangzhou.myqcloud.com/web/res/tinymce/js/tinymce/tinymce.min.js'
-          '/tenacity-oms/static/tinymce/js/tinymce/tinymce.min.js'
+          'https://insure-prod-web-1305111576.cos.ap-guangzhou.myqcloud.com/web/res/tinymce/js/tinymce/tinymce.min.js'
+          // '/tenacity-oms/static/tinymce/js/tinymce/tinymce.min.js'
         }
         // @ts-ignore
         onInit={(evt, editor) => (editorRef.current = editor)}

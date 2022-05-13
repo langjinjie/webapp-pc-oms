@@ -115,7 +115,7 @@
   .departmentOperation {
     position: fixed;
     width: 170px;
-    height: 264px;
+    height: 296px;
     padding: 4px;
     box-shadow: 2px 0 16px 0 rgba(129, 141, 168, 0.2);
     z-index: 999;
@@ -180,6 +180,26 @@
     &.active {
       background: rgba(48, 120, 219, 0.2);
       color: #318cf5;
+    }
+  }
+}
+
+.transferWrap {
+  width: 100%;
+
+  .transferRow {
+    margin-bottom: 10px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    .transferLabel {
+      width: 120px;
+      text-align: right;
+    }
+
+    .transferValue {
+      flex: 1;
     }
   }
 }

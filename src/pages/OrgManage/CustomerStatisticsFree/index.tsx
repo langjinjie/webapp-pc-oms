@@ -159,7 +159,6 @@ const CustomerStatisticsFree: React.FC = () => {
   };
 
   const exportList = async () => {
-    console.log('导出');
     const { data } = await exportFreeList(formParams);
     exportFile(data, '客户免统计名单');
   };

@@ -426,6 +426,20 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                   </li>
                   <li className={styles.infoItem}>
                     <Form.Item
+                      label={staffInfo.deptLeaderTag || '上级领导'}
+                      name="leaderName"
+                      rules={[
+                        {
+                          type: 'string',
+                          max: 30
+                        }
+                      ]}
+                    >
+                      <EditText readOnly={isReadOnly} />
+                    </Form.Item>
+                  </li>
+                  <li className={styles.infoItem}>
+                    <Form.Item
                       label="级别"
                       name="agentLevel"
                       rules={[

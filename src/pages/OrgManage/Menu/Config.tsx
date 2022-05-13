@@ -3,7 +3,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
-import { Button, Space } from 'antd';
+import { Button, Popconfirm, Space } from 'antd';
 import { Icon } from 'lester-ui';
 
 export const searchCols: SearchCol[] = [
@@ -90,8 +90,9 @@ export interface MenuProps {
 interface Operation {
   addSubMenu: (id: string) => void;
   editMenu: (id: string) => void;
+  deleteItem: (id: string) => void;
 }
-export const setTableColumns = ({ addSubMenu, editMenu }: Operation): ColumnsType<MenuProps> => {
+export const setTableColumns = ({ addSubMenu, editMenu, deleteItem }: Operation): ColumnsType<MenuProps> => {
   return [
     // {
     //   title: '序号',
@@ -147,8 +148,12 @@ export const setTableColumns = ({ addSubMenu, editMenu }: Operation): ColumnsTyp
               <Button type="link" onClick={() => addSubMenu(record.menuId)}>
                 添加
               </Button>
-              <Button type="link">关闭</Button>
-              <Button type="link">删除</Button>
+              <Popconfirm title="确定要关闭吗?" onConfirm={() => deleteItem(record.menuId)}>
+                <Button type="link">关闭</Button>
+              </Popconfirm>
+              <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(record.menuId)}>
+                <Button type="link">删除</Button>
+              </Popconfirm>
             </Space>
           </>
         );
