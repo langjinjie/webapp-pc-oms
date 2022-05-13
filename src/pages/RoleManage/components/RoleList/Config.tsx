@@ -3,8 +3,15 @@ import { ColumnType } from 'antd/es/table';
 import { IRoleList } from 'src/utils/interface';
 import style from './style.module.less';
 
-const TableColumns = (roleType: 1 | 2 | 3): ColumnType<any>[] => {
+const TableColumns = (
+  roleType: 1 | 2 | 3,
+  setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>
+): ColumnType<any>[] => {
   console.log('roleType', roleType);
+  // 点击编辑/添加成员
+  const AddOrEditUserHandle = (added: boolean, roleId: string) => {
+    setParams({ visible: true, added, roleId });
+  };
   return [
     {
       title: '角色id',
@@ -39,8 +46,12 @@ const TableColumns = (roleType: 1 | 2 | 3): ColumnType<any>[] => {
           <>
             <span className={style.check}>查看</span>
             {!row.isDefault && <span className={style.edit}>编辑</span>}
-            <span className={style.add}>添加成员</span>
-            <span className={style.mange}>管理成员</span>
+            <span className={style.add} onClick={() => AddOrEditUserHandle(true, row.roleId)}>
+              添加成员
+            </span>
+            <span className={style.mange} onClick={() => AddOrEditUserHandle(false, row.roleId)}>
+              管理成员
+            </span>
             {!row.isDefault && <span className={style.open}>{row.status ? '关闭' : '开启'}</span>}
             {!row.isDefault && <span className={style.del}>删除</span>}
           </>

@@ -27,7 +27,6 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange })
   const [treeHeight, setTreeHeight] = useState<number | string>(48);
   const [flatTreeData, setFlatTreeData] = useState<any[]>([]);
   const treeListNode = useRef<HTMLDivElement>(null);
-  // const [allTree];
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -60,8 +59,6 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange })
   };
   // 选中节点
   const onCheckHandle = (_: any, e: any) => {
-    console.log(flatTreeData);
-    console.log(e);
     // 判断是选中还是取消选中
     if (e.checked) {
       const newParamKeys = Array.from(
@@ -82,7 +79,7 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange })
     }
   }, [extend]);
   useEffect(() => {
-    setFlatTreeData(tree2Arry(item.children));
+    item.children && setFlatTreeData(tree2Arry(item.children));
   }, []);
   return (
     <div

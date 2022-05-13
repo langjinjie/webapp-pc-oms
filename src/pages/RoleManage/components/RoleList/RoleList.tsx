@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input } from 'antd';
 import { Icon, NgTable } from 'src/components';
+import { AddOrEditUser } from 'src/pages/RoleManage/components';
 import { TableColumns, TablePagination } from './Config';
 import { IRoleList } from 'src/utils/interface';
 import { roleTypeRouteList } from 'src/utils/commonData';
@@ -19,6 +20,12 @@ interface IRoleListParam {
 const RoleList: React.FC<IRoleType> = ({ roleType }) => {
   const [roleList, setRoleList] = useState<IRoleListParam>({ total: 0, list: [] });
   const [roleName, setRoleName] = useState('');
+  // 添加/编辑成岩
+  const [params, setParams] = useState<{ visible: boolean; added: boolean; roleId: string }>({
+    visible: false,
+    added: true,
+    roleId: ''
+  });
   const [paginationParam, setPaginationParam] = useState<{ pageNum: number; pageSize: number }>({
     pageNum: 1,
     pageSize: 10
@@ -87,7 +94,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         setRowKey={(row) => row.roleId}
         dataSource={roleList.list}
         loading={loading}
-        columns={TableColumns(roleType)}
+        columns={TableColumns(roleType, setParams)}
         scroll={{ x: 'max-content' }}
         {...TablePagination({
           roleType,
@@ -96,6 +103,8 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
           setPaginationParam
         })}
       />
+      {/* 添加/编辑成员 */}
+      <AddOrEditUser params={params} setParams={setParams} />
     </div>
   );
 };
