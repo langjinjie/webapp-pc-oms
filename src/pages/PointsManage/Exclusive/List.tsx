@@ -19,7 +19,7 @@ const ExclusiveList: React.FC = () => {
   const [formValues, setFormValues] = useState({
     pointsCount: null,
     responseBy: '年高老师',
-    taskResponse: undefined,
+    taskResponse: '真是非常棒的案例！希望再接再厉哦~',
     spconfName: ''
   });
   const [queryParams, setQueryParams] = useState({
@@ -94,9 +94,7 @@ const ExclusiveList: React.FC = () => {
     const exclusiveType = exclusiveList.filter((item) => item.id === record.spconfId)[0];
     setFormValues((formValues) => ({
       ...formValues,
-      spconfName: exclusiveType.name,
-      responseBy: '年高老师',
-      taskResponse: undefined
+      spconfName: exclusiveType.name
     }));
     setCurrentItem({ ...record, ...exclusiveType });
   };
