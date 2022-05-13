@@ -16,7 +16,7 @@ const AddTask: React.FC = () => {
       <div className={style.content}>
         <Form form={form} className={style.form}>
           <Item name="taskName" className={style.formItem} label="任务名称：">
-            <Input className={style.input} showCount={true} maxLength={50} placeholder="请输入任务名称"></Input>
+            <Input className={style.input} showCount={true} maxLength={50} placeholder="请输入任务名称" />
           </Item>
           <Item name="staffList" className={style.formItem} label="执行人员：">
             <div className={style.addStaffWrap}>
@@ -28,7 +28,6 @@ const AddTask: React.FC = () => {
               )}
             </div>
           </Item>
-          <Item></Item>
           <Button type="primary" onClick={() => console.log(form.getFieldsValue())}>
             保存
           </Button>

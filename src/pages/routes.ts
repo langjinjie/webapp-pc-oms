@@ -216,6 +216,31 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/lotteryManage',
     component: lazy(() => import('src/pages/PointsManage/LotteryManage/LotteryManage'))
+  },
+  // 角色管理
+  {
+    path: '/roleMangeOms',
+    component: lazy(() => import('src/pages/RoleManage/RoleOms/List/List'))
+  },
+  {
+    path: '/roleMangeOms/add',
+    component: lazy(() => import('src/pages/RoleManage/RoleOms/Add/Add'))
+  },
+  {
+    path: '/roleMangeB',
+    component: lazy(() => import('src/pages/RoleManage/RoleB/List/List'))
+  },
+  {
+    path: '/roleMangeB/add',
+    component: lazy(() => import('src/pages/RoleManage/RoleB/Add/Add'))
+  },
+  {
+    path: '/roleMangeA',
+    component: lazy(() => import('src/pages/RoleManage/RoleA/List/List'))
+  },
+  {
+    path: '/roleMangeA/add',
+    component: lazy(() => import('src/pages/RoleManage/RoleA/Add/Add'))
   }
 ];
 
@@ -386,7 +411,7 @@ export const menus: Menu[] = [
       { name: '加减积分', path: '/addSubPoints' },
       { name: '抽奖管理', path: '/lotteryManage' }
     ]
-  }
+  },
   // {
   //   name: '好友迁移',
   //   icon: 'a-bianzu101',
@@ -395,7 +420,18 @@ export const menus: Menu[] = [
   //     { name: '企微好友', path: '/enterprise' },
   //     { name: '个位好友', path: '/personal' }
   //   ]
-  // }
+  // },
+
+  {
+    name: '角色管理',
+    icon: 'icon_daohang_28_jigouguanli',
+    path: 'roleMange',
+    children: [
+      { name: '后管角色管理', path: '/roleMangeOms' },
+      { name: 'B端角色管理', path: '/roleMangeB' },
+      { name: 'A端角色管理', path: '/roleMangeA' }
+    ]
+  }
 ];
 
 if (process.env.NODE_ENV === 'development') {

@@ -164,3 +164,18 @@ console.log(result);
 // 输出：
 
 // ["2","2-1"]
+/**
+ * @param arr
+ * @return arr
+ */
+export const tree2Arry = (arr: any[]): any[] => {
+  const res = [];
+  res.push(...arr); // chilren插入结果数组
+  for (const item of arr) {
+    // 遍历子元素，若包含children则递归调用
+    if (item.children && item.children.length) {
+      res.push(...tree2Arry(item.children));
+    }
+  }
+  return res;
+};

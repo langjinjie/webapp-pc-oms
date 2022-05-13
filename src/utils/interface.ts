@@ -318,3 +318,13 @@ export interface IDeptRecord {
   opName: string;
   opTime: string;
 }
+
+// 角色管理-角色列表
+export interface IRoleList {
+  roleId: string;
+  roleName: string;
+  roleRange?: string;
+  status: number;
+  isDefault: number;
+  userNum: number;
+}

@@ -1,0 +1,72 @@
+.wrap {
+  .addRole {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 140px;
+    height: 40px;
+    background: #318cf5;
+    border-radius: 20px;
+    font-size: 16px;
+    // line-height: 40px;
+    .btnAddIcon {
+      margin-right: 5px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+  // 表单
+  .form {
+    display: flex;
+    margin-top: 30px;
+    .input {
+      width: 290px;
+    }
+    .searchBtn,
+    .resetBtn {
+      width: 88px;
+      height: 36px;
+      border-radius: 20px;
+    }
+    .searchBtn {
+      margin: 0 20px 0 30px;
+    }
+    :global {
+      .ant-form-item-label > label {
+        height: 36px;
+      }
+    }
+  }
+  // 表格
+  .table {
+    // config
+    .check,
+    .edit,
+    .add,
+    .mange,
+    .open,
+    .del {
+      margin-right: 20px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #318cf5;
+      line-height: 14px;
+      cursor: pointer;
+    }
+    .roleName {
+      display: inline-block;
+    }
+    .isDefault {
+      display: inline-block;
+      margin-left: 16px;
+      padding: 0 6px;
+      height: 18px;
+      background: #fbefd6;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #ddb100;
+      text-align: center;
+    }
+  }
+}
