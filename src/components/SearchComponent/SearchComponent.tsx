@@ -4,6 +4,7 @@ import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'a
 import style from './style.module.less';
 import { CascaderOptionType, CascaderValueType } from 'antd/lib/cascader';
 import { NamePath } from 'rc-field-form/lib/interface';
+import classNames from 'classnames';
 
 export interface OptionProps {
   id: string | number;
@@ -37,6 +38,7 @@ interface SearchComponentProps {
     | ((value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => void)
     | undefined;
   defaultValues?: any;
+  className?: string;
 }
 const { RangePicker } = DatePicker;
 
@@ -83,7 +85,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           onReset={() => {
             handleReset();
           }}
-          className={style['search-wrap']}
+          className={classNames(style['search-wrap'], [props.className])}
           onValuesChange={onValuesChange}
         >
           {searchCols?.map((col) => {

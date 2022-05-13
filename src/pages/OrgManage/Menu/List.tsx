@@ -1,15 +1,18 @@
-import { Tabs } from 'antd';
+import { Button, Tabs } from 'antd';
 import { Icon } from 'lester-ui';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
-import { MenuProps, searchCols, setTableColumns } from './Config';
+import { treeFindPath } from 'src/utils/base';
+import { MenuProps, searchCols, setTableColumns, systemList } from './Config';
 
 import styles from './style.module.less';
 
-const MenuConfigList: React.FC = () => {
+const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
   const onSearch = (values: any) => {
     console.log(values);
   };
+  const [currentTab, setCurrentTab] = useState(1);
   const [dataSource, setDataSource] = useState<MenuProps[]>([
     {
       menuName: '主页',
@@ -48,6 +51,10 @@ const MenuConfigList: React.FC = () => {
     console.log(arr);
     return arr;
   };
+
+  useEffect(() => {
+    console.log('1');
+  }, []);
   const handleOnExpand = (expanded: boolean, record: any) => {
     if (expanded) {
       const children = record.children;
@@ -83,27 +90,49 @@ const MenuConfigList: React.FC = () => {
       console.log('点击了展开按钮', expanded, children);
     }
   };
+  const addMenu = () => {
+    history.push('/menu/edit', { sysType: currentTab });
+  };
+
+  const addSubMenu = (menuId: string) => {
+    console.log(menuId);
+    const result = treeFindPath(dataSource, (node) => node.menuId === menuId);
+    console.log(result);
+    history.push('/menu/edit', { pathList: result, type: 'add', sysType: currentTab });
+  };
+  const editMenu = (menuId: string) => {
+    console.log(menuId);
+    const result = treeFindPath(dataSource, (node) => node.menuId === menuId);
+    console.log(result);
+    history.push('/menu/edit', { pathList: result, type: 'edit', sysType: currentTab });
+  };
+
+  const onTapsChange = (value: string) => {
+    setCurrentTab(+value);
+  };
   return (
     <div className="container">
-      <Tabs>
-        <Tabs.TabPane tab="M端（年高后管端）" key={1}></Tabs.TabPane>
-        <Tabs.TabPane tab="B端（机构管理端）" key={2}></Tabs.TabPane>
-        <Tabs.TabPane tab="A端（坐席管理端）" key={3}></Tabs.TabPane>
-        <Tabs.TabPane tab="A端（侧边栏）" key={4}></Tabs.TabPane>
-        <Tabs.TabPane tab="A端（移动端）" key={5}></Tabs.TabPane>
+      <Tabs onChange={onTapsChange} defaultActiveKey={currentTab + ''}>
+        {systemList.map((system) => (
+          <Tabs.TabPane tab={system.label} key={system.value} />
+        ))}
       </Tabs>
       <div className={styles.content}>
-        <div
-          className={styles.addBtn}
+        <Button
+          type="primary"
+          shape="round"
+          className={'addBtn'}
           onClick={() => {
+            addMenu();
             console.log('添加菜单');
           }}
         >
           <Icon className={styles.addIcon} name="xinjian" />
           添加菜单
-        </div>
-        <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
+        </Button>
+        <NgFormSearch searchCols={searchCols} onSearch={onSearch} className="mt20" />
         <NgTable
+          className="mt30"
           rowKey={'menuId'}
           expandable={{
             fixed: 'left',
@@ -134,7 +163,7 @@ const MenuConfigList: React.FC = () => {
               );
             }
           }}
-          columns={setTableColumns()}
+          columns={setTableColumns({ addSubMenu, editMenu })}
           loading={false}
           dataSource={dataSource}
         ></NgTable>

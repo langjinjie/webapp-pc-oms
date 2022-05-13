@@ -117,3 +117,50 @@ export const exportFile = (data: BlobPart, fileName: string): void => {
   link.remove(); // 下载完成移除元素
   window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
 };
+
+export function treeFindPath (tree: any[], func: (node: any) => boolean, path: any[] = []): any[] {
+  if (!tree) return [];
+  for (const data of tree) {
+    path.push(data);
+    if (func(data)) return path;
+    if (data.children) {
+      const findChildren = treeFindPath(data.children, func, path);
+      if (findChildren.length) return findChildren;
+    }
+    path.pop();
+  }
+  return [];
+}
+// 用上面的树结构测试：
+
+const myTree = [
+  {
+    id: '1',
+    name: '主父1',
+    children: [
+      {
+        id: '1-1',
+        name: '父1'
+      },
+      {
+        id: '1-2',
+        name: '父2',
+        children: [
+          {
+            id: '2-2-1-1',
+            name: '子1'
+          },
+          {
+            id: '1-2-2',
+            name: '子2'
+          }
+        ]
+      }
+    ]
+  }
+];
+const result = treeFindPath(myTree, (node) => node.id === '2-2-1-1');
+console.log(result);
+// 输出：
+
+// ["2","2-1"]

@@ -179,6 +179,10 @@ export const routes: (RouteProps & expandRoute)[] = [
     path: '/menu',
     component: lazy(() => import('src/pages/OrgManage/Menu/List'))
   },
+  {
+    path: '/menu/edit',
+    component: lazy(() => import('src/pages/OrgManage/Menu/Edit'))
+  },
   // 坐席详情
   {
     path: '/organization/staff-detail',
