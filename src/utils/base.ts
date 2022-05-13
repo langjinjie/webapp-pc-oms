@@ -95,6 +95,7 @@ export const debounce = (fn: { apply: (arg0: any, arg1: any) => void }, delay: n
     }
     // 设立新定时器
     timer = setTimeout(() => {
+      console.log(args);
       fn.apply(this, args);
     }, delay);
   };
@@ -118,6 +119,52 @@ export const exportFile = (data: BlobPart, fileName: string): void => {
   window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
 };
 
+export function treeFindPath (tree: any[], func: (node: any) => boolean, path: any[] = []): any[] {
+  if (!tree) return [];
+  for (const data of tree) {
+    path.push(data);
+    if (func(data)) return path;
+    if (data.children) {
+      const findChildren = treeFindPath(data.children, func, path);
+      if (findChildren.length) return findChildren;
+    }
+    path.pop();
+  }
+  return [];
+}
+// 用上面的树结构测试：
+
+const myTree = [
+  {
+    id: '1',
+    name: '主父1',
+    children: [
+      {
+        id: '1-1',
+        name: '父1'
+      },
+      {
+        id: '1-2',
+        name: '父2',
+        children: [
+          {
+            id: '2-2-1-1',
+            name: '子1'
+          },
+          {
+            id: '1-2-2',
+            name: '子2'
+          }
+        ]
+      }
+    ]
+  }
+];
+const result = treeFindPath(myTree, (node) => node.id === '2-2-1-1');
+console.log(result);
+// 输出：
+
+// ["2","2-1"]
 /**
  * @param arr
  * @return arr
@@ -132,4 +179,11 @@ export const tree2Arry = (arr: any[]): any[] => {
     }
   }
   return res;
+};
+// 小数点后两位百分比
+export const percentage = (num: number, total: number): number | string => {
+  if (num === 0 || total === 0) {
+    return 0;
+  }
+  return Math.round((num / total) * 10000) / 100 + '%';
 };

@@ -12,11 +12,12 @@ import styles from './style.module.less';
 import classNames from 'classnames';
 interface NgUploadProps {
   onChange?: (imgUrl: string) => void;
-  value?: string;
+  value?: string | undefined;
   beforeUpload?: (file: RcFile) => void;
   btnText?: string;
   type?: 'video' | 'audio';
   showDeleteBtn?: boolean;
+  disabled?: boolean;
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -30,16 +31,20 @@ const NgUpload: React.FC<NgUploadProps> = ({
   beforeUpload,
   btnText = '上传图片',
   type,
-  showDeleteBtn
+  showDeleteBtn,
+  disabled
 }) => {
-  const [states, setStates] = useState({
+  const [states, setStates] = useState<{
+    loading: boolean;
+    imageUrl: string | undefined;
+  }>({
     loading: false,
     imageUrl: ''
   });
   useEffect(() => {
-    if (value) {
-      setStates((states) => ({ ...states, imageUrl: value }));
-    }
+    // if (value) {
+    setStates((states) => ({ ...states, imageUrl: value }));
+    // }
   }, [value]);
   const uploadButton = (
     <div>
@@ -106,6 +111,7 @@ const NgUpload: React.FC<NgUploadProps> = ({
     <>
       {!type && (
         <Upload
+          disabled={disabled}
           onChange={handleChange}
           listType="picture-card"
           beforeUpload={beforeUpload}

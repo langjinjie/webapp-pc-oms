@@ -1,5 +1,5 @@
 import React from 'react';
-import { NgModal } from '../NgModal/NgModal';
+import { NgModal } from '../../../../../components/NgModal/NgModal';
 
 interface DeleteModalProps {
   visible: boolean;

@@ -4,7 +4,7 @@
  * @date 2021-12-10 10:36
  */
 import React, { useEffect, useState, useContext, useRef, MutableRefObject } from 'react';
-import { Input, Tree, message } from 'antd';
+import { Input, Tree, TreeSelect, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
 import { Icon, Modal, Empty } from 'src/components';
@@ -13,10 +13,12 @@ import {
   searchStaffAndDepart,
   saveDepartment,
   operateDepartment,
-  exportOrganization
+  exportOrganization,
+  transferDepartment
 } from 'src/apis/organization';
 import { exportFile } from 'src/utils/base';
 import { Context } from 'src/store';
+import { IOrganizationItem } from 'src/utils/interface';
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
@@ -42,6 +44,8 @@ interface OrganizationItem {
   leaderId?: string;
   leaderName?: string;
   total?: number;
+  path?: string[];
+  disabled?: boolean;
   children?: OrganizationItem[];
 }
 
@@ -54,18 +58,21 @@ type Key = string | number;
 
 const Organization: React.FC = () => {
   const { userInfo } = useContext(Context);
-  const [organization, setOrganization] = useState<OrganizationItem[]>([]);
+  const [organization, setOrganization] = useState<IOrganizationItem[]>([]);
   const [expandIds, setExpandIds] = useState<Key[]>([]);
   const [position, setPosition] = useState<PositionValue>({ left: 0, top: 0 });
   const [showDepart, setShowDepart] = useState<boolean>(false);
   const [departmentVisible, setDepartmentVisible] = useState<boolean>(false);
   const [isAddDepart, setIsAddDepart] = useState<boolean>(true);
-  const [currentNode, setCurrentNode] = useState<OrganizationItem & StaffItem>({});
+  const [currentNode, setCurrentNode] = useState<IOrganizationItem & StaffItem>({});
   const [deleteVisible, setDeleteVisible] = useState<boolean>(false);
-  const [searchList, setSearchList] = useState<OrganizationItem[]>([]);
+  const [searchList, setSearchList] = useState<IOrganizationItem[]>([]);
   const [staffList, setStaffList] = useState<StaffItem[]>([]);
   const [displayType, setDisplayType] = useState<number>(0);
   const [leaderVisible, setLeaderVisible] = useState<boolean>(false);
+  const [transferVisible, setTransferVisible] = useState<boolean>(false);
+  const [transferId, setTransferId] = useState<string>('');
+  const [parentDepartName, setParentDepartName] = useState<string>('');
 
   const staffListRef: MutableRefObject<any> = useRef(null);
 
@@ -76,8 +83,8 @@ const Organization: React.FC = () => {
    */
   const handlePosition = (x: number, y: number) => {
     let top = y + 30;
-    if (window.innerHeight - y - 35 < 260) {
-      top = y - 30 - 264;
+    if (window.innerHeight - y - 35 < 292) {
+      top = y - 30 - 296;
     }
     setPosition({
       left: 445,
@@ -91,10 +98,10 @@ const Organization: React.FC = () => {
    * @param key
    * @param type
    */
-  const moveData = (data: OrganizationItem[], key: string, type: string): OrganizationItem[] => {
+  const moveData = (data: IOrganizationItem[], key: string, type: string): IOrganizationItem[] => {
     const copyData = data.slice(0);
     const isNewStaffDepart = Number(copyData[0].deptId) === -1;
-    let newStaffDepart: OrganizationItem[] = [];
+    let newStaffDepart: IOrganizationItem[] = [];
     if (isNewStaffDepart) {
       newStaffDepart = copyData.splice(0, 1);
     }
@@ -133,8 +140,9 @@ const Organization: React.FC = () => {
   /**
    * 格式化数据源
    * @param data
+   * @param path
    */
-  const formatData = (data: OrganizationItem[]): OrganizationItem[] => {
+  const formatData = (data: IOrganizationItem[], path?: string[]): IOrganizationItem[] => {
     if (data.length === 0) {
       return [];
     }
@@ -143,7 +151,8 @@ const Organization: React.FC = () => {
       ...item,
       index: isNewStaffDepart ? index - 1 : index,
       total: isNewStaffDepart ? data.length - 1 : data.length,
-      children: formatData(item.children || [])
+      path: path || item.path || [],
+      children: formatData(item.children || [], [...(path || []), item.deptId!])
     }));
   };
 
@@ -153,12 +162,12 @@ const Organization: React.FC = () => {
    * @param key
    * @param children
    */
-  const updateData = (list: OrganizationItem[], key: string, children: OrganizationItem[]): OrganizationItem[] => {
+  const updateData = (list: IOrganizationItem[], key: string, children: IOrganizationItem[]): IOrganizationItem[] => {
     return list.map((item) => {
       if (item.deptId === key) {
         return {
           ...item,
-          children: formatData(children)
+          children: formatData((item.children || []).concat(children), [...(item.path || []), item.deptId])
         };
       }
       if (item.children && item.children.length > 0) {
@@ -190,7 +199,7 @@ const Organization: React.FC = () => {
    * @param data
    * @param node
    */
-  const updateNodeInfo = (data: OrganizationItem[], node: OrganizationItem): OrganizationItem[] => {
+  const updateNodeInfo = (data: IOrganizationItem[], node: IOrganizationItem): IOrganizationItem[] => {
     return data.map((item) => {
       if (item.deptId === node.deptId) {
         return node;
@@ -220,13 +229,13 @@ const Organization: React.FC = () => {
    * @param data
    * @param node
    */
-  const addData = (data: OrganizationItem[], node: OrganizationItem): OrganizationItem[] => {
+  const addData = (data: IOrganizationItem[], node: IOrganizationItem): IOrganizationItem[] => {
     return data.map((item) => {
       if (item.deptId === currentNode.deptId) {
-        const parentNode: OrganizationItem = {
+        const parentNode: IOrganizationItem = {
           ...currentNode,
           isLeaf: false,
-          children: formatData([...(item.children || []), node])
+          children: formatData([...(item.children || []), node], [...(currentNode.path || []), currentNode.deptId!])
         };
         return parentNode;
       }
@@ -272,7 +281,7 @@ const Organization: React.FC = () => {
       if (isAddDepart) {
         message.success('添加成功');
         if ((currentNode.isLeaf || (currentNode.children || []).length > 0) && typeof res === 'number') {
-          const newDepart: OrganizationItem = {
+          const newDepart: IOrganizationItem = {
             deptId: String(res),
             ...values,
             deptType: 0,
@@ -297,7 +306,7 @@ const Organization: React.FC = () => {
    * 删除节点
    * @param data
    */
-  const deleteData = (data: OrganizationItem[]): OrganizationItem[] => {
+  const deleteData = (data: IOrganizationItem[]): IOrganizationItem[] => {
     return data.map((item) => {
       const index: number = (item.children || []).findIndex((item) => item.deptId === currentNode.deptId);
       if (index > -1) {
@@ -370,6 +379,156 @@ const Organization: React.FC = () => {
     }
   };
 
+  /* const onDrop = (info: any) => {
+    console.log(info, 'onDrop');
+    const dropKey = info.node.deptId;
+    const dragKey = info.dragNode.deptId;
+    const dropPos = info.node.pos.split('-');
+    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+
+    const loop = (data: OrganizationItem[], key: string, callback: Function) => {
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].deptId === key) {
+          return callback(data[i], i, data);
+        }
+        if (data[i].children) {
+          loop(data[i].children || [], key, callback);
+        }
+      }
+    };
+    const data = [...organization];
+
+    // Find dragObject
+    let dragObj: OrganizationItem;
+    loop(data, dragKey, (item: OrganizationItem, index: number, arr: OrganizationItem[]) => {
+      arr.splice(index, 1);
+      dragObj = item;
+    });
+
+    if (!info.dropToGap) {
+      // Drop on the content
+      loop(data, dropKey, (item: OrganizationItem) => {
+        item.children = item.children || [];
+        // where to insert 示例添加到头部，可以是随意位置
+        item.children.unshift(dragObj);
+      });
+    } else if (
+      (info.node.props.children || []).length > 0 && // Has children
+      info.node.props.expanded && // Is expanded
+      dropPosition === 1 // On the bottom gap
+    ) {
+      loop(data, dropKey, (item: OrganizationItem) => {
+        item.children = item.children || [];
+        // where to insert 示例添加到头部，可以是随意位置
+        item.children.unshift(dragObj);
+        // in previous version, we use item.children.push(dragObj) to insert the
+        // item to the tail of the children
+      });
+    } else {
+      let ar: OrganizationItem[];
+      let i: number;
+      loop(data, dropKey, (item: OrganizationItem, index: number, arr: OrganizationItem[]) => {
+        ar = arr;
+        i = index;
+      });
+      if (dropPosition === -1) {
+        ar.splice(i, 0, dragObj);
+      } else {
+        ar.splice(i + 1, 0, dragObj);
+      }
+    }
+
+    setOrganization(data);
+  }; */
+
+  /**
+   * 获取当前部门父部门名称
+   * @param data
+   */
+  const getParentDepartName = (data: OrganizationItem[]) => {
+    data.forEach((item) => {
+      const index: number = (item.children || []).findIndex((item) => item.deptId === currentNode.deptId);
+      if (index > -1) {
+        setParentDepartName(item.deptName!);
+      } else if (item.children && item.children.length > 0) {
+        getParentDepartName(item.children);
+      }
+    });
+  };
+
+  /**
+   * 格式化禁用节点
+   * @param data
+   */
+  const formatDisabled = (data: OrganizationItem[]): OrganizationItem[] => {
+    if (data.length === 0) {
+      return [];
+    }
+    return data.map((item) => {
+      const path = currentNode.path || [];
+      return {
+        ...item,
+        disabled:
+          (item.path || []).includes(currentNode.deptId!) ||
+          item.deptId === currentNode.deptId ||
+          path[path.length - 1] === item.deptId ||
+          item.deptType === 2,
+        children: formatDisabled(item.children || [])
+      };
+    });
+  };
+
+  /**
+   * 转移部门
+   * @param data
+   */
+  const transferData = (data: OrganizationItem[]): OrganizationItem[] => {
+    return data.map((item) => {
+      if (item.deptId === transferId) {
+        /* const isRoot = ((item.children || [])[0] || {}).deptType === 2;
+        const children = item.children || [];
+        if (isRoot) {
+          children.splice(1, 0, currentNode);
+        } else {
+          children.push(currentNode);
+        } */
+        return {
+          ...item,
+          isLeaf: false,
+          children: formatData([...(item.children || []), currentNode], [...(item.path || []), transferId])
+        };
+      }
+      if (item.children && item.children.length > 0) {
+        return {
+          ...item,
+          children: transferData(item.children)
+        };
+      }
+      return item;
+    });
+  };
+
+  /**
+   * 确定转移部门
+   */
+  const transferDepart = async () => {
+    const res: any = await transferDepartment({ deptId: currentNode.deptId, newParentId: transferId });
+    if (res) {
+      message.success('转移部门成功！');
+      setOrganization(transferData(deleteData(organization)));
+      setTransferVisible(false);
+      setShowDepart(false);
+    }
+  };
+
+  useEffect(() => {
+    !transferVisible && setTransferId('');
+  }, [transferVisible]);
+
+  useEffect(() => {
+    getParentDepartName(organization);
+  }, [currentNode]);
+
   useEffect(() => {
     setTitle('组织架构管理');
     initCorpOrgData();
@@ -426,6 +585,11 @@ const Organization: React.FC = () => {
                 setCurrentNode(selectedNodes[0]);
               }
             }}
+            /* draggable={(node: any) => node.deptType === 0}
+            onDragEnter={(info) => {
+              console.log(info, 'onDragEnter');
+            }}
+            onDrop={onDrop} */
           />
         </div>
         <ul style={{ display: displayType === 1 ? 'block' : 'none' }} className={style.searchList}>
@@ -441,7 +605,7 @@ const Organization: React.FC = () => {
               {item.staffName}
             </li>
           ))}
-          {searchList.map((item: OrganizationItem) => (
+          {searchList.map((item: IOrganizationItem) => (
             <li
               key={item.deptId}
               className={classNames(style.searchItem, {
@@ -460,7 +624,11 @@ const Organization: React.FC = () => {
           <StaffDetail staffId={currentNode.staffId} />
             )
           : (
-          <StaffList staffListRef={staffListRef} departmentId={currentNode.deptId!} deptType={currentNode.deptType!} />
+          <StaffList
+            staffListRef={staffListRef}
+            department={currentNode as IOrganizationItem}
+            deptType={currentNode.deptType!}
+          />
             )}
       </div>
       <ul
@@ -500,20 +668,29 @@ const Organization: React.FC = () => {
           添加子部门
         </li>
         <li
-          className={classNames(style.operationItem, {
-            [style.disabled]: currentNode.deptType !== 0
-          })}
+          className={style.operationItem}
           onClick={() => {
-            if (currentNode.deptType === 0) {
-              setDepartmentVisible(true);
-              setIsAddDepart(false);
-            }
+            setDepartmentVisible(true);
+            setIsAddDepart(false);
           }}
         >
           修改部门
         </li>
         <li className={style.operationItem} onClick={() => setLeaderVisible(true)}>
           设置上级
+        </li>
+        <li
+          className={classNames(style.operationItem, {
+            [style.disabled]: currentNode.deptType !== 0
+          })}
+          onClick={() => {
+            if (currentNode.deptType === 0) {
+              setTransferVisible(true);
+              console.log(currentNode);
+            }
+          }}
+        >
+          转移团队
         </li>
         <li
           className={classNames(style.operationItem, {
@@ -570,7 +747,7 @@ const Organization: React.FC = () => {
           visible={leaderVisible}
           onClose={() => setLeaderVisible(false)}
           onOk={(leaderInfo) => {
-            const newNode: OrganizationItem = {
+            const newNode: IOrganizationItem = {
               ...currentNode,
               leaderId: leaderInfo.staffId || '',
               leaderName: leaderInfo.staffName || ''
@@ -580,6 +757,37 @@ const Organization: React.FC = () => {
             staffListRef.current?.resetHandle();
           }}
         />
+        <Modal
+          title="转移团队"
+          visible={transferVisible}
+          onClose={() => setTransferVisible(false)}
+          onOk={transferDepart}
+        >
+          <div className={style.transferWrap}>
+            <div className={style.transferRow}>
+              <span className={style.transferLabel}>目前上级部门：</span>
+              <span className={style.transferValue}>{parentDepartName}</span>
+            </div>
+            <div className={style.transferRow}>
+              <span className={style.transferLabel}>修改上级部门：</span>
+              <span className={style.transferValue}>
+                <TreeSelect
+                  showSearch
+                  filterTreeNode={(val, node) => node.deptName?.includes(val)}
+                  style={{ width: '100%' }}
+                  fieldNames={{ label: 'deptName', value: 'deptId' }}
+                  treeData={formatDisabled(organization)}
+                  loadData={onLoadData}
+                  treeDefaultExpandAll
+                  placeholder="请选择部门"
+                  allowClear
+                  value={transferId || undefined}
+                  onChange={(val) => setTransferId(val)}
+                />
+              </span>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );
