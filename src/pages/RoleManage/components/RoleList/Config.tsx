@@ -1,16 +1,44 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useContext } from 'react';
 import { ColumnType } from 'antd/es/table';
-import { IRoleList } from 'src/utils/interface';
+import { IRoleList, IConfirmModalParam } from 'src/utils/interface';
+import { roleTypeRouteList } from 'src/utils/commonData';
+import { useHistory } from 'react-router-dom';
+import { Context } from 'src/store';
+
 import style from './style.module.less';
 
 const TableColumns = (
   roleType: 1 | 2 | 3,
   setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>
 ): ColumnType<any>[] => {
+  const { setConfirmModalParam } =
+    useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(Context);
+  const history = useHistory();
   console.log('roleType', roleType);
-  // 点击编辑/添加成员
+  // 点击编辑/查看角色
+  const editOrViewHandle = (type: string) => {
+    console.log(roleTypeRouteList[roleType - 1] + '?type=' + type);
+    history.push(roleTypeRouteList[roleType - 1] + '?type=' + type);
+  };
+  // 点击管理/添加成员
   const AddOrEditUserHandle = (added: boolean, roleId: string) => {
     setParams({ visible: true, added, roleId });
+  };
+  // 删除角色
+  const delRoleHandle = () => {
+    setConfirmModalParam((param) => ({ ...param, visible: true }));
+  };
+  // 开启/关闭角色
+  const manageRoleHandle = (row: IRoleList) => {
+    setConfirmModalParam((param) => ({
+      ...param,
+      visible: true,
+      title: '温馨提示',
+      tips: row.status
+        ? `此角色下有人员共计${10}名。关闭角色后，他们的权限将会被关闭。无法进入系统。请您知悉`
+        : '确认开启该角色吗',
+      okText: row.status ? '确认关闭' : '确认开启'
+    }));
   };
   return [
     {
@@ -44,16 +72,30 @@ const TableColumns = (
       render (row: IRoleList) {
         return (
           <>
-            <span className={style.check}>查看</span>
-            {!row.isDefault && <span className={style.edit}>编辑</span>}
+            <span className={style.check} onClick={() => editOrViewHandle('view')}>
+              查看
+            </span>
+            {!row.isDefault && (
+              <span className={style.edit} onClick={() => editOrViewHandle('edit')}>
+                编辑
+              </span>
+            )}
             <span className={style.add} onClick={() => AddOrEditUserHandle(true, row.roleId)}>
               添加成员
             </span>
             <span className={style.mange} onClick={() => AddOrEditUserHandle(false, row.roleId)}>
               管理成员
             </span>
-            {!row.isDefault && <span className={style.open}>{row.status ? '关闭' : '开启'}</span>}
-            {!row.isDefault && <span className={style.del}>删除</span>}
+            {!row.isDefault && (
+              <span className={style.open} onClick={() => manageRoleHandle(row)}>
+                {row.status ? '关闭' : '开启'}
+              </span>
+            )}
+            {!row.isDefault && (
+              <span className={style.del} onClick={delRoleHandle}>
+                删除
+              </span>
+            )}
           </>
         );
       }

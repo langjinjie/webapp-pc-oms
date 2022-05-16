@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Key, Dispatch, SetStateAction } from 'react';
-import { Modal, Tree, Input } from 'antd';
+import { Modal, Tree, Input, Table } from 'antd';
+import { ColumnsType } from 'antd/es/table';
 import { Icon } from 'src/components';
 import { requestGetLotteryDeptList } from 'src/apis/pointsMall';
 import { ITreeDate, IDeptRecord } from 'src/utils/interface';
@@ -8,6 +9,7 @@ import classNames from 'classnames';
 import style from './style.module.less';
 
 interface IAddLotteryListProps {
+  roleType: 1 | 2 | 3;
   params: { visible: boolean; added: boolean; roleId: string };
   setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>;
   depLsit?: IDeptRecord;
@@ -24,13 +26,21 @@ interface ItreeProps {
   selectedKeys?: Key[];
 }
 
-const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ params, setParams, depLsit }) => {
+interface IaccountList {
+  adminId: string;
+  userName: string;
+  name: string;
+  isAdmin: number;
+}
+
+const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setParams, depLsit }) => {
   const [treeData, setTreeData] = useState<ITreeDate[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
   const [flatTreeData, setFlatTreeData] = useState<ITreeDate[]>([]);
   const [autoExpand, setAutoExpand] = useState(true);
   const [treeSearchValue, setTreeSearchValue] = useState('');
   const [selectedCount, setSeletedCount] = useState(6);
+  const [accountList, setAccountList] = useState<IaccountList[]>([]);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -40,7 +50,6 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ params, setParams, depL
     checkable: true,
     defaultExpandParent: false
   });
-  // const { Search } = Input;
   // 重置
   const onResetHandle = () => {
     setTreeData([]);
@@ -49,6 +58,14 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ params, setParams, depL
     setFlatTreeData([]);
     setAutoExpand(true);
   };
+  // 获取后管端账号列表
+  const userAccountList = () => {
+    setAccountList([{ name: '郎金杰', userName: 'langjinjie', adminId: '1', isAdmin: 0 }]);
+  };
+  const columns: ColumnsType<any> = [
+    { title: '员工姓名', dataIndex: 'name' },
+    { title: '员工账号', dataIndex: 'userName' }
+  ];
   // 获取组织架构部门
   const getCorpOrg = async (deptId?: string) => {
     // 获取部门,并且过滤掉未完善员工
@@ -163,12 +180,18 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ params, setParams, depL
     console.log('treeSearchValue', treeSearchValue);
   }, [treeSearchValue]);
   useEffect(() => {
-    if (params.visible) {
-      (async () => {
-        setTreeData(await getCorpOrg());
-      })();
+    if (roleType === 1) {
+      if (params.visible) {
+        userAccountList();
+      }
     } else {
-      onResetHandle();
+      if (params.visible) {
+        (async () => {
+          setTreeData(await getCorpOrg());
+        })();
+      } else {
+        onResetHandle();
+      }
     }
   }, [params.visible]);
 
@@ -194,7 +217,7 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ params, setParams, depL
   }, [flatTreeData]);
   return (
     <Modal
-      className={style.modalWrap}
+      className={classNames(style.modalWrap, { [style.omsWrap]: roleType === 1 })}
       visible={params.visible}
       centered
       maskClosable={false}
@@ -205,54 +228,78 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ params, setParams, depL
       onCancel={onCancel}
       destroyOnClose
     >
-      <div className={style.contentWrap}>
-        <div className={style.treeWrap}>
-          <Input
-            className={style.searchTree}
-            placeholder={'搜索成员、部门'}
-            onChange={debounce(treeSearchOnChange, 500)}
-            addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
-          />
-          <div className={style.title}>成员</div>
-          <Tree
-            className={style.tree}
-            {...treeProps}
-            fieldNames={{ title: 'deptName', key: 'deptId' }}
-            loadData={onLoadDataHandle}
-            // @ts-ignore
-            treeData={treeData}
-            onExpand={onExpandHandle}
-            checkedKeys={checkedKeys}
-            onCheck={onCheckHandle}
+      {roleType === 1 && (
+        <div className={style.omsContentWrap}>
+          <div className={style.title}>已选超级管理员：</div>
+          <div className={style.chooseAccountList}>
+            {new Array(1).fill('史菲菲').map((item) => (
+              <div key={item} className={style.chooseAccoutItem}>
+                {item}
+                <Icon className={style.del} name="biaoqian_quxiao" />
+              </div>
+            ))}
+          </div>
+          <Table
+            className={style.tableWrap}
+            rowKey={'adminId'}
+            scroll={{ x: 'max-content' }}
+            dataSource={accountList}
+            columns={columns}
+            // rowSelection={}
+            pagination={false}
           />
         </div>
-        <div className={style.selectedWrap}>
-          <Input
-            placeholder={'搜索成员、部门'}
-            onChange={debounce(selectedOnchange, 500)}
-            addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
-          />
-          <div className={style.seletedTitle}>已选择成员 {selectedCount} 人</div>
-          <div className={classNames(style.selectList, 'scroll-strip')}>
-            {checkedKeys.map(
-              (item) =>
-                item && (
-                  <div className={style.selectItem} key={item}>
-                    <span>
-                      {item}
-                      {/* {!!item.isLeader && <span className={style.isLeader}>上级</span>} */}
-                    </span>
-                    <Icon
-                      className={style.delIcon}
-                      name="icon_common_16_inputclean"
-                      // onClick={() => clickDelStaffHandle(item)}
-                    />
-                  </div>
-                )
-            )}
+      )}{' '}
+      {roleType !== 1 && (
+        <div className={style.contentWrap}>
+          <div className={style.treeWrap}>
+            <Input
+              className={style.searchTree}
+              placeholder={'搜索成员、部门'}
+              onChange={debounce(treeSearchOnChange, 500)}
+              addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
+            />
+            <div className={style.title}>成员</div>
+            <Tree
+              className={style.tree}
+              {...treeProps}
+              fieldNames={{ title: 'deptName', key: 'deptId' }}
+              loadData={onLoadDataHandle}
+              // @ts-ignore
+              treeData={treeData}
+              onExpand={onExpandHandle}
+              checkedKeys={checkedKeys}
+              onCheck={onCheckHandle}
+            />
+          </div>
+          <div className={style.selectedWrap}>
+            <Input
+              placeholder={'搜索成员、部门'}
+              onChange={debounce(selectedOnchange, 500)}
+              addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
+            />
+            <div className={style.seletedTitle}>已选择成员 {selectedCount} 人</div>
+            <div className={classNames(style.selectList, 'scroll-strip')}>
+              {checkedKeys.map(
+                (item) =>
+                  item && (
+                    <div className={style.selectItem} key={item}>
+                      <span>
+                        {item}
+                        {/* {!!item.isLeader && <span className={style.isLeader}>上级</span>} */}
+                      </span>
+                      <Icon
+                        className={style.delIcon}
+                        name="icon_common_16_inputclean"
+                        // onClick={() => clickDelStaffHandle(item)}
+                      />
+                    </div>
+                  )
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </Modal>
   );
 };

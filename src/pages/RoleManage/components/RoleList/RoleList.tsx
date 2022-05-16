@@ -104,7 +104,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         })}
       />
       {/* 添加/编辑成员 */}
-      <AddOrEditUser params={params} setParams={setParams} />
+      <AddOrEditUser roleType={roleType} params={params} setParams={setParams} />
     </div>
   );
 };

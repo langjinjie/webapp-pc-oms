@@ -298,10 +298,12 @@ export interface IFlowList {
 
 export interface IConfirmModalParam {
   visible: boolean;
-  title: string;
-  tips: string;
+  title?: string;
+  tips?: string;
   onOk?: () => void;
   onCancel?: () => void;
+  okText?: string;
+  cancelText?: string;
 }
 // 积分管理->抽奖设置 部门列表
 export interface ITreeDate {

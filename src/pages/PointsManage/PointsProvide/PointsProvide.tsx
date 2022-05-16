@@ -91,13 +91,9 @@ const PointsProvide: React.FC = () => {
       message.success('一键发放成功');
       // 发放完成重新获取列表最新数据
       setSearchParam((param) => ({ ...param }));
-      setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
       setAllSendStatus(true);
+      setConfirmModalParam({ visible: false });
     }
-  };
-  // 取消ConfirmModal
-  const onCancel = () => {
-    setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
   };
   // 点击一键发放
   const clickSendAllPonitsHandle = () => {
@@ -105,8 +101,7 @@ const PointsProvide: React.FC = () => {
       visible: true,
       title: '积分发放提醒',
       tips: '是否确定群发积分？',
-      onOk: sendAllPonitsHandle,
-      onCancel
+      onOk: sendAllPonitsHandle
     });
   };
   // 发放积分
@@ -133,8 +128,7 @@ const PointsProvide: React.FC = () => {
       visible: true,
       title: '积分发放提醒',
       tips: `是否确定${selectedRowKeys.length === 1 ? '发放' : '群发'}选中的积分？`,
-      onOk: sendPoints,
-      onCancel
+      onOk: sendPoints
     });
   };
   // 禁止选择今天之后的日期
