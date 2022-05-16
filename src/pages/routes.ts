@@ -170,6 +170,11 @@ export const routes: (RouteProps & expandRoute)[] = [
     onlyMain: true
   },
   {
+    path: '/company/feature',
+    component: lazy(() => import('src/pages/OrgManage/CompanyFeature/CompanyFeature')),
+    onlyMain: true
+  },
+  {
     path: '/company/access',
     component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess')),
     onlyMain: true
