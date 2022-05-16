@@ -8,7 +8,7 @@ import { Icon } from 'lester-ui';
 
 export const searchCols: SearchCol[] = [
   {
-    name: 'name',
+    name: 'menuName',
     type: 'input',
     label: '菜单名称',
     placeholder: '请输入',
@@ -18,7 +18,12 @@ export const searchCols: SearchCol[] = [
     name: 'status',
     type: 'select',
     label: '状态',
-    options: [{ id: '1', name: '已启用' }]
+    placeholder: '请选择',
+    width: 100,
+    options: [
+      { id: 1, name: '启用' },
+      { id: 0, name: '关闭' }
+    ]
   }
 ];
 
@@ -91,14 +96,15 @@ interface Operation {
   addSubMenu: (id: string) => void;
   editMenu: (id: string) => void;
   deleteItem: (id: string) => void;
+  operateItem: (id: string, status: number) => void;
 }
-export const setTableColumns = ({ addSubMenu, editMenu, deleteItem }: Operation): ColumnsType<MenuProps> => {
+export const setTableColumns = ({
+  addSubMenu,
+  editMenu,
+  deleteItem,
+  operateItem
+}: Operation): ColumnsType<MenuProps> => {
   return [
-    // {
-    //   title: '序号',
-    //   width: 80,
-    //   render: (text, record, index) => index + 1
-    // },
     {
       title: '菜单名称',
       dataIndex: 'menuName',
@@ -123,15 +129,15 @@ export const setTableColumns = ({ addSubMenu, editMenu, deleteItem }: Operation)
     },
     {
       title: '菜单类型',
-      dataIndex: 'sortId',
-      width: 320,
-      render: (value) => <span>{value || UNKNOWN}</span>
+      dataIndex: 'menuType',
+      width: 120,
+      render: (value) => <span>{value === 1 ? '菜单' : '按钮'}</span>
     },
     {
       title: '状态',
-      dataIndex: 'sortId',
+      dataIndex: 'enable',
       width: 100,
-      render: (value) => <span>{value || UNKNOWN}</span>
+      render: (enable) => <span>{enable ? '已启用' : '已关闭'}</span>
     },
     {
       title: '操作',
@@ -148,9 +154,18 @@ export const setTableColumns = ({ addSubMenu, editMenu, deleteItem }: Operation)
               <Button type="link" onClick={() => addSubMenu(record.menuId)}>
                 添加
               </Button>
-              <Popconfirm title="确定要关闭吗?" onConfirm={() => deleteItem(record.menuId)}>
-                <Button type="link">关闭</Button>
-              </Popconfirm>
+              {record.enable === 1
+                ? (
+                <Popconfirm title="确定要关闭吗?" onConfirm={() => operateItem(record.menuId, 0)}>
+                  <Button type="link">关闭</Button>
+                </Popconfirm>
+                  )
+                : (
+                <Popconfirm title="确定要启用吗?" onConfirm={() => operateItem(record.menuId, 1)}>
+                  <Button type="link">启用</Button>
+                </Popconfirm>
+                  )}
+
               <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(record.menuId)}>
                 <Button type="link">删除</Button>
               </Popconfirm>

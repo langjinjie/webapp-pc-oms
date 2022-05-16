@@ -1,6 +1,7 @@
-import { Breadcrumb, Button, Form, Input, InputNumber, Radio, Space } from 'antd';
+import { Breadcrumb, Button, Form, Input, InputNumber, message, Radio, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { addOrEditMenu } from 'src/apis/orgManage';
 import { btnTypes, MenuProps, systemList } from './Config';
 
 interface S {
@@ -10,34 +11,76 @@ interface S {
 }
 const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, location }) => {
   const [menu, setMenu] = useState<MenuProps>();
+  const [formParams, setFormParams] = useState<MenuProps>();
+  const [menuForm] = Form.useForm();
   useEffect(() => {
     const { sysType, type, pathList } = location.state;
-    console.log(sysType, type, pathList);
-    console.log(location);
     setMenu((menu) => ({
       ...menu!,
       sysType,
       pathList,
-      writeType: type
+      writeType: type,
+      parentId:
+        type === 'add' && pathList && pathList.length > 0
+          ? pathList[pathList.length - 1].menuId
+          : type === 'edit' && pathList && pathList.length > 1
+            ? pathList[pathList.length - 2].menuId
+            : '',
+      parentTitle:
+        type === 'add' && pathList && pathList?.length > 0
+          ? pathList.map((item) => item.menuName).join(' / ')
+          : type === 'edit' && pathList && pathList.length > 1
+            ? pathList
+              .slice(0, pathList.length - 1)
+              .map((item) => item.menuName)
+              .join(' / ')
+            : '一级目录'
     }));
+    if (type === 'edit') {
+      const currentItem = pathList?.slice(pathList.length - 1)[0];
+      console.log(currentItem);
+      setFormParams((formParams) => ({ ...formParams!, ...currentItem }));
+      menuForm.setFieldsValue({
+        ...currentItem
+      });
+    }
   }, []);
-  const [formParams, setFormParams] = useState({
-    menuType: 1,
-    menuName: ''
-  });
 
   const navigatorToList = () => {
     console.log('jump');
     history.push('/menu');
   };
 
-  useEffect(() => {
-    setFormParams(formParams);
-  }, []);
-
   const onValuesChange = (changeValues: any, values: any) => {
     const { menuType } = values;
-    setFormParams((formParams) => ({ ...formParams, menuType }));
+    setFormParams((formParams) => ({ ...formParams!, menuType }));
+  };
+
+  const onFinish = async (values: any) => {
+    console.log(values, menu);
+    const { menuType, menuName, menuIcon, path, buttonType, sortId } = values;
+    const res = await addOrEditMenu({
+      sysType: menu?.sysType,
+      menuId: menu?.writeType === 'add' ? null : formParams?.menuId,
+      menuType,
+      menuName,
+      menuIcon,
+      path,
+      buttonType,
+      menuCode: 'unknown',
+      parentId: menu?.parentId,
+      sortId
+    });
+    if (res) {
+      message.success('保存成功', () => {
+        history.replace('/menu');
+      });
+    }
+    console.log(res);
+  };
+
+  const onCancel = () => {
+    history.replace('/menu');
   };
 
   return (
@@ -53,7 +96,14 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
       </div>
 
       <div className="mt30">
-        <Form wrapperCol={{ span: 8 }} className="edit" initialValues={formParams} onValuesChange={onValuesChange}>
+        <Form
+          wrapperCol={{ span: 8 }}
+          className="edit"
+          form={menuForm}
+          onFinish={onFinish}
+          initialValues={formParams}
+          onValuesChange={onValuesChange}
+        >
           <Form.Item label="系统端">
             {systemList.filter((system) => system.value === menu?.sysType)[0]?.label}
           </Form.Item>
@@ -64,7 +114,7 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
               <Radio value={2}>按钮</Radio>
             </Radio.Group>
           </Form.Item>
-          {formParams.menuType === 2 && (
+          {formParams?.menuType === 2 && (
             <Form.Item label="按钮类型" name={'buttonType'}>
               <Radio.Group>
                 {btnTypes.map((btn) => (
@@ -75,23 +125,27 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
               </Radio.Group>
             </Form.Item>
           )}
-          <Form.Item label="菜单级别">{menu?.pathList?.length || '一级菜单'}</Form.Item>
+          <Form.Item label={formParams?.menuType === 2 ? '按钮级别' : '菜单级别'}>{menu?.parentTitle}</Form.Item>
           <Form.Item label="菜单名称" name={'menuName'}>
             <Input placeholder="请输入" className="width480" />
           </Form.Item>
           <Form.Item label="路由地址" name={'path'}>
             <Input placeholder="请输入" className="width480" />
           </Form.Item>
-          <Form.Item label="菜单图标" name={'menuIcon'}>
-            <Input placeholder="请输入" className="width480" />
-          </Form.Item>
-          <Form.Item label="排序" extra="序号越低，排序越靠前" name={'sortId'}>
-            <InputNumber controls={false} min={0} placeholder="请输入" />
-          </Form.Item>
+          {formParams?.menuType === 1 && (
+            <>
+              <Form.Item label="菜单图标" name={'menuIcon'}>
+                <Input placeholder="请输入" className="width480" />
+              </Form.Item>
+              <Form.Item label="排序" extra="序号越低，排序越靠前" name={'sortId'}>
+                <InputNumber controls={false} min={0} placeholder="请输入" />
+              </Form.Item>
+            </>
+          )}
 
           <Form.Item wrapperCol={{ offset: 4 }}>
             <Space size={40} className="formFooter">
-              <Button shape="round" htmlType="reset">
+              <Button shape="round" onClick={() => onCancel()}>
                 取消
               </Button>
               <Button shape="round" htmlType="submit" type="primary">

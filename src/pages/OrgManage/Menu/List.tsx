@@ -1,43 +1,17 @@
-import { Button, Tabs } from 'antd';
+import { Button, message, Tabs } from 'antd';
 import { Icon } from 'lester-ui';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { deleteMenu, getMenuList, operateMenu, searchMenu } from 'src/apis/orgManage';
 import { NgFormSearch, NgTable } from 'src/components';
-import { treeFindPath } from 'src/utils/base';
+import { changeTreeItem, filterTree, treeFindPath } from 'src/utils/base';
 import { MenuProps, searchCols, setTableColumns, systemList } from './Config';
 
 import styles from './style.module.less';
 
 const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
-  const onSearch = (values: any) => {
-    console.log(values);
-  };
   const [currentTab, setCurrentTab] = useState(1);
-  const [dataSource, setDataSource] = useState<MenuProps[]>([
-    {
-      menuName: '主页',
-      sortId: 60,
-      path: '/index',
-      menuIcon: 'icon_daohang_28_jigouguanli',
-      isLeaf: 0,
-      menuId: '122',
-      level: 1,
-      enable: 1,
-      fullMenuId: '12',
-      menuType: 0
-    },
-    {
-      menuName: '运营配置',
-      sortId: 32,
-      path: '/product',
-      isLeaf: 0,
-      menuId: '211',
-      level: 1,
-      enable: 1,
-      fullMenuId: '12',
-      menuType: 0
-    }
-  ]);
+  const [dataSource, setDataSource] = useState<MenuProps[]>();
   const deepArr = (arr: MenuProps[], menuId: string, children: MenuProps[]) => {
     arr.forEach((item) => {
       if (item.menuId === menuId) {
@@ -48,70 +22,92 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
         }
       }
     });
-    console.log(arr);
     return arr;
+  };
+  const getList = async (params?: any) => {
+    const res = (await getMenuList({ sysType: currentTab, ...params })) || [];
+    setDataSource(res);
+  };
+  // 搜索菜单
+  const onSearch = async (values: any) => {
+    console.log(values);
+    if (values.menuName === undefined && values.status === undefined) {
+      getList();
+    } else {
+      const res = await searchMenu({ sysType: currentTab, ...values });
+      setDataSource(res || []);
+    }
   };
 
   useEffect(() => {
-    console.log('1');
+    getList();
   }, []);
-  const handleOnExpand = (expanded: boolean, record: any) => {
+
+  const handleOnExpand = async (expanded: boolean, record: MenuProps) => {
     if (expanded) {
       const children = record.children;
-      console.log(children);
+      // 判断没有加载children时，请求子列表
       if (!children) {
-        const copyData = deepArr(dataSource, record.menuId, [
-          {
-            menuName: '运营配置-1',
-            sortId: 32,
-            path: '/product',
-            isLeaf: 0,
-            menuId: Math.random() * 10000 + '',
-            level: 1,
-            enable: 1,
-            fullMenuId: '12',
-            menuType: 0
-          },
-          {
-            menuName: '运营配置-2',
-            sortId: 32,
-            path: '/product',
-            isLeaf: 1,
-            menuId: Math.random() * 10000 + '',
-            level: 1,
-            enable: 1,
-            fullMenuId: '12',
-            menuType: 0
-          }
-        ]);
-        setDataSource(copyData);
+        const res = await getMenuList({
+          parentId: record.menuId,
+          sysType: currentTab
+        });
+        const copyData = deepArr(dataSource!, record.menuId, res);
+        // 结构赋值处理，数据动态渲染异常问题
+        setDataSource(() => [...copyData]);
       }
-
-      console.log('点击了展开按钮', expanded, children);
     }
   };
   const addMenu = () => {
-    history.push('/menu/edit', { sysType: currentTab });
+    history.push('/menu/edit', { sysType: currentTab, writeType: 'add' });
   };
 
   const addSubMenu = (menuId: string) => {
     console.log(menuId);
-    const result = treeFindPath(dataSource, (node) => node.menuId === menuId);
+    const result = treeFindPath(dataSource!, (node) => node.menuId === menuId);
     console.log(result);
     history.push('/menu/edit', { pathList: result, type: 'add', sysType: currentTab });
   };
   const editMenu = (menuId: string) => {
-    console.log(menuId);
-    const result = treeFindPath(dataSource, (node) => node.menuId === menuId);
-    console.log(result);
+    const result = treeFindPath(dataSource!, (node) => node.menuId === menuId);
     history.push('/menu/edit', { pathList: result, type: 'edit', sysType: currentTab });
   };
-  const deleteItem = (menuId: string) => {
-    console.log(menuId);
+
+  const deleteItem = async (menuId: string) => {
+    const res = await deleteMenu({
+      sysType: currentTab,
+      menuId
+    });
+    if (res) {
+      message.success('删除成功');
+      const filterRes = filterTree(dataSource!, (node: any) => node.menuId !== menuId);
+      console.log(filterRes);
+      // 结构赋值处理，数据动态渲染异常问题
+      setDataSource(() => [...filterRes]);
+    }
   };
 
   const onTapsChange = (value: string) => {
     setCurrentTab(+value);
+    getList({ sysType: +value });
+  };
+
+  const operateItem = async (menuId: string, status: number) => {
+    const res = await operateMenu({
+      sysType: currentTab,
+      menuId,
+      status
+    });
+    if (res) {
+      console.log('=============');
+      const operateTree = changeTreeItem(dataSource!, (node) => {
+        if (node.menuId === menuId) {
+          return (node.enable = status);
+        }
+      });
+      setDataSource(() => [...operateTree]);
+      message.success(status === 0 ? '关闭成功' : '启用成功');
+    }
   };
   return (
     <div className="container">
@@ -127,7 +123,6 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
           className={'addBtn'}
           onClick={() => {
             addMenu();
-            console.log('添加菜单');
           }}
         >
           <Icon className={styles.addIcon} name="xinjian" />
@@ -166,7 +161,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
               );
             }
           }}
-          columns={setTableColumns({ addSubMenu, editMenu, deleteItem })}
+          columns={setTableColumns({ addSubMenu, editMenu, deleteItem, operateItem })}
           loading={false}
           dataSource={dataSource}
         ></NgTable>
