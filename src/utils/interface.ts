@@ -1,3 +1,8 @@
+export interface Nav {
+  name: string;
+  path?: string;
+}
+
 export interface InstItem {
   corpId: string;
   corpName: string;
