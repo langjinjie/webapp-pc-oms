@@ -341,6 +341,7 @@ const PointsProvide: React.FC = () => {
             <InputNumber
               width={80}
               min={1}
+              max={10000}
               controls={false}
               addonAfter={<span>%</span>}
               onChange={(value) => {

@@ -2,7 +2,7 @@
  * 积分商城接口
  *  */
 import http from 'src/utils/http';
-type HttpFC<T = { [key: string]: unknown }> = (param: T) => Promise<any>;
+type HttpFC<T = { [key: string]: unknown }> = (param?: T) => Promise<any>;
 type VoidFC = () => Promise<any>;
 
 // 查询积分分发列表接口
@@ -60,4 +60,18 @@ export const getPointsSendConfig: HttpFC = (param) => {
 };
 export const savePointsSendConfig: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/points/rest/send/config/save', param);
+};
+
+// 专属案例列表
+export const getExclusiveList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/points/spectasklist', param);
+};
+
+// 专属任务类型
+export const getExclusiveTypeList: HttpFC = () => {
+  return http.post('/tenacity-admin/api/points/specconfig');
+};
+// 专属任务积分发放
+export const setPointsOfExclusive: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/points/specsend', param);
 };
