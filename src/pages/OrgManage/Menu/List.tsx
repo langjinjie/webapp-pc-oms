@@ -10,14 +10,16 @@ import { useDidRecover } from 'react-router-cache-route';
 
 import styles from './style.module.less';
 
-const MenuConfigList: React.FC<RouteComponentProps> = ({ history, location }) => {
+const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
   const [currentTab, setCurrentTab] = useState(1);
   const [dataSource, setDataSource] = useState<MenuProps[]>();
   const deepArr = (arr: MenuProps[], menuId: string, children: MenuProps[]) => {
     if (arr.length === 0) return children;
     arr.forEach((item) => {
       if (item.menuId === menuId) {
-        return (item.children = children);
+        item.isLeaf = 0;
+        item.children = children;
+        return item;
       } else {
         if (item.children) {
           deepArr(item.children, menuId, children);
@@ -41,19 +43,22 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history, location }) =>
     }
   };
   useDidRecover(async () => {
-    const { menuId } = URLSearchParams(location.search) as { menuId: string };
+    const { menuId } = URLSearchParams(window.location.search) as { menuId: string };
     console.log(menuId);
     if (menuId) {
       const res = await getMenuList({
         parentId: menuId,
         sysType: currentTab
       });
-      console.log(dataSource, menuId, res);
-      const copyData = deepArr(dataSource!, menuId, res);
       // 结构赋值处理，数据动态渲染异常问题
-      setDataSource(() => [...copyData]);
+      if (menuId === '0') {
+        setDataSource(() => [...res]);
+      } else {
+        const copyData = deepArr(dataSource!, menuId, res);
+        setDataSource(() => [...copyData]);
+      }
     }
-  }, [dataSource, location.search]);
+  }, [dataSource]);
   useEffect(() => {
     getList();
   }, []);
