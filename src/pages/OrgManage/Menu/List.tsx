@@ -4,15 +4,17 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { deleteMenu, getMenuList, operateMenu, searchMenu } from 'src/apis/orgManage';
 import { NgFormSearch, NgTable } from 'src/components';
-import { changeTreeItem, filterTree, treeFindPath } from 'src/utils/base';
+import { changeTreeItem, filterTree, treeFindPath, URLSearchParams } from 'src/utils/base';
 import { MenuProps, searchCols, setTableColumns, systemList } from './Config';
+import { useDidRecover } from 'react-router-cache-route';
 
 import styles from './style.module.less';
 
-const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
+const MenuConfigList: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [currentTab, setCurrentTab] = useState(1);
   const [dataSource, setDataSource] = useState<MenuProps[]>();
   const deepArr = (arr: MenuProps[], menuId: string, children: MenuProps[]) => {
+    if (arr.length === 0) return children;
     arr.forEach((item) => {
       if (item.menuId === menuId) {
         return (item.children = children);
@@ -38,7 +40,20 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
       setDataSource(res || []);
     }
   };
-
+  useDidRecover(async () => {
+    const { menuId } = URLSearchParams(location.search) as { menuId: string };
+    console.log(menuId);
+    if (menuId) {
+      const res = await getMenuList({
+        parentId: menuId,
+        sysType: currentTab
+      });
+      console.log(dataSource, menuId, res);
+      const copyData = deepArr(dataSource!, menuId, res);
+      // 结构赋值处理，数据动态渲染异常问题
+      setDataSource(() => [...copyData]);
+    }
+  }, [dataSource, location.search]);
   useEffect(() => {
     getList();
   }, []);

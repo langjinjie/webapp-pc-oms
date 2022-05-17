@@ -3,7 +3,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
-import { Button, Popconfirm, Space } from 'antd';
+import { Button, Popconfirm, Space, Tooltip } from 'antd';
 import { Icon } from 'lester-ui';
 
 export const searchCols: SearchCol[] = [
@@ -124,8 +124,15 @@ export const setTableColumns = ({
     {
       title: '路由地址',
       dataIndex: 'path',
-      width: 220,
-      render: (value) => <span>{value || UNKNOWN}</span>
+      width: 200,
+      ellipsis: {
+        showTitle: false
+      },
+      render: (path) => (
+        <Tooltip placement="topLeft" title={path}>
+          {path || UNKNOWN}
+        </Tooltip>
+      )
     },
     {
       title: '菜单类型',
@@ -134,15 +141,21 @@ export const setTableColumns = ({
       render: (value) => <span>{value === 1 ? '菜单' : '按钮'}</span>
     },
     {
+      title: '按钮类型',
+      dataIndex: 'buttonType',
+      width: 120,
+      render: (value) => <span>{btnTypes.filter((btn) => btn.value === value)[0]?.label || UNKNOWN}</span>
+    },
+    {
       title: '状态',
       dataIndex: 'enable',
       width: 100,
-      render: (enable) => <span>{enable ? '已启用' : '已关闭'}</span>
+      render: (enable) => <span>{enable ? '启用' : '关闭'}</span>
     },
     {
       title: '操作',
       dataIndex: 'sortId',
-      width: 240,
+      width: 200,
       fixed: 'right',
       render: (text, record) => {
         return (

@@ -58,7 +58,7 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
 
   const onFinish = async (values: any) => {
     console.log(values, menu);
-    const { menuType, menuName, menuIcon, path, buttonType, sortId } = values;
+    const { menuType, menuName, menuIcon, path, buttonType, sortId, menuCode } = values;
     const res = await addOrEditMenu({
       sysType: menu?.sysType,
       menuId: menu?.writeType === 'add' ? null : formParams?.menuId,
@@ -67,13 +67,13 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
       menuIcon,
       path,
       buttonType,
-      menuCode: 'unknown',
+      menuCode: menuCode,
       parentId: menu?.parentId,
       sortId
     });
     if (res) {
       message.success('保存成功', () => {
-        history.replace('/menu');
+        history.replace('/menu?menuId=' + (menu?.parentId || '0'));
       });
     }
     console.log(res);
@@ -108,14 +108,14 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
             {systemList.filter((system) => system.value === menu?.sysType)[0]?.label}
           </Form.Item>
 
-          <Form.Item label="菜单类型" name={'menuType'}>
-            <Radio.Group>
+          <Form.Item label="菜单类型" name={'menuType'} rules={[{ required: true }]}>
+            <Radio.Group disabled={menu?.writeType === 'edit'}>
               <Radio value={1}>菜单</Radio>
               <Radio value={2}>按钮</Radio>
             </Radio.Group>
           </Form.Item>
           {formParams?.menuType === 2 && (
-            <Form.Item label="按钮类型" name={'buttonType'}>
+            <Form.Item label="按钮类型" name={'buttonType'} rules={[{ required: true }]}>
               <Radio.Group>
                 {btnTypes.map((btn) => (
                   <Radio value={btn.value} key={btn.value}>
@@ -126,19 +126,27 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
             </Form.Item>
           )}
           <Form.Item label={formParams?.menuType === 2 ? '按钮级别' : '菜单级别'}>{menu?.parentTitle}</Form.Item>
-          <Form.Item label="菜单名称" name={'menuName'}>
-            <Input placeholder="请输入" className="width480" />
+          <Form.Item
+            label={formParams?.menuType === 2 ? '按钮名称' : '菜单名称'}
+            name={'menuName'}
+            rules={[{ required: true }]}
+          >
+            <Input placeholder="请输入" className="width480" maxLength={30} />
           </Form.Item>
           <Form.Item label="路由地址" name={'path'}>
-            <Input placeholder="请输入" className="width480" />
+            <Input placeholder="请输入" className="width480" maxLength={60} />
           </Form.Item>
-          {formParams?.menuType === 1 && (
+
+          {formParams?.menuType !== 2 && (
             <>
               <Form.Item label="菜单图标" name={'menuIcon'}>
                 <Input placeholder="请输入" className="width480" />
               </Form.Item>
               <Form.Item label="排序" extra="序号越低，排序越靠前" name={'sortId'}>
                 <InputNumber controls={false} min={0} placeholder="请输入" />
+              </Form.Item>
+              <Form.Item label="菜单编码权限标识" name={'menuCode'}>
+                <Input placeholder="请输入" className="width480" maxLength={60} />
               </Form.Item>
             </>
           )}

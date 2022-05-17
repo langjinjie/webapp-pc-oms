@@ -174,11 +174,7 @@ export const routes: (RouteProps & expandRoute)[] = [
     component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess')),
     onlyMain: true
   },
-  {
-    // 系统菜单管理
-    path: '/menu',
-    component: lazy(() => import('src/pages/OrgManage/Menu/List'))
-  },
+
   {
     path: '/menu/edit',
     component: lazy(() => import('src/pages/OrgManage/Menu/Edit'))
@@ -259,6 +255,11 @@ export const routes: (RouteProps & expandRoute)[] = [
 
 // 缓存路由
 export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
+  // 系统菜单管理
+  {
+    path: '/menu',
+    component: lazy(() => import('src/pages/OrgManage/Menu/List'))
+  },
   {
     path: '/organization',
     component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
