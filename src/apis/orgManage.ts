@@ -205,3 +205,26 @@ export const exportFreeList: HttpFC = (param: object) => {
     responseType: 'blob'
   });
 };
+
+/**
+ * 系统菜单列表
+ */
+export const getMenuList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/sys/menu/list', param);
+};
+// 新增或者编辑菜单
+export const addOrEditMenu: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/sys/menu/addoredit', param);
+};
+// 关闭/启用系统菜单接口
+export const operateMenu: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/sys/menu/status/man', param);
+};
+// 删除系统菜单接口
+export const deleteMenu: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/sys/menu/del', param);
+};
+// 搜索系统菜单接口
+export const searchMenu: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/sys/menu/search', param);
+};

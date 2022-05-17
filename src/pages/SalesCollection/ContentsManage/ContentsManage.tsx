@@ -40,58 +40,6 @@ const ContentsManage: React.FC = () => {
   });
   return (
     <>
-      {/* <NgTree
-        dataSource={[
-          {
-            label: '爷爷1',
-            children: [
-              {
-                label: '爸爸1',
-                children: [
-                  {
-                    label: '儿子1'
-                  },
-                  {
-                    label: '儿子2'
-                  },
-                  {
-                    label: '儿子3'
-                  }
-                ]
-              },
-              {
-                label: '爸爸2',
-                children: [
-                  {
-                    label: '儿子1'
-                  },
-                  {
-                    label: '儿子2'
-                  },
-                  {
-                    label: '儿子3'
-                  }
-                ]
-              },
-              {
-                label: '爸爸3',
-                children: [
-                  {
-                    label: '儿子1'
-                  },
-                  {
-                    label: '儿子2'
-                  },
-                  {
-                    label: '儿子3'
-                  }
-                ]
-              }
-            ]
-          }
-        ]}
-        parentDatas={[]}
-      /> */}
       <div className={style.wrap}>
         {contentsList.map((item, index) => (
           <div className={style.contentBannerWrap} key={item.catalogId}>

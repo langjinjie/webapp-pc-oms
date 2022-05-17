@@ -12,7 +12,6 @@ export interface Menu {
   name: string;
   icon?: string;
   path: string;
-  onlyMain?: boolean;
   children?: Menu[];
 }
 
@@ -179,11 +178,7 @@ export const routes: RouteProps[] = [
     path: '/company/access',
     component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess'))
   },
-  {
-    // 系统菜单管理
-    path: '/menu',
-    component: lazy(() => import('src/pages/OrgManage/Menu/List'))
-  },
+
   {
     path: '/menu/edit',
     component: lazy(() => import('src/pages/OrgManage/Menu/Edit'))
@@ -264,6 +259,11 @@ export const routes: RouteProps[] = [
 
 // 缓存路由
 export const cacheRoutes: CacheRouteProps[] = [
+  // 系统菜单管理
+  {
+    path: '/menu',
+    component: lazy(() => import('src/pages/OrgManage/Menu/List'))
+  },
   {
     path: '/organization',
     component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
@@ -307,8 +307,7 @@ export const menus: Menu[] = [
       },
       {
         name: '企业接入',
-        path: '/company',
-        onlyMain: true
+        path: '/company'
       },
       {
         name: '敏感词管理',
@@ -466,8 +465,7 @@ if (process.env.NODE_ENV === 'development') {
       },
       {
         name: '企业接入',
-        path: '/company',
-        onlyMain: true
+        path: '/company'
       }
     ]
   });

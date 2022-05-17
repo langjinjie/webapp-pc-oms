@@ -119,22 +119,9 @@ export const exportFile = (data: BlobPart, fileName: string): void => {
   window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
 };
 
-export function treeFindPath (tree: any[], func: (node: any) => boolean, path: any[] = []): any[] {
-  if (!tree) return [];
-  for (const data of tree) {
-    path.push(data);
-    if (func(data)) return path;
-    if (data.children) {
-      const findChildren = treeFindPath(data.children, func, path);
-      if (findChildren.length) return findChildren;
-    }
-    path.pop();
-  }
-  return [];
-}
-// 用上面的树结构测试：
-
-const myTree = [
+/**
+ * 根据节点Id 查询 父结构
+ * const myTree = [
   {
     id: '1',
     name: '主父1',
@@ -162,9 +149,22 @@ const myTree = [
 ];
 const result = treeFindPath(myTree, (node) => node.id === '2-2-1-1');
 console.log(result);
-// 输出：
+ * @returns  ["2","2-1"]
+ */
+export function treeFindPath (tree: any[], func: (node: any) => boolean, path: any[] = []): any[] {
+  if (!tree) return [];
+  for (const data of tree) {
+    path.push(data);
+    if (func(data)) return path;
+    if (data.children) {
+      const findChildren = treeFindPath(data.children, func, path);
+      if (findChildren.length) return findChildren;
+    }
+    path.pop();
+  }
+  return [];
+}
 
-// ["2","2-1"]
 /**
  * @param arr
  * @return arr
@@ -180,6 +180,27 @@ export const tree2Arry = (arr: any[]): any[] => {
   }
   return res;
 };
+
+// 删除树的某个节点
+export const filterTree = (tree: any[], func: (node: any) => boolean): any[] => {
+  const newTree = tree.filter(func);
+  newTree.forEach((item) => item.children && (item.children = filterTree(item.children, func)));
+  return newTree;
+};
+
+export const changeTreeItem = (tree: any[], func: (node: any) => any): any[] => {
+  tree.forEach((item) => {
+    if (func(item)) {
+      item = func(item);
+      return false;
+    }
+    if (item.children) {
+      changeTreeItem(item.children, func);
+    }
+  });
+  return tree;
+};
+
 // 小数点后两位百分比
 export const percentage = (num: number, total: number): number | string => {
   if (num === 0 || total === 0) {
