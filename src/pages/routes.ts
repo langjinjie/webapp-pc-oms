@@ -25,6 +25,10 @@ export const routes: (RouteProps & expandRoute)[] = [
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
   },
+  {
+    path: '/noPermission',
+    component: lazy(() => import('src/pages/NoPermission/NoPermission'))
+  },
   // 营销平台
   {
     path: '/marketingProduct',
@@ -167,6 +171,11 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/company',
     component: lazy(() => import('src/pages/OrgManage/Company/Company')),
+    onlyMain: true
+  },
+  {
+    path: '/company/feature',
+    component: lazy(() => import('src/pages/OrgManage/CompanyFeature/CompanyFeature')),
     onlyMain: true
   },
   {

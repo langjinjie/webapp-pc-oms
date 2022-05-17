@@ -5,7 +5,7 @@
  */
 
 import React, { createContext, useState, Context as ContextProps } from 'react';
-import { InstItem, IConfirmModalParam } from 'src/utils/interface';
+import { InstItem, IConfirmModalParam, MenuItem } from 'src/utils/interface';
 
 export const Context: ContextProps<any> = createContext({});
 
@@ -21,6 +21,7 @@ const StoreContext: React.FC = ({ children }) => {
     title: '',
     tips: ''
   });
+  const [menuList, setMenuList] = useState<MenuItem[]>([]);
 
   return (
     <Context.Provider
@@ -38,7 +39,9 @@ const StoreContext: React.FC = ({ children }) => {
         articleTagList,
         setArticleTagList,
         confirmModalParam,
-        setConfirmModalParam
+        setConfirmModalParam,
+        menuList,
+        setMenuList
       }}
     >
       {children}
