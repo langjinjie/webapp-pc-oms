@@ -10,37 +10,12 @@ import CacheRoute, { CacheRouteProps, CacheSwitch } from 'react-router-cache-rou
 import classNames from 'classnames';
 import { Icon, ConfirmModal } from 'src/components';
 import { Context } from 'src/store';
-import { routes, cacheRoutes } from 'src/pages/routes';
+import { routes, cacheRoutes, noVerRoutes } from 'src/pages/routes';
 import { queryUserInfo, queryMenuList } from 'src/apis';
 import { getCookie } from 'src/utils/base';
 import { MenuItem } from 'src/utils/interface';
 import Header from './Header';
 import './style.less';
-
-const Routes = withRouter(({ location }) => {
-  const { menuList } = useContext(Context);
-  const auThPaths: string[] = ['/index', '/noPermission'].concat(
-    menuList.reduce((res: string[], cur: MenuItem) => res.concat((cur.children || []).map((item) => item.path)), [])
-  );
-
-  return (
-    <Suspense fallback={null}>
-      <CacheSwitch location={location}>
-        {routes
-          .filter(({ path }) => auThPaths.some((val) => (path || '').includes(val)))
-          .map(({ path, ...props }: RouteProps) => (
-            <Route key={`rt${path}`} path={path} {...props} exact />
-          ))}
-        {cacheRoutes
-          .filter(({ path }) => auThPaths.some((val) => (path || '').includes(val)))
-          .map(({ path, ...props }: CacheRouteProps) => (
-            <CacheRoute saveScrollPosition className="cache-route" key={`rt${path}`} path={path} {...props} exact />
-          ))}
-        <Redirect from="/*" to="/noPermission" />
-      </CacheSwitch>
-    </Suspense>
-  );
-});
 
 const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList } = useContext(Context);
@@ -84,6 +59,37 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
       setIsMainCorp(res.isMainCorp === 1);
       setCurrentCorpId(res.corpId);
     }
+  };
+
+  const renderRoute = () => {
+    if (menuList.length === 0) {
+      return false;
+    }
+    const auThPaths: string[] = menuList.reduce(
+      (res: string[], cur: MenuItem) => res.concat((cur.children || []).map((item) => item.path)),
+      []
+    );
+
+    return (
+      <Suspense fallback={null}>
+        <CacheSwitch location={location}>
+          {noVerRoutes.map(({ path, ...props }: RouteProps) => (
+            <Route key={`rt${path}`} path={path} {...props} exact />
+          ))}
+          {routes
+            .filter(({ path }) => auThPaths.some((val) => (path || '').includes(val)))
+            .map(({ path, ...props }: RouteProps) => (
+              <Route key={`rt${path}`} path={path} {...props} exact />
+            ))}
+          {cacheRoutes
+            .filter(({ path }) => auThPaths.some((val) => (path || '').includes(val)))
+            .map(({ path, ...props }: CacheRouteProps) => (
+              <CacheRoute saveScrollPosition className="cache-route" key={`rt${path}`} path={path} {...props} exact />
+            ))}
+          <Redirect from="/*" to="/noPermission" />
+        </CacheSwitch>
+      </Suspense>
+    );
   };
 
   useEffect(() => {
@@ -148,9 +154,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
           ))}
         </ul>
         <div className="content-wrap">
-          <div className="route-content">
-            <Routes />
-          </div>
+          <div className="route-content">{renderRoute()}</div>
         </div>
       </div>
       <ConfirmModal />

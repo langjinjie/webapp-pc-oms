@@ -16,11 +16,7 @@ export interface Menu {
   children?: Menu[];
 }
 
-interface expandRoute {
-  onlyMain?: boolean;
-}
-
-export const routes: (RouteProps & expandRoute)[] = [
+export const noVerRoutes: RouteProps[] = [
   {
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
@@ -28,7 +24,10 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/noPermission',
     component: lazy(() => import('src/pages/NoPermission/NoPermission'))
-  },
+  }
+];
+
+export const routes: RouteProps[] = [
   // 营销平台
   {
     path: '/marketingProduct',
@@ -170,18 +169,15 @@ export const routes: (RouteProps & expandRoute)[] = [
   },
   {
     path: '/company',
-    component: lazy(() => import('src/pages/OrgManage/Company/Company')),
-    onlyMain: true
+    component: lazy(() => import('src/pages/OrgManage/Company/Company'))
   },
   {
     path: '/company/feature',
-    component: lazy(() => import('src/pages/OrgManage/CompanyFeature/CompanyFeature')),
-    onlyMain: true
+    component: lazy(() => import('src/pages/OrgManage/CompanyFeature/CompanyFeature'))
   },
   {
     path: '/company/access',
-    component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess')),
-    onlyMain: true
+    component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess'))
   },
   {
     // 系统菜单管理
@@ -267,7 +263,7 @@ export const routes: (RouteProps & expandRoute)[] = [
 ];
 
 // 缓存路由
-export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
+export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/organization',
     component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
