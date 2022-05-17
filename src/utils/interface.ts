@@ -336,3 +336,20 @@ export interface IRoleList {
   isDefault: number;
   userNum: number;
 }
+// 菜单
+export interface MenuItem {
+  sysType?: number;
+  menuId: string;
+  fullMenuId: string;
+  menuName: string;
+  menuIcon: string;
+  menuType: number;
+  path: string;
+  buttonType?: number;
+  parentId?: string;
+  level: number;
+  isLeaf: number;
+  enable: number;
+  menuCode: string;
+  children: MenuItem[];
+}

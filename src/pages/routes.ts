@@ -25,6 +25,10 @@ export const routes: (RouteProps & expandRoute)[] = [
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
   },
+  {
+    path: '/noPermission',
+    component: lazy(() => import('src/pages/NoPermission/NoPermission'))
+  },
   // 营销平台
   {
     path: '/marketingProduct',
