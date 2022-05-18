@@ -23,6 +23,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [subMenus, setSubMenus] = useState<MenuItem[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
   const [subMenuIndex, setSubMenuIndex] = useState<number | null>(null);
+  const [loaded, setLoaded] = useState<boolean>(false);
 
   /**
    * 刷新时获取激活菜单
@@ -46,6 +47,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
     if (res) {
       initMenu(res);
       setMenuList(res);
+      setLoaded(true);
     }
   };
 
@@ -62,7 +64,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
 
   const renderRoute = () => {
-    if (menuList.length === 0) {
+    if (!loaded) {
       return false;
     }
     const auThPaths: string[] = menuList.reduce(

@@ -62,7 +62,10 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const setAdmin = async () => {
-    const res: any = await setAdminUser({ corpId: currentCorpId, list: selectIds });
+    const res: any = await setAdminUser({
+      corpId: currentCorpId,
+      list: selectIds.map((val) => ({ adminId: val }))
+    });
     if (res) {
       setAdminVisible(false);
       message.success('设置成功！');
@@ -112,6 +115,16 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
           >
             设置企业超级管理员
           </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              setCurrentCorpId(record.corpId);
+              setAdminVisible(true);
+              getAccountList(record.corpId);
+            }}
+          >
+            复制功能权限
+          </Button>
         </>
       )
     }
@@ -137,7 +150,6 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   useEffect(() => {
     getCompanyList();
     setTitle('企业管理');
-    console.log(currentCorpId);
   }, []);
 
   return (

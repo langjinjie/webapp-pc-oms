@@ -311,5 +311,5 @@ export const queryMenuList: Void2Promise = () => {
       ]
     }
   ]);
-  return http.post('/tenacity-admin/api/privilege/menu/list');
+  return http.post('/tenacity-admin/api/privilege/menu/list', { sysType: 1 });
 };

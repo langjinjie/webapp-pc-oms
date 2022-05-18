@@ -14,7 +14,7 @@ const NoPermission: React.FC<RouteComponentProps> = ({ location }) => {
     <div className={style.wrap}>
       {errCode}
       <img className={style.img} src={require('src/assets/images/permission/no_permission.png')} alt="" />
-      <div className={style.text}>暂无使用权限</div>
+      <div className={style.text}>暂无使用权限，请联系管理员</div>
     </div>
   );
 };
