@@ -1,0 +1,41 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2021-07-01 15:15
+*/
+
+.breadList {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  .currentItem {
+    color: #999aa1;
+  }
+
+  .breadItem {
+    font-size: 14px;
+    color: #999aa1;
+
+    &:last-child {
+      color: #3078db;
+    }
+
+    &.link {
+      color: #999aa1;
+
+      .breadName {
+        cursor: pointer;
+
+        &:hover {
+          color: #318cf5;
+        }
+      }
+    }
+
+    .splitSign {
+      margin: 0 8px;
+      cursor: default;
+    }
+  }
+}

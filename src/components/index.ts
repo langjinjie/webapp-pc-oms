@@ -20,3 +20,4 @@ export { default as Video } from './Video/Video';
 export { default as ConfirmModal } from './ConfirmModal/ConfirmModal';
 export { default as UploadFile } from 'src/components/UploadFile/UploadFile';
 export { NgModal } from './NgModal/NgModal';
+export { default as BreadCrumbs } from './BreadCrumbs/BreadCrumbs';

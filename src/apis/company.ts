@@ -52,3 +52,35 @@ export const queryCompanyInfo: HttpFunction = (param: Object) => {
 export const queryAuthUrl: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/corp/open/queryAuthCode', param);
 };
+
+/**
+ * 查询账号列表
+ * @param param
+ */
+export const queryAccountList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/user/account/list', param);
+};
+
+/**
+ * 设置管理员
+ * @param param
+ */
+export const setAdminUser: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/user/set/admin', param);
+};
+
+/**
+ * 查询企业功能
+ * @param param
+ */
+export const queryCompanyFeature: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/privilege/corp/menu/list', param);
+};
+
+/**
+ * 一键复制企业功能权限
+ * @param param
+ */
+export const copyCompanyFeature: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/privilege/corp/menu/copy', param);
+};
