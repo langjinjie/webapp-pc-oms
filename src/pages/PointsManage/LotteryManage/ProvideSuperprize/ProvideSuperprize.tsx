@@ -3,7 +3,7 @@ import { useDocumentTitle } from 'src/utils/base';
 import { Button, message } from 'antd';
 import { TableColumns, TablePagination } from './Config';
 import { requestProviderPhone, requestGetProviderPhoneList } from 'src/apis/pointsMall';
-import { IPointsProvideList, IConfirmModalParam } from 'src/utils/interface';
+import { IPointsProvideList } from 'src/utils/interface';
 import { Context } from 'src/store';
 import { NgTable } from 'src/components';
 import style from './style.module.less';
@@ -27,17 +27,13 @@ const ProvideSuperprize: React.FC = () => {
     }
     setIsloading(false);
   };
-  // 取消ConfirmModal
-  const onCancel = () => {
-    setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
-  };
   // 发放手机
   const sendPhone = async () => {
     const res = await requestProviderPhone();
     if (res) {
       message.success('手机发放成功');
       setPaginationParam((param) => ({ ...param }));
-      onCancel();
+      setConfirmModalParam({ visible: false });
     }
   };
   // 点击发放积分
@@ -46,8 +42,7 @@ const ProvideSuperprize: React.FC = () => {
       visible: true,
       title: '大奖发放提醒',
       tips: '是否确定发放大奖？',
-      onOk: sendPhone,
-      onCancel
+      onOk: sendPhone
     });
   };
   useDocumentTitle('积分商城-手机发放');

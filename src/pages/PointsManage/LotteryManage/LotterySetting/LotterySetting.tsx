@@ -3,7 +3,7 @@ import { Button, Tag } from 'antd';
 import { Icon } from 'src/components';
 import { AddModal, List } from './components';
 import { useDocumentTitle } from 'src/utils/base';
-import { IDeptRecord, IConfirmModalParam } from 'src/utils/interface';
+import { IDeptRecord } from 'src/utils/interface';
 import { requestAddLotteryScope } from 'src/apis/pointsMall';
 import style from './style.module.less';
 import { Context } from 'src/store';
@@ -32,11 +32,8 @@ const LotterySetting: React.FC = () => {
         const res = await requestAddLotteryScope({ deptIds: deptIds.toString().replace(/,/g, ';') });
         if (res) {
           setAddScopeParam({ ...addScopeParam, added: true });
-          setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
+          setConfirmModalParam({ visible: false });
         }
-      },
-      onCancel () {
-        setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
       }
     });
   };

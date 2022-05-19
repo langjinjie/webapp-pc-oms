@@ -16,11 +16,7 @@ const StoreContext: React.FC = ({ children }) => {
   const [currentCorpId, setCurrentCorpId] = useState<string>('');
   const [articleCategoryList, setArticleCategoryList] = useState<any[]>([]);
   const [articleTagList, setArticleTagList] = useState<any[]>([]);
-  const [confirmModalParam, setConfirmModalParam] = useState<IConfirmModalParam>({
-    visible: false,
-    title: '',
-    tips: ''
-  });
+  const [confirmModalParam, setConfirmModalParam] = useState<IConfirmModalParam>({ visible: false });
   const [menuList, setMenuList] = useState<MenuItem[]>([]);
 
   return (
