@@ -121,7 +121,7 @@ const ChooseTags: React.FC<IChooseTags> = ({ value, onChange, readOnly }) => {
             )}
           </div>
         ))}
-        {!value?.length || <Icon name="guanbi" className={style.clear} onClick={clearTags} />}
+        {!value?.length || readOnly || <Icon name="guanbi" className={style.clear} onClick={clearTags} />}
       </div>
       <Button className={style.chooseTagBtn} onClick={chooseTagHandle} disabled={readOnly}>
         选择标签

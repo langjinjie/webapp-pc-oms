@@ -41,7 +41,7 @@ const StaffList: React.FC<IStaffList> = ({ value, onChange, readOnly }) => {
             )}
           </div>
         ))}
-        {!value?.length || <Icon name="guanbi" className={style.clear} onClick={clearStaff} />}
+        {!value?.length || readOnly || <Icon name="guanbi" className={style.clear} onClick={clearStaff} />}
       </div>
       <Button className={style.chooseTagBtn} onClick={chooseStaff} disabled={readOnly}>
         选择人员
