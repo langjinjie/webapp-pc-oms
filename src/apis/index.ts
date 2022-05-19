@@ -54,7 +54,7 @@ export const queryFuncList: Void2Promise = () => {
  * 查询菜单列表
  */
 export const queryMenuList: Void2Promise = () => {
-  return Promise.resolve([
+  /* return Promise.resolve([
     {
       menuId: '123',
       menuName: '机构管理',
@@ -310,6 +310,6 @@ export const queryMenuList: Void2Promise = () => {
         }
       ]
     }
-  ]);
+  ]); */
   return http.post('/tenacity-admin/api/privilege/menu/list', { sysType: 1 });
 };

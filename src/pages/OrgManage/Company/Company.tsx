@@ -6,9 +6,9 @@
 import React, { useEffect, useState, Key } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { setTitle } from 'lester-tools';
-import { Table, TableColumnProps, Button, message } from 'antd';
+import { Table, TableColumnProps, Button, message, Popconfirm } from 'antd';
 import { Form, Icon, Modal } from 'src/components';
-import { queryCompanyList, queryAuthUrl, queryAccountList, setAdminUser } from 'src/apis/company';
+import { queryCompanyList, queryAuthUrl, queryAccountList, setAdminUser, copyCompanyFeature } from 'src/apis/company';
 import { ItemProps } from 'src/utils/interface';
 import style from './style.module.less';
 
@@ -72,6 +72,13 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  const copyFeature = async (targetCorpId: string) => {
+    const res: any = await copyCompanyFeature({ targetCorpId });
+    if (res) {
+      message.success('复制成功!');
+    }
+  };
+
   const adminColumns: TableColumnProps<AccountItem>[] = [
     {
       title: '员工姓名',
@@ -115,16 +122,9 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
           >
             设置企业超级管理员
           </Button>
-          <Button
-            type="link"
-            onClick={() => {
-              setCurrentCorpId(record.corpId);
-              setAdminVisible(true);
-              getAccountList(record.corpId);
-            }}
-          >
-            复制功能权限
-          </Button>
+          <Popconfirm title="确认要一键复制当前企业功能权限到此企业吗？" onConfirm={() => copyFeature(record.corpId)}>
+            <Button type="link">一键复制功能权限</Button>
+          </Popconfirm>
         </>
       )
     }

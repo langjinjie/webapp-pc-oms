@@ -32,7 +32,7 @@ const CompanyFeature: React.FC<RouteComponentProps> = ({ location }) => {
       <div className={style.title}>功能权限</div>
       <div className={style.featureList}>
         {featureList.map((item) => (
-          <PricilegeItem key={item.menuId} item={item} />
+          <PricilegeItem key={item.sysType} item={item} readonly />
         ))}
       </div>
     </div>

@@ -9,6 +9,7 @@ interface IPricilegeItem {
   value?: { menuId: string; fullMenuId: string }[];
   item: any;
   onChange?: (menuList: { menuId: string; fullMenuId: string }[]) => void;
+  readonly?: true;
 }
 
 interface ItreeProps {
@@ -22,7 +23,7 @@ interface ItreeProps {
   selectedKeys?: Key[];
 }
 
-const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange }) => {
+const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, readonly }) => {
   const [extend, setExtend] = useState(false);
   const [treeHeight, setTreeHeight] = useState<number | string>(48);
   const [flatTreeData, setFlatTreeData] = useState<any[]>([]);
@@ -33,9 +34,10 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange })
     height: 252,
     virtual: false,
     blockNode: true,
-    checkable: true,
+    checkable: !readonly,
     defaultExpandParent: false
   });
+
   // 获取tree的高度
   const getTreeHeight = () => {
     if (item.children && extend) {
@@ -72,6 +74,7 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange })
       onChange?.(delValue);
     }
   };
+
   useEffect(() => {
     getTreeHeight();
     if (!extend) {
@@ -100,11 +103,11 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange })
               key={childItem.menuName}
               className={style.tree}
               {...treeProps}
+              onCheck={onCheckHandle}
               checkedKeys={value
                 ?.filter((valueItem) => valueItem.fullMenuId.split('-').includes(childItem.menuId))
                 .map((item) => item.menuId)}
               onExpand={onExpandHandle}
-              onCheck={onCheckHandle}
               fieldNames={{ title: 'menuName', key: 'menuId' }}
               treeData={[childItem]}
             />
