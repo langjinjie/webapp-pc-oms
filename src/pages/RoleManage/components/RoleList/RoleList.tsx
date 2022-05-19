@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input } from 'antd';
 import { Icon, NgTable } from 'src/components';
-import { AddOrEditUser } from 'src/pages/RoleManage/components';
+import { OrganizationalTree } from 'src/pages/RoleManage/components';
 import { TableColumns, TablePagination } from './Config';
 import { IRoleList } from 'src/utils/interface';
 import { roleTypeRouteList } from 'src/utils/commonData';
@@ -104,7 +104,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         })}
       />
       {/* 添加/编辑成员 */}
-      <AddOrEditUser roleType={roleType} params={params} setParams={setParams} />
+      <OrganizationalTree roleType={roleType} params={params} setParams={setParams} />
     </div>
   );
 };

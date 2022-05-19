@@ -216,16 +216,19 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       }}
     >
       <Form form={form} onValuesChange={() => setSubmitDisabled(false)}>
-        <Form.Item className={style.modalContentFormItem} label="目录名称:" required>
-          <Form.Item name="name" rules={[{ required: true, message: '请输入目录名称' }]} noStyle>
-            <Input
-              className={style.modalContentInput}
-              placeholder={'请输入目录名称'}
-              maxLength={50}
-              onChange={inputOnChangeHandle}
-            />
-          </Form.Item>
-          <span className={style.limitLength}>{catalogParam.name.length}/50</span>
+        <Form.Item
+          className={style.modalContentFormItem}
+          label="目录名称:"
+          name="name"
+          rules={[{ required: true, message: '请输入目录名称' }]}
+        >
+          <Input
+            className={style.modalContentInput}
+            placeholder={'请输入目录名称'}
+            showCount
+            maxLength={50}
+            onChange={inputOnChangeHandle}
+          />
         </Form.Item>
         <Form.Item
           className={style.modalContentFormItem}

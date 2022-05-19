@@ -254,6 +254,15 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/exclusive',
     component: lazy(() => import('src/pages/PointsManage/Exclusive/List'))
+  },
+  // 用户组管理
+  {
+    path: '/userGroup',
+    component: lazy(() => import('src/pages/OrgManage/UserGroup/UserGroup'))
+  },
+  {
+    path: '/userGroup/add',
+    component: lazy(() => import('src/pages/OrgManage/UserGroup/components/AddGroup/AddGroup'))
   }
 ];
 
@@ -324,6 +333,10 @@ export const menus: Menu[] = [
       {
         name: '系统菜单管理',
         path: '/menu'
+      },
+      {
+        name: '用户组管理',
+        path: '/userGroup'
       }
     ]
   },

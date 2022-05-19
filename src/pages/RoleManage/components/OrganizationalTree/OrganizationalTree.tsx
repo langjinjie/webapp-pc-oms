@@ -2,17 +2,18 @@ import React, { useState, useEffect, Key, Dispatch, SetStateAction } from 'react
 import { Modal, Tree, Input, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { Icon } from 'src/components';
-import { requestGetLotteryDeptList } from 'src/apis/pointsMall';
-import { ITreeDate, IDeptRecord } from 'src/utils/interface';
+import { requestGetDeptList, requestGetDepStaffList } from 'src/apis/orgManage';
 import { debounce } from 'src/utils/base';
 import classNames from 'classnames';
 import style from './style.module.less';
 
 interface IAddLotteryListProps {
-  roleType: 1 | 2 | 3;
+  value?: any[];
+  onChange?: (value: any[]) => void;
+  showStaff?: boolean;
+  roleType?: 1 | 2 | 3;
   params: { visible: boolean; added: boolean; roleId: string };
   setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>;
-  depLsit?: IDeptRecord;
 }
 
 interface ItreeProps {
@@ -33,13 +34,21 @@ interface IaccountList {
   isAdmin: number;
 }
 
-const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setParams, depLsit }) => {
-  const [treeData, setTreeData] = useState<ITreeDate[]>([]);
+const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
+  value,
+  onChange,
+  showStaff,
+  roleType,
+  params,
+  setParams
+}) => {
+  const [treeData, setTreeData] = useState<any[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
-  const [flatTreeData, setFlatTreeData] = useState<ITreeDate[]>([]);
+  const [flatTreeData, setFlatTreeData] = useState<any[]>([]);
+  const [selectedList, setSelectedList] = useState<any[]>([]);
   const [autoExpand, setAutoExpand] = useState(true);
   const [treeSearchValue, setTreeSearchValue] = useState('');
-  const [selectedCount, setSeletedCount] = useState(6);
+  const [selectedCount, setSeletedCount] = useState(0);
   const [accountList, setAccountList] = useState<IaccountList[]>([]);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
@@ -57,6 +66,7 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
     setCheckedKeys([]);
     setFlatTreeData([]);
     setAutoExpand(true);
+    setSelectedList([]);
   };
   // 获取后管端账号列表
   const userAccountList = () => {
@@ -66,23 +76,45 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
     { title: '员工姓名', dataIndex: 'name' },
     { title: '员工账号', dataIndex: 'userName' }
   ];
-  // 获取组织架构部门
-  const getCorpOrg = async (deptId?: string) => {
-    // 获取部门,并且过滤掉未完善员工
-    const res1: ITreeDate[] = (await requestGetLotteryDeptList({ deptId })).map((item: ITreeDate) => ({
-      ...item,
-      parentId: deptId
-    }));
-    // 将树结构添加到扁平结构中
-    setFlatTreeData((flatTreeData) => [...flatTreeData, ...res1]);
-    res1.forEach((item: any) => {
-      item.isLeaf = item.isLeaf ? 0 : 1;
-    });
-    return [...res1];
+  // 获取组织架构
+  const getCorpOrg = async (parentId: string) => {
+    let res1 = await requestGetDeptList({ parentId });
+    let res2 = [];
+    if (showStaff && parentId) {
+      console.log('获取员工列表');
+      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId });
+      res2 = res.list.map((item: any) => ({
+        ...item,
+        name: item.staffName,
+        id: item.staffId,
+        isLeaf: true,
+        parentId
+      }));
+    }
+    if (res1) {
+      // 过滤掉未完善员工
+      res1 = res1.filter((item: any) => item.deptId !== -1);
+      res1 = await Promise.all(
+        res1.map(async (item: any) => {
+          // 判断叶子部门节点下是否还有员工，有员工则不能作为叶子节点
+          if (
+            showStaff &&
+            item.isLeaf &&
+            (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId })).list.length
+          ) {
+            return { ...item, parentId, name: item.deptName, id: item.deptId, isLeaf: false };
+          } else {
+            return { ...item, parentId, name: item.deptName, id: item.deptId };
+          }
+        })
+      );
+      // 将树结构添加到扁平结构中
+      setFlatTreeData([...flatTreeData, ...res2, ...res1]);
+    }
+    return [...res2, ...res1];
   };
-
   // 将已被选中的节点的所有后代节点过滤掉
-  const filterChildren = (arr: ITreeDate[]) => {
+  const filterChildren = (arr: any[]) => {
     const newArr = [...arr];
     const newArr1: string[] = [];
     newArr.forEach((item) => {
@@ -98,24 +130,9 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
     return newArr.filter((item) => !newArr1.includes(item.deptId));
   };
   const onOk = async () => {
-    const deptIdList = flatTreeData.filter((item) => checkedKeys.includes(item.deptId));
-    // const res = await requestAddLotteryScope({
-    //   deptIds: filterChildren(deptIdList)
-    //     .map((item) => item.deptId)
-    //     .toString()
-    //     .replace(/,/g, ';')
-    // });
-    console.log(
-      filterChildren(deptIdList)
-        .map((item) => item.deptId)
-        .toString()
-        .replace(/,/g, ';')
-    );
-    console.log('deptIdList', deptIdList);
-    const res = {};
-    if (res) {
-      setParams({ visible: false, added: true, roleId: '' });
-    }
+    console.log('selectedList', selectedList);
+    onChange?.(selectedList);
+    setParams({ visible: false, added: true, roleId: '' });
   };
   const onCancel = () => {
     setParams({ visible: false, added: false, roleId: '' });
@@ -138,7 +155,6 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
       return node;
     });
   };
-
   // 异步获取组织架构及当前目录下的员工
   const onLoadDataHandle = async ({ key }: any) => {
     // 获取对应的子节点
@@ -153,30 +169,54 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
     setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
   };
   // 选中节点
-  const onCheckHandle = (
+  const onCheckHandle = async (
     checked:
       | Key[]
       | {
           checked: Key[];
           halfChecked: Key[];
-        }
+        },
+    info: any
   ) => {
     setAutoExpand(false);
     setCheckedKeys(checked as Key[]);
-    setSeletedCount(6);
+    let selectedList = [];
+    if (showStaff) {
+      selectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.staffId));
+      // 判断点击的是部门还是员工
+      if (!info.node.staffId) {
+        // 获取该部门下的所有员工
+        const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.id, pageSize: 9999 });
+        res.list.forEach((item: any) => {
+          item.id = item.staffId;
+          item.name = item.staffName;
+          item.isLeaf = true;
+        });
+        // 判断是选中还是取消
+        if (info.checked) {
+          selectedList = [...selectedList, ...res.list];
+        }
+      }
+    } else {
+      selectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id));
+    }
+    setSelectedList(selectedList);
   };
-
   // 树列表搜索
   const treeSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTreeSearchValue(e.target.value);
   };
-
   // 已选择成员搜索
   const selectedOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTreeSearchValue(e.target.value);
   };
-
+  // 删除选中
+  const clickDelStaffHandle = (item: any) => {
+    setSelectedList((param) => [...param.filter((filterItem) => filterItem.id !== item.id)]);
+    setCheckedKeys((keys) => [...keys.filter((keysItem) => keysItem !== item.id)]);
+  };
   useEffect(() => {
+    filterChildren([]);
     console.log('treeSearchValue', treeSearchValue);
   }, [treeSearchValue]);
   useEffect(() => {
@@ -187,34 +227,52 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
     } else {
       if (params.visible) {
         (async () => {
-          setTreeData(await getCorpOrg());
+          setTreeData(await getCorpOrg(''));
         })();
       } else {
         onResetHandle();
       }
     }
   }, [params.visible]);
-
   // 自动展开以及自动勾选
   useEffect(() => {
-    // setTimeout(() => {
-    if (depLsit && flatTreeData.length && autoExpand) {
+    if (value && flatTreeData.length && autoExpand) {
+      const expandedKeys = flatTreeData
+        .filter((filterItem) =>
+          Array.from(new Set(value?.map((mapItem) => [...mapItem.fullDeptId.split(',')]).flat(Infinity))).includes(
+            filterItem.deptId.toString() // fullDeptId 是string deptId 是number
+          )
+        )
+        .map((item) => item.deptId);
       setTreeProps({
         ...treeProps,
         autoExpandParent: true,
-        expandedKeys: flatTreeData
-          .filter((item) =>
-            Array.from(new Set(depLsit.scopeFullDeptIds.replace(/,/g, ';').split(';'))).includes(item.deptId)
-          )
-          .map((filterItem) => filterItem.deptId)
+        expandedKeys
       });
-      const keys = flatTreeData
-        .filter((item) => depLsit.scopeDeptIds.split(';').includes(item.deptId))
-        .map((filterItem) => filterItem.deptId);
-      setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...keys])));
+      const staffKeys = flatTreeData
+        .filter((filterItem) => value?.some((someItem) => someItem.staffId === filterItem.id))
+        .map((mapItem) => mapItem.id);
+      const deptKeys = flatTreeData
+        .filter((filterItem) => value?.some((someItem) => !someItem.staffId && someItem.deptId === filterItem.id))
+        .map((mapItem) => mapItem.id);
+      setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...staffKeys, ...deptKeys])));
+      const selectedList = flatTreeData.filter((filterItem) =>
+        Array.from(new Set([...staffKeys, ...deptKeys])).includes(filterItem.id)
+      );
+      setSelectedList((param) => [...param, ...selectedList]);
     }
-    // }, 200);
   }, [flatTreeData]);
+  useEffect(() => {
+    const seletedCount = selectedList.reduce((prev: number, now: any) => {
+      if (!now.staffId) {
+        prev += now.effCount || 0;
+      } else {
+        prev += 1;
+      }
+      return prev;
+    }, 0);
+    setSeletedCount(seletedCount);
+  }, [selectedList]);
   return (
     <Modal
       className={classNames(style.modalWrap, { [style.omsWrap]: roleType === 1 })}
@@ -249,7 +307,7 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
             pagination={false}
           />
         </div>
-      )}{' '}
+      )}
       {roleType !== 1 && (
         <div className={style.contentWrap}>
           <div className={style.treeWrap}>
@@ -263,7 +321,7 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
             <Tree
               className={style.tree}
               {...treeProps}
-              fieldNames={{ title: 'deptName', key: 'deptId' }}
+              fieldNames={{ title: 'name', key: 'id' }}
               loadData={onLoadDataHandle}
               // @ts-ignore
               treeData={treeData}
@@ -280,18 +338,18 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
             />
             <div className={style.seletedTitle}>已选择成员 {selectedCount} 人</div>
             <div className={classNames(style.selectList, 'scroll-strip')}>
-              {checkedKeys.map(
+              {selectedList.map(
                 (item) =>
                   item && (
-                    <div className={style.selectItem} key={item}>
-                      <span>
-                        {item}
-                        {/* {!!item.isLeader && <span className={style.isLeader}>上级</span>} */}
+                    <div className={style.selectItem} key={item.id}>
+                      <span className={style.name}>
+                        {item.name}
+                        {!item.staffId && '（' + item.effCount + '）'}
                       </span>
                       <Icon
                         className={style.delIcon}
                         name="icon_common_16_inputclean"
-                        // onClick={() => clickDelStaffHandle(item)}
+                        onClick={() => clickDelStaffHandle(item)}
                       />
                     </div>
                   )
@@ -303,4 +361,4 @@ const AddOrEditUser: React.FC<IAddLotteryListProps> = ({ roleType, params, setPa
     </Modal>
   );
 };
-export default AddOrEditUser;
+export default OrganizationalTree;

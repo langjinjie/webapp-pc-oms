@@ -291,7 +291,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     }
     newSelectList = selectList.filter((item) => item.id !== id);
     const currentItem = selectList.find((item) => item.id === id);
-    if (currentItem.parentId) {
+    if (currentItem && currentItem.parentId) {
       newSelectList = cancelChecked(currentItem.parentId, newSelectList);
     }
     setSelectList(newSelectList);

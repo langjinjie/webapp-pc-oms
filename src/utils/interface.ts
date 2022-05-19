@@ -333,3 +333,23 @@ export interface IRoleList {
   isDefault: number;
   userNum: number;
 }
+
+/**
+ * 机构管理-用户组管理
+ */
+// 用户组管理列表
+export interface IGroupItem {
+  groupId: string;
+  groupCode: string;
+  groupName: string;
+  desc: string;
+  staffNum: number;
+  createTime: string;
+}
+// 用户组标签
+export interface IGroupTag {
+  groupTagId: string;
+  name: string;
+  filterName: string;
+  createTime: string;
+}

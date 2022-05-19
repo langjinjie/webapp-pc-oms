@@ -205,3 +205,58 @@ export const exportFreeList: HttpFC = (param: object) => {
     responseType: 'blob'
   });
 };
+
+/**
+ * 查询用户组列表
+ */
+export const requestGetGroupList: (param: { [key: string]: any }) => Promise<any> = (param) => {
+  return http.post('/tenacity-admin/api/privilege/group/list', param);
+};
+/**
+ * 查询用户组标签
+ */
+export const requestGetGroupTagList: HttpFC = (param: { [key: string]: any }) => {
+  return http.post('/tenacity-admin/api/privilege/group/tag/list', param);
+};
+/**
+ * 查询人员标签列表
+ */
+export const requestGetStaffTagList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/staff/tag/list', param);
+};
+/**
+ * 新增用户组标签
+ */
+export const requestAddGroupTag: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/group/tag/add', param);
+};
+/**
+ * 新增用户组-筛选
+ */
+export const requestGetFilterGroup: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/group/filter', param);
+};
+/**
+ * 新增/编辑用户组
+ */
+export const requestAddGroup: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/group/addoredit', param);
+};
+/**
+ * 新增用户组-查看人员
+ */
+export const requestGetGroupStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/group/filter/staff', param);
+};
+/**
+ * 查看用户组
+ */
+export const requestGetGroupDetail: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/group/detail', param);
+};
+/**
+ * 查看用户组的成员列表(查看人员)
+ */
+export const requestGetViewGroupStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/privilege/group/staff', param);
+};
