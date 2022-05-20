@@ -378,3 +378,11 @@ export const batchOperateProduct: HttpFunction = (param) => {
 export const searchRecommendGoodsList: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/market/query', param);
 };
+// 查询用户分组，
+export const getUserGroup: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/privilege/scope/group/info', param);
+};
+// 查询用户分组，
+export const setUserRightWithArticle: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/news/batch/setscope', param);
+};

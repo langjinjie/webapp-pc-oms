@@ -7,7 +7,8 @@ import {
   operateArticleStatus,
   updateNewsState,
   getNewsDetail,
-  getTagsOrCategorys
+  getTagsOrCategorys,
+  setUserRightWithArticle
 } from 'src/apis/marketing';
 
 import style from './style.module.less';
@@ -20,9 +21,11 @@ import classNames from 'classnames';
 import { PlusOutlined } from '@ant-design/icons';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
 import { useDocumentTitle } from 'src/utils/base';
+import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
 
 const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('营销素材-文章库');
+  const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -237,8 +240,13 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     handleToggleOnlineState(type, record);
   };
 
+  const setRight = (record: Article) => {
+    setCurrentItem(record);
+    setVisibleSetUserRight(true);
+  };
+
   const myColumns = () => {
-    const res = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleTop });
+    const res = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleTop, setRight });
     // 根据时候为机构来过滤col
     if (isMainCorp) {
       return res;
@@ -288,6 +296,20 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   const submitOnline = (corpIds: any[]) => {
     onSubmitToggleOnline({ type: 1, corpIds });
     setVisibleOnline(false);
+  };
+
+  // 确认设置权限
+  const confirmSetRight = async (values: any) => {
+    setVisibleSetUserRight(false);
+    const { isSet, groupId } = values;
+    // [adminId];
+    // groupId: 93201136316088326
+
+    if (isSet) {
+      await setUserRightWithArticle({ list: [{ newsId: currentItem?.newsId, groupId }] });
+    } else {
+      await setUserRightWithArticle({ list: [{ newsId: currentItem?.newsId }] });
+    }
   };
 
   return (
@@ -364,6 +386,12 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
       >
         <div className={style.previewDesc} dangerouslySetInnerHTML={{ __html: htmlStr }}></div>
       </Modal>
+      <SetUserRight
+        groupId={currentItem?.groupId}
+        visible={visibleSetUserRight}
+        onOk={confirmSetRight}
+        onCancel={() => setVisibleSetUserRight(false)}
+      />
     </div>
   );
 };
