@@ -3,7 +3,7 @@ import { Context } from 'src/store';
 import { Modal, Tree, Input } from 'antd';
 import { Icon } from 'src/components';
 import { requestGetDeptList, requestGetDepStaffList } from 'src/apis/orgManage';
-import { debounce } from 'src/utils/base';
+import { debounce, filterChildren, updateTreeData } from 'src/utils/base';
 import classNames from 'classnames';
 import style from './style.module.less';
 
@@ -11,7 +11,7 @@ interface IAddLotteryListProps {
   value?: any[];
   onChange?: (value: any[]) => void;
   showStaff?: boolean;
-  roleType?: 1 | 2 | 3;
+  selectedDept: boolean;
   params: { visible: boolean; added: boolean; roleId: string };
   setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>;
   onOk?: (value: any) => void;
@@ -32,7 +32,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   value,
   onChange,
   showStaff,
-  roleType,
+  selectedDept = true,
   params,
   setParams,
   onOk
@@ -68,7 +68,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     let res1 = await requestGetDeptList({ parentId });
     let res2 = [];
     if (showStaff && parentId) {
-      console.log('获取员工列表');
       const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId });
       res2 = res.list.map((item: any) => ({
         ...item,
@@ -100,22 +99,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     }
     return [...res2, ...res1];
   };
-  // 将已被选中的节点的所有后代节点过滤掉
-  const filterChildren = (arr: any[]) => {
-    const newArr = [...arr];
-    const newArr1: string[] = [];
-    newArr.forEach((item) => {
-      newArr.forEach((childrenItem) => {
-        if (item === childrenItem) return;
-        // 找出该选中节点的所有后代节点
-        if (childrenItem.fullDeptId.split(',').includes(item.deptId)) {
-          newArr1.push(childrenItem.deptId);
-        }
-      });
-    });
-    // 过滤掉所有选中节点的后代节点
-    return newArr.filter((item) => !newArr1.includes(item.deptId));
-  };
   const onOkHandle = async () => {
     onChange?.(selectedList);
     setParams({ visible: false, added: true, roleId: '' });
@@ -124,24 +107,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const onCancel = () => {
     setParams({ visible: false, added: false, roleId: '' });
   };
-  // 向树结构添加子节点
-  const updateTreeData = (list: any[], key: React.Key, children: any[]): any[] => {
-    return list.map((node) => {
-      if (node.deptId === key) {
-        return {
-          ...node,
-          children
-        };
-      }
-      if (node.children) {
-        return {
-          ...node,
-          children: updateTreeData(node.children, key, children)
-        };
-      }
-      return node;
-    });
-  };
+
   // 异步获取组织架构及当前目录下的员工
   const onLoadDataHandle = async ({ key }: any) => {
     // 获取对应的子节点
@@ -170,18 +136,32 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     let selectedList = [];
     if (showStaff) {
       selectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.staffId));
-      // 判断点击的是部门还是员工
-      if (!info.node.staffId) {
-        // 获取该部门下的所有员工
-        const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.id, pageSize: 9999 });
-        res.list.forEach((item: any) => {
-          item.id = item.staffId;
-          item.name = item.staffName;
-          item.isLeaf = true;
-        });
-        // 判断是选中还是取消
-        if (info.checked) {
-          selectedList = [...selectedList, ...res.list];
+      if (selectedDept) {
+        // 判断已选列表是否需要显示部门
+        console.log(
+          'filterChildren',
+          filterChildren([...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))])
+        );
+        console.log('selectedList', [
+          ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
+        ]);
+        selectedList = filterChildren([
+          ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
+        ]);
+      } else {
+        // 判断点击的是部门还是员工
+        if (!info.node.staffId) {
+          // 获取该部门下的所有员工
+          const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.id, pageSize: 9999 });
+          res.list.forEach((item: any) => {
+            item.id = item.staffId;
+            item.name = item.staffName;
+            item.isLeaf = true;
+          });
+          // 判断是选中还是取消
+          if (info.checked) {
+            selectedList = [...res.list];
+          }
         }
       }
     } else {
@@ -203,18 +183,15 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     setCheckedKeys((keys) => [...keys.filter((keysItem) => keysItem !== item.id)]);
   };
   useEffect(() => {
-    filterChildren([]);
     console.log('treeSearchValue', treeSearchValue);
   }, [treeSearchValue]);
   useEffect(() => {
-    if (roleType !== 1) {
-      if (params.visible) {
-        (async () => {
-          setTreeData(await getCorpOrg(''));
-        })();
-      } else {
-        onResetHandle();
-      }
+    if (params.visible) {
+      (async () => {
+        setTreeData(await getCorpOrg(''));
+      })();
+    } else {
+      onResetHandle();
     }
   }, [params.visible, corpId]);
   // 自动展开以及自动勾选
@@ -258,7 +235,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   }, [selectedList]);
   return (
     <Modal
-      className={classNames(style.modalWrap, { [style.omsWrap]: roleType === 1 })}
+      className={style.modalWrap}
       visible={params.visible}
       centered
       maskClosable={false}
@@ -269,56 +246,55 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       onCancel={onCancel}
       destroyOnClose
     >
-      {roleType !== 1 && (
-        <div className={style.contentWrap}>
-          <div className={style.treeWrap}>
-            <Input
-              className={style.searchTree}
-              placeholder={'搜索成员、部门'}
-              onChange={debounce(treeSearchOnChange, 500)}
-              addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
-            />
-            <div className={style.title}>成员</div>
-            <Tree
-              className={style.tree}
-              {...treeProps}
-              fieldNames={{ title: 'name', key: 'id' }}
-              loadData={onLoadDataHandle}
-              // @ts-ignore
-              treeData={treeData}
-              onExpand={onExpandHandle}
-              checkedKeys={checkedKeys}
-              onCheck={onCheckHandle}
-            />
-          </div>
-          <div className={style.selectedWrap}>
-            <Input
-              placeholder={'搜索成员、部门'}
-              onChange={debounce(selectedOnchange, 500)}
-              addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
-            />
-            <div className={style.seletedTitle}>已选择成员 {selectedCount} 人</div>
-            <div className={classNames(style.selectList, 'scroll-strip')}>
-              {selectedList.map(
-                (item) =>
-                  item && (
-                    <div className={style.selectItem} key={item.id}>
-                      <span className={style.name}>
-                        {item.name}
-                        {!item.staffId && '（' + item.effCount + '）'}
-                      </span>
-                      <Icon
-                        className={style.delIcon}
-                        name="icon_common_16_inputclean"
-                        onClick={() => clickDelStaffHandle(item)}
-                      />
-                    </div>
-                  )
-              )}
-            </div>
+      <div className={style.contentWrap}>
+        <div className={style.treeWrap}>
+          <Input
+            className={style.searchTree}
+            placeholder={'搜索成员、部门'}
+            onChange={debounce(treeSearchOnChange, 500)}
+            addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
+          />
+          <div className={style.title}>成员</div>
+          <Tree
+            className={style.tree}
+            {...treeProps}
+            fieldNames={{ title: 'name', key: 'id' }}
+            loadData={onLoadDataHandle}
+            // @ts-ignore
+            treeData={treeData}
+            onExpand={onExpandHandle}
+            checkedKeys={checkedKeys}
+            onCheck={onCheckHandle}
+          />
+        </div>
+        <div className={style.selectedWrap}>
+          <Input
+            placeholder={'搜索成员、部门'}
+            onChange={debounce(selectedOnchange, 500)}
+            addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
+          />
+          <div className={style.seletedTitle}>已选择成员 {selectedCount} 人</div>
+          <div className={classNames(style.selectList, 'scroll-strip')}>
+            {selectedList.map(
+              (item) =>
+                item && (
+                  <div className={style.selectItem} key={item.id}>
+                    <span className={style.name}>
+                      {item.name}
+                      {!item.staffId && '（' + item.effCount + '）'}
+                    </span>
+                    <Icon
+                      className={style.delIcon}
+                      name="icon_common_16_inputclean"
+                      onClick={() => clickDelStaffHandle(item)}
+                    />
+                  </div>
+                )
+            )}
           </div>
         </div>
-      )}
+      </div>
+      )
     </Modal>
   );
 };

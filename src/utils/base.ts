@@ -208,3 +208,43 @@ export const percentage = (num: number, total: number): number | string => {
   }
   return Math.round((num / total) * 10000) / 100 + '%';
 };
+// 组织架构将已被选中的节点的所有后代节点过滤掉
+export const filterChildren = (arr: any[]): any[] => {
+  const newArr = [...arr];
+  const newArr1: string[] = [];
+  newArr.forEach((item) => {
+    if (item.staffId) return;
+    newArr.forEach((childrenItem) => {
+      if (item === childrenItem) return;
+      // 找出该选中节点的所有后代节点
+      if (childrenItem.fullDeptId.split(',').includes(item.deptId.toString())) {
+        if (childrenItem.staffId) {
+          console.log(childrenItem);
+          newArr1.push(childrenItem.staffId);
+        } else {
+          newArr1.push(childrenItem.deptId);
+        }
+      }
+    });
+  });
+  // 过滤掉所有选中节点的后代节点
+  return newArr.filter((item) => !newArr1.includes(item.staffId || item.deptId));
+};
+// 向树结构添加子节点
+export const updateTreeData = (list: any[], key: React.Key, children: any[]): any[] => {
+  return list.map((node) => {
+    if (node.deptId === key) {
+      return {
+        ...node,
+        children
+      };
+    }
+    if (node.children) {
+      return {
+        ...node,
+        children: updateTreeData(node.children, key, children)
+      };
+    }
+    return node;
+  });
+};

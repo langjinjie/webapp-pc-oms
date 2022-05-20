@@ -110,7 +110,10 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
     }
   };
   // 添加管理成员
-
+  const treeOnOk = async (value: any) => {
+    console.log('value', value);
+    // await requestAddOrEditRoleAccount({ roleId: params.roleId });
+  };
   useEffect(() => {
     getDetail();
   }, [paginationParam]);
@@ -156,7 +159,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         })}
       />
       {/* 添加/编辑成员 */}
-      <OrganizationalTree roleType={roleType} showStaff={true} params={params} setParams={setParams} />
+      <OrganizationalTree selectedDept={true} showStaff={true} params={params} setParams={setParams} onOk={treeOnOk} />
       <Modal
         className={style.adminModal}
         title="添加/管理成员"
