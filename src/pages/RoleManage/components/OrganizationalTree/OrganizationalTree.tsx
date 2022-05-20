@@ -1,9 +1,10 @@
 import React, { useState, useEffect, Key, Dispatch, SetStateAction, useContext } from 'react';
 import { Context } from 'src/store';
 import { Modal, Tree, Input } from 'antd';
-import { Icon } from 'src/components';
-import { requestGetDeptList, requestGetDepStaffList } from 'src/apis/orgManage';
+import { Icon, Empty } from 'src/components';
+import { requestGetDeptList, requestGetDepStaffList, searchStaffList } from 'src/apis/orgManage';
 import { debounce, filterChildren, updateTreeData } from 'src/utils/base';
+
 import classNames from 'classnames';
 import style from './style.module.less';
 
@@ -11,7 +12,7 @@ interface IAddLotteryListProps {
   value?: any[];
   onChange?: (value: any[]) => void;
   showStaff?: boolean;
-  selectedDept: boolean;
+  selectedDept?: boolean;
   params: { visible: boolean; added: boolean; roleId: string };
   setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>;
   onOk?: (value: any) => void;
@@ -44,6 +45,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const [selectedList, setSelectedList] = useState<any[]>([]);
   const [autoExpand, setAutoExpand] = useState(true);
   const [treeSearchValue, setTreeSearchValue] = useState('');
+  const [selectSearchValue, setSelectSearchValue] = useState('');
+  const [treeSearchList, setTreeSearchList] = useState<any[]>([]);
   const [selectedCount, setSeletedCount] = useState(0);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
@@ -66,7 +69,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   // 获取组织架构
   const getCorpOrg = async (parentId: string) => {
     let res1 = await requestGetDeptList({ parentId });
-    let res2 = [];
+    let res2: any = [];
     if (showStaff && parentId) {
       const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId });
       res2 = res.list.map((item: any) => ({
@@ -95,7 +98,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         })
       );
       // 将树结构添加到扁平结构中
-      setFlatTreeData([...flatTreeData, ...res2, ...res1]);
+      setFlatTreeData((flatTreeData) => [...flatTreeData, ...res2, ...res1]);
     }
     return [...res2, ...res1];
   };
@@ -168,15 +171,44 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   };
   // 已选择成员搜索
   const selectedOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTreeSearchValue(e.target.value);
+    setSelectSearchValue(e.target.value);
   };
   // 删除选中
   const clickDelStaffHandle = (item: any) => {
     setSelectedList((param) => [...param.filter((filterItem) => filterItem.id !== item.id)]);
     setCheckedKeys((keys) => [...keys.filter((keysItem) => keysItem !== item.id)]);
   };
+  // 点击左侧搜索结果的部门或者
+  const searchList = async () => {
+    const res = await searchStaffList({
+      keyWords: treeSearchValue,
+      searchType: selectedDept ? undefined : 2,
+      isFull: true
+    });
+    if (res) {
+      const list = [...res.staffList, ...(res.deptList || [])];
+      list.forEach((item: any) => {
+        item.id = item.deptId || item.staffId;
+        item.name = item.deptName || item.staffName;
+      });
+      setTreeSearchList(list);
+    }
+  };
+  // 点击搜索出来的列表
+  const clickSearchList = (item: any, checked: boolean) => {
+    let selected: any[] = [];
+    if (!checked) {
+      selected = [...selectedList, item];
+      setCheckedKeys((keys) => [...keys, item.id]);
+      // onChange?.([...selectedList, item]);
+    } else {
+      selected = selectedList.filter((filterItem) => filterItem.id !== item.id);
+      setCheckedKeys((keys) => keys.filter((filterItem) => filterItem !== item.id));
+    }
+    setSelectedList(selected);
+  };
   useEffect(() => {
-    console.log('treeSearchValue', treeSearchValue);
+    treeSearchValue && searchList();
   }, [treeSearchValue]);
   useEffect(() => {
     if (params.visible) {
@@ -212,9 +244,12 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       const selectedList = flatTreeData.filter((filterItem) =>
         Array.from(new Set([...staffKeys, ...deptKeys])).includes(filterItem.id)
       );
-      setSelectedList((param) => [...param, ...selectedList]);
+      console.log('value', value);
+      console.log('staffKeys', staffKeys);
+      console.log('flatTreeData', flatTreeData);
+      setSelectedList(() => [...selectedList]);
     }
-  }, [flatTreeData]);
+  }, [flatTreeData, value]);
   useEffect(() => {
     const seletedCount = selectedList.reduce((prev: number, now: any) => {
       if (!now.staffId) {
@@ -248,8 +283,36 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
             addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
           />
           <div className={style.title}>成员</div>
+          {!!treeSearchValue && (
+            <div className={style.searchListWrap}>
+              {treeSearchList.length
+                ? (
+                    treeSearchList.map((item: any) => (
+                  <div
+                    key={item.id}
+                    className={classNames(style.searchItem, {
+                      [style.active]: selectedList.some((selectItem) => item.id === selectItem.id)
+                    })}
+                    onClick={() =>
+                      clickSearchList(
+                        item,
+                        selectedList.some((selectItem) => item.id === selectItem.id)
+                      )
+                    }
+                  >
+                    <div className={style.name}>{item.name}</div>
+                  </div>
+                    ))
+                  )
+                : (
+                <div className={style.empty}>
+                  <Empty />
+                </div>
+                  )}
+            </div>
+          )}
           <Tree
-            className={style.tree}
+            className={classNames(style.tree, { [style.hiden]: !!treeSearchValue })}
             {...treeProps}
             fieldNames={{ title: 'name', key: 'id' }}
             loadData={onLoadDataHandle}
@@ -268,22 +331,24 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
           />
           <div className={style.seletedTitle}>已选择成员 {selectedCount} 人</div>
           <div className={classNames(style.selectList, 'scroll-strip')}>
-            {selectedList.map(
-              (item) =>
-                item && (
-                  <div className={style.selectItem} key={item.id}>
-                    <span className={style.name}>
-                      {item.name}
-                      {!item.staffId && '（' + item.effCount + '）'}
-                    </span>
-                    <Icon
-                      className={style.delIcon}
-                      name="icon_common_16_inputclean"
-                      onClick={() => clickDelStaffHandle(item)}
-                    />
-                  </div>
-                )
-            )}
+            {selectedList
+              .filter((filterItem) => filterItem.name.includes(selectSearchValue))
+              .map(
+                (item) =>
+                  item && (
+                    <div className={style.selectItem} key={item.id}>
+                      <span className={style.name}>
+                        {item.name}
+                        {!item.staffId && '（' + item.effCount + '）'}
+                      </span>
+                      <Icon
+                        className={style.delIcon}
+                        name="icon_common_16_inputclean"
+                        onClick={() => clickDelStaffHandle(item)}
+                      />
+                    </div>
+                  )
+              )}
           </div>
         </div>
       </div>

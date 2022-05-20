@@ -125,6 +125,9 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       message.success('添加/管理成功');
     }
   };
+  const treeOnchange = (value: any) => {
+    setTreeValue(value);
+  };
   // 打开选择组织架构选择树
   const clickTree = async (added: boolean, roleId: string) => {
     if (roleType === 1) {
@@ -133,7 +136,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       // 获取当前角色得成员
       const res = await requestGetCurRoleUserList({ roleId });
       if (res) {
-        setTreeValue([...(res.staffList || []), ...(res.deptList || [])]);
+        treeOnchange([...(res.staffList || []), ...(res.deptList || [])]);
         setParams({ visible: true, added, roleId });
       }
     }
@@ -185,6 +188,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       {/* 添加/编辑成员 */}
       <OrganizationalTree
         value={treeValue}
+        onChange={treeOnchange}
         selectedDept={true}
         showStaff={true}
         params={params}

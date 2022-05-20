@@ -46,7 +46,14 @@ const StaffList: React.FC<IStaffList> = ({ value, onChange, readOnly }) => {
       <Button className={style.chooseTagBtn} onClick={chooseStaff} disabled={readOnly}>
         选择人员
       </Button>
-      <OrganizationalTree value={value} onChange={onChange} showStaff={true} params={params} setParams={setParams} />
+      <OrganizationalTree
+        value={value}
+        onChange={onChange}
+        showStaff={true}
+        selectedDept={false}
+        params={params}
+        setParams={setParams}
+      />
     </div>
   );
 };
