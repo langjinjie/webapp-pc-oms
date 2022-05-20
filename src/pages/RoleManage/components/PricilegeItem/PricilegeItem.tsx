@@ -68,8 +68,6 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
         new Set([...value.map((valueItem) => valueItem.menuId), ...tree2Arry([e.node]).map((item) => item.menuId)])
       );
       const newValue = [...flatTreeData.filter((flatItem) => newParamKeys.includes(flatItem.menuId))];
-      console.log(newValue);
-      console.log(value);
       onChange?.([...value.filter((filterItem: any) => filterItem.sysType !== e.node.sysType), ...newValue]);
     } else {
       const deleParamKeys = tree2Arry([e.node]).map((item) => item.menuId);
@@ -103,13 +101,14 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
         {!item.children ||
           item.children.map((childItem: any) => (
             <Tree
+              checkStrictly
               disabled={disabled}
               key={childItem.menuName}
               className={style.tree}
               {...treeProps}
               onCheck={onCheckHandle}
               checkedKeys={value
-                ?.filter((valueItem) => valueItem.fullMenuId.split('-').includes(childItem.menuId))
+                ?.filter((valueItem) => valueItem.fullMenuId.split(',').includes(childItem.menuId))
                 .map((item) => item.menuId)}
               onExpand={onExpandHandle}
               fieldNames={{ title: 'menuName', key: 'menuId' }}

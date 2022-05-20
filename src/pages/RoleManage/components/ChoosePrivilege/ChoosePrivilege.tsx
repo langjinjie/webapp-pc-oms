@@ -2,9 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Icon, NgModal } from 'src/components';
 import { PricilegeItem } from 'src/pages/RoleManage/components';
 import { queryCompanyFeature } from 'src/apis/company';
-import { requesetGetRoleList } from 'src/apis/roleMange';
+import { requesetGetRoleList, requestGetRoleDetail } from 'src/apis/roleMange';
 import { Context } from 'src/store';
-import { Select } from 'antd';
+import { message, Select } from 'antd';
+import { tree2Arry } from 'src/utils/base';
 import style from './style.module.less';
 
 interface IChoosePrivilege {
@@ -19,6 +20,7 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
   const [modalParam, setModalParam] = useState<{ [key: string]: any }>({ visible: false });
   const [list, setList] = useState<any>([]);
   const [roleList, setRoleList] = useState<any[]>([]);
+  const [roleId, setRoleId] = useState('');
   const { Option } = Select;
   // 获取所有得权限列表
   const getAllMenuList = async () => {
@@ -27,10 +29,9 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
       setList(res);
     }
   };
-  // 复制权限
+  // 获取角色列表
   const copyPrivilege = async () => {
     const res = await requesetGetRoleList({ roleType, pageSize: 999 });
-    console.log(res);
     if (res) {
       setRoleList(res.list);
       setModalParam({ visible: true });
@@ -39,11 +40,20 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
   const onCancel = () => {
     setModalParam({ visible: false });
   };
-  const onOk = () => {
-    onCancel();
+  // 复制已有权限
+  const onOk = async () => {
+    const res = await requestGetRoleDetail({ roleType, roleId });
+    if (res) {
+      const menuList = tree2Arry(res.list)
+        .filter((filterItem) => filterItem.enable)
+        .map((mapItem) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId }));
+      onChange?.(menuList);
+      onCancel();
+      message.success('权限复制成功');
+    }
   };
-  const selectOnchange = (values: any) => {
-    console.log(values);
+  const selectOnchange = (value: string) => {
+    setRoleId(value);
   };
   useEffect(() => {
     corpId && getAllMenuList();
