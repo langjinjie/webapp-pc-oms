@@ -37,6 +37,7 @@ const TableColumns = (): ColumnType<any>[] => {
     },
     {
       title: '操作',
+      fixed: 'right',
       render (row: any) {
         return (
           <>

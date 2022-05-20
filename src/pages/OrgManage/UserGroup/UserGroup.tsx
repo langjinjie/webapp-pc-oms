@@ -12,7 +12,10 @@ interface IGroupList {
   list: IGroupItem[];
 }
 
-const UserGroup: React.FC = () => {
+interface UserGroupProps {
+  change?: (item: any) => void;
+}
+const UserGroup: React.FC<UserGroupProps> = ({ change }) => {
   const [loading, setLoading] = useState(false);
   const [groupList, setGroupList] = useState<IGroupList>({ total: 0, list: [] });
   const [searchParam, setSearchParam] = useState<{ groupName: string; groupCode: string }>({
@@ -49,6 +52,16 @@ const UserGroup: React.FC = () => {
     }
     setPaginationParam((param) => ({ ...param, pageNum: 1 }));
   };
+
+  const rowSelection = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+      change?.(selectedRows[0]);
+    },
+    getCheckboxProps: (record: any) => ({
+      disabled: record.name === 'Disabled User', // Column configuration not to be checked
+      name: record.name
+    })
+  };
   useEffect(() => {
     getGroupList();
   }, [paginationParam]);
@@ -74,6 +87,14 @@ const UserGroup: React.FC = () => {
         </Form.Item>
       </Form>
       <NgTable
+        rowSelection={
+          change
+            ? {
+                type: 'radio',
+                ...rowSelection
+              }
+            : undefined
+        }
         className={style.table}
         setRowKey={(row) => row.groupId}
         dataSource={groupList.list}
