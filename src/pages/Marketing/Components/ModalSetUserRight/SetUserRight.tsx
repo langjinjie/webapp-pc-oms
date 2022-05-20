@@ -10,7 +10,7 @@ interface SetUserRightProps extends Omit<React.ComponentProps<typeof NgModal>, '
   groupId?: string;
 }
 
-export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visible, onOk, ...props }) => {
+export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visible, onOk, onCancel, ...props }) => {
   const [rightForm] = Form.useForm();
   const [visibleUserGroup, setVisibleUserGroup] = useState(true);
   const [groupInfo, setGroupInfo] = useState<any>({
@@ -33,10 +33,10 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
   const getGroup = async () => {
     if (groupId) {
       const res = await getUserGroup({ groupId });
-      console.log(res);
       const { groupType } = res;
       rightForm.setFieldsValue({ groupType, isSet: 1, group: res.groupInfo });
-      setFormValues((formValues) => ({ ...formValues, isSet: 1 }));
+      setFormValues((formValues) => ({ ...formValues, isSet: 1, groupType }));
+      console.log(res);
       setGroupInfo(res);
     }
   };
@@ -44,8 +44,8 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
     getGroup();
   }, [groupId]);
   const onValuesChange = (values: any) => {
-    const { isSet } = values;
-    setFormValues((formValues) => ({ ...formValues, isSet }));
+    const { isSet, groupType } = values;
+    setFormValues((formValues) => ({ ...formValues, isSet, groupType }));
   };
   // const changeGroup = () => {
   //   console.log('修改分组');
@@ -53,6 +53,17 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
   // };
   const onUserGroupChange = (value: any) => {
     console.log(value);
+  };
+
+  const handleCancel = (e: any) => {
+    rightForm.resetFields();
+    setFormValues({
+      isSet: 0,
+      groupType: 1,
+      group: ''
+    });
+    onCancel?.(e);
+    setGroupInfo({});
   };
   return (
     <>
@@ -62,6 +73,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
         title={title || '修改可见范围'}
         width="570px"
         onOk={handleSubmit}
+        onCancel={handleCancel}
         {...props}
       >
         <Form
@@ -83,12 +95,13 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
               <>
                 <Form.Item name={'groupType'}>
                   <Radio.Group>
-                    <Radio value={2}>按照组织架构选择</Radio>
                     <Radio value={1}>按照用户组选择</Radio>
+                    <Radio value={2}>按照组织架构选择</Radio>
                   </Radio.Group>
                 </Form.Item>
                 <Form.Item name={'group'}>
                   <UserGroupModal
+                    groupType={formValues.groupType}
                     onCancel={() => setVisibleUserGroup(false)}
                     onOk={() => setVisibleUserGroup(false)}
                     visible={visibleUserGroup}
@@ -97,12 +110,12 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
                 </Form.Item>
                 <Form.Item>
                   上次选择的可见范围为：
-                  {formValues.groupType === 1 ? groupInfo.groupInfo.groupName : groupInfo.orgInfo.staffNum}
+                  {formValues.groupType === 1 ? groupInfo?.groupInfo?.groupName : groupInfo?.orgInfo?.staffNum}
                 </Form.Item>
                 <Form.Item>
                   <span>
                     截止目前时间：此用户组共计人数：
-                    {formValues.groupType === 1 ? groupInfo.groupInfo.staffNum : groupInfo.orgInfo.staffNum}人
+                    {formValues.groupType === 1 ? groupInfo?.groupInfo?.staffNum : groupInfo?.orgInfo?.staffNum}人
                   </span>
                   <Button type="link">查看人员</Button>
                 </Form.Item>

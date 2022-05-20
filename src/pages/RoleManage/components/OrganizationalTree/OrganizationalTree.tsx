@@ -1,4 +1,10 @@
-import React, { useState, useEffect, Key, Dispatch, SetStateAction, useContext } from 'react';
+import React, {
+  useState,
+  useEffect,
+  Key,
+  // Dispatch, SetStateAction,
+  useContext
+} from 'react';
 import { Context } from 'src/store';
 import { Modal, Tree, Input } from 'antd';
 import { Icon } from 'src/components';
@@ -11,9 +17,11 @@ interface IAddLotteryListProps {
   value?: any[];
   onChange?: (value: any[]) => void;
   showStaff?: boolean;
-  selectedDept: boolean;
-  params: { visible: boolean; added: boolean; roleId: string };
-  setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>;
+  selectedDept?: boolean;
+  title?: string;
+  params: any;
+  setParams?: any;
+  onCancel?: () => void;
   onOk?: (value: any) => void;
 }
 
@@ -35,7 +43,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   selectedDept = true,
   params,
   setParams,
-  onOk
+  onOk,
+  onCancel: onClose
 }) => {
   const { currentCorpId: corpId } = useContext<{ currentCorpId: string }>(Context);
   const [treeData, setTreeData] = useState<any[]>([]);
@@ -101,11 +110,12 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   };
   const onOkHandle = async () => {
     onChange?.(selectedList);
-    setParams({ visible: false, added: true, roleId: '' });
+    setParams?.({ visible: false, added: true, roleId: '' });
     onOk?.(selectedList);
   };
   const onCancel = () => {
-    setParams({ visible: false, added: false, roleId: '' });
+    onClose?.();
+    setParams?.({ visible: false, added: false, roleId: '' });
   };
 
   // 异步获取组织架构及当前目录下的员工
