@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Key, useContext } from 'react';
-import { Button, Form, Input, Table, TableColumnProps } from 'antd';
+import { Button, Form, Input, message, Table, TableColumnProps } from 'antd';
 import { Icon, NgTable, Modal } from 'src/components';
 import { OrganizationalTree } from 'src/pages/RoleManage/components';
 import { TableColumns, TablePagination } from './Config';
@@ -71,8 +71,6 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
   const getDetail = async () => {
     setLoading(true);
     const res = await requesetGetRoleList({ roleType, ...searchParam, ...paginationParam });
-    console.log(res);
-    console.log('roleType', roleType);
     setRoleList(res);
     setLoading(false);
   };
@@ -83,7 +81,6 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
   };
   // 新增角色
   const addRole = () => {
-    console.log(roleTypeRouteList[roleType - 1]);
     history.push(roleTypeRouteList[roleType - 1]);
   };
   // 管理成员
@@ -92,12 +89,13 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       roleId: adminModalParam.roleId,
       staffList: staffList.map((item) => ({ staffId: item }))
     });
-    console.log(res);
+    if (res) {
+      message.success('添加/管理成功');
+    }
   };
   const rowSelection = {
     selectedRowKeys: staffList,
     onChange: (keys: Key[]) => {
-      console.log(keys);
       setStaffList(keys);
     }
   };
@@ -110,23 +108,22 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
   // 获取角色成员列表
   const roleAccountList = async () => {
     const res = await requestGetRoleAccountList({ roleId: adminModalParam.roleId });
-    console.log(res);
     if (res) {
       setStaffList(res.staffList.map((item: any) => item.staffId));
     }
   };
   // 添加管理成员
   const treeOnOk = async (value: any) => {
-    console.log('value', value);
     const staffList = value
       .filter((filterItem: any) => filterItem.staffId)
       .map((item: any) => ({ staffId: item.staffId }));
     const deptList = value
       .filter((filterItem: any) => !filterItem.staffId)
       .map((item: any) => ({ deptId: item.deptId }));
-    console.log('roleId', params.roleId);
     const res = await requestAddOrEditRoleAccount({ roleId: params.roleId, staffList, deptList });
-    console.log(res);
+    if (res) {
+      message.success('添加/管理成功');
+    }
   };
   // 打开选择组织架构选择树
   const clickTree = async (added: boolean, roleId: string) => {
@@ -135,7 +132,6 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
     } else {
       // 获取当前角色得成员
       const res = await requestGetCurRoleUserList({ roleId });
-      console.log(res);
       if (res) {
         setTreeValue([...(res.staffList || []), ...(res.deptList || [])]);
         setParams({ visible: true, added, roleId });

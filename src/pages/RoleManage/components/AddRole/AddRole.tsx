@@ -41,7 +41,6 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
     }
   };
   const onFinish = async (values: any) => {
-    console.log('values', values);
     const res = await requestAddOrEditRole({
       ...values,
       roleType,
@@ -49,7 +48,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
       roleId: URLSearchParams(location.search).roleId
     });
     if (res) {
-      message.success('角色新增成功');
+      message.success(URLSearchParams(location.search).roleId ? '角色修改成功' : '角色新增成功');
       history.push(roleTypeRouteList[roleType - 1].replace('/add', ''));
     }
   };

@@ -17,10 +17,8 @@ const TableColumns = (
   const { setConfirmModalParam } =
     useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(Context);
   const history = useHistory();
-  console.log('roleType', roleType);
   // 点击编辑/查看角色
   const editOrViewHandle = (type: string, roleId: string) => {
-    console.log(roleTypeRouteList[roleType - 1] + '?type=' + type + '&roleId=' + roleId);
     history.push(roleTypeRouteList[roleType - 1] + '?type=' + type + '&roleId=' + roleId);
   };
   // 删除角色
