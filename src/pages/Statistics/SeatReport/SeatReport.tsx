@@ -9,8 +9,19 @@ import Dom2Img from 'dom-to-image';
 import { Button } from 'lester-ui';
 import { setTitle } from 'lester-tools';
 import { downloadImage } from 'src/utils/base';
-import { queryReportList, queryReportStyle, queryReportDetail, queryReportAreaData } from 'src/apis/seatReport';
+import {
+  queryReportList,
+  queryReportStyle,
+  queryReportDetail,
+  queryReportAreaData,
+  queryBoardList
+} from 'src/apis/seatReport';
 import style from './style.module.less';
+
+interface BoardItem {
+  boardId: string;
+  moduleName: string;
+}
 
 interface ReportItem {
   reportId?: string;
@@ -72,7 +83,8 @@ const SeatReport: React.FC = () => {
   const [reportId, setReportId] = useState<string>('');
   const [reportConfig, setReportConfig] = useState<ReportConfig>({});
   const [reportDetail, setReportDetail] = useState<ReportDetail>({});
-  const [templateId, setTemplateId] = useState<string>('');
+  const [boardId, setBoardId] = useState<string>('');
+  const [boardList, setBoardList] = useState<BoardItem[]>([]);
 
   /**
    * dom转换成图片
@@ -86,9 +98,10 @@ const SeatReport: React.FC = () => {
   /**
    * 获取战报样式数据
    * @param reportId
+   * @param boardId
    */
-  const getReportStyle = async (reportId: string) => {
-    const res: any = await queryReportStyle({ reportId, templateId });
+  const getReportStyle = async (reportId: string, boardId: string) => {
+    const res: any = await queryReportStyle({ reportId, boardId });
     if (res) {
       setReportConfig(res);
     }
@@ -97,9 +110,10 @@ const SeatReport: React.FC = () => {
   /**
    * 获取周报详情数据
    * @param reportId
+   * @param boardId
    */
-  const getReportDetail = async (reportId: string) => {
-    const res: any = await queryReportDetail({ reportId, templateId });
+  const getReportDetail = async (reportId: string, boardId: string) => {
+    const res: any = await queryReportDetail({ reportId, boardId });
     if (res) {
       setReportDetail(res);
       const promiseList: Promise<any>[] = [];
@@ -131,14 +145,24 @@ const SeatReport: React.FC = () => {
   /**
    * 获取战报列表
    */
-  const getReportList = async () => {
-    const res: any = await queryReportList();
-    if (Array.isArray(res) && res.length > 0) {
+  const getReportList = async (boardId: string) => {
+    const res: any = await queryReportList({ boardId });
+    if (res && res.length > 0) {
       setReportList(res);
       const id = res[0].reportId;
       setReportId(id);
-      getReportDetail(id);
-      getReportStyle(id);
+      getReportDetail(id, boardId);
+      getReportStyle(id, boardId);
+    }
+  };
+
+  const getBoardList = async () => {
+    const res: any = await queryBoardList();
+    if (res && res.length > 0) {
+      const boardId = res[0].boardId;
+      getReportList(boardId);
+      setBoardList(res);
+      setBoardId(boardId);
     }
   };
 
@@ -243,7 +267,7 @@ const SeatReport: React.FC = () => {
   };
 
   useEffect(() => {
-    getReportList();
+    getBoardList();
     setTitle('座席战报');
   }, []);
 
@@ -256,16 +280,15 @@ const SeatReport: React.FC = () => {
             <div className={style.colValue}>
               <Select
                 placeholder="请选择"
-                value={reportId}
+                value={boardId}
                 onChange={(val) => {
-                  setTemplateId(val);
-                  getReportDetail(val);
-                  getReportStyle(val);
+                  setBoardId(val);
+                  getReportList(val);
                 }}
               >
-                {reportList.map((item) => (
-                  <Option key={item.reportId} value={item.reportId!}>
-                    {item.reportName}
+                {boardList.map((item) => (
+                  <Option key={item.boardId} value={item.boardId!}>
+                    {item.moduleName}
                   </Option>
                 ))}
               </Select>
@@ -279,8 +302,8 @@ const SeatReport: React.FC = () => {
                 value={reportId}
                 onChange={(val) => {
                   setReportId(val);
-                  getReportDetail(val);
-                  getReportStyle(val);
+                  getReportDetail(val, boardId);
+                  getReportStyle(val, boardId);
                 }}
               >
                 {reportList.map((item) => (
