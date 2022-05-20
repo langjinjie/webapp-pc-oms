@@ -109,6 +109,8 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       setStaffList(res.staffList.map((item: any) => item.staffId));
     }
   };
+  // 添加管理成员
+
   useEffect(() => {
     getDetail();
   }, [paginationParam]);

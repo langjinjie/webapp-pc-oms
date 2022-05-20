@@ -14,7 +14,7 @@ interface IAddLotteryListProps {
   roleType?: 1 | 2 | 3;
   params: { visible: boolean; added: boolean; roleId: string };
   setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>;
-  onOk?: () => void;
+  onOk?: (value: any) => void;
 }
 
 interface ItreeProps {
@@ -119,7 +119,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const onOkHandle = async () => {
     onChange?.(selectedList);
     setParams({ visible: false, added: true, roleId: '' });
-    onOk?.();
+    onOk?.(selectedList);
   };
   const onCancel = () => {
     setParams({ visible: false, added: false, roleId: '' });
