@@ -18,7 +18,7 @@ import Header from './Header';
 import './style.less';
 
 const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
-  const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList } = useContext(Context);
+  const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList, setBtnList } = useContext(Context);
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
   const [subMenus, setSubMenus] = useState<MenuItem[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -38,7 +38,11 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
       const subMenus = menus[currentMenuIndex].children || [];
       setMenuIndex(currentMenuIndex);
       setSubMenus(subMenus);
-      setSubMenuIndex(subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(currentMenu)));
+      const subIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(currentMenu));
+      setSubMenuIndex(subIndex);
+      const btnList: MenuItem[] = subMenus[subIndex].children || [];
+      setBtnList(btnList.map((item) => item.path));
+      console.log(btnList.map((item) => item.path));
     }
   };
 
@@ -128,7 +132,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
               onClick={() => {
                 setMenuIndex(index);
                 setSubMenuIndex(null);
-                setSubMenus(menu.children || []);
                 if (menu.children && menu.children.length > 0) {
                   history.push(((menu.children || [])[0] || {}).path);
                 }
@@ -146,10 +149,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
                 'sub-menu-active': subMenuIndex === index
               })}
               key={subMenu.menuId}
-              onClick={() => {
-                console.log(index);
-                history.push(subMenu.path);
-              }}
+              onClick={() => history.push(subMenu.path)}
             >
               {subMenu.menuName}
             </li>
