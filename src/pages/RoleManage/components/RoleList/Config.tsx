@@ -3,7 +3,7 @@ import { ColumnType } from 'antd/es/table';
 import { IRoleList, IConfirmModalParam } from 'src/utils/interface';
 import { roleTypeRouteList } from 'src/utils/commonData';
 import { useHistory } from 'react-router-dom';
-import { requestDelRole } from 'src/apis/roleMange';
+import { requestDelRole, requestChangeRoleStatus } from 'src/apis/roleMange';
 import { Context } from 'src/store';
 
 import style from './style.module.less';
@@ -24,20 +24,20 @@ const TableColumns = (
     history.push(roleTypeRouteList[roleType - 1] + '?type=' + type + '&roleId=' + roleId);
   };
   // 删除角色
-  const delRoleHandle = (roleId: string) => {
+  const delRoleHandle = (row: IRoleList) => {
     const onCancel = () => {
       setConfirmModalParam({ visible: false });
     };
     const onOk = async () => {
-      await requestDelRole({ roleId });
+      await requestDelRole({ roleId: row.roleId });
       onCancel();
       setPaginationParam({ pageNum: 1, pageSize: 10 });
     };
     setConfirmModalParam((param) => ({
       ...param,
       visible: true,
-      title: '删除体系',
-      tips: '您确定删除该角色吗？',
+      title: '温馨提示',
+      tips: `此角色下有人员共计${row.userNum}名。关闭角色后，他们的权限将会被关闭。无法进入系统。请您知悉`,
       onOk,
       onCancel
     }));
@@ -49,9 +49,17 @@ const TableColumns = (
       visible: true,
       title: '温馨提示',
       tips: row.status
-        ? `此角色下有人员共计${10}名。关闭角色后，他们的权限将会被关闭。无法进入系统。请您知悉`
+        ? `此角色下有人员共计${row.userNum}名。关闭角色后，他们的权限将会被关闭。无法进入系统。请您知悉`
         : '确认开启该角色吗',
-      okText: row.status ? '确认关闭' : '确认开启'
+      okText: row.status ? '确认关闭' : '确认开启',
+      onCancel () {
+        setConfirmModalParam({ visible: false });
+      },
+      async onOk () {
+        await requestChangeRoleStatus({ roleId: row.roleId, status: row.status ? 0 : 1 });
+        setConfirmModalParam({ visible: false });
+        setPaginationParam((param) => ({ ...param }));
+      }
     }));
   };
   return [
@@ -109,7 +117,7 @@ const TableColumns = (
               </span>
             )}
             {!row.isDefault && (
-              <span className={style.del} onClick={() => delRoleHandle(row.roleId)}>
+              <span className={style.del} onClick={() => delRoleHandle(row)}>
                 删除
               </span>
             )}

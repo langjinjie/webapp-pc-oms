@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { ChoosePrivilege } from 'src/pages/RoleManage/components';
 import { requestGetRoleDetail, requestAddOrEditRole } from 'src/apis/roleMange';
 import { URLSearchParams, tree2Arry } from 'src/utils/base';
+import { roleTypeRouteList } from 'src/utils/commonData';
 import style from './style.module.less';
 
 interface IRoleType {
@@ -19,7 +20,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
   const { Item } = Form;
   // 点击面包屑
   const clickBreadCrumbs = () => {
-    history.goBack();
+    history.push(roleTypeRouteList[roleType - 1].replace('/add', ''));
   };
   // 获取角色详情
   const getRoleDetail = async () => {
@@ -28,11 +29,8 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
       setReadOnly(true);
     }
     if (roleId) {
-      console.log('roleId', roleId);
       const res = await requestGetRoleDetail({ roleType, roleId });
-      console.log(res);
       if (res) {
-        console.log(tree2Arry(res.list).filter((filterItem) => filterItem.enable));
         form.setFieldsValue({
           ...res,
           menuList: tree2Arry(res.list)
@@ -50,7 +48,13 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
       defaultDataScope: 1,
       roleId: URLSearchParams(location.search).roleId
     });
-    console.log(res);
+    if (res) {
+      message.success('角色新增成功');
+      history.push(roleTypeRouteList[roleType - 1].replace('/add', ''));
+    }
+  };
+  const onReset = () => {
+    history.push(roleTypeRouteList[roleType - 1].replace('/add', ''));
   };
   useEffect(() => {
     getRoleDetail();
@@ -68,7 +72,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
       </div>
       <div className={style.add}>
         <div className={style.title}>新增角色</div>
-        <Form form={form} className={style.form} onFinish={onFinish}>
+        <Form form={form} className={style.form} onFinish={onFinish} onReset={onReset}>
           <Item name="roleName" className={style.formItem} label="角色名称：">
             <Input
               className={style.smallInput}
@@ -99,9 +103,14 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
             <ChoosePrivilege roleType={roleType} readOnly={readOnly} />
           </Item>
           {readOnly || (
-            <Button type="primary" htmlType="submit">
-              保存
-            </Button>
+            <>
+              <Button className={style.submit} type="primary" htmlType="submit">
+                保存
+              </Button>
+              <Button className={style.cancel} htmlType="reset">
+                取消
+              </Button>
+            </>
           )}
         </Form>
       </div>

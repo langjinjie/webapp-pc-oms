@@ -42,3 +42,9 @@ export const requestDelRole: HttpFc = (param) => {
 export const requestGetCurRoleUserList: HttpFc = (param) => {
   return http.post('/tenacity-admin/api/privilege/role/user/list', param);
 };
+/**
+ * 开启/关闭角色
+ */
+export const requestChangeRoleStatus: HttpFc = (param) => {
+  return http.post('/tenacity-admin/api/privilege/role/status/manage', param);
+};

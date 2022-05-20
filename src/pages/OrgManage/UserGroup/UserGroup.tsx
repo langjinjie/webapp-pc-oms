@@ -42,12 +42,12 @@ const UserGroup: React.FC = () => {
   // 查询/重置
   const onSearchHandle = (values: any) => {
     console.log('values', values);
-    setPaginationParam((param) => ({ ...param, pageNum: 1 }));
     if (values.type === 'reset') {
       setSearchParam({ groupName: '', groupCode: '' });
     } else {
       setSearchParam(values);
     }
+    setPaginationParam((param) => ({ ...param, pageNum: 1 }));
   };
   useEffect(() => {
     getGroupList();

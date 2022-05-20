@@ -10,6 +10,7 @@ interface IPricilegeItem {
   item: any;
   onChange?: (menuList: { menuId: string; fullMenuId: string }[]) => void;
   readonly?: true;
+  disabled?: boolean;
 }
 
 interface ItreeProps {
@@ -23,7 +24,7 @@ interface ItreeProps {
   selectedKeys?: Key[];
 }
 
-const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, readonly }) => {
+const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, readonly, disabled }) => {
   const [extend, setExtend] = useState(false);
   const [treeHeight, setTreeHeight] = useState<number | string>(48);
   const [flatTreeData, setFlatTreeData] = useState<any[]>([]);
@@ -102,6 +103,7 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
         {!item.children ||
           item.children.map((childItem: any) => (
             <Tree
+              disabled={disabled}
               key={childItem.menuName}
               className={style.tree}
               {...treeProps}
