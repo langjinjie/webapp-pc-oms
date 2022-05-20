@@ -1,6 +1,6 @@
-import React, { useState, useEffect, Key, Dispatch, SetStateAction } from 'react';
-import { Modal, Tree, Input, Table } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import React, { useState, useEffect, Key, Dispatch, SetStateAction, useContext } from 'react';
+import { Context } from 'src/store';
+import { Modal, Tree, Input } from 'antd';
 import { Icon } from 'src/components';
 import { requestGetDeptList, requestGetDepStaffList } from 'src/apis/orgManage';
 import { debounce } from 'src/utils/base';
@@ -14,6 +14,7 @@ interface IAddLotteryListProps {
   roleType?: 1 | 2 | 3;
   params: { visible: boolean; added: boolean; roleId: string };
   setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>;
+  onOk?: () => void;
 }
 
 interface ItreeProps {
@@ -27,21 +28,16 @@ interface ItreeProps {
   selectedKeys?: Key[];
 }
 
-interface IaccountList {
-  adminId: string;
-  userName: string;
-  name: string;
-  isAdmin: number;
-}
-
 const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   value,
   onChange,
   showStaff,
   roleType,
   params,
-  setParams
+  setParams,
+  onOk
 }) => {
+  const { currentCorpId: corpId } = useContext<{ currentCorpId: string }>(Context);
   const [treeData, setTreeData] = useState<any[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
   const [flatTreeData, setFlatTreeData] = useState<any[]>([]);
@@ -49,7 +45,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const [autoExpand, setAutoExpand] = useState(true);
   const [treeSearchValue, setTreeSearchValue] = useState('');
   const [selectedCount, setSeletedCount] = useState(0);
-  const [accountList, setAccountList] = useState<IaccountList[]>([]);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -68,14 +63,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     setAutoExpand(true);
     setSelectedList([]);
   };
-  // 获取后管端账号列表
-  const userAccountList = () => {
-    setAccountList([{ name: '郎金杰', userName: 'langjinjie', adminId: '1', isAdmin: 0 }]);
-  };
-  const columns: ColumnsType<any> = [
-    { title: '员工姓名', dataIndex: 'name' },
-    { title: '员工账号', dataIndex: 'userName' }
-  ];
   // 获取组织架构
   const getCorpOrg = async (parentId: string) => {
     let res1 = await requestGetDeptList({ parentId });
@@ -129,10 +116,10 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     // 过滤掉所有选中节点的后代节点
     return newArr.filter((item) => !newArr1.includes(item.deptId));
   };
-  const onOk = async () => {
-    console.log('selectedList', selectedList);
+  const onOkHandle = async () => {
     onChange?.(selectedList);
     setParams({ visible: false, added: true, roleId: '' });
+    onOk?.();
   };
   const onCancel = () => {
     setParams({ visible: false, added: false, roleId: '' });
@@ -220,11 +207,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     console.log('treeSearchValue', treeSearchValue);
   }, [treeSearchValue]);
   useEffect(() => {
-    if (roleType === 1) {
-      if (params.visible) {
-        userAccountList();
-      }
-    } else {
+    if (roleType !== 1) {
       if (params.visible) {
         (async () => {
           setTreeData(await getCorpOrg(''));
@@ -233,7 +216,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         onResetHandle();
       }
     }
-  }, [params.visible]);
+  }, [params.visible, corpId]);
   // 自动展开以及自动勾选
   useEffect(() => {
     if (value && flatTreeData.length && autoExpand) {
@@ -282,32 +265,10 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       closable={false}
       title={(params.added ? '添加' : '编辑') + '成员'}
       okText={'确认添加'}
-      onOk={onOk}
+      onOk={onOkHandle}
       onCancel={onCancel}
       destroyOnClose
     >
-      {roleType === 1 && (
-        <div className={style.omsContentWrap}>
-          <div className={style.title}>已选超级管理员：</div>
-          <div className={style.chooseAccountList}>
-            {new Array(1).fill('史菲菲').map((item) => (
-              <div key={item} className={style.chooseAccoutItem}>
-                {item}
-                <Icon className={style.del} name="biaoqian_quxiao" />
-              </div>
-            ))}
-          </div>
-          <Table
-            className={style.tableWrap}
-            rowKey={'adminId'}
-            scroll={{ x: 'max-content' }}
-            dataSource={accountList}
-            columns={columns}
-            // rowSelection={}
-            pagination={false}
-          />
-        </div>
-      )}
       {roleType !== 1 && (
         <div className={style.contentWrap}>
           <div className={style.treeWrap}>

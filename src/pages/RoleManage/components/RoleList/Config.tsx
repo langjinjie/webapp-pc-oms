@@ -3,30 +3,52 @@ import { ColumnType } from 'antd/es/table';
 import { IRoleList, IConfirmModalParam } from 'src/utils/interface';
 import { roleTypeRouteList } from 'src/utils/commonData';
 import { useHistory } from 'react-router-dom';
+import { requestDelRole } from 'src/apis/roleMange';
 import { Context } from 'src/store';
 
 import style from './style.module.less';
 
 const TableColumns = (
   roleType: 1 | 2 | 3,
-  setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>
+  setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>,
+  setAdminParam: Dispatch<SetStateAction<{ visible: boolean; roleId: string }>>,
+  setPaginationParam: Dispatch<SetStateAction<{ pageNum: number; pageSize: number }>>
 ): ColumnType<any>[] => {
   const { setConfirmModalParam } =
     useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(Context);
   const history = useHistory();
   console.log('roleType', roleType);
   // 点击编辑/查看角色
-  const editOrViewHandle = (type: string) => {
-    console.log(roleTypeRouteList[roleType - 1] + '?type=' + type);
-    history.push(roleTypeRouteList[roleType - 1] + '?type=' + type);
+  const editOrViewHandle = (type: string, roleId: string) => {
+    console.log(roleTypeRouteList[roleType - 1] + '?type=' + type + '&roleId=' + roleId);
+    history.push(roleTypeRouteList[roleType - 1] + '?type=' + type + '&roleId=' + roleId);
   };
   // 点击管理/添加成员
   const AddOrEditUserHandle = (added: boolean, roleId: string) => {
-    setParams({ visible: true, added, roleId });
+    if (roleType === 1) {
+      setAdminParam({ visible: true, roleId });
+    } else {
+      setParams({ visible: true, added, roleId });
+    }
   };
   // 删除角色
-  const delRoleHandle = () => {
-    setConfirmModalParam((param) => ({ ...param, visible: true }));
+  const delRoleHandle = (roleId: string) => {
+    const onCancel = () => {
+      setConfirmModalParam({ visible: false });
+    };
+    const onOk = async () => {
+      await requestDelRole({ roleId });
+      onCancel();
+      setPaginationParam({ pageNum: 1, pageSize: 10 });
+    };
+    setConfirmModalParam((param) => ({
+      ...param,
+      visible: true,
+      title: '删除体系',
+      tips: '您确定删除该角色吗？',
+      onOk,
+      onCancel
+    }));
   };
   // 开启/关闭角色
   const manageRoleHandle = (row: IRoleList) => {
@@ -65,18 +87,21 @@ const TableColumns = (
     },
     {
       title: '管辖范围',
-      dataIndex: 'roleRange'
+      dataIndex: 'roleRange',
+      render (text: string) {
+        return text || '全部范围';
+      }
     },
     {
       title: '操作',
       render (row: IRoleList) {
         return (
           <>
-            <span className={style.check} onClick={() => editOrViewHandle('view')}>
+            <span className={style.check} onClick={() => editOrViewHandle('view', row.roleId)}>
               查看
             </span>
             {!row.isDefault && (
-              <span className={style.edit} onClick={() => editOrViewHandle('edit')}>
+              <span className={style.edit} onClick={() => editOrViewHandle('edit', row.roleId)}>
                 编辑
               </span>
             )}
@@ -92,7 +117,7 @@ const TableColumns = (
               </span>
             )}
             {!row.isDefault && (
-              <span className={style.del} onClick={delRoleHandle}>
+              <span className={style.del} onClick={() => delRoleHandle(row.roleId)}>
                 删除
               </span>
             )}
