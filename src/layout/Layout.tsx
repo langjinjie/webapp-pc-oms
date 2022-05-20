@@ -47,8 +47,8 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
     if (res) {
       initMenu(res);
       setMenuList(res);
-      setLoaded(true);
     }
+    setLoaded(true);
   };
 
   /**

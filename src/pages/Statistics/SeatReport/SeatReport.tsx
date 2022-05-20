@@ -72,6 +72,7 @@ const SeatReport: React.FC = () => {
   const [reportId, setReportId] = useState<string>('');
   const [reportConfig, setReportConfig] = useState<ReportConfig>({});
   const [reportDetail, setReportDetail] = useState<ReportDetail>({});
+  const [templateId, setTemplateId] = useState<string>('');
 
   /**
    * dom转换成图片
@@ -87,7 +88,7 @@ const SeatReport: React.FC = () => {
    * @param reportId
    */
   const getReportStyle = async (reportId: string) => {
-    const res: any = await queryReportStyle({ reportId });
+    const res: any = await queryReportStyle({ reportId, templateId });
     if (res) {
       setReportConfig(res);
     }
@@ -98,7 +99,7 @@ const SeatReport: React.FC = () => {
    * @param reportId
    */
   const getReportDetail = async (reportId: string) => {
-    const res: any = await queryReportDetail({ reportId });
+    const res: any = await queryReportDetail({ reportId, templateId });
     if (res) {
       setReportDetail(res);
       const promiseList: Promise<any>[] = [];
@@ -249,23 +250,47 @@ const SeatReport: React.FC = () => {
   return (
     <div className={style.wrap}>
       <div className={style.row}>
-        <div className={style.colLabel}>更新时间:</div>
-        <div className={style.colValue}>
-          <Select
-            placeholder="请选择"
-            value={reportId}
-            onChange={(val) => {
-              setReportId(val);
-              getReportDetail(val);
-              getReportStyle(val);
-            }}
-          >
-            {reportList.map((item) => (
-              <Option key={item.reportId} value={item.reportId!}>
-                {item.reportName}
-              </Option>
-            ))}
-          </Select>
+        <div className={style.colContent}>
+          <div className={style.col}>
+            <div className={style.colLabel}>战报名称:</div>
+            <div className={style.colValue}>
+              <Select
+                placeholder="请选择"
+                value={reportId}
+                onChange={(val) => {
+                  setTemplateId(val);
+                  getReportDetail(val);
+                  getReportStyle(val);
+                }}
+              >
+                {reportList.map((item) => (
+                  <Option key={item.reportId} value={item.reportId!}>
+                    {item.reportName}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          </div>
+          <div className={style.col}>
+            <div className={style.colLabel}>更新时间:</div>
+            <div className={style.colValue}>
+              <Select
+                placeholder="请选择"
+                value={reportId}
+                onChange={(val) => {
+                  setReportId(val);
+                  getReportDetail(val);
+                  getReportStyle(val);
+                }}
+              >
+                {reportList.map((item) => (
+                  <Option key={item.reportId} value={item.reportId!}>
+                    {item.reportName}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          </div>
         </div>
         {/* <Button className={style.btn} type="primary" onClick={domToImage}>
           下载数据源
