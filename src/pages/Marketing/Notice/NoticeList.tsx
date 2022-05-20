@@ -9,7 +9,7 @@ import { Button as AntdBtn, Card, message, Modal, PaginationProps, Table, TableC
 import { setTitle } from 'lester-tools';
 import { Icon, Button } from 'lester-ui';
 import classNames from 'classnames';
-import { Form } from 'src/components';
+import { Form, AuthBtn } from 'src/components';
 import { ItemProps } from 'src/utils/interface';
 import { delNotice, queryNoticeList } from 'src/apis/notice';
 import style from './style.module.less';
@@ -149,13 +149,17 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
       render: (text: string, record: NoticeItem) => (
         <>
           {record.status === 2 && (
-            <AntdBtn type="link" onClick={() => operateHandle(text, 0)}>
-              编辑
-            </AntdBtn>
+            <AuthBtn path="/edit">
+              <AntdBtn type="link" onClick={() => operateHandle(text, 0)}>
+                编辑
+              </AntdBtn>
+            </AuthBtn>
           )}
-          <AntdBtn type="link" onClick={() => operateHandle(text, 1)}>
-            查看
-          </AntdBtn>
+          <AuthBtn path="/view">
+            <AntdBtn type="link" onClick={() => operateHandle(text, 1)}>
+              查看
+            </AntdBtn>
+          </AuthBtn>
         </>
       )
     }
@@ -205,11 +209,15 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <Card className={style.listWrap} title="公告配置">
-      <div className={style.addBtn} onClick={() => operateHandle('', 0)}>
-        <Icon className={style.addIcon} name="xinjian" />
-        添加
-      </div>
-      <Form itemData={formItemData} onSubmit={onSubmit} />
+      <AuthBtn path="/add">
+        <div className={style.addBtn} onClick={() => operateHandle('', 0)}>
+          <Icon className={style.addIcon} name="xinjian" />
+          添加
+        </div>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <Form itemData={formItemData} onSubmit={onSubmit} />
+      </AuthBtn>
       <Table
         style={{ marginTop: 20 }}
         rowKey="noticeId"
@@ -223,9 +231,11 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
           onShowSizeChange: pageChange
         }}
       />
-      <Button disabled={noticeIds.length === 0} onClick={() => deleteNotice()}>
-        删除
-      </Button>
+      <AuthBtn path="/delete">
+        <Button disabled={noticeIds.length === 0} onClick={() => deleteNotice()}>
+          删除
+        </Button>
+      </AuthBtn>
     </Card>
   );
 };

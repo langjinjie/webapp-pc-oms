@@ -13,8 +13,9 @@ import {
   queryIndexConfig,
   saveIndexConfig
 } from 'src/apis/marketing';
-import style from './style.module.less';
 import { useDocumentTitle } from 'src/utils/base';
+import { AuthBtn } from 'src/components';
+import style from './style.module.less';
 
 interface Poster {
   posterId: string;
@@ -574,11 +575,13 @@ const MarketIndex: React.FC = () => {
             </Item>
           </Panel>
         </Collapse>
-        <div className={style.btnWrp}>
-          <Button type="primary" htmlType="submit">
-            确定
-          </Button>
-        </div>
+        <AuthBtn path="/submit">
+          <div className={style.btnWrp}>
+            <Button type="primary" htmlType="submit">
+              确定
+            </Button>
+          </div>
+        </AuthBtn>
       </Form>
     </Card>
   );
