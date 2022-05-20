@@ -67,7 +67,9 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
         new Set([...value.map((valueItem) => valueItem.menuId), ...tree2Arry([e.node]).map((item) => item.menuId)])
       );
       const newValue = [...flatTreeData.filter((flatItem) => newParamKeys.includes(flatItem.menuId))];
-      onChange?.(newValue);
+      console.log(newValue);
+      console.log(value);
+      onChange?.([...value.filter((filterItem: any) => filterItem.sysType !== e.node.sysType), ...newValue]);
     } else {
       const deleParamKeys = tree2Arry([e.node]).map((item) => item.menuId);
       const delValue = [...value.filter((valueItem) => !deleParamKeys.includes(valueItem.menuId))];

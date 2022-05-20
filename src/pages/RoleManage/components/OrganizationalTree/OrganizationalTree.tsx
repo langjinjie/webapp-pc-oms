@@ -294,7 +294,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
           </div>
         </div>
       </div>
-      )
     </Modal>
   );
 };

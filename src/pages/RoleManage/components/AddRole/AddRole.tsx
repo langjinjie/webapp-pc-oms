@@ -34,10 +34,10 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
       if (res) {
         console.log(tree2Arry(res.list).filter((filterItem) => filterItem.enable));
         form.setFieldsValue({
-          ...res
-          // menuList: tree2Arry(res.list)
-          //   .filter((filterItem) => filterItem.enable)
-          //   .map((mapItem) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId }))
+          ...res,
+          menuList: tree2Arry(res.list)
+            .filter((filterItem) => filterItem.enable)
+            .map((mapItem) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId }))
         });
       }
     }

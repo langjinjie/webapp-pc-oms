@@ -6,7 +6,12 @@ import { TableColumns, TablePagination } from './Config';
 import { IRoleList } from 'src/utils/interface';
 import { roleTypeRouteList } from 'src/utils/commonData';
 import { useHistory } from 'react-router-dom';
-import { requesetGetRoleList, requestGetRoleAccountList, requestAddOrEditRoleAccount } from 'src/apis/roleMange';
+import {
+  requesetGetRoleList,
+  requestGetRoleAccountList,
+  requestAddOrEditRoleAccount,
+  requestGetCurRoleUserList
+} from 'src/apis/roleMange';
 import { queryAccountList } from 'src/apis/company';
 import { Context } from 'src/store';
 import style from './style.module.less';
@@ -36,6 +41,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
   });
   const [staffList, setStaffList] = useState<Key[]>([]);
   const [accountList, setAccountList] = useState<AccountItem[]>([]);
+  const [treeValue, setTreeValue] = useState<any[]>([]);
   const [searchParam, setSearchParam] = useState<{ [key: string]: any }>({});
   // 添加/编辑成岩
   const [params, setParams] = useState<{ visible: boolean; added: boolean; roleId: string }>({
@@ -112,7 +118,29 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
   // 添加管理成员
   const treeOnOk = async (value: any) => {
     console.log('value', value);
-    // await requestAddOrEditRoleAccount({ roleId: params.roleId });
+    const staffList = value
+      .filter((filterItem: any) => filterItem.staffId)
+      .map((item: any) => ({ staffId: item.staffId }));
+    const deptList = value
+      .filter((filterItem: any) => !filterItem.staffId)
+      .map((item: any) => ({ deptId: item.deptId }));
+    console.log('roleId', params.roleId);
+    const res = await requestAddOrEditRoleAccount({ roleId: params.roleId, staffList, deptList });
+    console.log(res);
+  };
+  // 打开选择组织架构选择树
+  const clickTree = async (added: boolean, roleId: string) => {
+    if (roleType === 1) {
+      setAdminParam({ visible: true, roleId });
+    } else {
+      // 获取当前角色得成员
+      const res = await requestGetCurRoleUserList({ roleId });
+      console.log(res);
+      if (res) {
+        setTreeValue([...(res.staffList || []), ...(res.deptList || [])]);
+        setParams({ visible: true, added, roleId });
+      }
+    }
   };
   useEffect(() => {
     getDetail();
@@ -149,7 +177,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         setRowKey={(row) => row.roleId}
         dataSource={roleList.list}
         loading={loading}
-        columns={TableColumns(roleType, setParams, setAdminParam, setPaginationParam)}
+        columns={TableColumns(roleType, clickTree, setAdminParam, setPaginationParam)}
         scroll={{ x: 'max-content' }}
         {...TablePagination({
           roleType,
@@ -159,7 +187,14 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         })}
       />
       {/* 添加/编辑成员 */}
-      <OrganizationalTree selectedDept={true} showStaff={true} params={params} setParams={setParams} onOk={treeOnOk} />
+      <OrganizationalTree
+        value={treeValue}
+        selectedDept={true}
+        showStaff={true}
+        params={params}
+        setParams={setParams}
+        onOk={treeOnOk}
+      />
       <Modal
         className={style.adminModal}
         title="添加/管理成员"

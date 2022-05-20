@@ -36,3 +36,9 @@ export const requestAddOrEditRoleAccount: HttpFc = (param) => {
 export const requestDelRole: HttpFc = (param) => {
   return http.post('/tenacity-admin/api/privilege/role/del', param);
 };
+/**
+ * 查看角色的成员列表
+ */
+export const requestGetCurRoleUserList: HttpFc = (param) => {
+  return http.post('/tenacity-admin/api/privilege/role/user/list', param);
+};

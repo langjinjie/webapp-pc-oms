@@ -10,7 +10,7 @@ import style from './style.module.less';
 
 const TableColumns = (
   roleType: 1 | 2 | 3,
-  setParams: Dispatch<SetStateAction<{ visible: boolean; added: boolean; roleId: string }>>,
+  clickTree: (add: boolean, roleId: string) => void,
   setAdminParam: Dispatch<SetStateAction<{ visible: boolean; roleId: string }>>,
   setPaginationParam: Dispatch<SetStateAction<{ pageNum: number; pageSize: number }>>
 ): ColumnType<any>[] => {
@@ -22,14 +22,6 @@ const TableColumns = (
   const editOrViewHandle = (type: string, roleId: string) => {
     console.log(roleTypeRouteList[roleType - 1] + '?type=' + type + '&roleId=' + roleId);
     history.push(roleTypeRouteList[roleType - 1] + '?type=' + type + '&roleId=' + roleId);
-  };
-  // 点击管理/添加成员
-  const AddOrEditUserHandle = (added: boolean, roleId: string) => {
-    if (roleType === 1) {
-      setAdminParam({ visible: true, roleId });
-    } else {
-      setParams({ visible: true, added, roleId });
-    }
   };
   // 删除角色
   const delRoleHandle = (roleId: string) => {
@@ -105,10 +97,10 @@ const TableColumns = (
                 编辑
               </span>
             )}
-            <span className={style.add} onClick={() => AddOrEditUserHandle(true, row.roleId)}>
+            <span className={style.add} onClick={() => clickTree(true, row.roleId)}>
               添加成员
             </span>
-            <span className={style.mange} onClick={() => AddOrEditUserHandle(false, row.roleId)}>
+            <span className={style.mange} onClick={() => clickTree(false, row.roleId)}>
               管理成员
             </span>
             {!row.isDefault && (
