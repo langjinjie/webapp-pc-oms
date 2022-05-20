@@ -18,6 +18,7 @@ const StoreContext: React.FC = ({ children }) => {
   const [articleTagList, setArticleTagList] = useState<any[]>([]);
   const [confirmModalParam, setConfirmModalParam] = useState<IConfirmModalParam>({ visible: false });
   const [menuList, setMenuList] = useState<MenuItem[]>([]);
+  const [btnList, setBtnList] = useState<string[]>([]);
 
   return (
     <Context.Provider
@@ -37,7 +38,9 @@ const StoreContext: React.FC = ({ children }) => {
         confirmModalParam,
         setConfirmModalParam,
         menuList,
-        setMenuList
+        setMenuList,
+        btnList,
+        setBtnList
       }}
     >
       {children}
