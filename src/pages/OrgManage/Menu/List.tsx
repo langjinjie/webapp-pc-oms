@@ -153,7 +153,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
           className="mt30"
           rowKey={'menuId'}
           expandable={{
-            fixed: 'left',
+            // fixed: 'left',
             onExpand: (expanded, record) => handleOnExpand(expanded, record),
             expandIcon: ({ expanded, onExpand, record }) => {
               return (
