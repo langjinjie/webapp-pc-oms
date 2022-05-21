@@ -12,47 +12,53 @@ interface SetUserRightProps extends Omit<React.ComponentProps<typeof NgModal>, '
 
 export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visible, onOk, onCancel, ...props }) => {
   const [rightForm] = Form.useForm();
-  const [visibleUserGroup, setVisibleUserGroup] = useState(true);
-  const [groupInfo, setGroupInfo] = useState<any>({
-    groupInfo: {},
-    orgInfo: {}
-  });
 
   const [formValues, setFormValues] = useState<{ isSet: number; groupType: number; group: any }>({
     isSet: 0,
     groupType: 1,
-    group: ''
+    group: {
+      groupType: 1,
+      info: {}
+    }
   });
   const handleSubmit = () => {
     rightForm.validateFields().then((values) => {
       const { group, isSet } = values;
       console.log({ group, isSet });
-      onOk?.({ groupId: group?.groupId, isSet });
+      onOk?.({ groupId: group?.info.groupId, isSet });
     });
   };
   const getGroup = async () => {
     if (groupId) {
       const res = await getUserGroup({ groupId });
       const { groupType } = res;
-      rightForm.setFieldsValue({ groupType, isSet: 1, group: res.groupInfo });
-      setFormValues((formValues) => ({ ...formValues, isSet: 1, groupType }));
-      console.log(res);
-      setGroupInfo(res);
+      rightForm.setFieldsValue({
+        groupType,
+        isSet: 1,
+        group: {
+          groupType: groupType,
+          info: { ...res.groupInfo, groupId, ...res.orgInfo }
+        }
+      });
+      setFormValues((formValues) => ({
+        ...formValues,
+        isSet: 1,
+        groupType,
+        group: { groupType, info: { ...res.groupInfo, groupId, ...res.orgInfo } }
+      }));
     }
   };
   useEffect(() => {
     getGroup();
   }, [groupId]);
-  const onValuesChange = (values: any) => {
-    const { isSet, groupType } = values;
-    setFormValues((formValues) => ({ ...formValues, isSet, groupType }));
-  };
-  // const changeGroup = () => {
-  //   console.log('修改分组');
-  //   setVisibleUserGroup(true);
-  // };
-  const onUserGroupChange = (value: any) => {
-    console.log(value);
+  const onValuesChange = (changeValues: any, values: any) => {
+    const { groupType = 1, isSet, group } = values;
+    const groupRes = changeValues.groupType ? { info: {}, groupType } : { ...group, groupType };
+    console.log('group: ', groupRes);
+    setFormValues((formValues) => ({ ...formValues, isSet, group: groupRes }));
+    rightForm.setFieldsValue({
+      group: groupRes
+    });
   };
 
   const handleCancel = (e: any) => {
@@ -60,11 +66,13 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
     setFormValues({
       isSet: 0,
       groupType: 1,
-      group: ''
+      group: {
+        groupType: 1
+      }
     });
     onCancel?.(e);
-    setGroupInfo({});
   };
+
   return (
     <>
       <NgModal
@@ -79,8 +87,8 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
         <Form
           form={rightForm}
           initialValues={formValues}
-          onValuesChange={(_, values) => {
-            onValuesChange(values);
+          onValuesChange={(changeValues, values) => {
+            onValuesChange(changeValues, values);
           }}
         >
           <Form.Item label="可见范围设置：" required>
@@ -100,22 +108,18 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
                   </Radio.Group>
                 </Form.Item>
                 <Form.Item name={'group'}>
-                  <UserGroupModal
-                    groupType={formValues.groupType}
-                    onCancel={() => setVisibleUserGroup(false)}
-                    onOk={() => setVisibleUserGroup(false)}
-                    visible={visibleUserGroup}
-                    onChange={onUserGroupChange}
-                  />
+                  <UserGroupModal />
                 </Form.Item>
                 <Form.Item>
                   上次选择的可见范围为：
-                  {formValues.groupType === 1 ? groupInfo?.groupInfo?.groupName : groupInfo?.orgInfo?.staffNum}
+                  {formValues.groupType === 1
+                    ? formValues.group?.info?.groupInfo?.groupName
+                    : formValues.group?.info?.orgInfo?.staffNum}
                 </Form.Item>
                 <Form.Item>
                   <span>
                     截止目前时间：此用户组共计人数：
-                    {formValues.groupType === 1 ? groupInfo?.groupInfo?.staffNum : groupInfo?.orgInfo?.staffNum}人
+                    {formValues.group?.info?.staffNum || 0}人
                   </span>
                   <Button type="link">查看人员</Button>
                 </Form.Item>
