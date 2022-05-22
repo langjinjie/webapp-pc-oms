@@ -41,6 +41,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
 export interface Poster {
   id: string;
   posterId: string;
+  groupId: string;
   corpId: string;
   exterPosterId: null | string;
   onlineTime: null | string;
@@ -67,7 +68,7 @@ const UNKNOWN = '— —';
 enum StatusEnum {
   '未上架' = 1,
   '已上架',
-  '已下架',
+  '已下架'
 }
 
 // Table配置项
@@ -77,10 +78,11 @@ type OperationsType = {
   viewItem: (record: any) => void;
   deleteItem: (record: any) => void;
   handleTop: (record: any) => void;
+  setRight: (record: Poster) => void;
 };
 export const columns = (args: OperationsType): ColumnsType<Poster> => {
   const { isMainCorp } = useContext(Context);
-  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleTop } = args;
+  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleTop, setRight } = args;
   if (isMainCorp) {
     return [
       {
@@ -220,6 +222,9 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
                 <Button type="link">删除</Button>
               </Popconfirm>
             )}
+            <Button type="link" onClick={() => setRight(obj)}>
+              配置可见范围
+            </Button>
           </Space>
         )
       }
@@ -348,6 +353,9 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
                 <Button type="link">删除</Button>
               </Popconfirm>
             )}
+            <Button type="link" onClick={() => setRight(obj)}>
+              配置可见范围
+            </Button>
           </Space>
         )
       }

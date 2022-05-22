@@ -14,6 +14,7 @@ export interface SearchParamsProps {
   categoryId: string;
   syncBank: string;
   corpId: string;
+  recommendType: string;
 }
 
 export const recommendTypeList = [

@@ -5,13 +5,24 @@ import { NgModal } from 'src/components';
 import UserGroupModal from './UserGroupModal';
 import UserOrgModal from './UserOrgModal';
 
+import styles from './style.module.less';
+
 interface SetUserRightProps extends Omit<React.ComponentProps<typeof NgModal>, 'onOk'> {
   title?: string;
-  onOk: (values: any) => void;
-  groupId?: string;
+  onOk: (values: { isBatch?: boolean; groupId: string; isSet: boolean }) => void;
+  groupId?: string | string[];
+  isBatch?: boolean;
 }
 
-export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visible, onOk, onCancel, ...props }) => {
+export const SetUserRight: React.FC<SetUserRightProps> = ({
+  title,
+  groupId,
+  visible,
+  onOk,
+  onCancel,
+  isBatch,
+  ...props
+}) => {
   const [rightForm] = Form.useForm();
   const [originValues, setOriginValues] = useState<any>();
   const [formValues, setFormValues] = useState<{ isSet: number; groupType: number; group1: any; group2: any }>({
@@ -20,30 +31,69 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
     group1: undefined,
     group2: undefined
   });
+  // 是否设置过
+  const [isSeted, setIsSeted] = useState(false);
+  // 是否开启强制修改
+  const [isForceSet, setIsForceSet] = useState(false);
+  // const [,setIsDiff] = useState(false);
   const handleSubmit = () => {
     rightForm.validateFields().then((values) => {
       const { group1, group2, isSet, groupType } = values;
-      onOk?.({ groupId: groupType === 1 ? group1.groupId : group2.groupId, isSet });
+      onOk?.({ groupId: groupType === 1 ? group1.groupId : group2.groupId, isSet, isBatch });
     });
   };
+
+  const getGroupDetail = async (groupId: string) => {
+    const res = await getUserGroup({ groupId });
+    const { groupType } = res;
+    rightForm.setFieldsValue({
+      groupType,
+      isSet: 1,
+      group1: groupType === 1 ? { ...res.groupInfo, groupId } : undefined,
+      group2: groupType === 2 ? { ...res.orgInfo, groupId } : undefined
+    });
+    setFormValues((formValues) => ({
+      ...formValues,
+      isSet: 1,
+      groupType,
+      group1: groupType === 1 ? { ...res.groupInfo, groupId } : undefined,
+      group2: groupType === 2 ? { ...res.orgInfo, groupId } : undefined
+    }));
+    setOriginValues({ ...res.groupInfo, groupId, ...res.orgInfo, groupType });
+  };
   const getGroup = async () => {
-    if (groupId) {
-      const res = await getUserGroup({ groupId });
-      const { groupType } = res;
-      rightForm.setFieldsValue({
-        groupType,
-        isSet: 1,
-        group1: groupType === 1 ? { ...res.groupInfo, groupId } : undefined,
-        group2: groupType === 2 ? { ...res.orgInfo, groupId } : undefined
-      });
-      setFormValues((formValues) => ({
-        ...formValues,
-        isSet: 1,
-        groupType,
-        group1: groupType === 1 ? { ...res.groupInfo, groupId } : undefined,
-        group2: groupType === 2 ? { ...res.orgInfo, groupId } : undefined
-      }));
-      setOriginValues({ ...res.groupInfo, groupId, ...res.orgInfo, groupType });
+    setIsForceSet(false);
+    setIsSeted(false);
+    if (!(typeof groupId === 'string')) {
+      if (groupId && groupId?.length === 1) {
+        // setIsDiff(false);
+        // todo, 判断是否设置过
+        if (groupId[0]) {
+          await getGroupDetail(groupId[0]);
+          setIsSeted(true);
+        } else {
+          setIsSeted(false);
+        }
+      } else if (groupId && groupId?.length > 1) {
+        // 存在不同的分组，清空表单
+        // setIsDiff(true);
+        setIsSeted(true);
+        setFormValues({
+          isSet: 0,
+          groupType: 1,
+          group1: undefined,
+          group2: undefined
+        });
+        rightForm.setFieldsValue({
+          isSet: 0,
+          groupType: 1,
+          group1: undefined,
+          group2: undefined
+        });
+      }
+      return false;
+    } else if (groupId) {
+      await getGroupDetail(groupId);
     } else {
       setFormValues({
         isSet: 0,
@@ -52,13 +102,18 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
         group2: undefined
       });
       rightForm.setFieldsValue({
-        isSet: 0
+        isSet: 0,
+        groupType: 1,
+        group1: undefined,
+        group2: undefined
       });
     }
   };
   useEffect(() => {
-    getGroup();
-  }, [groupId, visible]);
+    if (visible) {
+      getGroup();
+    }
+  }, [visible]);
   const onValuesChange = (changeValues: any, values: any) => {
     const { groupType = 1, isSet, group1, group2 } = values;
     if (changeValues.groupType) {
@@ -92,12 +147,28 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
       <NgModal
         forceRender
         visible={visible}
-        title={title || '修改可见范围'}
+        title={title || (isBatch ? '批量修改可见范围' : '修改可见范围')}
         width="570px"
         onOk={handleSubmit}
         onCancel={handleCancel}
         {...props}
       >
+        {isBatch && (
+          <>
+            {isSeted
+              ? (
+              <span className={styles.tips}>
+                提示：目前选择的内容已配置可见范围，如果修改，则会批量覆盖数据，请谨慎操作系统
+                <Button type="primary" size="small" onClick={() => setIsForceSet(true)}>
+                  开启修改
+                </Button>
+              </span>
+                )
+              : (
+              <span className={styles.tips}>提示：目前选择的内容未配置可见范围，如修改后则会批量配置可见数据</span>
+                )}
+          </>
+        )}
         <Form
           form={rightForm}
           initialValues={formValues}
@@ -107,12 +178,12 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
         >
           <Form.Item label="可见范围设置：" required>
             <Form.Item name={'isSet'}>
-              <Radio.Group>
+              <Radio.Group disabled={isSeted && !isForceSet}>
                 <Radio value={0}>关闭</Radio>
                 <Radio value={1}>开启</Radio>
               </Radio.Group>
             </Form.Item>
-            {formValues.isSet
+            {formValues.isSet && !(isSeted && !isForceSet)
               ? (
               <>
                 <Form.Item name={'groupType'}>

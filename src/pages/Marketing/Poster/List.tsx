@@ -9,11 +9,18 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { PaginationProps } from '../types';
 import { RouteComponentProps } from 'react-router';
-import { getPosterList, toggleOnlineState, posterOperation, getPosterCategoryList } from 'src/apis/marketing';
+import {
+  getPosterList,
+  toggleOnlineState,
+  posterOperation,
+  getPosterCategoryList,
+  setUserRightWithPoster
+} from 'src/apis/marketing';
 import { useAsync } from 'src/utils/use-async';
 import { Context } from 'src/store';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
 import { useDocumentTitle } from 'src/utils/base';
+import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
 
 interface PostPosterData {
   total: number;
@@ -48,6 +55,11 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     status: null,
     typeIds: []
   });
+
+  const [selectRows, setSelectRows] = useState<Poster[]>();
+  const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
+  const [isBatchSetRight, setIsBatchSetRight] = useState(false);
+  const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
 
   const { isLoading, run, data: posterData } = useAsync<PostPosterData>();
   const [currentItem, setCurrentItem] = useState<Poster | null>();
@@ -116,6 +128,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: Poster[]) => {
     setSelectRowKeys(selectedRowKeys);
+    setSelectRows(selectedRows);
     const current = selectedRows[0];
     if (current) {
       if (current.status === 1 || current.status === 3) {
@@ -230,7 +243,24 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const columnList = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleTop });
+  // 显示配置可见范围模块
+  const setRight = (record?: Poster) => {
+    if (record) {
+      setIsBatchSetRight(false);
+      setCurrentItem(record);
+    } else {
+      const mySet = new Set();
+      selectRows?.forEach((item) => {
+        mySet.add(item.groupId);
+      });
+      console.log(Array.from(mySet));
+      setCurrentGroupIds(Array.from(mySet));
+      setIsBatchSetRight(true);
+    }
+    setVisibleSetUserRight(true);
+  };
+
+  const columnList = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleTop, setRight });
 
   const isDisabled = (operationType: number | null, status: number, record: Poster) => {
     let _isDisabled = false;
@@ -259,6 +289,28 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
         disabled: isDisabled(operationType, record.status, record),
         name: record.name
       };
+    }
+  };
+
+  // 确认设置权限
+  const confirmSetRight = async (values: any) => {
+    setVisibleSetUserRight(false);
+    const { isSet, groupId, isBatch } = values;
+    // [adminId];
+    // groupId: 93201136316088326
+    const list: any[] = [];
+    if (isBatch) {
+      selectRows?.forEach((item) => {
+        list.push({ posterId: item.posterId, groupId: isSet ? groupId : null });
+      });
+    } else {
+      list.push({ posterId: currentItem?.posterId, groupId: isSet ? groupId : null });
+    }
+    const res = await setUserRightWithPoster({ list });
+    if (res) {
+      message.success('设置成功');
+      getList({ pageNum: 1 });
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
     }
   };
 
@@ -318,12 +370,28 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
               >
                 批量下架
               </Button>
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={!(selectRows && selectRows.length > 0)}
+                onClick={() => setRight()}
+              >
+                批量添加可见范围
+              </Button>
             </Space>
           </div>
         )}
       </div>
       <div className={style.footer}></div>
       <OnlineModal visible={visible} onCancel={() => setVisible(false)} onOk={submitOnline}></OnlineModal>
+      <SetUserRight
+        isBatch={isBatchSetRight}
+        groupId={isBatchSetRight ? currentGroupIds : currentItem?.groupId}
+        visible={visibleSetUserRight}
+        onOk={confirmSetRight}
+        onCancel={() => setVisibleSetUserRight(false)}
+      />
     </div>
   );
 };

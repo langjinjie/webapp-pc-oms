@@ -390,3 +390,8 @@ export const createSingleGroup: HttpFunction = (param) => {
 export const setUserRightWithArticle: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/news/batch/setscope', param);
 };
+
+// 设置海报用户权限
+export const setUserRightWithPoster: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/poster/batch/setscope', param);
+};

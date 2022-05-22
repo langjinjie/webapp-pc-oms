@@ -25,7 +25,6 @@ import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
 
 const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('营销素材-文章库');
-  const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -44,6 +43,12 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visible, toggleVisible] = useState(false);
   const [htmlStr, setHtmlStr] = useState('');
   const [currentItem, setCurrentItem] = useState<Article | null>();
+
+  // 批量设置权限的状态
+  const [selectRows, setSelectRows] = useState<Article[]>();
+  const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
+  const [isBatchSetRight, setIsBatchSetRight] = useState(false);
+  const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
   const [queryForm, setQueryForm] = useState({
     title: '',
     minTime: '',
@@ -240,8 +245,20 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     handleToggleOnlineState(type, record);
   };
 
-  const setRight = (record: Article) => {
-    setCurrentItem(record);
+  // 显示配置可见范围模块
+  const setRight = (record?: Article) => {
+    if (record) {
+      setIsBatchSetRight(false);
+      setCurrentItem(record);
+    } else {
+      const mySet = new Set();
+      selectRows?.forEach((item) => {
+        mySet.add(item.groupId);
+      });
+      console.log(Array.from(mySet));
+      setCurrentGroupIds(Array.from(mySet));
+      setIsBatchSetRight(true);
+    }
     setVisibleSetUserRight(true);
   };
 
@@ -267,6 +284,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
     setSelectRowKeys(selectedRowKeys);
+    setSelectRows(selectedRows);
     const current = selectedRows[0];
     if (current) {
       if (current.syncBank === 0 || current.syncBank === 2) {
@@ -301,14 +319,22 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   // 确认设置权限
   const confirmSetRight = async (values: any) => {
     setVisibleSetUserRight(false);
-    const { isSet, groupId } = values;
+    const { isSet, groupId, isBatch } = values;
     // [adminId];
     // groupId: 93201136316088326
-
-    if (isSet) {
-      await setUserRightWithArticle({ list: [{ newsId: currentItem?.newsId, groupId }] });
+    const list: any[] = [];
+    if (isBatch) {
+      selectRows?.forEach((item) => {
+        list.push({ newsId: item.newsId, groupId: isSet ? groupId : null });
+      });
     } else {
-      await setUserRightWithArticle({ list: [{ newsId: currentItem?.newsId }] });
+      list.push({ newsId: currentItem?.newsId, groupId: isSet ? groupId : null });
+    }
+    const res = await setUserRightWithArticle({ list });
+    if (res) {
+      message.success('设置成功');
+      getList({ pageNum: 1 });
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
     }
   };
 
@@ -370,6 +396,15 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
               >
                 批量下架
               </Button>
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={!(selectRows && selectRows.length > 0)}
+                onClick={() => setRight()}
+              >
+                批量添加可见范围
+              </Button>
             </Space>
           </div>
         )}
@@ -387,7 +422,8 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         <div className={style.previewDesc} dangerouslySetInnerHTML={{ __html: htmlStr }}></div>
       </Modal>
       <SetUserRight
-        groupId={currentItem?.groupId}
+        isBatch={isBatchSetRight}
+        groupId={isBatchSetRight ? currentGroupIds : currentItem?.groupId}
         visible={visibleSetUserRight}
         onOk={confirmSetRight}
         onCancel={() => setVisibleSetUserRight(false)}
