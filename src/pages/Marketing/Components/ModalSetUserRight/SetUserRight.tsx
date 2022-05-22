@@ -13,17 +13,17 @@ interface SetUserRightProps extends Omit<React.ComponentProps<typeof NgModal>, '
 
 export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visible, onOk, onCancel, ...props }) => {
   const [rightForm] = Form.useForm();
-
-  const [formValues, setFormValues] = useState<{ isSet: number; groupType: number; group: any }>({
+  const [originValues, setOriginValues] = useState<any>();
+  const [formValues, setFormValues] = useState<{ isSet: number; groupType: number; group1: any; group2: any }>({
     isSet: 0,
     groupType: 1,
-    group: {}
+    group1: undefined,
+    group2: undefined
   });
   const handleSubmit = () => {
     rightForm.validateFields().then((values) => {
-      const { group, isSet } = values;
-      console.log({ group, isSet });
-      onOk?.({ groupId: group.groupId, isSet });
+      const { group1, group2, isSet, groupType } = values;
+      onOk?.({ groupId: groupType === 1 ? group1.groupId : group2.groupId, isSet });
     });
   };
   const getGroup = async () => {
@@ -33,41 +33,45 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
       rightForm.setFieldsValue({
         groupType,
         isSet: 1,
-        group: {
-          ...res.groupInfo,
-          groupId,
-          ...res.orgInfo
-        }
+        group1: groupType === 1 ? { ...res.groupInfo, groupId } : undefined,
+        group2: groupType === 2 ? { ...res.orgInfo, groupId } : undefined
       });
       setFormValues((formValues) => ({
         ...formValues,
         isSet: 1,
         groupType,
-        group: { ...res.groupInfo, groupId, ...res.orgInfo }
+        group1: groupType === 1 ? { ...res.groupInfo, groupId } : undefined,
+        group2: groupType === 2 ? { ...res.orgInfo, groupId } : undefined
       }));
+      setOriginValues({ ...res.groupInfo, groupId, ...res.orgInfo, groupType });
     } else {
       setFormValues({
         isSet: 0,
         groupType: 1,
-        group: {}
+        group1: undefined,
+        group2: undefined
       });
-      rightForm.resetFields();
+      rightForm.setFieldsValue({
+        isSet: 0
+      });
     }
   };
   useEffect(() => {
     getGroup();
   }, [groupId, visible]);
   const onValuesChange = (changeValues: any, values: any) => {
-    console.log('111', values);
-    const { groupType = 1, isSet, group } = values;
-
-    rightForm.setFieldsValue({
-      group: changeValues.groupType ? {} : group
-    });
+    const { groupType = 1, isSet, group1, group2 } = values;
+    if (changeValues.groupType) {
+      rightForm.setFieldsValue({
+        group1: undefined,
+        group12: undefined
+      });
+    }
     setFormValues((formValues) => ({
       ...formValues,
       isSet,
-      group: changeValues.groupType ? {} : group,
+      group1,
+      group2,
       groupType
     }));
   };
@@ -76,7 +80,8 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
     setFormValues({
       isSet: 0,
       groupType: 1,
-      group: {}
+      group1: undefined,
+      group2: undefined
     });
     rightForm.resetFields();
     onCancel?.(e);
@@ -118,25 +123,34 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({ title, groupId, visi
                 </Form.Item>
                 {formValues.groupType === 1
                   ? (
-                  <Form.Item name={'group'}>
+                  <Form.Item name={'group1'} key="groupModal">
                     <UserGroupModal />
                   </Form.Item>
                     )
                   : (
-                  <Form.Item name={'group'}>
+                  <Form.Item name={'group2'} key="orgModal">
                     <UserOrgModal />
                   </Form.Item>
                     )}
                 <Form.Item>
                   上次选择的可见范围为：
-                  {formValues.groupType === 1
-                    ? formValues.group?.info?.groupInfo?.groupName
-                    : formValues.group?.info?.orgInfo?.staffNum}
+                  {originValues?.groupType === 1
+                    ? (
+                        originValues?.groupName
+                      )
+                    : (
+                    <>
+                      {originValues?.deptList?.map((item: any) => (
+                        <span key={item.deptId}>{item.deptName}</span>
+                      ))}
+                    </>
+                      )}
                 </Form.Item>
                 <Form.Item>
                   <span>
                     截止目前时间：此用户组共计人数：
-                    {formValues.group?.staffNum || 0}人
+                    {formValues?.groupType === 1 ? formValues.group1?.staffNum || 0 : formValues.group2?.staffNum || 0}
+                    人
                   </span>
                   <Button type="link">查看人员</Button>
                 </Form.Item>
