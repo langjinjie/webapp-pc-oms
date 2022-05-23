@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
 import { UploadFile } from 'src/components';
+import { SetUserRightFormItem } from '../Components/SetUserRight/SetUserRight';
 
 interface ActivityPageProps {
   id: number;
@@ -16,6 +17,7 @@ interface ActivityPageProps {
 }
 
 interface ActivityProps {
+  groupId?: string;
   activityId?: string;
   activityName: string;
   corpactivityId?: string;
@@ -65,7 +67,8 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
         displayType,
         username,
         path,
-        sourceUrl
+        sourceUrl,
+        groupId
       } = res;
 
       setDisplayType(displayType);
@@ -73,6 +76,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
       form.setFieldsValue({
         activityName,
         activityId,
+        groupId,
         corpActivityLink,
         speechcraft,
         tags: tags?.split(','),
@@ -111,10 +115,13 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
   }, []);
 
   const onFinish = async (values: any) => {
-    const { tags, ...otherValues } = values;
+    const { tags, groupId, ...otherValues } = values;
+    delete otherValues.group1;
+    delete otherValues.group2;
     const editParams = {
       ...otherValues,
       tags: tags.join(','),
+      groupId: groupId || '',
       shareCoverImgUrl: active.shareCoverImgUrl,
       activityId: active.activityId
     };
@@ -316,6 +323,9 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
             readOnly={isReadOnly}
             className="width400"
           />
+        </Form.Item>
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={form} />
         </Form.Item>
         {/* </Form> */}
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
