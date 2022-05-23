@@ -42,7 +42,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
       setSubMenuIndex(subIndex);
       const btnList: MenuItem[] = subMenus[subIndex].children || [];
       setBtnList(btnList.map((item) => item.path));
-      console.log(btnList.map((item) => item.path));
     }
   };
 
