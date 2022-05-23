@@ -45,7 +45,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
   const handleSubmit = () => {
     rightForm.validateFields().then((values) => {
       const { group1, group2, isSet, groupType } = values;
-      onOk?.({ groupId: groupType === 1 ? group1.groupId : group2.groupId, isSet, isBatch });
+      onOk?.({ groupId: groupType === 1 ? group1?.groupId : group2?.groupId, isSet, isBatch });
     });
   };
 
@@ -267,7 +267,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
           modalParam={{
             visible: visibleStaffList.visible,
             add: false,
-            filterId: isArray(groupId) ? groupId && groupId[0]! : groupId
+            filterId: formValues?.groupType === 1 ? formValues.group1?.groupId : formValues.group2?.groupId
           }}
           setModalParam={setVisibleStaffList}
         ></ViewStaffModal>

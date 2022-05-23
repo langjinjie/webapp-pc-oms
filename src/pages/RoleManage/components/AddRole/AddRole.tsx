@@ -15,6 +15,7 @@ interface IRoleType {
 const AddRole: React.FC<IRoleType> = ({ roleType }) => {
   const [readOnly, setReadOnly] = useState(false);
   const [addMenu, setAddMenu] = useState(false); // 默认角色只能添加菜单功能
+  const [rangeParam, setRangeParam] = useState<{ visible: boolean; groupId: string }>({ visible: false, groupId: '' });
   const breadCrumbsPathList = ['后管端权限管理', 'B端权限管理', 'A端权限管理'];
   const history = useHistory();
   const location = useLocation();
@@ -39,14 +40,29 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
             .map((mapItem) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId }))
         });
         setAddMenu(type === 'addMenu');
+        setRangeParam((param) => ({ ...param, groupId: res.dataScopeGroup }));
       }
     }
+  };
+  // 设置B端管辖范围
+  const setRangeHangle = () => {
+    setRangeParam((param) => ({ ...param, visible: true }));
+  };
+  // 取消
+  const rangeOnCancel = () => {
+    setRangeParam((param) => ({ ...param, visible: false }));
+  };
+  // 管辖范围onOk
+  const rageScopeOnOk = (value: { isBatch?: boolean; groupId: string; isSet: boolean }) => {
+    setRangeParam((param) => ({ ...param, visible: false, groupId: value.groupId }));
   };
   const onFinish = async (values: any) => {
     const res = await (addMenu ? requestAddDefaultMenuList : requestAddOrEditRole)({
       ...values,
+      menuList: values.menuList.map((mapItem: any) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId })),
       roleType,
-      defaultDataScope: 1,
+      defaultDataScope: rangeParam.groupId ? 1 : 0,
+      dataScopeGroup: rangeParam.groupId,
       roleId: URLSearchParams(location.search).roleId
     });
     if (res) {
@@ -68,10 +84,24 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
           {breadCrumbsPathList[roleType - 1]}
         </span>
         <span className={style.line}>/</span>
-        <span className={style.current}>新增角色</span>
+        <span className={style.current}>
+          {URLSearchParams(location.search).type
+            ? URLSearchParams(location.search).type === 'view'
+              ? '查看'
+              : '编辑'
+            : '新增'}
+          角色
+        </span>
       </div>
       <div className={style.add}>
-        <div className={style.title}>新增角色</div>
+        <div className={style.title}>
+          {URLSearchParams(location.search).type
+            ? URLSearchParams(location.search).type === 'view'
+              ? '查看'
+              : '编辑'
+            : '新增'}
+          角色
+        </div>
         <Form form={form} className={style.form} onFinish={onFinish} onReset={onReset}>
           <Item name="roleName" className={style.formItem} label="角色名称：">
             <Input
@@ -91,20 +121,32 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
               readOnly={readOnly || addMenu}
             />
           </Item>
-          <Item
-            name="dataScopeGroup"
-            className={style.formItem}
-            label="管辖范围："
-            {...(roleType !== 2 && { initialValue: roleType === 1 ? '全部组织' : '全部下级' })}
-          >
-            {roleType !== 2
-              ? (
-              <Input disabled className={style.longInput} placeholder="请输入" />
-                )
-              : (
-              <SetUserRight onOk={() => console.log(1)} />
-                )}
-          </Item>
+          {roleType !== 3 && (
+            <Item
+              className={style.formItem}
+              label="管辖范围："
+              {...(roleType !== 2 && { initialValue: roleType === 1 ? '全部组织' : '全部下级' })}
+            >
+              {roleType !== 2
+                ? (
+                <Input disabled className={style.longInput} placeholder="请输入" />
+                  )
+                : (
+                <div className={style.rangeWrap}>
+                  <div className={style.scope}>{rangeParam.groupId ? '已配置管辖范围' : '未配置管辖范围'}</div>
+                  <Button className={style.setScropBtn} onClick={setRangeHangle}>
+                    {rangeParam.groupId ? '修改' : '添加'}
+                  </Button>
+                  <SetUserRight
+                    groupId={rangeParam.groupId}
+                    visible={rangeParam.visible}
+                    onOk={rageScopeOnOk}
+                    onCancel={rangeOnCancel}
+                  />
+                </div>
+                  )}
+            </Item>
+          )}
           <Item name={'menuList'}>
             <ChoosePrivilege roleType={roleType} readOnly={readOnly} addMenu={addMenu} />
           </Item>
