@@ -36,7 +36,6 @@ const UserGroup: React.FC<UserGroupProps> = ({ change }) => {
   const getGroupList = async () => {
     setLoading(true);
     const res = await requestGetGroupList({ ...searchParam, ...paginationParam });
-    console.log('res', res);
     if (res) {
       setGroupList(res);
     }
@@ -44,7 +43,6 @@ const UserGroup: React.FC<UserGroupProps> = ({ change }) => {
   };
   // 查询/重置
   const onSearchHandle = (values: any) => {
-    console.log('values', values);
     if (values.type === 'reset') {
       setSearchParam({ groupName: '', groupCode: '' });
     } else {
