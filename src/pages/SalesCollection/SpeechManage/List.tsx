@@ -11,7 +11,8 @@ import {
   sortSpeech,
   getSensitiveStatus,
   checkSensitive,
-  addBatchSpeech
+  addBatchSpeech,
+  setUserRightWithSpeech
 } from 'src/apis/salesCollection';
 import { Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
@@ -23,6 +24,7 @@ import style from './style.module.less';
 import { Context } from 'src/store';
 import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
 import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/SetUserRight';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   useDocumentTitle('销售宝典-话术管理');
@@ -64,6 +66,10 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     checkTime: ''
   });
   const [loading] = useState(false);
+  const [currentItem, setCurrentItem] = useState<SpeechProps>();
+  const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
+  const [isBatchSetRight, setIsBatchSetRight] = useState(false);
+  const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
 
   // 查询话术列表
   const getList = async (params?: any) => {
@@ -431,6 +437,43 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       message.success(res);
     }
   };
+  // 显示配置可见范围模块
+  const setRight = (record?: SpeechProps) => {
+    if (record) {
+      setIsBatchSetRight(false);
+      setCurrentItem(record);
+    } else {
+      const mySet = new Set();
+      selectedRows?.forEach((item) => {
+        mySet.add(item.groupId);
+      });
+      console.log(Array.from(mySet));
+      setCurrentGroupIds(Array.from(mySet));
+      setIsBatchSetRight(true);
+    }
+    setVisibleSetUserRight(true);
+  };
+
+  const confirmSetRight = async (values: any) => {
+    setVisibleSetUserRight(false);
+    const { isSet, groupId, isBatch } = values;
+    // [adminId];
+    // groupId: 93201136316088326
+    const list: any[] = [];
+    if (isBatch) {
+      selectedRows?.forEach((item) => {
+        list.push({ sceneId: item.sceneId, contentId: item.contentId, groupId: isSet ? groupId : null });
+      });
+    } else {
+      list.push({ sceneId: currentItem?.sceneId, contentId: currentItem?.contentId, groupId: isSet ? groupId : null });
+    }
+    const res = await setUserRightWithSpeech({ list });
+    if (res) {
+      message.success('设置成功');
+      getList({ pageNum: 1 });
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
+    }
+  };
   return (
     <div className="container">
       <div className="flex justify-between">
@@ -494,7 +537,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
 
       <NgTable
         dataSource={dataSource}
-        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew })}
+        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight })}
         setRowKey={(record: SpeechProps) => {
           return record.contentId;
         }}
@@ -545,6 +588,15 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
             >
               删除
             </Button>
+            <Button
+              type="primary"
+              shape={'round'}
+              ghost
+              disabled={!(selectedRows && selectedRows.length > 0)}
+              onClick={() => setRight()}
+            >
+              批量添加可见范围
+            </Button>
           </Space>
         </div>
       )}
@@ -567,6 +619,13 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
 
       {/* modal */}
       <ConfirmModal visible={visibleChecked} title={'温馨提醒'} onOk={doCheck} />
+      <SetUserRight
+        isBatch={isBatchSetRight}
+        groupId={isBatchSetRight ? currentGroupIds : currentItem?.groupId}
+        visible={visibleSetUserRight}
+        onOk={confirmSetRight}
+        onCancel={() => setVisibleSetUserRight(false)}
+      />
     </div>
   );
 };
