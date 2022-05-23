@@ -71,15 +71,35 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
   const onCheckHandle = (_: any, e: any) => {
     // 判断是选中还是取消选中
     if (e.checked) {
-      console.log(e.node);
+      // 将该菜单的所有子菜单选中
       const newParamKeys = Array.from(
-        new Set([...value.map((valueItem) => valueItem.menuId), ...tree2Arry([e.node]).map((item) => item.menuId)])
+        new Set([
+          ...value.map((valueItem) => valueItem.menuId),
+          ...tree2Arry([e.node]).map((item) => item.menuId),
+          ...e.node.fullMenuId.split(',')
+        ])
       );
       const newValue = [...flatTreeData.filter((flatItem) => newParamKeys.includes(flatItem.menuId))];
       onChange?.([...value.filter((filterItem: any) => filterItem.sysType !== e.node.sysType), ...newValue]);
     } else {
-      console.log(e.node);
       const deleParamKeys = tree2Arry([e.node]).map((item) => item.menuId);
+      const currentParantsList: string[] = e.node.fullMenuId
+        .split(',')
+        .slice(0, e.node.fullMenuId.split(',').length - 1);
+      currentParantsList.reverse().some((item) => {
+        const parentMenu = flatTreeData.find((findItem) => findItem.menuId === item);
+        const currentTreeValueKeys = value.map((mapItem) => mapItem.menuId);
+        // 判断该节点的父节点是否需要取消选择
+        if (
+          parentMenu.children.filter((filterItem: any) => currentTreeValueKeys.includes(filterItem.menuId)).length <= 1
+        ) {
+          deleParamKeys.push(item);
+          return false;
+        } else {
+          return true;
+        }
+      });
+      // // 将该菜单的所有子菜单取消选中
       const delValue = [...value.filter((valueItem) => !deleParamKeys.includes(valueItem.menuId))];
       onChange?.(delValue);
     }

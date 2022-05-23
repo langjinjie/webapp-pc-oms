@@ -16,6 +16,7 @@ import { getCookie } from 'src/utils/base';
 import { MenuItem } from 'src/utils/interface';
 import Header from './Header';
 import './style.less';
+import { message } from 'antd';
 
 const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList, setBtnList } = useContext(Context);
@@ -133,6 +134,8 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
                 setSubMenuIndex(null);
                 if (menu.children && menu.children.length > 0) {
                   history.push(((menu.children || [])[0] || {}).path);
+                } else {
+                  message.warn('无子级菜单，请联系管理员');
                 }
               }}
             >
