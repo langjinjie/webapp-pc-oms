@@ -74,6 +74,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     setFlatTreeData([]);
     setAutoExpand(true);
     setSelectedList([]);
+    setTreeSearchValue('');
+    setSelectSearchValue('');
   };
   // 获取组织架构
   const getCorpOrg = async (parentId: string) => {
@@ -112,8 +114,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     return [...res2, ...res1];
   };
   const onOkHandle = async () => {
-    onChange?.(selectedList);
     setParams?.({ visible: false, added: true, roleId: '' });
+    onChange?.(selectedList);
     onOk?.(selectedList);
   };
   const onCancel = () => {
@@ -231,7 +233,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   }, [params.visible, corpId]);
   // 自动展开以及自动勾选
   useEffect(() => {
-    if (value && flatTreeData.length && autoExpand) {
+    if (params.visible && value && flatTreeData.length && autoExpand) {
       const expandedKeys = flatTreeData
         .filter((filterItem) =>
           Array.from(new Set(value?.map((mapItem) => [...mapItem.fullDeptId.split(',')]).flat(Infinity))).includes(
