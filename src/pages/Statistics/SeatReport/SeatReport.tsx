@@ -16,6 +16,7 @@ import {
   queryReportAreaData,
   queryBoardList
 } from 'src/apis/seatReport';
+import { AuthBtn } from 'src/components';
 import style from './style.module.less';
 
 interface BoardItem {
@@ -318,9 +319,11 @@ const SeatReport: React.FC = () => {
         {/* <Button className={style.btn} type="primary" onClick={domToImage}>
           下载数据源
         </Button> */}
-        <Button className={style.btn} type="primary" onClick={domToImage}>
-          导出图片
-        </Button>
+        <AuthBtn path="/export">
+          <Button className={style.btn} type="primary" onClick={domToImage}>
+            导出图片
+          </Button>
+        </AuthBtn>
       </div>
       <div className={style.content}>
         <img

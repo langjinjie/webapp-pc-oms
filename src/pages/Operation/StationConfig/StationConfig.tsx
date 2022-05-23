@@ -10,7 +10,7 @@ import { Table, Card, TableColumnType, PaginationProps } from 'antd';
 import moment from 'moment';
 import qs from 'qs';
 import { setTitle } from 'lester-tools';
-import { Icon } from 'src/components';
+import { Icon, AuthBtn } from 'src/components';
 import { queryStationList } from 'src/apis/stationConfig';
 import style from './style.module.less';
 
@@ -106,10 +106,14 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
       dataIndex: 'settingId',
       render: (text: number) => (
         <>
-          <a onClick={() => operateHandle(text, 1)}>查看</a>
-          <a style={{ marginLeft: 10 }} onClick={() => operateHandle(text, 0)}>
-            编辑
-          </a>
+          <AuthBtn path="/view">
+            <a onClick={() => operateHandle(text, 1)}>查看</a>
+          </AuthBtn>
+          <AuthBtn path="/edit">
+            <a style={{ marginLeft: 10 }} onClick={() => operateHandle(text, 0)}>
+              编辑
+            </a>
+          </AuthBtn>
         </>
       )
     }
@@ -142,10 +146,12 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <Card className={style.wrap} title="小站配置" bordered={false}>
-      <div className={style.addBtn} onClick={() => operateHandle(null, 0)}>
-        <Icon className={style.addIcon} name="xinjian" />
-        添加
-      </div>
+      <AuthBtn path="/add">
+        <div className={style.addBtn} onClick={() => operateHandle(null, 0)}>
+          <Icon className={style.addIcon} name="xinjian" />
+          添加
+        </div>
+      </AuthBtn>
       {/* <Form className={style.formWrap} form={form} layout="inline" onFinish={onsubmit} onReset={() => onsubmit({})}>
         <Item label="上架时间" name="onlineTime">
           <RangePicker />

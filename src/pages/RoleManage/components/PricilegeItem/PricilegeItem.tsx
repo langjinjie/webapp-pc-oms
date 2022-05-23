@@ -29,6 +29,7 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
   const [treeHeight, setTreeHeight] = useState<number | string>(48);
   const [flatTreeData, setFlatTreeData] = useState<any[]>([]);
   const treeListNode = useRef<HTMLDivElement>(null);
+  const treeWrap = useRef<HTMLDivElement>(null);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -40,23 +41,28 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
   });
 
   // 获取tree的高度
-  const getTreeHeight = () => {
+  const extendLinster = () => {
     if (item.children && extend) {
       setTreeHeight(treeListNode.current!.offsetHeight + 48 + 1);
     } else {
       setTreeHeight(48);
+      setTimeout(() => {
+        setTreeProps((param) => ({ ...param, expandedKeys: [] }));
+      }, 300);
     }
   };
+  // 折叠活
   // 点击展开对应功能权限
   const extendHandle = () => {
     if (item.children && extend) {
-      // 折叠动画
+      // 点击折叠时,让height立即设置为当前高度,让transition能够生效
       setTreeHeight(treeListNode.current!.offsetHeight + 48 + 1);
     }
     setExtend((param) => !param);
   };
   // 展开/折叠触发
   const onExpandHandle = (expandedKeys: Key[]) => {
+    // 折叠/展开tree的时候,高度自适应
     setTreeHeight('auto');
     setTreeProps({ ...treeProps, expandedKeys, autoExpandParent: false });
   };
@@ -77,16 +83,14 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
   };
 
   useEffect(() => {
-    getTreeHeight();
-    if (!extend) {
-      setTreeProps((param) => ({ ...param, expandedKeys: [] }));
-    }
+    extendLinster();
   }, [extend]);
   useEffect(() => {
     item.children && setFlatTreeData(tree2Arry(item.children));
   }, []);
   return (
     <div
+      ref={treeWrap}
       className={classNames(style.wrap, { [style.extend]: extend })}
       style={{ height: treeHeight }}
       onClick={extendHandle}
