@@ -31,6 +31,7 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
   };
   // 获取角色列表
   const copyPrivilege = async () => {
+    if (readOnly) return;
     const res = await requesetGetRoleList({ roleType, pageSize: 999 });
     if (res) {
       setRoleList(res.list);
