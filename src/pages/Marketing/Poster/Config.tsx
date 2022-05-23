@@ -187,7 +187,7 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
       },
       {
         title: '操作',
-        width: 250,
+        width: 340,
         dataIndex: 'status',
         align: 'left',
         fixed: 'right',
@@ -318,7 +318,7 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
       },
       {
         title: '操作',
-        width: 250,
+        width: 340,
         dataIndex: 'status',
         align: 'left',
         fixed: 'right',
