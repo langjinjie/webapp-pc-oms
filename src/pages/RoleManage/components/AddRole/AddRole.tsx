@@ -5,6 +5,7 @@ import { ChoosePrivilege } from 'src/pages/RoleManage/components';
 import { requestGetRoleDetail, requestAddOrEditRole } from 'src/apis/roleMange';
 import { URLSearchParams, tree2Arry } from 'src/utils/base';
 import { roleTypeRouteList } from 'src/utils/commonData';
+import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/SetUserRight';
 import style from './style.module.less';
 
 interface IRoleType {
@@ -94,9 +95,10 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
             name="dataScopeGroup"
             className={style.formItem}
             label="管辖范围："
-            initialValue={roleType === 1 ? '全部组织' : '全部下级'}
+            {...(roleType !== 2 && { initialValue: roleType === 1 ? '全部组织' : '全部下级' })}
           >
-            <Input disabled className={style.longInput} placeholder="请输入" />
+            {roleType !== 2 && <Input disabled className={style.longInput} placeholder="请输入" />}
+            {roleType === 2 && <SetUserRight onOk={() => console.log(1)} />}
           </Item>
           <Item name={'menuList'}>
             <ChoosePrivilege roleType={roleType} readOnly={readOnly} />

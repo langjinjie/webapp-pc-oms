@@ -91,6 +91,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
     });
     if (res) {
       message.success('添加/管理成功');
+      setAdminParam({ visible: false });
     }
   };
   const rowSelection = {
@@ -176,7 +177,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         setRowKey={(row) => row.roleId}
         dataSource={roleList.list}
         loading={loading}
-        columns={TableColumns(roleType, clickTree, setAdminParam, setPaginationParam)}
+        columns={TableColumns(roleType, clickTree, setPaginationParam)}
         scroll={{ x: 'max-content' }}
         {...TablePagination({
           roleType,
@@ -197,7 +198,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       />
       <Modal
         className={style.adminModal}
-        title="添加/管理成员"
+        title="管理成员"
         visible={adminModalParam.visible}
         onClose={() => setAdminParam((param) => ({ ...param, visible: false }))}
         onOk={onOk}

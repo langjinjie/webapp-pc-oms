@@ -11,7 +11,6 @@ import style from './style.module.less';
 const TableColumns = (
   roleType: 1 | 2 | 3,
   clickTree: (add: boolean, roleId: string) => void,
-  setAdminParam: Dispatch<SetStateAction<{ visible: boolean; roleId: string }>>,
   setPaginationParam: Dispatch<SetStateAction<{ pageNum: number; pageSize: number }>>
 ): ColumnType<any>[] => {
   const { setConfirmModalParam } =
@@ -103,9 +102,6 @@ const TableColumns = (
                 编辑
               </span>
             )}
-            <span className={style.add} onClick={() => clickTree(true, row.roleId)}>
-              添加成员
-            </span>
             <span className={style.mange} onClick={() => clickTree(false, row.roleId)}>
               管理成员
             </span>
