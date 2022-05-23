@@ -219,7 +219,6 @@ export const filterChildren = (arr: any[]): any[] => {
       // 找出该选中节点的所有后代节点
       if (childrenItem.fullDeptId.split(',').includes(item.deptId.toString())) {
         if (childrenItem.staffId) {
-          console.log(childrenItem);
           newArr1.push(childrenItem.staffId);
         } else {
           newArr1.push(childrenItem.deptId);

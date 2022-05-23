@@ -247,10 +247,11 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         expandedKeys
       });
       const staffKeys = flatTreeData
-        .filter((filterItem) => value?.some((someItem) => someItem.staffId === filterItem.id))
+        .filter((filterItem) => value?.some((someItem) => +someItem.staffId === +filterItem.id))
         .map((mapItem) => mapItem.id);
+      const deptValue = value.filter((filterItem) => !filterItem.staffId);
       const deptKeys = flatTreeData
-        .filter((filterItem) => value?.some((someItem) => !someItem.staffId && someItem.deptId === filterItem.id))
+        .filter((filterItem) => deptValue?.some((someItem) => +someItem.deptId === +filterItem.id))
         .map((mapItem) => mapItem.id);
       setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...staffKeys, ...deptKeys])));
       const selectedList = flatTreeData.filter((filterItem) =>

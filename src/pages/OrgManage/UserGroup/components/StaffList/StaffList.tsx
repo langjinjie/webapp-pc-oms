@@ -19,7 +19,6 @@ const StaffList: React.FC<IStaffList> = ({ value, onChange, readOnly }) => {
   });
   // 选择人员
   const chooseStaff = () => {
-    console.log('params', params);
     setParams({ visible: true, added: true, roleId: '' });
   };
   // 清除单个标签选择

@@ -59,7 +59,6 @@ const AddTagModal: React.FC<IAddTagModal> = ({ addTagParam, setAddTagParam, upda
   };
   // 监听form表单变化
   const formOnchange = (_: any, allValues: any) => {
-    console.log('allValues', allValues);
     let deptName = '';
     if (allValues.deptList) {
       deptName =
@@ -78,7 +77,6 @@ const AddTagModal: React.FC<IAddTagModal> = ({ addTagParam, setAddTagParam, upda
     const tagName = (allValues.name || '') + '+';
     const textAreaVal = (deptName + tagName + ruleTypeName).replace(/^(\s|\+)+|(\s|\+)+$/g, '');
     form.setFieldsValue({ filterName: textAreaVal });
-    console.log('textAreaVal', textAreaVal);
   };
   const onOk = async () => {
     const { name, filterName, deptList, staffTagList } = form.getFieldsValue();

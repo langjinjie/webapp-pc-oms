@@ -30,7 +30,6 @@ const ViewStaffModal: React.FC<IViewStaffModal> = ({ modalParam, setModalParam }
     console.log('onOk');
   };
   const onCancel = () => {
-    console.log('onCancel');
     setModalParam((param: any) => ({ ...param, visible: false }));
   };
   const onReset = () => {
@@ -44,13 +43,11 @@ const ViewStaffModal: React.FC<IViewStaffModal> = ({ modalParam, setModalParam }
   };
   // 获取人员列表
   const getStaffList = async () => {
-    console.log(modalParam);
     setLoading(true);
     const res = await (modalParam.add
       ? requestGetGroupStaffList({ ...searchParam, filterId: modalParam.filterId, ...paginationPram })
       : requestGetViewGroupStaffList({ ...searchParam, groupId: modalParam.filterId, ...paginationPram }));
     if (res) {
-      console.log('res', res);
       setStaffList(res);
     }
     setLoading(false);

@@ -46,7 +46,6 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
     setModalParam({ visible: false });
   };
   const radioOnChange = (event: RadioChangeEvent) => {
-    console.log('evnet', event);
     setRadioVal(event.target.value);
   };
   const clearTags = (event: React.MouseEvent<Element, MouseEvent>) => {
@@ -60,7 +59,7 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
   // 获取标签列表
   const getStaffTagList = async () => {
     const res = await requestGetStaffTagList({});
-    console.log('res', res);
+
     if (res) {
       const arr = (res.list as any[]).sort(function (a: any, b: any) {
         return a.sortId - b.sortId; // 升序

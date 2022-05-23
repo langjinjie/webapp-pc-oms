@@ -24,7 +24,6 @@ const AddGroup: React.FC = () => {
   const filterHandle = async () => {
     const { groupTagList, staffList } = form.getFieldsValue();
     const res = await requestGetFilterGroup({ groupTagList, staffList });
-    console.log('res', res);
     if (res) {
       setFilterCount(res.totalCount);
       setModalParam((param) => ({ ...param, filterId: res.filterId, add: true }));

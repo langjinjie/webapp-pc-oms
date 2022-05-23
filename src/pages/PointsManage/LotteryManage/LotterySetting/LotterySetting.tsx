@@ -26,8 +26,6 @@ const LotterySetting: React.FC = () => {
       onOk: async () => {
         const deptIds = depLsit?.scopeDeptIds.split(';') || [];
         deptIds.splice(index, 1);
-        console.log(deptIds);
-        console.log(deptIds.toString().replace(/,/g, ';'));
         // return;
         const res = await requestAddLotteryScope({ deptIds: deptIds.toString().replace(/,/g, ';') });
         if (res) {

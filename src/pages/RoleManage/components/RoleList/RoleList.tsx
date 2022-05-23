@@ -137,6 +137,8 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       // 获取当前角色得成员
       const res = await requestGetCurRoleUserList({ roleId });
       if (res) {
+        console.log(res);
+        console.log([...(res.staffList || []), ...(res.deptList || [])]);
         treeOnchange([...(res.staffList || []), ...(res.deptList || [])]);
         setParams({ visible: true, added, roleId });
       }
