@@ -254,9 +254,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       const selectedList = flatTreeData.filter((filterItem) =>
         Array.from(new Set([...staffKeys, ...deptKeys])).includes(filterItem.id)
       );
-      console.log('value', value);
-      console.log('staffKeys', staffKeys);
-      console.log('flatTreeData', flatTreeData);
       setSelectedList(() => [...selectedList]);
     }
   }, [flatTreeData, value]);

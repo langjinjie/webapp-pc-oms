@@ -62,7 +62,6 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
   }, [corpId]);
   useEffect(() => {
     if (addMenu) {
-      console.log(list);
       tree2Arry(list).forEach((item) => {
         if (value?.map((mapItem) => mapItem.menuId).includes(item.menuId)) {
           item.disabled = true;
