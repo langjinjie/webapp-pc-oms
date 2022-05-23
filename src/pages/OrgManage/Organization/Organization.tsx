@@ -7,7 +7,7 @@ import React, { useEffect, useState, useContext, useRef, MutableRefObject } from
 import { Input, Tree, TreeSelect, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
-import { Icon, Modal, Empty } from 'src/components';
+import { Icon, Modal, Empty, AuthBtn } from 'src/components';
 import {
   queryDepartmentList,
   searchStaffAndDepart,
@@ -566,16 +566,18 @@ const Organization: React.FC = () => {
               <div className={style.nodeItem}>
                 {node.deptName}({node.deptType === 1 ? `${node.effCount}/${node.totalCount}` : node.effCount})
                 {Number(node.deptId) !== -1 && (
-                  <Icon
-                    className={style.dotIcon}
-                    name="diandian"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePosition(e.clientX, e.clientY);
-                      setShowDepart(true);
-                      setCurrentNode(node);
-                    }}
-                  />
+                  <AuthBtn path="/operate">
+                    <Icon
+                      className={style.dotIcon}
+                      name="diandian"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePosition(e.clientX, e.clientY);
+                        setShowDepart(true);
+                        setCurrentNode(node);
+                      }}
+                    />
+                  </AuthBtn>
                 )}
               </div>
             )}

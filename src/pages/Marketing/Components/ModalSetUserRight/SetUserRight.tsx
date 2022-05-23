@@ -1,5 +1,5 @@
-import { Button, Form, Radio } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Button, Form, Radio, Tag } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
 import { getUserGroup } from 'src/apis/marketing';
 import { NgModal } from 'src/components';
 import UserGroupModal from './UserGroupModal';
@@ -7,6 +7,7 @@ import UserOrgModal from './UserOrgModal';
 
 import styles from './style.module.less';
 import { isArray } from 'src/utils/tools';
+import { ViewStaffModal } from 'src/pages/OrgManage/UserGroup/components';
 
 interface SetUserRightProps extends Omit<React.ComponentProps<typeof NgModal>, 'onOk'> {
   title?: string;
@@ -26,6 +27,10 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
 }) => {
   const [rightForm] = Form.useForm();
   const [originValues, setOriginValues] = useState<any>();
+  const [visibleStaffList, setVisibleStaffList] = useState({
+    visible: false,
+    add: false
+  });
   const [formValues, setFormValues] = useState<{ isSet: number; groupType: number; group1: any; group2: any }>({
     isSet: 0,
     groupType: 1,
@@ -107,7 +112,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
       }
       return false;
     } else if (groupId) {
-      await getGroupDetail(groupId);
+      await getGroupDetail(groupId as string);
     } else {
       setFormValues({
         isSet: 0,
@@ -154,6 +159,10 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
     });
     onCancel?.(e);
   };
+
+  const staffCount = useMemo(() => {
+    return formValues?.groupType === 1 ? formValues.group1?.staffNum || 0 : formValues.group2?.staffNum || 0;
+  }, [formValues]);
 
   return (
     <>
@@ -225,7 +234,10 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
                     : (
                     <>
                       {originValues?.deptList?.map((item: any) => (
-                        <span key={item.deptId}>{item.deptName}</span>
+                        <Tag key={item.deptId}>{item.deptName}</Tag>
+                      ))}
+                      {originValues?.staffList?.map((item: any) => (
+                        <Tag key={item.staffId}>{item.staffName}</Tag>
                       ))}
                     </>
                       )}
@@ -233,16 +245,32 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
                 <Form.Item>
                   <span>
                     截止目前时间：此用户组共计人数：
-                    {formValues?.groupType === 1 ? formValues.group1?.staffNum || 0 : formValues.group2?.staffNum || 0}
-                    人
+                    {staffCount}人
                   </span>
-                  <Button type="link">查看人员</Button>
+                  {staffCount > 0 && (
+                    <Button
+                      type="link"
+                      onClick={() =>
+                        setVisibleStaffList((visibleStaffList) => ({ ...visibleStaffList, visible: true }))
+                      }
+                    >
+                      查看人员
+                    </Button>
+                  )}
                 </Form.Item>
               </>
                 )
               : null}
           </Form.Item>
         </Form>
+        <ViewStaffModal
+          modalParam={{
+            visible: visibleStaffList.visible,
+            add: false,
+            filterId: isArray(groupId) ? groupId && groupId[0]! : groupId
+          }}
+          setModalParam={setVisibleStaffList}
+        ></ViewStaffModal>
       </NgModal>
     </>
   );

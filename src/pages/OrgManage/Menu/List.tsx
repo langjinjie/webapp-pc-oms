@@ -34,8 +34,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   // 搜索菜单
   const onSearch = async (values: any) => {
-    console.log(values);
-    if (values.menuName === undefined && values.status === undefined) {
+    if ((values.menuName === undefined || values.menuName === '') && values.status === undefined) {
       getList();
     } else {
       const res = await searchMenu({ sysType: currentTab, ...values });
