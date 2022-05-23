@@ -9,6 +9,7 @@ import { Icon } from 'lester-ui';
 import { RecommendMarketProps } from './TabView3';
 import { debounce } from 'src/utils/base';
 import { recommendTypeList } from '../Config';
+import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
 interface typeProps {
   id: string;
   name: string;
@@ -81,7 +82,15 @@ const TabView2: React.FC = () => {
 
   const onFinish = async (values: any) => {
     setSubmitting(true);
-    const res = await peerNews({ ...values, corpId: currentCorpId });
+    delete values.group1;
+    delete values.group2;
+    delete values.groupType;
+    delete values.isSet;
+    const res = await peerNews({
+      ...values,
+      groupId: values.groupId || '',
+      corpId: currentCorpId
+    });
     if (!res) {
       setSubmitting(false);
       return false;
@@ -296,6 +305,9 @@ const TabView2: React.FC = () => {
               </Radio>
             ))}
           </Radio.Group>
+        </Form.Item>
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={form} />
         </Form.Item>
         <Form.Item
           className={style.customerAddWrap}

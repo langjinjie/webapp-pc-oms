@@ -11,6 +11,7 @@ import { Icon } from 'lester-ui';
 import style from './style.module.less';
 import { recommendTypeList } from '../Config';
 import { debounce } from 'src/utils/base';
+import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
 interface TabView3Props {
   isEdit: boolean;
   newsId: string;
@@ -111,11 +112,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         defaultImg,
         corpId,
         recommendType,
-        recommendList
+        recommendList,
+        groupId
       } = res;
 
       form.setFieldsValue({
         title,
+        groupId,
         originalCreator,
         fromSource,
         summary,
@@ -142,8 +145,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         return message.error('请输入文章内容');
       }
       setSubmitting(false);
+      delete values.group1;
+      delete values.group2;
+      delete values.groupType;
+      delete values.isSet;
       const res = await saveNews({
         ...values,
+        groupId: values.groupId || '',
         newsId: newsId,
         content: submitHTML,
         corpId: currentCorpId
@@ -283,8 +291,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       list.push(currentItem.marketId);
       setNewUploadProductIdList(list);
     }
-    console.log(currentItem);
-    console.log(url);
   };
 
   return (
@@ -402,6 +408,9 @@ const TabView3: React.FC<TabView3Props> = (props) => {
               </Select.Option>
             ))}
           </Select>
+        </Form.Item>
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={form} />
         </Form.Item>
         <Form.Item name={'recommendType'} label="推荐类型">
           <Radio.Group onChange={onRecommendTypeChange}>

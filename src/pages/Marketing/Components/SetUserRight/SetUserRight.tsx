@@ -75,13 +75,15 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
 
   const onOpenChange = (isOpen: number) => {
     form.setFieldsValue({
+      groupType: 1,
       group1: undefined,
       group12: undefined,
       groupId: undefined
     });
     setFormValues((formValues) => ({
       ...formValues,
-      isSet: isOpen
+      isSet: isOpen,
+      groupType: 1
     }));
   };
 
