@@ -26,12 +26,13 @@ export interface ProductProps {
   status: number;
   isOwner: string;
   isTop: string;
+  groupId: string;
 }
 
 enum ProductStatus {
   '未上架' = 1,
   '已上架',
-  '已下架',
+  '已下架'
 }
 
 export const setSearchCols = (options: any[]): SearchCol[] => {
@@ -72,9 +73,10 @@ type ColumnsArgs = {
   viewItem: (record: ProductProps) => void;
   deleteItem: (record: ProductProps, index: number) => void;
   handleSort: (record: ProductProps) => void;
+  setRight: (record: ProductProps) => void;
 };
 const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
-  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort } = args;
+  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort, setRight } = args;
   return [
     { title: '产品名称', dataIndex: 'productName', width: 200, ellipsis: { showTitle: true } },
     {
@@ -147,7 +149,7 @@ const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
     },
     {
       title: '操作',
-      width: 180,
+      width: 230,
       dataIndex: 'status',
       align: 'left',
       fixed: 'right',
@@ -179,6 +181,9 @@ const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
               <Button type="link">删除</Button>
             </Popconfirm>
           )}
+          <Button type="link" onClick={() => setRight(obj)}>
+            配置可见范围
+          </Button>
         </Space>
       )
     }
