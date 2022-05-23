@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import { ChoosePrivilege } from 'src/pages/RoleManage/components';
-import { requestGetRoleDetail, requestAddOrEditRole } from 'src/apis/roleMange';
+import { requestGetRoleDetail, requestAddOrEditRole, requestAddDefaultMenuList } from 'src/apis/roleMange';
 import { URLSearchParams, tree2Arry } from 'src/utils/base';
 import { roleTypeRouteList } from 'src/utils/commonData';
 import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/SetUserRight';
@@ -14,6 +14,7 @@ interface IRoleType {
 
 const AddRole: React.FC<IRoleType> = ({ roleType }) => {
   const [readOnly, setReadOnly] = useState(false);
+  const [addMenu, setAddMenu] = useState(false); // 默认角色只能添加菜单功能
   const breadCrumbsPathList = ['后管端权限管理', 'B端权限管理', 'A端权限管理'];
   const history = useHistory();
   const location = useLocation();
@@ -26,23 +27,23 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
   // 获取角色详情
   const getRoleDetail = async () => {
     const { type, roleId } = URLSearchParams(location.search);
-    if (type === 'view') {
-      setReadOnly(true);
-    }
+    setReadOnly(type === 'view');
     if (roleId) {
       const res = await requestGetRoleDetail({ roleType, roleId });
       if (res) {
         form.setFieldsValue({
           ...res,
+          dataScopeGroup: res.dataScopeGroup || roleType === 1 ? '全部组织' : '全部下级',
           menuList: tree2Arry(res.list)
             .filter((filterItem) => filterItem.enable)
             .map((mapItem) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId }))
         });
+        setAddMenu(type === 'addMenu');
       }
     }
   };
   const onFinish = async (values: any) => {
-    const res = await requestAddOrEditRole({
+    const res = await (addMenu ? requestAddDefaultMenuList : requestAddOrEditRole)({
       ...values,
       roleType,
       defaultDataScope: 1,
@@ -58,7 +59,6 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
   };
   useEffect(() => {
     getRoleDetail();
-    // 设置
   }, []);
   return (
     <div className={style.wrap}>
@@ -79,7 +79,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
               showCount={true}
               maxLength={20}
               placeholder="请输入"
-              readOnly={readOnly}
+              readOnly={readOnly || addMenu}
             />
           </Item>
           <Item name="desc" className={style.formItem} label="角色说明：">
@@ -88,7 +88,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
               showCount={true}
               maxLength={200}
               placeholder="请输入"
-              readOnly={readOnly}
+              readOnly={readOnly || addMenu}
             />
           </Item>
           <Item
@@ -97,11 +97,16 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
             label="管辖范围："
             {...(roleType !== 2 && { initialValue: roleType === 1 ? '全部组织' : '全部下级' })}
           >
-            {roleType !== 2 && <Input disabled className={style.longInput} placeholder="请输入" />}
-            {roleType === 2 && <SetUserRight onOk={() => console.log(1)} />}
+            {roleType !== 2
+              ? (
+              <Input disabled className={style.longInput} placeholder="请输入" />
+                )
+              : (
+              <SetUserRight onOk={() => console.log(1)} />
+                )}
           </Item>
           <Item name={'menuList'}>
-            <ChoosePrivilege roleType={roleType} readOnly={readOnly} />
+            <ChoosePrivilege roleType={roleType} readOnly={readOnly} addMenu={addMenu} />
           </Item>
           {readOnly || (
             <>

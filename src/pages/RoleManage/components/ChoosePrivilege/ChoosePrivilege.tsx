@@ -12,10 +12,11 @@ interface IChoosePrivilege {
   value?: { menuId: string; fullMenuId: string }[];
   onChange?: (menuList: { menuId: string; fullMenuId: string }[]) => void;
   readOnly?: boolean;
+  addMenu?: boolean;
   roleType: 1 | 2 | 3;
 }
 
-const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly, roleType }) => {
+const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly, roleType, addMenu }) => {
   const { currentCorpId: corpId } = useContext<{ currentCorpId: string }>(Context);
   const [modalParam, setModalParam] = useState<{ [key: string]: any }>({ visible: false });
   const [list, setList] = useState<any>([]);
@@ -59,6 +60,17 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
   useEffect(() => {
     corpId && getAllMenuList();
   }, [corpId]);
+  useEffect(() => {
+    if (addMenu) {
+      console.log(list);
+      tree2Arry(list).forEach((item) => {
+        if (value?.map((mapItem) => mapItem.menuId).includes(item.menuId)) {
+          item.disabled = true;
+        }
+      });
+      setList((list: any) => [...list]);
+    }
+  }, [addMenu]);
   return (
     <div className={style.wrap}>
       <div className={style.titleWrap}>
@@ -71,7 +83,14 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
       <div className={style.privilege}>功能权限</div>
       <div className={style.menuList}>
         {list.map((item: any) => (
-          <PricilegeItem value={value} onChange={onChange} key={item.menuName} item={item} disabled={readOnly} />
+          <PricilegeItem
+            value={value}
+            onChange={onChange}
+            key={item.menuName}
+            item={item}
+            disabled={readOnly}
+            addMenu={addMenu}
+          />
         ))}
       </div>
       <NgModal

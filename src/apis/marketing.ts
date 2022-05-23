@@ -393,5 +393,14 @@ export const setUserRightWithArticle: HttpFunction = (param) => {
 
 // 设置海报用户权限
 export const setUserRightWithPoster: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/poster/batch/setscope', param);
+  return http.post('/tenacity-admin/api/activity/batch/setscope', param);
+};
+
+// 设置活动用户权限
+export const setUserRightWithActivity: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/activity/batch/setscope', param);
+};
+// 设置产品用户权限
+export const setUserRightWithProduct: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/product/batch/setscope', param);
 };

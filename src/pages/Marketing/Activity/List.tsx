@@ -13,6 +13,7 @@ import {
   activityList,
   activityManage,
   batchOperateActivity,
+  setUserRightWithActivity,
   sortCancelTopAtActivity,
   sortTopAtActivity
 } from 'src/apis/marketing';
@@ -20,6 +21,7 @@ import { SearchCols, columns, ActivityProps } from './Config';
 import { useDocumentTitle } from 'src/utils/base';
 import moment from 'moment';
 import { PaginationProps } from '../Article/Config';
+import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
 
 // 状态
 
@@ -57,6 +59,14 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
     }
   });
 
+  const [currentItem, setCurrentItem] = useState<ActivityProps | null>();
+
+  // 批量设置权限的状态
+  const [selectRows, setSelectRows] = useState<ActivityProps[]>();
+  const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
+  const [isBatchSetRight, setIsBatchSetRight] = useState(false);
+  const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
+
   // 查询活动列表
   const getList = async (queryParams: any) => {
     setOperationType(null);
@@ -83,6 +93,23 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
   // 查看
   const viewItem = (activityId: string) => {
     history.push('/marketingActivity/edit?activityId=' + activityId + '&isView=' + true);
+  };
+
+  // 显示配置可见范围模块
+  const setRight = (record?: ActivityProps) => {
+    if (record) {
+      setIsBatchSetRight(false);
+      setCurrentItem(record);
+    } else {
+      const mySet = new Set();
+      selectRows?.forEach((item) => {
+        mySet.add(item.groupId);
+      });
+      console.log(Array.from(mySet));
+      setCurrentGroupIds(Array.from(mySet));
+      setIsBatchSetRight(true);
+    }
+    setVisibleSetUserRight(true);
   };
 
   const handleOperate = async (operateType: number, activityId: string, index: number) => {
@@ -169,6 +196,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: ActivityProps[]) => {
     setSelectRowKeys(selectedRowKeys);
+    setSelectRows(selectedRows);
     const current = selectedRows[0];
     if (current) {
       if (current.status === 1 || current.status === 3) {
@@ -227,6 +255,28 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
     });
   };
 
+  // 确认设置权限
+  const confirmSetRight = async (values: any) => {
+    setVisibleSetUserRight(false);
+    const { isSet, groupId, isBatch } = values;
+    // [adminId];
+    // groupId: 93201136316088326
+    const list: any[] = [];
+    if (isBatch) {
+      selectRows?.forEach((item) => {
+        list.push({ activityId: item.activityId, groupId: isSet ? groupId : null });
+      });
+    } else {
+      list.push({ activityId: currentItem?.activityId, groupId: isSet ? groupId : null });
+    }
+    const res = await setUserRightWithActivity({ list });
+    if (res) {
+      message.success('设置成功');
+      getList({ pageNum: 1 });
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
+    }
+  };
+
   return (
     <div className={classNames(style.addFriendBox, 'container')}>
       <div className={style.addFriendContent}>
@@ -251,7 +301,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
               return record.activityId;
             }}
             loading={loading}
-            columns={columns({ handleOperate, viewItem, handleSort })}
+            columns={columns({ handleOperate, viewItem, handleSort, setRight })}
             rowSelection={rowSelection}
             dataSource={dataSource}
             pagination={pagination}
@@ -278,11 +328,28 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
                 >
                   批量下架
                 </Button>
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={!(selectRows && selectRows.length > 0)}
+                  onClick={() => setRight()}
+                >
+                  批量添加可见范围
+                </Button>
               </Space>
             </div>
           )}
         </div>
       </div>
+
+      <SetUserRight
+        isBatch={isBatchSetRight}
+        groupId={isBatchSetRight ? currentGroupIds : currentItem?.groupId}
+        visible={visibleSetUserRight}
+        onOk={confirmSetRight}
+        onCancel={() => setVisibleSetUserRight(false)}
+      />
     </div>
   );
 };

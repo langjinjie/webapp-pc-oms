@@ -43,6 +43,7 @@ interface OperateProps {
   viewItem: (id: string) => void;
   handleSort: (record: ActivityProps) => void;
   handleOperate: (operateType: number, activityId: string, index: number) => void;
+  setRight: (record: ActivityProps) => void;
 }
 export interface ActivityProps {
   activityName: string;
@@ -54,9 +55,10 @@ export interface ActivityProps {
   createBy: string;
   activityId: string;
   isTop: string;
+  groupId: string;
 }
 export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
-  const { viewItem, handleOperate, handleSort } = args;
+  const { viewItem, handleOperate, handleSort, setRight } = args;
   return [
     {
       title: '活动名称',
@@ -122,7 +124,7 @@ export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
     {
       title: '操作',
       dataIndex: 'status',
-      width: 200,
+      width: 280,
       align: 'left',
       fixed: 'right',
       render: (status: number, record: any, index: number) => (
@@ -154,6 +156,9 @@ export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
               <Button type="link">删除</Button>
             </Popconfirm>
           )}
+          <Button type="link" onClick={() => setRight(record)}>
+            配置可见范围
+          </Button>
         </Space>
       )
     }

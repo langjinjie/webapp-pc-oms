@@ -91,7 +91,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
     });
     if (res) {
       message.success('添加/管理成功');
-      setAdminParam({ visible: false });
+      setAdminParam((param) => ({ ...param, visible: false }));
     }
   };
   const rowSelection = {

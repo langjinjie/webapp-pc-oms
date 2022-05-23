@@ -102,6 +102,11 @@ const TableColumns = (
                 编辑
               </span>
             )}
+            {!row.isDefault || (
+              <span className={style.addMenu} onClick={() => editOrViewHandle('addMenu', row.roleId)}>
+                添加功能
+              </span>
+            )}
             <span className={style.mange} onClick={() => clickTree(false, row.roleId)}>
               管理成员
             </span>
