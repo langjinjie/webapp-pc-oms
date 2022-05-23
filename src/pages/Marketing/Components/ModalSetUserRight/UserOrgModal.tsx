@@ -10,16 +10,16 @@ interface UserGroupModalProps extends Omit<React.ComponentProps<typeof NgModal>,
 }
 const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValue }) => {
   const [visibleUserGroup, setVisibleUserGroup] = useState(false);
-
+  console.log(propValue);
   const handleOnOK = async (values?: any[]) => {
     if (values) {
       const staffList: any[] = [];
       const deptList: any[] = [];
       values.forEach((item: any) => {
         if (item.staffId) {
-          staffList.push({ staffId: item.staffId });
+          staffList.push({ staffId: item.staffId, staffName: item.staffName });
         } else {
-          deptList.push({ deptId: item.deptId });
+          deptList.push({ deptId: item.deptId, deptName: item.deptName });
         }
       });
       const res = await createSingleGroup({ staffList, deptList });
