@@ -543,13 +543,15 @@ const Organization: React.FC = () => {
   return (
     <div className={style.wrap}>
       <section className={style.left}>
-        <div className={style.inputWrap}>
-          <Search
-            placeholder="搜索成员、部门"
-            onSearch={onSearch}
-            enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
-          />
-        </div>
+        <AuthBtn path="/query">
+          <div className={style.inputWrap}>
+            <Search
+              placeholder="搜索成员、部门"
+              onSearch={onSearch}
+              enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
+            />
+          </div>
+        </AuthBtn>
         <div
           style={{ display: displayType === 0 ? 'block' : 'none' }}
           className={classNames(style.treeContainer, 'scroll-strip')}

@@ -15,7 +15,7 @@ import style from './style.module.less';
 
 import { Context } from 'src/store';
 
-import { NgFormSearch, NgTable } from 'src/components';
+import { NgFormSearch, NgTable, AuthBtn } from 'src/components';
 import { setSearchCols, SearchParamsProps, columns, Article, PaginationProps } from './Config';
 import classNames from 'classnames';
 import { PlusOutlined } from '@ant-design/icons';
@@ -341,26 +341,30 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <div className={classNames(style.wrap, 'container')}>
       {/* Form 表单查询 start */}
-      <Button
-        className={style.btnAdd}
-        type="primary"
-        onClick={handleAdd}
-        shape="round"
-        icon={<PlusOutlined />}
-        size="large"
-        style={{ width: 128 }}
-      >
-        添加
-      </Button>
-      <div className={'pt20'}>
-        <NgFormSearch
-          isInline={false}
-          firstRowChildCount={3}
-          searchCols={setSearchCols(articleCategoryList)}
-          onSearch={onSearch}
-          onValuesChange={onValuesChange}
-        />
-      </div>
+      <AuthBtn path="/add">
+        <Button
+          className={style.btnAdd}
+          type="primary"
+          onClick={handleAdd}
+          shape="round"
+          icon={<PlusOutlined />}
+          size="large"
+          style={{ width: 128 }}
+        >
+          添加
+        </Button>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <div className={'pt20'}>
+          <NgFormSearch
+            isInline={false}
+            firstRowChildCount={3}
+            searchCols={setSearchCols(articleCategoryList)}
+            onSearch={onSearch}
+            onValuesChange={onValuesChange}
+          />
+        </div>
+      </AuthBtn>
       {/* Form 表单查询 end */}
       {/* 列表数据 start */}
       <div className={'pt5'}>
@@ -378,33 +382,39 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         {tableSource.length > 0 && (
           <div className={'operationWrap'}>
             <Space size={20}>
-              <Button
-                type="primary"
-                shape={'round'}
-                ghost
-                disabled={operationType !== 1}
-                onClick={() => handleToggleOnlineState(1)}
-              >
-                批量上架
-              </Button>
-              <Button
-                type="primary"
-                shape={'round'}
-                ghost
-                disabled={operationType !== 2}
-                onClick={() => handleToggleOnlineState(2)}
-              >
-                批量下架
-              </Button>
-              <Button
-                type="primary"
-                shape={'round'}
-                ghost
-                disabled={!(selectRows && selectRows.length > 0)}
-                onClick={() => setRight()}
-              >
-                批量添加可见范围
-              </Button>
+              <AuthBtn path="/operateBatch">
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={operationType !== 1}
+                  onClick={() => handleToggleOnlineState(1)}
+                >
+                  批量上架
+                </Button>
+              </AuthBtn>
+              <AuthBtn path="/operateBatch">
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={operationType !== 2}
+                  onClick={() => handleToggleOnlineState(2)}
+                >
+                  批量下架
+                </Button>
+              </AuthBtn>
+              <AuthBtn path="/setBatch">
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={!(selectRows && selectRows.length > 0)}
+                  onClick={() => setRight()}
+                >
+                  批量添加可见范围
+                </Button>
+              </AuthBtn>
             </Space>
           </div>
         )}
