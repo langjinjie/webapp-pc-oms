@@ -48,3 +48,9 @@ export const requestGetCurRoleUserList: HttpFc = (param) => {
 export const requestChangeRoleStatus: HttpFc = (param) => {
   return http.post('/tenacity-admin/api/privilege/role/status/manage', param);
 };
+/**
+ * 默认角色新增菜单权限
+ */
+export const requestAddDefaultMenuList: HttpFc = (param) => {
+  return http.post('/tenacity-admin/api/privilege/role/default/add', param);
+};

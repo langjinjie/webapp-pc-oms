@@ -10,6 +10,7 @@ interface IPricilegeItem {
   item: any;
   onChange?: (menuList: { menuId: string; fullMenuId: string }[]) => void;
   readonly?: true;
+  addMenu?: boolean;
   disabled?: boolean;
 }
 
@@ -70,12 +71,14 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
   const onCheckHandle = (_: any, e: any) => {
     // 判断是选中还是取消选中
     if (e.checked) {
+      console.log(e.node);
       const newParamKeys = Array.from(
         new Set([...value.map((valueItem) => valueItem.menuId), ...tree2Arry([e.node]).map((item) => item.menuId)])
       );
       const newValue = [...flatTreeData.filter((flatItem) => newParamKeys.includes(flatItem.menuId))];
       onChange?.([...value.filter((filterItem: any) => filterItem.sysType !== e.node.sysType), ...newValue]);
     } else {
+      console.log(e.node);
       const deleParamKeys = tree2Arry([e.node]).map((item) => item.menuId);
       const delValue = [...value.filter((valueItem) => !deleParamKeys.includes(valueItem.menuId))];
       onChange?.(delValue);
