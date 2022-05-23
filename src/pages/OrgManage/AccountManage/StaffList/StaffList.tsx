@@ -351,10 +351,12 @@ const StaffList: React.FC = () => {
           <span>
             {staffListInfo.usedCount}/{staffListInfo.licenseCount}
           </span>
-          <Icon className={style.icon} name="shuaxin" />
-          <span className={style.refresh} onClick={syncAccount}>
-            手动同步通讯录
-          </span>
+          <AuthBtn path="/sync">
+            <Icon className={style.icon} name="shuaxin" />
+            <span className={style.refresh} onClick={syncAccount}>
+              手动同步通讯录
+            </span>
+          </AuthBtn>
         </div>
         <Table
           rowKey="staffId"
@@ -368,21 +370,25 @@ const StaffList: React.FC = () => {
 
         {!!staffListInfo.staffList?.length && (
           <div className={style.btnWrap}>
-            <Button
-              disabled={disabledColumnType !== '4' || !selectedRowKeys.length}
-              onClick={() => buttonClickHandle(0)}
-            >
-              {'批量停用' +
-                (disabledColumnType !== '4' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
-            </Button>
-            <Button
-              disabled={disabledColumnType !== '1' || !selectedRowKeys.length}
-              onClick={() => buttonClickHandle(1)}
-            >
-              {'批量激活' +
-                (disabledColumnType !== '1' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
-            </Button>
-            <Button onClick={downLoad}>导出表格</Button>
+            <AuthBtn path="/operate">
+              <Button
+                disabled={disabledColumnType !== '4' || !selectedRowKeys.length}
+                onClick={() => buttonClickHandle(0)}
+              >
+                {'批量停用' +
+                  (disabledColumnType !== '4' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
+              </Button>
+              <Button
+                disabled={disabledColumnType !== '1' || !selectedRowKeys.length}
+                onClick={() => buttonClickHandle(1)}
+              >
+                {'批量激活' +
+                  (disabledColumnType !== '1' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/export">
+              <Button onClick={downLoad}>导出表格</Button>
+            </AuthBtn>
           </div>
         )}
       </Card>
