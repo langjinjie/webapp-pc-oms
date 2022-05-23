@@ -6,6 +6,7 @@ import UserGroupModal from './UserGroupModal';
 import UserOrgModal from './UserOrgModal';
 
 import styles from './style.module.less';
+import { isArray } from 'src/utils/tools';
 
 interface SetUserRightProps extends Omit<React.ComponentProps<typeof NgModal>, 'onOk'> {
   title?: string;
@@ -64,7 +65,8 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
   const getGroup = async () => {
     setIsForceSet(false);
     setIsSeted(false);
-    if (!(typeof groupId === 'string')) {
+    console.log(isArray(groupId));
+    if (isArray(groupId)) {
       if (groupId && groupId?.length === 1) {
         // setIsDiff(false);
         // todo, 判断是否设置过
@@ -73,6 +75,18 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
           setIsSeted(true);
         } else {
           setIsSeted(false);
+          setFormValues({
+            isSet: 0,
+            groupType: 1,
+            group1: undefined,
+            group2: undefined
+          });
+          rightForm.setFieldsValue({
+            isSet: 0,
+            groupType: 1,
+            group1: undefined,
+            group2: undefined
+          });
         }
       } else if (groupId && groupId?.length > 1) {
         // 存在不同的分组，清空表单
@@ -138,7 +152,6 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
       group1: undefined,
       group2: undefined
     });
-    rightForm.resetFields();
     onCancel?.(e);
   };
 
