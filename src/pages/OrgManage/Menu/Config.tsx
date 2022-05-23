@@ -46,7 +46,7 @@ export const systemList = [
   },
   {
     value: 5,
-    label: 'A端（移动端））'
+    label: 'A端（移动端）'
   }
 ];
 
