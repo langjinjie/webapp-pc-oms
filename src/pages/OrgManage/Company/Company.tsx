@@ -164,7 +164,7 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className={style.wrap}>
-      <AuthBtn path="/addCompany">
+      <AuthBtn path="/add">
         <div className={style.addBtn} onClick={() => history.push('/company/access')}>
           <Icon className={style.addIcon} name="xinjian" />
           添加企业

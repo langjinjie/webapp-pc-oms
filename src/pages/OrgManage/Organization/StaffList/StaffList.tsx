@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useImperativeHandle, MutableRefObject } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Form, Space, Select, Input, message, Modal } from 'antd';
-import { NgTable } from 'src/components';
+import { NgTable, AuthBtn } from 'src/components';
 import { exportFile } from 'src/utils/base';
 import { TableColumns, TablePagination } from './Config';
 import MultiSetting from './MultiSetting/MultiSetting';
@@ -175,64 +175,74 @@ const StaffList: React.FC<IStaffListProps> = ({ department, deptType = 1, staffL
   return (
     <div className={style.wrap}>
       <div className={style.operation}>
-        <Button type="primary" className={style.btn} onClick={multiSettingHandle}>
-          批量修改信息
-        </Button>
-        <Button type="primary" className={style.btn} onClick={multiLaodingInHangle}>
-          批量导入信息
-        </Button>
-        <Button type="primary" className={style.btn} onClick={downLoadStaffList}>
-          批量导出信息
-        </Button>
-        <Button type="primary" className={style.btn} onClick={downloadSpecialList}>
-          导出运营专属报表
-        </Button>
-        <Button
-          type="primary"
-          className={style.btn}
-          disabled={!(searchParam.isDeleted === 1 && selectedRowKeys.length)}
-          onClick={() => setDeleteTip(true)}
-        >
-          删除
-        </Button>
+        <AuthBtn path="/edit">
+          <Button type="primary" className={style.btn} onClick={multiSettingHandle}>
+            批量修改信息
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/import">
+          <Button type="primary" className={style.btn} onClick={multiLaodingInHangle}>
+            批量导入信息
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/export">
+          <Button type="primary" className={style.btn} onClick={downLoadStaffList}>
+            批量导出信息
+          </Button>
+          <Button type="primary" className={style.btn} onClick={downloadSpecialList}>
+            导出运营专属报表
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/delete">
+          <Button
+            type="primary"
+            className={style.btn}
+            disabled={!(searchParam.isDeleted === 1 && selectedRowKeys.length)}
+            onClick={() => setDeleteTip(true)}
+          >
+            删除
+          </Button>
+        </AuthBtn>
       </div>
-      <Form name="base" className={style.form} layout="inline" form={form} onReset={resetHandle}>
-        <Space className={style.antSpace}>
-          <Form.Item className={style.label} name="resource" label="资源：">
-            <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
-          </Form.Item>
-          <Form.Item className={style.label} name="businessModel" label="业务模式：">
-            <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
-          </Form.Item>
-        </Space>
-        <Space className={style.antSpace}>
-          <Form.Item className={style.label} name="businessArea" label="业务地区：">
-            <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
-          </Form.Item>
-          <Form.Item className={style.label} name="officePlace" label="办公职场：">
-            <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
-          </Form.Item>
-          <Form.Item className={style.label} name="isDeleted" label="状态：">
-            <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
-              {staffStatusList.map((item) => (
-                <Select.Option key={item.value} value={item.value}>
-                  {item.label}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            <Space size="small">
-              <Button className={style.searchBtn} type="primary" onClick={onSearchHandle}>
-                查询
-              </Button>
-              <Button className={style.resetBtn} htmlType="reset">
-                重置
-              </Button>
-            </Space>
-          </Form.Item>
-        </Space>
-      </Form>
+      <AuthBtn path="/query">
+        <Form name="base" className={style.form} layout="inline" form={form} onReset={resetHandle}>
+          <Space className={style.antSpace}>
+            <Form.Item className={style.label} name="resource" label="资源：">
+              <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
+            </Form.Item>
+            <Form.Item className={style.label} name="businessModel" label="业务模式：">
+              <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
+            </Form.Item>
+          </Space>
+          <Space className={style.antSpace}>
+            <Form.Item className={style.label} name="businessArea" label="业务地区：">
+              <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
+            </Form.Item>
+            <Form.Item className={style.label} name="officePlace" label="办公职场：">
+              <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
+            </Form.Item>
+            <Form.Item className={style.label} name="isDeleted" label="状态：">
+              <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
+                {staffStatusList.map((item) => (
+                  <Select.Option key={item.value} value={item.value}>
+                    {item.label}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item>
+              <Space size="small">
+                <Button className={style.searchBtn} type="primary" onClick={onSearchHandle}>
+                  查询
+                </Button>
+                <Button className={style.resetBtn} htmlType="reset">
+                  重置
+                </Button>
+              </Space>
+            </Form.Item>
+          </Space>
+        </Form>
+      </AuthBtn>
       <NgTable
         className={style.tableWrap}
         setRowKey={(record: any) => record.staffId}

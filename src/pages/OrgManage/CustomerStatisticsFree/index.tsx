@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message, PaginationProps } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, CustomerProps, tableColumns } from './Config';
 import { AddCustomerFreeModal } from './Components/AddCustomerModal';
 import {
@@ -167,43 +167,52 @@ const CustomerStatisticsFree: React.FC = () => {
     <div className="container">
       <div className="header">
         <div className="btn_wrap pb20">
-          <Button
-            type="primary"
-            onClick={() => {
-              setVisible(true);
-            }}
-            shape="round"
-            size="large"
-          >
-            新增免统计名单
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => {
-              setBatchVisible(true);
-            }}
-            shape="round"
-            size="large"
-          >
-            批量新增
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => {
-              setDeleteVisible(true);
-            }}
-            shape="round"
-            size="large"
-            disabled={selectedRowKeys.length === 0}
-          >
-            删除
-          </Button>
-
-          <Button type="primary" shape="round" size="large" onClick={exportList}>
-            导出
-          </Button>
+          <AuthBtn path="/add">
+            <Button
+              type="primary"
+              onClick={() => {
+                setVisible(true);
+              }}
+              shape="round"
+              size="large"
+            >
+              新增免统计名单
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/addBatch">
+            <Button
+              type="primary"
+              onClick={() => {
+                setBatchVisible(true);
+              }}
+              shape="round"
+              size="large"
+            >
+              批量新增
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/delete">
+            <Button
+              type="primary"
+              onClick={() => {
+                setDeleteVisible(true);
+              }}
+              shape="round"
+              size="large"
+              disabled={selectedRowKeys.length === 0}
+            >
+              删除
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/export">
+            <Button type="primary" shape="round" size="large" onClick={exportList}>
+              导出
+            </Button>
+          </AuthBtn>
         </div>
-        <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
+        <AuthBtn path="/query">
+          <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
+        </AuthBtn>
       </div>
       <div className="pt20">
         <NgTable

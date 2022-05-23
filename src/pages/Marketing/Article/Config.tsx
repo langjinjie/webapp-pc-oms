@@ -6,6 +6,7 @@ import moment, { Moment } from 'moment';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
 import { Context } from 'src/store';
+import { AuthBtn } from 'src/components';
 
 export interface SearchParamsProps {
   rangePicker: undefined | Moment[];
@@ -254,50 +255,67 @@ const columns = (args: colargsType): ColumnsType<Article> => {
             {isMainCorp
               ? (
               <>
-                <Button type="link" onClick={() => handleTop(record)}>
-                  {record.isTop ? '取消置顶' : '置顶'}
-                </Button>
-                <Button type="link" onClick={() => handleEdit(record)}>
-                  编辑
-                </Button>
-                {record.syncBank !== 1 && (
-                  <Button type="link" onClick={() => changeItemStatus(record)}>
-                    上架
+                <AuthBtn path="/top">
+                  <Button type="link" onClick={() => handleTop(record)}>
+                    {record.isTop ? '取消置顶' : '置顶'}
                   </Button>
-                )}
-
-                {record.syncBank === 1 && (
-                  <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => changeItemStatus(record)}>
-                    <Button type="link">下架</Button>
-                  </Popconfirm>
-                )}
-                {record.syncBank !== 1 && (
-                  <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => deleteItem(record)}>
-                    <Button type="link">删除</Button>
-                  </Popconfirm>
-                )}
+                </AuthBtn>
+                <AuthBtn path="/edit">
+                  <Button type="link" onClick={() => handleEdit(record)}>
+                    编辑
+                  </Button>
+                </AuthBtn>
+                <AuthBtn path="/operate">
+                  {record.syncBank !== 1 && (
+                    <Button type="link" onClick={() => changeItemStatus(record)}>
+                      上架
+                    </Button>
+                  )}
+                  {record.syncBank === 1 && (
+                    <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => changeItemStatus(record)}>
+                      <Button type="link">下架</Button>
+                    </Popconfirm>
+                  )}
+                </AuthBtn>
+                <AuthBtn path="/delete">
+                  {record.syncBank !== 1 && (
+                    <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => deleteItem(record)}>
+                      <Button type="link">删除</Button>
+                    </Popconfirm>
+                  )}
+                </AuthBtn>
               </>
                 )
               : (
               <>
-                <a onClick={() => handleTop(record)}>{record.isTop ? '取消置顶' : '置顶'}</a>
-                <a onClick={() => handleEdit(record)}>编辑</a>
-                {record.syncBank !== 1 && <a onClick={() => changeItemStatus(record)}>上架</a>}
-                {record.syncBank === 1 && (
-                  <Popconfirm title="确定要下架?" onConfirm={() => changeItemStatus(record)}>
-                    <Button type="link">下架</Button>
-                  </Popconfirm>
-                )}
-                {record.syncBank !== 1 && (
-                  <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(record)}>
-                    <Button type="link">删除</Button>
-                  </Popconfirm>
-                )}
+                <AuthBtn path="/top">
+                  <a onClick={() => handleTop(record)}>{record.isTop ? '取消置顶' : '置顶'}</a>
+                </AuthBtn>
+                <AuthBtn path="/edit">
+                  <a onClick={() => handleEdit(record)}>编辑</a>
+                </AuthBtn>
+                <AuthBtn path="/operate">
+                  {record.syncBank !== 1 && <a onClick={() => changeItemStatus(record)}>上架</a>}
+                  {record.syncBank === 1 && (
+                    <Popconfirm title="确定要下架?" onConfirm={() => changeItemStatus(record)}>
+                      <Button type="link">下架</Button>
+                    </Popconfirm>
+                  )}
+                </AuthBtn>
+                <AuthBtn path="/delete">
+                  {record.syncBank !== 1 && (
+                    <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(record)}>
+                      <Button type="link">删除</Button>
+                    </Popconfirm>
+                  )}
+                </AuthBtn>
               </>
                 )}
-            <Button type="link" onClick={() => setRight(record)}>
-              配置可见范围
-            </Button>
+            <AuthBtn path="/set">
+              <Button type="link" onClick={() => setRight(record)}>
+                配置可见范围
+              </Button>
+            </AuthBtn>
           </Space>
         </>
       )
