@@ -102,3 +102,7 @@ export const getSensitiveStatus: HttpFunction = (params) => {
 export const getAutoParams: HttpFunction = (params) => {
   return http.post('/tenacity-admin/api/smart/param/value', params);
 };
+// 获取敏感词状态
+export const setUserRightWithSpeech: HttpFunction = (params) => {
+  return http.post('/tenacity-admin/api/smart/content/batch/setscope', params);
+};

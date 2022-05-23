@@ -88,6 +88,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
 
 interface OperateProps {
   handleEdit: (record: SpeechProps) => void;
+  setRight: (record: SpeechProps) => void;
   handleSort: (record: SpeechProps, sortType: number) => void;
   lastCategory: any;
   pagination: any;
@@ -123,7 +124,7 @@ export interface SpeechProps {
   [propKey: string]: any;
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
-  const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew } = args;
+  const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight } = args;
   const {
     content = '',
     contentType = '',
@@ -275,7 +276,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       title: '操作',
       align: 'left',
       fixed: 'right',
-      width: 140,
+      width: 220,
       render: (value, record: SpeechProps, index: number) => {
         return (
           <Space className="spaceWrap">
@@ -320,6 +321,9 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
                 下移
               </Button>
             )}
+            <Button type="link" onClick={() => setRight(record)}>
+              配置可见范围
+            </Button>
           </Space>
         );
       }
