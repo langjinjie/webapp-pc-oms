@@ -148,7 +148,8 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       level,
       lastLevel,
       catalogId: title === '新增' ? undefined : catalogId,
-      ...updataCatalog
+      ...updataCatalog,
+      groupId: updataCatalog.groupId || ''
     });
     setSubmitDisabled(false);
     setBtnIsLoading(false);
