@@ -137,8 +137,6 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       // 获取当前角色得成员
       const res = await requestGetCurRoleUserList({ roleId });
       if (res) {
-        console.log(res);
-        console.log([...(res.staffList || []), ...(res.deptList || [])]);
         treeOnchange([...(res.staffList || []), ...(res.deptList || [])]);
         setParams({ visible: true, added, roleId });
       }
@@ -164,7 +162,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         新增角色
       </Button>
       <Form className={style.form} onFinish={onFinishHandle}>
-        <Item name="roleName" label="角色名称">
+        <Item name="name" label="角色名称">
           <Input className={style.input} placeholder="请输入" />
         </Item>
         <Button className={style.searchBtn} type="primary" htmlType="submit">

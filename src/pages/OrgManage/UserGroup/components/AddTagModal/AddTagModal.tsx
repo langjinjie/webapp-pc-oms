@@ -80,7 +80,7 @@ const AddTagModal: React.FC<IAddTagModal> = ({ addTagParam, setAddTagParam, upda
   };
   const onOk = async () => {
     const { name, filterName, deptList, staffTagList } = form.getFieldsValue();
-    const param = { name, filterName, deptList: deptList.map((item: number) => ({ deptId: item })), staffTagList };
+    const param = { name, filterName, deptList: deptList?.map((item: number) => ({ deptId: item })), staffTagList };
     const res = await requestAddGroupTag(param);
     if (res) {
       setAddTagParam({ visible: false });
@@ -90,6 +90,7 @@ const AddTagModal: React.FC<IAddTagModal> = ({ addTagParam, setAddTagParam, upda
   };
   const onCancel = () => {
     setAddTagParam({ visible: false });
+    form.resetFields();
   };
   useEffect(() => {
     (async () => {

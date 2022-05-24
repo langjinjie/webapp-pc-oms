@@ -72,13 +72,15 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
     item: { ruleType: number; tagName: string; tagValues: string; sortId: number },
     tagVal: string
   ) => {
-    // 判断该标签是否被选中
-    const selectedItem = selectedList.find((findItem) => findItem.ruleType === item.ruleType);
-    if (selectedItem?.ruleType === item.ruleType) {
-      selectedItem.tagValues = tagVal;
-      setSelectedList([...selectedList]);
+    const selectedItem = selectedList.find(
+      (findItem) => findItem.ruleType === item.ruleType && tagVal === findItem.tagValues
+    );
+    if (selectedItem) {
+      setSelectedList((list) => [
+        ...list.filter((filterItem) => !(filterItem.ruleType === item.ruleType && tagVal === filterItem.tagValues))
+      ]);
     } else {
-      setSelectedList((param) => [...param, { ...item, tagValues: tagVal }]);
+      setSelectedList((list) => [...list, { ...item, tagValues: tagVal }]);
     }
   };
   // 清除单个标签选择
@@ -135,8 +137,9 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
                       <div
                         key={mapItem}
                         className={classNames(style.tagValItem, {
-                          [style.selected]:
-                            selectedList.find((findItem) => findItem.ruleType === item.ruleType)?.tagValues === mapItem
+                          [style.selected]: selectedList.find(
+                            (findItem) => findItem.ruleType === item.ruleType && findItem.tagValues === mapItem
+                          )
                         })}
                         onClick={() => chooseTag(item, mapItem)}
                       >

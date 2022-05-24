@@ -74,15 +74,29 @@ const AddGroup: React.FC = () => {
           用户组管理
         </span>
         <span className={style.line}>/</span>
-        <span className={style.current}>新增角色</span>
+        <span className={style.current}>
+          {URLSearchParams(location.search).type
+            ? URLSearchParams(location.search).type === 'view'
+              ? '查看'
+              : '修改'
+            : '新增'}
+          用户组
+        </span>
       </div>
-      <div className={style.title}>新增用户组</div>
+      <div className={style.title}>
+        {URLSearchParams(location.search).type
+          ? URLSearchParams(location.search).type === 'view'
+            ? '查看'
+            : '修改'
+          : '新增'}
+        用户组
+      </div>
       <Form form={form} className={style.form} onFinish={onFinish}>
         <div className={style.title}>用户组基本信息</div>
-        <Form.Item name="groupName" label="用户组名称：">
+        <Form.Item name="groupName" label="用户组名称：" required>
           <Input placeholder="待输入" allowClear style={{ width: 300 }} readOnly={readOnly} />
         </Form.Item>
-        <Form.Item name="desc" label="用户组说明：">
+        <Form.Item name="desc" label="用户组说明：" required>
           <Input.TextArea
             className={style.textArea}
             placeholder="待输入"

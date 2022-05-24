@@ -26,11 +26,11 @@ const ViewStaffModal: React.FC<IViewStaffModal> = ({ modalParam, setModalParam }
       dataIndex: 'deptName'
     }
   ];
-  const onOk = () => {
-    console.log('onOk');
-  };
   const onCancel = () => {
     setModalParam((param: any) => ({ ...param, visible: false }));
+  };
+  const onOk = () => {
+    onCancel();
   };
   const onReset = () => {
     form.resetFields();
@@ -57,16 +57,16 @@ const ViewStaffModal: React.FC<IViewStaffModal> = ({ modalParam, setModalParam }
   }, [paginationPram, modalParam.visible]);
   return (
     <Modal
-      title="选择标签"
+      title="查看人员"
       visible={modalParam.visible}
       centered
       className={style.modalWrap}
       maskClosable={false}
-      closable={!modalParam.add}
+      // closable={!modalParam.add}
       onOk={onOk}
       onCancel={onCancel}
       destroyOnClose
-      {...(modalParam.add || { footer: null })}
+      // {...(modalParam.add || { footer: null })}
     >
       <div className={style.contentWrap}>
         <Form className={style.form} form={form} layout={'inline'} onFinish={onFinish}>

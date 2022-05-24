@@ -14,8 +14,9 @@ interface IGroupList {
 
 interface UserGroupProps {
   change?: (item: any) => void;
+  readonly?: boolean;
 }
-const UserGroup: React.FC<UserGroupProps> = ({ change }) => {
+const UserGroup: React.FC<UserGroupProps> = ({ change, readonly }) => {
   const [loading, setLoading] = useState(false);
   const [groupList, setGroupList] = useState<IGroupList>({ total: 0, list: [] });
   const [searchParam, setSearchParam] = useState<{ groupName: string; groupCode: string }>({
@@ -65,25 +66,29 @@ const UserGroup: React.FC<UserGroupProps> = ({ change }) => {
   }, [paginationParam]);
   return (
     <div className={style.wrap}>
-      <Button className={style.addBtn} icon={<PlusOutlined />} type="primary" onClick={addGroup}>
-        新增用户组
-      </Button>
-      <Form className={style.form} form={form} layout="inline" onFinish={onSearchHandle} onReset={onSearchHandle}>
-        <Form.Item name="groupName" label="用户组名称：">
-          <Input placeholder="待输入" allowClear style={{ width: 180 }} />
-        </Form.Item>
-        <Form.Item name="groupCode" label="用户组编号：">
-          <Input placeholder="待输入" allowClear style={{ width: 180 }} />
-        </Form.Item>
-        <Form.Item style={{ width: 186 }}>
-          <Button className={style.searchBtn} type="primary" htmlType="submit" disabled={loading}>
-            查询
+      {readonly || (
+        <>
+          <Button className={style.addBtn} icon={<PlusOutlined />} type="primary" onClick={addGroup}>
+            新增用户组
           </Button>
-          <Button className={style.resetBtn} htmlType="reset" disabled={loading}>
-            重置
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form className={style.form} form={form} layout="inline" onFinish={onSearchHandle} onReset={onSearchHandle}>
+            <Form.Item name="groupName" label="用户组名称：">
+              <Input placeholder="待输入" allowClear style={{ width: 180 }} />
+            </Form.Item>
+            <Form.Item name="groupCode" label="用户组编号：">
+              <Input placeholder="待输入" allowClear style={{ width: 180 }} />
+            </Form.Item>
+            <Form.Item style={{ width: 186 }}>
+              <Button className={style.searchBtn} type="primary" htmlType="submit" disabled={loading}>
+                查询
+              </Button>
+              <Button className={style.resetBtn} htmlType="reset" disabled={loading}>
+                重置
+              </Button>
+            </Form.Item>
+          </Form>
+        </>
+      )}
       <NgTable
         rowSelection={
           change
@@ -97,7 +102,7 @@ const UserGroup: React.FC<UserGroupProps> = ({ change }) => {
         setRowKey={(row) => row.groupId}
         dataSource={groupList.list}
         loading={loading}
-        columns={TableColumns()}
+        columns={TableColumns(readonly)}
         scroll={{ x: 'max-content' }}
         {...TablePagination({
           total: groupList.total,

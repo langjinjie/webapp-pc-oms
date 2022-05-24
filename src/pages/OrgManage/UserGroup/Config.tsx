@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 
 import style from './style.module.less';
 
-const TableColumns = (): ColumnType<any>[] => {
+const TableColumns = (readonly?: boolean): ColumnType<any>[] => {
   // const { setConfirmModalParam } =
   //   useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(Context);
   const history = useHistory();
@@ -40,14 +40,16 @@ const TableColumns = (): ColumnType<any>[] => {
       fixed: 'right',
       render (row: any) {
         return (
-          <>
-            <span className={style.check} onClick={() => viewGroup(row.groupId)}>
-              查看
-            </span>
-            <span className={style.modifyGroup} onClick={() => editGroup(row.groupId)}>
-              修改用户组
-            </span>
-          </>
+          readonly || (
+            <>
+              <span className={style.check} onClick={() => viewGroup(row.groupId)}>
+                查看
+              </span>
+              <span className={style.modifyGroup} onClick={() => editGroup(row.groupId)}>
+                修改用户组
+              </span>
+            </>
+          )
         );
       }
     }

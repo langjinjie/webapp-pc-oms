@@ -234,9 +234,19 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   // 自动展开以及自动勾选
   useEffect(() => {
     if (params.visible && value && flatTreeData.length && autoExpand) {
+      // 过滤掉fullDeptId为null的
+      const filterValue = value.filter((filterItem) => filterItem.fullDeptId);
       const expandedKeys = flatTreeData
         .filter((filterItem) =>
-          Array.from(new Set(value?.map((mapItem) => [...mapItem.fullDeptId.split(',')]).flat(Infinity))).includes(
+          Array.from(
+            new Set(
+              filterValue
+                ?.map((mapItem) => [...mapItem.fullDeptId?.split(',')])
+                .toString()
+                .split(',')
+            )
+          ).includes(
+            // .toString().split(',') 数组扁平化
             filterItem.deptId.toString() // fullDeptId 是string deptId 是number
           )
         )
@@ -247,11 +257,11 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         expandedKeys
       });
       const staffKeys = flatTreeData
-        .filter((filterItem) => value?.some((someItem) => +someItem.staffId === +filterItem.id))
+        .filter((filterItem) => filterValue?.some((someItem) => someItem.staffId === filterItem.id))
         .map((mapItem) => mapItem.id);
-      const deptValue = value.filter((filterItem) => !filterItem.staffId);
+      const deptValue = filterValue.filter((filterItem) => !filterItem.staffId);
       const deptKeys = flatTreeData
-        .filter((filterItem) => deptValue?.some((someItem) => +someItem.deptId === +filterItem.id))
+        .filter((filterItem) => deptValue?.some((someItem) => someItem.deptId.toString() === filterItem.id.toString())) // deptId有时候是string 有时候是number
         .map((mapItem) => mapItem.id);
       setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...staffKeys, ...deptKeys])));
       const selectedList = flatTreeData.filter((filterItem) =>
