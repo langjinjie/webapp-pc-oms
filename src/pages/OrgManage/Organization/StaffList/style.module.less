@@ -33,6 +33,26 @@
     border: 1px solid #e5e5e7;
     border-radius: 8px;
     overflow: hidden;
+    // Table config 的样式
+    .view {
+      height: 100%;
+      line-height: 100%;
+      display: inline-block;
+      color: #318cf5;
+    }
+    .edit {
+      display: inline-block;
+      width: 100%;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #318cf5;
+      line-height: 20px;
+      cursor: pointer;
+      &.disabled {
+        cursor: not-allowed;
+      }
+    }
     :global {
       .ant-table-pagination.ant-pagination {
         padding-right: 16px;

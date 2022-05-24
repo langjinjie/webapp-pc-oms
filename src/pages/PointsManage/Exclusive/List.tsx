@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { setSearchCols, tableColumns } from './Config';
 import { useAsync } from 'src/utils/use-async';
 // import moment from 'moment';
@@ -143,7 +143,9 @@ const ExclusiveList: React.FC = () => {
   };
   return (
     <div className="container">
-      <NgFormSearch isInline={false} searchCols={setSearchCols(exclusiveList)} onSearch={onSearch} />
+      <AuthBtn path="/query">
+        <NgFormSearch isInline={false} searchCols={setSearchCols(exclusiveList)} onSearch={onSearch} />
+      </AuthBtn>
       <NgTable
         loading={isLoading}
         columns={tableColumns(viewContent, checkedItem, exclusiveList, previewPic)}

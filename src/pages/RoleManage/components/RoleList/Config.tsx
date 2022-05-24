@@ -108,7 +108,7 @@ const TableColumns = (
               </AuthBtn>
             )}
             {!row.isDefault || (
-              <AuthBtn path="/add">
+              <AuthBtn path="/edit">
                 <span className={style.addMenu} onClick={() => editOrViewHandle('addMenu', row.roleId)}>
                   添加功能
                 </span>

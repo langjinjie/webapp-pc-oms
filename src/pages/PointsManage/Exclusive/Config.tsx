@@ -4,6 +4,7 @@ import { OptionProps, SearchCol } from 'src/components/SearchComponent/SearchCom
 import { Button, Image, Tooltip } from 'antd';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
+import { AuthBtn } from 'src/components';
 const sendStatusOptions = [
   { id: 0, name: '未发放' },
   { id: 1, name: '已发放' }
@@ -113,9 +114,11 @@ export const tableColumns = (
               ? (
               <div className="flex">
                 <div className="cell ellipsis">{text}</div>
-                <Button className="ml10" type="primary" ghost size="small" onClick={() => viewContent(text)}>
-                  查看
-                </Button>
+                <AuthBtn path="/view">
+                  <Button className="ml10" type="primary" ghost size="small" onClick={() => viewContent(text)}>
+                    查看
+                  </Button>
+                </AuthBtn>
               </div>
                 )
               : (
@@ -195,16 +198,18 @@ export const tableColumns = (
       width: 120,
       render: (text, record) => {
         return (
-          <Button
-            disabled={record.sendStatus === 1}
-            type="link"
-            key={record.trecordId}
-            onClick={() => {
-              checkedItem(record);
-            }}
-          >
-            发放积分与评价
-          </Button>
+          <AuthBtn path="/send">
+            <Button
+              disabled={record.sendStatus === 1}
+              type="link"
+              key={record.trecordId}
+              onClick={() => {
+                checkedItem(record);
+              }}
+            >
+              发放积分与评价
+            </Button>
+          </AuthBtn>
         );
       }
     }

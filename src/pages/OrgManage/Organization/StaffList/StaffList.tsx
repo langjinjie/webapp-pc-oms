@@ -50,7 +50,7 @@ const StaffList: React.FC<IStaffListProps> = ({ department, deptType = 1, staffL
     { value: 1, label: '离职' }
   ];
   // 获取员工列表
-  const getStaffList = async (searchParam: ISearchParam) => {
+  const getStaffList = async () => {
     setIsLoading(true);
     const res = await requestGetDepStaffList({
       ...searchParam,
@@ -165,7 +165,7 @@ const StaffList: React.FC<IStaffListProps> = ({ department, deptType = 1, staffL
   }));
 
   useEffect(() => {
-    getStaffList(searchParam);
+    getStaffList();
   }, [paginationParam, searchParam]);
 
   useEffect(() => {
@@ -247,7 +247,7 @@ const StaffList: React.FC<IStaffListProps> = ({ department, deptType = 1, staffL
         className={style.tableWrap}
         setRowKey={(record: any) => record.staffId}
         dataSource={staffList.list}
-        columns={TableColumns()}
+        columns={TableColumns({ updateList: () => setPaginationParam((param) => ({ ...param })) })}
         loading={isLoading}
         tableLayout={'fixed'}
         scroll={{ x: 'max-content' }}
