@@ -109,11 +109,11 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
     if (!itemId) {
       return null;
     }
-    const areaData = areaText[itemId] || {};
+    const areaData = areaText[itemId];
     if (areaData) {
       return (
         <div className={style.areaTips}>
-          <span>合计：{itemId}</span>
+          <span>合计：</span>
           <span className={style.areaTipsVal}>{areaData.totalNum}人</span>
           <span>可见：</span>
           <span className={style.areaTipsVal}>{areaData.visibleNum}人</span>
