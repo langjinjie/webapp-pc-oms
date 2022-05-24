@@ -48,9 +48,11 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   const getMenuList = async () => {
     const res: any = await queryMenuList();
-    if (res) {
+    if (res && res.length > 0) {
       initMenu(res);
       setMenuList(res);
+    } else {
+      history.push('/noPermission');
     }
     setLoaded(true);
   };
