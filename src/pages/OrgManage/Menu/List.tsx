@@ -3,7 +3,7 @@ import { Icon } from 'lester-ui';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { deleteMenu, getMenuList, operateMenu, searchMenu } from 'src/apis/orgManage';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { changeTreeItem, filterTree, treeFindPath, URLSearchParams } from 'src/utils/base';
 import { MenuProps, searchCols, setTableColumns, systemList } from './Config';
 import { useDidRecover } from 'react-router-cache-route';
@@ -136,18 +136,22 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
         ))}
       </Tabs>
       <div className={styles.content}>
-        <Button
-          type="primary"
-          shape="round"
-          className={'addBtn'}
-          onClick={() => {
-            addMenu();
-          }}
-        >
-          <Icon className={styles.addIcon} name="xinjian" />
-          添加菜单
-        </Button>
-        <NgFormSearch searchCols={searchCols} onSearch={onSearch} className="mt20" />
+        <AuthBtn path="/addMenu">
+          <Button
+            type="primary"
+            shape="round"
+            className={'addBtn'}
+            onClick={() => {
+              addMenu();
+            }}
+          >
+            <Icon className={styles.addIcon} name="xinjian" />
+            添加菜单
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/query">
+          <NgFormSearch searchCols={searchCols} onSearch={onSearch} className="mt20" />
+        </AuthBtn>
         <NgTable
           className="mt30"
           rowKey={'menuId'}
