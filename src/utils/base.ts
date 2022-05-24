@@ -247,3 +247,12 @@ export const updateTreeData = (list: any[], key: React.Key, children: any[]): an
     return node;
   });
 };
+/**
+ * 匹配字符串中的换行符
+ * @param str string
+ * @return string
+ */
+export const replaceEnter = (str: string): string => {
+  // \n 匹配一个换行符, \r 匹配一个回车符
+  return str.replace(/\\n|\\r|\r\n/g, '<br/>');
+};

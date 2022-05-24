@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ColumnsType } from 'antd/es/table';
-import { UNKNOWN } from 'src/utils/base';
+import { UNKNOWN, replaceEnter } from 'src/utils/base';
 import { IStaffList } from 'src/utils/interface';
 import { Popconfirm } from 'antd';
 import { AuthBtn } from 'src/components';
@@ -95,7 +95,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
       }
     },
     {
-      title: '资源',
+      title: '支公司',
       // width: 100,
       render (row) {
         return <span>{row.resource || UNKNOWN}</span>;
@@ -109,10 +109,16 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
       }
     },
     {
-      title: '业务地区',
+      title: '市公司',
       // width: 150,
       render (row) {
         return <span>{row.businessArea || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '省公司',
+      render (row) {
+        return <span>{row.provinceCompany || UNKNOWN}</span>;
       }
     },
     {
@@ -120,6 +126,25 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
       // width: 90,
       render (row) {
         return <span>{row.officePlace || UNKNOWN}</span>;
+      }
+    },
+
+    {
+      title: '角色名称',
+      render (row) {
+        return (
+          <span
+            dangerouslySetInnerHTML={{
+              __html:
+                replaceEnter(
+                  row.roles.split(';').reduce((prev: string, now: string, index: number) => {
+                    prev += index ? 'B端：' + now : 'A端：' + now + '\\n\\r';
+                    return prev;
+                  }, '')
+                ) || UNKNOWN
+            }}
+          />
+        );
       }
     },
     {
@@ -150,7 +175,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
       render (row: any) {
         return (
           <>
-            <AuthBtn path="view">
+            <AuthBtn path="/view">
               <span className={style.view} onClick={() => viewHandle(row)}>
                 查看
               </span>

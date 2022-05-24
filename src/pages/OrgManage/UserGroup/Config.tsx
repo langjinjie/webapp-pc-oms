@@ -40,16 +40,16 @@ const TableColumns = (readonly?: boolean): ColumnType<any>[] => {
       fixed: 'right',
       render (row: any) {
         return (
-          readonly || (
-            <>
-              <span className={style.check} onClick={() => viewGroup(row.groupId)}>
-                查看
-              </span>
+          <>
+            <span className={style.check} onClick={() => viewGroup(row.groupId)}>
+              查看
+            </span>
+            {readonly || (
               <span className={style.modifyGroup} onClick={() => editGroup(row.groupId)}>
                 修改用户组
               </span>
-            </>
-          )
+            )}
+          </>
         );
       }
     }

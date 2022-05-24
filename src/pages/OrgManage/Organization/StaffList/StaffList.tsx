@@ -207,7 +207,7 @@ const StaffList: React.FC<IStaffListProps> = ({ department, deptType = 1, staffL
       <AuthBtn path="/query">
         <Form name="base" className={style.form} layout="inline" form={form} onReset={resetHandle}>
           <Space className={style.antSpace}>
-            <Form.Item className={style.label} name="resource" label="资源：">
+            <Form.Item className={style.label} name="resource" label="支公司：">
               <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
             </Form.Item>
             <Form.Item className={style.label} name="businessModel" label="业务模式：">
@@ -215,7 +215,7 @@ const StaffList: React.FC<IStaffListProps> = ({ department, deptType = 1, staffL
             </Form.Item>
           </Space>
           <Space className={style.antSpace}>
-            <Form.Item className={style.label} name="businessArea" label="业务地区：">
+            <Form.Item className={style.label} name="businessArea" label="市公司：">
               <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
             </Form.Item>
             <Form.Item className={style.label} name="officePlace" label="办公职场：">
