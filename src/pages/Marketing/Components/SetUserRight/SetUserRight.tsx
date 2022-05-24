@@ -53,7 +53,6 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   }, [value]);
 
   const onChangeWithGroupType = (groupType: number) => {
-    console.log('changed');
     form.setFieldsValue({
       group1: undefined,
       group12: undefined
@@ -69,7 +68,6 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   }, [formValues]);
 
   const handleModalChange = (value: any) => {
-    console.log(value);
     onChange?.(value.groupId);
   };
 
@@ -120,7 +118,7 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
               上次选择的可见范围为：
               {originValues?.groupType === 1
                 ? (
-                    originValues?.groupName
+                    originValues?.groupName || '全部人员'
                   )
                 : (
                 <>
@@ -130,6 +128,7 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
                   {originValues?.staffList?.map((item: any) => (
                     <Tag key={item.staffId}>{item.staffName}</Tag>
                   ))}
+                  {!originValues?.deptList && !originValues?.staffList && '全部人员'}
                 </>
                   )}
             </Form.Item>
