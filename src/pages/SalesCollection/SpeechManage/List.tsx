@@ -14,7 +14,7 @@ import {
   addBatchSpeech,
   setUserRightWithSpeech
 } from 'src/apis/salesCollection';
-import { Icon, NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import ExportModal from './Components/ExportModal/ExportModal';
 import PreviewSpeech from './Components/PreviewSpeech/PreviewSpeech';
@@ -478,62 +478,72 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     <div className="container">
       <div className="flex justify-between">
         <Space size={20}>
-          <Button
-            className={style.btnAdd}
-            type="primary"
-            onClick={handleAdd}
-            shape="round"
-            icon={<PlusOutlined />}
-            size="large"
-            style={{ width: 128 }}
-          >
-            新增
-          </Button>
-          <Button
-            className={style.btnAdd}
-            type="primary"
-            onClick={() => setVisibleExport(true)}
-            shape="round"
-            icon={<PlusOutlined />}
-            size="large"
-            style={{ width: 128 }}
-          >
-            批量新增
-          </Button>
-          <Button
-            className={style.btnAdd}
-            type="primary"
-            onClick={() => handleChecked()}
-            shape="round"
-            size="large"
-            style={{ width: 128 }}
-            loading={!!checkedInfo.checking}
-          >
-            {!checkedInfo.checking ? '敏感词校验' : '正在校验'}
-          </Button>
-          {checkedInfo.checkTime && <span className="color-text-placeholder">{checkedInfo.checkTime}检测过</span>}
+          <AuthBtn path="/add">
+            <Button
+              className={style.btnAdd}
+              type="primary"
+              onClick={handleAdd}
+              shape="round"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ width: 128 }}
+            >
+              新增
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/addBatch">
+            <Button
+              className={style.btnAdd}
+              type="primary"
+              onClick={() => setVisibleExport(true)}
+              shape="round"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ width: 128 }}
+            >
+              批量新增
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/check">
+            <Button
+              className={style.btnAdd}
+              type="primary"
+              onClick={() => handleChecked()}
+              shape="round"
+              size="large"
+              style={{ width: 128 }}
+              loading={!!checkedInfo.checking}
+            >
+              {!checkedInfo.checking ? '敏感词校验' : '正在校验'}
+            </Button>
+            {checkedInfo.checkTime && <span className="color-text-placeholder">{checkedInfo.checkTime}检测过</span>}
+          </AuthBtn>
         </Space>
-        <Button
-          className={style.btnAdd}
-          type="primary"
-          onClick={() => setVisiblePreview(true)}
-          shape="round"
-          size="large"
-        >
-          <Icon className="font16" name="yulan" />
-          <span className="ml10">预览</span>
-        </Button>
+        <AuthBtn path="/view">
+          <Button
+            className={style.btnAdd}
+            type="primary"
+            onClick={() => setVisiblePreview(true)}
+            shape="round"
+            size="large"
+          >
+            <Icon className="font16" name="yulan" />
+            <span className="ml10">预览</span>
+          </Button>
+        </AuthBtn>
       </div>
-      <div className="form-inline pt20">
-        <NgFormSearch
-          defaultValues={formDefaultValue}
-          searchCols={setSearchCols(categories)}
-          loadData={loadData}
-          onSearch={onSearch}
-          onChangeOfCascader={onCascaderChange}
-          onValuesChange={onValuesChange}
-        />
-      </div>
+      <AuthBtn path="/query">
+        <div className="form-inline pt20">
+          <NgFormSearch
+            defaultValues={formDefaultValue}
+            searchCols={setSearchCols(categories)}
+            loadData={loadData}
+            onSearch={onSearch}
+            onChangeOfCascader={onCascaderChange}
+            onValuesChange={onValuesChange}
+          />
+        </div>
+      </AuthBtn>
 
       <NgTable
         dataSource={dataSource}
@@ -549,54 +559,62 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       {dataSource.length > 0 && (
         <div className={'operationWrap'}>
           <Space size={20}>
-            <Button type="primary" shape={'round'} ghost onClick={() => handleExport()}>
-              导出
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={currentType === 1 || selectedRowKeys.length === 0}
-              onClick={() => operateStatus(1)}
-            >
-              上架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={currentType === 0 || selectedRowKeys.length === 0}
-              onClick={() => operateStatus(0)}
-            >
-              待上架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={currentType === 2 || selectedRowKeys.length === 0}
-              onClick={() => operateStatus(2)}
-            >
-              下架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={currentType === 1 || selectedRowKeys.length === 0}
-              onClick={() => operateStatus(3)}
-            >
-              删除
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={!(selectedRows && selectedRows.length > 0)}
-              onClick={() => setRight()}
-            >
-              批量添加可见范围
-            </Button>
+            <AuthBtn path="/export">
+              <Button type="primary" shape={'round'} ghost onClick={() => handleExport()}>
+                导出
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/operate">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={currentType === 1 || selectedRowKeys.length === 0}
+                onClick={() => operateStatus(1)}
+              >
+                上架
+              </Button>
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={currentType === 0 || selectedRowKeys.length === 0}
+                onClick={() => operateStatus(0)}
+              >
+                待上架
+              </Button>
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={currentType === 2 || selectedRowKeys.length === 0}
+                onClick={() => operateStatus(2)}
+              >
+                下架
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/delete">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={currentType === 1 || selectedRowKeys.length === 0}
+                onClick={() => operateStatus(3)}
+              >
+                删除
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/setBatch">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={!(selectedRows && selectedRows.length > 0)}
+                onClick={() => setRight()}
+              >
+                批量添加可见范围
+              </Button>
+            </AuthBtn>
           </Space>
         </div>
       )}
