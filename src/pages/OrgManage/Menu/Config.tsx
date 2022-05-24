@@ -107,6 +107,13 @@ export const setTableColumns = ({
 }: Operation): ColumnsType<MenuProps> => {
   return [
     {
+      title: '序号',
+      width: 60,
+      render: (value, record, index) => {
+        return <>{record.parentId === '0' ? <span>{index + 1}</span> : null}</>;
+      }
+    },
+    {
       title: '菜单名称',
       dataIndex: 'menuName',
       width: 320,

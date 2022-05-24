@@ -19,8 +19,6 @@ const UserGroupModal: React.FC<UserGroupModalProps> = ({ onChange, value: propVa
     setVisibleUserGroup(false);
   };
 
-  console.log(propValue);
-
   const handleShowSelectModal = () => {
     setVisibleUserGroup(true);
   };

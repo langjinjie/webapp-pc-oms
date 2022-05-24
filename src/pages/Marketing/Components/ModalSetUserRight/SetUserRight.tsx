@@ -8,6 +8,7 @@ import UserOrgModal from './UserOrgModal';
 import styles from './style.module.less';
 import { isArray } from 'src/utils/tools';
 import { ViewStaffModal } from 'src/pages/OrgManage/UserGroup/components';
+import classNames from 'classnames';
 
 interface SetUserRightProps extends Omit<React.ComponentProps<typeof NgModal>, 'onOk'> {
   title?: string;
@@ -65,12 +66,11 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
       group1: groupType === 1 ? { ...res.groupInfo, groupId } : undefined,
       group2: groupType === 2 ? { ...res.orgInfo, groupId } : undefined
     }));
-    setOriginValues({ ...res.groupInfo, groupId, ...res.orgInfo, groupType });
+    !originValues && setOriginValues({ ...res.groupInfo, groupId, ...res.orgInfo, groupType });
   };
   const getGroup = async () => {
     setIsForceSet(false);
     setIsSeted(false);
-    console.log(isArray(groupId));
     if (isArray(groupId)) {
       if (groupId && groupId?.length === 1) {
         // setIsDiff(false);
@@ -158,6 +158,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
       group2: undefined
     });
     onCancel?.(e);
+    setOriginValues(null);
   };
 
   const staffCount = useMemo(() => {
@@ -179,15 +180,26 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
           <>
             {isSeted
               ? (
-              <span className={styles.tips}>
-                提示：目前选择的内容已配置可见范围，如果修改，则会批量覆盖数据，请谨慎操作系统
-                <Button type="primary" size="small" onClick={() => setIsForceSet(true)}>
-                  开启修改
-                </Button>
-              </span>
+              <div className={classNames(styles.tips, 'flex mb10')}>
+                <span className="flex cell fixed">提示：</span>
+                <span className="cell">
+                  <span>目前选择的内容已配置可见范围，如果修改，则会批量覆盖数据，请谨慎操作系统</span>
+                  <Button
+                    type="primary"
+                    className={styles.openChangeBtn}
+                    size="small"
+                    ghost
+                    onClick={() => setIsForceSet(true)}
+                  >
+                    开启修改
+                  </Button>
+                </span>
+              </div>
                 )
               : (
-              <span className={styles.tips}>提示：目前选择的内容未配置可见范围，如修改后则会批量配置可见数据</span>
+              <div className={classNames(styles.tips, 'mb10')}>
+                提示：目前选择的内容未配置可见范围，如修改后则会批量配置可见数据
+              </div>
                 )}
           </>
         )}
@@ -229,7 +241,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
                   上次选择的可见范围为：
                   {originValues?.groupType === 1
                     ? (
-                        originValues?.groupName
+                        originValues?.groupName || '全部人员'
                       )
                     : (
                     <>
@@ -239,6 +251,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
                       {originValues?.staffList?.map((item: any) => (
                         <Tag key={item.staffId}>{item.staffName}</Tag>
                       ))}
+                      {!originValues?.deptList && !originValues?.staffList && '全部人员'}
                     </>
                       )}
                 </Form.Item>

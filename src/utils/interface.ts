@@ -126,6 +126,7 @@ export interface ICatalogItem {
   lastLevel: number;
   onlineContentNum: number;
   contentNum: number;
+  groupId?: string;
 }
 
 // 添加/编辑目录参数
@@ -134,6 +135,7 @@ export interface IEditOrAddCatalogParam {
   title: string;
   catalog: ICatalogItem;
   parentId: string;
+  groupId?: string;
   getParentChildrenList: () => void;
 }
 

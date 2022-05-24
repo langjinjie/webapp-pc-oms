@@ -10,7 +10,7 @@ interface UserGroupModalProps extends Omit<React.ComponentProps<typeof NgModal>,
 }
 const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValue }) => {
   const [visibleUserGroup, setVisibleUserGroup] = useState(false);
-  console.log(propValue);
+
   const handleOnOK = async (values?: any[]) => {
     if (values) {
       const staffList: any[] = [];

@@ -3,7 +3,7 @@
  * @author Lester
  * @date 2021-10-21 16:19
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
 import { Card, Collapse, Button, Form, FormProps, Select, message } from 'antd';
 import {
   getPosterList,
@@ -11,7 +11,8 @@ import {
   queryProductList,
   queryActivityList,
   queryIndexConfig,
-  saveIndexConfig
+  saveIndexConfig,
+  queryMarketArea
 } from 'src/apis/marketing';
 import { useDocumentTitle } from 'src/utils/base';
 import { AuthBtn } from 'src/components';
@@ -58,8 +59,10 @@ const MarketIndex: React.FC = () => {
   const [posterMessage, setPosterMessage] = useState<string[]>([]);
   const [articleMessage, setArticleMessage] = useState<string[]>([]);
   const [chooseValue, setChooseValue] = useState<any>({});
+  const [areaText, setAreaText] = useState<any>({});
 
   const [form] = useForm();
+  const areaTextRef: MutableRefObject<any> = useRef({});
 
   const formLayout: FormProps = {
     labelAlign: 'right',
@@ -67,9 +70,37 @@ const MarketIndex: React.FC = () => {
     wrapperCol: { span: 6 }
   };
 
-  /* const isRepeat = (data: string[]) => {
-    return data.length !== Array.from(new Set(data)).length;
-  }; */
+  const renderAreaTips = (itemId: string) => {
+    const areaData = areaText[itemId];
+    if (areaData) {
+      return (
+        <div className={style.areaTips}>
+          <span>合计：</span>
+          <span className={style.areaTipsVal}>{areaData.totalNum}人</span>
+          <span>可见：</span>
+          <span className={style.areaTipsVal}>{areaData.visibleNum}人</span>
+          <span>不可见：</span>
+          <span>{areaData.invisibleNum}人</span>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+
+  const getAreaTips = async (type: number, itemId: string) => {
+    if (areaText[itemId]) {
+      return false;
+    }
+    const res: any = await queryMarketArea({ type, itemId });
+    if (res) {
+      areaTextRef.current = {
+        ...areaTextRef.current,
+        [itemId]: res
+      };
+      setAreaText(areaTextRef.current);
+    }
+  };
 
   const onSubmit = async (values: any) => {
     const {
@@ -169,6 +200,11 @@ const MarketIndex: React.FC = () => {
         initChooseValue = {
           ...initValue
         };
+        posterList
+          .filter((item: Poster) => item.status !== 3)
+          .forEach((item: Poster) => {
+            getAreaTips(4, item.posterId);
+          });
       }
       if (newsList && newsList.length > 0) {
         const initValue = {
@@ -183,6 +219,11 @@ const MarketIndex: React.FC = () => {
           ...initChooseValue,
           ...initValue
         };
+        newsList
+          .filter((item: Article) => item.status !== 2)
+          .forEach((item: Article) => {
+            getAreaTips(3, item.articleId);
+          });
       }
       if (productTypeList && productTypeList.length > 0) {
         const initValue = {
@@ -197,6 +238,11 @@ const MarketIndex: React.FC = () => {
           ...initChooseValue,
           ...initValue
         };
+        productTypeList
+          .filter((item: Product) => item.status !== 3)
+          .forEach((item: Product) => {
+            getAreaTips(2, item.productId);
+          });
       }
       if (activityList && activityList.length > 0) {
         const initValue = {
@@ -211,6 +257,11 @@ const MarketIndex: React.FC = () => {
           ...initChooseValue,
           ...initValue
         };
+        activityList
+          .filter((item: Activity) => item.status !== 3)
+          .forEach((item: Activity) => {
+            getAreaTips(1, item.activityId);
+          });
       }
       setChooseValue(initChooseValue);
       const activityMessages: string[] = [];
@@ -291,11 +342,15 @@ const MarketIndex: React.FC = () => {
             <Item
               name="product"
               label="产品一"
+              extra={renderAreaTips(chooseValue.product)}
               rules={[{ required: true, message: getMarketMessage(0, productMessage[0]) }]}
             >
               <Select
                 placeholder={getMarketMessage(0, productMessage[0])}
-                onChange={(val) => setChooseValue({ ...chooseValue, product: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, product: val });
+                  getAreaTips(2, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -313,10 +368,13 @@ const MarketIndex: React.FC = () => {
                 ))}
               </Select>
             </Item>
-            <Item name="productTwo" label="产品二">
+            <Item name="productTwo" label="产品二" extra={renderAreaTips(chooseValue.productTwo)}>
               <Select
                 placeholder={getMarketMessage(0, productMessage[1])}
-                onChange={(val) => setChooseValue({ ...chooseValue, productTwo: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, productTwo: val });
+                  getAreaTips(2, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -334,10 +392,13 @@ const MarketIndex: React.FC = () => {
                 ))}
               </Select>
             </Item>
-            <Item name="productThree" label="产品三">
+            <Item name="productThree" label="产品三" extra={renderAreaTips(chooseValue.productThree)}>
               <Select
                 placeholder={getMarketMessage(0, productMessage[2])}
-                onChange={(val) => setChooseValue({ ...chooseValue, productThree: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, productThree: val });
+                  getAreaTips(2, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -360,11 +421,15 @@ const MarketIndex: React.FC = () => {
             <Item
               name="article"
               label="文章一"
+              extra={renderAreaTips(chooseValue.article)}
               rules={[{ required: true, message: getMarketMessage(1, articleMessage[0]) }]}
             >
               <Select
                 placeholder={getMarketMessage(1, articleMessage[0])}
-                onChange={(val) => setChooseValue({ ...chooseValue, article: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, article: val });
+                  getAreaTips(3, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -385,11 +450,15 @@ const MarketIndex: React.FC = () => {
             <Item
               name="articleTwo"
               label="文章二"
+              extra={renderAreaTips(chooseValue.articleTwo)}
               rules={[{ required: true, message: getMarketMessage(1, articleMessage[1]) }]}
             >
               <Select
                 placeholder={getMarketMessage(1, articleMessage[1])}
-                onChange={(val) => setChooseValue({ ...chooseValue, articleTwo: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, articleTwo: val });
+                  getAreaTips(3, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -410,11 +479,15 @@ const MarketIndex: React.FC = () => {
             <Item
               name="articleThree"
               label="文章三"
+              extra={renderAreaTips(chooseValue.articleThree)}
               rules={[{ required: true, message: getMarketMessage(1, articleMessage[2]) }]}
             >
               <Select
                 placeholder={getMarketMessage(1, articleMessage[2])}
-                onChange={(val) => setChooseValue({ ...chooseValue, articleThree: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, articleThree: val });
+                  getAreaTips(3, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -437,11 +510,15 @@ const MarketIndex: React.FC = () => {
             <Item
               name="poster"
               label="海报一"
+              extra={renderAreaTips(chooseValue.poster)}
               rules={[{ required: true, message: getMarketMessage(2, posterMessage[0]) }]}
             >
               <Select
                 placeholder={getMarketMessage(2, posterMessage[0])}
-                onChange={(val) => setChooseValue({ ...chooseValue, poster: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, poster: val });
+                  getAreaTips(4, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -462,11 +539,15 @@ const MarketIndex: React.FC = () => {
             <Item
               name="posterTwo"
               label="海报二"
+              extra={renderAreaTips(chooseValue.posterTwo)}
               rules={[{ required: true, message: getMarketMessage(2, posterMessage[1]) }]}
             >
               <Select
                 placeholder={getMarketMessage(2, posterMessage[1])}
-                onChange={(val) => setChooseValue({ ...chooseValue, posterTwo: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, posterTwo: val });
+                  getAreaTips(4, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -487,11 +568,15 @@ const MarketIndex: React.FC = () => {
             <Item
               name="posterThree"
               label="海报三"
+              extra={renderAreaTips(chooseValue.posterThree)}
               rules={[{ required: true, message: getMarketMessage(2, posterMessage[2]) }]}
             >
               <Select
                 placeholder={getMarketMessage(2, posterMessage[2])}
-                onChange={(val) => setChooseValue({ ...chooseValue, posterThree: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, posterThree: val });
+                  getAreaTips(4, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -509,10 +594,13 @@ const MarketIndex: React.FC = () => {
             </Item>
           </Panel>
           <Panel key="activity" header="营销活动">
-            <Item name="activity" label="活动一">
+            <Item name="activity" label="活动一" extra={renderAreaTips(chooseValue.activity)}>
               <Select
                 placeholder={getMarketMessage(3, activityMessage[0])}
-                onChange={(val) => setChooseValue({ ...chooseValue, activity: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, activity: val });
+                  getAreaTips(1, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -531,10 +619,13 @@ const MarketIndex: React.FC = () => {
                 ))}
               </Select>
             </Item>
-            <Item name="activityTwo" label="活动二">
+            <Item name="activityTwo" label="活动二" extra={renderAreaTips(chooseValue.activityTwo)}>
               <Select
                 placeholder={getMarketMessage(3, activityMessage[1])}
-                onChange={(val) => setChooseValue({ ...chooseValue, activityTwo: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, activityTwo: val });
+                  getAreaTips(1, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear
@@ -552,10 +643,13 @@ const MarketIndex: React.FC = () => {
                 ))}
               </Select>
             </Item>
-            <Item name="activityThree" label="活动三">
+            <Item name="activityThree" label="活动三" extra={renderAreaTips(chooseValue.activityThree)}>
               <Select
                 placeholder={getMarketMessage(3, activityMessage[2])}
-                onChange={(val) => setChooseValue({ ...chooseValue, activityThree: val })}
+                onChange={(val) => {
+                  setChooseValue({ ...chooseValue, activityThree: val });
+                  getAreaTips(1, val);
+                }}
                 showSearch
                 filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 allowClear

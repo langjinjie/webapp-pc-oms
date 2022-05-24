@@ -404,3 +404,11 @@ export const setUserRightWithActivity: HttpFunction = (param) => {
 export const setUserRightWithProduct: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/product/batch/setscope', param);
 };
+
+/**
+ * 查询素材可见范围
+ * @param param
+ */
+export const queryMarketArea: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/item/scope/data', param);
+};

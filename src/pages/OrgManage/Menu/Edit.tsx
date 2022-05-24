@@ -47,7 +47,6 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
   }, []);
 
   const navigatorToList = () => {
-    console.log('jump');
     history.push('/menu');
   };
 
@@ -57,7 +56,6 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
   };
 
   const onFinish = async (values: any) => {
-    console.log(values, menu);
     const { menuType, menuName, menuIcon, path, buttonType, sortId, menuCode } = values;
     const res = await addOrEditMenu({
       sysType: menu?.sysType,
@@ -72,11 +70,10 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
       sortId
     });
     if (res) {
-      message.success('保存成功', () => {
+      message.success('保存成功', 1, () => {
         history.replace('/menu?menuId=' + (menu?.parentId || '0'));
       });
     }
-    console.log(res);
   };
 
   const onCancel = () => {
@@ -109,7 +106,7 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
           </Form.Item>
 
           <Form.Item label="菜单类型" name={'menuType'} rules={[{ required: true }]}>
-            <Radio.Group disabled={menu?.writeType === 'edit'}>
+            <Radio.Group disabled={menu?.writeType === 'edit' || !menu?.pathList} defaultValue={1}>
               <Radio value={1}>菜单</Radio>
               <Radio value={2}>按钮</Radio>
             </Radio.Group>
