@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Key, useContext } from 'react';
 import { Button, Form, Input, message, Table, TableColumnProps } from 'antd';
-import { Icon, NgTable, Modal } from 'src/components';
+import { Icon, NgTable, Modal, AuthBtn } from 'src/components';
 import { OrganizationalTree } from 'src/pages/RoleManage/components';
 import { TableColumns, TablePagination } from './Config';
 import { IRoleList } from 'src/utils/interface';
@@ -153,25 +153,29 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
   }, [adminModalParam]);
   return (
     <div className={style.wrap}>
-      <Button
-        className={style.addRole}
-        type="primary"
-        icon={<Icon className={style.btnAddIcon} name="xinjian" />}
-        onClick={addRole}
-      >
-        新增角色
-      </Button>
-      <Form className={style.form} onFinish={onFinishHandle}>
-        <Item name="name" label="角色名称">
-          <Input className={style.input} placeholder="请输入" />
-        </Item>
-        <Button className={style.searchBtn} type="primary" htmlType="submit">
-          查询
+      <AuthBtn path="/add">
+        <Button
+          className={style.addRole}
+          type="primary"
+          icon={<Icon className={style.btnAddIcon} name="xinjian" />}
+          onClick={addRole}
+        >
+          新增角色
         </Button>
-        <Button className={style.resetBtn} htmlType="reset">
-          重置
-        </Button>
-      </Form>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <Form className={style.form} onFinish={onFinishHandle}>
+          <Item name="name" label="角色名称">
+            <Input className={style.input} placeholder="请输入" />
+          </Item>
+          <Button className={style.searchBtn} type="primary" htmlType="submit">
+            查询
+          </Button>
+          <Button className={style.resetBtn} htmlType="reset">
+            重置
+          </Button>
+        </Form>
+      </AuthBtn>
       <NgTable
         className={style.table}
         setRowKey={(row) => row.roleId}

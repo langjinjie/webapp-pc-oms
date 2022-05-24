@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import styles from './style.module.less';
 import { Button, message, PaginationProps } from 'antd';
 import PieChart, { PieDataItem } from './PieChart';
-import { Icon, NgTable } from 'src/components';
+import { Icon, NgTable, AuthBtn } from 'src/components';
 import { columns, TaskProps } from './Config';
 import { exportFile, useDocumentTitle } from 'src/utils/base';
 import EmptyTask from '../components/EmptyTask/EmptyTask';
@@ -180,15 +180,17 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
             <section className={classNames(styles.kanban, 'flex')}>
               <div className={classNames(styles.kanbanLeft, 'flex vertical justify-between')}>
                 <div className="font16 color-text-primary bold">全部客户经理迁移进度</div>
-                <Button
-                  type="default"
-                  size="large"
-                  shape="round"
-                  className={styles.btnViewRange}
-                  onClick={() => setVisibleDetail(true)}
-                >
-                  查看可见范围
-                </Button>
+                <AuthBtn path="/areaView">
+                  <Button
+                    type="default"
+                    size="large"
+                    shape="round"
+                    className={styles.btnViewRange}
+                    onClick={() => setVisibleDetail(true)}
+                  >
+                    查看可见范围
+                  </Button>
+                </AuthBtn>
               </div>
 
               <div className={classNames(styles.kanbanRight, 'flex cell')}>
@@ -237,15 +239,17 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
           </header>
 
           <div className={classNames(styles.addTask, 'flex align-center')}>
-            <Button
-              className={classNames({ [styles.disabled]: btnDisabled })}
-              type="primary"
-              shape="round"
-              size="large"
-              onClick={clickCreateTask}
-            >
-              创建群发任务
-            </Button>
+            <AuthBtn path="/add">
+              <Button
+                className={classNames({ [styles.disabled]: btnDisabled })}
+                type="primary"
+                shape="round"
+                size="large"
+                onClick={clickCreateTask}
+              >
+                创建群发任务
+              </Button>
+            </AuthBtn>
             <div className="ml30 color-text-placeholder">
               温馨提示：企业每天可对同一个客户发送1条消息，超过上限，客户当天将无法再收到群发消息。
             </div>
