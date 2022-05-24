@@ -99,6 +99,13 @@
           background-color: #fff;
           text-align-last: justify;
           transition: background 0.3s;
+          .name {
+            padding-right: 5px;
+            max-width: 222px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
           &:hover {
             background-color: rgba(48, 120, 219, 0.2);
             // .delIcon {
@@ -108,6 +115,8 @@
           }
           .delIcon {
             display: inline-block;
+            flex-grow: 0;
+            flex-shrink: 0;
             width: 20px;
             height: 20px;
             // opacity: 0;
