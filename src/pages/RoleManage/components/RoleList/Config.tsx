@@ -5,6 +5,7 @@ import { roleTypeRouteList } from 'src/utils/commonData';
 import { useHistory } from 'react-router-dom';
 import { requestDelRole, requestChangeRoleStatus } from 'src/apis/roleMange';
 import { Context } from 'src/store';
+import { AuthBtn } from 'src/components';
 
 import style from './style.module.less';
 
@@ -94,31 +95,43 @@ const TableColumns = (
       render (row: IRoleList) {
         return (
           <>
-            <span className={style.check} onClick={() => editOrViewHandle('view', row.roleId)}>
-              查看
-            </span>
-            {!row.isDefault && (
-              <span className={style.edit} onClick={() => editOrViewHandle('edit', row.roleId)}>
-                编辑
+            <AuthBtn path="/view">
+              <span className={style.check} onClick={() => editOrViewHandle('view', row.roleId)}>
+                查看
               </span>
+            </AuthBtn>
+            {!row.isDefault && (
+              <AuthBtn path="/edit">
+                <span className={style.edit} onClick={() => editOrViewHandle('edit', row.roleId)}>
+                  编辑
+                </span>
+              </AuthBtn>
             )}
             {!row.isDefault || (
-              <span className={style.addMenu} onClick={() => editOrViewHandle('addMenu', row.roleId)}>
-                添加功能
-              </span>
+              <AuthBtn path="/add">
+                <span className={style.addMenu} onClick={() => editOrViewHandle('addMenu', row.roleId)}>
+                  添加功能
+                </span>
+              </AuthBtn>
             )}
-            <span className={style.mange} onClick={() => clickTree(false, row.roleId)}>
-              管理成员
-            </span>
-            {!row.isDefault && (
-              <span className={style.open} onClick={() => manageRoleHandle(row)}>
-                {row.status ? '关闭' : '开启'}
+            <AuthBtn path="/manage">
+              <span className={style.mange} onClick={() => clickTree(false, row.roleId)}>
+                管理成员
               </span>
+            </AuthBtn>
+            {!row.isDefault && (
+              <AuthBtn path="/operate">
+                <span className={style.open} onClick={() => manageRoleHandle(row)}>
+                  {row.status ? '关闭' : '开启'}
+                </span>
+              </AuthBtn>
             )}
             {!row.isDefault && (
-              <span className={style.del} onClick={() => delRoleHandle(row)}>
-                删除
-              </span>
+              <AuthBtn path="/delete">
+                <span className={style.del} onClick={() => delRoleHandle(row)}>
+                  删除
+                </span>
+              </AuthBtn>
             )}
           </>
         );

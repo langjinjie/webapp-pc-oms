@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Button, Tag } from 'antd';
-import { Icon } from 'src/components';
+import { AuthBtn, Icon } from 'src/components';
 import { AddModal, List } from './components';
 import { useDocumentTitle } from 'src/utils/base';
 import { IDeptRecord } from 'src/utils/interface';
@@ -55,11 +55,13 @@ const LotterySetting: React.FC = () => {
                 </Tag>
               ))}
           </div>
-          <Button
-            className={style.addBtn}
-            icon={<Icon className={style.addBtnIcon} name="xinjian" />}
-            onClick={clickAddBtn}
-          />
+          <AuthBtn path="/add">
+            <Button
+              className={style.addBtn}
+              icon={<Icon className={style.addBtnIcon} name="xinjian" />}
+              onClick={clickAddBtn}
+            />
+          </AuthBtn>
         </div>
         <div className={style.tip}>温馨提醒：未在可见名单的坐席，进入a端抽奖页面时，抽奖按钮置灰。</div>
       </div>

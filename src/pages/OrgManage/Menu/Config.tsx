@@ -5,6 +5,7 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { Button, Popconfirm, Space, Tooltip } from 'antd';
 import { Icon } from 'lester-ui';
+import { AuthBtn } from 'src/components';
 
 export const searchCols: SearchCol[] = [
   {
@@ -168,27 +169,34 @@ export const setTableColumns = ({
         return (
           <>
             <Space>
-              <Button type="link" onClick={() => editMenu(record.menuId)}>
-                编辑
-              </Button>
-              <Button type="link" onClick={() => addSubMenu(record.menuId)}>
-                添加
-              </Button>
-              {record.enable === 1
-                ? (
-                <Popconfirm title="确定要关闭吗?" onConfirm={() => operateItem(record.menuId, 0)}>
-                  <Button type="link">关闭</Button>
+              <AuthBtn path="/edit">
+                <Button type="link" onClick={() => editMenu(record.menuId)}>
+                  编辑
+                </Button>
+              </AuthBtn>
+              <AuthBtn path="/add">
+                <Button type="link" onClick={() => addSubMenu(record.menuId)}>
+                  添加
+                </Button>
+              </AuthBtn>
+              <AuthBtn path="/close">
+                {record.enable === 1
+                  ? (
+                  <Popconfirm title="确定要关闭吗?" onConfirm={() => operateItem(record.menuId, 0)}>
+                    <Button type="link">关闭</Button>
+                  </Popconfirm>
+                    )
+                  : (
+                  <Popconfirm title="确定要启用吗?" onConfirm={() => operateItem(record.menuId, 1)}>
+                    <Button type="link">启用</Button>
+                  </Popconfirm>
+                    )}
+              </AuthBtn>
+              <AuthBtn path="/delete">
+                <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(record.menuId)}>
+                  <Button type="link">删除</Button>
                 </Popconfirm>
-                  )
-                : (
-                <Popconfirm title="确定要启用吗?" onConfirm={() => operateItem(record.menuId, 1)}>
-                  <Button type="link">启用</Button>
-                </Popconfirm>
-                  )}
-
-              <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(record.menuId)}>
-                <Button type="link">删除</Button>
-              </Popconfirm>
+              </AuthBtn>
             </Space>
           </>
         );

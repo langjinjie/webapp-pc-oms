@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, message, Modal, Space } from 'antd';
 
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import style from './style.module.less';
 
 import { columns, ProductProps, setSearchCols } from './Config';
@@ -281,34 +281,40 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
       {/* 表单查询 start */}
       <header>
         <div className={style.addBtnWrap}>
-          <Button
-            type="primary"
-            onClick={addProduct}
-            shape="round"
-            icon={<PlusOutlined />}
-            size="large"
-            style={{ width: 128 }}
-          >
-            添加
-          </Button>
-          <Button
-            type="primary"
-            onClick={addFeatureProduct}
-            shape="round"
-            icon={<PlusOutlined />}
-            size="large"
-            style={{ width: 128, marginLeft: 40 }}
-          >
-            当月精选
-          </Button>
+          <AuthBtn path="/add">
+            <Button
+              type="primary"
+              onClick={addProduct}
+              shape="round"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ width: 128 }}
+            >
+              添加
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/viewSelected">
+            <Button
+              type="primary"
+              onClick={addFeatureProduct}
+              shape="round"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ width: 128, marginLeft: 40 }}
+            >
+              当月精选
+            </Button>
+          </AuthBtn>
         </div>
         <div className="pt20">
-          <NgFormSearch
-            isInline={false}
-            onSearch={onSearch}
-            searchCols={setSearchCols(productOptions)}
-            onValuesChange={onValuesChange}
-          />
+          <AuthBtn path="/query">
+            <NgFormSearch
+              isInline={false}
+              onSearch={onSearch}
+              searchCols={setSearchCols(productOptions)}
+              onValuesChange={onValuesChange}
+            />
+          </AuthBtn>
         </div>
       </header>
       {/* 表单查询 end */}
@@ -326,33 +332,37 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
       {dataSource.length > 0 && (
         <div className={'operationWrap'}>
           <Space size={20}>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={operationType !== 1}
-              onClick={() => handleToggleOnlineState(1)}
-            >
-              批量上架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={operationType !== 2}
-              onClick={() => handleToggleOnlineState(2)}
-            >
-              批量下架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={!(selectRows && selectRows.length > 0)}
-              onClick={() => setRight()}
-            >
-              批量添加可见范围
-            </Button>
+            <AuthBtn path="/operateBatch">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={operationType !== 1}
+                onClick={() => handleToggleOnlineState(1)}
+              >
+                批量上架
+              </Button>
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={operationType !== 2}
+                onClick={() => handleToggleOnlineState(2)}
+              >
+                批量下架
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/setBatch">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={!(selectRows && selectRows.length > 0)}
+                onClick={() => setRight()}
+              >
+                批量添加可见范围
+              </Button>
+            </AuthBtn>
           </Space>
         </div>
       )}

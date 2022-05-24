@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Form, Space, Select, Input, DatePicker, message } from 'antd';
-import { NgTable } from 'src/components';
+import { NgTable, AuthBtn } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
@@ -129,51 +129,59 @@ const MultiLaod: React.FC = () => {
         /<span className={style.currentName}>批量导入信息</span>
       </div>
       <div className={style.operation}>
-        <Button type="primary" className={style.btn} onClick={() => setExportModal(true)}>
-          上传表格
-        </Button>
-        <Button type="primary" className={style.btn} onClick={downLoadNewStaffList}>
-          下载信息未完善员工信息表
-        </Button>
-        <a
-          className={style.btn}
-          href={
-            'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/%E7%BB%84%E7%BB%87%E6%9E%B6%E6%9E%84%E4%BF%A1%E6%81%AF%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF.xlsx?' +
-            Date.now().toString(16)
-          }
-        >
-          下载模板
-        </a>
+        <AuthBtn path="/import/upload">
+          <Button type="primary" className={style.btn} onClick={() => setExportModal(true)}>
+            上传表格
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/import/unPerfection">
+          <Button type="primary" className={style.btn} onClick={downLoadNewStaffList}>
+            下载信息未完善员工信息表
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/import/downTemplate">
+          <a
+            className={style.btn}
+            href={
+              'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/stafforg/%E7%BB%84%E7%BB%87%E6%9E%B6%E6%9E%84%E4%BF%A1%E6%81%AF%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF.xlsx?' +
+              Date.now().toString(16)
+            }
+          >
+            下载模板
+          </a>
+        </AuthBtn>
       </div>
-      <Form name="base" className={style.form} layout="inline" form={form}>
-        <Space className={style.antSpace}>
-          <Form.Item className={style.label} name="status" label="状态：">
-            <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
-              {statusList.map((item) => (
-                <Select.Option key={item.value} value={item.value}>
-                  {item.label}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item className={style.label} name="createBy" label="创建人：">
-            <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
-          </Form.Item>
-          <Form.Item className={style.label} name="createTime" label="创建时间：">
-            <RangePicker className={style.rangePicker} style={{ width: 300 }} />
-          </Form.Item>
-          <Form.Item>
-            <Space size="small">
-              <Button className={style.searchBtn} type="primary" htmlType="submit" onClick={onFinishHandle}>
-                查询
-              </Button>
-              <Button className={style.resetBtn} htmlType="reset" onClick={onResetHandle}>
-                重置
-              </Button>
-            </Space>
-          </Form.Item>
-        </Space>
-      </Form>
+      <AuthBtn path="/import/query">
+        <Form name="base" className={style.form} layout="inline" form={form}>
+          <Space className={style.antSpace}>
+            <Form.Item className={style.label} name="status" label="状态：">
+              <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
+                {statusList.map((item) => (
+                  <Select.Option key={item.value} value={item.value}>
+                    {item.label}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item className={style.label} name="createBy" label="创建人：">
+              <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
+            </Form.Item>
+            <Form.Item className={style.label} name="createTime" label="创建时间：">
+              <RangePicker className={style.rangePicker} style={{ width: 300 }} />
+            </Form.Item>
+            <Form.Item>
+              <Space size="small">
+                <Button className={style.searchBtn} type="primary" htmlType="submit" onClick={onFinishHandle}>
+                  查询
+                </Button>
+                <Button className={style.resetBtn} htmlType="reset" onClick={onResetHandle}>
+                  重置
+                </Button>
+              </Space>
+            </Form.Item>
+          </Space>
+        </Form>
+      </AuthBtn>
       <NgTable
         className={style.tableWrap}
         setRowKey={(record: any) => record.batchId}

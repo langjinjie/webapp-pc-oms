@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, message } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { columns, searchCols, UserTagProps } from './Config';
 import {
   changeClientTag,
@@ -237,11 +237,15 @@ const TagConfig: React.FC<RouteComponentProps> = ({ history }) => {
           <span className="font16 bold margin-right20">标签配置</span>
           <span className="font12 color-text-placeholder">标签修改成功后，直接应用于促成任务生成及消息推送</span>
         </div>
-        <Button type="primary" className={style.headerRightBtn} ghost shape="round" onClick={navigatorToHistory}>
-          保存与推送记录
-        </Button>
+        <AuthBtn path="/view">
+          <Button type="primary" className={style.headerRightBtn} ghost shape="round" onClick={navigatorToHistory}>
+            保存与推送记录
+          </Button>
+        </AuthBtn>
       </header>
-      <NgFormSearch searchCols={searchCols} onSearch={handleSearch} onReset={onReset} />
+      <AuthBtn path="/query">
+        <NgFormSearch searchCols={searchCols} onSearch={handleSearch} onReset={onReset} />
+      </AuthBtn>
       <div className="pt20">
         <NgTable
           loading={false}

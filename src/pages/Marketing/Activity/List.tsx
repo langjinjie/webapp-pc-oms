@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { useDidRecover } from 'react-router-cache-route';
 import { PlusOutlined } from '@ant-design/icons';
+import { AuthBtn, NgTable, NgFormSearch } from 'src/components';
 import { Button, message, Modal, Space } from 'antd';
 import classNames from 'classnames';
-
-import { NgTable, NgFormSearch } from 'src/components';
 
 import style from './style.module.less';
 
@@ -281,19 +280,23 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
     <div className={classNames(style.addFriendBox, 'container')}>
       <div className={style.addFriendContent}>
         <div className={style.addFriendPanel}>
-          <Button
-            type="primary"
-            onClick={addHandle}
-            shape="round"
-            icon={<PlusOutlined />}
-            size="large"
-            style={{ width: 128 }}
-          >
-            添加
-          </Button>
+          <AuthBtn path="/add">
+            <Button
+              type="primary"
+              onClick={addHandle}
+              shape="round"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ width: 128 }}
+            >
+              添加
+            </Button>
+          </AuthBtn>
         </div>
         <div className={style.addFriendSearchBox}>
-          <NgFormSearch searchCols={SearchCols} onSearch={onSearch} onValuesChange={onValuesChange}></NgFormSearch>
+          <AuthBtn path="/query">
+            <NgFormSearch searchCols={SearchCols} onSearch={onSearch} onValuesChange={onValuesChange}></NgFormSearch>
+          </AuthBtn>
         </div>
         <div className={'pt20'}>
           <NgTable
@@ -310,33 +313,37 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
           {dataSource.length > 0 && (
             <div className={'operationWrap'}>
               <Space size={20}>
-                <Button
-                  type="primary"
-                  shape={'round'}
-                  ghost
-                  disabled={operationType !== 1}
-                  onClick={() => handleToggleOnlineState(1)}
-                >
-                  批量上架
-                </Button>
-                <Button
-                  type="primary"
-                  shape={'round'}
-                  ghost
-                  disabled={operationType !== 2}
-                  onClick={() => handleToggleOnlineState(2)}
-                >
-                  批量下架
-                </Button>
-                <Button
-                  type="primary"
-                  shape={'round'}
-                  ghost
-                  disabled={!(selectRows && selectRows.length > 0)}
-                  onClick={() => setRight()}
-                >
-                  批量添加可见范围
-                </Button>
+                <AuthBtn path="/operate">
+                  <Button
+                    type="primary"
+                    shape={'round'}
+                    ghost
+                    disabled={operationType !== 1}
+                    onClick={() => handleToggleOnlineState(1)}
+                  >
+                    批量上架
+                  </Button>
+                  <Button
+                    type="primary"
+                    shape={'round'}
+                    ghost
+                    disabled={operationType !== 2}
+                    onClick={() => handleToggleOnlineState(2)}
+                  >
+                    批量下架
+                  </Button>
+                </AuthBtn>
+                <AuthBtn path="/setBatch">
+                  <Button
+                    type="primary"
+                    shape={'round'}
+                    ghost
+                    disabled={!(selectRows && selectRows.length > 0)}
+                    onClick={() => setRight()}
+                  >
+                    批量添加可见范围
+                  </Button>
+                </AuthBtn>
               </Space>
             </div>
           )}
