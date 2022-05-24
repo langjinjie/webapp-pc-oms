@@ -74,10 +74,12 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
     <div className={style.wrap}>
       <div className={style.titleWrap}>
         <div className={style.title}>选择权限</div>
-        <div className={style.copy} onClick={copyPrivilege}>
-          <Icon name="a-icon_common_16_modelcharge" />
-          复制已有权限
-        </div>
+        {addMenu || (
+          <div className={style.copy} onClick={copyPrivilege}>
+            <Icon name="a-icon_common_16_modelcharge" />
+            复制已有权限
+          </div>
+        )}
       </div>
       <div className={style.privilege}>功能权限</div>
       <div className={style.menuList}>
