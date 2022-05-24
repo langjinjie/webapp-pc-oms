@@ -6,6 +6,7 @@ import { requestGetCatalogDetail, requestEditCatalog } from 'src/apis/salesColle
 import { Context } from 'src/store';
 import { catalogType2Name } from 'src/utils/commonData';
 import style from './style.module.less';
+import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
 // import classNames from 'classnames';
 
 interface IAddOrEditContentProps {
@@ -134,6 +135,10 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   const onOk = async (updataCatalog: any) => {
     setSubmitDisabled(true);
     setBtnIsLoading(true);
+    delete updataCatalog.group1;
+    delete updataCatalog.isSet;
+    delete updataCatalog.group2;
+    delete updataCatalog.groupType;
     const { parentId, catalog, title } = editOrAddLastCatalogParam;
     const { sceneId, catalogId, level, lastLevel } = catalog;
     const res = await requestEditCatalog({
@@ -252,6 +257,9 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
           setUploadImg={setUploadImg}
           fileList={fileList}
         />
+        <Form.Item name={'groupId'} label="可见范围设置">
+          <SetUserRightFormItem form={form} />
+        </Form.Item>
       </Form>
     </Modal>
   );

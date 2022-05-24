@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Modal, Upload, message } from 'antd';
+import { Modal, message, Form, Input } from 'antd';
 import { IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils/interface';
-import { Icon } from 'src/components';
 import { requestEditCatalog } from 'src/apis/salesCollection';
 import { catalogLmitLengtg, catalogLmitLengtgTip } from 'src/utils/commonData';
 import style from './style.module.less';
 import { Context } from 'src/store';
+import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
+import NgUpload from 'src/pages/Marketing/Components/Upload/Upload';
 
 interface IAddOrEditContentProps {
   editOrAddCatalogParam: IEditOrAddCatalogParam;
@@ -23,59 +24,34 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   setEditOrAddCatalogParam,
   setFirmModalParam
 }) => {
+  const [editForm] = Form.useForm();
   const { currentCorpId: corpId } = useContext(Context);
-  const [iconImg, setIconImg] = useState('');
-  const [catalogName, setCatalogName] = useState('');
   const [catalogSenceAndLevel, setCatalogSenceAndLevel] = useState<ICatalogSenceAndLevel>({ sence: 0, level: 0 });
-  const [submitDisabled, setSubmitDisabled] = useState(true);
   const [btnIsLoading, setBtnIsLoading] = useState(false);
   const resetHandle = () => {
-    setIconImg('');
-    setCatalogName('');
     setCatalogSenceAndLevel({ sence: 0, level: 0 });
     setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
-    setSubmitDisabled(true);
     setBtnIsLoading(false);
-  };
-
-  // 更新Modal确定的disabled状态
-  const updateOkBtnStatus = (catalogName: string, iconImg: string) => {
-    const isShowIcon =
-      (editOrAddCatalogParam.catalog.sceneId === 4 && editOrAddCatalogParam.catalog.level === 2) ||
-      (editOrAddCatalogParam.catalog.sceneId === 5 && editOrAddCatalogParam.catalog.level === 1);
-    setSubmitDisabled(
-      catalogName.length < catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0] ||
-        catalogName.length > catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1] ||
-        (editOrAddCatalogParam.title === '编辑' &&
-          editOrAddCatalogParam.catalog.name === catalogName &&
-          iconImg === editOrAddCatalogParam.catalog.logoUrl) ||
-        (isShowIcon && !iconImg)
-    );
-  };
-
-  // 输入目录名称的onChange
-  const inputOnChangHangle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCatalogName(e.target.value.trim());
-    updateOkBtnStatus(e.target.value.trim(), iconImg);
   };
 
   // 确认修改/增加目录handle
   const firmModalOnOk = async () => {
-    setSubmitDisabled(true);
     setBtnIsLoading(true);
     const { parentId, catalog } = editOrAddCatalogParam;
     const { sceneId, catalogId, level, lastLevel } = catalog;
+    const { groupId, name, logoUrl } = editForm.getFieldsValue();
+    console.log({ groupId });
     const res = await requestEditCatalog({
       corpId,
       parentId,
       sceneId,
-      name: catalogName,
+      name,
       level,
       lastLevel,
+      groupId: groupId || '',
       catalogId: editOrAddCatalogParam.title === '新增' ? undefined : catalogId,
-      logoUrl: iconImg
+      logoUrl
     });
-    setSubmitDisabled(false);
     setBtnIsLoading(false);
     if (res) {
       setFirmModalParam({ title: '', content: '', visible: false });
@@ -88,21 +64,26 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   const modalOnOkHandle = async () => {
     const title = '修改提醒';
     const content = '修改目录会对已上架话术产生影响，企微前端能实时看到变化';
-    if (editOrAddCatalogParam.title === '新增') {
-      await firmModalOnOk();
-    } else {
-      setFirmModalParam({
-        title,
-        content,
-        visible: true,
-        onOk: firmModalOnOk,
-        onCancel () {
-          setFirmModalParam({ title: '', content: '', visible: false });
-          setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: true });
+    editForm
+      .validateFields()
+      .then(() => {
+        if (editOrAddCatalogParam.title === '新增') {
+          firmModalOnOk();
+        } else {
+          setFirmModalParam({
+            title,
+            content,
+            visible: true,
+            onOk: firmModalOnOk,
+            onCancel () {
+              setFirmModalParam({ title: '', content: '', visible: false });
+              setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: true });
+            }
+          });
+          // setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible:  });
         }
-      });
-      setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
-    }
+      })
+      .catch((e) => console.error(e));
   };
   // updaload beforeUpload
   const beforeUploadHandle = (file: File): Promise<boolean> => {
@@ -136,23 +117,19 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       reader.readAsDataURL(file);
     });
   };
-  const handleChange = (info: any) => {
-    if (info.file.status === 'done') {
-      setIconImg(info.file.response.retdata.filePath);
-      updateOkBtnStatus(catalogName, info.file.response.retdata.filePath);
-    }
-  };
+
   const onCancelHandle = () => {
+    editForm.resetFields();
     resetHandle();
     setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
   };
   useEffect(() => {
     if (editOrAddCatalogParam?.visible) {
       if (editOrAddCatalogParam.title === '编辑') {
-        catalogName || setCatalogName(editOrAddCatalogParam.catalog.name || '');
-        iconImg || setIconImg(editOrAddCatalogParam.catalog.logoUrl);
-      } else {
-        setCatalogName('');
+        console.log(editOrAddCatalogParam.catalog);
+        const { name, logoUrl, groupId } = editOrAddCatalogParam.catalog;
+        editForm.setFieldsValue({ name, logoUrl, groupId });
+        // iconImg || setIconImg(editOrAddCatalogParam.catalog.logoUrl);
       }
       setCatalogSenceAndLevel({
         sence: editOrAddCatalogParam.catalog.sceneId - 1,
@@ -162,8 +139,9 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   }, [editOrAddCatalogParam]);
   return (
     <Modal
-      width={320}
+      width={600}
       centered
+      forceRender
       wrapClassName={style.modalWrap}
       closable={false}
       visible={editOrAddCatalogParam?.visible}
@@ -172,52 +150,52 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       onOk={modalOnOkHandle}
       maskClosable={false}
       okButtonProps={{
-        disabled: submitDisabled,
         loading: btnIsLoading
       }}
     >
-      {editOrAddCatalogParam && (
-        <>
-          <input
-            value={catalogName}
+      <Form form={editForm} labelCol={{ span: 5 }}>
+        <Form.Item
+          label="目录名称"
+          name={'name'}
+          rules={[
+            {
+              required: true,
+              type: 'string',
+              max: catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1],
+              min: catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0]
+            }
+          ]}
+        >
+          <Input
             className={style.input}
-            minLength={catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][0]}
-            maxLength={catalogLmitLengtg[catalogSenceAndLevel.sence][catalogSenceAndLevel.level][1]}
-            onChange={(e) => inputOnChangHangle(e)}
             placeholder={`输入目录名称（${
               catalogLmitLengtgTip[catalogSenceAndLevel.sence][catalogSenceAndLevel.level]
             }）`}
           />
-          {((editOrAddCatalogParam.catalog.sceneId === 4 && editOrAddCatalogParam.catalog.level === 2) ||
-            (editOrAddCatalogParam.catalog.sceneId === 5 && editOrAddCatalogParam.catalog.level === 1)) && (
-            <div className={style.uploadWrap}>
-              <div className={style.tip}>该目录需上传icon，请上传80x80像素的图片</div>
-              <Upload
-                accept="image/*"
-                maxCount={1}
-                listType="picture-card"
-                action="/tenacity-admin/api/file/upload"
-                data={{ bizKey: 'news' }}
-                className={style.upload}
-                showUploadList={false}
-                beforeUpload={beforeUploadHandle}
-                onChange={handleChange}
-              >
-                {iconImg
-                  ? (
-                  <img src={iconImg} alt="icon" style={{ width: '100%' }} />
-                    )
-                  : (
-                  <div className={style.iconWrap}>
-                    <Icon className={style.uploadIcon} name="upload" />
-                    <div className={style.uploadTip}>点击上传</div>
-                  </div>
-                    )}
-              </Upload>
-            </div>
-          )}
-        </>
-      )}
+        </Form.Item>
+        {editOrAddCatalogParam?.catalog.level !== 0 && (
+          <Form.Item label="可见范围设置" name={'groupId'}>
+            <SetUserRightFormItem
+              form={editForm}
+              onChange={(value: any) => {
+                console.log(value);
+              }}
+            />
+          </Form.Item>
+        )}
+        {((editOrAddCatalogParam?.catalog.sceneId === 4 && editOrAddCatalogParam?.catalog.level === 2) ||
+          (editOrAddCatalogParam?.catalog.sceneId === 5 && editOrAddCatalogParam?.catalog.level === 1)) && (
+          <Form.Item
+            label="请上传Icon"
+            name={'logoUrl'}
+            rules={[{ required: true }]}
+            className={style.uploadWrap}
+            extra="该目录需上传icon，请上传80x80像素的图片"
+          >
+            <NgUpload beforeUpload={beforeUploadHandle}></NgUpload>
+          </Form.Item>
+        )}
+      </Form>
     </Modal>
   );
 };

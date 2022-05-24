@@ -91,7 +91,7 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
     <>
       <Form.Item required>
         <Form.Item name={'isSet'}>
-          <Radio.Group onChange={(e) => onOpenChange(e.target.value)}>
+          <Radio.Group defaultValue={0} onChange={(e) => onOpenChange(e.target.value)}>
             <Radio value={0}>关闭</Radio>
             <Radio value={1}>开启</Radio>
           </Radio.Group>

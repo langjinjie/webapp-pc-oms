@@ -47,7 +47,6 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
   }, []);
 
   const navigatorToList = () => {
-    console.log('jump');
     history.push('/menu');
   };
 
@@ -72,11 +71,10 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
       sortId
     });
     if (res) {
-      message.success('保存成功', () => {
+      message.success('保存成功', 1, () => {
         history.replace('/menu?menuId=' + (menu?.parentId || '0'));
       });
     }
-    console.log(res);
   };
 
   const onCancel = () => {
