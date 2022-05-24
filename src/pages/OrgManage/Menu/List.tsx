@@ -3,7 +3,7 @@ import { Icon } from 'lester-ui';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { deleteMenu, getMenuList, operateMenu, searchMenu } from 'src/apis/orgManage';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { changeTreeItem, filterTree, treeFindPath, URLSearchParams } from 'src/utils/base';
 import { MenuProps, searchCols, setTableColumns, systemList } from './Config';
 import { useDidRecover } from 'react-router-cache-route';
@@ -13,6 +13,7 @@ import styles from './style.module.less';
 const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
   const [currentTab, setCurrentTab] = useState(1);
   const [dataSource, setDataSource] = useState<MenuProps[]>();
+  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
   const deepArr = (arr: MenuProps[], menuId: string, children: MenuProps[]) => {
     if (arr.length === 0) return children;
     arr.forEach((item) => {
@@ -29,6 +30,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
     return arr;
   };
   const getList = async (params?: any) => {
+    setExpandedRowKeys([]);
     const res = (await getMenuList({ sysType: currentTab, ...params })) || [];
     setDataSource(res);
   };
@@ -64,6 +66,15 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const handleOnExpand = async (expanded: boolean, record: MenuProps) => {
     if (expanded) {
+      const copyArr = [...expandedRowKeys];
+      copyArr.push(record.menuId);
+      setExpandedRowKeys(copyArr);
+    } else {
+      const copyArr = [...expandedRowKeys];
+      const res = copyArr.filter((item) => item !== record.menuId);
+      setExpandedRowKeys(res);
+    }
+    if (expanded) {
       const children = record.children;
       // 判断没有加载children时，请求子列表
       if (!children) {
@@ -82,9 +93,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const addSubMenu = (menuId: string) => {
-    console.log(menuId);
     const result = treeFindPath(dataSource!, (node) => node.menuId === menuId);
-    console.log(result);
     history.push('/menu/edit', { pathList: result, type: 'add', sysType: currentTab });
   };
   const editMenu = (menuId: string) => {
@@ -100,7 +109,6 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
     if (res) {
       message.success('删除成功');
       const filterRes = filterTree(dataSource!, (node: any) => node.menuId !== menuId);
-      console.log(filterRes);
       // 结构赋值处理，数据动态渲染异常问题
       setDataSource(() => [...filterRes]);
     }
@@ -118,7 +126,6 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
       status
     });
     if (res) {
-      console.log('=============');
       const operateTree = changeTreeItem(dataSource!, (node) => {
         if (node.menuId === menuId) {
           return (node.enable = status);
@@ -136,23 +143,32 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
         ))}
       </Tabs>
       <div className={styles.content}>
-        <Button
-          type="primary"
-          shape="round"
-          className={'addBtn'}
-          onClick={() => {
-            addMenu();
-          }}
-        >
-          <Icon className={styles.addIcon} name="xinjian" />
-          添加菜单
-        </Button>
-        <NgFormSearch searchCols={searchCols} onSearch={onSearch} className="mt20" />
+        <AuthBtn path="/addMenu">
+          <Button
+            type="primary"
+            shape="round"
+            className={'addBtn'}
+            onClick={() => {
+              addMenu();
+            }}
+          >
+            <Icon className={styles.addIcon} name="xinjian" />
+            添加菜单
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/query">
+          <NgFormSearch searchCols={searchCols} onSearch={onSearch} className="mt20" />
+        </AuthBtn>
         <NgTable
           className="mt30"
           rowKey={'menuId'}
           expandable={{
             // fixed: 'left',
+            expandedRowKeys: expandedRowKeys,
+            indentSize: 30,
+            expandRowByClick: false, // 点击行可以展开
+            expandIconColumnIndex: 1, // 设置安装放置在第二列
+            showExpandColumn: true,
             onExpand: (expanded, record) => handleOnExpand(expanded, record),
             expandIcon: ({ expanded, onExpand, record }) => {
               return (
@@ -162,6 +178,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
                         expanded
                           ? (
                       <Icon
+                        key={record.menuId + 'down'}
                         className={styles.iconExpand}
                         name="icon_common_16_Line_Down"
                         onClick={(e: any) => onExpand(record, e)}
@@ -169,6 +186,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
                             )
                           : (
                       <Icon
+                        key={record.menuId + 'up'}
                         className={styles.iconExpand}
                         name="iconfontjiantou2"
                         onClick={(e: any) => onExpand(record, e)}

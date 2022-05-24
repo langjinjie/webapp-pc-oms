@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Avatar, Button, Popconfirm, Select, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { AuthBtn } from 'src/components';
 export const searchCols: SearchCol[] = [
   {
     name: 'staffName',
@@ -145,21 +146,25 @@ export const columns = (args: OperateProps): ColumnsType<UserTagProps> => {
       fixed: 'right',
       render: (value: any, scored: any, index: number) => (
         <>
-          {tableType === 1 && (
-            <Button type="link" onClick={() => saveBuffer?.(scored)}>
-              保存
-            </Button>
-          )}
-          {tableType !== 3 && (
-            <Popconfirm
-              placement="bottomLeft"
-              title="标签值修改为高后系统将会推送促成任务消息给员工?"
-              onConfirm={() => onConfirm(scored, index)}
-            >
-              <Button type="link">推送</Button>
-            </Popconfirm>
-          )}
-          {<span>{scored.pushTime}</span>}
+          <AuthBtn path="/save">
+            {tableType === 1 && (
+              <Button type="link" onClick={() => saveBuffer?.(scored)}>
+                保存
+              </Button>
+            )}
+          </AuthBtn>
+          <AuthBtn path="/send">
+            {tableType !== 3 && (
+              <Popconfirm
+                placement="bottomLeft"
+                title="标签值修改为高后系统将会推送促成任务消息给员工?"
+                onConfirm={() => onConfirm(scored, index)}
+              >
+                <Button type="link">推送</Button>
+              </Popconfirm>
+            )}
+            {<span>{scored.pushTime}</span>}
+          </AuthBtn>
         </>
       )
     }

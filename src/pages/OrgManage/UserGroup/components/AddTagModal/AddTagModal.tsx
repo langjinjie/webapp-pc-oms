@@ -74,8 +74,7 @@ const AddTagModal: React.FC<IAddTagModal> = ({ addTagParam, setAddTagParam, upda
       prev = prev + now.tagName + '：' + now.tagValues + '+';
       return prev;
     }, '');
-    const tagName = (allValues.name || '') + '+';
-    const textAreaVal = (deptName + tagName + ruleTypeName).replace(/^(\s|\+)+|(\s|\+)+$/g, '');
+    const textAreaVal = (deptName + ruleTypeName).replace(/^(\s|\+)+|(\s|\+)+$/g, '');
     form.setFieldsValue({ filterName: textAreaVal });
   };
   const onOk = async () => {

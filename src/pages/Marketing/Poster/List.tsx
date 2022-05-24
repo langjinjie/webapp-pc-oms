@@ -21,6 +21,7 @@ import { Context } from 'src/store';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
 import { useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
+import { AuthBtn } from 'src/components';
 
 interface PostPosterData {
   total: number;
@@ -317,24 +318,28 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <div className="container">
       <div className={style.header}>
-        <Button
-          className={style.btnAdd}
-          type="primary"
-          onClick={handleAdd}
-          shape="round"
-          icon={<PlusOutlined />}
-          size="large"
-          style={{ width: 128 }}
-        >
-          添加
-        </Button>
-        <FormSearch
-          searchCols={setSearchCols(categoryList)}
-          onSearch={handleSearch}
-          onValuesChange={(changesValue, values) => {
-            handleSearchValueChange(changesValue, values);
-          }}
-        />
+        <AuthBtn path="/add">
+          <Button
+            className={style.btnAdd}
+            type="primary"
+            onClick={handleAdd}
+            shape="round"
+            icon={<PlusOutlined />}
+            size="large"
+            style={{ width: 128 }}
+          >
+            添加
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/query">
+          <FormSearch
+            searchCols={setSearchCols(categoryList)}
+            onSearch={handleSearch}
+            onValuesChange={(changesValue, values) => {
+              handleSearchValueChange(changesValue, values);
+            }}
+          />
+        </AuthBtn>
       </div>
       <div className={style.main}>
         {/* 表单查询 end */}
@@ -352,33 +357,37 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
         {posterData && posterData.total > 0 && (
           <div className={'operationWrap'}>
             <Space size={20}>
-              <Button
-                type="primary"
-                shape={'round'}
-                ghost
-                disabled={operationType !== 1}
-                onClick={() => handleToggleOnlineState(1)}
-              >
-                批量上架
-              </Button>
-              <Button
-                type="primary"
-                shape={'round'}
-                ghost
-                disabled={operationType !== 2}
-                onClick={() => handleToggleOnlineState(2)}
-              >
-                批量下架
-              </Button>
-              <Button
-                type="primary"
-                shape={'round'}
-                ghost
-                disabled={!(selectRows && selectRows.length > 0)}
-                onClick={() => setRight()}
-              >
-                批量添加可见范围
-              </Button>
+              <AuthBtn path="/operateBatch">
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={operationType !== 1}
+                  onClick={() => handleToggleOnlineState(1)}
+                >
+                  批量上架
+                </Button>
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={operationType !== 2}
+                  onClick={() => handleToggleOnlineState(2)}
+                >
+                  批量下架
+                </Button>
+              </AuthBtn>
+              <AuthBtn path="/setBatch">
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={!(selectRows && selectRows.length > 0)}
+                  onClick={() => setRight()}
+                >
+                  批量添加可见范围
+                </Button>
+              </AuthBtn>
             </Space>
           </div>
         )}

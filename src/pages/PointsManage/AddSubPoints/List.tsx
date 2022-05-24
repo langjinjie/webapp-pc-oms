@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
-import { Icon, NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, Icon, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
 import { RouteComponentProps } from 'react-router-dom';
 import ModalUpdatePoints from './Components/ModalUpdatePonits';
@@ -66,14 +66,18 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <div className="container">
       <div className="header flex justify-between">
-        <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
-        <div
-          className={classNames('flex fixed color-text-regular pointer', styles.rightLink)}
-          onClick={navigateToRecord}
-        >
-          <Icon className={styles.iconList} name="jifenshuoming" />
-          <span>积分加减记录</span>
-        </div>
+        <AuthBtn path="/query">
+          <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
+        </AuthBtn>
+        <AuthBtn path="/view">
+          <div
+            className={classNames('flex fixed color-text-regular pointer', styles.rightLink)}
+            onClick={navigateToRecord}
+          >
+            <Icon className={styles.iconList} name="jifenshuoming" />
+            <span>积分加减记录</span>
+          </div>
+        </AuthBtn>
       </div>
       <div className="pt20">
         <NgTable

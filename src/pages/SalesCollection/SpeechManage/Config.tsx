@@ -6,6 +6,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { AuthBtn } from 'src/components';
 export const sensitiveOptions = [
   { id: 0, name: '未知' },
   { id: 1, name: '是' },
@@ -280,50 +281,56 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       render: (value, record: SpeechProps, index: number) => {
         return (
           <Space className="spaceWrap">
-            <Button disabled={record.status === 1} type="link" onClick={() => handleEdit(record)}>
-              编辑
-            </Button>
-            {(index !== 0 || (pagination.current === 1 && index !== 0) || pagination.current !== 1) && (
-              <Button
-                disabled={
-                  !isNew ||
-                  lastCategory?.lastLevel !== 1 ||
-                  content !== '' ||
-                  contentType !== '' ||
-                  sensitive !== '' ||
-                  status !== '' ||
-                  updateBeginTime !== '' ||
-                  updateEndTime !== '' ||
-                  tip !== ''
-                }
-                type="link"
-                onClick={() => handleSort(record, -1)}
-              >
-                上移
+            <AuthBtn path="/edit">
+              <Button disabled={record.status === 1} type="link" onClick={() => handleEdit(record)}>
+                编辑
               </Button>
-            )}
-            {(pagination.current - 1) * pagination.pageSize + index + 1 !== pagination.total && (
-              <Button
-                disabled={
-                  !isNew ||
-                  lastCategory?.lastLevel !== 1 ||
-                  content !== '' ||
-                  contentType !== '' ||
-                  sensitive !== '' ||
-                  status !== '' ||
-                  updateBeginTime !== '' ||
-                  updateEndTime !== '' ||
-                  tip !== ''
-                }
-                type="link"
-                onClick={() => handleSort(record, 1)}
-              >
-                下移
+            </AuthBtn>
+            <AuthBtn path="/sort">
+              {(index !== 0 || (pagination.current === 1 && index !== 0) || pagination.current !== 1) && (
+                <Button
+                  disabled={
+                    !isNew ||
+                    lastCategory?.lastLevel !== 1 ||
+                    content !== '' ||
+                    contentType !== '' ||
+                    sensitive !== '' ||
+                    status !== '' ||
+                    updateBeginTime !== '' ||
+                    updateEndTime !== '' ||
+                    tip !== ''
+                  }
+                  type="link"
+                  onClick={() => handleSort(record, -1)}
+                >
+                  上移
+                </Button>
+              )}
+              {(pagination.current - 1) * pagination.pageSize + index + 1 !== pagination.total && (
+                <Button
+                  disabled={
+                    !isNew ||
+                    lastCategory?.lastLevel !== 1 ||
+                    content !== '' ||
+                    contentType !== '' ||
+                    sensitive !== '' ||
+                    status !== '' ||
+                    updateBeginTime !== '' ||
+                    updateEndTime !== '' ||
+                    tip !== ''
+                  }
+                  type="link"
+                  onClick={() => handleSort(record, 1)}
+                >
+                  下移
+                </Button>
+              )}
+            </AuthBtn>
+            <AuthBtn path="/set">
+              <Button type="link" onClick={() => setRight(record)}>
+                配置可见范围
               </Button>
-            )}
-            <Button type="link" onClick={() => setRight(record)}>
-              配置可见范围
-            </Button>
+            </AuthBtn>
           </Space>
         );
       }

@@ -5,7 +5,7 @@ import { TableColumns, TablePagination } from './Config';
 import { requestProviderPhone, requestGetProviderPhoneList } from 'src/apis/pointsMall';
 import { IPointsProvideList } from 'src/utils/interface';
 import { Context } from 'src/store';
-import { NgTable } from 'src/components';
+import { AuthBtn, NgTable } from 'src/components';
 import style from './style.module.less';
 
 interface IPonitsList {
@@ -51,9 +51,11 @@ const ProvideSuperprize: React.FC = () => {
   }, [paginationParam]);
   return (
     <div className={style.wrap}>
-      <Button className={style.provideAllBtn} type="primary" onClick={clickSendPhoneHandle}>
-        一键发放大奖
-      </Button>
+      <AuthBtn path="/edit">
+        <Button className={style.provideAllBtn} type="primary" onClick={clickSendPhoneHandle}>
+          一键发放大奖
+        </Button>
+      </AuthBtn>
       <NgTable
         className={style.tableWrap}
         setRowKey={(record: any) => record.sendTime}

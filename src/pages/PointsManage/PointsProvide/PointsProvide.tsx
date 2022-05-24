@@ -1,7 +1,7 @@
 import React, { Key, useContext, useEffect, useState } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
 import { Form, Space, Input, Select, Button, DatePicker, message, TreeSelect, Switch, InputNumber } from 'antd';
-import { NgTable } from 'src/components';
+import { AuthBtn, NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import {
   getPointsSendConfig,
@@ -213,75 +213,83 @@ const PointsProvide: React.FC = () => {
   return (
     <div className={style.wrap}>
       <Form name="base" className={style.form} layout="inline" form={form} onReset={onSearchHandle}>
-        <Space className={style.antSpace}>
-          <Form.Item className={style.label} name="staffName" label="客户经理姓名：">
-            <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />
-          </Form.Item>
-          <Form.Item name="deptIds" label="部门">
-            <TreeSelect
-              virtual={false}
-              fieldNames={{ label: 'deptName', value: 'deptId', children: 'children' }}
-              className={style.treeSelect}
-              dropdownClassName={style.treeSelectDropdown}
-              multiple
-              showCheckedStrategy={SHOW_ALL}
-              allowClear
-              placeholder="请选择部门"
-              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-              loadData={onLoadData}
-              treeData={treeData}
-            />
-          </Form.Item>
-        </Space>
-        <Space className={style.antBtnSpace}>
-          <Space size="small">
-            <Form.Item
-              className={style.label}
-              name="date"
-              label="日期："
-              initialValue={[moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')]}
-            >
-              <RangePicker style={{ width: 280 }} disabledDate={disabledDate} />
+        <AuthBtn path="/query">
+          <Space className={style.antSpace}>
+            <Form.Item className={style.label} name="staffName" label="客户经理姓名：">
+              <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 290 }} />
             </Form.Item>
-            <Form.Item className={style.label} name="isBlackClient" label="是否有黑名单客户：">
-              <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
-                {isBlackClientList.map((item) => (
-                  <Select.Option key={item.value} value={item.value}>
-                    {item.label}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item className={style.label} name="sendStatus" label="积分发放状态：">
-              <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
-                {sendStatusList.map((item) => (
-                  <Select.Option key={item.value} value={item.value}>
-                    {item.label}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item style={{ width: 186 }}>
-              <Button className={style.searchBtn} type="primary" onClick={onSearchHandle} disabled={isLoading}>
-                查询
-              </Button>
-              <Button className={style.resetBtn} htmlType="reset" disabled={isLoading}>
-                重置
-              </Button>
+            <Form.Item name="deptIds" label="部门">
+              <TreeSelect
+                virtual={false}
+                fieldNames={{ label: 'deptName', value: 'deptId', children: 'children' }}
+                className={style.treeSelect}
+                dropdownClassName={style.treeSelectDropdown}
+                multiple
+                showCheckedStrategy={SHOW_ALL}
+                allowClear
+                placeholder="请选择部门"
+                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                loadData={onLoadData}
+                treeData={treeData}
+              />
             </Form.Item>
           </Space>
+        </AuthBtn>
+        <Space className={style.antBtnSpace}>
+          <AuthBtn path="/query">
+            <Space size="small">
+              <Form.Item
+                className={style.label}
+                name="date"
+                label="日期："
+                initialValue={[moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')]}
+              >
+                <RangePicker style={{ width: 280 }} disabledDate={disabledDate} />
+              </Form.Item>
+              <Form.Item className={style.label} name="isBlackClient" label="是否有黑名单客户：">
+                <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
+                  {isBlackClientList.map((item) => (
+                    <Select.Option key={item.value} value={item.value}>
+                      {item.label}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item className={style.label} name="sendStatus" label="积分发放状态：">
+                <Select placeholder="待选择" className={style.selectBox} allowClear style={{ width: 180 }}>
+                  {sendStatusList.map((item) => (
+                    <Select.Option key={item.value} value={item.value}>
+                      {item.label}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item style={{ width: 186 }}>
+                <Button className={style.searchBtn} type="primary" onClick={onSearchHandle} disabled={isLoading}>
+                  查询
+                </Button>
+                <Button className={style.resetBtn} htmlType="reset" disabled={isLoading}>
+                  重置
+                </Button>
+              </Form.Item>
+            </Space>
+          </AuthBtn>
           <Space size={10}>
-            <Button
-              shape="round"
-              type="primary"
-              onClick={clickSendAllPonitsHandle}
-              disabled={!!selectedRowKeys.length || allSendStatus || searchParam.sendStatus}
-            >
-              一键群发积分
-            </Button>
-            <Button type="primary" shape="round" onClick={showAutoSendWrap}>
-              积分自动发放配置
-            </Button>
+            <AuthBtn path="/providePoints">
+              <Button
+                shape="round"
+                type="primary"
+                onClick={clickSendAllPonitsHandle}
+                disabled={!!selectedRowKeys.length || allSendStatus || searchParam.sendStatus}
+              >
+                一键群发积分
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/autoProvide">
+              <Button type="primary" shape="round" onClick={showAutoSendWrap}>
+                积分自动发放配置
+              </Button>
+            </AuthBtn>
           </Space>
         </Space>
       </Form>
@@ -302,18 +310,20 @@ const PointsProvide: React.FC = () => {
           setDisabledColumnType
         })}
       />
-      {!!ponitsList.total && (
-        <div className={style.sendPonits}>
-          <Button
-            disabled={!selectedRowKeys.length}
-            type="primary"
-            className={style.sendPonitsBtn}
-            onClick={clickSendPonitsHandle}
-          >
-            发放积分
-          </Button>
-        </div>
-      )}
+      <AuthBtn path="/provide">
+        {!!ponitsList.total && (
+          <div className={style.sendPonits}>
+            <Button
+              disabled={!selectedRowKeys.length}
+              type="primary"
+              className={style.sendPonitsBtn}
+              onClick={clickSendPonitsHandle}
+            >
+              发放积分
+            </Button>
+          </div>
+        )}
+      </AuthBtn>
       {/* 积分详情 */}
       <PonitsDetail ponitsParam={ponitsParam} setPonitsParam={setPonitsParam} />
 

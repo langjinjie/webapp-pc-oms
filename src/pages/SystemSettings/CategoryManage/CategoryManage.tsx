@@ -16,7 +16,7 @@ import {
 
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { Icon } from 'src/components';
+import { AuthBtn, Icon } from 'src/components';
 import { Context } from 'src/store';
 import { Tabs, ChildrenCategory } from 'src/pages/SystemSettings/component/index';
 import classNames from 'classnames';
@@ -25,7 +25,7 @@ import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
 import { useDocumentTitle } from 'src/utils/base';
 
 const CategoryManage: React.FC = () => {
-  const { isMainCorp } = useContext(Context);
+  const { isMainCorp, btnList } = useContext(Context);
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [editType, setEditType] = useState('');
   const [typeList, setTypeList] = useState<IProductTypeItem[] | IPosterTypeItem[]>([]);
@@ -78,10 +78,15 @@ const CategoryManage: React.FC = () => {
   };
 
   // 开始拖拽
-  const onDragStart = ({ source, type }: DropResult) => setIsOnDrag(type + source.index);
+  const onDragStart = ({ source, type }: DropResult) => {
+    setIsOnDrag(type + source.index);
+  };
 
   // 拖拽结束
   const onDragEnd = async ({ source, destination, type }: DropResult) => {
+    if (!btnList.includes('/sort')) {
+      return null;
+    }
     setIsOnDrag('');
     if (source.index === destination?.index) return;
     if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
@@ -302,25 +307,34 @@ const CategoryManage: React.FC = () => {
                     >
                       <div className={style.typeName}>{item.name}</div>
                       <div className={style.operation}>
-                        {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
-                          <span data-edit={'edit'} className={style.edit} onClick={async () => handleEdit(item, null)}>
-                            编辑
-                          </span>
-                        )}
-                        {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
-                          <Popconfirm
-                            title={'删除分类后,素材将移至"其他"分类下'}
-                            visible={
-                              popconfirmVisible === ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
-                            }
-                            onConfirm={() => onConfirmHandle(item)}
-                            onCancel={() => setPopconfirmVisible('')}
-                          >
-                            <span className={style.delete} onClick={() => clickDeleteHandle(item)}>
-                              删除
+                        <AuthBtn path="/edit">
+                          {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
+                            <span
+                              data-edit={'edit'}
+                              className={style.edit}
+                              onClick={async () => handleEdit(item, null)}
+                            >
+                              编辑
                             </span>
-                          </Popconfirm>
-                        )}
+                          )}
+                        </AuthBtn>
+                        <AuthBtn path="/delete">
+                          {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
+                            <Popconfirm
+                              title={'删除分类后,素材将移至"其他"分类下'}
+                              visible={
+                                popconfirmVisible ===
+                                ((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id)
+                              }
+                              onConfirm={() => onConfirmHandle(item)}
+                              onCancel={() => setPopconfirmVisible('')}
+                            >
+                              <span className={style.delete} onClick={() => clickDeleteHandle(item)}>
+                                删除
+                              </span>
+                            </Popconfirm>
+                          )}
+                        </AuthBtn>
                         {item.name !== '其他' && item.categoryList && (
                           <span className={style.more} onClick={() => showChildrenTypeHandle(item)}>
                             <Icon
@@ -378,18 +392,20 @@ const CategoryManage: React.FC = () => {
                         clearInputTextHandle={clearInputTextHandle}
                       />
                     )}
-                    {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
-                      <Button
-                        className={classNames(style.addChilrenType, {
-                          [style.active]: !item.categoryList?.length
-                        })}
-                        icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
-                        type={'primary'}
-                        onClick={() => addTypeHandle(item)}
-                      >
-                        新增
-                      </Button>
-                    )}
+                    <AuthBtn path="/add">
+                      {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
+                        <Button
+                          className={classNames(style.addChilrenType, {
+                            [style.active]: !item.categoryList?.length
+                          })}
+                          icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
+                          type={'primary'}
+                          onClick={() => addTypeHandle(item)}
+                        >
+                          新增
+                        </Button>
+                      )}
+                    </AuthBtn>
                   </div>
                 </Drag>
               ))}
@@ -397,17 +413,18 @@ const CategoryManage: React.FC = () => {
           </Drop>
         </DragDropContext>
       </div>
-
-      {(isMainCorp || tabIndex === 0) && (
-        <Button
-          className={style.addType}
-          icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
-          type={'primary'}
-          onClick={() => addTypeHandle()}
-        >
-          新增
-        </Button>
-      )}
+      <AuthBtn path="/add">
+        {(isMainCorp || tabIndex === 0) && (
+          <Button
+            className={style.addType}
+            icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
+            type={'primary'}
+            onClick={() => addTypeHandle()}
+          >
+            新增
+          </Button>
+        )}
+      </AuthBtn>
       <Modal
         wrapClassName={style.modalWrap}
         title={modalType}

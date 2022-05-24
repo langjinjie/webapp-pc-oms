@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDocumentTitle } from 'src/utils/base';
 import { Button, message, PaginationProps } from 'antd';
-import { Icon, NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, Icon, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, DeductProps, tableColumns } from './Config';
 import { RouteComponentProps } from 'react-router-dom';
 import { batchDeductIntegral, getWaitDeductPointsList } from 'src/apis/integral';
@@ -128,14 +128,18 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <div className="container">
       <div className="header flex justify-between">
-        <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
-        <div
-          className={classNames('flex fixed color-text-regular pointer', styles.rightLink)}
-          onClick={navigateToRecord}
-        >
-          <Icon className={styles.iconList} name="jifenshuoming" />
-          <span>积分扣减记录</span>
-        </div>
+        <AuthBtn path="/query">
+          <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
+        </AuthBtn>
+        <AuthBtn path="/view">
+          <div
+            className={classNames('flex fixed color-text-regular pointer', styles.rightLink)}
+            onClick={navigateToRecord}
+          >
+            <Icon className={styles.iconList} name="jifenshuoming" />
+            <span>积分扣减记录</span>
+          </div>
+        </AuthBtn>
       </div>
       <div className="pt20">
         <NgTable
@@ -151,17 +155,19 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
         />
         {dataSource.length > 0
           ? (
-          <div className={'operationWrap'}>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={selectedRowKeys.length === 0}
-              onClick={() => setVisible(true)}
-            >
-              批量扣减
-            </Button>
-          </div>
+          <AuthBtn path="/editBatch">
+            <div className={'operationWrap'}>
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={selectedRowKeys.length === 0}
+                onClick={() => setVisible(true)}
+              >
+                批量扣减
+              </Button>
+            </div>
+          </AuthBtn>
             )
           : null}
       </div>
