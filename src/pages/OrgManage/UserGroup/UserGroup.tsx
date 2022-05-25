@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { NgTable } from 'src/components';
+import { AuthBtn, NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
 import { IGroupItem } from 'src/utils/interface';
 import { requestGetGroupList } from 'src/apis/orgManage';
@@ -69,25 +69,29 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly }) => {
     <div className={style.wrap}>
       {readonly || (
         <>
-          <Button className={style.addBtn} icon={<PlusOutlined />} type="primary" onClick={addGroup}>
-            新增用户组
-          </Button>
-          <Form className={style.form} form={form} layout="inline" onFinish={onSearchHandle} onReset={onSearchHandle}>
-            <Form.Item name="groupName" label="用户组名称：">
-              <Input placeholder="待输入" allowClear style={{ width: 180 }} />
-            </Form.Item>
-            <Form.Item name="groupCode" label="用户组编号：">
-              <Input placeholder="待输入" allowClear style={{ width: 180 }} />
-            </Form.Item>
-            <Form.Item style={{ width: 186 }}>
-              <Button className={style.searchBtn} type="primary" htmlType="submit" disabled={loading}>
-                查询
-              </Button>
-              <Button className={style.resetBtn} htmlType="reset" disabled={loading}>
-                重置
-              </Button>
-            </Form.Item>
-          </Form>
+          <AuthBtn path="/add">
+            <Button className={style.addBtn} icon={<PlusOutlined />} type="primary" onClick={addGroup}>
+              新增用户组
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/query">
+            <Form className={style.form} form={form} layout="inline" onFinish={onSearchHandle} onReset={onSearchHandle}>
+              <Form.Item name="groupName" label="用户组名称：">
+                <Input placeholder="待输入" allowClear style={{ width: 180 }} />
+              </Form.Item>
+              <Form.Item name="groupCode" label="用户组编号：">
+                <Input placeholder="待输入" allowClear style={{ width: 180 }} />
+              </Form.Item>
+              <Form.Item style={{ width: 186 }}>
+                <Button className={style.searchBtn} type="primary" htmlType="submit" disabled={loading}>
+                  查询
+                </Button>
+                <Button className={style.resetBtn} htmlType="reset" disabled={loading}>
+                  重置
+                </Button>
+              </Form.Item>
+            </Form>
+          </AuthBtn>
         </>
       )}
       <NgTable

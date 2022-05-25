@@ -71,7 +71,9 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
   const getDetail = async () => {
     setLoading(true);
     const res = await requesetGetRoleList({ roleType, ...searchParam, ...paginationParam });
-    setRoleList(res);
+    if (res) {
+      setRoleList(res);
+    }
     setLoading(false);
   };
   // 提交

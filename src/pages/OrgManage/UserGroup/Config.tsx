@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 // import { Context } from 'src/store';
 
 import style from './style.module.less';
+import { AuthBtn } from 'src/components';
 
 const TableColumns = (readonly?: boolean): ColumnType<any>[] => {
   // const { setConfirmModalParam } =
@@ -41,14 +42,18 @@ const TableColumns = (readonly?: boolean): ColumnType<any>[] => {
       render (row: any) {
         return (
           <>
-            <span className={style.check} onClick={() => viewGroup(row.groupId)}>
-              查看
-            </span>
-            {readonly || (
-              <span className={style.modifyGroup} onClick={() => editGroup(row.groupId)}>
-                修改用户组
+            <AuthBtn path="/view">
+              <span className={style.check} onClick={() => viewGroup(row.groupId)}>
+                查看
               </span>
-            )}
+            </AuthBtn>
+            <AuthBtn path="/edit">
+              {readonly || (
+                <span className={style.modifyGroup} onClick={() => editGroup(row.groupId)}>
+                  修改用户组
+                </span>
+              )}
+            </AuthBtn>
           </>
         );
       }
