@@ -79,6 +79,11 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
     setSearchParam(values);
     setPaginationParam((param) => ({ ...param, pageNum: 1 }));
   };
+  // 重置
+  const onResetHandle = () => {
+    setSearchParam({});
+    setPaginationParam({ pageNum: 1, pageSize: 10 });
+  };
   // 新增角色
   const addRole = () => {
     history.push(roleTypeRouteList[roleType - 1]);
@@ -164,7 +169,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         </Button>
       </AuthBtn>
       <AuthBtn path="/query">
-        <Form className={style.form} onFinish={onFinishHandle}>
+        <Form className={style.form} onFinish={onFinishHandle} onReset={onResetHandle}>
           <Item name="name" label="角色名称">
             <Input className={style.input} placeholder="请输入" />
           </Item>

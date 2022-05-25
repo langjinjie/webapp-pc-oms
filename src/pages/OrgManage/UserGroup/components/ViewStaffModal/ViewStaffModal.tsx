@@ -66,7 +66,7 @@ const ViewStaffModal: React.FC<IViewStaffModal> = ({ modalParam, setModalParam }
       onOk={onOk}
       onCancel={onCancel}
       destroyOnClose
-      // {...(modalParam.add || { footer: null })}
+      footer={null}
     >
       <div className={style.contentWrap}>
         <Form className={style.form} form={form} layout={'inline'} onFinish={onFinish}>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
-import { ChoosePrivilege } from 'src/pages/RoleManage/components';
+import { ChoosePrivilege, DataRangeModal } from 'src/pages/RoleManage/components';
 import { requestGetRoleDetail, requestAddOrEditRole, requestAddDefaultMenuList } from 'src/apis/roleMange';
 import { URLSearchParams, tree2Arry } from 'src/utils/base';
 import { roleTypeRouteList } from 'src/utils/commonData';
-import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/SetUserRight';
+
 import style from './style.module.less';
 
 interface IRoleType {
@@ -15,7 +15,11 @@ interface IRoleType {
 const AddRole: React.FC<IRoleType> = ({ roleType }) => {
   const [readOnly, setReadOnly] = useState(false);
   const [addMenu, setAddMenu] = useState(false); // 默认角色只能添加菜单功能
-  const [rangeParam, setRangeParam] = useState<{ visible: boolean; groupId: string }>({ visible: false, groupId: '' });
+  const [rangeParam, setRangeParam] = useState<{ visible: boolean; groupId: string; defaultDataScope: 0 | 1 }>({
+    visible: false,
+    groupId: '',
+    defaultDataScope: 1
+  });
   const breadCrumbsPathList = ['后管端权限管理', 'B端权限管理', 'A端权限管理'];
   const history = useHistory();
   const location = useLocation();
@@ -34,13 +38,12 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
       if (res) {
         form.setFieldsValue({
           ...res,
-          dataScopeGroup: res.dataScopeGroup || roleType === 1 ? '全部组织' : '全部下级',
           menuList: tree2Arry(res.list)
             .filter((filterItem) => filterItem.enable)
             .map((mapItem) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId }))
         });
         setAddMenu(type === 'addMenu');
-        setRangeParam((param) => ({ ...param, groupId: res.dataScopeGroup }));
+        setRangeParam((param) => ({ ...param, groupId: res.dataScopeGroup, defaultDataScope: res.defaultDataScope }));
       }
     }
   };
@@ -53,17 +56,21 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
     setRangeParam((param) => ({ ...param, visible: false }));
   };
   // 管辖范围onOk
-  const rageScopeOnOk = (value: { isBatch?: boolean; groupId: string; isSet: boolean }) => {
-    setRangeParam((param) => ({ ...param, visible: false, groupId: value.groupId }));
+  const rageScopeOnOk = (value: { groupId: string; isSet: boolean; defaultDataScope: 0 | 1 }) => {
+    setRangeParam((param) => ({
+      ...param,
+      visible: false,
+      groupId: value.groupId,
+      defaultDataScope: value.defaultDataScope
+    }));
   };
   const onFinish = async (values: any) => {
-    console.log('values', values);
     const res = await (addMenu ? requestAddDefaultMenuList : requestAddOrEditRole)({
       ...values,
       menuList: values.menuList?.map((mapItem: any) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId })),
       roleType,
-      defaultDataScope: roleType === 2 ? (rangeParam.groupId ? 1 : 0) : 1, // A端后管端默认为1 B端需要配置
-      dataScopeGroup: roleType === 2 ? rangeParam.groupId : roleType === 1 ? '全部组织' : undefined, // A端不需要该字段 后管端为全部组织
+      defaultDataScope: rangeParam.defaultDataScope,
+      dataScopeGroup: rangeParam.groupId,
       roleId: URLSearchParams(location.search).roleId
     });
     if (res) {
@@ -124,22 +131,25 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
           </Item>
           {roleType !== 3 && (
             <Item className={style.formItem} label="管辖范围：">
-              {roleType !== 2 ? (
+              {roleType !== 2
+                ? (
                 <Input value={'全部组织'} disabled className={style.longInput} placeholder="请输入" />
-              ) : (
+                  )
+                : (
                 <div className={style.rangeWrap}>
-                  <div className={style.scope}>{rangeParam.groupId ? '已配置管辖范围' : '未配置管辖范围'}</div>
+                  <div className={style.scope}>
+                    {rangeParam.groupId
+                      ? '已配置管辖范围'
+                      : rangeParam.defaultDataScope
+                        ? '全部下级'
+                        : '已关闭管辖范围'}
+                  </div>
                   <Button className={style.setScropBtn} onClick={setRangeHangle}>
                     {rangeParam.groupId ? '修改' : '添加'}
                   </Button>
-                  <SetUserRight
-                    groupId={rangeParam.groupId}
-                    visible={rangeParam.visible}
-                    onOk={rageScopeOnOk}
-                    onCancel={rangeOnCancel}
-                  />
+                  <DataRangeModal {...rangeParam} onOk={rageScopeOnOk} onCancel={rangeOnCancel} />
                 </div>
-              )}
+                  )}
             </Item>
           )}
           <Item name={'menuList'}>
