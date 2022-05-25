@@ -63,7 +63,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
       title: '姓名',
       // width: 150,
       fixed: 'left',
-      render (row) {
+      render(row) {
         return (
           <span>
             {row.staffName}
@@ -75,14 +75,14 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
     {
       title: '部门',
       // width: 100,
-      render (row) {
+      render(row) {
         return <span>{row.deptName || UNKNOWN}</span>;
       }
     },
     {
       title: '职位',
       // width: 150,
-      render (row) {
+      render(row) {
         return <span>{row.position || UNKNOWN}</span>;
       }
     },
@@ -90,55 +90,55 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
     {
       title: '员工工号',
       // width: 100,
-      render (row) {
+      render(row) {
         return <span>{row.jobNumber || UNKNOWN}</span>;
       }
     },
     {
       title: '支公司',
       // width: 100,
-      render (row) {
+      render(row) {
         return <span>{row.resource || UNKNOWN}</span>;
       }
     },
     {
       title: '业务模式',
       // width: 100,
-      render (row) {
+      render(row) {
         return <span>{row.businessModel || UNKNOWN}</span>;
       }
     },
     {
       title: '市公司',
       // width: 150,
-      render (row) {
+      render(row) {
         return <span>{row.businessArea || UNKNOWN}</span>;
       }
     },
     {
       title: '省公司',
-      render (row) {
+      render(row) {
         return <span>{row.provinceCompany || UNKNOWN}</span>;
       }
     },
     {
       title: '办公职场',
       // width: 90,
-      render (row) {
+      render(row) {
         return <span>{row.officePlace || UNKNOWN}</span>;
       }
     },
 
     {
       title: '角色名称',
-      render (row) {
+      render(row) {
         return (
           <span
             dangerouslySetInnerHTML={{
               __html:
                 replaceEnter(
                   row.roles.split(';').reduce((prev: string, now: string, index: number) => {
-                    prev += index ? 'B端：' + now : 'A端：' + now + '\\n\\r';
+                    prev += index ? 'B端：' + now : 'A端：' + now + '\\n';
                     return prev;
                   }, '')
                 ) || UNKNOWN
@@ -150,21 +150,21 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
     {
       title: '账号开通时间',
       // width: 180,
-      render (row) {
+      render(row) {
         return <span>{row.accountStartTime || UNKNOWN}</span>;
       }
     },
     {
       title: '账号停止时间',
       // width: 180,
-      render (row) {
+      render(row) {
         return <span>{row.accountEndTime || UNKNOWN}</span>;
       }
     },
     {
       title: '状态',
       // width: 60,
-      render (row) {
+      render(row) {
         return <span>{row.isDeleted ? '离职' : '在职'}</span>;
       }
     },
@@ -172,7 +172,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
       title: '操作',
       // align: 'center',
       fixed: 'right',
-      render (row: any) {
+      render(row: any) {
         return (
           <>
             <AuthBtn path="/view">

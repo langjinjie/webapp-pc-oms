@@ -9,7 +9,7 @@ import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/S
 import style from './style.module.less';
 
 interface IRoleType {
-  roleType: 1 | 2 | 3;
+  roleType: 1 | 2 | 3; // 后管端 | B端 | A端
 }
 
 const AddRole: React.FC<IRoleType> = ({ roleType }) => {
@@ -57,12 +57,13 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
     setRangeParam((param) => ({ ...param, visible: false, groupId: value.groupId }));
   };
   const onFinish = async (values: any) => {
+    console.log('values', values);
     const res = await (addMenu ? requestAddDefaultMenuList : requestAddOrEditRole)({
       ...values,
-      menuList: values.menuList.map((mapItem: any) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId })),
+      menuList: values.menuList?.map((mapItem: any) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId })),
       roleType,
-      defaultDataScope: rangeParam.groupId ? 1 : 0,
-      dataScopeGroup: rangeParam.groupId,
+      defaultDataScope: roleType === 2 ? (rangeParam.groupId ? 1 : 0) : 1, // A端后管端默认为1 B端需要配置
+      dataScopeGroup: roleType === 2 ? rangeParam.groupId : roleType === 1 ? '全部组织' : undefined, // A端不需要该字段 后管端为全部组织
       roleId: URLSearchParams(location.search).roleId
     });
     if (res) {
@@ -122,16 +123,10 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
             />
           </Item>
           {roleType !== 3 && (
-            <Item
-              className={style.formItem}
-              label="管辖范围："
-              {...(roleType !== 2 && { initialValue: roleType === 1 ? '全部组织' : '全部下级' })}
-            >
-              {roleType !== 2
-                ? (
-                <Input disabled className={style.longInput} placeholder="请输入" />
-                  )
-                : (
+            <Item className={style.formItem} label="管辖范围：">
+              {roleType !== 2 ? (
+                <Input value={'全部组织'} disabled className={style.longInput} placeholder="请输入" />
+              ) : (
                 <div className={style.rangeWrap}>
                   <div className={style.scope}>{rangeParam.groupId ? '已配置管辖范围' : '未配置管辖范围'}</div>
                   <Button className={style.setScropBtn} onClick={setRangeHangle}>
@@ -144,7 +139,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
                     onCancel={rangeOnCancel}
                   />
                 </div>
-                  )}
+              )}
             </Item>
           )}
           <Item name={'menuList'}>
