@@ -46,10 +46,11 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly }) => {
   const onSearchHandle = (values: any) => {
     if (values.type === 'reset') {
       setSearchParam({ groupName: '', groupCode: '' });
+      setPaginationParam((param) => ({ ...param, pageNum: 1, pageSize: 10 }));
     } else {
       setSearchParam(values);
+      setPaginationParam((param) => ({ ...param, pageNum: 1 }));
     }
-    setPaginationParam((param) => ({ ...param, pageNum: 1 }));
   };
 
   const rowSelection = {

@@ -64,10 +64,11 @@ const TablePagination = (arg: { [key: string]: unknown }): { [key: string]: unkn
   };
   const pagination = {
     total,
-    current: paginationParam.pageNum
+    current: paginationParam.pageNum,
+    pageSize: paginationParam.pageSize
   };
-  const paginationChange = (current: number) => {
-    setPaginationParam((param) => ({ ...param, pageNum: current }));
+  const paginationChange = (current: number, pageSize: number) => {
+    setPaginationParam((param) => ({ ...param, pageNum: current, pageSize }));
   };
   return { pagination, paginationChange };
 };
