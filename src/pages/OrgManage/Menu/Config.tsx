@@ -174,11 +174,15 @@ export const setTableColumns = ({
                   编辑
                 </Button>
               </AuthBtn>
-              <AuthBtn path="/add">
-                <Button type="link" onClick={() => addSubMenu(record.menuId)}>
-                  添加
-                </Button>
-              </AuthBtn>
+              {/* 按钮下不可以在添加按钮 */}
+              {record.menuType !== 2 && (
+                <AuthBtn path="/add">
+                  <Button type="link" onClick={() => addSubMenu(record.menuId)}>
+                    添加
+                  </Button>
+                </AuthBtn>
+              )}
+
               <AuthBtn path="/close">
                 {record.enable === 1
                   ? (
