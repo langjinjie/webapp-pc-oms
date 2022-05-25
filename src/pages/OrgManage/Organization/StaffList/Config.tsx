@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN, replaceEnter } from 'src/utils/base';
-import { IStaffList } from 'src/utils/interface';
 import { Popconfirm } from 'antd';
 import { AuthBtn } from 'src/components';
 import { requestSetStaffOpstatus } from 'src/apis/orgManage';
@@ -39,16 +38,16 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
     await updateList?.();
   };
   // 定义单个激活/停用onfirem
-  const popOnconfirmHandle = async (row: IStaffList) => {
+  const popOnconfirmHandle = async (row: any) => {
     setPopconfirmVisible('');
     const { staffId } = row;
     updateStaffPpstatus([staffId]);
   };
   // 点击单行操作
-  const clickCurrentRowHandle = (row: IStaffList) => {
+  const clickCurrentRowHandle = (row: any) => {
     // 停用操作不可逆
-    if (row.accountStatus === '2') return;
-    setOpType(row.accountStatus === '4' ? 1 : 0);
+    if (row.status === 2) return;
+    setOpType(row.status === '4' ? 1 : 0);
     setPopconfirmVisible(row.staffId);
   };
   // 查看
@@ -171,7 +170,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
       fixed: 'right',
       render (row: any) {
         return (
-          <>
+          <span className={style.viewAndEdit}>
             <AuthBtn path="/view">
               <span className={style.view} onClick={() => viewHandle(row)}>
                 查看
@@ -179,21 +178,21 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
             </AuthBtn>
             <AuthBtn path="/operateStaff">
               <Popconfirm
-                title={'确认' + (row.status === '1' ? '停用' : '激活') + '该账号吗'}
+                title={'确认' + (row.status === 1 ? '停用' : '激活') + '该账号吗'}
                 visible={popconfirmVisible === row.staffId}
                 onConfirm={async () => popOnconfirmHandle(row)}
                 onCancel={() => setPopconfirmVisible('')}
               >
                 <span
                   key={row.staffId}
-                  className={classNames(style.edit, { [style.disabled]: row.status === '2' })}
+                  className={classNames(style.edit, { [style.disabled]: row.status === 2 })}
                   onClick={() => clickCurrentRowHandle(row)}
                 >
                   {accountStatusEdit2Name[row.status]}
                 </span>
               </Popconfirm>
             </AuthBtn>
-          </>
+          </span>
         );
       }
     }
