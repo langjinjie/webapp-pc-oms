@@ -156,6 +156,14 @@ ul {
   .ml((@i + 5));
 }
 .ml(5);
+// 上外边距 5->40px
+.mr(@i) when(@i<=40) {
+  .mr@{i} {
+    margin-right: @i + 0px;
+  }
+  .mr((@i + 5));
+}
+.mr(5);
 
 @bgColor_3078DB: #3078db;
 @color_fff: #fff;
@@ -692,6 +700,10 @@ ul {
 //
 .bold {
   font-weight: 500;
+}
+
+.italic {
+  font-style: italic;
 }
 
 .color-success {
