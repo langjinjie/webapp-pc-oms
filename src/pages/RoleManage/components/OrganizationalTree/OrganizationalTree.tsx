@@ -361,12 +361,12 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
                         className={style.name}
                         title={
                           item.name +
-                          (!item.staffId ? '（' + item.effCount + '）' : '') +
+                          (!item.staffId ? '（' + (item.effCount || item.staffCount) + '）' : '') +
                           (item.staffId ? '（' + item.deptName + '）' : '')
                         }
                       >
                         {item.name +
-                          (!item.staffId ? '（' + item.effCount + '）' : '') +
+                          (!item.staffId ? '（' + (item.effCount || item.staffCount) + '）' : '') +
                           (item.staffId ? '（' + item.deptName + '）' : '')}
                       </span>
                       <Icon

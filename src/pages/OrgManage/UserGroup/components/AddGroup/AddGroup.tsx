@@ -36,7 +36,7 @@ const AddGroup: React.FC = () => {
   // 提交新增
   const onFinish = async (values: any) => {
     const groupId = URLSearchParams(location.search).groupId;
-    const param = { ...values, filterId: modalParam.filterId, groupId };
+    const param = { ...values, filterId: modalParam.add ? modalParam.filterId : undefined, groupId };
     const res = await requestAddGroup(param);
     if (res) {
       message.success(groupId ? '用户组编辑成功' : '用户组添加成功');
