@@ -44,6 +44,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
   const [isForceSet, setIsForceSet] = useState(false);
   // const [,setIsDiff] = useState(false);
   const handleSubmit = () => {
+    setOriginValues(null);
     rightForm.validateFields().then((values) => {
       const { group1, group2, isSet, groupType } = values;
       onOk?.({ groupId: groupType === 1 ? group1?.groupId : group2?.groupId, isSet, isBatch });
@@ -151,6 +152,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
   };
 
   const handleCancel = (e: any) => {
+    setOriginValues(null);
     setFormValues({
       isSet: 0,
       groupType: 1,
@@ -158,7 +160,6 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
       group2: undefined
     });
     onCancel?.(e);
-    setOriginValues(null);
   };
 
   const staffCount = useMemo(() => {
@@ -246,10 +247,14 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
                     : (
                     <>
                       {originValues?.deptList?.map((item: any) => (
-                        <Tag key={item.deptId}>{item.deptName}</Tag>
+                        <Tag className={styles.tag} key={item.deptId}>
+                          {item.deptName}
+                        </Tag>
                       ))}
                       {originValues?.staffList?.map((item: any) => (
-                        <Tag key={item.staffId}>{item.staffName}</Tag>
+                        <Tag className={styles.tag} key={item.staffId}>
+                          {item.staffName}
+                        </Tag>
                       ))}
                       {!originValues?.deptList && !originValues?.staffList && '全部人员'}
                     </>

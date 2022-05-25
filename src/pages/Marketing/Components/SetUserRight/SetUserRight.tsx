@@ -5,7 +5,6 @@ import UserGroupModal from '../ModalSetUserRight/UserGroupModal';
 import UserOrgModal from '../ModalSetUserRight/UserOrgModal';
 
 import { ViewStaffModal } from 'src/pages/OrgManage/UserGroup/components';
-
 interface SetUserRightProps {
   onChange?: (groupId: string | undefined) => void;
   value?: string;
@@ -123,10 +122,14 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
                 : (
                 <>
                   {originValues?.deptList?.map((item: any) => (
-                    <Tag key={item.deptId}>{item.deptName}</Tag>
+                    <Tag className="mb5" key={item.deptId}>
+                      {item.deptName}
+                    </Tag>
                   ))}
                   {originValues?.staffList?.map((item: any) => (
-                    <Tag key={item.staffId}>{item.staffName}</Tag>
+                    <Tag className="mb5" key={item.staffId}>
+                      {item.staffName}
+                    </Tag>
                   ))}
                   {!originValues?.deptList && !originValues?.staffList && '全部人员'}
                 </>

@@ -124,9 +124,11 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
           </Item>
           {roleType !== 3 && (
             <Item className={style.formItem} label="管辖范围：">
-              {roleType !== 2 ? (
+              {roleType !== 2
+                ? (
                 <Input value={'全部组织'} disabled className={style.longInput} placeholder="请输入" />
-              ) : (
+                  )
+                : (
                 <div className={style.rangeWrap}>
                   <div className={style.scope}>{rangeParam.groupId ? '已配置管辖范围' : '未配置管辖范围'}</div>
                   <Button className={style.setScropBtn} onClick={setRangeHangle}>
@@ -139,7 +141,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
                     onCancel={rangeOnCancel}
                   />
                 </div>
-              )}
+                  )}
             </Item>
           )}
           <Item name={'menuList'}>

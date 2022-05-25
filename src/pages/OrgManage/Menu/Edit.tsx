@@ -9,9 +9,12 @@ interface S {
   type: string;
   pathList?: MenuProps[];
 }
+
 const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, location }) => {
   const [menu, setMenu] = useState<MenuProps>();
-  const [formParams, setFormParams] = useState<MenuProps>();
+  const [formParams, setFormParams] = useState<Partial<MenuProps>>({
+    menuType: 1
+  });
   const [menuForm] = Form.useForm();
   useEffect(() => {
     const { sysType, type, pathList } = location.state;
@@ -106,7 +109,7 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
           </Form.Item>
 
           <Form.Item label="菜单类型" name={'menuType'} rules={[{ required: true }]}>
-            <Radio.Group disabled={menu?.writeType === 'edit' || !menu?.pathList} defaultValue={1}>
+            <Radio.Group disabled={menu?.writeType === 'edit' || !menu?.pathList}>
               <Radio value={1}>菜单</Radio>
               <Radio value={2}>按钮</Radio>
             </Radio.Group>
@@ -122,7 +125,7 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
               </Radio.Group>
             </Form.Item>
           )}
-          <Form.Item label={formParams?.menuType === 2 ? '按钮级别' : '菜单级别'}>{menu?.parentTitle}</Form.Item>
+          <Form.Item label={'上级路径'}>{menu?.parentTitle}</Form.Item>
           <Form.Item
             label={formParams?.menuType === 2 ? '按钮名称' : '菜单名称'}
             name={'menuName'}
@@ -139,7 +142,7 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
               <Form.Item label="菜单图标" name={'menuIcon'}>
                 <Input placeholder="请输入" className="width480" />
               </Form.Item>
-              <Form.Item label="排序" extra="序号越低，排序越靠前" name={'sortId'}>
+              <Form.Item label="排序" extra="序号越低，排序越靠前" name={'sortId'} rules={[{ required: true }]}>
                 <InputNumber controls={false} min={0} placeholder="请输入" />
               </Form.Item>
               <Form.Item label="菜单编码权限标识" name={'menuCode'}>

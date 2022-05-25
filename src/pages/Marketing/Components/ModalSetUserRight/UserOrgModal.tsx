@@ -1,16 +1,15 @@
 import { Button, Tag } from 'antd';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { createSingleGroup } from 'src/apis/marketing';
 import { NgModal } from 'src/components';
 import { OrganizationalTree } from 'src/pages/RoleManage/components';
-
+import styles from './style.module.less';
 interface UserGroupModalProps extends Omit<React.ComponentProps<typeof NgModal>, 'onOk'> {
   onChange?: (item: any) => void;
   value?: { groupType: number; [prop: string]: any };
 }
 const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValue }) => {
   const [visibleUserGroup, setVisibleUserGroup] = useState(false);
-
   const handleOnOK = async (values?: any[]) => {
     if (values) {
       const staffList: any[] = [];
@@ -36,26 +35,28 @@ const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValu
   const handleShowSelectModal = () => {
     setVisibleUserGroup(true);
   };
+  const tagList = useMemo(() => {
+    return propValue ? [...propValue?.staffList, ...propValue.deptList] : [];
+  }, [propValue]);
   return (
     <>
-      {propValue?.deptList || propValue?.staffList
-        ? (
-        <>
-          {propValue?.deptList?.map((item: any, index: number) => {
-            return <Tag key={index}>{item.staffName || item.deptName}</Tag>;
-          })}
-          {propValue?.staffList?.map((item: any, index: number) => {
-            return <Tag key={index}>{item.staffName || item.deptName}</Tag>;
-          })}
-        </>
+      {tagList.map((item: any, index: number) => {
+        return (
+          index < 3 && (
+            <Tag className={styles.tag} key={index}>
+              {item.staffName || item.deptName}
+            </Tag>
           )
-        : null}
+        );
+      })}
+      {tagList.length > 3 && <Tag title="点击修改可见范围可以查看全部人员">...</Tag>}
 
       <OrganizationalTree
         showStaff
         params={{
           visible: visibleUserGroup
         }}
+        value={tagList}
         onCancel={() => setVisibleUserGroup(false)}
         onOk={handleOnOK}
       />
