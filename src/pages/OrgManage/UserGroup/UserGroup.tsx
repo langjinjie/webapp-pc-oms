@@ -6,6 +6,7 @@ import { TableColumns, TablePagination } from './Config';
 import { IGroupItem } from 'src/utils/interface';
 import { requestGetGroupList } from 'src/apis/orgManage';
 import { useHistory } from 'react-router-dom';
+import { useDocumentTitle } from 'src/utils/base';
 import style from './style.module.less';
 interface IGroupList {
   total: number;
@@ -63,6 +64,7 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly, selectedKey }) 
       name: record.name
     })
   };
+  useDocumentTitle('机构管理-用户组管理');
   useEffect(() => {
     getGroupList();
   }, [paginationParam]);

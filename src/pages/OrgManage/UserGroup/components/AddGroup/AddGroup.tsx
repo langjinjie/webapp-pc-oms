@@ -36,7 +36,7 @@ const AddGroup: React.FC = () => {
   // 提交新增
   const onFinish = async (values: any) => {
     const groupId = URLSearchParams(location.search).groupId;
-    const param = { ...values, filterId: modalParam.filterId, groupId };
+    const param = { ...values, filterId: modalParam.add ? modalParam.filterId : undefined, groupId };
     const res = await requestAddGroup(param);
     if (res) {
       message.success(groupId ? '用户组编辑成功' : '用户组添加成功');
@@ -94,7 +94,7 @@ const AddGroup: React.FC = () => {
       <Form form={form} className={style.form} onFinish={onFinish}>
         <div className={style.title}>用户组基本信息</div>
         <Form.Item name="groupName" label="用户组名称：" required>
-          <Input placeholder="待输入" allowClear style={{ width: 600 }} showCount maxLength={100} readOnly={readOnly} />
+          <Input placeholder="待输入" allowClear style={{ width: 300 }} showCount maxLength={30} readOnly={readOnly} />
         </Form.Item>
         <Form.Item name="desc" label="用户组说明：" required>
           <Input.TextArea
@@ -102,7 +102,7 @@ const AddGroup: React.FC = () => {
             placeholder="待输入"
             allowClear
             showCount
-            maxLength={300}
+            maxLength={100}
             style={{ width: 600 }}
             readOnly={readOnly}
           />

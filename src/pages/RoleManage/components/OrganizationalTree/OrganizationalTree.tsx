@@ -200,8 +200,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     if (res) {
       const list = [...res.staffList, ...(res.deptList || [])];
       list.forEach((item: any) => {
-        item.id = item.deptId || item.staffId;
-        item.name = item.deptName || item.staffName;
+        item.id = item.staffId || item.deptId;
+        item.name = item.staffName || item.deptName;
       });
       setTreeSearchList(list);
     }
@@ -298,7 +298,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         <div className={style.treeWrap}>
           <Input
             className={style.searchTree}
-            placeholder={'搜索成员、部门'}
+            placeholder={showStaff ? (selectedDept ? '搜索成员、部门' : '搜索员工') : '搜索部门'}
             onChange={debounce(treeSearchOnChange, 500)}
             addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
           />
@@ -345,7 +345,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         </div>
         <div className={style.selectedWrap}>
           <Input
-            placeholder={'搜索成员、部门'}
+            placeholder={showStaff ? (selectedDept ? '搜索成员、部门' : '搜索员工') : '搜索部门'}
             onChange={debounce(selectedOnchange, 500)}
             addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
           />
@@ -361,12 +361,12 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
                         className={style.name}
                         title={
                           item.name +
-                          (!item.staffId ? '（' + item.effCount + '）' : '') +
+                          (!item.staffId ? '（' + (item.effCount || item.staffCount) + '）' : '') +
                           (item.staffId ? '（' + item.deptName + '）' : '')
                         }
                       >
                         {item.name +
-                          (!item.staffId ? '（' + item.effCount + '）' : '') +
+                          (!item.staffId ? '（' + (item.effCount || item.staffCount) + '）' : '') +
                           (item.staffId ? '（' + item.deptName + '）' : '')}
                       </span>
                       <Icon

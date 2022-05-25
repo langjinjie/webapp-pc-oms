@@ -5,7 +5,7 @@ import { useAsync } from 'src/utils/use-async';
 // import moment from 'moment';
 import { getExclusiveList, getExclusiveTypeList, setPointsOfExclusive } from 'src/apis/pointsMall';
 import { NgModal } from 'src/components/NgModal/NgModal';
-
+import { useDocumentTitle } from 'src/utils/base';
 import styles from './style.module.less';
 import { Form, Image, Input, InputNumber, message, Modal, PaginationProps } from 'antd';
 import { OptionProps } from 'src/components/SearchComponent/SearchComponent';
@@ -81,6 +81,7 @@ const ExclusiveList: React.FC = () => {
       setExclusiveList(typeList || []);
     }
   };
+  useDocumentTitle('积分管理-专属奖励管理');
   useEffect(() => {
     getTaskTypeList();
     getList();

@@ -145,8 +145,8 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
         searchList = res.deptList || [];
       }
       searchList.forEach((item: any) => {
-        item.id = item.deptId || item.staffId;
-        item.name = item.deptName || item.staffName;
+        item.id = item.staffId || item.deptId;
+        item.name = item.staffName || item.deptName;
       });
       setSearchList(searchList);
     } else {

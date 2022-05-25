@@ -19,6 +19,7 @@ import {
 import { exportFile } from 'src/utils/base';
 import { Context } from 'src/store';
 import { IOrganizationItem } from 'src/utils/interface';
+
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
@@ -520,7 +521,6 @@ const Organization: React.FC = () => {
       setShowDepart(false);
     }
   };
-
   useEffect(() => {
     !transferVisible && setTransferId('');
   }, [transferVisible]);
