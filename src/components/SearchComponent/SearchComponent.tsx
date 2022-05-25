@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'antd';
 import style from './style.module.less';
-import { CascaderOptionType, CascaderValueType } from 'antd/lib/cascader';
+import { DefaultOptionType } from 'antd/lib/cascader';
 import { NamePath } from 'rc-field-form/lib/interface';
 import classNames from 'classnames';
 import { Moment } from 'moment';
@@ -29,6 +29,7 @@ export interface SearchCol {
   };
 }
 
+type SingleValueType = (string | number)[];
 interface SearchComponentProps {
   searchCols: SearchCol[];
   isInline?: boolean;
@@ -36,9 +37,9 @@ interface SearchComponentProps {
   onSearch: (params: any) => void;
   onReset?: () => void;
   onValuesChange?: (changeValues: any, values: any) => void;
-  loadData?: ((selectedOptions?: CascaderOptionType[] | undefined) => void) | undefined;
+  loadData?: ((selectedOptions?: DefaultOptionType[] | undefined) => void) | undefined;
   onChangeOfCascader?:
-    | ((value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => void)
+    | ((value: SingleValueType, selectedOptions?: DefaultOptionType[] | undefined) => void)
     | undefined;
   defaultValues?: any;
   className?: string;
@@ -66,7 +67,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     }
   };
   // 对数据进行处理
-  const onChange = (value: CascaderValueType, selectedOptions?: CascaderOptionType[] | undefined) => {
+  const onChange = (value: SingleValueType, selectedOptions?: DefaultOptionType[] | undefined) => {
     if (selectedOptions) {
       const lastOption = selectedOptions[selectedOptions?.length - 1];
       const fields: NamePath[] = [];
@@ -93,7 +94,6 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     if (rangePickerName) {
       const rangePickerData: [Moment, Moment] = values[rangePickerName];
       if (rangePickerData?.length > 0) {
-        console.log('');
         const beginTime = rangePickerData[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
         const endTime = rangePickerData[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
         values.beginTime = beginTime;
@@ -192,7 +192,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder} style={{ width: col.width }} allowClear />
+                    <Input placeholder={col.placeholder as string} style={{ width: col.width }} allowClear />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (
@@ -220,7 +220,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder} style={{ width: col.width }} allowClear />
+                    <Input placeholder={col.placeholder as string} style={{ width: col.width }} allowClear />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (

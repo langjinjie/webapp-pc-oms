@@ -25,7 +25,15 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   });
 
   const getGroupDetail = async () => {
-    if (!value) return false;
+    console.log(value);
+    if (!value) {
+      return form.setFieldsValue({
+        groupType: 1,
+        isSet: 0,
+        group1: undefined,
+        group2: undefined
+      });
+    }
     const res = await getUserGroup({ groupId: value });
     const { groupType } = res;
     form.setFieldsValue({
@@ -46,9 +54,7 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   };
 
   useEffect(() => {
-    if (value) {
-      getGroupDetail();
-    }
+    getGroupDetail();
   }, [value]);
 
   const onChangeWithGroupType = (groupType: number) => {
@@ -86,73 +92,71 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
 
   return (
     <>
-      <Form.Item required>
-        <Form.Item name={'isSet'}>
-          <Radio.Group defaultValue={0} onChange={(e) => onOpenChange(e.target.value)}>
-            <Radio value={0}>关闭</Radio>
-            <Radio value={1}>开启</Radio>
-          </Radio.Group>
-        </Form.Item>
-        {formValues.isSet
-          ? (
-          <>
-            <Form.Item name={'groupType'}>
-              <Radio.Group onChange={(e) => onChangeWithGroupType(e.target.value)}>
-                <Radio value={1}>按照用户组选择</Radio>
-                <Radio value={2}>按照组织架构选择</Radio>
-              </Radio.Group>
+      <Form.Item name={'isSet'}>
+        <Radio.Group onChange={(e) => onOpenChange(e.target.value)}>
+          <Radio value={0}>关闭</Radio>
+          <Radio value={1}>开启</Radio>
+        </Radio.Group>
+      </Form.Item>
+      {formValues.isSet
+        ? (
+        <>
+          <Form.Item name={'groupType'}>
+            <Radio.Group onChange={(e) => onChangeWithGroupType(e.target.value)}>
+              <Radio value={1}>按照用户组选择</Radio>
+              <Radio value={2}>按照组织架构选择</Radio>
+            </Radio.Group>
+          </Form.Item>
+          {formValues.groupType === 1
+            ? (
+            <Form.Item name={'group1'} key="groupModal">
+              <UserGroupModal onChange={handleModalChange} />
             </Form.Item>
-            {formValues.groupType === 1
+              )
+            : (
+            <Form.Item name={'group2'} key="orgModal">
+              <UserOrgModal onChange={handleModalChange} />
+            </Form.Item>
+              )}
+          <Form.Item>
+            上次选择的可见范围为：
+            {originValues?.groupType === 1
               ? (
-              <Form.Item name={'group1'} key="groupModal">
-                <UserGroupModal onChange={handleModalChange} />
-              </Form.Item>
+                  originValues?.groupName || '全部人员'
                 )
               : (
-              <Form.Item name={'group2'} key="orgModal">
-                <UserOrgModal onChange={handleModalChange} />
-              </Form.Item>
+              <>
+                {originValues?.deptList?.map((item: any) => (
+                  <Tag className="mb5" key={item.deptId}>
+                    {item.deptName}
+                  </Tag>
+                ))}
+                {originValues?.staffList?.map((item: any) => (
+                  <Tag className="mb5" key={item.staffId}>
+                    {item.staffName}
+                  </Tag>
+                ))}
+                {!originValues?.deptList && !originValues?.staffList && '全部人员'}
+              </>
                 )}
-            <Form.Item>
-              上次选择的可见范围为：
-              {originValues?.groupType === 1
-                ? (
-                    originValues?.groupName || '全部人员'
-                  )
-                : (
-                <>
-                  {originValues?.deptList?.map((item: any) => (
-                    <Tag className="mb5" key={item.deptId}>
-                      {item.deptName}
-                    </Tag>
-                  ))}
-                  {originValues?.staffList?.map((item: any) => (
-                    <Tag className="mb5" key={item.staffId}>
-                      {item.staffName}
-                    </Tag>
-                  ))}
-                  {!originValues?.deptList && !originValues?.staffList && '全部人员'}
-                </>
-                  )}
-            </Form.Item>
-            <Form.Item>
-              <span>
-                截止目前时间：此用户组共计人数：
-                {staffCount}人
-              </span>
-              {staffCount > 0 && (
-                <Button
-                  type="link"
-                  onClick={() => setVisibleStaffList((visibleStaffList) => ({ ...visibleStaffList, visible: true }))}
-                >
-                  查看人员
-                </Button>
-              )}
-            </Form.Item>
-          </>
-            )
-          : null}
-      </Form.Item>
+          </Form.Item>
+          <Form.Item>
+            <span>
+              截止目前时间：此用户组共计人数：
+              {staffCount}人
+            </span>
+            {staffCount > 0 && (
+              <Button
+                type="link"
+                onClick={() => setVisibleStaffList((visibleStaffList) => ({ ...visibleStaffList, visible: true }))}
+              >
+                查看人员
+              </Button>
+            )}
+          </Form.Item>
+        </>
+          )
+        : null}
       <ViewStaffModal
         modalParam={{
           visible: visibleStaffList.visible,

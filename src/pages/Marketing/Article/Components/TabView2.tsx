@@ -297,6 +297,11 @@ const TabView2: React.FC = () => {
             ))}
           </Select>
         </Form.Item>
+
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={form} />
+        </Form.Item>
+
         <Form.Item name={'recommendType'} label="推荐类型">
           <Radio.Group onChange={onRecommendTypeChange}>
             {recommendTypeList.map((item) => (
@@ -306,9 +311,7 @@ const TabView2: React.FC = () => {
             ))}
           </Radio.Group>
         </Form.Item>
-        <Form.Item label="可见范围设置" name={'groupId'}>
-          <SetUserRightFormItem form={form} />
-        </Form.Item>
+
         <Form.Item
           className={style.customerAddWrap}
           labelCol={{ span: 3 }}
@@ -417,7 +420,7 @@ const TabView2: React.FC = () => {
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 3 }}>
-          <Button type="primary" shape="round" htmlType="submit" loading={isSubmitting}>
+          <Button type="primary" shape="round" style={{ width: '128px' }} htmlType="submit" loading={isSubmitting}>
             添加
           </Button>
         </Form.Item>
