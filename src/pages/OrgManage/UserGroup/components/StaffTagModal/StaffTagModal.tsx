@@ -6,7 +6,7 @@ import style from './style.module.less';
 import classNames from 'classnames';
 
 interface IUserTagModal {
-  value?: { ruleType: number; tagValues: string }[];
+  value?: { ruleType: number; tagValues: string; tagName: string }[];
   onChange?: (value: { ruleType: number; tagValues: string }[]) => void;
 }
 
@@ -15,7 +15,7 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
   const [staffTagList, setStaffTagList] = useState<
     { ruleType: number; tagName: string; tagValues: string; sortId: number }[]
   >([]);
-  const [selectedList, setSelectedList] = useState<{ ruleType: number; tagValues: string }[]>([]);
+  const [selectedList, setSelectedList] = useState<{ ruleType: number; tagValues: string; tagName: string }[]>([]);
   const [radioVal, setRadioVal] = useState(0);
   // 阿拉伯数字转换汉字 1-99
   const changeNumber = (num: number) => {
@@ -72,16 +72,41 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
     item: { ruleType: number; tagName: string; tagValues: string; sortId: number },
     tagVal: string
   ) => {
+    let list: any[] = [...selectedList];
+    // 判断是否有同类型的标签
     const selectedItem = selectedList.find(
-      (findItem) => findItem.ruleType === item.ruleType && tagVal === findItem.tagValues
+      (findItem) => findItem.ruleType === item.ruleType // && findItem.tagValues.split(',').includes(tagVal)
     );
     if (selectedItem) {
-      setSelectedList((list) => [
-        ...list.filter((filterItem) => !(filterItem.ruleType === item.ruleType && tagVal === filterItem.tagValues))
-      ]);
+      // 判断是否同类型的标签是否有相同的标签
+      if (selectedItem.tagValues.split(';').includes(tagVal)) {
+        list = list.map((mapItem) => {
+          if (mapItem.ruleType === item.ruleType && mapItem.tagValues.split(';').includes(tagVal)) {
+            return {
+              ...mapItem,
+              tagValues: mapItem.tagValues.replace(tagVal, '').replace(/^(\s|;)+|(\s|;)+$/g, '')
+            };
+          } else {
+            return { ...mapItem };
+          }
+        });
+      } else {
+        list = list.map((mapItem) => {
+          if (mapItem.ruleType === item.ruleType) {
+            return { ...mapItem, tagValues: mapItem.tagValues + ';' + tagVal };
+          } else {
+            return { ...mapItem };
+          }
+        });
+      }
     } else {
-      setSelectedList((list) => [...list, { ...item, tagValues: tagVal }]);
+      list = [...list, { ...item, tagValues: tagVal }];
     }
+    console.log(
+      'list',
+      list.filter((filterItem) => filterItem.tagValues)
+    );
+    setSelectedList(list.filter((filterItem) => filterItem.tagValues));
   };
   // 清除单个标签选择
   const delSingleTag = (ruleType: number) => {
@@ -104,7 +129,7 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
         {!value?.length && <span className={style.placeholder}>请选择</span>}
         {value?.map((item) => (
           <div key={item.ruleType} className={style.tagItem}>
-            {item.tagValues}
+            {item.tagName + '：' + item.tagValues}
             <Icon className={style.delItem} name="icon_common_Line_Close" onClick={() => delSingleTag(item.ruleType)} />
           </div>
         ))}
@@ -138,7 +163,8 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
                         key={mapItem}
                         className={classNames(style.tagValItem, {
                           [style.selected]: selectedList.find(
-                            (findItem) => findItem.ruleType === item.ruleType && findItem.tagValues === mapItem
+                            (findItem) =>
+                              findItem.ruleType === item.ruleType && findItem.tagValues.split(';').includes(mapItem)
                           )
                         })}
                         onClick={() => chooseTag(item, mapItem)}

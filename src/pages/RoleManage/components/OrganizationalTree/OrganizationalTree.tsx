@@ -200,8 +200,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     if (res) {
       const list = [...res.staffList, ...(res.deptList || [])];
       list.forEach((item: any) => {
-        item.id = item.deptId || item.staffId;
-        item.name = item.deptName || item.staffName;
+        item.id = item.staffId || item.deptId;
+        item.name = item.staffName || item.deptName;
       });
       setTreeSearchList(list);
     }
