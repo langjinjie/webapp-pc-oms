@@ -25,7 +25,7 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
   const { Option } = Select;
   // 获取所有得权限列表
   const getAllMenuList = async () => {
-    const res = await queryCompanyFeature({ corpId, roleType });
+    const res = await queryCompanyFeature({ corpId, roleType, enable: 1 });
     if (res) {
       setList(res);
     }

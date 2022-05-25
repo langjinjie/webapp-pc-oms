@@ -94,13 +94,15 @@ const AddGroup: React.FC = () => {
       <Form form={form} className={style.form} onFinish={onFinish}>
         <div className={style.title}>用户组基本信息</div>
         <Form.Item name="groupName" label="用户组名称：" required>
-          <Input placeholder="待输入" allowClear style={{ width: 300 }} readOnly={readOnly} />
+          <Input placeholder="待输入" allowClear style={{ width: 600 }} showCount maxLength={100} readOnly={readOnly} />
         </Form.Item>
         <Form.Item name="desc" label="用户组说明：" required>
           <Input.TextArea
             className={style.textArea}
             placeholder="待输入"
             allowClear
+            showCount
+            maxLength={300}
             style={{ width: 600 }}
             readOnly={readOnly}
           />

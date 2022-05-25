@@ -181,27 +181,27 @@ export const tree2Arry = (arr: any[]): any[] => {
   return res;
 };
 /**
- * @param {arr: array, pid: number}
+ * @param {arr: array, parentId: number}
  * @return {obj: object}
  */
-export const arry2Tree = (arr: any[], pid: string): any[] => {
+export const arry2Tree = (arr: any[], parentId: string, idName = 'id'): any[] => {
   const map = new Map(); // 生成map存储元素
   for (const item of arr) {
-    if (!map.has(item.id)) {
+    if (!map.has(item[idName])) {
       // 若map中没有当前元素，添加并初始化children
-      map.set(item.id, { ...item, children: [] });
+      map.set(item[idName], { ...item, children: [] });
     } else {
-      map.set(item.id, { ...map.get(item.id), ...item });
+      map.set(item[idName], { ...map.get(item[idName]), ...item });
     }
-    if (map.has(item.pid)) {
+    if (map.has(item.parentId)) {
       // 查找父元素，存在则将该元素插入到children
-      map.get(item.pid).children.push(map.get(item.id));
+      map.get(item.parentId).children.push(map.get(item[idName]));
     } else {
       // 否则初始化父元素，并插入children
-      map.set(item.pid, { children: [map.get(item.id)] });
+      map.set(item.parentId, { children: [map.get(item[idName])] });
     }
   }
-  return map.get(pid);
+  return map.get(parentId);
 };
 
 // 删除树的某个节点

@@ -36,11 +36,15 @@
       line-height: 14px;
     }
     .textArea {
-      min-height: 100px;
-      // max-height: 100px;
-      padding: 10px !important;
-      border-radius: 18px !important;
-      border: 1px solid #e1e2e6;
+      :global {
+        textarea.ant-input {
+          min-height: 100px;
+          // max-height: 100px;
+          padding: 10px !important;
+          border-radius: 18px !important;
+          border: 1px solid #e1e2e6;
+        }
+      }
     }
     .filterBtn {
       display: block;
