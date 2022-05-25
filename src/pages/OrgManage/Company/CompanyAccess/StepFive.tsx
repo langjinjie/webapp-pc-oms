@@ -71,7 +71,7 @@ const StepFive: React.FC<StepFiveProps> = ({ nextStep, prevStep, corpId }) => {
         name="corpSelfUploadSmallLogoUrl"
         label="名片logo"
         rules={[{ required: true, message: '请上传名片logo' }]}
-        extra={imgDesc}
+        extra={'为确保最佳展示效果，请上传256*56像素高清图片，仅支持.png/.jpg格式'}
       >
         <ImageUpload />
       </Item>
@@ -89,7 +89,7 @@ const StepFive: React.FC<StepFiveProps> = ({ nextStep, prevStep, corpId }) => {
         name="corpWhiteCompleteLogoUrl"
         label="白色logo"
         rules={[{ required: true, message: '请上传白色logo' }]}
-        extra={imgDesc}
+        extra={'为确保最佳展示效果，请上传710*436像素高清图片，仅支持.png/.jpg格式'}
       >
         <ImageUpload />
       </Item>

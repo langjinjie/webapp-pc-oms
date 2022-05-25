@@ -15,8 +15,9 @@ interface IGroupList {
 interface UserGroupProps {
   change?: (item: any) => void;
   readonly?: boolean;
+  selectedKey?: string;
 }
-const UserGroup: React.FC<UserGroupProps> = ({ change, readonly }) => {
+const UserGroup: React.FC<UserGroupProps> = ({ change, readonly, selectedKey }) => {
   const [loading, setLoading] = useState(false);
   const [groupList, setGroupList] = useState<IGroupList>({ total: 0, list: [] });
   const [searchParam, setSearchParam] = useState<{ groupName: string; groupCode: string }>({
@@ -65,6 +66,7 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly }) => {
   useEffect(() => {
     getGroupList();
   }, [paginationParam]);
+  console.log(selectedKey);
   return (
     <div className={style.wrap}>
       {readonly || (
@@ -98,6 +100,7 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly }) => {
         rowSelection={
           change
             ? {
+                defaultSelectedRowKeys: [selectedKey!],
                 type: 'radio',
                 ...rowSelection
               }

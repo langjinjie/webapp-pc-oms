@@ -25,7 +25,6 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   });
 
   const getGroupDetail = async () => {
-    console.log(value);
     if (!value) {
       return form.setFieldsValue({
         groupType: 1,
@@ -58,10 +57,6 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   }, [value]);
 
   const onChangeWithGroupType = (groupType: number) => {
-    form.setFieldsValue({
-      group1: undefined,
-      group12: undefined
-    });
     setFormValues((formValues) => ({
       ...formValues,
       groupType

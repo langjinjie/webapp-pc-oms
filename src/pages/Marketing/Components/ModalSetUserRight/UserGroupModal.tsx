@@ -32,7 +32,7 @@ const UserGroupModal: React.FC<UserGroupModalProps> = ({ onChange, value: propVa
         onCancel={() => setVisibleUserGroup(false)}
         onOk={() => handleOnOK()}
       >
-        <UserGroup readonly={true} change={handleChange}></UserGroup>
+        <UserGroup selectedKey={propValue?.groupId} readonly={true} change={handleChange}></UserGroup>
       </NgModal>
 
       <Button shape="round" onClick={handleShowSelectModal}>

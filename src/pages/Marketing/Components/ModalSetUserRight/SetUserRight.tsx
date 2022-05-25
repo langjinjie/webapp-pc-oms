@@ -136,12 +136,12 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
   }, [visible]);
   const onValuesChange = (changeValues: any, values: any) => {
     const { groupType = 1, isSet, group1, group2 } = values;
-    if (changeValues.groupType) {
-      rightForm.setFieldsValue({
-        group1: undefined,
-        group12: undefined
-      });
-    }
+    // if (changeValues.groupType) {
+    //   rightForm.setFieldsValue({
+    //     // group1: undefined,
+    //     // group12: undefined
+    //   });
+    // }
     setFormValues((formValues) => ({
       ...formValues,
       isSet,
@@ -262,7 +262,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
                 </Form.Item>
                 <Form.Item>
                   <span>
-                    截止目前时间：此用户组共计人数：
+                    截止目前时间：共计人数
                     {staffCount}人
                   </span>
                   {staffCount > 0 && (
