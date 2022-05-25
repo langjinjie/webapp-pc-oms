@@ -82,7 +82,8 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
   // 重置
   const onResetHandle = () => {
     setSearchParam({});
-    setPaginationParam({ pageNum: 1, pageSize: 10 });
+    // setPaginationParam((param) => ({ ...param, pageNum: 1 }));
+    setPaginationParam((param) => ({ ...param, pageNum: 1, pageSize: 10 }));
   };
   // 新增角色
   const addRole = () => {

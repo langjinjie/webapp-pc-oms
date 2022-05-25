@@ -2,8 +2,8 @@ import { Button, Form, Radio, Tag } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { getUserGroup } from 'src/apis/marketing';
 import { NgModal } from 'src/components';
-import UserGroupModal from './UserGroupModal';
-import UserOrgModal from './UserOrgModal';
+import UserGroupModal from 'src/pages/Marketing/Components/ModalSetUserRight/UserGroupModal';
+import UserOrgModal from 'src/pages/Marketing/Components/ModalSetUserRight/UserOrgModal';
 
 // import styles from './style.module.less';
 import { ViewStaffModal } from 'src/pages/OrgManage/UserGroup/components';
@@ -50,6 +50,7 @@ const DataRangeModal: React.FC<IDataRangeModalProps> = ({
   const [isForceSet, setIsForceSet] = useState(false);
   // const [,setIsDiff] = useState(false);
   const handleSubmit = () => {
+    setOriginValues(null);
     rightForm.validateFields().then((values) => {
       const { group1, group2, isSet, groupType, defaultDataScope } = values;
       onOk?.({ groupId: groupType === 1 ? group1?.groupId : group2?.groupId, isSet, defaultDataScope });
