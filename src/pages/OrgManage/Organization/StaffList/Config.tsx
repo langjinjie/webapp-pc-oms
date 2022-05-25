@@ -44,8 +44,6 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
     const { staffId } = row;
     updateStaffPpstatus([staffId]);
   };
-  console.log(popOnconfirmHandle);
-  console.log(popconfirmVisible);
   // 点击单行操作
   const clickCurrentRowHandle = (row: IStaffList) => {
     // 停用操作不可逆
@@ -55,7 +53,6 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
   };
   // 查看
   const viewHandle = (row: any) => {
-    console.log('查看~');
     history.push('/organization/staff-detail?staffId=' + row.staffId);
   };
   return [

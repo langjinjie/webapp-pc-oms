@@ -180,6 +180,29 @@ export const tree2Arry = (arr: any[]): any[] => {
   }
   return res;
 };
+/**
+ * @param {arr: array, pid: number}
+ * @return {obj: object}
+ */
+export const arry2Tree = (arr: any[], pid: string): any[] => {
+  const map = new Map(); // 生成map存储元素
+  for (const item of arr) {
+    if (!map.has(item.id)) {
+      // 若map中没有当前元素，添加并初始化children
+      map.set(item.id, { ...item, children: [] });
+    } else {
+      map.set(item.id, { ...map.get(item.id), ...item });
+    }
+    if (map.has(item.pid)) {
+      // 查找父元素，存在则将该元素插入到children
+      map.get(item.pid).children.push(map.get(item.id));
+    } else {
+      // 否则初始化父元素，并插入children
+      map.set(item.pid, { children: [map.get(item.id)] });
+    }
+  }
+  return map.get(pid);
+};
 
 // 删除树的某个节点
 export const filterTree = (tree: any[], func: (node: any) => boolean): any[] => {
