@@ -4,7 +4,7 @@
  * @date 2021-05-24 11:19
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Card, Collapse, Button, Form, FormProps, Input, Select, TreeSelect, message, Upload } from 'antd';
 import { getQueryParam } from 'lester-tools';
@@ -16,6 +16,7 @@ import {
   queryActivityList,
   queryProductList
 } from 'src/apis/stationConfig';
+import { queryMarketArea } from 'src/apis/marketing';
 import style from './style.module.less';
 
 interface Activity {
@@ -43,10 +44,48 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [activityMessage, setActivityMessage] = useState<string[]>([]);
   const [productMessage, setProductMessage] = useState<string[]>([]);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const [areaText, setAreaText] = useState<any>({});
 
+  const areaTextRef: MutableRefObject<any> = useRef({});
   const [form] = useForm();
   const { SHOW_ALL } = TreeSelect;
   const type: string = getQueryParam('type');
+
+  const renderAreaTips = (type: string, index: number) => {
+    const itemId = (form.getFieldValue(`${type}List`)[index] || {})[`${type}Id`];
+    if (!itemId) {
+      return null;
+    }
+    const areaData = areaText[itemId];
+    if (areaData) {
+      return (
+        <div className={style.areaTips}>
+          <span>合计：</span>
+          <span className={style.areaTipsVal}>{areaData.totalNum}人</span>
+          <span>可见：</span>
+          <span className={style.areaTipsVal}>{areaData.visibleNum}人</span>
+          <span>不可见：</span>
+          <span>{areaData.invisibleNum}人</span>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+
+  const getAreaTips = async (type: number, itemId: string) => {
+    if (areaText[itemId]) {
+      return false;
+    }
+    const res: any = await queryMarketArea({ type, itemId });
+    if (res) {
+      areaTextRef.current = {
+        ...areaTextRef.current,
+        [itemId]: res
+      };
+      setAreaText(areaTextRef.current);
+    }
+  };
 
   /**
    * 提交保存
@@ -142,6 +181,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
             activityMessages.push(`${activityName || activityId}已过期，请重新选择`);
           } else {
             activityMessages.push('请选择活动');
+            getAreaTips(1, activityId);
           }
         });
         productList.forEach(({ status, productName, productId }: Product) => {
@@ -149,6 +189,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
             productMessages.push(`${productName || productId}已过期，请重新选择`);
           } else {
             productMessages.push('请选择产品');
+            getAreaTips(2, productId);
           }
         });
         setActivityMessage(activityMessages);
@@ -287,6 +328,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                           fieldKey={[field.fieldKey, 'activityId']}
                           rules={[{ required: true, message: activityMessage[index] }]}
                           className={style.listFormItem}
+                          extra={renderAreaTips('activity', index)}
                         >
                           <Select
                             disabled={+type === 1}
@@ -296,6 +338,10 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                             }
                             allowClear
                             placeholder="请选择"
+                            onChange={() => {
+                              const value = form.getFieldValue('activityList');
+                              getAreaTips(1, value[index]?.activityId);
+                            }}
                           >
                             {activityList.map((item: Activity) => (
                               <Option key={item.activityId} value={item.activityId}>
@@ -380,6 +426,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                         fieldKey={[field.fieldKey, 'productId']}
                         rules={[{ required: true, message: productMessage[index] }]}
                         className={style.listFormItem}
+                        extra={renderAreaTips('product', index)}
                       >
                         <Select
                           disabled={+type === 1}
@@ -389,6 +436,10 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                           }
                           allowClear
                           placeholder="请选择"
+                          onChange={() => {
+                            const value = form.getFieldValue('productList');
+                            getAreaTips(2, value[index]?.productId);
+                          }}
                         >
                           {productList.map((item: Product) => (
                             <Option key={item.productId} value={item.productId}>
