@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Form, Select, Space, Button, Input, Card, DatePicker, message, Modal } from 'antd';
-import { NgTable } from 'src/components/index';
+import { NgTable, AuthBtn } from 'src/components';
 import { ISensitiveType, ISensitiveSearchParam, ISensitiveList } from 'src/utils/interface';
 import {
   requestGetSensitiveTypeList,
@@ -111,12 +111,14 @@ const SensitiveList: React.FC = () => {
       width: 70,
       render (row: ISensitiveList) {
         return (
-          <span
-            className={classNames(style.edit, { [style.disabled]: row.status === 1 })}
-            onClick={() => singleAdd('edit', row)}
-          >
-            编辑
-          </span>
+          <AuthBtn path="/edit">
+            <span
+              className={classNames(style.edit, { [style.disabled]: row.status === 1 })}
+              onClick={() => singleAdd('edit', row)}
+            >
+              编辑
+            </span>
+          </AuthBtn>
         );
       }
     }
@@ -249,46 +251,48 @@ const SensitiveList: React.FC = () => {
   return (
     <div className={style.wrap}>
       <Card bordered={false}>
-        <Form name="base" className={style.form} layout="inline" form={form}>
-          <Space className={style.antSpace}>
-            <Form.Item className={style.label} name="typeId" label="敏感词类型：">
-              <Select placeholder="待选择" className={style.selectBox} allowClear>
-                {sensitiveType.map((item) => (
-                  <Select.Option key={item.typeId} value={item.typeId}>
-                    {item.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item className={style.label} name="word" label="敏感词内容：">
-              <Input placeholder="待输入" className={style.inputBox} allowClear />
-            </Form.Item>
-          </Space>
-          <Space className={style.antSpace}>
-            <Form.Item className={style.label} name="status" label="敏感词状态：">
-              <Select placeholder="待选择" className={style.selectBox} allowClear>
-                {sensitiveStatusList.map((item) => (
-                  <Select.Option key={item.label} value={item.value}>
-                    {item.label}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item className={style.label} name="updateTime" label="更新时间">
-              <RangePicker format="YYYY-MM-DD" className={style.rangePicker} />
-            </Form.Item>
-            <Form.Item>
-              <Space size="small">
-                <Button className={style.searchBtn} type="primary" htmlType="submit" onClick={onFinish}>
-                  查询
-                </Button>
-                <Button className={style.resetBtn} htmlType="button" onClick={onReset}>
-                  重置
-                </Button>
-              </Space>
-            </Form.Item>
-          </Space>
-        </Form>
+        <AuthBtn path="/query">
+          <Form name="base" className={style.form} layout="inline" form={form}>
+            <Space className={style.antSpace}>
+              <Form.Item className={style.label} name="typeId" label="敏感词类型：">
+                <Select placeholder="待选择" className={style.selectBox} allowClear>
+                  {sensitiveType.map((item) => (
+                    <Select.Option key={item.typeId} value={item.typeId}>
+                      {item.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item className={style.label} name="word" label="敏感词内容：">
+                <Input placeholder="待输入" className={style.inputBox} allowClear />
+              </Form.Item>
+            </Space>
+            <Space className={style.antSpace}>
+              <Form.Item className={style.label} name="status" label="敏感词状态：">
+                <Select placeholder="待选择" className={style.selectBox} allowClear>
+                  {sensitiveStatusList.map((item) => (
+                    <Select.Option key={item.label} value={item.value}>
+                      {item.label}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item className={style.label} name="updateTime" label="更新时间">
+                <RangePicker format="YYYY-MM-DD" className={style.rangePicker} />
+              </Form.Item>
+              <Form.Item>
+                <Space size="small">
+                  <Button className={style.searchBtn} type="primary" htmlType="submit" onClick={onFinish}>
+                    查询
+                  </Button>
+                  <Button className={style.resetBtn} htmlType="button" onClick={onReset}>
+                    重置
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Space>
+          </Form>
+        </AuthBtn>
         <NgTable
           setRowKey={(record: any) => record.sensitiveId}
           dataSource={sensitiveList.list}
@@ -300,30 +304,40 @@ const SensitiveList: React.FC = () => {
         />
         <div className={classNames(style.multiOperation, { [style.empty]: !sensitiveList.total })}>
           {/* <div className={style.btnWrap}> */}
-          <Button htmlType="button" onClick={() => singleAdd('add')}>
-            新增
-          </Button>
-          <Button htmlType="button" onClick={() => setVisible(true)}>
-            批量新增
-          </Button>
-          <Button onClick={() => onDownLoadExcel(1, '敏感词列表')}>全量导出</Button>
+          <AuthBtn path="/add">
+            <Button htmlType="button" onClick={() => singleAdd('add')}>
+              新增
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/batchAdd">
+            <Button htmlType="button" onClick={() => setVisible(true)}>
+              批量新增
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/export">
+            <Button onClick={() => onDownLoadExcel(1, '敏感词列表')}>全量导出</Button>
+          </AuthBtn>
           {!!sensitiveList.total && (
             <>
-              <Button
-                disabled={disabledColumnType !== 0 && disabledColumnType !== 2}
-                onClick={() => buttonHandle('上架', 1)}
-              >
-                上架
-              </Button>
-              <Button disabled={disabledColumnType !== 1} onClick={() => buttonHandle('下架', 2)}>
-                下架
-              </Button>
-              <Button
-                disabled={disabledColumnType === 1 || disabledColumnType === -1}
-                onClick={() => buttonHandle('删除', 3)}
-              >
-                删除
-              </Button>
+              <AuthBtn path="/operate">
+                <Button
+                  disabled={disabledColumnType !== 0 && disabledColumnType !== 2}
+                  onClick={() => buttonHandle('上架', 1)}
+                >
+                  上架
+                </Button>
+                <Button disabled={disabledColumnType !== 1} onClick={() => buttonHandle('下架', 2)}>
+                  下架
+                </Button>
+              </AuthBtn>
+              <AuthBtn path="/delete">
+                <Button
+                  disabled={disabledColumnType === 1 || disabledColumnType === -1}
+                  onClick={() => buttonHandle('删除', 3)}
+                >
+                  删除
+                </Button>
+              </AuthBtn>
             </>
           )}
           {/* </div> */}

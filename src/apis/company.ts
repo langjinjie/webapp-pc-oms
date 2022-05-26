@@ -58,62 +58,6 @@ export const queryAuthUrl: HttpFunction = (param: Object) => {
  * @param param
  */
 export const queryAccountList: HttpFunction = (param: Object) => {
-  return Promise.resolve([
-    {
-      adminId: '213sadas',
-      userName: 'lester',
-      name: '龙春表',
-      isAdmin: 1
-    },
-    {
-      adminId: '12314546',
-      userName: 'lester1',
-      name: '龙春表1',
-      isAdmin: 0
-    },
-    {
-      adminId: '213asdasd',
-      userName: 'lester2',
-      name: '龙春表2',
-      isAdmin: 0
-    },
-    {
-      adminId: '123asdsad4sad',
-      userName: 'lester3',
-      name: '龙春表3',
-      isAdmin: 0
-    },
-    {
-      adminId: '213asdas757',
-      userName: 'lester4',
-      name: '龙春表4',
-      isAdmin: 0
-    },
-    {
-      adminId: '123asdasd',
-      userName: 'lester5',
-      name: '龙春表5',
-      isAdmin: 0
-    },
-    {
-      adminId: '123asdasda123g',
-      userName: 'lester6',
-      name: '龙春表6',
-      isAdmin: 0
-    },
-    {
-      adminId: '5554123561254',
-      userName: 'lester7',
-      name: '龙春表7',
-      isAdmin: 0
-    },
-    {
-      adminId: '123123asdsadasd',
-      userName: 'lester8',
-      name: '龙春表8',
-      isAdmin: 0
-    }
-  ]);
   return http.post('/tenacity-admin/api/user/account/list', param);
 };
 
@@ -123,4 +67,20 @@ export const queryAccountList: HttpFunction = (param: Object) => {
  */
 export const setAdminUser: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/user/set/admin', param);
+};
+
+/**
+ * 查询企业功能
+ * @param param
+ */
+export const queryCompanyFeature: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/privilege/corp/menu/list', param);
+};
+
+/**
+ * 一键复制企业功能权限
+ * @param param
+ */
+export const copyCompanyFeature: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/privilege/corp/menu/copy', param);
 };

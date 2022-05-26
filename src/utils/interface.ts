@@ -126,6 +126,7 @@ export interface ICatalogItem {
   lastLevel: number;
   onlineContentNum: number;
   contentNum: number;
+  groupId?: string;
 }
 
 // 添加/编辑目录参数
@@ -134,6 +135,7 @@ export interface IEditOrAddCatalogParam {
   title: string;
   catalog: ICatalogItem;
   parentId: string;
+  groupId?: string;
   getParentChildrenList: () => void;
 }
 
@@ -303,10 +305,12 @@ export interface IFlowList {
 
 export interface IConfirmModalParam {
   visible: boolean;
-  title: string;
-  tips: string;
+  title?: string;
+  tips?: string;
   onOk?: () => void;
   onCancel?: () => void;
+  okText?: string;
+  cancelText?: string;
 }
 // 积分管理->抽奖设置 部门列表
 export interface ITreeDate {
@@ -325,4 +329,51 @@ export interface IDeptRecord {
   scopeFullDeptNames: string;
   opName: string;
   opTime: string;
+}
+
+// 角色管理-角色列表
+export interface IRoleList {
+  roleId: string;
+  roleName: string;
+  roleRange?: string;
+  status: number;
+  isDefault: number;
+  userNum: number;
+}
+
+/**
+ * 机构管理-用户组管理
+ */
+// 用户组管理列表
+export interface IGroupItem {
+  groupId: string;
+  groupCode: string;
+  groupName: string;
+  desc: string;
+  staffNum: number;
+  createTime: string;
+}
+// 用户组标签
+export interface IGroupTag {
+  groupTagId: string;
+  name: string;
+  filterName: string;
+  createTime: string;
+}
+// 菜单
+export interface MenuItem {
+  sysType?: number;
+  menuId: string;
+  fullMenuId: string;
+  menuName: string;
+  menuIcon: string;
+  menuType: number;
+  path: string;
+  buttonType?: number;
+  parentId?: string;
+  level: number;
+  isLeaf: number;
+  enable: number;
+  menuCode: string;
+  children: MenuItem[];
 }

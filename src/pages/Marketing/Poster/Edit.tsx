@@ -9,6 +9,7 @@ import { Poster } from './Config';
 import { useForm } from 'antd/es/form/Form';
 import NgUpload from '../Components/Upload/Upload';
 import { RcFile } from 'antd/lib/upload';
+import { SetUserRightFormItem } from '../Components/SetUserRight/SetUserRight';
 
 const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   useDocumentTitle('海报编辑');
@@ -63,8 +64,13 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     }
   }, []);
   const onSubmit = async (values: any) => {
-    const { typeIds = [], tags = [] } = values;
+    console.log(values);
+    const { typeIds = [], tags = [], groupId } = values;
     let postData: any = {};
+    delete values.group1;
+    delete values.group2;
+    delete values.groupType;
+    delete values.isSet;
     if (poster) {
       postData = {
         ...poster,
@@ -72,13 +78,15 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
         typeId: typeIds.pop(),
         corpId: poster?.corpId,
         posterId: poster.posterId,
-        tags: tags.join(',')
+        tags: tags.join(','),
+        groupId: groupId || ''
       };
     } else {
       postData = {
         ...values,
         typeId: typeIds.pop(),
         posterId: '',
+        groupId: groupId || '',
         tags: tags.join(',')
       };
     }
@@ -156,10 +164,13 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
         <Form.Item label="营销话术" name={'speechcraft'} rules={[{ required: true }]}>
           <Input.TextArea placeholder="待输入" maxLength={300} showCount />
         </Form.Item>
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={myForm} />
+        </Form.Item>
 
         {!isView && (
           <Form.Item wrapperCol={{ offset: 3 }}>
-            <Button type="primary" shape="round" htmlType="submit">
+            <Button type="primary" style={{ width: '128px' }} shape="round" htmlType="submit">
               保 存
             </Button>
           </Form.Item>

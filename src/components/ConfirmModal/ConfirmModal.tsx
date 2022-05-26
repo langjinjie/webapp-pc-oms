@@ -1,20 +1,26 @@
-import React, { useContext, useState } from 'react';
+import React, { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { Modal } from 'antd';
 import { Context } from 'src/store';
+import { IConfirmModalParam } from 'src/utils/interface';
 import style from './style.module.less';
 
 const ConfirmModal: React.FC = () => {
-  const { confirmModalParam } = useContext(Context);
-  const { visible, title, tips, onOk, onCancel } = confirmModalParam;
+  const { confirmModalParam, setConfirmModalParam } =
+    useContext<{
+      confirmModalParam: IConfirmModalParam;
+      setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>>;
+    }>(Context);
+  const { visible, title, tips, onOk, onCancel, okText, cancelText } = confirmModalParam;
   const [isLoading, setIsLoading] = useState(false);
   const Ok = async () => {
     setIsLoading(true);
-    await onOk();
+    await onOk?.();
     setIsLoading(false);
   };
   const cancel = async () => {
     setIsLoading(true);
-    await onCancel();
+    await onCancel?.();
+    setConfirmModalParam({ visible: false });
     setIsLoading(false);
   };
   return (
@@ -24,7 +30,9 @@ const ConfirmModal: React.FC = () => {
       closable={false}
       visible={visible}
       width={300}
-      title={title}
+      title={title || '温馨提示'}
+      okText={okText || '确认'}
+      cancelText={cancelText || '取消'}
       onOk={Ok}
       onCancel={cancel}
       maskClosable={false}
@@ -33,7 +41,7 @@ const ConfirmModal: React.FC = () => {
         loading: isLoading
       }}
     >
-      <div className={style.content}>{tips}</div>
+      <div className={style.content}>{tips || '确定执行该操作吗？'}</div>
     </Modal>
   );
 };

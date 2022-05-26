@@ -88,6 +88,12 @@ ul {
       }
     }
   }
+
+  .addBtn {
+    width: 149px;
+    height: 40px !important;
+    font-size: 16px;
+  }
 }
 .pointer {
   cursor: pointer;
@@ -134,6 +140,14 @@ ul {
   .mt((@i + 2));
 }
 .mt(6);
+// 下外边距 5->40px
+.mb(@i) when(@i<=40) {
+  .mb@{i} {
+    margin-bottom: @i + 0px;
+  }
+  .mb((@i + 2));
+}
+.mb(6);
 // 上外边距 5->40px
 .ml(@i) when(@i<=40) {
   .ml@{i} {

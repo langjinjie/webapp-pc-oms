@@ -10,6 +10,7 @@ import { RouteComponentProps } from 'react-router';
 import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
 import InputShowLength from './Components/InputShowLength/InputShowLength';
+import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
 
 const scenesStates = [
   { sceneId: 1, name: '车险流程', needGenderType: 1, needAgeType: 0 },
@@ -52,6 +53,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       setOriginSpeech(res);
       const {
         ageType,
+        groupId,
         catalogId,
         content,
         contentType,
@@ -75,6 +77,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       const currentScenes = scenesStates.filter((scenes) => scenes.sceneId === sceneId)[0];
       setCurrentScenesState(currentScenes);
       const formData = {
+        groupId,
         ageType,
         catalogId,
         content,
@@ -125,7 +128,6 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const initSetFormQuery = async () => {
     const { catalog, contentId, sceneId } = URLSearchParams(location.search) as { [key: string]: string };
     if (catalog) {
-      console.log(catalog);
       const catalogs = catalog.split(',');
       const tree = JSON.parse(localStorage.getItem('catalogTree') || '[]') as any[];
       const res = await getCategory();
@@ -196,7 +198,8 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       summary,
       thumbnail,
       appId,
-      appPath = ''
+      appPath = '',
+      groupId
     } = values;
 
     const submitData = {
@@ -211,6 +214,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       contentUrl: contentType === 9 ? JSON.stringify({ appId, appPath }) : contentUrl,
       thumbnail,
       title,
+      groupId: groupId || '',
       summary: summary || originSpeech?.summary
     };
     if (
@@ -364,6 +368,10 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
         <Form.Item label="话术小贴士" name="tip">
           <InputShowLength className="width360" maxLength={20} placeholder={'请输入'} />
         </Form.Item>
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={speechForm} />
+        </Form.Item>
+
         <Form.Item className={styles.formItem__footerBtnWrap}>
           <Space size={20}>
             <Button type="default" shape="round" onClick={() => handleBack()}>

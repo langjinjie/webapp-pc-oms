@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Form, Input, Select, Button, message, Image as AntImage, Radio, RadioChangeEvent, Spin } from 'antd';
-import { peerNews, getTagsOrCategorys, searchRecommendGoodsList } from 'src/apis/marketing';
+import { peerNews, getTagsOrCategorys, searchRecommendGoodsList, queryMarketArea } from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import NgUpload from '../../Components/Upload/Upload';
@@ -9,11 +9,29 @@ import { Icon } from 'lester-ui';
 import { RecommendMarketProps } from './TabView3';
 import { debounce } from 'src/utils/base';
 import { recommendTypeList } from '../Config';
+import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
 interface typeProps {
   id: string;
   name: string;
   type: string;
 }
+
+const RenderAreaTips: React.FC<{ value?: any }> = ({ value }) => {
+  if (value) {
+    return (
+      <div className={style.areaTips}>
+        <span>合计：</span>
+        <span className={style.areaTipsVal}>{value.totalNum}人</span>
+        <span>可见：</span>
+        <span className={style.areaTipsVal}>{value.visibleNum}人</span>
+        <span>不可见：</span>
+        <span>{value.invisibleNum}人</span>
+      </div>
+    );
+  } else {
+    return null;
+  }
+};
 const TabView2: React.FC = () => {
   const [visibleImage, setVisibleImage] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
@@ -81,7 +99,15 @@ const TabView2: React.FC = () => {
 
   const onFinish = async (values: any) => {
     setSubmitting(true);
-    const res = await peerNews({ ...values, corpId: currentCorpId });
+    delete values.group1;
+    delete values.group2;
+    delete values.groupType;
+    delete values.isSet;
+    const res = await peerNews({
+      ...values,
+      groupId: values.groupId || '',
+      corpId: currentCorpId
+    });
     if (!res) {
       setSubmitting(false);
       return false;
@@ -134,8 +160,13 @@ const TabView2: React.FC = () => {
     setFormData((formData) => ({ ...formData, recommendList: [] }));
   };
   // 当选中select素材时处理的东西
-  const onRecommendSelected = (value: string, index: number) => {
+  const onRecommendSelected = async (value: string, index: number) => {
+    const res = await queryMarketArea({
+      itemid: value,
+      type: recommendType
+    });
     const selectedItem = recommendList.filter((item) => item.marketId === value)[0];
+    selectedItem.otherData = res;
     const oldSelectedList = [...formData.recommendList];
     oldSelectedList.splice(index, 1, selectedItem);
     form.setFieldsValue({
@@ -288,6 +319,11 @@ const TabView2: React.FC = () => {
             ))}
           </Select>
         </Form.Item>
+
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={form} />
+        </Form.Item>
+
         <Form.Item name={'recommendType'} label="推荐类型">
           <Radio.Group onChange={onRecommendTypeChange}>
             {recommendTypeList.map((item) => (
@@ -297,6 +333,7 @@ const TabView2: React.FC = () => {
             ))}
           </Radio.Group>
         </Form.Item>
+
         <Form.Item
           className={style.customerAddWrap}
           labelCol={{ span: 3 }}
@@ -322,6 +359,7 @@ const TabView2: React.FC = () => {
                           <Input type="text" />
                         </Form.Item>
                         <Form.Item
+                          style={{ width: '400px' }}
                           {...restFiled}
                           name={[name, 'marketId']}
                           rules={[
@@ -364,6 +402,9 @@ const TabView2: React.FC = () => {
                             ))}
                           </Select>
                         </Form.Item>
+                        <Form.Item name={[name, 'otherData']} className={style.otherData}>
+                          <RenderAreaTips />
+                        </Form.Item>
                         {/* 当是商品时展示图片模块 */}
                         {recommendType === 2 && (
                           <Form.Item
@@ -387,9 +428,17 @@ const TabView2: React.FC = () => {
                     <Form.Item>
                       <Button
                         className={style.addBtn}
-                        onClick={() => {
+                        onClick={async () => {
                           if (recommendType === 3) {
                             return message.warning('请选择推荐类型后再进行添加');
+                          }
+                          if (recommendList.length < 5) {
+                            const res = await searchRecommendGoodsList({
+                              title: '',
+                              recommendType
+                            });
+
+                            setRecommendList([...res, ...recommendList] || []);
                           }
                           add();
                         }}
@@ -405,7 +454,7 @@ const TabView2: React.FC = () => {
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 3 }}>
-          <Button type="primary" shape="round" htmlType="submit" loading={isSubmitting}>
+          <Button type="primary" shape="round" style={{ width: '128px' }} htmlType="submit" loading={isSubmitting}>
             添加
           </Button>
         </Form.Item>

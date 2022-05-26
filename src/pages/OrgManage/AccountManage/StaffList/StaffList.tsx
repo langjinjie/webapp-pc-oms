@@ -7,7 +7,7 @@ import {
   requestLeadingOutExcel
 } from 'src/apis/orgManage';
 import { IStaffList, ICurrentSearchParam, IMoalParam, IStaffListInfo } from 'src/utils/interface';
-import { Icon } from 'src/components/index';
+import { Icon, AuthBtn } from 'src/components';
 import {
   /* serviceType2Name, */ accountStatus2Name,
   accountStatusEdit2Name,
@@ -145,20 +145,22 @@ const StaffList: React.FC = () => {
       align: 'center',
       render (row: IStaffList) {
         return (
-          <Popconfirm
-            title={'确认' + (row.accountStatus === '1' ? '停用' : '激活') + '该账号吗'}
-            visible={popconfirmVisible === row.staffId}
-            onConfirm={async () => popOnconfirmHandle(row)}
-            onCancel={() => setPopconfirmVisible('')}
-          >
-            <span
-              key={row.staffId}
-              className={classNames(style.edit, { [style.disabled]: row.accountStatus === '2' })}
-              onClick={() => clickCurrentRowHandle(row)}
+          <AuthBtn path="/operate">
+            <Popconfirm
+              title={'确认' + (row.accountStatus === '1' ? '停用' : '激活') + '该账号吗'}
+              visible={popconfirmVisible === row.staffId}
+              onConfirm={async () => popOnconfirmHandle(row)}
+              onCancel={() => setPopconfirmVisible('')}
             >
-              {accountStatusEdit2Name[row.accountStatus]}
-            </span>
-          </Popconfirm>
+              <span
+                key={row.staffId}
+                className={classNames(style.edit, { [style.disabled]: row.accountStatus === '2' })}
+                onClick={() => clickCurrentRowHandle(row)}
+              >
+                {accountStatusEdit2Name[row.accountStatus]}
+              </span>
+            </Popconfirm>
+          </AuthBtn>
         );
       }
     }
@@ -302,55 +304,59 @@ const StaffList: React.FC = () => {
         </div>
       </Modal>
       <Card bordered={false}>
-        <Form name="base" layout="inline" form={form}>
-          <Space className={style.antSpace}>
-            <Form.Item name="staffName" label="员工姓名">
-              <Input placeholder="待输入" className={style.inputBox} allowClear />
-            </Form.Item>
-            <Form.Item name="mangerName" label="直属上级">
-              <Input placeholder="待输入" className={style.inputBox} allowClear />
-            </Form.Item>
-          </Space>
-          <Space className={style.antSpace}>
-            <Form.Item name="staffStatus" label="员工状态">
-              <Select placeholder="待选择" className={style.inputBox} allowClear>
-                {staffStatusList.map((item) => (
-                  <Select.Option key={item.label} value={item.value}>
-                    {item.label}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item name="accountStatus" label="账号状态">
-              <Select placeholder="待选择" className={style.inputBox} allowClear>
-                {accountStatusList.map((item) => (
-                  <Select.Option key={item.label} value={item.value}>
-                    {item.label}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item>
-              <Space size="small">
-                <Button className={style.searchBtn} type="primary" htmlType="submit" onClick={onFinish}>
-                  查询
-                </Button>
-                <Button className={style.resetBtn} htmlType="button" onClick={onReset}>
-                  重置
-                </Button>
-              </Space>
-            </Form.Item>
-          </Space>
-        </Form>
+        <AuthBtn path="/query">
+          <Form name="base" layout="inline" form={form}>
+            <Space className={style.antSpace}>
+              <Form.Item name="staffName" label="员工姓名">
+                <Input placeholder="待输入" className={style.inputBox} allowClear />
+              </Form.Item>
+              <Form.Item name="mangerName" label="直属上级">
+                <Input placeholder="待输入" className={style.inputBox} allowClear />
+              </Form.Item>
+            </Space>
+            <Space className={style.antSpace}>
+              <Form.Item name="staffStatus" label="员工状态">
+                <Select placeholder="待选择" className={style.inputBox} allowClear>
+                  {staffStatusList.map((item) => (
+                    <Select.Option key={item.label} value={item.value}>
+                      {item.label}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item name="accountStatus" label="账号状态">
+                <Select placeholder="待选择" className={style.inputBox} allowClear>
+                  {accountStatusList.map((item) => (
+                    <Select.Option key={item.label} value={item.value}>
+                      {item.label}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item>
+                <Space size="small">
+                  <Button className={style.searchBtn} type="primary" htmlType="submit" onClick={onFinish}>
+                    查询
+                  </Button>
+                  <Button className={style.resetBtn} htmlType="button" onClick={onReset}>
+                    重置
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Space>
+          </Form>
+        </AuthBtn>
         <div className={style.accountSituation}>
           <span className={style.text}>*机构使用情况: </span>
           <span>
             {staffListInfo.usedCount}/{staffListInfo.licenseCount}
           </span>
-          <Icon className={style.icon} name="shuaxin" />
-          <span className={style.refresh} onClick={syncAccount}>
-            手动同步通讯录
-          </span>
+          <AuthBtn path="/sync">
+            <Icon className={style.icon} name="shuaxin" />
+            <span className={style.refresh} onClick={syncAccount}>
+              手动同步通讯录
+            </span>
+          </AuthBtn>
         </div>
         <Table
           rowKey="staffId"
@@ -364,21 +370,25 @@ const StaffList: React.FC = () => {
 
         {!!staffListInfo.staffList?.length && (
           <div className={style.btnWrap}>
-            <Button
-              disabled={disabledColumnType !== '4' || !selectedRowKeys.length}
-              onClick={() => buttonClickHandle(0)}
-            >
-              {'批量停用' +
-                (disabledColumnType !== '4' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
-            </Button>
-            <Button
-              disabled={disabledColumnType !== '1' || !selectedRowKeys.length}
-              onClick={() => buttonClickHandle(1)}
-            >
-              {'批量激活' +
-                (disabledColumnType !== '1' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
-            </Button>
-            <Button onClick={downLoad}>导出表格</Button>
+            <AuthBtn path="/operate">
+              <Button
+                disabled={disabledColumnType !== '4' || !selectedRowKeys.length}
+                onClick={() => buttonClickHandle(0)}
+              >
+                {'批量停用' +
+                  (disabledColumnType !== '4' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
+              </Button>
+              <Button
+                disabled={disabledColumnType !== '1' || !selectedRowKeys.length}
+                onClick={() => buttonClickHandle(1)}
+              >
+                {'批量激活' +
+                  (disabledColumnType !== '1' || !selectedRowKeys.length ? '' : '(' + selectedRowKeys.length + ')')}
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/export">
+              <Button onClick={downLoad}>导出表格</Button>
+            </AuthBtn>
           </div>
         )}
       </Card>

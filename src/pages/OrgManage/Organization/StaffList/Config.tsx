@@ -1,94 +1,203 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { ColumnsType } from 'antd/es/table';
-import { UNKNOWN } from 'src/utils/base';
+import { UNKNOWN, replaceEnter } from 'src/utils/base';
+import { Popconfirm } from 'antd';
+import { AuthBtn } from 'src/components';
+import { requestSetStaffOpstatus } from 'src/apis/orgManage';
+import { Context } from 'src/store';
+import { accountStatusEdit2Name } from 'src/utils/commonData';
 import style from './style.module.less';
+import classNames from 'classnames';
 
-const TableColumns = (): ColumnsType<any> => [
-  {
-    title: '姓名',
-    // width: 150,
-    fixed: 'left',
-    render (row) {
-      return (
-        <span>
-          {row.staffName}
-          {!!row.isLeader && <span className={style.isLeader}>{row.deptLeaderTag || '上级'}</span>}
-        </span>
-      );
+const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
+  const { currentCorpId: corpId } = useContext(Context);
+  const { updateList } = arg;
+  const history = useHistory();
+  const [popconfirmVisible, setPopconfirmVisible] = useState('');
+  const [opType, setOpType] = useState(0);
+  // 激活/停用账号请求
+  const updateStaffPpstatus = async (userIds: string[]) => {
+    if (opType) {
+      // 前端校验激活上限
+      // if (staffListInfo.usedCount + userIds.length > staffListInfo.licenseCount) {
+      //   return setModalParam({
+      //     isModalVisible: true,
+      //     modalType: '容量通知',
+      //     modalContentTitle: '账号告罄',
+      //     modalContent: '当前启用账号已超出系统设定账号，请联系管理员修改后台账号容量'
+      //   });
+      // }
     }
-  },
-  {
-    title: '部门',
-    // width: 100,
-    render (row) {
-      return <span>{row.deptName || UNKNOWN}</span>;
+    const params = {
+      opType,
+      corpId,
+      userIds: userIds
+    };
+    await requestSetStaffOpstatus(params);
+    await updateList?.();
+  };
+  // 定义单个激活/停用onfirem
+  const popOnconfirmHandle = async (row: any) => {
+    setPopconfirmVisible('');
+    const { staffId } = row;
+    updateStaffPpstatus([staffId]);
+  };
+  // 点击单行操作
+  const clickCurrentRowHandle = (row: any) => {
+    // 停用操作不可逆
+    if (row.status === 2) return;
+    setOpType(row.status === '4' ? 1 : 0);
+    setPopconfirmVisible(row.staffId);
+  };
+  // 查看
+  const viewHandle = (row: any) => {
+    history.push('/organization/staff-detail?staffId=' + row.staffId);
+  };
+  return [
+    {
+      title: '姓名',
+      // width: 150,
+      fixed: 'left',
+      render (row) {
+        return (
+          <span>
+            {row.staffName}
+            {!!row.isLeader && <span className={style.isLeader}>{row.deptLeaderTag || '上级'}</span>}
+          </span>
+        );
+      }
+    },
+    {
+      title: '部门',
+      // width: 100,
+      render (row) {
+        return <span>{row.deptName || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '职位',
+      // width: 150,
+      render (row) {
+        return <span>{row.position || UNKNOWN}</span>;
+      }
+    },
+    { title: '企微账号', dataIndex: 'userId', width: 150 },
+    {
+      title: '员工工号',
+      // width: 100,
+      render (row) {
+        return <span>{row.jobNumber || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '支公司',
+      // width: 100,
+      render (row) {
+        return <span>{row.resource || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '业务模式',
+      // width: 100,
+      render (row) {
+        return <span>{row.businessModel || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '市公司',
+      // width: 150,
+      render (row) {
+        return <span>{row.businessArea || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '省公司',
+      render (row) {
+        return <span>{row.provinceCompany || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '办公职场',
+      // width: 90,
+      render (row) {
+        return <span>{row.officePlace || UNKNOWN}</span>;
+      }
+    },
+
+    {
+      title: '角色名称',
+      render (row) {
+        return (
+          <span
+            dangerouslySetInnerHTML={{
+              __html:
+                replaceEnter(
+                  row.roles.split(';').reduce((prev: string, now: string, index: number) => {
+                    prev += index ? 'B端：' + now : 'A端：' + now + '\\n';
+                    return prev;
+                  }, '')
+                ) || UNKNOWN
+            }}
+          />
+        );
+      }
+    },
+    {
+      title: '账号开通时间',
+      // width: 180,
+      render (row) {
+        return <span>{row.accountStartTime || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '账号停止时间',
+      // width: 180,
+      render (row) {
+        return <span>{row.accountEndTime || UNKNOWN}</span>;
+      }
+    },
+    {
+      title: '状态',
+      // width: 60,
+      render (row) {
+        return <span>{row.isDeleted ? '离职' : '在职'}</span>;
+      }
+    },
+    {
+      title: '操作',
+      // align: 'center',
+      fixed: 'right',
+      render (row: any) {
+        return (
+          <span className={style.viewAndEdit}>
+            <AuthBtn path="/view">
+              <span className={style.view} onClick={() => viewHandle(row)}>
+                查看
+              </span>
+            </AuthBtn>
+            <AuthBtn path="/operateStaff">
+              <Popconfirm
+                title={'确认' + (row.status === 1 ? '停用' : '激活') + '该账号吗'}
+                visible={popconfirmVisible === row.staffId}
+                onConfirm={async () => popOnconfirmHandle(row)}
+                onCancel={() => setPopconfirmVisible('')}
+              >
+                <span
+                  key={row.staffId}
+                  className={classNames(style.edit, { [style.disabled]: row.status === 2 })}
+                  onClick={() => clickCurrentRowHandle(row)}
+                >
+                  {accountStatusEdit2Name[row.status]}
+                </span>
+              </Popconfirm>
+            </AuthBtn>
+          </span>
+        );
+      }
     }
-  },
-  {
-    title: '职位',
-    // width: 150,
-    render (row) {
-      return <span>{row.position || UNKNOWN}</span>;
-    }
-  },
-  { title: '企微账号', dataIndex: 'userId', width: 150 },
-  {
-    title: '员工工号',
-    // width: 100,
-    render (row) {
-      return <span>{row.jobNumber || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '资源',
-    // width: 100,
-    render (row) {
-      return <span>{row.resource || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '业务模式',
-    // width: 100,
-    render (row) {
-      return <span>{row.businessModel || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '业务地区',
-    // width: 150,
-    render (row) {
-      return <span>{row.businessArea || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '办公职场',
-    // width: 90,
-    render (row) {
-      return <span>{row.officePlace || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '账号开通时间',
-    // width: 180,
-    render (row) {
-      return <span>{row.accountStartTime || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '账号停止时间',
-    // width: 180,
-    render (row) {
-      return <span>{row.accountEndTime || UNKNOWN}</span>;
-    }
-  },
-  {
-    title: '状态',
-    // width: 60,
-    render (row) {
-      return <span>{row.isDeleted ? '离职' : '在职'}</span>;
-    }
-  }
-];
+  ];
+};
 
 const TablePagination = (arg: { [key: string]: any }): any => {
   const {

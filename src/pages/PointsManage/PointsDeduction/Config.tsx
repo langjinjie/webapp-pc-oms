@@ -4,6 +4,7 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { Avatar, Button, Popconfirm, Tooltip } from 'antd';
 import moment from 'moment';
+import { AuthBtn } from 'src/components';
 
 export const searchCols: SearchCol[] = [
   {
@@ -100,9 +101,11 @@ export const tableColumns = (batchDeduct: (record: DeductProps) => void): Column
     title: '操作',
     fixed: 'right',
     render: (value, record) => (
-      <Popconfirm title="积分扣减提醒，是否确定扣减该客户经理积分？" onConfirm={() => batchDeduct(record)}>
-        <Button type="link">扣减</Button>
-      </Popconfirm>
+      <AuthBtn path="/edit">
+        <Popconfirm title="积分扣减提醒，是否确定扣减该客户经理积分？" onConfirm={() => batchDeduct(record)}>
+          <Button type="link">扣减</Button>
+        </Popconfirm>
+      </AuthBtn>
     )
   }
 ];

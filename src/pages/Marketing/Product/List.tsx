@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, message, Modal, Space } from 'antd';
 
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import style from './style.module.less';
 
 import { columns, ProductProps, setSearchCols } from './Config';
@@ -12,12 +12,14 @@ import {
   getProductList,
   productConfig,
   productManage,
+  setUserRightWithProduct,
   sortCancelTopAtProduct,
   sortTopAtProduct
 } from 'src/apis/marketing';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import moment from 'moment';
 import { useDocumentTitle } from 'src/utils/base';
+import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
 
 const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('营销素材-产品库');
@@ -41,6 +43,13 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(true);
   const [productOptions, setProductOptions] = useState<any>([]);
+  // 批量设置权限的状态
+  const [currentItem, setCurrentItem] = useState<ProductProps | null>();
+  const [selectRows, setSelectRows] = useState<ProductProps[]>();
+  const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
+  const [isBatchSetRight, setIsBatchSetRight] = useState(false);
+  const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
+
   const handleEdit = (record: ProductProps) => {
     history.push('/marketingProduct/edit', { id: record.productId, type: '2' });
   };
@@ -133,7 +142,24 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleSort });
+  // 显示配置可见范围模块
+  const setRight = (record?: ProductProps) => {
+    if (record) {
+      setIsBatchSetRight(false);
+      setCurrentItem(record);
+    } else {
+      const mySet = new Set();
+      selectRows?.forEach((item) => {
+        mySet.add(item.groupId);
+      });
+      console.log(Array.from(mySet));
+      setCurrentGroupIds(Array.from(mySet));
+      setIsBatchSetRight(true);
+    }
+    setVisibleSetUserRight(true);
+  };
+
+  const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleSort, setRight });
 
   // 添加商品
   const addProduct = () => {
@@ -184,6 +210,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: ProductProps[]) => {
     setSelectRowKeys(selectedRowKeys);
+    setSelectRows(selectedRows);
     const current = selectedRows[0];
     if (current) {
       if (current.status === 1 || current.status === 3) {
@@ -227,39 +254,67 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
       }
     });
   };
+
+  // 确认设置权限
+  const confirmSetRight = async (values: any) => {
+    setVisibleSetUserRight(false);
+    const { isSet, groupId, isBatch } = values;
+    // [adminId];
+    // groupId: 93201136316088326
+    const list: any[] = [];
+    if (isBatch) {
+      selectRows?.forEach((item) => {
+        list.push({ productId: item.productId, groupId: isSet ? groupId : null });
+      });
+    } else {
+      list.push({ productId: currentItem?.productId, groupId: isSet ? groupId : null });
+    }
+    const res = await setUserRightWithProduct({ list });
+    if (res) {
+      message.success('设置成功');
+      getList({ pageNum: 1 });
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
+    }
+  };
   return (
     <div className="container">
       {/* 表单查询 start */}
       <header>
         <div className={style.addBtnWrap}>
-          <Button
-            type="primary"
-            onClick={addProduct}
-            shape="round"
-            icon={<PlusOutlined />}
-            size="large"
-            style={{ width: 128 }}
-          >
-            添加
-          </Button>
-          <Button
-            type="primary"
-            onClick={addFeatureProduct}
-            shape="round"
-            icon={<PlusOutlined />}
-            size="large"
-            style={{ width: 128, marginLeft: 40 }}
-          >
-            当月精选
-          </Button>
+          <AuthBtn path="/add">
+            <Button
+              type="primary"
+              onClick={addProduct}
+              shape="round"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ width: 128 }}
+            >
+              添加
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/viewSelected">
+            <Button
+              type="primary"
+              onClick={addFeatureProduct}
+              shape="round"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ width: 128, marginLeft: 40 }}
+            >
+              当月精选
+            </Button>
+          </AuthBtn>
         </div>
         <div className="pt20">
-          <NgFormSearch
-            isInline={false}
-            onSearch={onSearch}
-            searchCols={setSearchCols(productOptions)}
-            onValuesChange={onValuesChange}
-          />
+          <AuthBtn path="/query">
+            <NgFormSearch
+              isInline={false}
+              onSearch={onSearch}
+              searchCols={setSearchCols(productOptions)}
+              onValuesChange={onValuesChange}
+            />
+          </AuthBtn>
         </div>
       </header>
       {/* 表单查询 end */}
@@ -277,27 +332,48 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
       {dataSource.length > 0 && (
         <div className={'operationWrap'}>
           <Space size={20}>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={operationType !== 1}
-              onClick={() => handleToggleOnlineState(1)}
-            >
-              批量上架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={operationType !== 2}
-              onClick={() => handleToggleOnlineState(2)}
-            >
-              批量下架
-            </Button>
+            <AuthBtn path="/operateBatch">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={operationType !== 1}
+                onClick={() => handleToggleOnlineState(1)}
+              >
+                批量上架
+              </Button>
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={operationType !== 2}
+                onClick={() => handleToggleOnlineState(2)}
+              >
+                批量下架
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/setBatch">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={!(selectRows && selectRows.length > 0)}
+                onClick={() => setRight()}
+              >
+                批量添加可见范围
+              </Button>
+            </AuthBtn>
           </Space>
         </div>
       )}
+
+      <SetUserRight
+        isBatch={isBatchSetRight}
+        groupId={isBatchSetRight ? currentGroupIds : currentItem?.groupId}
+        visible={visibleSetUserRight}
+        onOk={confirmSetRight}
+        onCancel={() => setVisibleSetUserRight(false)}
+      />
     </div>
   );
 };

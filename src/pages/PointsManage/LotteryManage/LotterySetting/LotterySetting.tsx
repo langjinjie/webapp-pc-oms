@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { Button, Tag } from 'antd';
-import { Icon } from 'src/components';
+import { AuthBtn, Icon } from 'src/components';
 import { AddModal, List } from './components';
 import { useDocumentTitle } from 'src/utils/base';
-import { IDeptRecord, IConfirmModalParam } from 'src/utils/interface';
+import { IDeptRecord } from 'src/utils/interface';
 import { requestAddLotteryScope } from 'src/apis/pointsMall';
 import style from './style.module.less';
 import { Context } from 'src/store';
@@ -26,17 +26,12 @@ const LotterySetting: React.FC = () => {
       onOk: async () => {
         const deptIds = depLsit?.scopeDeptIds.split(';') || [];
         deptIds.splice(index, 1);
-        console.log(deptIds);
-        console.log(deptIds.toString().replace(/,/g, ';'));
         // return;
         const res = await requestAddLotteryScope({ deptIds: deptIds.toString().replace(/,/g, ';') });
         if (res) {
           setAddScopeParam({ ...addScopeParam, added: true });
-          setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
+          setConfirmModalParam({ visible: false });
         }
-      },
-      onCancel () {
-        setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
       }
     });
   };
@@ -51,7 +46,11 @@ const LotterySetting: React.FC = () => {
               depLsit?.scopeDeptNames.split(';').map((item, index) => (
                 <Tag
                   key={item + index}
-                  closeIcon={<Icon name="icon_common_Line_Close" className={style.tagIcon} />}
+                  closeIcon={
+                    <AuthBtn path="/add">
+                      <Icon name="icon_common_Line_Close" className={style.tagIcon} />
+                    </AuthBtn>
+                  }
                   className={style.tagItem}
                   closable
                   onClose={(event) => onClose(event, index)}
@@ -60,11 +59,13 @@ const LotterySetting: React.FC = () => {
                 </Tag>
               ))}
           </div>
-          <Button
-            className={style.addBtn}
-            icon={<Icon className={style.addBtnIcon} name="xinjian" />}
-            onClick={clickAddBtn}
-          />
+          <AuthBtn path="/add">
+            <Button
+              className={style.addBtn}
+              icon={<Icon className={style.addBtnIcon} name="xinjian" />}
+              onClick={clickAddBtn}
+            />
+          </AuthBtn>
         </div>
         <div className={style.tip}>温馨提醒：未在可见名单的坐席，进入a端抽奖页面时，抽奖按钮置灰。</div>
       </div>

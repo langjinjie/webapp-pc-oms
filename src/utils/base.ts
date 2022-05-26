@@ -119,10 +119,163 @@ export const exportFile = (data: BlobPart, fileName: string): void => {
   window.URL.revokeObjectURL(link.href); // 用完之后使用URL.revokeObjectURL()释放；
 };
 
+/**
+ * 根据节点Id 查询 父结构
+ * const myTree = [
+  {
+    id: '1',
+    name: '主父1',
+    children: [
+      {
+        id: '1-1',
+        name: '父1'
+      },
+      {
+        id: '1-2',
+        name: '父2',
+        children: [
+          {
+            id: '2-2-1-1',
+            name: '子1'
+          },
+          {
+            id: '1-2-2',
+            name: '子2'
+          }
+        ]
+      }
+    ]
+  }
+];
+const result = treeFindPath(myTree, (node) => node.id === '2-2-1-1');
+console.log(result);
+ * @returns  ["2","2-1"]
+ */
+export function treeFindPath (tree: any[], func: (node: any) => boolean, path: any[] = []): any[] {
+  if (!tree) return [];
+  for (const data of tree) {
+    path.push(data);
+    if (func(data)) return path;
+    if (data.children) {
+      const findChildren = treeFindPath(data.children, func, path);
+      if (findChildren.length) return findChildren;
+    }
+    path.pop();
+  }
+  return [];
+}
+
+/**
+ * @param arr
+ * @return arr
+ */
+export const tree2Arry = (arr: any[]): any[] => {
+  const res = [];
+  res.push(...arr); // chilren插入结果数组
+  for (const item of arr) {
+    // 遍历子元素，若包含children则递归调用
+    if (item.children && item.children.length) {
+      res.push(...tree2Arry(item.children));
+    }
+  }
+  return res;
+};
+/**
+ * @param {arr: array, parentId: number}
+ * @return {obj: object}
+ */
+export const arry2Tree = (arr: any[], parentId: string, idName = 'id'): any[] => {
+  const map = new Map(); // 生成map存储元素
+  for (const item of arr) {
+    if (!map.has(item[idName])) {
+      // 若map中没有当前元素，添加并初始化children
+      map.set(item[idName], { ...item, children: [] });
+    } else {
+      map.set(item[idName], { ...map.get(item[idName]), ...item });
+    }
+    if (map.has(item.parentId)) {
+      // 查找父元素，存在则将该元素插入到children
+      map.get(item.parentId).children.push(map.get(item[idName]));
+    } else {
+      // 否则初始化父元素，并插入children
+      map.set(item.parentId, { children: [map.get(item[idName])] });
+    }
+  }
+  return map.get(parentId);
+};
+
+// 删除树的某个节点
+export const filterTree = (tree: any[], func: (node: any) => boolean): any[] => {
+  const newTree = tree.filter(func);
+  newTree.forEach((item) => item.children && (item.children = filterTree(item.children, func)));
+  return newTree;
+};
+
+export const changeTreeItem = (tree: any[], func: (node: any) => any): any[] => {
+  tree.forEach((item) => {
+    if (func(item)) {
+      item = func(item);
+      return false;
+    }
+    if (item.children) {
+      changeTreeItem(item.children, func);
+    }
+  });
+  return tree;
+};
+
 // 小数点后两位百分比
 export const percentage = (num: number, total: number): number | string => {
   if (num === 0 || total === 0) {
     return 0;
   }
   return Math.round((num / total) * 10000) / 100 + '%';
+};
+// 组织架构将已被选中的节点的所有后代节点过滤掉
+export const filterChildren = (arr: any[]): any[] => {
+  const newArr = [...arr];
+  const newArr1: string[] = [];
+  newArr.forEach((item) => {
+    if (item.staffId) return;
+    newArr.forEach((childrenItem) => {
+      if (item === childrenItem) return;
+      // 找出该选中节点的所有后代节点
+      if (childrenItem.fullDeptId.split(',').includes(item.deptId.toString())) {
+        if (childrenItem.staffId) {
+          newArr1.push(childrenItem.staffId);
+        } else {
+          newArr1.push(childrenItem.deptId);
+        }
+      }
+    });
+  });
+  // 过滤掉所有选中节点的后代节点
+  return newArr.filter((item) => !newArr1.includes(item.staffId || item.deptId));
+};
+// 向树结构添加子节点
+export const updateTreeData = (list: any[], key: React.Key, children: any[]): any[] => {
+  return list.map((node) => {
+    if (node.deptId === key) {
+      return {
+        ...node,
+        children
+      };
+    }
+    if (node.children) {
+      return {
+        ...node,
+        children: updateTreeData(node.children, key, children)
+      };
+    }
+    return node;
+  });
+};
+/**
+ * 匹配字符串中的换行符
+ * @param str string
+ * @return string
+ */
+export const replaceEnter = (str: string): string => {
+  // \n 匹配一个换行符, \r 匹配一个回车符
+  return str.replace(/\\n|\\r|\r\n/g, '<br/>');
 };

@@ -378,3 +378,37 @@ export const batchOperateProduct: HttpFunction = (param) => {
 export const searchRecommendGoodsList: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/market/query', param);
 };
+// 查询用户分组，
+export const getUserGroup: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/privilege/scope/group/info', param);
+};
+// 生成临时用户组，
+export const createSingleGroup: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/privilege/group/info', param);
+};
+// 设置文章用户权限，
+export const setUserRightWithArticle: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/news/batch/setscope', param);
+};
+
+// 设置海报用户权限
+export const setUserRightWithPoster: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/poster/batch/setscope', param);
+};
+
+// 设置活动用户权限
+export const setUserRightWithActivity: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/activity/batch/setscope', param);
+};
+// 设置产品用户权限
+export const setUserRightWithProduct: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/product/batch/setscope', param);
+};
+
+/**
+ * 查询素材可见范围
+ * @param param
+ */
+export const queryMarketArea: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/item/scope/data', param);
+};

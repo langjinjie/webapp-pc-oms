@@ -153,6 +153,15 @@
       margin-right: 8px;
     }
   }
+  .formFooter {
+    .ant-btn {
+      width: 140px;
+    }
+  }
+
+  .ant-input-number {
+    border-radius: 16px;
+  }
 }
 
 .ant-checkbox-disabled:not(.ant-checkbox-checked) > .ant-checkbox-inner::after {
@@ -228,4 +237,23 @@
 // message全局通知样式
 .ant-message {
   z-index: 99999; // 设置为最高 (message默认为1010 Modal为1000 Popover为1030)
+}
+
+// 面包屑样式处理
+.breadcrumbWrap {
+  padding: 20px 0;
+  color: #999aa1;
+  .ant-breadcrumb {
+    color: #999aa1;
+    display: inline-block;
+  }
+  .ant-breadcrumb > span:last-child {
+    color: #318cf5;
+  }
+  .ant-breadcrumb a {
+    color: #fff;
+  }
+  .ant-breadcrumb-separator {
+    color: #999aa1;
+  }
 }

@@ -8,6 +8,7 @@ import { useForm } from 'antd/lib/form/Form';
 
 import { Context } from 'src/store';
 import classNames from 'classnames';
+import { useMountedRef } from 'src/utils/use-async';
 
 // interface addressProps {
 //   id: number;
@@ -26,11 +27,12 @@ const TabView1: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [list, setList] = useState<GzhProps[]>([]);
   const [form] = useForm();
-
+  const mountedRef = useMountedRef();
   const { currentCorpId } = useContext(Context);
 
   // 获取公众号列表
   const getList = async () => {
+    if (!mountedRef) return;
     const res = (await getOfficialAccountsList({})) || {};
     const { newsTaskList } = res;
     setList(newsTaskList || []);

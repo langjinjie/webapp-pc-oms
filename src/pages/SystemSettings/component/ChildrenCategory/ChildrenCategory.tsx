@@ -5,6 +5,7 @@ import { Popconfirm, message } from 'antd';
 import { Context } from 'src/store';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { AuthBtn } from 'src/components';
 
 interface IChildrenCategoryProps {
   parentIndex: number;
@@ -83,25 +84,28 @@ const ChildrenCategory: React.FC<IChildrenCategoryProps> = ({
                 >
                   {childrenItem.name}
                   <div className={style.childrenOperation}>
-                    {parentCategory.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
-                      <span data-edit={'edit'} onClick={() => handleEdit(parentCategory, childrenItem)}>
-                        编辑
-                      </span>
-                    )}
-
-                    <Popconfirm
-                      title={'删除分类后,素材将移至"其他"分类下'}
-                      visible={
-                        popconfirmVisible ===
-                        ((childrenItem as IProductTypeItem).typeId || (childrenItem as IPosterTypeItem).id)
-                      }
-                      onConfirm={async () => onConfirmHandle(childrenItem)}
-                      onCancel={() => setPopconfirmVisible('')}
-                    >
+                    <AuthBtn path="/edit">
                       {parentCategory.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
-                        <span onClick={() => clickDeleteHandle(childrenItem)}>删除</span>
+                        <span data-edit={'edit'} onClick={() => handleEdit(parentCategory, childrenItem)}>
+                          编辑
+                        </span>
                       )}
-                    </Popconfirm>
+                    </AuthBtn>
+                    <AuthBtn path="/delete">
+                      <Popconfirm
+                        title={'删除分类后,素材将移至"其他"分类下'}
+                        visible={
+                          popconfirmVisible ===
+                          ((childrenItem as IProductTypeItem).typeId || (childrenItem as IPosterTypeItem).id)
+                        }
+                        onConfirm={async () => onConfirmHandle(childrenItem)}
+                        onCancel={() => setPopconfirmVisible('')}
+                      >
+                        {parentCategory.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
+                          <span onClick={() => clickDeleteHandle(childrenItem)}>删除</span>
+                        )}
+                      </Popconfirm>
+                    </AuthBtn>
                   </div>
                 </div>
                 <div

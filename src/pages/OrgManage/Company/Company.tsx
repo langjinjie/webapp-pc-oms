@@ -6,9 +6,9 @@
 import React, { useEffect, useState, Key } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { setTitle } from 'lester-tools';
-import { Table, TableColumnProps, Button, message } from 'antd';
-import { Form, Icon, Modal } from 'src/components';
-import { queryCompanyList, queryAuthUrl, queryAccountList, setAdminUser } from 'src/apis/company';
+import { Table, TableColumnProps, Button, message, Popconfirm } from 'antd';
+import { Form, Icon, Modal, AuthBtn } from 'src/components';
+import { queryCompanyList, queryAuthUrl, queryAccountList, setAdminUser, copyCompanyFeature } from 'src/apis/company';
 import { ItemProps } from 'src/utils/interface';
 import style from './style.module.less';
 
@@ -62,10 +62,20 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const setAdmin = async () => {
-    const res: any = await setAdminUser({ corpId: currentCorpId, list: selectIds });
+    const res: any = await setAdminUser({
+      corpId: currentCorpId,
+      list: selectIds.map((val) => ({ adminId: val }))
+    });
     if (res) {
       setAdminVisible(false);
       message.success('设置成功！');
+    }
+  };
+
+  const copyFeature = async (targetCorpId: string) => {
+    const res: any = await copyCompanyFeature({ targetCorpId });
+    if (res) {
+      message.success('复制成功!');
     }
   };
 
@@ -93,25 +103,38 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
       title: '操作',
       render: (text, record) => (
         <>
-          <Button type="link" onClick={() => history.push('/company/access', { corpId: record.corpId })}>
-            查看
-          </Button>
-          <Button type="link" onClick={() => getAuthUrl(record.corpId)}>
-            授权
-          </Button>
-          <Button type="link" onClick={() => history.push('/company/feature', { corpId: record.corpId })}>
-            查看功能
-          </Button>
-          <Button
-            type="link"
-            onClick={() => {
-              setCurrentCorpId(record.corpId);
-              setAdminVisible(true);
-              getAccountList(record.corpId);
-            }}
-          >
-            设置企业超级管理员
-          </Button>
+          <AuthBtn path="/view">
+            <Button type="link" onClick={() => history.push('/company/access', { corpId: record.corpId })}>
+              查看
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/auth">
+            <Button type="link" onClick={() => getAuthUrl(record.corpId)}>
+              授权
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/featureView">
+            <Button type="link" onClick={() => history.push('/company/feature', { corpId: record.corpId })}>
+              查看功能
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/setAdmin">
+            <Button
+              type="link"
+              onClick={() => {
+                setCurrentCorpId(record.corpId);
+                setAdminVisible(true);
+                getAccountList(record.corpId);
+              }}
+            >
+              设置企业超级管理员
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/copy">
+            <Popconfirm title="确认要一键复制当前企业功能权限到此企业吗？" onConfirm={() => copyFeature(record.corpId)}>
+              <Button type="link">一键复制功能权限</Button>
+            </Popconfirm>
+          </AuthBtn>
         </>
       )
     }
@@ -137,16 +160,19 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   useEffect(() => {
     getCompanyList();
     setTitle('企业管理');
-    console.log(currentCorpId);
   }, []);
 
   return (
     <div className={style.wrap}>
-      <div className={style.addBtn} onClick={() => history.push('/company/access')}>
-        <Icon className={style.addIcon} name="xinjian" />
-        添加企业
-      </div>
-      <Form itemData={formData} onSubmit={onSubmit} />
+      <AuthBtn path="/add">
+        <div className={style.addBtn} onClick={() => history.push('/company/access')}>
+          <Icon className={style.addIcon} name="xinjian" />
+          添加企业
+        </div>
+      </AuthBtn>
+      <AuthBtn path="/search">
+        <Form itemData={formData} onSubmit={onSubmit} />
+      </AuthBtn>
       <Table className={style.taleWrap} rowKey="corpId" dataSource={companyList} columns={columns} pagination={false} />
       <Modal
         className={style.adminModal}

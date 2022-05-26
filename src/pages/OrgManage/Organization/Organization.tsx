@@ -7,7 +7,7 @@ import React, { useEffect, useState, useContext, useRef, MutableRefObject } from
 import { Input, Tree, TreeSelect, message } from 'antd';
 import classNames from 'classnames';
 import { setTitle, copy } from 'lester-tools';
-import { Icon, Modal, Empty } from 'src/components';
+import { Icon, Modal, Empty, AuthBtn } from 'src/components';
 import {
   queryDepartmentList,
   searchStaffAndDepart,
@@ -19,6 +19,7 @@ import {
 import { exportFile } from 'src/utils/base';
 import { Context } from 'src/store';
 import { IOrganizationItem } from 'src/utils/interface';
+
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
@@ -520,7 +521,6 @@ const Organization: React.FC = () => {
       setShowDepart(false);
     }
   };
-
   useEffect(() => {
     !transferVisible && setTransferId('');
   }, [transferVisible]);
@@ -543,13 +543,15 @@ const Organization: React.FC = () => {
   return (
     <div className={style.wrap}>
       <section className={style.left}>
-        <div className={style.inputWrap}>
-          <Search
-            placeholder="搜索成员、部门"
-            onSearch={onSearch}
-            enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
-          />
-        </div>
+        <AuthBtn path="/query">
+          <div className={style.inputWrap}>
+            <Search
+              placeholder="搜索成员、部门"
+              onSearch={onSearch}
+              enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
+            />
+          </div>
+        </AuthBtn>
         <div
           style={{ display: displayType === 0 ? 'block' : 'none' }}
           className={classNames(style.treeContainer, 'scroll-strip')}
@@ -566,16 +568,18 @@ const Organization: React.FC = () => {
               <div className={style.nodeItem}>
                 {node.deptName}({node.deptType === 1 ? `${node.effCount}/${node.totalCount}` : node.effCount})
                 {Number(node.deptId) !== -1 && (
-                  <Icon
-                    className={style.dotIcon}
-                    name="diandian"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePosition(e.clientX, e.clientY);
-                      setShowDepart(true);
-                      setCurrentNode(node);
-                    }}
-                  />
+                  <AuthBtn path="/operate">
+                    <Icon
+                      className={style.dotIcon}
+                      name="diandian"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePosition(e.clientX, e.clientY);
+                        setShowDepart(true);
+                        setCurrentNode(node);
+                      }}
+                    />
+                  </AuthBtn>
                 )}
               </div>
             )}

@@ -5,6 +5,7 @@ import moment, { Moment } from 'moment';
 import classNames from 'classnames';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
+import { AuthBtn } from 'src/components';
 
 export interface SearchParamsProps {
   rangePicker: undefined | Moment[];
@@ -26,12 +27,13 @@ export interface ProductProps {
   status: number;
   isOwner: string;
   isTop: string;
+  groupId: string;
 }
 
 enum ProductStatus {
   '未上架' = 1,
   '已上架',
-  '已下架',
+  '已下架'
 }
 
 export const setSearchCols = (options: any[]): SearchCol[] => {
@@ -72,9 +74,10 @@ type ColumnsArgs = {
   viewItem: (record: ProductProps) => void;
   deleteItem: (record: ProductProps, index: number) => void;
   handleSort: (record: ProductProps) => void;
+  setRight: (record: ProductProps) => void;
 };
 const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
-  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort } = args;
+  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort, setRight } = args;
   return [
     { title: '产品名称', dataIndex: 'productName', width: 200, ellipsis: { showTitle: true } },
     {
@@ -147,38 +150,54 @@ const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
     },
     {
       title: '操作',
-      width: 180,
+      width: 230,
       dataIndex: 'status',
       align: 'left',
       fixed: 'right',
       render: (status: number, obj: any, index: number) => (
         <Space size={10} className="spaceWrap">
-          <Button type="link" onClick={() => handleSort(obj)}>
-            {obj.isTop === '1' ? '取消置顶' : '置顶'}
-          </Button>
-          <Button type="link" onClick={() => viewItem(obj)}>
-            查看
-          </Button>
-          {status === 1 && (
-            <Button type="link" onClick={() => handleEdit(obj)}>
-              编辑
+          <AuthBtn path="/top">
+            <Button type="link" onClick={() => handleSort(obj)}>
+              {obj.isTop === '1' ? '取消置顶' : '置顶'}
             </Button>
-          )}
-          {(status === 1 || status === 3) && (
-            <Popconfirm title="确定要上架?" onConfirm={() => changeItemStatus(obj, index)}>
-              <Button type="link">上架</Button>
-            </Popconfirm>
-          )}
-          {status === 2 && (
-            <Popconfirm title="确定要下架?" onConfirm={() => changeItemStatus(obj, index)}>
-              <Button type="link">下架</Button>
-            </Popconfirm>
-          )}
-          {status === 3 && (
-            <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj, index)}>
-              <Button type="link">删除</Button>
-            </Popconfirm>
-          )}
+          </AuthBtn>
+          <AuthBtn path="/view">
+            <Button type="link" onClick={() => viewItem(obj)}>
+              查看
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/edit">
+            {status === 1 && (
+              <Button type="link" onClick={() => handleEdit(obj)}>
+                编辑
+              </Button>
+            )}
+          </AuthBtn>
+          <AuthBtn path="/operate">
+            {(status === 1 || status === 3) && (
+              <Popconfirm title="确定要上架?" onConfirm={() => changeItemStatus(obj, index)}>
+                <Button type="link">上架</Button>
+              </Popconfirm>
+            )}
+
+            {status === 2 && (
+              <Popconfirm title="确定要下架?" onConfirm={() => changeItemStatus(obj, index)}>
+                <Button type="link">下架</Button>
+              </Popconfirm>
+            )}
+          </AuthBtn>
+          <AuthBtn path="/delete">
+            {status === 3 && (
+              <Popconfirm title="确定要删除?" onConfirm={() => deleteItem(obj, index)}>
+                <Button type="link">删除</Button>
+              </Popconfirm>
+            )}
+          </AuthBtn>
+          <AuthBtn path="/set">
+            <Button type="link" onClick={() => setRight(obj)}>
+              配置可见范围
+            </Button>
+          </AuthBtn>
         </Space>
       )
     }

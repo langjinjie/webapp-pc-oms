@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message, PaginationProps } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
 import { AddStatisticsFreeModal } from './Components/ExportStaff/AddStatisticsFreeModal';
 import { addFreeStaffs, delFreeStaffs, getFreeStaffList } from 'src/apis/orgManage';
+import { useDocumentTitle } from 'src/utils/base';
 import DeleteModal from './Components/DeleteModal/DeleteModal';
 
 const StatisticsFreeList: React.FC = () => {
@@ -64,6 +65,8 @@ const StatisticsFreeList: React.FC = () => {
     }
   };
 
+  useDocumentTitle('机构管理-数据免统计名单');
+
   useEffect(() => {
     getList();
   }, []);
@@ -96,29 +99,35 @@ const StatisticsFreeList: React.FC = () => {
     <div className="container">
       <div className="header">
         <div className="btn_wrap pb20">
-          <Button
-            type="primary"
-            onClick={() => {
-              setVisible(true);
-            }}
-            shape="round"
-            size="large"
-          >
-            新增免统计名单
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => {
-              setDeleteVisible(true);
-            }}
-            shape="round"
-            size="large"
-            disabled={selectedRowKeys.length === 0}
-          >
-            删除成员
-          </Button>
+          <AuthBtn path="/add">
+            <Button
+              type="primary"
+              onClick={() => {
+                setVisible(true);
+              }}
+              shape="round"
+              size="large"
+            >
+              新增免统计名单
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/delete">
+            <Button
+              type="primary"
+              onClick={() => {
+                setDeleteVisible(true);
+              }}
+              shape="round"
+              size="large"
+              disabled={selectedRowKeys.length === 0}
+            >
+              删除成员
+            </Button>
+          </AuthBtn>
         </div>
-        <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
+        <AuthBtn path="/query">
+          <NgFormSearch searchCols={searchCols} onSearch={handleSearch} />
+        </AuthBtn>
       </div>
       <div className="pt20">
         <NgTable
