@@ -3,14 +3,17 @@
   .choosedList {
     position: relative;
     display: flex;
+    flex-wrap: wrap;
     margin: 0 20px 0 28px;
     width: 560px;
     padding: 0 10px;
     min-height: 36px;
+    max-height: 200px;
     background: #ffffff;
     border-radius: 18px;
     border: 1px solid #e1e2e6;
     transition: all 0.3s;
+    overflow: auto;
     .placeholder {
       height: 36px;
       line-height: 36px;
