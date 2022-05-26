@@ -73,7 +73,7 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
     if (e.checked) {
       // 判断点击的是否是非查询按钮
       let searchButtonKeys: string[] = [];
-      if (e.node.buttonType !== 1) {
+      if (e.node.buttonType && e.node.buttonType !== 1) {
         searchButtonKeys = flatTreeData
           .find((findItem: any) => findItem.menuId === e.node.parentId)
           .children.filter((filterItem: any) => filterItem.buttonType === 1)
