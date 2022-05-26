@@ -137,7 +137,7 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
           </Form.Item>
           <Form.Item>
             <span>
-              截止目前时间：此用户组共计人数：
+              截止目前时间：共计人数
               {staffCount}人
             </span>
             {staffCount > 0 && (
