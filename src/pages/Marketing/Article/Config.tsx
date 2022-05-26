@@ -248,7 +248,7 @@ const columns = (args: colargsType): ColumnsType<Article> => {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 320,
+      width: 340,
       render: (text, record) => (
         <>
           <Space size="small">

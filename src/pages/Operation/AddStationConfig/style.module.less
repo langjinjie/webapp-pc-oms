@@ -53,6 +53,15 @@
 }
 
 .formWrap {
+  .areaTips {
+    white-space: nowrap;
+    color: red;
+
+    .areaTipsVal {
+      margin-right: 15px;
+    }
+  }
+
   :global {
     .ant-form-item-label {
       padding-right: 20px;
@@ -84,6 +93,12 @@
     :global {
       .ant-form-item-label {
         width: 80px;
+      }
+
+      .ant-form-item-extra {
+        position: absolute;
+        left: 550px;
+        top: 5px;
       }
     }
   }
