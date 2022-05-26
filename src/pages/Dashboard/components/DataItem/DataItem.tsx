@@ -7,10 +7,11 @@ import styles from './style.module.less';
 
 interface DataItemProps {
   path?: string;
+  onClick: () => void;
 }
-export const DataItem: React.FC<DataItemProps> = () => {
+export const DataItem: React.FC<DataItemProps> = ({ onClick }) => {
   return (
-    <div className={classNames(styles.wrapper, 'flex cell align-center justify-between')}>
+    <div className={classNames(styles.wrapper, 'flex cell align-center justify-between')} onClick={onClick}>
       <dl className="ml30 flex vertical align-center">
         <dt>
           <i className={styles.iconType}></i>
