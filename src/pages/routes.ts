@@ -27,6 +27,10 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/dashboard',
     component: lazy(() => import('src/pages/Dashboard/index'))
+  },
+  {
+    path: '/dashboard/AddFriend',
+    component: lazy(() => import('src/pages/Dashboard/AddFriend/AddFriend'))
   }
 ];
 
