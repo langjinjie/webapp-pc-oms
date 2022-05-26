@@ -123,6 +123,7 @@ const DataRangeModal: React.FC<IDataRangeModalProps> = ({
   };
 
   const handleCancel = (e: any) => {
+    setOriginValues(null);
     setFormValues({
       isSet: 0,
       groupType: 1,
@@ -131,7 +132,6 @@ const DataRangeModal: React.FC<IDataRangeModalProps> = ({
       defaultDataScope: 1
     });
     onCancel?.(e);
-    setOriginValues(null);
   };
 
   const staffCount = useMemo(() => {
