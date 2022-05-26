@@ -20,7 +20,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
     groupId: '',
     defaultDataScope: 1
   });
-  const breadCrumbsPathList = ['后管端权限管理', 'B端权限管理', 'A端权限管理'];
+  const breadCrumbsPathList = ['后管端角色管理', 'B端角色管理', 'A端角色管理'];
   const history = useHistory();
   const location = useLocation();
   const [form] = Form.useForm();

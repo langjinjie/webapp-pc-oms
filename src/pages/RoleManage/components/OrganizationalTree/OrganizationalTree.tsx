@@ -273,7 +273,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   useEffect(() => {
     const seletedCount = selectedList.reduce((prev: number, now: any) => {
       if (!now.staffId) {
-        prev += now.effCount || 0;
+        prev += now.effCount || now.staffCount || 0;
       } else {
         prev += 1;
       }
