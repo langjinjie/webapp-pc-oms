@@ -49,6 +49,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
   };
   // 设置B端管辖范围
   const setRangeHangle = () => {
+    if (readOnly) return;
     setRangeParam((param) => ({ ...param, visible: true }));
   };
   // 取消

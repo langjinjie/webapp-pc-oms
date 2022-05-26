@@ -133,8 +133,9 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
             dangerouslySetInnerHTML={{
               __html:
                 replaceEnter(
-                  row.roles.split(';').reduce((prev: string, now: string, index: number) => {
-                    prev += index ? 'B端：' + now : 'A端：' + now + '\\n';
+                  row.roles.reduce((prev: string, now: any) => {
+                    prev +=
+                      (now.roleType === '3' ? 'A端：' : 'B端：') + now.roleName + (now.roleType === '3' ? '\\n' : '');
                     return prev;
                   }, '')
                 ) || UNKNOWN

@@ -5,7 +5,7 @@ import { NgModal } from 'src/components';
 import UserGroupModal from 'src/pages/Marketing/Components/ModalSetUserRight/UserGroupModal';
 import UserOrgModal from 'src/pages/Marketing/Components/ModalSetUserRight/UserOrgModal';
 
-// import styles from './style.module.less';
+import style from './style.module.less';
 import { ViewStaffModal } from 'src/pages/OrgManage/UserGroup/components';
 // import classNames from 'classnames';
 
@@ -46,6 +46,7 @@ const DataRangeModal: React.FC<IDataRangeModalProps> = ({
   });
   // 是否设置过
   const [isSeted, setIsSeted] = useState(false);
+  const [isTips, setIsTips] = useState(false);
   // 是否开启强制修改
   const [isForceSet, setIsForceSet] = useState(false);
   // const [,setIsDiff] = useState(false);
@@ -80,6 +81,7 @@ const DataRangeModal: React.FC<IDataRangeModalProps> = ({
   const getGroup = async () => {
     setIsForceSet(false);
     setIsSeted(false);
+    setIsTips(!defaultDataScope);
     if (groupId) {
       await getGroupDetail(groupId as string);
     } else {
@@ -105,21 +107,14 @@ const DataRangeModal: React.FC<IDataRangeModalProps> = ({
     }
   }, [visible]);
   const onValuesChange = (changeValues: any, values: any) => {
-    const { groupType = 1, isSet, group1, group2, defaultDataScope } = values;
-    // if (changeValues.groupType) {
-    //   rightForm.setFieldsValue({
-    //     group1: undefined,
-    //     group12: undefined
-    //   });
-    // }
+    const { groupType = 1, isSet, defaultDataScope } = values;
     setFormValues((formValues) => ({
       ...formValues,
       isSet,
-      group1,
-      group2,
-      groupType,
-      defaultDataScope
+      ...changeValues,
+      groupType
     }));
+    setIsTips(!defaultDataScope);
   };
 
   const handleCancel = (e: any) => {
@@ -147,8 +142,12 @@ const DataRangeModal: React.FC<IDataRangeModalProps> = ({
         width="570px"
         onOk={handleSubmit}
         onCancel={handleCancel}
+        className={style.modalWrap}
         {...props}
       >
+        {isTips && (
+          <div className={style.tips}>备注：选择关闭默认管辖范围，则会关掉默认的查看下级的数据，请谨慎操作</div>
+        )}
         <Form
           form={rightForm}
           initialValues={formValues}
