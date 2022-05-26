@@ -1,0 +1,46 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2022-05-26 14:24
+*/
+.activityList {
+  padding: 30px;
+
+  .addBtn {
+    margin-bottom: 30px;
+    padding: 0 28px;
+    line-height: 40px;
+  }
+
+  .mb30 {
+    margin-bottom: 30px;
+  }
+}
+
+.circle {
+  margin-right: 8px;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #f25555;
+  border-radius: 50%;
+
+  &.green {
+    background-color: #52c41a;
+  }
+
+  &.grey {
+    background-color: #d1d1d1;
+  }
+}
+
+.activityEdit {
+  :global {
+    .ant-form-item-control-input {
+      .ant-input-affix-wrapper,
+      .ant-picker {
+        border-radius: 20px;
+      }
+    }
+  }
+}

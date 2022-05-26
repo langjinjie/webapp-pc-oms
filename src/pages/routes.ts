@@ -263,6 +263,18 @@ export const routes: RouteProps[] = [
   {
     path: '/userGroup/add',
     component: lazy(() => import('src/pages/OrgManage/UserGroup/components/AddGroup/AddGroup'))
+  },
+  {
+    path: '/lotteryConfig',
+    component: lazy(() => import('src/pages/PointsManage/LotteryConfig/ActivityList'))
+  },
+  {
+    path: '/lotteryConfig/prize',
+    component: lazy(() => import('src/pages/PointsManage/LotteryConfig/LotteryConfig'))
+  },
+  {
+    path: '/lotteryConfig/prize/add',
+    component: lazy(() => import('src/pages/PointsManage/LotteryConfig/PrizeEdit'))
   }
 ];
 

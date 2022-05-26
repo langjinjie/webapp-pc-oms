@@ -4,6 +4,7 @@
  * @date 2021-11-05 16:22
  */
 import React from 'react';
+import classNames from 'classnames';
 import { Form, Input, Select, DatePicker, Button, FormProps, FormItemProps } from 'antd';
 import { DataItem, ItemDataProps, ItemProps } from 'src/utils/interface';
 import style from './style.module.less';
@@ -18,10 +19,10 @@ const { Item, useForm } = Form;
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-const CommonForm: React.FC<CommonFormProps> = ({ onSubmit, itemProps, itemData, ...formProps }) => {
+const CommonForm: React.FC<CommonFormProps> = ({ onSubmit, itemProps, className, itemData, ...formProps }) => {
   const [form] = useForm();
 
-  const itemRender = ({ type, dataSource = [], placeholder }: ItemDataProps) => {
+  const itemRender = ({ type, dataSource = [], placeholder }: ItemDataProps): React.ReactNode => {
     switch (type) {
       case 'input':
         return <Input placeholder={placeholder || '请输入'} allowClear />;
@@ -51,7 +52,7 @@ const CommonForm: React.FC<CommonFormProps> = ({ onSubmit, itemProps, itemData, 
       onFinish={onSubmit}
       onReset={() => onSubmit({})}
       {...formProps}
-      className={style.formWrap}
+      className={classNames(style.formWrap, className)}
     >
       {itemData.map(({ name, label, ...item }) => (
         <Item key={name} {...itemProps} name={name} label={label}>

@@ -1,7 +1,7 @@
 /**
  * 积分商城接口
  *  */
-import http from 'src/utils/http';
+import http, { HttpFunction } from 'src/utils/http';
 type HttpFC<T = { [key: string]: unknown }> = (param?: T) => Promise<any>;
 type VoidFC = () => Promise<any>;
 
@@ -74,4 +74,143 @@ export const getExclusiveTypeList: HttpFC = () => {
 // 专属任务积分发放
 export const setPointsOfExclusive: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/points/specsend', param);
+};
+
+/**
+ * 查询抽奖活动列表
+ * @param param
+ */
+export const queryLotteryActivity: HttpFunction = (param: object) => {
+  return Promise.resolve({
+    total: 21,
+    list: [
+      {
+        activityId: '123',
+        activityName: '贵州人保先锋团队第四轮抽奖',
+        startTime: '2022.04.20 18:00',
+        endTime: '2022.04.21 19:00',
+        dateCreated: '2022.04.19 15:03',
+        createBy: 'lester',
+        status: 0
+      },
+      {
+        activityId: '456',
+        activityName: '贵州人保先锋团队第三轮抽奖',
+        startTime: '2022.04.20 18:00',
+        endTime: '2022.04.21 19:00',
+        dateCreated: '2022.04.19 15:03',
+        createBy: 'lester',
+        status: 1
+      },
+      {
+        activityId: '789',
+        activityName: '贵州人保先锋团队第二轮抽奖',
+        startTime: '2022.04.20 18:00',
+        endTime: '2022.04.21 19:00',
+        dateCreated: '2022.04.19 15:03',
+        createBy: 'lester',
+        status: 2
+      },
+      {
+        activityId: '321',
+        activityName: '贵州人保先锋团队第一轮抽奖',
+        startTime: '2022.04.20 18:00',
+        endTime: '2022.04.21 19:00',
+        dateCreated: '2022.04.19 15:03',
+        createBy: 'lester',
+        status: 3,
+        sendStatus: 0
+      },
+      {
+        activityId: 'abc',
+        activityName: '贵州人保先锋团队第1轮抽奖',
+        startTime: '2022.04.20 18:00',
+        endTime: '2022.04.21 19:00',
+        dateCreated: '2022.04.19 15:03',
+        createBy: 'lester',
+        status: 3,
+        sendStatus: 1,
+        sendTime: '2022.04.19 15:03',
+        opName: 'lester'
+      },
+      {
+        activityId: '654',
+        activityName: '我佛了',
+        startTime: '2022.04.20 18:00',
+        endTime: '2022.04.21 19:00',
+        dateCreated: '2022.04.19 15:03',
+        createBy: 'lester',
+        status: 4,
+        sendStatus: 1,
+        sendTime: '2022.04.19 15:03',
+        opName: 'lester'
+      }
+    ]
+  });
+  return http.post('/tenacity-admin/api/lottery/activity/list', param);
+};
+
+/**
+ * 查询活动详情
+ * @param param
+ */
+export const queryActivityDetail: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/activity/detail', param);
+};
+
+/**
+ * 上架抽奖活动
+ * @param param
+ */
+export const operateActivity: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/activity/manage', param);
+};
+
+/**
+ * 编辑抽奖活动
+ * @param param
+ */
+export const editActivity: HttpFunction = (param: Object) => {
+  return Promise.resolve({});
+  return http.post('/tenacity-admin/api/lottery/activity/edit', param);
+};
+
+/**
+ * 发放大奖
+ * @param param
+ */
+export const giveOutPrize: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/rest/prize/phone/send', param);
+};
+
+/**
+ * 查询活动配置
+ * @param param
+ */
+export const queryActivityConfig: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/goods/list', param);
+};
+
+/**
+ * 配置活动
+ * @param param
+ */
+export const editActivityConfig: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/activity/config', param);
+};
+
+/**
+ * 查询奖品详情
+ * @param param
+ */
+export const queryPrizeDetail: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/goods/detail', param);
+};
+
+/**
+ * 编辑奖品
+ * @param param
+ */
+export const editPrize: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/goods/edit', param);
 };
