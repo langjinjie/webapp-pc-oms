@@ -16,6 +16,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
   const history = useHistory();
   const [popconfirmVisible, setPopconfirmVisible] = useState('');
   const [opType, setOpType] = useState(0);
+  const roleType2Name = ['后管端', 'B端', 'A端'];
   // 激活/停用账号请求
   const updateStaffPpstatus = async (userIds: string[]) => {
     if (opType) {
@@ -133,9 +134,9 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
             dangerouslySetInnerHTML={{
               __html:
                 replaceEnter(
-                  row.roles.reduce((prev: string, now: any) => {
+                  row.roles.reduce((prev: string, now: any, index: number) => {
                     prev +=
-                      (now.roleType === '3' ? 'A端：' : 'B端：') + now.roleName + (now.roleType === '3' ? '\\n' : '');
+                      roleType2Name[+now.roleType - 1] + now.roleName + (index !== row.roles.length - 1 ? '\\n' : '');
                     return prev;
                   }, '')
                 ) || UNKNOWN
