@@ -135,18 +135,11 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
     }
   }, [visible]);
   const onValuesChange = (changeValues: any, values: any) => {
-    const { groupType = 1, isSet, group1, group2 } = values;
-    // if (changeValues.groupType) {
-    //   rightForm.setFieldsValue({
-    //     // group1: undefined,
-    //     // group12: undefined
-    //   });
-    // }
+    const { groupType = 1, isSet } = values;
     setFormValues((formValues) => ({
       ...formValues,
       isSet,
-      group1,
-      group2,
+      ...changeValues,
       groupType
     }));
   };
