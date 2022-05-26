@@ -127,7 +127,7 @@ const ChooseTags: React.FC<IChooseTags> = ({ value, onChange, readOnly }) => {
         {!value?.length && <span className={style.placeholder}>请选择</span>}
         {value?.map((item) => (
           <div key={item.groupTagId} className={classNames(style.chooseItem, { [style.readOnly]: readOnly })}>
-            {groupTagList.list.find((findItem) => item.groupTagId === findItem.groupTagId)?.name}
+            {item.name}
             {readOnly || (
               <Icon
                 className={style.delItem}
