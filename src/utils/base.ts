@@ -3,7 +3,7 @@
  * @author Lester
  * @date 2021-05-29 17:29
  */
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
 import qs, { ParsedQs } from 'qs';
 import { useEffect, useRef } from 'react';
 type commonFC = (...args: any) => any;

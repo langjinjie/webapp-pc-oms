@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
 import { UploadFile } from 'src/components';
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
 import { SetUserRightFormItem } from '../Components/SetUserRight/SetUserRight';
 
 interface productConfigProps {

@@ -7,7 +7,7 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Button, message, FormProps } from 'antd';
 import classNames from 'classnames';
-import { copy } from 'lester-tools';
+import { copy } from 'tenacity-tools';
 import { queryCompanyInfo, saveCompanyInfo, updateCompanyStep } from 'src/apis/company';
 import style from './style.module.less';
 

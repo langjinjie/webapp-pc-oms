@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import NgUpload from '../../Components/Upload/Upload';
 import style from './style.module.less';
-import { Icon } from 'lester-ui';
+import { Icon } from 'tenacity-ui';
 import { RecommendMarketProps } from './TabView3';
 import { debounce } from 'src/utils/base';
 import { recommendTypeList } from '../Config';

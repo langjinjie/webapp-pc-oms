@@ -7,7 +7,7 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Card, Collapse, Button, Form, FormProps, Input, Select, TreeSelect, message, Upload } from 'antd';
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
 import { Icon } from 'src/components';
 import {
   saveStation,

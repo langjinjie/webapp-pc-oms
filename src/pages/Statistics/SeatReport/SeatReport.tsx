@@ -6,8 +6,8 @@
 import React, { useEffect, useState } from 'react';
 import { Select } from 'antd';
 import Dom2Img from 'dom-to-image';
-import { Button } from 'lester-ui';
-import { setTitle } from 'lester-tools';
+import { Button } from 'tenacity-ui';
+import { setTitle } from 'tenacity-tools';
 import { downloadImage } from 'src/utils/base';
 import {
   queryReportList,

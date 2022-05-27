@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Form, Input, Button, Radio, DatePicker, message } from 'antd';
 import { ChoosedStaffList } from './component';
 import { ImageUpload } from 'src/components';
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
 import { requestCreateTransferTask, requestGetTaskDetail } from 'src/apis/migration';
 import moment, { Moment } from 'moment';
 import DetailModal from 'src/pages/Migration/EnterpriseWeChat/components/DetailModal/DetailModal';
