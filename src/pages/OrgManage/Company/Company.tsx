@@ -5,7 +5,7 @@
  */
 import React, { useEffect, useState, Key } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { setTitle } from 'lester-tools';
+import { setTitle } from 'tenacity-tools';
 import { Table, TableColumnProps, Button, message, Popconfirm } from 'antd';
 import { Form, Icon, Modal, AuthBtn } from 'src/components';
 import { queryCompanyList, queryAuthUrl, queryAccountList, setAdminUser, copyCompanyFeature } from 'src/apis/company';

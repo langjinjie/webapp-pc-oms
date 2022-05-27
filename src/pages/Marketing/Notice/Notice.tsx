@@ -5,7 +5,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Card, Form, Input, DatePicker, FormProps, Button, Radio, message, Select } from 'antd';
-import { setTitle } from 'lester-tools';
+import { setTitle } from 'tenacity-tools';
 import moment, { Moment } from 'moment';
 import { RouteComponentProps } from 'react-router-dom';
 import { ImageUpload } from 'src/components';

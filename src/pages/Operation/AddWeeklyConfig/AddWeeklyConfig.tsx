@@ -6,7 +6,7 @@
 import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Card, Button, Form, FormProps, Input, Select, DatePicker, Radio, message } from 'antd';
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
 import moment from 'moment';
 import { Icon, Modal, ImageUpload } from 'src/components';
 import { queryActivityList, queryArticleList, queryMarketArea, queryProductList } from 'src/apis/marketing';

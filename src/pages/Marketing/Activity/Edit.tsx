@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Row, Col, Card, Form, Input, message, Button, Select, Radio } from 'antd';
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
 import { Context } from 'src/store';
 import { activityDetail, activityEdit, productConfig } from 'src/apis/marketing';
 import style from './style.module.less';

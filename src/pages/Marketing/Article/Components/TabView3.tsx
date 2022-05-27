@@ -12,7 +12,7 @@ import { Context } from 'src/store';
 import { NgEditor } from 'src/components';
 import NgUpload from '../../Components/Upload/Upload';
 import { WechatShare } from '../../Components/WechatShare/WechatShare';
-import { Icon } from 'lester-ui';
+import { Icon } from 'tenacity-ui';
 
 import style from './style.module.less';
 import { recommendTypeList } from '../Config';

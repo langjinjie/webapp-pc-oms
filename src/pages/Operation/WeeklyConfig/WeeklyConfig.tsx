@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Card, Table, PaginationProps, TableColumnType, Button, Modal, message } from 'antd';
 import qs from 'qs';
 import classNames from 'classnames';
-import { setTitle } from 'lester-tools';
+import { setTitle } from 'tenacity-tools';
 import { AuthBtn, Form, Icon } from 'src/components';
 import { ItemProps } from 'src/utils/interface';
 import { queryWeeklyList, publishConfig, deleteConfig } from 'src/apis/weekly';
