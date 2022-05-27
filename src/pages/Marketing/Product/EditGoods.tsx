@@ -9,6 +9,7 @@ import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
 import { UploadFile } from 'src/components';
 import { getQueryParam } from 'lester-tools';
+import { SetUserRightFormItem } from '../Components/SetUserRight/SetUserRight';
 
 interface productConfigProps {
   id: number;
@@ -93,7 +94,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         sourceUrl,
         recommendImgUrl,
         whetherAssociated,
-        specType
+        specType,
+        groupId
       } = res;
 
       setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl, whetherAssociated });
@@ -104,6 +106,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
 
       form.setFieldsValue({
         productName,
+        groupId,
         productId,
         specType,
         corpProductLink,
@@ -239,13 +242,19 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   };
 
   const onFinish = async (values: any) => {
-    const { highlights, tags, ...otherValues } = values;
+    const { highlights, tags, groupId, ...otherValues } = values;
+
+    delete otherValues.group1;
+    delete otherValues.group2;
+    delete otherValues.groupType;
+    delete otherValues.isSet;
     const editParams = {
       ...otherValues,
       productId: propsState.id || null,
       premium: +premiumValue * 100,
       premiumTypeId: currency,
       tags: tags.join(','),
+      groupId: groupId || '',
       highlights: highlights && highlights.replace(/，/gi, ',')
     };
     const res = await productEdit(editParams);
@@ -554,6 +563,10 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             className="width400"
             readOnly={isReadOnly}
           />
+        </Form.Item>
+
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={form} />
         </Form.Item>
         {/* </Form> */}
 

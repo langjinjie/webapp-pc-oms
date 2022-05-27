@@ -42,7 +42,6 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
         ? { group1: { ...res.groupInfo, groupId: value } }
         : { group2: { ...res.orgInfo, groupId: value } })
     };
-    console.log(groupType, data);
     form.setFieldsValue(data);
     setFormValues((formValues) => ({
       ...formValues,
