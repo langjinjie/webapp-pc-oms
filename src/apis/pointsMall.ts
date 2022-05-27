@@ -188,6 +188,99 @@ export const giveOutPrize: HttpFunction = (param: Object) => {
  * @param param
  */
 export const queryActivityConfig: HttpFunction = (param: Object) => {
+  return Promise.resolve({
+    status: 0,
+    costPoints: 100,
+    dayLimit: 2,
+    weekLimit: 10,
+    monthLimit: 20,
+    list: [
+      {
+        goodsId: '123sad',
+        name: '肾14',
+        imgUrl: require('src/assets/images/artImg.png'),
+        goodsType: 1,
+        totalStock: 5,
+        consumeStock: 2,
+        winWeight: 10,
+        exchangeDesc:
+          '恭喜中奖，请核查下方收货信息，年高工作人员审核相关信息无误后，会在3-5个工作日内发放奖品。若有问题请点击纠错并提交信息。'
+      },
+      {
+        goodsId: '123',
+        name: '九阳空气炸锅',
+        imgUrl: require('src/assets/images/artImg.png'),
+        goodsType: 4,
+        totalStock: 5,
+        consumeStock: 2,
+        winWeight: 10,
+        exchangeDesc:
+          '1、使用企业微信添加年高工作人员（李女士，手机号17612242635）。\n' +
+          '2、复制兑换码发送给工作人员核实中奖信息。\n' +
+          '3、工作人员确认信息后发放现金红包。'
+      },
+      {
+        goodsId: '456',
+        name: '兑换券',
+        imgUrl: require('src/assets/images/artImg.png'),
+        goodsType: 2,
+        totalStock: 5,
+        consumeStock: 2,
+        winWeight: 10,
+        exchangeDesc: '试试水吧'
+      },
+      {
+        goodsId: '789',
+        name: '空气',
+        imgUrl: require('src/assets/images/artImg.png'),
+        goodsType: 3,
+        totalStock: 100,
+        consumeStock: 2,
+        winWeight: 10,
+        exchangeDesc: '试试水吧'
+      },
+      {
+        goodsId: 'abc',
+        name: '我佛了呀',
+        imgUrl: require('src/assets/images/artImg.png'),
+        goodsType: 4,
+        totalStock: 100,
+        consumeStock: 2,
+        winWeight: 10,
+        exchangeDesc: '试试水吧'
+      },
+      {
+        goodsId: 'dsajasj',
+        name: '一坨屎',
+        imgUrl: require('src/assets/images/artImg.png'),
+        goodsType: 4,
+        totalStock: 100,
+        consumeStock: 2,
+        winWeight: 10,
+        exchangeDesc: '试试水吧'
+      },
+      {
+        goodsId: '12dsdasds',
+        name: '一坨屎2',
+        imgUrl: require('src/assets/images/artImg.png'),
+        goodsType: 4,
+        totalStock: 100,
+        consumeStock: 2,
+        winWeight: 10,
+        exchangeDesc: '试试水吧'
+      },
+      {
+        goodsId: 'hgjghj',
+        name: '傻x吧',
+        imgUrl: require('src/assets/images/artImg.png'),
+        goodsType: 4,
+        totalStock: 100,
+        consumeStock: 2,
+        winWeight: 10,
+        exchangeDesc: '试试水吧'
+      }
+    ]
+  });
   return http.post('/tenacity-admin/api/lottery/goods/list', param);
 };
 

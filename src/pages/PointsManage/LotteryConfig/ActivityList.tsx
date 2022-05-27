@@ -46,7 +46,6 @@ const ActivityList: React.FC<RouteComponentProps> = ({ history }) => {
   const statusArr: string[] = ['未开始未上架', '未开始已上架', '已开始未上架', '进行中', '已结束'];
 
   const onEdit = (item: ActivityItem | null, type: number) => {
-    console.log(item);
     setCurrentActivity(item);
     setEditType(type);
     setEditVisible(true);
@@ -63,7 +62,6 @@ const ActivityList: React.FC<RouteComponentProps> = ({ history }) => {
       ...searchParam,
       ...param
     };
-    console.log(params);
     const res: any = await queryLotteryActivity(params);
     if (res) {
       const { list, total } = res;
@@ -178,15 +176,8 @@ const ActivityList: React.FC<RouteComponentProps> = ({ history }) => {
               </AntdBtn>
             </AuthBtn>
           )}
-          {record.status === 3 && (
-            <AuthBtn path="/givePrize">
-              <AntdBtn type="link" disabled={record.sendStatus === 1} onClick={() => onGive(record.activityId)}>
-                大奖发放
-              </AntdBtn>
-            </AuthBtn>
-          )}
           <AuthBtn path="/config">
-            <AntdBtn type="link" onClick={() => history.push('/lotteryConfig/prize')}>
+            <AntdBtn type="link" onClick={() => history.push('/lotteryConfig/prize', { activityId: text })}>
               奖品配置
             </AntdBtn>
           </AuthBtn>
@@ -194,6 +185,13 @@ const ActivityList: React.FC<RouteComponentProps> = ({ history }) => {
             <AuthBtn path="/winnerList">
               <AntdBtn type="link" onClick={() => history.push('/lotteryConfig/prize')}>
                 中奖名单
+              </AntdBtn>
+            </AuthBtn>
+          )}
+          {record.status === 3 && (
+            <AuthBtn path="/givePrize">
+              <AntdBtn type="link" disabled={record.sendStatus === 1} onClick={() => onGive(record.activityId)}>
+                大奖发放
               </AntdBtn>
             </AuthBtn>
           )}

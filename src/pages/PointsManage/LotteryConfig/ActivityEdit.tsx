@@ -33,7 +33,6 @@ const ActivityEdit: React.FC<ActivityEditProps> = ({ visible, onClose, onOk, typ
   };
 
   const onFinish = async (values: any) => {
-    console.log(values);
     const { activityName, time } = values;
     const param: any = {
       activityName,
