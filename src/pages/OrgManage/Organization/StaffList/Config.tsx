@@ -136,7 +136,10 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
                 replaceEnter(
                   row.roles.reduce((prev: string, now: any, index: number) => {
                     prev +=
-                      roleType2Name[+now.roleType - 1] + now.roleName + (index !== row.roles.length - 1 ? '\\n' : '');
+                      roleType2Name[+now.roleType - 1] +
+                      '：' +
+                      now.roleName +
+                      (index !== row.roles.length - 1 ? '\\n' : '');
                     return prev;
                   }, '')
                 ) || UNKNOWN
