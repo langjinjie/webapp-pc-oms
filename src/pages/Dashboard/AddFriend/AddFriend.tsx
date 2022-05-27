@@ -1,13 +1,15 @@
 import classNames from 'classnames';
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import { NgTable } from 'src/components';
 import { tableColumns } from './config';
 
 import styles from './style.module.less';
 
-const AddFriend: React.FC = () => {
+const AddFriend: React.FC<RouteComponentProps> = ({ history }) => {
   const toDetailPage = (record: any) => {
     console.log(record);
+    history.push('/dashboard/AddFriend/detail');
   };
   return (
     <div className={classNames(styles.addFriend, 'container')}>

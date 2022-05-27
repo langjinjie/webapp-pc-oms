@@ -13,7 +13,6 @@ const Dashboard: React.FC<RouteComponentProps> = ({ history }) => {
     <div className="container">
       <div className="flex">
         <DataItem onClick={navigateToDetail} />
-        <DataItem />
       </div>
 
       <div className="flex justify-center mt40">

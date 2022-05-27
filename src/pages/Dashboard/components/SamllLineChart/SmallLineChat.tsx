@@ -10,7 +10,7 @@ interface SmallLineChartProps {
   width?: number;
   height?: number;
 }
-export const NgLineChart: React.FC<SmallLineChartProps> = ({ data, height, width }) => {
+export const SmallLineChart: React.FC<SmallLineChartProps> = ({ data, height, width }) => {
   const isMounted = useMountedRef();
   const lineChartRef: React.LegacyRef<HTMLDivElement> = useRef(null);
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
 import moment from 'moment';
-import { NgLineChart } from '../components/NgLineChart/NgLineChat';
+import { SmallLineChart } from '../components/SamllLineChart/SmallLineChat';
 
 interface ItemProps {
   id: string;
@@ -112,7 +112,7 @@ export const tableColumns = ({ toDetailPage }: tableOperations): ColumnsType<Ite
       render: (text: string, record) => {
         return (
           <div className="cursor" onClick={() => toDetailPage(record)}>
-            <NgLineChart data={[1, 4, 8, 20, 14, 18, 40]} key={record.id} />
+            <SmallLineChart data={[1, 4, 8, 20, 14, 18, 40]} key={record.id} />
           </div>
         );
       }
