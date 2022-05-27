@@ -138,12 +138,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         recommendList,
         groupId
       } = res;
+
       if (recommendList && recommendList.length > 0) {
         recommendList = await Promise.all(
           recommendList.map(async (recommend: any) => {
             const res = await queryMarketArea({
-              itemid: recommend.marketId,
-              type: recommendType
+              itemId: recommend.marketId,
+              type: recommendTypeList.filter((item) => item.id === recommendType)[0]?.queryAuthId
             });
             recommend.otherData = res;
             return recommend;
@@ -168,6 +169,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       changeGetDetailLoading(false);
       form.validateFields();
     } catch (e) {
+      console.error(e);
       changeGetDetailLoading(false);
     }
   };
@@ -271,8 +273,8 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   // 当选中select素材时处理的东西
   const onRecommendSelected = async (value: string, index: number) => {
     const res = await queryMarketArea({
-      itemid: value,
-      type: recommendType
+      itemId: value,
+      type: recommendTypeList.filter((item) => item.id === recommendType)[0]?.queryAuthId
     });
     const selectedItem = recommendList.filter((item) => item.marketId === value)[0];
     selectedItem.otherData = res;

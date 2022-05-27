@@ -572,7 +572,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
 
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
           <span className="bold margin-right20">文章推荐设置</span>
-          <span className="color-text-secondary">说明：如无票配置，则无法在文章末尾配置推荐产品</span>
+          <span className="color-text-secondary">说明：如无配置，则无法在文章末尾配置推荐产品</span>
         </div>
         <Form.Item
           label="推荐展示图片"
