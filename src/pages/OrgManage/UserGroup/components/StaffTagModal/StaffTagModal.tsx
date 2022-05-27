@@ -22,7 +22,7 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
     const numberArray = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
     // 个位数
     if (num.toString().length === 1) {
-      return numberArray[num - 1];
+      return numberArray[num];
     }
     // 十位数
     if (num.toString().length === 2) {
