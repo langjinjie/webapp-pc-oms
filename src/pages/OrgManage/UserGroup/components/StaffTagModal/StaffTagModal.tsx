@@ -149,13 +149,13 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
         </Radio.Group>
         {!radioVal || (
           <div className={style.tagWrap}>
-            {staffTagList.map((item) => (
+            {staffTagList.map((item, index: number) => (
               <div className={style.tagItem} key={item.sortId}>
                 <div className={style.tagName}>
-                  标签{changeNumber(item.sortId)}：{item.tagName}
+                  标签{changeNumber(index)}：{item.tagName}
                 </div>
                 <div className={style.tagValWrap}>
-                  {item.tagValues
+                  {(item.tagValues || '')
                     .split(';')
                     .filter((filterItem) => filterItem)
                     .map((mapItem) => (

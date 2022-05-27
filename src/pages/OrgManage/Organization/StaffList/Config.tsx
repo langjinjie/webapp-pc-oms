@@ -48,7 +48,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
   const clickCurrentRowHandle = (row: any) => {
     // 停用操作不可逆
     if (row.status === 2) return;
-    setOpType(row.status === '4' ? 1 : 0);
+    setOpType(row.status === 4 ? 1 : 0);
     setPopconfirmVisible(row.staffId);
   };
   // 查看

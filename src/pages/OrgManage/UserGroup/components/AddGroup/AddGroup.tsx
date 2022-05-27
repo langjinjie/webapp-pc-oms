@@ -45,7 +45,7 @@ const AddGroup: React.FC = () => {
   };
   // 查看人员
   const viewStaff = () => {
-    if (!modalParam.filterId) return message.info('筛选id不能为空');
+    if (!modalParam.filterId) return message.info('先点击筛选才能查看人员');
     setModalParam((param) => ({ ...param, visible: true }));
   };
   // 获取用户组详情
@@ -120,7 +120,7 @@ const AddGroup: React.FC = () => {
         <div className={style.filterResult}>
           截至目前时间：共筛除：{filterCount}人。人员名单点击此处
           <span className={style.checkDetail} onClick={viewStaff}>
-            查看详情
+            查看人员
           </span>
         </div>
         {readOnly || (
