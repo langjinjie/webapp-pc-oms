@@ -1,80 +1,57 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 
-import * as echarts from 'echarts/core';
-import { LineChart } from 'echarts/charts';
-import { useMountedRef } from 'src/utils/use-async';
-import { GridComponent, DatasetComponent } from 'echarts/components';
-import { CanvasRenderer } from 'echarts/renderers';
+import { ECOption, NgLineChart } from 'src/components/LineChart/LineChart';
+
 interface SmallLineChartProps {
   data: number[];
-  width?: number;
-  height?: number;
+  width?: string;
+  height?: string;
 }
-export const SmallLineChart: React.FC<SmallLineChartProps> = ({ data, height, width }) => {
-  const isMounted = useMountedRef();
-  const lineChartRef: React.LegacyRef<HTMLDivElement> = useRef(null);
-
-  const lineChartInit = () => {
-    let lineChartDom = echarts.getInstanceByDom(lineChartRef.current!);
-    //  如果没有挂载echartDom
-    if (!lineChartDom) {
-      if (isMounted && lineChartRef.current) {
-        echarts.use([LineChart, GridComponent, DatasetComponent, CanvasRenderer]);
-        lineChartDom = echarts.init(lineChartRef.current!);
+export const SmallLineChart: React.FC<SmallLineChartProps> = ({ data, width = '100%', height = '40px' }) => {
+  const option: ECOption = {
+    tooltip: {
+      show: false
+    },
+    grid: { top: 2, right: 2, bottom: 2, left: 2 },
+    xAxis: {
+      type: 'category',
+      axisTick: {
+        show: false
+      },
+      axisLine: {
+        show: false
+      },
+      axisLabel: {
+        show: false
+      },
+      splitLine: {
+        show: false
       }
-    }
-    const option = {
-      grid: { top: 2, right: 2, bottom: 2, left: 2 },
-      xAxis: {
-        type: 'category',
-        axisTick: {
-          show: false
-        },
-        axisLine: {
-          show: false
-        },
-        axisLabel: {
-          show: false
-        },
-        splitLine: {
-          show: false
-        }
+    },
+    yAxis: {
+      type: 'value',
+      axisLine: {
+        show: false
       },
-      yAxis: {
-        type: 'value',
-        axisLine: {
-          show: false
-        },
-        axisLabel: {
-          show: false
-        },
-        splitLine: {
-          show: false
-        }
+      axisLabel: {
+        show: false
       },
+      splitLine: {
+        show: false
+      }
+    },
 
-      series: [
-        {
-          data: data,
-          type: 'line',
-          smooth: true,
-          symbol: 'none',
-          itemStyle: {
-            normal: {
-              lineStyle: {
-                color: '#318CF5'
-              }
-            }
-          }
+    series: [
+      {
+        data: data,
+        type: 'line',
+        smooth: true,
+        symbol: 'none',
+        lineStyle: {
+          color: '#318CF5'
         }
-      ]
-    };
-    lineChartDom?.setOption(option);
+      }
+    ]
   };
-  useEffect(() => {
-    if (data) {
-      lineChartInit();
-    }
-  }, [data]);
-  return <div style={{ height: `${height || 40}px`, width: `${width || 100}px` }} ref={lineChartRef}></div>;
+  return <NgLineChart options={option} height={height} width={width} />;
 };

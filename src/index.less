@@ -107,6 +107,14 @@ ul {
 }
 .font(12);
 
+.ph(@i) when(@i<=40) {
+  .ph@{i} {
+    padding-left: @i + 0px;
+    padding-right: @i + 0px;
+  }
+  .ph((@i + 5));
+}
+.ph(5);
 // 上边距 5->40px
 .pt(@i) when(@i<=40) {
   .pt@{i} {

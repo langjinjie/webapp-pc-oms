@@ -9,7 +9,8 @@ import {
   TransformComponent,
   TitleComponentOption,
   GridComponentOption,
-  DatasetComponentOption
+  DatasetComponentOption,
+  TitleComponent
 } from 'echarts/components';
 // 标签自动布局，全局过渡动画等特性
 import { LabelLayout, UniversalTransition } from 'echarts/features';
@@ -21,6 +22,8 @@ export type ECOption = echarts.ComposeOption<
 >;
 interface NgLineChartProps {
   options: ECOption;
+  height?: string;
+  width?: string;
 }
 
 const defaultOptions = {
@@ -37,7 +40,7 @@ const defaultOptions = {
   }
 };
 
-export const NgLineChart: React.FC<NgLineChartProps> = ({ options }) => {
+export const NgLineChart: React.FC<NgLineChartProps> = ({ options, height, width }) => {
   const NgLineChartRef: React.LegacyRef<HTMLDivElement> = useRef(null);
   const lineChartDom = useRef<echarts.ECharts>();
   const initChart = () => {
@@ -53,7 +56,8 @@ export const NgLineChart: React.FC<NgLineChartProps> = ({ options }) => {
         LegendComponent,
         LabelLayout,
         UniversalTransition,
-        TransformComponent
+        TransformComponent,
+        TitleComponent
       ]);
       lineChartDom.current = echarts.init(NgLineChartRef.current!);
     }
@@ -76,5 +80,5 @@ export const NgLineChart: React.FC<NgLineChartProps> = ({ options }) => {
     };
   }, []);
 
-  return <div ref={NgLineChartRef} style={{ width: '100%', height: '400px' }}></div>;
+  return <div ref={NgLineChartRef} style={{ width: width || '100%', height: height || '400px' }}></div>;
 };
