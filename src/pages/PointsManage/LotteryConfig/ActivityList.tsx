@@ -5,7 +5,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { Button } from 'lester-ui';
+import { Button } from 'tenacity-ui';
 import { RouteComponentProps } from 'react-router-dom';
 import { Button as AntdBtn, PaginationProps, Table, TableColumnType, Modal as AntdModal, message } from 'antd';
 import { AuthBtn, Form } from 'src/components';
