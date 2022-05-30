@@ -516,7 +516,9 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
             >
               {!checkedInfo.checking ? '敏感词校验' : '正在校验'}
             </Button>
-            {checkedInfo.checkTime && <span className="color-text-placeholder">{checkedInfo.checkTime}检测过</span>}
+            {checkedInfo.checkTime && (
+              <span className="color-text-placeholder ml10">{checkedInfo.checkTime}检测过</span>
+            )}
           </AuthBtn>
         </Space>
         <AuthBtn path="/view">
@@ -577,6 +579,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
               <Button
                 type="primary"
                 shape={'round'}
+                className="ml20"
                 ghost
                 disabled={currentType === 0 || selectedRowKeys.length === 0}
                 onClick={() => operateStatus(0)}
@@ -586,6 +589,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
               <Button
                 type="primary"
                 shape={'round'}
+                className="ml20"
                 ghost
                 disabled={currentType === 2 || selectedRowKeys.length === 0}
                 onClick={() => operateStatus(2)}

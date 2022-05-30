@@ -367,6 +367,8 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
                 >
                   批量上架
                 </Button>
+              </AuthBtn>
+              <AuthBtn path="/operateBatch">
                 <Button
                   type="primary"
                   shape={'round'}

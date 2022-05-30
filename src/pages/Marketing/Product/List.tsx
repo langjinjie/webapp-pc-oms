@@ -343,6 +343,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
                 批量上架
               </Button>
               <Button
+                className="ml20"
                 type="primary"
                 shape={'round'}
                 ghost
