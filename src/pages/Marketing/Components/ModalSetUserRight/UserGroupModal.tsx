@@ -15,7 +15,7 @@ const UserGroupModal: React.FC<UserGroupModalProps> = ({ onChange, value: propVa
     setValue(value);
   };
   const handleOnOK = async () => {
-    onChange?.(value);
+    onChange?.(value || propValue);
     setVisibleUserGroup(false);
   };
 

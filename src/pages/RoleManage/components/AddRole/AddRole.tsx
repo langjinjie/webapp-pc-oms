@@ -68,7 +68,6 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
   const onFinish = async (values: any) => {
     const res = await (addMenu ? requestAddDefaultMenuList : requestAddOrEditRole)({
       ...values,
-      menuList: values.menuList?.map((mapItem: any) => ({ menuId: mapItem.menuId, fullMenuId: mapItem.fullMenuId })),
       roleType,
       defaultDataScope: rangeParam.defaultDataScope,
       dataScopeGroup: rangeParam.groupId,
