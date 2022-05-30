@@ -1,20 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { Button, Form, Input, Space, DatePicker, Select } from 'antd';
-import { NgTable } from 'src/components';
+import { NgModal, NgTable } from 'src/components';
 import { TableColumns, TableConfig } from './Config';
+import { Context } from 'src/store';
+import { IConfirmModalParam } from 'src/utils/interface';
 import style from './style.module.less';
 
 const WinManage: React.FC = () => {
+  const { setConfirmModalParam } = useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(
+    Context
+  );
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState<{ total: Number; list: any[] }>({ total: 0, list: [] });
   const [searchParam, setSearchParam] = useState<{ [key: string]: any }>({});
+  const [modalParam, setModalParam] = useState<{ visible: boolean; address: string }>({ visible: false, address: '' });
   const [paginationParam, setPaginationParam] = useState<{ pageNum: number; pageSize: number }>({
     pageNum: 1,
     pageSize: 10
   });
   const [form] = Form.useForm();
+  const [modalForm] = Form.useForm();
   const { Item } = Form;
   const { RangePicker } = DatePicker;
+  const { TextArea } = Input;
   // 获取列表
   const getList = async () => {
     console.log('param', { ...searchParam, ...paginationParam });
@@ -54,6 +62,25 @@ const WinManage: React.FC = () => {
     setSearchParam({});
     setPaginationParam({ pageNum: 1, pageSize: 10 });
   };
+  const onCancel = () => {
+    setModalParam((param) => ({ ...param, visible: false }));
+  };
+  const onOk = () => {
+    console.log('form', modalForm.getFieldsValue());
+    const confirmOnOk = () => {
+      setConfirmModalParam((param) => ({ ...param, visible: false }));
+    };
+    setConfirmModalParam({
+      title: '奖品发放提醒',
+      tips: '是否确认发放红包奖品？',
+      visible: true,
+      okText: '确认发放',
+      onOk () {
+        confirmOnOk();
+        onCancel();
+      }
+    });
+  };
   useEffect(() => {
     getList();
   }, [paginationParam]);
@@ -90,14 +117,36 @@ const WinManage: React.FC = () => {
         </Space>
       </Form>
       <NgTable
-        dataSource={list.list}
-        columns={TableColumns()}
-        loading={loading}
         className={style.table}
+        dataSource={list.list}
+        columns={TableColumns(setModalParam)}
+        setRowKey={(record) => record.staffId}
+        loading={loading}
         scroll={{ x: 'max-content' }}
         {...TableConfig({ total: list.total, paginationParam, setPaginationParam })}
       />
       {/* 发放奖品 */}
+      <NgModal
+        maskClosable={false}
+        className={style.modalWrap}
+        title="奖品发放提醒"
+        okText="确认发放"
+        visible={modalParam.visible}
+        onOk={onOk}
+        onCancel={onCancel}
+      >
+        <Form className={style.form} form={modalForm}>
+          <Item className={style.formItem} name="company">
+            <Input className={style.input} placeholder="请输入物流公司" />
+          </Item>
+          <Item name="number">
+            <Input className={style.input} placeholder="请输入物流单号" />
+          </Item>
+          <Item name="address" initialValue={modalParam.address}>
+            <TextArea className={style.textArea} placeholder="请输入收货地址" />
+          </Item>
+        </Form>
+      </NgModal>
     </div>
   );
 };
