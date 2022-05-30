@@ -18,6 +18,7 @@ import style from './style.module.less';
 import { recommendTypeList } from '../Config';
 import { debounce } from 'src/utils/base';
 import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
+import { AreaTips } from './AreaTips';
 interface TabView3Props {
   isEdit: boolean;
   newsId: string;
@@ -37,22 +38,6 @@ export interface RecommendMarketProps {
   otherData: any;
 }
 
-const RenderAreaTips: React.FC<{ value?: any }> = ({ value }) => {
-  if (value) {
-    return (
-      <div className={style.areaTips}>
-        <span>合计：</span>
-        <span className={style.areaTipsVal}>{value.totalNum}人</span>
-        <span>可见：</span>
-        <span className={style.areaTipsVal}>{value.visibleNum}人</span>
-        <span>不可见：</span>
-        <span>{value.invisibleNum}人</span>
-      </div>
-    );
-  } else {
-    return null;
-  }
-};
 const TabView3: React.FC<TabView3Props> = (props) => {
   const [isGetDetailLoading, changeGetDetailLoading] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
@@ -531,7 +516,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                           </Select>
                         </Form.Item>
                         <Form.Item name={[name, 'otherData']} className={style.otherData}>
-                          <RenderAreaTips />
+                          <AreaTips />
                         </Form.Item>
                         {/* 当是商品时展示图片模块 */}
                         {recommendType === 2 && (
