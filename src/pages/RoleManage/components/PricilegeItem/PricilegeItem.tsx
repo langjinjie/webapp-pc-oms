@@ -80,16 +80,22 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
           .map((mapItem: any) => mapItem.menuId);
       }
       // 将该菜单的所有子菜单选中
-      const newParamKeys = Array.from(
+      const newParamKeys: Key[] = Array.from(
         new Set([
-          ...value.map((valueItem) => valueItem.menuId),
-          ...tree2Arry([e.node]).map((item) => item.menuId),
-          ...e.node.fullMenuId.split(','),
-          ...searchButtonKeys
+          ...value.map((valueItem) => valueItem.menuId), // 已有的节点
+          ...tree2Arry([e.node]).map((item) => item.menuId), // 将子节点也选中
+          ...e.node.fullMenuId.split(','), // 将父节点也选上
+          ...searchButtonKeys // 按钮节点
         ])
       );
-      const newValue = [...flatTreeData.filter((flatItem) => newParamKeys.includes(flatItem.menuId))];
-      onChange?.([...value.filter((filterItem: any) => filterItem.sysType !== e.node.sysType), ...newValue]);
+      const newValue = newParamKeys.map((mapItem) => {
+        const item = [...value, ...flatTreeData].find((findItem) => findItem.menuId === mapItem);
+        return {
+          menuId: item.menuId,
+          fullMenuId: item.fullMenuId
+        };
+      });
+      onChange?.(newValue);
     } else {
       const deleParamKeys = tree2Arry([e.node]).map((item) => item.menuId);
       const currentParantsList: string[] = e.node.fullMenuId
