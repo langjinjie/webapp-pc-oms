@@ -68,7 +68,6 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly, selectedKey }) 
   useEffect(() => {
     getGroupList();
   }, [paginationParam]);
-  console.log(selectedKey);
   return (
     <div className={style.wrap}>
       {readonly || (

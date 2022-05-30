@@ -22,7 +22,7 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
     const numberArray = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
     // 个位数
     if (num.toString().length === 1) {
-      return numberArray[num - 1];
+      return numberArray[num];
     }
     // 十位数
     if (num.toString().length === 2) {
@@ -149,13 +149,13 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
         </Radio.Group>
         {!radioVal || (
           <div className={style.tagWrap}>
-            {staffTagList.map((item) => (
+            {staffTagList.map((item, index: number) => (
               <div className={style.tagItem} key={item.sortId}>
                 <div className={style.tagName}>
-                  标签{changeNumber(item.sortId)}：{item.tagName}
+                  标签{changeNumber(index)}：{item.tagName}
                 </div>
                 <div className={style.tagValWrap}>
-                  {item.tagValues
+                  {(item.tagValues || '')
                     .split(';')
                     .filter((filterItem) => filterItem)
                     .map((mapItem) => (

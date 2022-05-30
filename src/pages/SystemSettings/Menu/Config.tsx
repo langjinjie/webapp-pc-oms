@@ -4,7 +4,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { Button, Popconfirm, Space, Tooltip } from 'antd';
-import { Icon } from 'lester-ui';
+import { Icon } from 'tenacity-ui';
 import { AuthBtn } from 'src/components';
 
 export const searchCols: SearchCol[] = [

@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import NgUpload from '../../Components/Upload/Upload';
 import style from './style.module.less';
-import { Icon } from 'lester-ui';
+import { Icon } from 'tenacity-ui';
 import { RecommendMarketProps } from './TabView3';
 import { debounce } from 'src/utils/base';
 import { recommendTypeList } from '../Config';
@@ -162,8 +162,8 @@ const TabView2: React.FC = () => {
   // 当选中select素材时处理的东西
   const onRecommendSelected = async (value: string, index: number) => {
     const res = await queryMarketArea({
-      itemid: value,
-      type: recommendType
+      itemId: value,
+      type: recommendTypeList.filter((item) => item.id === recommendType)[0]?.queryAuthId
     });
     const selectedItem = recommendList.filter((item) => item.marketId === value)[0];
     selectedItem.otherData = res;

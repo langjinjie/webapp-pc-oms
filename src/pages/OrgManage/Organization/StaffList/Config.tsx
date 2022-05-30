@@ -16,6 +16,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
   const history = useHistory();
   const [popconfirmVisible, setPopconfirmVisible] = useState('');
   const [opType, setOpType] = useState(0);
+  const roleType2Name = ['后管端', 'B端', 'A端'];
   // 激活/停用账号请求
   const updateStaffPpstatus = async (userIds: string[]) => {
     if (opType) {
@@ -47,7 +48,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
   const clickCurrentRowHandle = (row: any) => {
     // 停用操作不可逆
     if (row.status === 2) return;
-    setOpType(row.status === '4' ? 1 : 0);
+    setOpType(row.status === 4 ? 1 : 0);
     setPopconfirmVisible(row.staffId);
   };
   // 查看
@@ -133,8 +134,12 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
             dangerouslySetInnerHTML={{
               __html:
                 replaceEnter(
-                  row.roles.split(';').reduce((prev: string, now: string, index: number) => {
-                    prev += index ? 'B端：' + now : 'A端：' + now + '\\n';
+                  row.roles.reduce((prev: string, now: any, index: number) => {
+                    prev +=
+                      roleType2Name[+now.roleType - 1] +
+                      '：' +
+                      now.roleName +
+                      (index !== row.roles.length - 1 ? '\\n' : '');
                     return prev;
                   }, '')
                 ) || UNKNOWN
