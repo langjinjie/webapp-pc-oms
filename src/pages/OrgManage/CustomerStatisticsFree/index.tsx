@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, message, PaginationProps } from 'antd';
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, CustomerProps, tableColumns } from './Config';
+import { useDocumentTitle, exportFile } from 'src/utils/base';
 import { AddCustomerFreeModal } from './Components/AddCustomerModal';
 import {
   addFreeCustomer,
@@ -13,7 +14,6 @@ import {
 import DeleteModal from '../StatisticsFree/Components/DeleteModal/DeleteModal';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import BatchAddResult from './Components/BatchAddResultModal';
-import { exportFile } from 'src/utils/base';
 
 interface BatchAddResultProps {
   successCount: number;
@@ -162,7 +162,7 @@ const CustomerStatisticsFree: React.FC = () => {
     const { data } = await exportFreeList(formParams);
     exportFile(data, '客户免统计名单');
   };
-
+  useDocumentTitle('机构管理-客户免统计名单');
   return (
     <div className="container">
       <div className="header">

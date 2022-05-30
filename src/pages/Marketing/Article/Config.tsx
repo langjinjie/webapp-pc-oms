@@ -21,15 +21,18 @@ export interface SearchParamsProps {
 export const recommendTypeList = [
   {
     id: 0,
-    name: '文章'
+    name: '文章',
+    queryAuthId: 3
   },
   {
     id: 2,
-    name: '产品'
+    name: '产品',
+    queryAuthId: 2
   },
   {
     id: 1,
-    name: '活动'
+    name: '活动',
+    queryAuthId: 1
   },
   {
     id: 3,
@@ -248,7 +251,7 @@ const columns = (args: colargsType): ColumnsType<Article> => {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 320,
+      width: 340,
       render: (text, record) => (
         <>
           <Space size="small">

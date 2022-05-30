@@ -9,7 +9,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Table, Card, TableColumnType, PaginationProps } from 'antd';
 import moment from 'moment';
 import qs from 'qs';
-import { setTitle } from 'lester-tools';
+import { setTitle } from 'tenacity-tools';
 import { Icon, AuthBtn } from 'src/components';
 import { queryStationList } from 'src/apis/stationConfig';
 import style from './style.module.less';

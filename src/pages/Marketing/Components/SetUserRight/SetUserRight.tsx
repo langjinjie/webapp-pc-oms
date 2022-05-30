@@ -25,7 +25,6 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   });
 
   const getGroupDetail = async () => {
-    console.log(value);
     if (!value) {
       return form.setFieldsValue({
         groupType: 1,
@@ -36,18 +35,21 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
     }
     const res = await getUserGroup({ groupId: value });
     const { groupType } = res;
-    form.setFieldsValue({
+    const data = {
       groupType,
       isSet: 1,
-      group1: groupType === 1 ? { ...res.groupInfo, groupId: value } : undefined,
-      group2: groupType === 2 ? { ...res.orgInfo, groupId: value } : undefined
-    });
+      ...(groupType === 1
+        ? { group1: { ...res.groupInfo, groupId: value } }
+        : { group2: { ...res.orgInfo, groupId: value } })
+    };
+    form.setFieldsValue(data);
     setFormValues((formValues) => ({
       ...formValues,
       isSet: 1,
       groupType,
-      group1: groupType === 1 ? { ...res.groupInfo, groupId: value } : undefined,
-      group2: groupType === 2 ? { ...res.orgInfo, groupId: value } : undefined
+      ...(groupType === 1
+        ? { group1: { ...res.groupInfo, groupId: value } }
+        : { group2: { ...res.orgInfo, groupId: value } })
     }));
     // 第一次的时候存储origin数据
     !originValues && setOriginValues({ ...res.groupInfo, groupId: value, ...res.orgInfo, groupType });
@@ -58,10 +60,6 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   }, [value]);
 
   const onChangeWithGroupType = (groupType: number) => {
-    form.setFieldsValue({
-      group1: undefined,
-      group12: undefined
-    });
     setFormValues((formValues) => ({
       ...formValues,
       groupType
@@ -73,6 +71,10 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   }, [formValues]);
 
   const handleModalChange = (value: any) => {
+    setFormValues((formValues) => ({
+      ...formValues,
+      ...[formValues.groupType === 1 ? { group1: value } : { group2: value }]
+    }));
     onChange?.(value.groupId);
   };
 
@@ -142,7 +144,7 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
           </Form.Item>
           <Form.Item>
             <span>
-              截止目前时间：此用户组共计人数：
+              截止目前时间：共计人数
               {staffCount}人
             </span>
             {staffCount > 0 && (

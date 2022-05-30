@@ -313,7 +313,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
           {dataSource.length > 0 && (
             <div className={'operationWrap'}>
               <Space size={20}>
-                <AuthBtn path="/operate">
+                <AuthBtn path="/operateBatch">
                   <Button
                     type="primary"
                     shape={'round'}

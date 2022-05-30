@@ -6,8 +6,8 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Button as AntdBtn, Card, message, Modal, PaginationProps, Table, TableColumnType } from 'antd';
-import { setTitle } from 'lester-tools';
-import { Icon, Button } from 'lester-ui';
+import { setTitle } from 'tenacity-tools';
+import { Icon, Button } from 'tenacity-ui';
 import classNames from 'classnames';
 import { Form, AuthBtn } from 'src/components';
 import { ItemProps } from 'src/utils/interface';

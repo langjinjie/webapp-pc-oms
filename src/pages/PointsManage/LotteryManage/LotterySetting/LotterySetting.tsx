@@ -46,7 +46,11 @@ const LotterySetting: React.FC = () => {
               depLsit?.scopeDeptNames.split(';').map((item, index) => (
                 <Tag
                   key={item + index}
-                  closeIcon={<Icon name="icon_common_Line_Close" className={style.tagIcon} />}
+                  closeIcon={
+                    <AuthBtn path="/add">
+                      <Icon name="icon_common_Line_Close" className={style.tagIcon} />
+                    </AuthBtn>
+                  }
                   className={style.tagItem}
                   closable
                   onClose={(event) => onClose(event, index)}

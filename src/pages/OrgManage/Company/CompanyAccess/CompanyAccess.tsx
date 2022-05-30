@@ -4,10 +4,10 @@
  * @date 2021-12-21 14:42
  */
 import React, { useEffect, useState } from 'react';
-import { setTitle } from 'lester-tools';
+import { setTitle } from 'tenacity-tools';
 import { RouteComponentProps } from 'react-router-dom';
 import { Steps } from 'antd';
-import { DrawerItem } from 'lester-ui';
+import { DrawerItem } from 'tenacity-ui';
 import { queryCompanyStep } from 'src/apis/company';
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';

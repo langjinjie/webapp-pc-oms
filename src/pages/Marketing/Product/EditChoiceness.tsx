@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Row, Col, Card, Form, FormProps, message, Button, Select, Tooltip } from 'antd';
-import { getProductOnlineList, productChoiceList, productChoiceEdit } from 'src/apis/marketing';
+import { getProductOnlineList, productChoiceList, productChoiceEdit, queryMarketArea } from 'src/apis/marketing';
 import { Icon } from 'src/components';
 import NgUpload from '../Components/Upload/Upload';
+import { AreaTips } from '../Article/Components/AreaTips';
+import style from './style.module.less';
 
 const { Option } = Select;
 const getItemStyle = () => ({
@@ -58,9 +60,21 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
     const res = await productChoiceList({});
     try {
       if (res) {
-        const { productList } = res;
-
+        let { productList } = res;
+        if (productList && productList.length > 0) {
+          productList = await Promise.all(
+            productList.map(async (item: any) => {
+              const authData = await queryMarketArea({
+                itemId: item.productId,
+                type: 2
+              });
+              item.authData = authData;
+              return item;
+            })
+          );
+        }
         const spliceIndex: number = productList.length;
+        // 数组自动补全
         const __data = productList.concat(data.splice(spliceIndex, 4));
         setData(__data);
       }
@@ -123,11 +137,17 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
     });
   };
 
-  const onGenderChange = (index: number, value: string) => {
+  const onGenderChange = async (index: number, value: string) => {
     const copyData = [...data];
 
     copyData[index].productId = value;
     copyData[index].status = 2;
+    // 获取文章的可见范围
+    const res = await queryMarketArea({
+      itemId: value,
+      type: 2
+    });
+    copyData[index].authData = res;
     setData(copyData);
   };
 
@@ -208,9 +228,10 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
                           <Row gutter={24}>
                             <Col className="gutter-row" span={24}>
                               <Form.Item
-                                label="产品名称："
+                                className={style.authWrap}
                                 labelAlign="right"
                                 required
+                                label="产品名称："
                                 validateStatus={
                                   (item.bannerImgUrl && !item.productId) || item.status === 3 ? 'error' : ''
                                 }
@@ -244,6 +265,7 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
                                     );
                                   })}
                                 </Select>
+                                <AreaTips className={'customAreaTips'} value={item.authData} />
                               </Form.Item>
                               <Form.Item
                                 label="banner图片："

@@ -6,6 +6,7 @@ import { TableColumns, TablePagination } from './Config';
 import { IGroupItem } from 'src/utils/interface';
 import { requestGetGroupList } from 'src/apis/orgManage';
 import { useHistory } from 'react-router-dom';
+import { useDocumentTitle } from 'src/utils/base';
 import style from './style.module.less';
 interface IGroupList {
   total: number;
@@ -15,8 +16,9 @@ interface IGroupList {
 interface UserGroupProps {
   change?: (item: any) => void;
   readonly?: boolean;
+  selectedKey?: string;
 }
-const UserGroup: React.FC<UserGroupProps> = ({ change, readonly }) => {
+const UserGroup: React.FC<UserGroupProps> = ({ change, readonly, selectedKey }) => {
   const [loading, setLoading] = useState(false);
   const [groupList, setGroupList] = useState<IGroupList>({ total: 0, list: [] });
   const [searchParam, setSearchParam] = useState<{ groupName: string; groupCode: string }>({
@@ -62,6 +64,7 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly }) => {
       name: record.name
     })
   };
+  useDocumentTitle('机构管理-用户组管理');
   useEffect(() => {
     getGroupList();
   }, [paginationParam]);
@@ -98,6 +101,7 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly }) => {
         rowSelection={
           change
             ? {
+                defaultSelectedRowKeys: [selectedKey!],
                 type: 'radio',
                 ...rowSelection
               }

@@ -6,7 +6,7 @@
 import React, { useEffect, useState, useContext, useRef, MutableRefObject } from 'react';
 import { Input, Tree, TreeSelect, message } from 'antd';
 import classNames from 'classnames';
-import { setTitle, copy } from 'lester-tools';
+import { setTitle, copy } from 'tenacity-tools';
 import { Icon, Modal, Empty, AuthBtn } from 'src/components';
 import {
   queryDepartmentList,
@@ -19,6 +19,7 @@ import {
 import { exportFile } from 'src/utils/base';
 import { Context } from 'src/store';
 import { IOrganizationItem } from 'src/utils/interface';
+
 import StaffList from './StaffList/StaffList';
 import StaffDetail from './StaffDetail/StaffDetail';
 import SetLeader from './components/SetLeader';
@@ -520,7 +521,6 @@ const Organization: React.FC = () => {
       setShowDepart(false);
     }
   };
-
   useEffect(() => {
     !transferVisible && setTransferId('');
   }, [transferVisible]);

@@ -64,7 +64,6 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     }
   }, []);
   const onSubmit = async (values: any) => {
-    console.log(values);
     const { typeIds = [], tags = [], groupId } = values;
     let postData: any = {};
     delete values.group1;

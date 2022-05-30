@@ -4,6 +4,7 @@ import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffProps, tableColumns } from './Config';
 import { AddStatisticsFreeModal } from './Components/ExportStaff/AddStatisticsFreeModal';
 import { addFreeStaffs, delFreeStaffs, getFreeStaffList } from 'src/apis/orgManage';
+import { useDocumentTitle } from 'src/utils/base';
 import DeleteModal from './Components/DeleteModal/DeleteModal';
 
 const StatisticsFreeList: React.FC = () => {
@@ -63,6 +64,8 @@ const StatisticsFreeList: React.FC = () => {
       };
     }
   };
+
+  useDocumentTitle('机构管理-数据免统计名单');
 
   useEffect(() => {
     getList();

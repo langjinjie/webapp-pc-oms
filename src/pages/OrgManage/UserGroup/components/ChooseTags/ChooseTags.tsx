@@ -3,14 +3,14 @@ import { IGroupTag } from 'src/utils/interface';
 import { Button, Modal, Table, Form, Input } from 'antd';
 import { Icon } from 'src/components';
 import { ColumnsType } from 'antd/es/table';
+// import { Key } from 'rc-table/lib/interface';
 import { requestGetGroupTagList } from 'src/apis/orgManage';
-import { Key } from 'rc-table/lib/interface';
 import { AddTagModal } from '../index';
 import style from './style.module.less';
 import classNames from 'classnames';
 
 interface IChooseTags {
-  value?: { groupTagId: string }[];
+  value?: { groupTagId: string; name: string }[];
   onChange?: (value: { groupTagId: string }[]) => void;
   readOnly?: boolean;
 }
@@ -23,7 +23,7 @@ interface IGroupTagList {
 const ChooseTags: React.FC<IChooseTags> = ({ value, onChange, readOnly }) => {
   const [modalParam, setModalParam] = useState<{ visible: boolean }>({ visible: false });
   const [groupTagList, setGroupTagList] = useState<IGroupTagList>({ total: 0, list: [] });
-  const [selectedKeys, setSelectedKeys] = useState<Key[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState<{ groupTagId: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchParam, setSearchParam] = useState<{ [key: string]: any }>({ name: '' });
   const [addTagParam, setAddTagParam] = useState<{ visible: boolean }>({ visible: false });
@@ -59,9 +59,28 @@ const ChooseTags: React.FC<IChooseTags> = ({ value, onChange, readOnly }) => {
   };
   // 多选框配置对象
   const rowSelection = {
-    selectedRowKeys: selectedKeys,
-    onChange (selectedRowKeys: Key[]) {
-      setSelectedKeys(selectedRowKeys);
+    selectedRowKeys: selectedKeys.map((mapItem) => mapItem.groupTagId),
+    onSelect (record: IGroupTag, selected: boolean) {
+      if (selected) {
+        setSelectedKeys((keys) => [...keys, { ...record }]);
+      } else {
+        setSelectedKeys((keys) => [...keys.filter((filterItem) => filterItem.groupTagId !== record.groupTagId)]);
+      }
+    },
+    onSelectAll (selected: boolean, selectedRows: IGroupTag[]) {
+      if (selected) {
+        // 当搜索的时候按下全选会出现数组元素为undefined的情况
+        // 过滤掉undefined
+        const filterSelectedRows = selectedRows.filter((filterItem) => filterItem);
+        const selectedRowsKeys = filterSelectedRows.map((mapItem) => mapItem?.groupTagId);
+        setSelectedKeys((keys) => [
+          ...keys.filter((filterItem) => !selectedRowsKeys.includes(filterItem.groupTagId)),
+          ...filterSelectedRows
+        ]);
+      } else {
+        const unSelectedRowsKeys = groupTagList.list.map((mapItem) => mapItem.groupTagId);
+        setSelectedKeys((keys) => keys.filter((filterItem) => !unSelectedRowsKeys.includes(filterItem.groupTagId)));
+      }
     }
   };
   // 搜索
@@ -84,25 +103,22 @@ const ChooseTags: React.FC<IChooseTags> = ({ value, onChange, readOnly }) => {
   };
   // 取消选中
   const delSelected = (groupTagId: string) => {
-    setSelectedKeys((param) => [...param.filter((item) => item !== groupTagId)]);
+    setSelectedKeys((param) => [...param.filter((item) => item.groupTagId !== groupTagId)]);
   };
   const onOk = () => {
     setModalParam({ visible: false });
-    onChange?.(
-      groupTagList.list
-        .filter((filterItem) => selectedKeys.includes(filterItem.groupTagId))
-        .map((item) => ({ groupTagId: item.groupTagId }))
-    );
+    onChange?.(selectedKeys);
   };
   const onCancel = () => {
     setModalParam({ visible: false });
+    onReset();
   };
   useEffect(() => {
     getGroupTagList();
   }, [searchParam]);
   useEffect(() => {
     if (modalParam.visible) {
-      setSelectedKeys((value || []).map((item) => item.groupTagId));
+      setSelectedKeys(value || []);
     }
   }, [modalParam.visible]);
   return (
@@ -111,7 +127,7 @@ const ChooseTags: React.FC<IChooseTags> = ({ value, onChange, readOnly }) => {
         {!value?.length && <span className={style.placeholder}>请选择</span>}
         {value?.map((item) => (
           <div key={item.groupTagId} className={classNames(style.chooseItem, { [style.readOnly]: readOnly })}>
-            {groupTagList.list.find((findItem) => item.groupTagId === findItem.groupTagId)?.name}
+            {item.name}
             {readOnly || (
               <Icon
                 className={style.delItem}
@@ -142,18 +158,16 @@ const ChooseTags: React.FC<IChooseTags> = ({ value, onChange, readOnly }) => {
           </Button>
           <div className={style.title}>已选可见标签：</div>
           <div className={style.chooseTagList}>
-            {groupTagList.list
-              .filter((item) => selectedKeys.includes(item.groupTagId))
-              .map((item) => (
-                <div key={item.groupTagId} className={style.chooseTagItem}>
-                  {item.name}
-                  <Icon
-                    className={style.del}
-                    name="icon_common_Line_Close"
-                    onClick={() => delSelected(item.groupTagId)}
-                  />
-                </div>
-              ))}
+            {selectedKeys.map((item) => (
+              <div key={item.groupTagId} className={style.chooseTagItem}>
+                {item.name}
+                <Icon
+                  className={style.del}
+                  name="icon_common_Line_Close"
+                  onClick={() => delSelected(item.groupTagId)}
+                />
+              </div>
+            ))}
           </div>
           <div className={style.title}>已有可见标签：</div>
           <Form className={style.form} form={form} layout={'inline'} onFinish={onFinish}>

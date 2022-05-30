@@ -35,7 +35,7 @@ const TableColumns = (
       ...param,
       visible: true,
       title: '温馨提示',
-      tips: `此角色下有人员共计${row.userNum}名。关闭角色后，他们的权限将会被关闭。无法进入系统。请您知悉`,
+      tips: `此角色下有人员共计${row.userNum}名。删除角色后，他们的权限将会被关闭。无法进入系统。请您知悉`,
       onOk,
       onCancel
     }));

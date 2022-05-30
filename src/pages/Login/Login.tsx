@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Form, Input, Button } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-// import { getQueryParam } from 'lester-tools';
+// import { getQueryParam } from 'tenacity-tools';
 import md5 from 'js-md5';
 import { Context } from 'src/store';
 import { login, queryUserInfo } from 'src/apis';

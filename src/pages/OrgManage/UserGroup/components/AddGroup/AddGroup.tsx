@@ -36,7 +36,7 @@ const AddGroup: React.FC = () => {
   // 提交新增
   const onFinish = async (values: any) => {
     const groupId = URLSearchParams(location.search).groupId;
-    const param = { ...values, filterId: modalParam.filterId, groupId };
+    const param = { ...values, filterId: modalParam.add ? modalParam.filterId : undefined, groupId };
     const res = await requestAddGroup(param);
     if (res) {
       message.success(groupId ? '用户组编辑成功' : '用户组添加成功');
@@ -45,7 +45,7 @@ const AddGroup: React.FC = () => {
   };
   // 查看人员
   const viewStaff = () => {
-    if (!modalParam.filterId) return message.info('筛选id不能为空');
+    if (!modalParam.filterId) return message.info('先点击筛选才能查看人员');
     setModalParam((param) => ({ ...param, visible: true }));
   };
   // 获取用户组详情
@@ -94,7 +94,7 @@ const AddGroup: React.FC = () => {
       <Form form={form} className={style.form} onFinish={onFinish}>
         <div className={style.title}>用户组基本信息</div>
         <Form.Item name="groupName" label="用户组名称：" required>
-          <Input placeholder="待输入" allowClear style={{ width: 600 }} showCount maxLength={100} readOnly={readOnly} />
+          <Input placeholder="待输入" allowClear style={{ width: 300 }} showCount maxLength={30} readOnly={readOnly} />
         </Form.Item>
         <Form.Item name="desc" label="用户组说明：" required>
           <Input.TextArea
@@ -102,7 +102,7 @@ const AddGroup: React.FC = () => {
             placeholder="待输入"
             allowClear
             showCount
-            maxLength={300}
+            maxLength={100}
             style={{ width: 600 }}
             readOnly={readOnly}
           />
@@ -120,7 +120,7 @@ const AddGroup: React.FC = () => {
         <div className={style.filterResult}>
           截至目前时间：共筛除：{filterCount}人。人员名单点击此处
           <span className={style.checkDetail} onClick={viewStaff}>
-            查看详情
+            查看人员
           </span>
         </div>
         {readOnly || (

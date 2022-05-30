@@ -71,12 +71,21 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
   const onCheckHandle = (_: any, e: any) => {
     // 判断是选中还是取消选中
     if (e.checked) {
+      // 判断点击的是否是非查询按钮
+      let searchButtonKeys: string[] = [];
+      if (e.node.buttonType && e.node.buttonType !== 1) {
+        searchButtonKeys = flatTreeData
+          .find((findItem: any) => findItem.menuId === e.node.parentId)
+          .children.filter((filterItem: any) => filterItem.buttonType === 1)
+          .map((mapItem: any) => mapItem.menuId);
+      }
       // 将该菜单的所有子菜单选中
       const newParamKeys = Array.from(
         new Set([
           ...value.map((valueItem) => valueItem.menuId),
           ...tree2Arry([e.node]).map((item) => item.menuId),
-          ...e.node.fullMenuId.split(',')
+          ...e.node.fullMenuId.split(','),
+          ...searchButtonKeys
         ])
       );
       const newValue = [...flatTreeData.filter((flatItem) => newParamKeys.includes(flatItem.menuId))];
@@ -91,6 +100,7 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
         const currentTreeValueKeys = value.map((mapItem) => mapItem.menuId);
         // 判断该节点的父节点是否需要取消选择
         if (
+          !e.node.buttonType &&
           parentMenu.children.filter((filterItem: any) => currentTreeValueKeys.includes(filterItem.menuId)).length <= 1
         ) {
           deleParamKeys.push(item);
@@ -99,7 +109,7 @@ const PricilegeItem: React.FC<IPricilegeItem> = ({ value = [], item, onChange, r
           return true;
         }
       });
-      // // 将该菜单的所有子菜单取消选中
+      // 将该菜单的所有子菜单取消选中
       const delValue = [...value.filter((valueItem) => !deleParamKeys.includes(valueItem.menuId))];
       onChange?.(delValue);
     }

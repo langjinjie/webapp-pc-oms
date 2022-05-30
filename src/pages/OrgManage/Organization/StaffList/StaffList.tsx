@@ -213,6 +213,9 @@ const StaffList: React.FC<IStaffListProps> = ({ department, deptType = 1, staffL
             <Form.Item className={style.label} name="businessModel" label="业务模式：">
               <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
             </Form.Item>
+            <Form.Item className={style.label} name="provinceCompany" label="省公司：">
+              <Input placeholder="待输入" className={style.inputBox} allowClear style={{ width: 180 }} />
+            </Form.Item>
           </Space>
           <Space className={style.antSpace}>
             <Form.Item className={style.label} name="businessArea" label="市公司：">

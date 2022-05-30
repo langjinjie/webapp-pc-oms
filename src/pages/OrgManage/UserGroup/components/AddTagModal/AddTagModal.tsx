@@ -4,7 +4,7 @@ import { Form, Input, TreeSelect } from 'antd';
 import { LegacyDataNode } from 'rc-tree-select/lib/TreeSelect';
 import { ITreeDate } from 'src/utils/interface';
 import { queryDepartmentList } from 'src/apis/organization';
-import { UserTagModal } from '../index';
+import { StaffTagModal } from '../index';
 import { debounce, tree2Arry } from 'src/utils/base';
 import { requestAddGroupTag } from 'src/apis/orgManage';
 import style from './style.module.less';
@@ -126,7 +126,7 @@ const AddTagModal: React.FC<IAddTagModal> = ({ addTagParam, setAddTagParam, upda
           />
         </Item>
         <Item className={style.formItem} name="staffTagList" label="选择人员标签：">
-          <UserTagModal />
+          <StaffTagModal />
         </Item>
         <Item name="filterName" className={style.formItem} label="标签筛选逻辑：">
           <Input.TextArea className={style.textAreaVal} readOnly disabled />
