@@ -47,6 +47,12 @@ const WinManage: React.FC = () => {
   // 搜索
   const onFinish = (values: { [key: string]: any }) => {
     setSearchParam(values);
+    setPaginationParam((param) => ({ ...param }));
+  };
+  // 重置
+  const onReset = () => {
+    setSearchParam({});
+    setPaginationParam({ pageNum: 1, pageSize: 10 });
   };
   useEffect(() => {
     getList();
@@ -78,7 +84,7 @@ const WinManage: React.FC = () => {
           <Button className={style.submitBtn} type="primary" htmlType="submit">
             查询
           </Button>
-          <Button className={style.resetBtn} htmlType="reset">
+          <Button className={style.resetBtn} onClick={onReset} htmlType="reset">
             重置
           </Button>
         </Space>
@@ -91,6 +97,7 @@ const WinManage: React.FC = () => {
         scroll={{ x: 'max-content' }}
         {...TableConfig({ total: list.total, paginationParam, setPaginationParam })}
       />
+      {/* 发放奖品 */}
     </div>
   );
 };
