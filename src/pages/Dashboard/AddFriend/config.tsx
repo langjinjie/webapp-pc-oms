@@ -21,7 +21,7 @@ export const tableColumns = ({ toDetailPage }: tableOperations): ColumnsType<Ite
         colSpan: (index as number) === 0 ? 3 : 1
       }),
       render: (_, __, index) => {
-        return index > 0 ? index + 1 : <span className="text-primary">总计</span>;
+        return index > 0 ? index : <span className="text-primary">总计</span>;
       }
     },
     {

@@ -43,7 +43,7 @@ const AddFriend: React.FC<RouteComponentProps> = ({ history }) => {
             </Radio.Group>
           </div>
           <div className={'ml20 mt20 mb20'}>
-            业务模式：{' '}
+            业务模式：
             <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleModelChange}>
               <Select.Option value="jack">Jack</Select.Option>
               <Select.Option value="lucy">Lucy</Select.Option>
