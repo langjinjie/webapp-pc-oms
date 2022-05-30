@@ -45,7 +45,7 @@
     "react-router-cache-route": "^1.11.1",
     "react-router-dom": "^5.2.0",
     "react-transition-group": "^4.4.2",
-    "tenacity-tools": "^1.0.0",
+    "tenacity-tools": "^1.0.1",
     "tenacity-ui": "^1.0.0",
     "tinymce": "^5.10.0"
   },
