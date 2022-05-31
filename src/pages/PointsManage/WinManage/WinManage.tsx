@@ -5,8 +5,10 @@ import { TableColumns, TableConfig } from './Config';
 import { Context } from 'src/store';
 import { IConfirmModalParam } from 'src/utils/interface';
 import style from './style.module.less';
+import { RouteComponentProps } from 'react-router-dom';
+import { URLSearchParams } from 'src/utils/base';
 
-const WinManage: React.FC = () => {
+const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
   const { setConfirmModalParam } = useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(
     Context
   );
@@ -81,6 +83,14 @@ const WinManage: React.FC = () => {
       }
     });
   };
+  useEffect(() => {
+    const { activityName } = URLSearchParams(location.search) as { activityName: string };
+    if (activityName) {
+      form.setFieldsValue({ activityName });
+      setSearchParam({ activityName });
+      setPaginationParam((param) => ({ ...param }));
+    }
+  }, []);
   useEffect(() => {
     getList();
   }, [paginationParam]);
