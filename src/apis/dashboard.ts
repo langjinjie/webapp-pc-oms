@@ -1,0 +1,11 @@
+import http from 'src/utils/http';
+type HttpFC<T = { [key: string]: unknown }> = (param?: T) => Promise<any>;
+
+/**
+ * @description 获取看板整体数据
+ * @param param param
+ * @returns Promise<any>
+ */
+export const getDashboardData: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bi/generalView', param);
+};
