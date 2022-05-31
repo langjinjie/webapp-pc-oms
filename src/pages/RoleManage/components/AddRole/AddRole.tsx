@@ -70,7 +70,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
       ...values,
       roleType,
       defaultDataScope: rangeParam.defaultDataScope,
-      dataScopeGroup: rangeParam.groupId,
+      dataScopeGroup: rangeParam.groupId || '',
       roleId: URLSearchParams(location.search).roleId
     });
     if (res) {
