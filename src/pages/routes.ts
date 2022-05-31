@@ -274,7 +274,7 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/PointsManage/LotteryConfig/LotteryConfig'))
   },
   {
-    path: '/lotteryConfig/prize/add',
+    path: '/lotteryConfig/prizeAdd',
     component: lazy(() => import('src/pages/PointsManage/LotteryConfig/PrizeEdit'))
   },
   // 中奖管理

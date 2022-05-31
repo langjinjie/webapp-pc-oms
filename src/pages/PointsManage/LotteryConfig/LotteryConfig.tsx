@@ -5,12 +5,13 @@
  */
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Button, Table, TableColumnType } from 'antd';
-import { BreadCrumbs } from 'src/components';
+import { Button, Form, Image, InputNumber, TableColumnType } from 'antd';
+import { BreadCrumbs, NgTable } from 'src/components';
 import { queryActivityConfig } from 'src/apis/pointsMall';
 import style from './style.module.less';
+import classNames from 'classnames';
 
-interface PrizeItem {
+export interface PrizeItem {
   goodsId: string;
   name: string;
   imgUrl: string;
@@ -19,10 +20,15 @@ interface PrizeItem {
   consumeStock: number;
   winWeight: number;
   exchangeDesc: string;
+  status: number;
 }
-
+const PanelTitle = ({ title, className }: { title: string; className?: string }) => {
+  return <div className={classNames(style.panelTitle, [className])}>{title}</div>;
+};
 const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [prizeList, setPrizeList] = useState<PrizeItem[]>([]);
+  const [formValues, setFormValues] = useState<any>({});
+  const [lotteryConfigForm] = Form.useForm();
 
   const columns: TableColumnType<PrizeItem>[] = [
     {
@@ -31,52 +37,63 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
     },
     {
       title: '奖品名称',
-      dataIndex: 'name'
+      dataIndex: 'name',
+      width: 200,
+      render: (name, record) => {
+        return (
+          <div>
+            <span className={classNames('ellipsis', style.goodsName)}>{name}</span>
+            {record.goodsType === 1 && <span className={style.prizeType}>大奖</span>}
+          </div>
+        );
+      }
     },
     {
+      width: 100,
       title: '奖品图片',
       dataIndex: 'imgUrl',
-      render: (text: string) => <img style={{ width: 100 }} src={text} alt="" />
+      render: (text: string) => <Image style={{ width: 44 }} src={text} alt="" />
     },
     {
-      title: '活动结束时间',
-      dataIndex: 'endTime'
+      title: '奖品库存',
+      dataIndex: 'totalStock'
     },
     {
-      title: '创建时间',
-      dataIndex: 'dateCreated'
+      title: '消耗库存',
+      dataIndex: 'consumeStock'
     },
     {
-      title: '创建人',
-      dataIndex: 'createBy',
+      title: '中奖概率百分比',
+      dataIndex: 'winWeight',
       width: 100
     },
     {
-      title: '大奖发放时间',
-      dataIndex: 'sendTime'
+      title: '兑换流程说明',
+      dataIndex: 'exchangeDesc',
+      width: 200,
+      ellipsis: {
+        showTitle: true
+      }
     },
-    {
-      title: '大奖发放人',
-      dataIndex: 'opName',
-      width: 110
-    },
-    {
-      title: '活动状态',
-      dataIndex: 'status',
-      render: (text: number) => <div>{text}</div>
-    },
-    {
-      title: '生效时间',
-      dataIndex: 'startTime'
-    },
+
     {
       title: '操作',
       dataIndex: 'activityId',
-      render: (text: string, record: PrizeItem) => (
-        <Button type="link" onClick={() => history.push('/lotteryConfig/prize/add', { goodsId: record.goodsId })}>
-          编辑
-        </Button>
-      )
+      render: (text: string, record) =>
+        formValues.status < 3
+          ? (
+          <Button
+            type="link"
+            onClick={() =>
+              history.push('/lotteryConfig/prizeAdd', { goodsId: record.goodsId, goodsType: record.goodsType })
+            }
+          >
+            编辑
+          </Button>
+            )
+          : (
+              '/'
+            )
     }
   ];
 
@@ -84,7 +101,12 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
     const { activityId }: any = location.state || {};
     const res: any = await queryActivityConfig({ activityId });
     if (res) {
-      setPrizeList(res.list || []);
+      console.log(res);
+      const { list, ...formParams } = res;
+
+      setPrizeList(list || []);
+      lotteryConfigForm.setFieldsValue(formParams);
+      setFormValues(formParams);
     }
   };
 
@@ -95,7 +117,38 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
   return (
     <div className={style.lotteryConfig}>
       <BreadCrumbs navList={[{ name: '抽奖配置' }, { name: '奖品配置' }]} />
-      <Table style={{ marginTop: 20 }} rowKey="goodsId" columns={columns} dataSource={prizeList} pagination={false} />
+      <PanelTitle title="奖品配置" />
+      <NgTable style={{ marginTop: 20 }} rowKey="goodsId" columns={columns} dataSource={prizeList} />
+
+      <Form className={classNames('edit', style.configEdit)} form={lotteryConfigForm} initialValues={formValues}>
+        <PanelTitle title="抽奖消耗积分配置" className="margin-bottom20" />
+        <Form.Item
+          label="抽奖积分"
+          extra="积分/次"
+          rules={[{ required: true }]}
+          name="costPoints"
+          className="customExtra"
+        >
+          <InputNumber style={{ width: '120px' }} controls={false} disabled={formValues.status >= 3} />
+        </Form.Item>
+        <PanelTitle title="中奖限制配置" className="margin-bottom20" />
+        <div className="flex">
+          <Form.Item label="限制每月" extra="次" name="monthLimit" className="customExtra">
+            <InputNumber controls={false} style={{ width: '70px' }} disabled={formValues.status >= 3} />
+          </Form.Item>
+          <Form.Item label="限制每周" extra="次" name="weekLimit" className="customExtra">
+            <InputNumber controls={false} style={{ width: '70px' }} disabled={formValues.status >= 3} />
+          </Form.Item>
+          <Form.Item label="限制每日" extra="次" name="dayLimit" className="customExtra">
+            <InputNumber controls={false} style={{ width: '70px' }} disabled={formValues.status >= 3} />
+          </Form.Item>
+        </div>
+      </Form>
+      <ul className={style.ruleInfo}>
+        <li>限制说明：</li>
+        <li>1、若为空则表示不限制。</li>
+        <li>2、若每日/周/月限制1次，则表示该坐席每日/周/月只能中奖1次。</li>
+      </ul>
     </div>
   );
 };

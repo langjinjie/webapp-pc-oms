@@ -5,9 +5,9 @@
  */
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { Button } from 'tenacity-ui';
+
 import { RouteComponentProps } from 'react-router-dom';
-import { Button as AntdBtn, PaginationProps, Table, TableColumnType, Modal as AntdModal, message } from 'antd';
+import { Button, PaginationProps, Table, TableColumnType, Modal as AntdModal, message } from 'antd';
 import { AuthBtn, Form } from 'src/components';
 import { queryLotteryActivity, operateActivity, giveOutPrize } from 'src/apis/pointsMall';
 import ActivityEdit from './ActivityEdit';
@@ -164,35 +164,35 @@ const ActivityList: React.FC<RouteComponentProps> = ({ history }) => {
         <>
           {[0, 1].includes(record.status) && (
             <AuthBtn path="/edit">
-              <AntdBtn type="link" onClick={() => onEdit(record, 1)}>
+              <Button type="link" onClick={() => onEdit(record, 1)}>
                 编辑
-              </AntdBtn>
+              </Button>
             </AuthBtn>
           )}
           {[0, 2].includes(record.status) && (
             <AuthBtn path="/operate">
-              <AntdBtn type="link" onClick={() => onOperate(text)}>
+              <Button type="link" onClick={() => onOperate(text)}>
                 上架活动
-              </AntdBtn>
+              </Button>
             </AuthBtn>
           )}
           <AuthBtn path="/config">
-            <AntdBtn type="link" onClick={() => history.push('/lotteryConfig/prize', { activityId: text })}>
+            <Button type="link" onClick={() => history.push('/lotteryConfig/prize', { activityId: text })}>
               奖品配置
-            </AntdBtn>
+            </Button>
           </AuthBtn>
           {[3, 4].includes(record.status) && (
             <AuthBtn path="/winnerList">
-              <AntdBtn type="link" onClick={() => history.push('/lotteryConfig/prize')}>
+              <Button type="link" onClick={() => history.push('/winManage?activityName=' + record.activityName)}>
                 中奖名单
-              </AntdBtn>
+              </Button>
             </AuthBtn>
           )}
           {record.status === 3 && (
             <AuthBtn path="/givePrize">
-              <AntdBtn type="link" disabled={record.sendStatus === 1} onClick={() => onGive(record.activityId)}>
+              <Button type="link" disabled={record.sendStatus === 1} onClick={() => onGive(record.activityId)}>
                 大奖发放
-              </AntdBtn>
+              </Button>
             </AuthBtn>
           )}
         </>
@@ -229,7 +229,7 @@ const ActivityList: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <div className={style.activityList}>
       <AuthBtn path="/add">
-        <Button className={style.addBtn} type="primary" onClick={() => onEdit(null, 0)}>
+        <Button className={style.addBtn} type="primary" shape="round" onClick={() => onEdit(null, 0)}>
           创建抽奖活动
         </Button>
       </AuthBtn>
