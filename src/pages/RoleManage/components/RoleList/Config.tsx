@@ -14,8 +14,9 @@ const TableColumns = (
   clickTree: (add: boolean, roleId: string) => void,
   setPaginationParam: Dispatch<SetStateAction<{ pageNum: number; pageSize: number }>>
 ): ColumnType<any>[] => {
-  const { setConfirmModalParam } =
-    useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(Context);
+  const { setConfirmModalParam } = useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(
+    Context
+  );
   const history = useHistory();
   // 点击编辑/查看角色
   const editOrViewHandle = (type: string, roleId: string) => {
@@ -60,7 +61,7 @@ const TableColumns = (
       }
     }));
   };
-  return [
+  const columns = [
     {
       title: '角色id',
       dataIndex: 'roleId'
@@ -85,9 +86,14 @@ const TableColumns = (
     },
     {
       title: '管辖范围',
-      dataIndex: 'roleRange',
-      render (text: string) {
-        return text || '全部范围';
+      render (row: IRoleList) {
+        return roleType === 1
+          ? '全部组织'
+          : row.dataScopeGroup
+            ? '已配置管辖范围'
+            : row.defaultDataScope
+              ? '全部下级'
+              : '已关闭管辖范围';
       }
     },
     {
@@ -138,6 +144,10 @@ const TableColumns = (
       }
     }
   ];
+  if (roleType === 3) {
+    columns.splice(3, 1);
+  }
+  return columns;
 };
 
 const TablePagination = (arg: { [key: string]: unknown }): { [key: string]: unknown } => {

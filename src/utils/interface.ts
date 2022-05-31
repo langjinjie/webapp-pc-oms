@@ -335,7 +335,8 @@ export interface IDeptRecord {
 export interface IRoleList {
   roleId: string;
   roleName: string;
-  roleRange?: string;
+  dataScopeGroup?: string | null;
+  defaultDataScope: number;
   status: number;
   isDefault: number;
   userNum: number;
