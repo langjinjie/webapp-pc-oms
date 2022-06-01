@@ -29,11 +29,11 @@ export const noVerRoutes: RouteProps[] = [
     component: lazy(() => import('src/pages/Dashboard/index'))
   },
   {
-    path: '/dashboard/list/:id',
+    path: '/dashboardList/:id',
     component: lazy(() => import('src/pages/Dashboard/List/List'))
   },
   {
-    path: '/dashboard/list/:id/detail',
+    path: '/dashboardList/:id/detail',
     component: lazy(() => import('src/pages/Dashboard/Detail/Detail'))
   }
 ];

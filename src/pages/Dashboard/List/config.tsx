@@ -119,3 +119,148 @@ export const tableColumns = ({ toDetailPage }: tableOperations): ColumnsType<Ite
     }
   ];
 };
+
+// 指标代码:
+// avg_add_friend_count日人均加好友数
+// avg_chat_friend_count日人均聊天客户数
+// avg_circle_send_count日人均朋友圈发送数
+// avg_market日人均营销平台调用数
+// avg_smart日人均销售宝典调用数
+// avg_cust_count日人均客户信息调用数
+// avg_radar_count日人均客户雷达调用数
+// avg_tag_count 日人均客户标签调用数
+// avg_speech_count日人均我的收藏调用数
+// avg_orc_count日人均文字识别调用数
+// avg_rank_count日人均排行榜调用数
+
+export type CodeListType = {
+  key: string;
+  title: string;
+  children: {
+    key: string;
+    title: string;
+    subTitle: string;
+  }[];
+}[];
+export const dataCodeList: CodeListType = [
+  {
+    key: 'avg_add_friend_count',
+    title: '加好友',
+    children: [
+      {
+        key: 'avg_add_friend_count',
+        title: '加好友',
+        subTitle: '日均加好友数'
+      },
+      {
+        key: 'avg_chat_friend_count',
+        title: '客户联系',
+        subTitle: '日人均联系客户数'
+      }
+    ]
+  },
+  {
+    key: 'avg_circle_send_count',
+    title: '朋友圈',
+    children: [
+      {
+        key: 'avg_circle_send_count',
+        title: '朋友圈',
+        subTitle: '日人均朋友圈发送数'
+      }
+    ]
+  },
+  {
+    key: 'avg_circle_send_count',
+    title: '朋友圈1',
+    children: [
+      {
+        key: 'avg_circle_send_count',
+        title: '朋友圈',
+        subTitle: '日人均朋友圈发送数'
+      }
+    ]
+  },
+  {
+    key: 'avg_market',
+    title: '营销平台',
+    children: [
+      {
+        key: 'avg_market',
+        title: '营销平台',
+        subTitle: '日人均营销平台调用数'
+      }
+    ]
+  },
+  {
+    key: 'avg_smart',
+    title: '销售宝典',
+    children: [
+      {
+        key: 'avg_smart',
+        title: '销售宝典',
+        subTitle: '日人均销售宝典调用数'
+      }
+    ]
+  },
+
+  {
+    key: 'avg_cust_count',
+    title: '客户信息',
+    children: [
+      {
+        key: 'avg_cust_count',
+        title: '客户信息',
+        subTitle: '日人均客户信息调用数'
+      },
+      {
+        key: 'avg_radar_count',
+        title: '客户雷达',
+        subTitle: '日人均客户雷达调用数'
+      },
+      // {
+      //   key: '',
+      //   title: '客户列表',
+      //   subTitle: '日人均客户列表调用数'
+      // },
+      {
+        key: 'avg_tag_count',
+        title: '客户标签',
+        subTitle: '日人均客户标签调用数'
+      }
+    ]
+  },
+  {
+    key: 'avg_speechsend_count',
+    title: '我的收藏',
+    children: [
+      {
+        key: 'avg_speechsend_count',
+        title: '我的收藏',
+        subTitle: '日人均我的收藏调用数'
+      }
+    ]
+  },
+  {
+    key: 'avg_orc_count',
+    title: '文字识别',
+    children: [
+      {
+        key: 'avg_orc_count',
+        title: '文字识别',
+        subTitle: '日人均文字识别调用数'
+      }
+    ]
+  },
+  {
+    key: 'avg_rank_count',
+    title: '排行榜',
+    children: [
+      {
+        key: 'avg_rank_count',
+        title: '排行榜',
+        subTitle: '日人均排行榜调用数'
+      }
+    ]
+  }
+];

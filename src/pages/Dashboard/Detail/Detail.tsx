@@ -2,13 +2,16 @@ import { Breadcrumb, Button, Divider } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import { TrendChart } from '../components/TrendChart/TrenChart';
+import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './style.module.less';
 
-const DashboardDetail: React.FC = () => {
+const DashboardDetail: React.FC<RouteComponentProps<{ id: string }>> = ({ match }) => {
   const navigatorToList = () => {
     console.log('aa');
   };
+  console.log(match.params);
+
   return (
     <div className="container">
       <div className={'breadcrumbWrap'}>

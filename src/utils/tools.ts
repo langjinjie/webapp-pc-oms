@@ -63,3 +63,14 @@ export const numFormat = (num: number, places = 3, symbol = ','): string => {
   console.log(reg);
   return num.toString().replace(reg, symbol);
 };
+
+export const groupArr = (array: any[], subGroupLength = 0): any[] => {
+  let index = 0;
+  const newArray = [];
+  console.log(subGroupLength);
+  while (index < array.length) {
+    newArray.push(array.slice(index, index + subGroupLength));
+    index += subGroupLength;
+  }
+  return newArray;
+};

@@ -1,33 +1,61 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { NgTable } from 'src/components';
-import { tableColumns } from './config';
+import { dataCodeList, tableColumns } from './config';
 import { Button, Divider, Radio, Select, Tabs } from 'antd';
-import styles from '../style.module.less';
 
-const AddFriend: React.FC<RouteComponentProps> = ({ history }) => {
+import styles from '../style.module.less';
+import { getDashboardItemData } from 'src/apis/dashboard';
+
+const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, match }) => {
+  const [currentCode, setCurrentCode] = useState<{
+    key: string;
+    title: string;
+    children: {
+      key: string;
+      title: string;
+      subTitle: string;
+    }[];
+  }>();
+  const [currentItem, setCurrentItem] = useState<{ key: string; title: string; subTitle: string }>();
   const toDetailPage = (record: any) => {
-    console.log(record);
-    history.push('/dashboard/AddFriend/detail');
+    console.log(history, match, record);
+    const { id } = match.params;
+    history.push(`/dashboardList/${id}/detail`);
   };
+  const getList = async () => {
+    const res = await getDashboardItemData({});
+    console.log(res);
+  };
+
+  useEffect(() => {
+    const { id } = match.params;
+    const current = dataCodeList.filter((code) => code.key === id)[0];
+    const item = current.children.filter((item) => item.key === id)[0];
+    setCurrentCode(current);
+    setCurrentItem(item);
+    getList();
+  }, [match]);
   const handleModelChange = () => {
     console.log('change');
   };
-  const onTabsChange = () => {
-    console.log('onTabsChange');
+  const onTabsChange = (activeKey: string) => {
+    const item = currentCode?.children.filter((item) => item.key === activeKey)[0];
+    setCurrentItem(item);
   };
   return (
     <div className={classNames(styles.addFriend)}>
-      <Tabs defaultActiveKey="1" onChange={onTabsChange}>
-        <Tabs.TabPane tab="客户信息" key={'1'}></Tabs.TabPane>
-        <Tabs.TabPane tab="客户雷达" key={'2'}></Tabs.TabPane>
+      <Tabs defaultActiveKey={currentCode?.key} onChange={onTabsChange}>
+        {currentCode?.children.map((item) => {
+          return <Tabs.TabPane tab={item.title} key={item.key}></Tabs.TabPane>;
+        })}
       </Tabs>
       <div className="container">
         <div className={classNames(styles.contentWrap, 'pb20')}>
           <div className={classNames(styles.header, 'flex justify-between align-center ml20 mr20')}>
             <div className="flex align-center">
-              <h3 className="f18 bold">日均客户信息调用数</h3>
+              <h3 className="f18 bold">{currentItem?.subTitle}</h3>
               <Divider
                 type="vertical"
                 style={{
@@ -35,7 +63,7 @@ const AddFriend: React.FC<RouteComponentProps> = ({ history }) => {
                   margin: '0 30px'
                 }}
               />
-              <span className="f16 color-text-regular">张成的团队</span>
+              <span className="f16 text-primary">全部团队</span>
             </div>
             <Radio.Group defaultValue="a" size="middle">
               <Radio.Button value="a">最近6周</Radio.Button>

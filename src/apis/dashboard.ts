@@ -9,3 +9,20 @@ type HttpFC<T = { [key: string]: unknown }> = (param?: T) => Promise<any>;
 export const getDashboardData: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/data/bi/generalView', param);
 };
+
+/**
+ * @description 获取看单项数据列表
+ * @param param param
+ * @returns Promise<any>
+ */
+export const getDashboardItemData: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bi/whole/list', param);
+};
+/**
+ * @description 获取看单项数据列表
+ * @param param param
+ * @returns Promise<any>
+ */
+export const getDashboardTeamDetail: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bi/whole/teamdetail', param);
+};

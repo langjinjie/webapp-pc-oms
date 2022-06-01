@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect, useContext, Suspense } from 'react';
-import { Redirect, Route, withRouter, RouteProps, RouteComponentProps } from 'react-router-dom';
+import { Redirect, Route, withRouter, RouteProps, RouteComponentProps, NavLink } from 'react-router-dom';
 import CacheRoute, { CacheRouteProps, CacheSwitch } from 'react-router-cache-route';
 import classNames from 'classnames';
 import { Icon, ConfirmModal } from 'src/components';
@@ -23,7 +23,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
   const [subMenus, setSubMenus] = useState<MenuItem[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
-  const [subMenuIndex, setSubMenuIndex] = useState<number | null>(null);
   const [loaded, setLoaded] = useState<boolean>(false);
 
   /**
@@ -40,7 +39,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
       setMenuIndex(currentMenuIndex);
       setSubMenus(subMenus);
       const subIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(currentMenu));
-      setSubMenuIndex(subIndex);
       const btnList: MenuItem[] = subMenus[subIndex].children || [];
       setBtnList(btnList.map((item) => item.path));
     }
@@ -133,7 +131,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
               key={menu.menuId}
               onClick={() => {
                 setMenuIndex(index);
-                setSubMenuIndex(null);
                 if (menu.children && menu.children.length > 0) {
                   history.push(((menu.children || [])[0] || {}).path);
                 } else {
@@ -147,15 +144,20 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
           ))}
         </ul>
         <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
-          {subMenus.map((subMenu: MenuItem, index: number) => (
-            <li
-              className={classNames('sub-menu-item', {
-                'sub-menu-active': subMenuIndex === index
-              })}
-              key={subMenu.menuId}
-              onClick={() => history.push(subMenu.path)}
-            >
-              {subMenu.menuName}
+          {subMenus.map((subMenu: MenuItem) => (
+            <li key={subMenu.menuId}>
+              <NavLink
+                to={subMenu.path}
+                activeClassName={'sub-menu-active'}
+                className="sub-menu-item"
+                // className={classNames('sub-menu-item', {
+                //   'sub-menu-active': subMenuIndex === index
+                // })}
+
+                // onClick={() => history.push(subMenu.path)}
+              >
+                {subMenu.menuName}
+              </NavLink>
             </li>
           ))}
         </ul>
