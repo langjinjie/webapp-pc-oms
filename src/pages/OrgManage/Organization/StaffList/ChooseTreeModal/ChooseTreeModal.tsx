@@ -145,8 +145,8 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
         searchList = res.deptList || [];
       }
       searchList.forEach((item: any) => {
-        item.id = item.deptId || item.staffId;
-        item.name = item.deptName || item.staffName;
+        item.id = item.staffId || item.deptId;
+        item.name = item.staffName || item.deptName;
       });
       setSearchList(searchList);
     } else {
@@ -291,7 +291,7 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
     }
     newSelectList = selectList.filter((item) => item.id !== id);
     const currentItem = selectList.find((item) => item.id === id);
-    if (currentItem.parentId) {
+    if (currentItem && currentItem.parentId) {
       newSelectList = cancelChecked(currentItem.parentId, newSelectList);
     }
     setSelectList(newSelectList);

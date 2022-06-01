@@ -2,6 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { Button } from 'antd';
+import { AuthBtn } from 'src/components';
 
 export const searchCols: SearchCol[] = [
   {
@@ -38,12 +39,14 @@ export const tableColumns = (
     title: '操作',
     render: (text, record) => (
       <>
-        <Button type="link" onClick={() => addPoints(record)}>
-          增加
-        </Button>
-        <Button type="link" onClick={() => minusPoints(record)}>
-          扣减
-        </Button>
+        <AuthBtn path="/edit">
+          <Button type="link" onClick={() => addPoints(record)}>
+            增加
+          </Button>
+          <Button type="link" onClick={() => minusPoints(record)}>
+            扣减
+          </Button>
+        </AuthBtn>
       </>
     )
   }

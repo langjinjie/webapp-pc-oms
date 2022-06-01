@@ -10,25 +10,44 @@ export interface PaginationProps {
 }
 interface TableComponentProps<T> extends TableProps<T> {
   className?: string;
-  loading?: boolean;
+  loading: boolean;
   columns: any;
   pagination?: TablePaginationConfig;
   paginationChange?: (pageNum: number, pageSize?: number) => void;
   setRowKey?: (record: any) => string;
   rowSelection?: {
+    defaultSelectedRowKeys?: string[];
+    type?: 'checkbox' | 'radio';
     onChange: (selectedRowKeys: React.Key[], selectedRows: T[]) => void;
     getCheckboxProps: (record: T) => { disabled: boolean; name: string };
-    hideSelectAll: boolean;
+    hideSelectAll?: boolean;
   };
 }
 
 const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.Element => {
-  const { className, paginationChange, pagination, setRowKey, rowSelection, scroll, ...otherPorps } = props;
+  const {
+    className,
+    columns,
+    dataSource,
+    paginationChange,
+    pagination,
+    loading,
+    setRowKey,
+    rowSelection,
+    onRow,
+    scroll,
+    tableLayout,
+    ...otherProps
+  } = props;
   return (
     <Table
       className={classNames('table-container', className)}
+      columns={columns}
+      dataSource={dataSource}
       scroll={scroll || { x: 1300 }}
       rowKey={setRowKey}
+      loading={loading}
+      tableLayout={tableLayout}
       rowSelection={
         rowSelection
           ? {
@@ -47,7 +66,8 @@ const TableComponent = <T extends object>(props: TableComponentProps<T>): JSX.El
             }
           : false
       }
-      {...otherPorps}
+      onRow={onRow}
+      {...otherProps}
     />
   );
 };

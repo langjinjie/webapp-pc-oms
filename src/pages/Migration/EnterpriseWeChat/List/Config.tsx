@@ -6,6 +6,7 @@ import moment from 'moment';
 import { UNKNOWN } from 'src/utils/base';
 import { Popconfirm, Space, Tooltip } from 'antd';
 import { percentage } from 'src/utils/tools';
+import { AuthBtn } from 'src/components';
 
 export interface TaskProps {
   taskId: string;
@@ -131,23 +132,33 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       width: 100,
       render: (text, record, index) => (
         <Space size="small">
-          <a onClick={() => viewItem(record.taskId)}>查看</a>
+          <AuthBtn path="/view">
+            <a onClick={() => viewItem(record.taskId)}>查看</a>
+          </AuthBtn>
           {record.taskStatus === 1 && (
-            <Popconfirm
-              title="任务关闭后数据统计截止当前，确定操作吗？ "
-              onConfirm={() => operateItem(record, 1, index)}
-            >
-              <a>关闭</a>
-            </Popconfirm>
+            <AuthBtn path="/close">
+              <Popconfirm
+                title="任务关闭后数据统计截止当前，确定操作吗？ "
+                onConfirm={() => operateItem(record, 1, index)}
+              >
+                <a>关闭</a>
+              </Popconfirm>
+            </AuthBtn>
           )}
-          {record.taskStatus === 2 && <a onClick={() => exportData(record)}>数据</a>}
+          {record.taskStatus === 2 && (
+            <AuthBtn path="/download">
+              <a onClick={() => exportData(record)}>数据</a>
+            </AuthBtn>
+          )}
           {record.taskStatus === 0 && (
-            <Popconfirm
-              title="删除后不给客户经理下发此任务，确定操作吗？ "
-              onConfirm={() => operateItem(record, 0, index)}
-            >
-              <a>删除</a>
-            </Popconfirm>
+            <AuthBtn path="/delete">
+              <Popconfirm
+                title="删除后不给客户经理下发此任务，确定操作吗？ "
+                onConfirm={() => operateItem(record, 0, index)}
+              >
+                <a>删除</a>
+              </Popconfirm>
+            </AuthBtn>
           )}
         </Space>
       )

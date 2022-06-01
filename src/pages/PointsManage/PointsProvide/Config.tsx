@@ -7,6 +7,7 @@ import { UNKNOWN } from 'src/utils/base';
 import { IPointsProvideList } from 'src/utils/interface';
 import style from './style.module.less';
 import classNames from 'classnames';
+import { AuthBtn } from 'src/components';
 
 interface IPonitsParam {
   visible: boolean;
@@ -95,9 +96,11 @@ const TableColumns = ({ setPonitsParam }: ITableColumns): ColumnsType<any> => {
       fixed: 'right',
       render (row: IPointsProvideList) {
         return (
-          <span className={style.check} onClick={() => clickCheckHandle(row)}>
-            查看
-          </span>
+          <AuthBtn path="/view">
+            <span className={style.check} onClick={() => clickCheckHandle(row)}>
+              查看
+            </span>
+          </AuthBtn>
         );
       }
     }

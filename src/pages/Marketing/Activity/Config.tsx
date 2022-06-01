@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Button, Popconfirm, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
+import { AuthBtn } from 'src/components';
 
 export const SearchCols: SearchCol[] = [
   {
@@ -43,6 +44,7 @@ interface OperateProps {
   viewItem: (id: string) => void;
   handleSort: (record: ActivityProps) => void;
   handleOperate: (operateType: number, activityId: string, index: number) => void;
+  setRight: (record: ActivityProps) => void;
 }
 export interface ActivityProps {
   activityName: string;
@@ -54,9 +56,10 @@ export interface ActivityProps {
   createBy: string;
   activityId: string;
   isTop: string;
+  groupId: string;
 }
 export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
-  const { viewItem, handleOperate, handleSort } = args;
+  const { viewItem, handleOperate, handleSort, setRight } = args;
   return [
     {
       title: '活动名称',
@@ -122,38 +125,52 @@ export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
     {
       title: '操作',
       dataIndex: 'status',
-      width: 200,
+      width: 280,
       align: 'left',
       fixed: 'right',
       render: (status: number, record: any, index: number) => (
         <Space size={10} className="spaceWrap">
-          <Button type="link" onClick={() => handleSort(record)}>
-            {record.isTop === '1' ? '取消置顶' : '置顶'}
-          </Button>
-          <Button type="link" onClick={() => viewItem(record.activityId)}>
-            查看
-          </Button>
-          {status === 1 && (
-            <Button type="link" onClick={() => handleOperate(0, record.activityId, index)}>
-              编辑
+          <AuthBtn path="/top">
+            <Button type="link" onClick={() => handleSort(record)}>
+              {record.isTop === '1' ? '取消置顶' : '置顶'}
             </Button>
+          </AuthBtn>
+          <AuthBtn path="/view">
+            <Button type="link" onClick={() => viewItem(record.activityId)}>
+              查看
+            </Button>
+          </AuthBtn>
+          {status === 1 && (
+            <AuthBtn path="/edit">
+              <Button type="link" onClick={() => handleOperate(0, record.activityId, index)}>
+                编辑
+              </Button>
+            </AuthBtn>
           )}
-
-          {(status === 3 || status === 1) && (
-            <Popconfirm title="确定要上架?" onConfirm={() => handleOperate(1, record.activityId, index)}>
-              <Button type="link">上架</Button>
-            </Popconfirm>
-          )}
-          {status === 2 && (
-            <Popconfirm title="确定要下架?" onConfirm={() => handleOperate(2, record.activityId, index)}>
-              <Button type="link">下架</Button>
-            </Popconfirm>
-          )}
-          {status === 3 && (
-            <Popconfirm title="确定要删除?" onConfirm={() => handleOperate(3, record.activityId, index)}>
-              <Button type="link">删除</Button>
-            </Popconfirm>
-          )}
+          <AuthBtn path="/operate">
+            {(status === 3 || status === 1) && (
+              <Popconfirm title="确定要上架?" onConfirm={() => handleOperate(1, record.activityId, index)}>
+                <Button type="link">上架</Button>
+              </Popconfirm>
+            )}
+            {status === 2 && (
+              <Popconfirm title="确定要下架?" onConfirm={() => handleOperate(2, record.activityId, index)}>
+                <Button type="link">下架</Button>
+              </Popconfirm>
+            )}
+          </AuthBtn>
+          <AuthBtn path="/delete">
+            {status === 3 && (
+              <Popconfirm title="确定要删除?" onConfirm={() => handleOperate(3, record.activityId, index)}>
+                <Button type="link">删除</Button>
+              </Popconfirm>
+            )}
+          </AuthBtn>
+          <AuthBtn path="/set">
+            <Button type="link" onClick={() => setRight(record)}>
+              配置可见范围
+            </Button>
+          </AuthBtn>
         </Space>
       )
     }

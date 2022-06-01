@@ -11,9 +11,10 @@ import {
   sortSpeech,
   getSensitiveStatus,
   checkSensitive,
-  addBatchSpeech
+  addBatchSpeech,
+  setUserRightWithSpeech
 } from 'src/apis/salesCollection';
-import { Icon, NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
 import ExportModal from './Components/ExportModal/ExportModal';
 import PreviewSpeech from './Components/PreviewSpeech/PreviewSpeech';
@@ -23,6 +24,7 @@ import style from './style.module.less';
 import { Context } from 'src/store';
 import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
 import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/SetUserRight';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   useDocumentTitle('销售宝典-话术管理');
@@ -64,6 +66,10 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     checkTime: ''
   });
   const [loading] = useState(false);
+  const [currentItem, setCurrentItem] = useState<SpeechProps>();
+  const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
+  const [isBatchSetRight, setIsBatchSetRight] = useState(false);
+  const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
 
   // 查询话术列表
   const getList = async (params?: any) => {
@@ -431,70 +437,119 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       message.success(res);
     }
   };
+  // 显示配置可见范围模块
+  const setRight = (record?: SpeechProps) => {
+    if (record) {
+      setIsBatchSetRight(false);
+      setCurrentItem(record);
+    } else {
+      const mySet = new Set();
+      selectedRows?.forEach((item) => {
+        mySet.add(item.groupId);
+      });
+      console.log(Array.from(mySet));
+      setCurrentGroupIds(Array.from(mySet));
+      setIsBatchSetRight(true);
+    }
+    setVisibleSetUserRight(true);
+  };
+
+  const confirmSetRight = async (values: any) => {
+    setVisibleSetUserRight(false);
+    const { isSet, groupId, isBatch } = values;
+    // [adminId];
+    // groupId: 93201136316088326
+    const list: any[] = [];
+    if (isBatch) {
+      selectedRows?.forEach((item) => {
+        list.push({ sceneId: item.sceneId, contentId: item.contentId, groupId: isSet ? groupId : null });
+      });
+    } else {
+      list.push({ sceneId: currentItem?.sceneId, contentId: currentItem?.contentId, groupId: isSet ? groupId : null });
+    }
+    const res = await setUserRightWithSpeech({ list });
+    if (res) {
+      message.success('设置成功');
+      getList({ pageNum: 1 });
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
+    }
+  };
   return (
     <div className="container">
       <div className="flex justify-between">
         <Space size={20}>
-          <Button
-            className={style.btnAdd}
-            type="primary"
-            onClick={handleAdd}
-            shape="round"
-            icon={<PlusOutlined />}
-            size="large"
-            style={{ width: 128 }}
-          >
-            新增
-          </Button>
-          <Button
-            className={style.btnAdd}
-            type="primary"
-            onClick={() => setVisibleExport(true)}
-            shape="round"
-            icon={<PlusOutlined />}
-            size="large"
-            style={{ width: 128 }}
-          >
-            批量新增
-          </Button>
-          <Button
-            className={style.btnAdd}
-            type="primary"
-            onClick={() => handleChecked()}
-            shape="round"
-            size="large"
-            style={{ width: 128 }}
-            loading={!!checkedInfo.checking}
-          >
-            {!checkedInfo.checking ? '敏感词校验' : '正在校验'}
-          </Button>
-          {checkedInfo.checkTime && <span className="color-text-placeholder">{checkedInfo.checkTime}检测过</span>}
+          <AuthBtn path="/add">
+            <Button
+              className={style.btnAdd}
+              type="primary"
+              onClick={handleAdd}
+              shape="round"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ width: 128 }}
+            >
+              新增
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/addBatch">
+            <Button
+              className={style.btnAdd}
+              type="primary"
+              onClick={() => setVisibleExport(true)}
+              shape="round"
+              icon={<PlusOutlined />}
+              size="large"
+              style={{ width: 128 }}
+            >
+              批量新增
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/check">
+            <Button
+              className={style.btnAdd}
+              type="primary"
+              onClick={() => handleChecked()}
+              shape="round"
+              size="large"
+              style={{ width: 128 }}
+              loading={!!checkedInfo.checking}
+            >
+              {!checkedInfo.checking ? '敏感词校验' : '正在校验'}
+            </Button>
+            {checkedInfo.checkTime && (
+              <span className="color-text-placeholder ml10">{checkedInfo.checkTime}检测过</span>
+            )}
+          </AuthBtn>
         </Space>
-        <Button
-          className={style.btnAdd}
-          type="primary"
-          onClick={() => setVisiblePreview(true)}
-          shape="round"
-          size="large"
-        >
-          <Icon className="font16" name="yulan" />
-          <span className="ml10">预览</span>
-        </Button>
+        <AuthBtn path="/view">
+          <Button
+            className={style.btnAdd}
+            type="primary"
+            onClick={() => setVisiblePreview(true)}
+            shape="round"
+            size="large"
+          >
+            <Icon className="font16" name="yulan" />
+            <span className="ml10">预览</span>
+          </Button>
+        </AuthBtn>
       </div>
-      <div className="form-inline pt20">
-        <NgFormSearch
-          defaultValues={formDefaultValue}
-          searchCols={setSearchCols(categories)}
-          loadData={loadData}
-          onSearch={onSearch}
-          onChangeOfCascader={onCascaderChange}
-          onValuesChange={onValuesChange}
-        />
-      </div>
+      <AuthBtn path="/query">
+        <div className="form-inline pt20">
+          <NgFormSearch
+            defaultValues={formDefaultValue}
+            searchCols={setSearchCols(categories)}
+            loadData={loadData}
+            onSearch={onSearch}
+            onChangeOfCascader={onCascaderChange}
+            onValuesChange={onValuesChange}
+          />
+        </div>
+      </AuthBtn>
 
       <NgTable
         dataSource={dataSource}
-        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew })}
+        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight })}
         setRowKey={(record: SpeechProps) => {
           return record.contentId;
         }}
@@ -506,45 +561,64 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       {dataSource.length > 0 && (
         <div className={'operationWrap'}>
           <Space size={20}>
-            <Button type="primary" shape={'round'} ghost onClick={() => handleExport()}>
-              导出
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={currentType === 1 || selectedRowKeys.length === 0}
-              onClick={() => operateStatus(1)}
-            >
-              上架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={currentType === 0 || selectedRowKeys.length === 0}
-              onClick={() => operateStatus(0)}
-            >
-              待上架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={currentType === 2 || selectedRowKeys.length === 0}
-              onClick={() => operateStatus(2)}
-            >
-              下架
-            </Button>
-            <Button
-              type="primary"
-              shape={'round'}
-              ghost
-              disabled={currentType === 1 || selectedRowKeys.length === 0}
-              onClick={() => operateStatus(3)}
-            >
-              删除
-            </Button>
+            <AuthBtn path="/export">
+              <Button type="primary" shape={'round'} ghost onClick={() => handleExport()}>
+                导出
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/operate">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={currentType === 1 || selectedRowKeys.length === 0}
+                onClick={() => operateStatus(1)}
+              >
+                上架
+              </Button>
+              <Button
+                type="primary"
+                shape={'round'}
+                className="ml20"
+                ghost
+                disabled={currentType === 0 || selectedRowKeys.length === 0}
+                onClick={() => operateStatus(0)}
+              >
+                待上架
+              </Button>
+              <Button
+                type="primary"
+                shape={'round'}
+                className="ml20"
+                ghost
+                disabled={currentType === 2 || selectedRowKeys.length === 0}
+                onClick={() => operateStatus(2)}
+              >
+                下架
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/delete">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={currentType === 1 || selectedRowKeys.length === 0}
+                onClick={() => operateStatus(3)}
+              >
+                删除
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/setBatch">
+              <Button
+                type="primary"
+                shape={'round'}
+                ghost
+                disabled={!(selectedRows && selectedRows.length > 0)}
+                onClick={() => setRight()}
+              >
+                批量添加可见范围
+              </Button>
+            </AuthBtn>
           </Space>
         </div>
       )}
@@ -567,6 +641,13 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
 
       {/* modal */}
       <ConfirmModal visible={visibleChecked} title={'温馨提醒'} onOk={doCheck} />
+      <SetUserRight
+        isBatch={isBatchSetRight}
+        groupId={isBatchSetRight ? currentGroupIds : currentItem?.groupId}
+        visible={visibleSetUserRight}
+        onOk={confirmSetRight}
+        onCancel={() => setVisibleSetUserRight(false)}
+      />
     </div>
   );
 };

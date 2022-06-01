@@ -3,7 +3,7 @@ import { Drawer, Button, message } from 'antd';
 import { requestGetSendPonitsDetail, requestSendAllPonitsDetail } from 'src/apis/pointsMall';
 import { NgTable } from 'src/components';
 import { TableColumns, TablePagination } from './Config';
-import { IPointsProvideList, ISendPointsDetail, IConfirmModalParam } from 'src/utils/interface';
+import { IPointsProvideList, ISendPointsDetail } from 'src/utils/interface';
 import { Context } from 'src/store';
 import style from './style.module.less';
 
@@ -93,8 +93,8 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
       });
       setSendPointsDetail(({ total }) => ({ total, list }));
       setSelectedRowKeys([]);
-      setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
       setSendStatus(true);
+      setConfirmModalParam({ visible: false });
     }
   };
   // 点击一键发放
@@ -103,10 +103,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
       visible: true,
       title: '积分发放提醒',
       tips: '是否确定发放积分？',
-      onOk: sendedAllHandle,
-      onCancel () {
-        setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
-      }
+      onOk: sendedAllHandle
     });
   };
   useEffect(() => {

@@ -1,9 +1,10 @@
 import React from 'react';
+import classNames from 'classnames';
 import { ColumnsType } from 'antd/es/table';
 import { requestDownLoadFailLoad } from 'src/apis/orgManage';
 import { IStaffImpList } from 'src/utils/interface';
+import { AuthBtn } from 'src/components';
 import style from './style.module.less';
-import classNames from 'classnames';
 
 const status2NameList = ['成功', '异常', '校验中'];
 
@@ -65,12 +66,14 @@ const TableColumns = (): ColumnsType<any> => [
     fixed: 'right',
     render (row: IStaffImpList) {
       return (
-        <span
-          className={classNames(style.edit, { [style.disabled]: row.status !== 1 })}
-          onClick={() => onDownLoadFailExcel(row.batchId, row.title, row.status)}
-        >
-          {row.status === 1 ? '下载异常表格' : '/'}
-        </span>
+        <AuthBtn path="/import/downAbnormal">
+          <span
+            className={classNames(style.edit, { [style.disabled]: row.status !== 1 })}
+            onClick={() => onDownLoadFailExcel(row.batchId, row.title, row.status)}
+          >
+            {row.status === 1 ? '下载异常表格' : '/'}
+          </span>
+        </AuthBtn>
       );
     }
   }

@@ -1,0 +1,51 @@
+.wrap {
+  .titleWrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: content-box;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f5f5f5;
+    .title {
+      height: 20px;
+      font-size: 18px;
+      font-weight: 400;
+      color: #111111;
+      line-height: 20px;
+    }
+    .copy {
+      height: 20px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #318cf5;
+      line-height: 20px;
+      cursor: pointer;
+    }
+  }
+  .privilege {
+    margin-top: 30px;
+    height: 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #111111;
+    line-height: 16px;
+    &::before {
+      display: inline-block;
+      margin-right: 10px;
+      width: 6px;
+      height: 16px;
+      background: #318cf5;
+      content: ' ';
+      vertical-align: top;
+    }
+  }
+  .menuList {
+    margin-top: 20px;
+  }
+}
+.modalWrap {
+  width: 360px !important;
+  .select {
+    width: 290px;
+  }
+}

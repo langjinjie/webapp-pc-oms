@@ -2,7 +2,7 @@ import React, { useState, useRef, MutableRefObject, useContext } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN } from 'src/utils/base';
 import { Icon } from 'src/components';
-import { ISendPointsDetail, IFlowList, IConfirmModalParam } from 'src/utils/interface';
+import { ISendPointsDetail, IFlowList } from 'src/utils/interface';
 import { message, Popover, Table, Tooltip } from 'antd';
 import { requestModifyRemark, requestAddBlackList } from 'src/apis/pointsMall';
 import { Context } from 'src/store';
@@ -56,7 +56,7 @@ const TableColumns = (
     if (res) {
       message.success('添加黑名单成功');
       setPaginationParam((param) => ({ ...param }));
-      setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
+      setConfirmModalParam({ visible: false });
     }
   };
   // 点击添加黑名单
@@ -67,10 +67,7 @@ const TableColumns = (
       visible: true,
       title: '温馨提醒',
       tips: '是否确定将该用户加入黑名单？',
-      onOk: () => addBlackListHandle(row, rewardId),
-      onCancel () {
-        setConfirmModalParam((param: IConfirmModalParam) => ({ ...param, visible: false }));
-      }
+      onOk: () => addBlackListHandle(row, rewardId)
     });
   };
   // popoverTable

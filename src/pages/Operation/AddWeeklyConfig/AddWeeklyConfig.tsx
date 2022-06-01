@@ -6,10 +6,10 @@
 import React, { useEffect, useState, useRef, MutableRefObject } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Card, Button, Form, FormProps, Input, Select, DatePicker, Radio, message } from 'antd';
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
 import moment from 'moment';
 import { Icon, Modal, ImageUpload } from 'src/components';
-import { queryActivityList, queryArticleList, queryProductList } from 'src/apis/marketing';
+import { queryActivityList, queryArticleList, queryMarketArea, queryProductList } from 'src/apis/marketing';
 import { queryColors, queryWeeklyDetail, saveConfig, queryUserList, publishConfig } from 'src/apis/weekly';
 import { DataItem } from 'src/utils/interface';
 import style from './style.module.less';
@@ -73,8 +73,10 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [materialList, setMaterialList] = useState<any>({});
   const [choosedMaterial, setChoosedMaterial] = useState<any>({});
   const [paperId, setPaperId] = useState<string>('');
+  const [areaText, setAreaText] = useState<any>({});
 
   const matetailMapRef: MutableRefObject<any> = useRef({});
+  const areaTextRef: MutableRefObject<any> = useRef({});
 
   const [form] = useForm();
   const type: string = getQueryParam('type');
@@ -100,6 +102,43 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
       name: '活动'
     }
   ];
+
+  const renderAreaTips = (index: number, materialIndex: number) => {
+    const listValue = form.getFieldValue('marketCateList')[index]?.marketContentList || [];
+    const itemId = (listValue[materialIndex] || {}).marketId;
+    if (!itemId) {
+      return null;
+    }
+    const areaData = areaText[itemId];
+    if (areaData) {
+      return (
+        <div className={style.areaTips}>
+          <span>合计：</span>
+          <span className={style.areaTipsVal}>{areaData.totalNum}人</span>
+          <span>可见：</span>
+          <span className={style.areaTipsVal}>{areaData.visibleNum}人</span>
+          <span>不可见：</span>
+          <span>{areaData.invisibleNum}人</span>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+
+  const getAreaTips = async (type: number, itemId: string) => {
+    if (areaText[itemId]) {
+      return false;
+    }
+    const res: any = await queryMarketArea({ type, itemId });
+    if (res) {
+      areaTextRef.current = {
+        ...areaTextRef.current,
+        [itemId]: res
+      };
+      setAreaText(areaTextRef.current);
+    }
+  };
 
   const getColors = async () => {
     const res: any = await queryColors();
@@ -224,6 +263,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
             if (market.status === 3) {
               marketMessages.push(`${market.marketTitle || market.marketId}已下架，请重新选择`);
             } else {
+              getAreaTips(item.cateType, market.marketId);
               marketMessages.push('搜索对应素材标题在下拉框进行选择');
             }
           });
@@ -635,6 +675,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                                         }
                                       ]}
                                       className={style.listFormItem}
+                                      extra={renderAreaTips(index, materialIndex)}
                                     >
                                       <Select
                                         disabled={+type === 1}
@@ -648,12 +689,14 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                                           option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                         }
                                         onChange={() => {
-                                          const value =
-                                            form.getFieldValue('marketCateList')[index]?.marketContentList || [];
+                                          const listValue = form.getFieldValue('marketCateList');
+                                          const value = listValue[index]?.marketContentList || [];
                                           setChoosedMaterial({
                                             ...choosedMaterial,
                                             [index]: value.map((item: any) => item && item.marketId).filter(Boolean)
                                           });
+                                          const cateType = listValue[index]?.cateType;
+                                          getAreaTips(cateType, value[materialIndex].marketId);
                                         }}
                                       >
                                         {getMaterialData(materialList[index] || 'article').map(

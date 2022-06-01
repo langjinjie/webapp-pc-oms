@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Form, Input, Radio, Select, Button, Modal, message } from 'antd';
-import { Icon } from 'src/components/index';
+import { Icon, AuthBtn } from 'src/components';
 import { useHistory, useLocation } from 'react-router-dom';
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
 import { ISensitiveType, ISensitiveList } from 'src/utils/interface';
 import { requestGetSensitiveTypeList, requestAddSensitiveType, requestEditSensitiveWord } from 'src/apis/orgManage';
 import { Context } from 'src/store';
@@ -85,10 +85,12 @@ const AddOrEditWords: React.FC = () => {
             </Select>
           </Form.Item>
           {getQueryParam().type === 'add' && (
-            <div className={style.addWordsType} onClick={addWordsTypeHandle}>
-              <Icon className={style.icon} name="tianjiafenzu" />
-              增加
-            </div>
+            <AuthBtn path="/add/type">
+              <div className={style.addWordsType} onClick={addWordsTypeHandle}>
+                <Icon className={style.icon} name="tianjiafenzu" />
+                增加
+              </div>
+            </AuthBtn>
           )}
         </div>
         <div className={style.inputWrap}>

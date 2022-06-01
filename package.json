@@ -1,7 +1,7 @@
 {
-  "name": "letser-app",
+  "name": "tenacity-app",
   "version": "1.0.0",
-  "description": "app of lester",
+  "description": "app of tenacity",
   "main": "index.js",
   "scripts": {
     "start": "node scripts/start.js",
@@ -37,8 +37,6 @@
     "dom-to-image": "^2.6.0",
     "echarts": "^5.3.2",
     "js-md5": "^0.7.3",
-    "lester-tools": "^1.1.2",
-    "lester-ui": "^1.1.4",
     "moment": "^2.29.1",
     "qs": "^6.10.1",
     "react": "^17.0.2",
@@ -47,6 +45,8 @@
     "react-router-cache-route": "^1.11.1",
     "react-router-dom": "^5.2.0",
     "react-transition-group": "^4.4.2",
+    "tenacity-tools": "^1.0.1",
+    "tenacity-ui": "^1.0.0",
     "tinymce": "^5.10.0"
   },
   "devDependencies": {

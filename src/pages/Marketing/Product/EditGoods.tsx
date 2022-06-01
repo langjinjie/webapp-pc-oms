@@ -8,7 +8,8 @@ import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
 import { UploadFile } from 'src/components';
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
+import { SetUserRightFormItem } from '../Components/SetUserRight/SetUserRight';
 
 interface productConfigProps {
   id: number;
@@ -93,7 +94,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         sourceUrl,
         recommendImgUrl,
         whetherAssociated,
-        specType
+        specType,
+        groupId
       } = res;
 
       setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl, whetherAssociated });
@@ -104,6 +106,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
 
       form.setFieldsValue({
         productName,
+        groupId,
         productId,
         specType,
         corpProductLink,
@@ -239,13 +242,19 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   };
 
   const onFinish = async (values: any) => {
-    const { highlights, tags, ...otherValues } = values;
+    const { highlights, tags, groupId, ...otherValues } = values;
+
+    delete otherValues.group1;
+    delete otherValues.group2;
+    delete otherValues.groupType;
+    delete otherValues.isSet;
     const editParams = {
       ...otherValues,
       productId: propsState.id || null,
       premium: +premiumValue * 100,
       premiumTypeId: currency,
       tags: tags.join(','),
+      groupId: groupId || '',
       highlights: highlights && highlights.replace(/，/gi, ',')
     };
     const res = await productEdit(editParams);
@@ -437,11 +446,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
               rules={[{ required: true, message: '请上传视频' }]}
               extra="仅支持.mp4格式, 最大100MB"
             >
-              <UploadFile
-                bizKey="media"
-                beforeUpload={beforeUploadMp4}
-                onRemove={() => form.setFieldsValue({ ...form.getFieldsValue(), sourceUrl: '' })}
-              />
+              <UploadFile bizKey="media" beforeUpload={beforeUploadMp4} />
             </Form.Item>
           </>
         )}
@@ -559,11 +564,15 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             readOnly={isReadOnly}
           />
         </Form.Item>
+
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={form} />
+        </Form.Item>
         {/* </Form> */}
 
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
           <span className="bold margin-right20">文章推荐设置</span>
-          <span className="color-text-secondary">说明：如无票配置，则无法在文章末尾配置推荐产品</span>
+          <span className="color-text-secondary">说明：如无配置，则无法在文章末尾配置推荐产品</span>
         </div>
         <Form.Item
           label="推荐展示图片"

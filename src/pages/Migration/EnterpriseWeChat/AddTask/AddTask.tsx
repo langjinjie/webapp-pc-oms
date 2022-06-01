@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Form, Input, Button, Radio, DatePicker, message } from 'antd';
 import { ChoosedStaffList } from './component';
 import { ImageUpload } from 'src/components';
-import { getQueryParam } from 'lester-tools';
+import { getQueryParam } from 'tenacity-tools';
 import { requestCreateTransferTask, requestGetTaskDetail } from 'src/apis/migration';
 import moment, { Moment } from 'moment';
 import DetailModal from 'src/pages/Migration/EnterpriseWeChat/components/DetailModal/DetailModal';
@@ -150,19 +150,8 @@ const AddTask: React.FC = () => {
       <header className={style.addTask}>创建任务</header>
       <div className={style.content}>
         <Form form={form} className={style.form} onFinish={onFinish}>
-          <Item
-            name="taskName"
-            className={style.formItem}
-            label="任务名称："
-            rules={[{ required: true, message: '请输入任务名称' }]}
-          >
-            <Input
-              className={style.input}
-              showCount={!isReadOnly}
-              maxLength={50}
-              placeholder="请输入任务名称"
-              readOnly={isReadOnly}
-            />
+          <Item name="taskName" className={style.formItem} label="任务名称：">
+            <Input className={style.input} showCount={true} maxLength={50} placeholder="请输入任务名称" />
           </Item>
           {isReadOnly
             ? (

@@ -1,5 +1,5 @@
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
-import { Icon } from 'src/components/index';
+import { AuthBtn, Icon } from 'src/components/index';
 import { ICatalogItem, IEditOrAddCatalogParam, IFirmModalParam } from 'src/utils/interface';
 import { getCategoryList, requestSaveSortCatalog, requestDeleteCatalog } from 'src/apis/salesCollection';
 import { useHistory } from 'react-router';
@@ -251,43 +251,52 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
         <div className={style.edit}>
           {catalog.lastLevel === 1 && (
             <>
-              <Button type="link" onClick={() => navigateToSpeech('list')}>
-                <EyeOutlined />
-                查看话术
-              </Button>
-              <Button type="link" onClick={() => navigateToSpeech('edit')}>
-                <Icon className={'svgIcon'} name="tianjiafenzu" />
-                新增话术
-              </Button>
+              <AuthBtn path="/viewSpeech">
+                <Button type="link" onClick={() => navigateToSpeech('list')}>
+                  <EyeOutlined />
+                  查看话术
+                </Button>
+              </AuthBtn>
+              <AuthBtn path="/addSpeech">
+                <Button type="link" onClick={() => navigateToSpeech('edit')}>
+                  <Icon className={'svgIcon'} name="tianjiafenzu" />
+                  新增话术
+                </Button>
+              </AuthBtn>
             </>
           )}
-
-          <Button type="link" onClick={editClickHandle}>
-            <Icon className={'svgIcon'} name="bianji" />
-            编辑
-          </Button>
-          <Button
-            type="link"
-            className={classNames({ is_disabled: isHiddenMoveUp })}
-            onClick={(e) => moveClickHandle(e, -1, isHiddenMoveUp)}
-          >
-            <Icon className={'svgIcon'} name="shangyi" />
-            上移
-          </Button>
-          <Button
-            type="link"
-            className={classNames({ is_disabled: isHiddenMoveDown })}
-            onClick={(e) => moveClickHandle(e, 1, isHiddenMoveDown)}
-          >
-            <Icon className={'svgIcon'} name="xiayi" />
-            下移
-          </Button>
-          {!catalog.level || isHiddenDelete || (
-            <Button type="link" onClick={delClickHandle}>
-              <Icon className={'svgIcon'} name="shanchu" />
-              删除
+          <AuthBtn path="/edit">
+            <Button type="link" onClick={editClickHandle}>
+              <Icon className={'svgIcon'} name="bianji" />
+              编辑
             </Button>
-          )}
+          </AuthBtn>
+          <AuthBtn path="/sort">
+            <Button
+              type="link"
+              className={classNames({ is_disabled: isHiddenMoveUp })}
+              onClick={(e) => moveClickHandle(e, -1, isHiddenMoveUp)}
+            >
+              <Icon className={'svgIcon'} name="shangyi" />
+              上移
+            </Button>
+            <Button
+              type="link"
+              className={classNames({ is_disabled: isHiddenMoveDown })}
+              onClick={(e) => moveClickHandle(e, 1, isHiddenMoveDown)}
+            >
+              <Icon className={'svgIcon'} name="xiayi" />
+              下移
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/delete">
+            {!catalog.level || isHiddenDelete || (
+              <Button type="link" onClick={delClickHandle}>
+                <Icon className={'svgIcon'} name="shanchu" />
+                删除
+              </Button>
+            )}
+          </AuthBtn>
         </div>
       </div>
       <div className={style.children}>
@@ -311,10 +320,12 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
                 />
               </div>
             ))}
-            <span className={classNames(style.add)} onClick={() => addClickHandle(catalog, catalog.catalogId)}>
-              <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" />
-              新增
-            </span>
+            <AuthBtn path="/add">
+              <span className={classNames(style.add)} onClick={() => addClickHandle(catalog, catalog.catalogId)}>
+                <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" />
+                新增
+              </span>
+            </AuthBtn>
           </>
         )}
       </div>

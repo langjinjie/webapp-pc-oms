@@ -12,19 +12,21 @@ export interface Menu {
   name: string;
   icon?: string;
   path: string;
-  onlyMain?: boolean;
   children?: Menu[];
 }
 
-interface expandRoute {
-  onlyMain?: boolean;
-}
-
-export const routes: (RouteProps & expandRoute)[] = [
+export const noVerRoutes: RouteProps[] = [
   {
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
   },
+  {
+    path: '/noPermission',
+    component: lazy(() => import('src/pages/NoPermission/NoPermission'))
+  }
+];
+
+export const routes: RouteProps[] = [
   // 营销平台
   {
     path: '/marketingProduct',
@@ -166,13 +168,20 @@ export const routes: (RouteProps & expandRoute)[] = [
   },
   {
     path: '/company',
-    component: lazy(() => import('src/pages/OrgManage/Company/Company')),
-    onlyMain: true
+    component: lazy(() => import('src/pages/OrgManage/Company/Company'))
+  },
+  {
+    path: '/company/feature',
+    component: lazy(() => import('src/pages/OrgManage/CompanyFeature/CompanyFeature'))
   },
   {
     path: '/company/access',
-    component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess')),
-    onlyMain: true
+    component: lazy(() => import('src/pages/OrgManage/Company/CompanyAccess/CompanyAccess'))
+  },
+
+  {
+    path: '/menu/edit',
+    component: lazy(() => import('src/pages/OrgManage/Menu/Edit'))
   },
   // 坐席详情
   {
@@ -208,6 +217,31 @@ export const routes: (RouteProps & expandRoute)[] = [
     path: '/lotteryManage',
     component: lazy(() => import('src/pages/PointsManage/LotteryManage/LotteryManage'))
   },
+  // 角色管理
+  {
+    path: '/roleMangeOms',
+    component: lazy(() => import('src/pages/RoleManage/RoleOms/List/List'))
+  },
+  {
+    path: '/roleMangeOms/add',
+    component: lazy(() => import('src/pages/RoleManage/RoleOms/Add/Add'))
+  },
+  {
+    path: '/roleMangeB',
+    component: lazy(() => import('src/pages/RoleManage/RoleB/List/List'))
+  },
+  {
+    path: '/roleMangeB/add',
+    component: lazy(() => import('src/pages/RoleManage/RoleB/Add/Add'))
+  },
+  {
+    path: '/roleMangeA',
+    component: lazy(() => import('src/pages/RoleManage/RoleA/List/List'))
+  },
+  {
+    path: '/roleMangeA/add',
+    component: lazy(() => import('src/pages/RoleManage/RoleA/Add/Add'))
+  },
   // 好友迁移
   {
     path: '/enterprise',
@@ -220,11 +254,25 @@ export const routes: (RouteProps & expandRoute)[] = [
   {
     path: '/exclusive',
     component: lazy(() => import('src/pages/PointsManage/Exclusive/List'))
+  },
+  // 用户组管理
+  {
+    path: '/userGroup',
+    component: lazy(() => import('src/pages/OrgManage/UserGroup/UserGroup'))
+  },
+  {
+    path: '/userGroup/add',
+    component: lazy(() => import('src/pages/OrgManage/UserGroup/components/AddGroup/AddGroup'))
   }
 ];
 
 // 缓存路由
-export const cacheRoutes: (CacheRouteProps & expandRoute)[] = [
+export const cacheRoutes: CacheRouteProps[] = [
+  // 系统菜单管理
+  {
+    path: '/menu',
+    component: lazy(() => import('src/pages/OrgManage/Menu/List'))
+  },
   {
     path: '/organization',
     component: lazy(() => import('src/pages/OrgManage/Organization/Organization'))
@@ -268,8 +316,7 @@ export const menus: Menu[] = [
       },
       {
         name: '企业接入',
-        path: '/company',
-        onlyMain: true
+        path: '/company'
       },
       {
         name: '敏感词管理',
@@ -286,6 +333,14 @@ export const menus: Menu[] = [
       {
         name: '客户免统计名单',
         path: '/customer-statistics-free'
+      },
+      {
+        name: '系统菜单管理',
+        path: '/menu'
+      },
+      {
+        name: '用户组管理',
+        path: '/userGroup'
       }
     ]
   },
@@ -388,7 +443,7 @@ export const menus: Menu[] = [
       { name: '企微好友', path: '/enterprise' }
       // { name: '个微好友', path: '/personal' }
     ]
-  }
+  },
   // {
   //   name: '好友迁移',
   //   icon: 'a-bianzu101',
@@ -397,7 +452,18 @@ export const menus: Menu[] = [
   //     { name: '企微好友', path: '/enterprise' },
   //     { name: '个位好友', path: '/personal' }
   //   ]
-  // }
+  // },
+
+  {
+    name: '角色管理',
+    icon: 'icon_daohang_28_jigouguanli',
+    path: 'roleMange',
+    children: [
+      { name: '后管角色管理', path: '/roleMangeOms' },
+      { name: 'B端角色管理', path: '/roleMangeB' },
+      { name: 'A端角色管理', path: '/roleMangeA' }
+    ]
+  }
 ];
 
 if (process.env.NODE_ENV === 'development') {
@@ -412,8 +478,7 @@ if (process.env.NODE_ENV === 'development') {
       },
       {
         name: '企业接入',
-        path: '/company',
-        onlyMain: true
+        path: '/company'
       }
     ]
   });

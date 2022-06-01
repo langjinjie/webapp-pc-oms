@@ -9,10 +9,9 @@ interface IUploadFileProps {
   value?: string;
   beforeUpload?: (file: RcFile) => void;
   bizKey?: string;
-  onRemove?: () => void;
 }
 
-const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload, bizKey = 'media', onRemove }) => {
+const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload, bizKey = 'media' }) => {
   const [props, setProps] = useState<any>();
   const beforeUploadFileHandle = (file: RcFile) => {
     return beforeUpload?.(file);
@@ -31,7 +30,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload,
     }
   };
   const onRemoveHandle = () => {
-    onRemove?.();
+    onChange?.('');
   };
   useEffect(() => {
     setProps(

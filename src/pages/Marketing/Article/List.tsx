@@ -7,19 +7,21 @@ import {
   operateArticleStatus,
   updateNewsState,
   getNewsDetail,
-  getTagsOrCategorys
+  getTagsOrCategorys,
+  setUserRightWithArticle
 } from 'src/apis/marketing';
 
 import style from './style.module.less';
 
 import { Context } from 'src/store';
 
-import { NgFormSearch, NgTable } from 'src/components';
+import { NgFormSearch, NgTable, AuthBtn } from 'src/components';
 import { setSearchCols, SearchParamsProps, columns, Article, PaginationProps } from './Config';
 import classNames from 'classnames';
 import { PlusOutlined } from '@ant-design/icons';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
 import { useDocumentTitle } from 'src/utils/base';
+import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
 
 const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('营销素材-文章库');
@@ -41,6 +43,12 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visible, toggleVisible] = useState(false);
   const [htmlStr, setHtmlStr] = useState('');
   const [currentItem, setCurrentItem] = useState<Article | null>();
+
+  // 批量设置权限的状态
+  const [selectRows, setSelectRows] = useState<Article[]>();
+  const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
+  const [isBatchSetRight, setIsBatchSetRight] = useState(false);
+  const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
   const [queryForm, setQueryForm] = useState({
     title: '',
     minTime: '',
@@ -237,8 +245,25 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     handleToggleOnlineState(type, record);
   };
 
+  // 显示配置可见范围模块
+  const setRight = (record?: Article) => {
+    if (record) {
+      setIsBatchSetRight(false);
+      setCurrentItem(record);
+    } else {
+      const mySet = new Set();
+      selectRows?.forEach((item) => {
+        mySet.add(item.groupId);
+      });
+      console.log(Array.from(mySet));
+      setCurrentGroupIds(Array.from(mySet));
+      setIsBatchSetRight(true);
+    }
+    setVisibleSetUserRight(true);
+  };
+
   const myColumns = () => {
-    const res = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleTop });
+    const res = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleTop, setRight });
     // 根据时候为机构来过滤col
     if (isMainCorp) {
       return res;
@@ -259,6 +284,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
     setSelectRowKeys(selectedRowKeys);
+    setSelectRows(selectedRows);
     const current = selectedRows[0];
     if (current) {
       if (current.syncBank === 0 || current.syncBank === 2) {
@@ -290,29 +316,55 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     setVisibleOnline(false);
   };
 
+  // 确认设置权限
+  const confirmSetRight = async (values: any) => {
+    setVisibleSetUserRight(false);
+    const { isSet, groupId, isBatch } = values;
+    // [adminId];
+    // groupId: 93201136316088326
+    const list: any[] = [];
+    if (isBatch) {
+      selectRows?.forEach((item) => {
+        list.push({ newsId: item.newsId, groupId: isSet ? groupId : null });
+      });
+    } else {
+      list.push({ newsId: currentItem?.newsId, groupId: isSet ? groupId : null });
+    }
+    const res = await setUserRightWithArticle({ list });
+    if (res) {
+      message.success('设置成功');
+      getList({ pageNum: 1 });
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
+    }
+  };
+
   return (
     <div className={classNames(style.wrap, 'container')}>
       {/* Form 表单查询 start */}
-      <Button
-        className={style.btnAdd}
-        type="primary"
-        onClick={handleAdd}
-        shape="round"
-        icon={<PlusOutlined />}
-        size="large"
-        style={{ width: 128 }}
-      >
-        添加
-      </Button>
-      <div className={'pt20'}>
-        <NgFormSearch
-          isInline={false}
-          firstRowChildCount={3}
-          searchCols={setSearchCols(articleCategoryList)}
-          onSearch={onSearch}
-          onValuesChange={onValuesChange}
-        />
-      </div>
+      <AuthBtn path="/add">
+        <Button
+          className={style.btnAdd}
+          type="primary"
+          onClick={handleAdd}
+          shape="round"
+          icon={<PlusOutlined />}
+          size="large"
+          style={{ width: 128 }}
+        >
+          添加
+        </Button>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <div className={'pt20'}>
+          <NgFormSearch
+            isInline={false}
+            firstRowChildCount={3}
+            searchCols={setSearchCols(articleCategoryList)}
+            onSearch={onSearch}
+            onValuesChange={onValuesChange}
+          />
+        </div>
+      </AuthBtn>
       {/* Form 表单查询 end */}
       {/* 列表数据 start */}
       <div className={'pt5'}>
@@ -330,24 +382,39 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         {tableSource.length > 0 && (
           <div className={'operationWrap'}>
             <Space size={20}>
-              <Button
-                type="primary"
-                shape={'round'}
-                ghost
-                disabled={operationType !== 1}
-                onClick={() => handleToggleOnlineState(1)}
-              >
-                批量上架
-              </Button>
-              <Button
-                type="primary"
-                shape={'round'}
-                ghost
-                disabled={operationType !== 2}
-                onClick={() => handleToggleOnlineState(2)}
-              >
-                批量下架
-              </Button>
+              <AuthBtn path="/operateBatch">
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={operationType !== 1}
+                  onClick={() => handleToggleOnlineState(1)}
+                >
+                  批量上架
+                </Button>
+              </AuthBtn>
+              <AuthBtn path="/operateBatch">
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={operationType !== 2}
+                  onClick={() => handleToggleOnlineState(2)}
+                >
+                  批量下架
+                </Button>
+              </AuthBtn>
+              <AuthBtn path="/setBatch">
+                <Button
+                  type="primary"
+                  shape={'round'}
+                  ghost
+                  disabled={!(selectRows && selectRows.length > 0)}
+                  onClick={() => setRight()}
+                >
+                  批量添加可见范围
+                </Button>
+              </AuthBtn>
             </Space>
           </div>
         )}
@@ -364,6 +431,13 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
       >
         <div className={style.previewDesc} dangerouslySetInnerHTML={{ __html: htmlStr }}></div>
       </Modal>
+      <SetUserRight
+        isBatch={isBatchSetRight}
+        groupId={isBatchSetRight ? currentGroupIds : currentItem?.groupId}
+        visible={visibleSetUserRight}
+        onOk={confirmSetRight}
+        onCancel={() => setVisibleSetUserRight(false)}
+      />
     </div>
   );
 };

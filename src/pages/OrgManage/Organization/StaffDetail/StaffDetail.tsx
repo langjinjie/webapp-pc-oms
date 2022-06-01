@@ -244,7 +244,12 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                       </Form.Item>
                     </li>
                     <li className={styles.infoItem}>
-                      <Form.Item label="资源" name="resource">
+                      <Form.Item label="支公司" name="resource">
+                        <EditText readOnly={isReadOnly} />
+                      </Form.Item>
+                    </li>
+                    <li className={styles.infoItem}>
+                      <Form.Item label="省公司" name="provinceCompany">
                         <EditText readOnly={isReadOnly} />
                       </Form.Item>
                     </li>
@@ -265,7 +270,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
                     </li>
                     <li className={styles.infoItem}>
                       <Form.Item
-                        label="业务地区"
+                        label="市公司"
                         name="businessArea"
                         rules={[
                           {

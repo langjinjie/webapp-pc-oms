@@ -6,6 +6,7 @@ import { requestGetCatalogDetail, requestEditCatalog } from 'src/apis/salesColle
 import { Context } from 'src/store';
 import { catalogType2Name } from 'src/utils/commonData';
 import style from './style.module.less';
+import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
 // import classNames from 'classnames';
 
 interface IAddOrEditContentProps {
@@ -134,6 +135,10 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   const onOk = async (updataCatalog: any) => {
     setSubmitDisabled(true);
     setBtnIsLoading(true);
+    delete updataCatalog.group1;
+    delete updataCatalog.isSet;
+    delete updataCatalog.group2;
+    delete updataCatalog.groupType;
     const { parentId, catalog, title } = editOrAddLastCatalogParam;
     const { sceneId, catalogId, level, lastLevel } = catalog;
     const res = await requestEditCatalog({
@@ -143,7 +148,8 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       level,
       lastLevel,
       catalogId: title === '新增' ? undefined : catalogId,
-      ...updataCatalog
+      ...updataCatalog,
+      groupId: updataCatalog.groupId || ''
     });
     setSubmitDisabled(false);
     setBtnIsLoading(false);
@@ -216,16 +222,19 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
       }}
     >
       <Form form={form} onValuesChange={() => setSubmitDisabled(false)}>
-        <Form.Item className={style.modalContentFormItem} label="目录名称:" required>
-          <Form.Item name="name" rules={[{ required: true, message: '请输入目录名称' }]} noStyle>
-            <Input
-              className={style.modalContentInput}
-              placeholder={'请输入目录名称'}
-              maxLength={50}
-              onChange={inputOnChangeHandle}
-            />
-          </Form.Item>
-          <span className={style.limitLength}>{catalogParam.name.length}/50</span>
+        <Form.Item
+          className={style.modalContentFormItem}
+          label="目录名称:"
+          name="name"
+          rules={[{ required: true, message: '请输入目录名称' }]}
+        >
+          <Input
+            className={style.modalContentInput}
+            placeholder={'请输入目录名称'}
+            showCount
+            maxLength={50}
+            onChange={inputOnChangeHandle}
+          />
         </Form.Item>
         <Form.Item
           className={style.modalContentFormItem}
@@ -249,6 +258,9 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
           setUploadImg={setUploadImg}
           fileList={fileList}
         />
+        <Form.Item name={'groupId'} label="可见范围设置">
+          <SetUserRightFormItem form={form} />
+        </Form.Item>
       </Form>
     </Modal>
   );

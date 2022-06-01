@@ -8,7 +8,6 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import { chooseInst, logout, queryInstList } from 'src/apis';
-// import { setCookie } from 'src/utils/base';
 import { InstItem } from 'src/utils/interface';
 import './style.less';
 

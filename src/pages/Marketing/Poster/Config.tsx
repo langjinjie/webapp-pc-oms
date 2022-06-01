@@ -7,6 +7,7 @@ import classNames from 'classnames';
 
 import styles from './style.module.less';
 import { Context } from 'src/store';
+import { AuthBtn } from 'src/components';
 
 export const setSearchCols = (options: any[]): SearchCol[] => {
   return [
@@ -41,6 +42,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
 export interface Poster {
   id: string;
   posterId: string;
+  groupId: string;
   corpId: string;
   exterPosterId: null | string;
   onlineTime: null | string;
@@ -67,7 +69,7 @@ const UNKNOWN = '— —';
 enum StatusEnum {
   '未上架' = 1,
   '已上架',
-  '已下架',
+  '已下架'
 }
 
 // Table配置项
@@ -77,10 +79,11 @@ type OperationsType = {
   viewItem: (record: any) => void;
   deleteItem: (record: any) => void;
   handleTop: (record: any) => void;
+  setRight: (record: Poster) => void;
 };
 export const columns = (args: OperationsType): ColumnsType<Poster> => {
   const { isMainCorp } = useContext(Context);
-  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleTop } = args;
+  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleTop, setRight } = args;
   if (isMainCorp) {
     return [
       {
@@ -185,41 +188,55 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
       },
       {
         title: '操作',
-        width: 250,
+        width: 340,
         dataIndex: 'status',
         align: 'left',
         fixed: 'right',
         render: (status: number, obj: Poster) => (
           <Space size={10} className="spaceWrap">
-            {!obj.productId && (
-              <Button type="link" onClick={() => handleTop(obj)}>
-                {obj.weightRecommend ? '取消置顶' : '置顶'}
+            <AuthBtn path="/top">
+              {!obj.productId && (
+                <Button type="link" onClick={() => handleTop(obj)}>
+                  {obj.weightRecommend ? '取消置顶' : '置顶'}
+                </Button>
+              )}
+            </AuthBtn>
+            <AuthBtn path="/view">
+              <Button type="link" onClick={() => viewItem(obj)}>
+                查看
               </Button>
-            )}
-
-            <Button type="link" onClick={() => viewItem(obj)}>
-              查看
-            </Button>
-            {(status === 1 || status === 3) && !obj.productId && (
-              <Button type="link" onClick={() => handleEdit(obj)}>
-                编辑
+            </AuthBtn>
+            <AuthBtn path="/edit">
+              {(status === 1 || status === 3) && !obj.productId && (
+                <Button type="link" onClick={() => handleEdit(obj)}>
+                  编辑
+                </Button>
+              )}
+            </AuthBtn>
+            <AuthBtn path="/operate">
+              {(status === 1 || status === 3) && !obj.productId && (
+                <Button type="link" onClick={() => changeItemStatus(1, obj)}>
+                  上架
+                </Button>
+              )}
+              {status === 2 && !obj.productId && (
+                <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => changeItemStatus(2, obj)}>
+                  <Button type="link">下架</Button>
+                </Popconfirm>
+              )}
+            </AuthBtn>
+            <AuthBtn path="/delete">
+              {status === 3 && !obj.productId && (
+                <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => deleteItem(obj)}>
+                  <Button type="link">删除</Button>
+                </Popconfirm>
+              )}
+            </AuthBtn>
+            <AuthBtn path="/set">
+              <Button type="link" onClick={() => setRight(obj)}>
+                配置可见范围
               </Button>
-            )}
-            {(status === 1 || status === 3) && !obj.productId && (
-              <Button type="link" onClick={() => changeItemStatus(1, obj)}>
-                上架
-              </Button>
-            )}
-            {status === 2 && !obj.productId && (
-              <Popconfirm title="下架后会影响所有机构，确定要下架?" onConfirm={() => changeItemStatus(2, obj)}>
-                <Button type="link">下架</Button>
-              </Popconfirm>
-            )}
-            {status === 3 && !obj.productId && (
-              <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => deleteItem(obj)}>
-                <Button type="link">删除</Button>
-              </Popconfirm>
-            )}
+            </AuthBtn>
           </Space>
         )
       }
@@ -313,7 +330,7 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
       },
       {
         title: '操作',
-        width: 250,
+        width: 340,
         dataIndex: 'status',
         align: 'left',
         fixed: 'right',
@@ -348,6 +365,9 @@ export const columns = (args: OperationsType): ColumnsType<Poster> => {
                 <Button type="link">删除</Button>
               </Popconfirm>
             )}
+            <Button type="link" onClick={() => setRight(obj)}>
+              配置可见范围
+            </Button>
           </Space>
         )
       }

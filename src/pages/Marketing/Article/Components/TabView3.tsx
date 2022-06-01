@@ -1,16 +1,24 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Form, Input, Select, Button, message, Spin, Radio, RadioChangeEvent, Image as AntImage } from 'antd';
-import { getNewsDetail, saveNews, getTagsOrCategorys, searchRecommendGoodsList } from 'src/apis/marketing';
+import {
+  getNewsDetail,
+  saveNews,
+  getTagsOrCategorys,
+  searchRecommendGoodsList,
+  queryMarketArea
+} from 'src/apis/marketing';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import { NgEditor } from 'src/components';
 import NgUpload from '../../Components/Upload/Upload';
 import { WechatShare } from '../../Components/WechatShare/WechatShare';
-import { Icon } from 'lester-ui';
+import { Icon } from 'tenacity-ui';
 
 import style from './style.module.less';
 import { recommendTypeList } from '../Config';
 import { debounce } from 'src/utils/base';
+import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
+import { AreaTips } from './AreaTips';
 interface TabView3Props {
   isEdit: boolean;
   newsId: string;
@@ -27,6 +35,7 @@ export interface RecommendMarketProps {
   title: string;
   recommendImgUrl?: string;
   whetherDelete?: number;
+  otherData: any;
 }
 
 const TabView3: React.FC<TabView3Props> = (props) => {
@@ -101,7 +110,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         ...resdata,
         editorHtml: content || ''
       }));
-      const {
+      let {
         title,
         originalCreator,
         fromSource,
@@ -111,11 +120,25 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         defaultImg,
         corpId,
         recommendType,
-        recommendList
+        recommendList,
+        groupId
       } = res;
 
+      if (recommendList && recommendList.length > 0) {
+        recommendList = await Promise.all(
+          recommendList.map(async (recommend: any) => {
+            const res = await queryMarketArea({
+              itemId: recommend.marketId,
+              type: recommendTypeList.filter((item) => item.id === recommendType)[0]?.queryAuthId
+            });
+            recommend.otherData = res;
+            return recommend;
+          })
+        );
+      }
       form.setFieldsValue({
         title,
+        groupId,
         originalCreator,
         fromSource,
         summary,
@@ -131,6 +154,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       changeGetDetailLoading(false);
       form.validateFields();
     } catch (e) {
+      console.error(e);
       changeGetDetailLoading(false);
     }
   };
@@ -142,8 +166,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         return message.error('请输入文章内容');
       }
       setSubmitting(false);
+      delete values.group1;
+      delete values.group2;
+      delete values.groupType;
+      delete values.isSet;
       const res = await saveNews({
         ...values,
+        groupId: values.groupId || '',
         newsId: newsId,
         content: submitHTML,
         corpId: currentCorpId
@@ -227,8 +256,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
   }, 800);
 
   // 当选中select素材时处理的东西
-  const onRecommendSelected = (value: string, index: number) => {
+  const onRecommendSelected = async (value: string, index: number) => {
+    const res = await queryMarketArea({
+      itemId: value,
+      type: recommendTypeList.filter((item) => item.id === recommendType)[0]?.queryAuthId
+    });
     const selectedItem = recommendList.filter((item) => item.marketId === value)[0];
+    selectedItem.otherData = res;
     const oldSelectedList = [...formData.recommendList];
     oldSelectedList.splice(index, 1, selectedItem);
     form.setFieldsValue({
@@ -283,8 +317,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       list.push(currentItem.marketId);
       setNewUploadProductIdList(list);
     }
-    console.log(currentItem);
-    console.log(url);
   };
 
   return (
@@ -403,6 +435,9 @@ const TabView3: React.FC<TabView3Props> = (props) => {
             ))}
           </Select>
         </Form.Item>
+        <Form.Item label="可见范围设置" name={'groupId'}>
+          <SetUserRightFormItem form={form} />
+        </Form.Item>
         <Form.Item name={'recommendType'} label="推荐类型">
           <Radio.Group onChange={onRecommendTypeChange}>
             {recommendTypeList.map((item) => (
@@ -437,6 +472,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                           <Input type="text" />
                         </Form.Item>
                         <Form.Item
+                          style={{ width: '400px' }}
                           {...restFiled}
                           name={[name, 'marketId']}
                           rules={[
@@ -479,6 +515,9 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                             ))}
                           </Select>
                         </Form.Item>
+                        <Form.Item name={[name, 'otherData']} className={style.otherData}>
+                          <AreaTips />
+                        </Form.Item>
                         {/* 当是商品时展示图片模块 */}
                         {recommendType === 2 && (
                           <Form.Item
@@ -502,9 +541,17 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                     {fields.length < 5 && (
                       <Button
                         className={style.addBtn}
-                        onClick={() => {
+                        onClick={async () => {
                           if (recommendType === 3) {
                             return message.warning('请选择推荐类型后再进行添加');
+                          }
+                          if (recommendList.length < 5) {
+                            const res = await searchRecommendGoodsList({
+                              title: '',
+                              recommendType
+                            });
+
+                            setRecommendList([...res, ...recommendList] || []);
                           }
                           add();
                         }}

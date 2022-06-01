@@ -8,8 +8,8 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Card, Table, PaginationProps, TableColumnType, Button, Modal, message } from 'antd';
 import qs from 'qs';
 import classNames from 'classnames';
-import { setTitle } from 'lester-tools';
-import { Form, Icon } from 'src/components';
+import { setTitle } from 'tenacity-tools';
+import { AuthBtn, Form, Icon } from 'src/components';
 import { ItemProps } from 'src/utils/interface';
 import { queryWeeklyList, publishConfig, deleteConfig } from 'src/apis/weekly';
 import style from './style.module.less';
@@ -169,23 +169,31 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
           {record.paperStatus === 1 && (
             <>
               {!record.sendTime && (
-                <Button type="link" onClick={() => publishWeekly(text)}>
-                  发布
-                </Button>
+                <AuthBtn path="/publish">
+                  <Button type="link" onClick={() => publishWeekly(text)}>
+                    发布
+                  </Button>
+                </AuthBtn>
               )}
-              <Button type="link" onClick={() => operateHandle(text, 0)}>
-                编辑
-              </Button>
+              <AuthBtn path="/edit">
+                <Button type="link" onClick={() => operateHandle(text, 0)}>
+                  编辑
+                </Button>
+              </AuthBtn>
             </>
           )}
           {record.paperStatus === 2 && (
-            <Button type="link" onClick={() => deleteWeekly(text)}>
-              删除
-            </Button>
+            <AuthBtn path="/delete">
+              <Button type="link" onClick={() => deleteWeekly(text)}>
+                删除
+              </Button>
+            </AuthBtn>
           )}
-          <Button type="link" onClick={() => operateHandle(text, 1)}>
-            查看
-          </Button>
+          <AuthBtn path="/view">
+            <Button type="link" onClick={() => operateHandle(text, 1)}>
+              查看
+            </Button>
+          </AuthBtn>
         </>
       )
     }
@@ -227,11 +235,15 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <Card className={style.wrap} title="周报列表">
-      <div className={style.addBtn} onClick={() => operateHandle('', 0)}>
-        <Icon className={style.addIcon} name="xinjian" />
-        添加
-      </div>
-      <Form itemData={formItemData} onSubmit={onSubmit} />
+      <AuthBtn path="/add">
+        <div className={style.addBtn} onClick={() => operateHandle('', 0)}>
+          <Icon className={style.addIcon} name="xinjian" />
+          添加
+        </div>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <Form itemData={formItemData} onSubmit={onSubmit} />
+      </AuthBtn>
       <Table
         style={{ marginTop: 20 }}
         rowKey="paperId"
