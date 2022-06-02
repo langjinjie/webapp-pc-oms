@@ -81,12 +81,12 @@ export const useDocumentTitle = (title: string, keepOnUumount = true): void => {
 };
 export const UNKNOWN = '— —';
 
-export const debounce = (fn: { apply: (arg0: any, arg1: any) => void }, delay: number): (() => void) => {
+export const debounce = <T>(fn: { apply: (arg0: any, arg1: any) => void }, delay: number): ((param?: T) => void) => {
   // 定时器
   let timer: NodeJS.Timeout;
 
   // 将debounce处理结果当作函数返回
-  return (...args: any) => {
+  return (...args) => {
     // 保留调用时的this上下文
     // 保留调用时传入的参数
     // 每次事件被触发时，都去清除之前的旧定时器
