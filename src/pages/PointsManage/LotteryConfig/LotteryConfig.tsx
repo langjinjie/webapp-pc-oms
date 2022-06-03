@@ -33,6 +33,7 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
   const columns: TableColumnType<PrizeItem>[] = [
     {
       title: '奖品序号',
+      width: '80',
       render: (_, r, index) => index + 1
     },
     {
