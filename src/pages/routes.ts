@@ -23,6 +23,18 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/noPermission',
     component: lazy(() => import('src/pages/NoPermission/NoPermission'))
+  },
+  {
+    path: '/dashboard',
+    component: lazy(() => import('src/pages/Dashboard/index'))
+  },
+  {
+    path: '/dashboardList/:id',
+    component: lazy(() => import('src/pages/Dashboard/List/List'))
+  },
+  {
+    path: '/dashboardList/:id/detail',
+    component: lazy(() => import('src/pages/Dashboard/Detail/Detail'))
   }
 ];
 
