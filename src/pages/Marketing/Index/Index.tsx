@@ -29,17 +29,7 @@ const MarketIndex: React.FC = () => {
   const [productList, setProductList] = useState<any[]>([]);
   const [activityList, setActivityList] = useState<any[]>([]);
   const [fetching, setFetching] = useState(false);
-  const [formData, setFormData] = useState<{ recommendList: RecommendMarketProps[]; [prop: string]: any }>({
-    title: '',
-    originalCreator: '',
-    summary: '',
-    defaultImg: '',
-    crawl: 0,
-    editorHtml: '',
-    editorHtmlChanged: '',
-    recommendType: 0,
-    recommendList: []
-  });
+  const [formData, setFormData] = useState<any>({});
 
   const [form] = useForm();
 
@@ -50,7 +40,6 @@ const MarketIndex: React.FC = () => {
 
   const onSubmit = async (values: any) => {
     const { newsList, productTypeList, posterList, activityList } = values;
-    console.log(newsList, productTypeList, posterList, activityList);
     const param: any = {
       products: productTypeList
         .filter((product: any) => product.marketId || product.productId)
@@ -113,7 +102,6 @@ const MarketIndex: React.FC = () => {
         setProductList(() => productTypeList);
         const spliceIndex: number = productTypeList.length;
         productTypeList = productTypeList.concat(defaultProductList.splice(spliceIndex, 3));
-        console.log(productTypeList);
       }
       if (posterList && posterList.length > 0) {
         posterList = await Promise.all(
@@ -148,19 +136,17 @@ const MarketIndex: React.FC = () => {
         // 数组自动补全
         setActivityList(() => activityList);
         const spliceIndex: number = activityList.length;
-        console.log(spliceIndex);
         activityList = activityList.concat(defaultActivityList.splice(spliceIndex, 3));
       } else {
         activityList = defaultActivityList;
       }
-      console.log(activityList);
       form.setFieldsValue({
         newsList,
         posterList,
         productTypeList,
         activityList
       });
-      setFormData({ ...res, productTypeList });
+      setFormData({ newsList, posterList, productTypeList, activityList });
     }
   };
 
@@ -170,41 +156,110 @@ const MarketIndex: React.FC = () => {
 
   // 当选中select素材时处理的东西
   const onRecommendSelected = async (value: string, index: number, marketType: number) => {
-    console.log(value, index);
     // 文章的
     if (marketType === 3) {
-      const res = await queryMarketArea({
-        itemId: value,
-        type: marketType
-      });
-      const selectedItem = articleList.filter((item) => item.marketId === value)[0];
-      selectedItem.articleId = selectedItem.articleId || selectedItem.marketId;
-      selectedItem.otherData = res;
-      const oldSelectedList = [...formData.newsList];
-      oldSelectedList.splice(index, 1, selectedItem);
-      form.setFieldsValue({
-        newsList: oldSelectedList
-      });
-      setFormData((formData) => ({ ...formData, newsList: oldSelectedList }));
+      if (value) {
+        const res = await queryMarketArea({
+          itemId: value,
+          type: marketType
+        });
+        const selectedItem = articleList.filter((item) => item.marketId === value)[0];
+        selectedItem.articleId = selectedItem.articleId || selectedItem.marketId;
+        selectedItem.otherData = res;
+        const oldSelectedList = [...formData.newsList];
+        oldSelectedList.splice(index, 1, selectedItem);
+        form.setFieldsValue({
+          newsList: oldSelectedList
+        });
+        setFormData((formData) => ({ ...formData, newsList: oldSelectedList }));
+      } else {
+        const oldSelectedList = [...formData.newsList];
+        oldSelectedList.splice(index, 1, {});
+        form.setFieldsValue({
+          newsList: oldSelectedList
+        });
+      }
     }
     // 产品
     if (marketType === 2) {
-      const res = await queryMarketArea({
-        itemId: value,
-        type: marketType
-      });
-      const selectedItem = productList.filter((item) => item.marketId === value || item.productId === value)[0];
-      selectedItem.productId = selectedItem.productId || selectedItem.marketId;
-      selectedItem.otherData = res;
-      const oldSelectedList = form.getFieldValue('productTypeList');
-      oldSelectedList.splice(index, 1, selectedItem);
-      form.setFieldsValue({
-        productTypeList: oldSelectedList
-      });
-      setFormData((formData) => ({
-        ...formData,
-        productTypeList: oldSelectedList.filter((item: any) => item.productId)
-      }));
+      if (value) {
+        const res = await queryMarketArea({
+          itemId: value,
+          type: marketType
+        });
+        const selectedItem = productList.filter((item) => item.marketId === value || item.productId === value)[0];
+        selectedItem.productId = selectedItem.productId || selectedItem.marketId;
+        selectedItem.otherData = res;
+        const oldSelectedList = [...formData.productTypeList];
+        oldSelectedList.splice(index, 1, selectedItem);
+        form.setFieldsValue({
+          productTypeList: oldSelectedList
+        });
+        setFormData((formData) => ({
+          ...formData,
+          productTypeList: oldSelectedList.filter((item: any) => item.productId)
+        }));
+      } else {
+        const oldSelectedList = [...formData.productTypeList];
+        oldSelectedList.splice(index, 1, {});
+        form.setFieldsValue({
+          productTypeList: oldSelectedList
+        });
+      }
+    }
+    // 海报
+    if (marketType === 4) {
+      if (value) {
+        const res = await queryMarketArea({
+          itemId: value,
+          type: marketType
+        });
+        const selectedItem = posterList.filter((item) => item.marketId === value || item.posterId === value)[0];
+        selectedItem.posterId = selectedItem.posterId || selectedItem.marketId;
+        selectedItem.otherData = res;
+        const oldSelectedList = [...formData.posterList];
+        oldSelectedList.splice(index, 1, selectedItem);
+        form.setFieldsValue({
+          posterList: oldSelectedList
+        });
+        setFormData((formData) => ({
+          ...formData,
+          posterList: oldSelectedList.filter((item: any) => item.posterId)
+        }));
+      } else {
+        const oldSelectedList = [...formData.posterList];
+        oldSelectedList.splice(index, 1, {});
+        form.setFieldsValue({
+          posterList: oldSelectedList
+        });
+      }
+    }
+    // 活动
+    if (marketType === 1) {
+      if (value) {
+        const res = await queryMarketArea({
+          itemId: value,
+          type: marketType
+        });
+        const selectedItem = activityList.filter((item) => item.marketId === value || item.activityId === value)[0];
+        selectedItem.activityId = selectedItem.activityId || selectedItem.marketId;
+        selectedItem.otherData = res;
+        const oldSelectedList = [...formData.activityList];
+        oldSelectedList.splice(index, 1, selectedItem);
+        form.setFieldsValue({
+          activityList: oldSelectedList
+        });
+        setFormData((formData) => ({
+          ...formData,
+          activityList: oldSelectedList.filter((item: any) => item.activityId)
+        }));
+      } else {
+        const oldSelectedList = [...formData.activityList];
+        oldSelectedList.splice(index, 1, {});
+        form.setFieldsValue({
+          activityList: oldSelectedList
+        });
+      }
     }
   };
 
@@ -238,6 +293,30 @@ const MarketIndex: React.FC = () => {
         return newArr;
       }, []);
       setProductList(arr);
+    } else if (marketType === 1) {
+      const resList = [...formData.activityList?.filter((item: any) => item.activityId), ...res];
+      const obj: any = {};
+      const arr = resList.reduce((newArr: RecommendMarketProps[], next) => {
+        if (obj[next.marketId || next.activityId]) {
+          console.log(obj);
+        } else {
+          obj[next.marketId || next.activityId] = true && newArr.push(next);
+        }
+        return newArr;
+      }, []);
+      setActivityList(arr);
+    } else if (marketType === 3) {
+      const resList = [...formData.posterList?.filter((item: any) => item.posterId), ...res];
+      const obj: any = {};
+      const arr = resList.reduce((newArr: RecommendMarketProps[], next) => {
+        if (obj[next.marketId || next.posterId]) {
+          console.log(obj);
+        } else {
+          obj[next.marketId || next.posterId] = true && newArr.push(next);
+        }
+        return newArr;
+      }, []);
+      setPosterList(arr);
     }
     setFetching(false);
   };
@@ -245,7 +324,6 @@ const MarketIndex: React.FC = () => {
   // 防抖处理
   const debounceFetcher = debounce<{ value: any; marketType: Number }>(
     async ({ value, marketType }: { value: string; marketType: number }) => {
-      console.log(value, marketType);
       await onRecommendSearch(value, marketType);
     },
     800
@@ -270,7 +348,7 @@ const MarketIndex: React.FC = () => {
                           {...restFiled}
                           name={[name, 'productId']}
                           rules={[
-                            { required: index === 0, message: '请重新选择' },
+                            { required: index === 0, message: '请选择' },
                             ({ getFieldValue }) => ({
                               validator (_, value) {
                                 const itemValue = getFieldValue('productTypeList')[index];
@@ -338,7 +416,7 @@ const MarketIndex: React.FC = () => {
                           {...restFiled}
                           name={[name, 'articleId']}
                           rules={[
-                            { required: true, message: '请重新选择' },
+                            { required: true, message: '请选择' },
                             ({ getFieldValue }) => ({
                               validator (_, value) {
                                 const itemValue = getFieldValue('newsList')[index];
@@ -406,7 +484,7 @@ const MarketIndex: React.FC = () => {
                           {...restFiled}
                           name={[name, 'posterId']}
                           rules={[
-                            { required: index === 0, message: '请重新选择' },
+                            { required: true, message: '请选择' },
                             ({ getFieldValue }) => ({
                               validator (_, value) {
                                 const itemValue = getFieldValue('productTypeList')[index];
@@ -474,7 +552,7 @@ const MarketIndex: React.FC = () => {
                           {...restFiled}
                           name={[name, 'activityId']}
                           rules={[
-                            { required: index === 0, message: '请重新选择' },
+                            { message: '请选择' },
                             ({ getFieldValue }) => ({
                               validator (_, value) {
                                 const itemValue = getFieldValue('productTypeList')[index];
@@ -496,8 +574,8 @@ const MarketIndex: React.FC = () => {
                             notFoundContent={
                               fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>
                             }
-                            onChange={(value) => onRecommendSelected(value, index, 4)}
-                            onSearch={(value) => debounceFetcher({ value: value, marketType: 3 })}
+                            onChange={(value) => onRecommendSelected(value, index, 1)}
+                            onSearch={(value) => debounceFetcher({ value: value, marketType: 1 })}
                           >
                             {activityList.map((option) => {
                               return (
@@ -505,7 +583,7 @@ const MarketIndex: React.FC = () => {
                                   key={option.activityId || option.marketId}
                                   value={option.activityId || option.marketId}
                                   disabled={
-                                    formData?.posterList?.filter(
+                                    formData?.activityList?.filter(
                                       (item: any) =>
                                         (item?.marketId || item.activityId) === (option.marketId || option.activityId)
                                     ).length > 0
