@@ -43,7 +43,13 @@ const ActivityList: React.FC<RouteComponentProps> = ({ history }) => {
   const [editType, setEditType] = useState<number>(0);
   const [currentActivity, setCurrentActivity] = useState<ActivityItem | null>(null);
 
-  const statusArr: string[] = ['未开始未上架', '未开始已上架', '已开始未上架', '进行中', '已结束'];
+  enum statusArr {
+    '未开始未上架' = 0,
+    '未开始已上架',
+    '已开始未上架',
+    '进行中',
+    '已结束'
+  }
 
   const onEdit = (item: ActivityItem | null, type: number) => {
     setCurrentActivity(item);

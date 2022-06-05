@@ -135,6 +135,7 @@ export const tableColumns = ({ toDetailPage }: tableOperations): ColumnsType<Ite
 
 export type CodeListType = {
   key: string;
+  dataCode?: string;
   title: string;
   children: {
     key: string;

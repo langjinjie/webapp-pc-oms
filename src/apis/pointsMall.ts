@@ -105,7 +105,6 @@ export const operateActivity: HttpFunction = (param: Object) => {
  * @param param
  */
 export const editActivity: HttpFunction = (param: Object) => {
-  return Promise.resolve({});
   return http.post('/tenacity-admin/api/lottery/activity/edit', param);
 };
 
@@ -138,16 +137,6 @@ export const editActivityConfig: HttpFunction = (param: Object) => {
  * @param param
  */
 export const queryPrizeDetail: HttpFunction = (param: Object) => {
-  return Promise.resolve({
-    goodsId: '789',
-    name: '空气',
-    imgUrl: require('src/assets/images/artImg.png'),
-    goodsType: 3,
-    totalStock: 100,
-    consumeStock: 2,
-    winWeight: 10,
-    exchangeDesc: '试试水吧'
-  });
   return http.post('/tenacity-admin/api/lottery/goods/detail', param);
 };
 

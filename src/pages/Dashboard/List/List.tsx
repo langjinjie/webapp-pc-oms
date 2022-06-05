@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { NgTable } from 'src/components';
 import { dataCodeList, tableColumns } from './config';
-import { Button, Divider, Radio, Select, Tabs } from 'antd';
+import { Button, Divider, PaginationProps, Radio, Select, Tabs } from 'antd';
 
 import styles from '../style.module.less';
 import { getDashboardItemData } from 'src/apis/dashboard';
@@ -18,14 +18,26 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
       subTitle: string;
     }[];
   }>();
+  const [dayType, setDayType] = useState('2');
+  const [pagination, setPagination] = useState<PaginationProps>({
+    simple: true,
+    current: 1,
+    total: 100,
+    pageSize: 10
+  });
   const [currentItem, setCurrentItem] = useState<{ key: string; title: string; subTitle: string }>();
   const toDetailPage = (record: any) => {
     console.log(history, match, record);
     const { id } = match.params;
     history.push(`/dashboardList/${id}/detail`);
   };
-  const getList = async () => {
-    const res = await getDashboardItemData({});
+  const getList = async (dataCode?: any) => {
+    const res = await getDashboardItemData({
+      dayType: 2,
+      queryType: 1,
+      dataCode: '',
+      ...dataCode
+    });
     console.log(res);
   };
 
@@ -35,7 +47,9 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
     const item = current.children.filter((item) => item.key === id)[0];
     setCurrentCode(current);
     setCurrentItem(item);
-    getList();
+    getList({ dataCode: id });
+    setDayType('2');
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
   }, [match]);
   const handleModelChange = () => {
     console.log('change');
@@ -43,6 +57,18 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   const onTabsChange = (activeKey: string) => {
     const item = currentCode?.children.filter((item) => item.key === activeKey)[0];
     setCurrentItem(item);
+    getList({ dataCode: item?.key });
+  };
+
+  const onDayTypeChange = (value: any) => {
+    console.log(value);
+    setDayType(value);
+    getList({ datType: value });
+  };
+
+  const onPaginationChange = (pageNum: number) => {
+    console.log(pageNum);
+    setPagination((pagination) => ({ ...pagination, current: pageNum }));
   };
   return (
     <div className={classNames(styles.addFriend)}>
@@ -65,9 +91,9 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
               />
               <span className="f16 text-primary">全部团队</span>
             </div>
-            <Radio.Group defaultValue="a" size="middle">
-              <Radio.Button value="a">最近6周</Radio.Button>
-              <Radio.Button value="b">最近6个月</Radio.Button>
+            <Radio.Group value={dayType} size="middle" onChange={(e) => onDayTypeChange(e.target.value)}>
+              <Radio.Button value="2">最近6周</Radio.Button>
+              <Radio.Button value="3">最近6个月</Radio.Button>
             </Radio.Group>
           </div>
           <div className={'ml20 mt20 mb20'}>
@@ -86,6 +112,8 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
                 return '';
               }}
               columns={tableColumns({ toDetailPage })}
+              pagination={pagination}
+              paginationChange={onPaginationChange}
               dataSource={[
                 {
                   taskName1: '测试',

@@ -5,9 +5,9 @@
  */
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Button, Form, Image, InputNumber, TableColumnType } from 'antd';
+import { Button, Form, Image, InputNumber, message, TableColumnType } from 'antd';
 import { BreadCrumbs, NgTable } from 'src/components';
-import { queryActivityConfig } from 'src/apis/pointsMall';
+import { editActivityConfig, queryActivityConfig } from 'src/apis/pointsMall';
 import style from './style.module.less';
 import classNames from 'classnames';
 
@@ -29,7 +29,7 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
   const [prizeList, setPrizeList] = useState<PrizeItem[]>([]);
   const [formValues, setFormValues] = useState<any>({});
   const [lotteryConfigForm] = Form.useForm();
-
+  const [activityId, setActivityId] = useState('');
   const columns: TableColumnType<PrizeItem>[] = [
     {
       title: '奖品序号',
@@ -100,6 +100,7 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
 
   const getActivityConfig = async () => {
     const { activityId }: any = location.state || {};
+    setActivityId(activityId);
     const res: any = await queryActivityConfig({ activityId });
     if (res) {
       console.log(res);
@@ -114,6 +115,21 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
   useEffect(() => {
     getActivityConfig();
   }, []);
+
+  const onPressEnter: React.KeyboardEventHandler<HTMLInputElement> = () => {
+    lotteryConfigForm
+      .validateFields()
+      .then(async () => {
+        const values = lotteryConfigForm.getFieldsValue();
+        const res = await editActivityConfig({ ...values, activityId });
+        if (res) {
+          message.success('配置成功');
+        }
+      })
+      .catch(() => {
+        message.error('请配置正确后再提交');
+      });
+  };
 
   return (
     <div className={style.lotteryConfig}>
@@ -130,18 +146,38 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
           name="costPoints"
           className="customExtra"
         >
-          <InputNumber style={{ width: '120px' }} controls={false} disabled={formValues.status >= 3} />
+          <InputNumber
+            style={{ width: '120px' }}
+            controls={false}
+            disabled={formValues.status >= 3}
+            onPressEnter={onPressEnter}
+          />
         </Form.Item>
         <PanelTitle title="中奖限制配置" className="margin-bottom20" />
         <div className="flex">
           <Form.Item label="限制每月" extra="次" name="monthLimit" className="customExtra">
-            <InputNumber controls={false} style={{ width: '70px' }} disabled={formValues.status >= 3} />
+            <InputNumber
+              onPressEnter={onPressEnter}
+              controls={false}
+              style={{ width: '70px' }}
+              disabled={formValues.status >= 3}
+            />
           </Form.Item>
           <Form.Item label="限制每周" extra="次" name="weekLimit" className="customExtra">
-            <InputNumber controls={false} style={{ width: '70px' }} disabled={formValues.status >= 3} />
+            <InputNumber
+              onPressEnter={onPressEnter}
+              controls={false}
+              style={{ width: '70px' }}
+              disabled={formValues.status >= 3}
+            />
           </Form.Item>
           <Form.Item label="限制每日" extra="次" name="dayLimit" className="customExtra">
-            <InputNumber controls={false} style={{ width: '70px' }} disabled={formValues.status >= 3} />
+            <InputNumber
+              onPressEnter={onPressEnter}
+              controls={false}
+              style={{ width: '70px' }}
+              disabled={formValues.status >= 3}
+            />
           </Form.Item>
         </div>
       </Form>
