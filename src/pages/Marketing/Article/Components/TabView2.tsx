@@ -146,12 +146,16 @@ const TabView2: React.FC = () => {
   };
   // 当选中select素材时处理的东西
   const onRecommendSelected = async (value: string, index: number) => {
-    const res = await queryMarketArea({
-      itemId: value,
-      type: recommendTypeList.filter((item) => item.id === recommendType)[0]?.queryAuthId
-    });
-    const selectedItem = recommendList.filter((item) => item.marketId === value)[0];
-    selectedItem.otherData = res;
+    let res = null;
+    if (value) {
+      res = await queryMarketArea({
+        itemId: value,
+        type: recommendTypeList.filter((item) => item.id === recommendType)[0]?.queryAuthId
+      });
+    }
+    let selectedItem = recommendList.filter((item) => item.marketId === value)[0];
+    selectedItem = { ...selectedItem, otherData: res };
+
     const oldSelectedList = [...formData.recommendList];
     oldSelectedList.splice(index, 1, selectedItem);
     form.setFieldsValue({

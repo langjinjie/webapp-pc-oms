@@ -9,10 +9,11 @@ import { Card, Button, Form, FormProps, Input, Select, DatePicker, Radio, messag
 import { getQueryParam } from 'tenacity-tools';
 import moment from 'moment';
 import { Icon, Modal, ImageUpload } from 'src/components';
-import { queryActivityList, queryArticleList, queryMarketArea, queryProductList } from 'src/apis/marketing';
+import { queryMarketArea, searchRecommendGoodsList } from 'src/apis/marketing';
 import { queryColors, queryWeeklyDetail, saveConfig, queryUserList, publishConfig } from 'src/apis/weekly';
 import { DataItem } from 'src/utils/interface';
 import style from './style.module.less';
+import { debounce } from 'src/utils/base';
 
 interface ColorItem {
   colorCode: string;
@@ -62,7 +63,6 @@ const { Group } = Radio;
 const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [editField, setEditField] = useState<string>('');
   const [editFieldValue, setEditFieldValues] = useState<KeyMapVal>({});
-  const [categoryMessage, setCategoryMessage] = useState<KeyMapVal>({});
   const [colors, setColors] = useState<ColorItem[]>([]);
   const [userList, setUserList] = useState<UserItem[]>([]);
   const [receiver, setReceiver] = useState<string[]>([]);
@@ -147,45 +147,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const getArticleList = async () => {
-    const res: any = await queryArticleList({ pageSize: 2000, syncBank: 1 });
-    if (res) {
-      setArticleList(
-        (res.newsList || []).map((item: Article) => ({
-          ...item,
-          id: item.newsId,
-          name: item.title
-        }))
-      );
-    }
-  };
-
-  const getProductList = async () => {
-    const res: any = await queryProductList({ pageSize: 1000, status: 2 });
-    if (res) {
-      setProductList(
-        (res.list || []).map((item: Product) => ({
-          ...item,
-          id: item.productId,
-          name: item.productName
-        }))
-      );
-    }
-  };
-
-  const getActivityList = async () => {
-    const res: any = await queryActivityList({ pageSize: 1000, status: 2 });
-    if (res) {
-      setActivityList(
-        (res.list || []).map((item: Activity) => ({
-          ...item,
-          id: item.activityId,
-          name: item.activityName
-        }))
-      );
-    }
-  };
-
   const getUserList = async () => {
     const res: any = await queryUserList();
     if (res) {
@@ -247,10 +208,55 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
             ...marketCate,
             marketContentList: marketCate.marketContentList.map((market: any) => ({
               ...market,
-              marketId: market.status === 3 ? undefined : market.marketId
+              marketId: market.marketId
             }))
           }))
         });
+        const articleArr = new Set();
+        const productArr = new Set();
+        const activityArr = new Set();
+        marketCateList.forEach((item: any) => {
+          if (item.cateType === 3) {
+            if (item.marketContentList && item.marketContentList.length > 0) {
+              item.marketContentList?.forEach((item: any) => {
+                articleArr.add(item);
+              });
+            }
+          } else if (item.cateType === 1) {
+            if (item.marketContentList && item.marketContentList.length > 0) {
+              item.marketContentList?.forEach((item: any) => {
+                activityArr.add(item);
+              });
+            }
+          } else {
+            if (item.marketContentList && item.marketContentList.length > 0) {
+              item.marketContentList?.forEach((item: any) => {
+                productArr.add(item);
+              });
+            }
+          }
+        });
+        setArticleList(
+          Array.from(articleArr).map((item: any) => ({
+            ...item,
+            id: item.marketId,
+            name: item.marketTitle
+          }))
+        );
+        setProductList(
+          Array.from(productArr).map((item: any) => ({
+            ...item,
+            id: item.marketId,
+            name: item.marketTitle
+          }))
+        );
+        setActivityList(
+          Array.from(activityArr).map((item: any) => ({
+            ...item,
+            id: item.marketId,
+            name: item.marketTitle
+          }))
+        );
         const cateNames: any = {};
         const marketMsg: any = {};
         const chooseMaterial: any = {};
@@ -269,7 +275,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
           });
           marketMsg[index] = marketMessages;
         });
-        setCategoryMessage(marketMsg);
         setEditFieldValues({
           expressName,
           ...cateNames
@@ -296,7 +301,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSubmit = async (values: any) => {
-    console.log(values);
     const { startTime, ...otherValue } = values;
     const params = { ...otherValue };
     if (startTime) {
@@ -305,7 +309,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
     if (paperId) {
       params.paperId = paperId;
     }
-    console.log(params);
     const res: any = await saveConfig(params);
     if (res) {
       message.success('保存成功！');
@@ -345,16 +348,69 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   const isEdit = (filed: string) => editField === filed;
 
+  const onRecommendSearch = async (value: string, index: number) => {
+    console.log(value, index);
+    const current = form.getFieldValue('marketCateList')[index];
+    // 文章类型
+    const res = await searchRecommendGoodsList({
+      title: value,
+      recommendType: current.cateType === 3 ? 0 : current.cateType
+    });
+    if (current.cateType === 3) {
+      setArticleList(
+        (res || []).map((item: any) => ({
+          ...item,
+          id: item.marketId,
+          name: item.title
+        }))
+      );
+    } else if (current.cateType === 1) {
+      setActivityList(
+        (res || []).map((item: any) => ({
+          ...item,
+          id: item.marketId,
+          name: item.title
+        }))
+      );
+    } else {
+      if (res) {
+        setProductList(
+          (res || []).map((item: any) => ({
+            ...item,
+            name: item.title,
+            id: item.marketId
+          }))
+        );
+      }
+    }
+  };
+  // 防抖处理
+  const debounceFetcher = debounce(async (value: string, index: number) => {
+    await onRecommendSearch(value, index);
+  }, 800);
   useEffect(() => {
     const paperId: string = getQueryParam('paperId');
     getWeeklyDetail(paperId);
     getColors();
-    getArticleList();
-    getProductList();
-    getActivityList();
     getUserList();
   }, []);
 
+  const onSelected = (value: string, index: number, subIndex: number) => {
+    const listValue = form.getFieldValue('marketCateList');
+    const list = listValue[index]?.marketContentList || [];
+    // 对选中的option进行处理，并且手动更新form
+    const selectOptions = [...articleList, ...productList, ...activityList];
+    const selectedItem = selectOptions.filter((item) => item.id === value)[0];
+    list.splice(subIndex, 1, selectedItem);
+    listValue[index].marketContentList = list;
+    form.setFieldsValue({ marketCateList: listValue });
+    setChoosedMaterial({
+      ...choosedMaterial,
+      [index]: list.map((item: any) => item && item.marketId).filter(Boolean)
+    });
+    const cateType = listValue[index]?.cateType;
+    getAreaTips(cateType, value);
+  };
   return (
     <Card title="新增周报配置">
       <Form className={style.formWrap} form={form} onFinish={onSubmit} {...formLayout}>
@@ -417,6 +473,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
           <Item hidden name="expressId">
             <Input />
           </Item>
+
           <List name="expressList">
             {(fields, { add, remove }) => (
               <>
@@ -435,7 +492,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                         wrapperCol={{ span: 15 }}
                         label={`新闻${chineseNumbers[index]}`}
                         name={[field.name, 'title']}
-                        fieldKey={[field.fieldKey, 'title']}
                         rules={[{ required: true, message: '请输入' }]}
                         className={style.listFormItem}
                       >
@@ -454,7 +510,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                       wrapperCol={{ span: 15 }}
                       label={`解读${chineseNumbers[index]}`}
                       name={[field.name, 'content']}
-                      fieldKey={[field.fieldKey, 'content']}
                       rules={[{ required: true, message: '请输入' }]}
                       className={style.listFormItem}
                     >
@@ -496,6 +551,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
               </>
             )}
           </List>
+
           <List name="marketCateList">
             {(fields, { add, remove }) => (
               <>
@@ -514,7 +570,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                             style={{ display: isEdit(`cateName${index}`) ? 'block' : 'none' }}
                             {...field}
                             name={[field.name, 'cateName']}
-                            fieldKey={[field.fieldKey, 'cateName']}
                             rules={[{ required: true, message: '请输入' }]}
                             initialValue={`分类名称${chineseNumbers[index]}`}
                           >
@@ -615,7 +670,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                         <Item
                           {...field}
                           name={[field.name, 'cateType']}
-                          fieldKey={[field.fieldKey, 'cateType']}
                           rules={[{ required: true, message: '请选择' }]}
                           wrapperCol={{ offset: 3 }}
                           initialValue={3}
@@ -667,39 +721,35 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                                       wrapperCol={{ span: 15 }}
                                       label={`素材${chineseNumbers[materialIndex]}`}
                                       name={[field.name, 'marketId']}
-                                      fieldKey={[field.fieldKey, 'marketId']}
                                       rules={[
                                         {
                                           required: true,
-                                          message: (categoryMessage[index] || [])[materialIndex] || '请选择'
-                                        }
+                                          message: '请选择素材'
+                                        },
+                                        ({ getFieldValue }) => ({
+                                          validator (_, value) {
+                                            const itemValue =
+                                              getFieldValue('marketCateList')[index].marketContentList[materialIndex];
+                                            if (!value || itemValue.status !== 3) {
+                                              return Promise.resolve();
+                                            }
+                                            return Promise.reject(new Error('相关内容存在已下架/删除，请检查'));
+                                          }
+                                        })
                                       ]}
                                       className={style.listFormItem}
                                       extra={renderAreaTips(index, materialIndex)}
                                     >
                                       <Select
                                         disabled={+type === 1}
-                                        placeholder={
-                                          (categoryMessage[index] || [])[materialIndex] ||
-                                          '搜索对应素材标题在下拉框进行选择'
-                                        }
+                                        placeholder={'搜索对应素材标题在下拉框进行选择'}
                                         allowClear
                                         showSearch
-                                        filterOption={(input, option) =>
-                                          option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        }
-                                        onChange={() => {
-                                          const listValue = form.getFieldValue('marketCateList');
-                                          const value = listValue[index]?.marketContentList || [];
-                                          setChoosedMaterial({
-                                            ...choosedMaterial,
-                                            [index]: value.map((item: any) => item && item.marketId).filter(Boolean)
-                                          });
-                                          const cateType = listValue[index]?.cateType;
-                                          getAreaTips(cateType, value[materialIndex].marketId);
-                                        }}
+                                        filterOption={false}
+                                        onSearch={(value) => debounceFetcher(value, index)}
+                                        onChange={(value) => onSelected(value, index, materialIndex)}
                                       >
-                                        {getMaterialData(materialList[index] || 'article').map(
+                                        {getMaterialData(materialList[index] || 'article')?.map(
                                           (item: Activity | Product | Article) => (
                                             <Option
                                               key={item.id}
