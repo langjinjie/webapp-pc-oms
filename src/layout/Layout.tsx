@@ -16,7 +16,7 @@ import { getCookie } from 'src/utils/base';
 import { MenuItem } from 'src/utils/interface';
 import Header from './Header';
 import './style.less';
-import { message } from 'antd';
+import { Affix, message } from 'antd';
 
 const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList, setBtnList } = useContext(Context);
@@ -103,6 +103,11 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   useEffect(() => {
     menuList.length > 0 && initMenu();
   }, [location]);
+  useEffect(() => {
+    if (document?.documentElement || document?.body) {
+      document.documentElement.scrollTop = document.body.scrollTop = 0;
+    }
+  }, [history.location.pathname]);
 
   useEffect(() => {
     const token = getCookie('b2632ff42e4a58b67f37c8c1f322b213');
@@ -124,41 +129,45 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
         >
           <Icon className="arrow-icon" name={isCollapse ? 'iconfontjiantou2' : 'zuojiantou-copy'} />
         </div>
-        <ul className="menu-list">
-          {menuList.map((menu: MenuItem, index: number) => (
-            <li
-              className={classNames('menu-item', {
-                'menu-active': menuIndex === index
-              })}
-              key={menu.menuId}
-              onClick={() => {
-                setMenuIndex(index);
-                setSubMenuIndex(null);
-                if (menu.children && menu.children.length > 0) {
-                  history.push(((menu.children || [])[0] || {}).path);
-                } else {
-                  message.warn('无子级菜单，请联系管理员');
-                }
-              }}
-            >
-              <Icon className="menu-icon" name={menu.menuIcon!} />
-              <span className="menu-name">{menu.menuName}</span>
-            </li>
-          ))}
-        </ul>
-        <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
-          {subMenus.map((subMenu: MenuItem, index: number) => (
-            <li
-              className={classNames('sub-menu-item', {
-                'sub-menu-active': subMenuIndex === index
-              })}
-              key={subMenu.menuId}
-              onClick={() => history.push(subMenu.path)}
-            >
-              {subMenu.menuName}
-            </li>
-          ))}
-        </ul>
+        <Affix offsetTop={80}>
+          <ul className="menu-list">
+            {menuList.map((menu: MenuItem, index: number) => (
+              <li
+                className={classNames('menu-item', {
+                  'menu-active': menuIndex === index
+                })}
+                key={menu.menuId}
+                onClick={() => {
+                  setMenuIndex(index);
+                  setSubMenuIndex(null);
+                  if (menu.children && menu.children.length > 0) {
+                    history.push(((menu.children || [])[0] || {}).path);
+                  } else {
+                    message.warn('无子级菜单，请联系管理员');
+                  }
+                }}
+              >
+                <Icon className="menu-icon" name={menu.menuIcon!} />
+                <span className="menu-name">{menu.menuName}</span>
+              </li>
+            ))}
+          </ul>
+        </Affix>
+        <Affix offsetTop={80}>
+          <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
+            {subMenus.map((subMenu: MenuItem, index: number) => (
+              <li
+                className={classNames('sub-menu-item', {
+                  'sub-menu-active': subMenuIndex === index
+                })}
+                key={subMenu.menuId}
+                onClick={() => history.push(subMenu.path)}
+              >
+                {subMenu.menuName}
+              </li>
+            ))}
+          </ul>
+        </Affix>
         <div className="content-wrap">
           <div className="route-content">{renderRoute()}</div>
         </div>

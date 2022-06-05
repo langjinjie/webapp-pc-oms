@@ -36,7 +36,12 @@
 }
 
 .header-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
+  z-index: 6000;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -126,12 +131,12 @@
 
 .layout-wrap {
   width: 100%;
-  height: 100vh;
   display: flex;
   flex-direction: column;
 
   .layout-content {
     position: relative;
+    padding-top: 80px;
     width: 100%;
     height: calc(100% - 80px);
     display: inline-flex;
@@ -166,7 +171,7 @@
 
     .menu-list {
       width: 88px;
-      height: 100%;
+      height: calc(100vh - 80px);
       padding-top: 20px;
       background-color: #eff0f5;
       overflow-y: auto;
@@ -220,7 +225,7 @@
 
     .sub-menu-list {
       width: 164px;
-      height: 100%;
+      height: calc(100vh - 80px);
       padding-top: 20px;
       background-color: #f8f9fd;
       overflow-y: auto;
