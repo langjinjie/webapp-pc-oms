@@ -9,15 +9,10 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Card, Collapse, Button, Form, FormProps, Input, Select, TreeSelect, message, Upload } from 'antd';
 import { getQueryParam } from 'tenacity-tools';
 import { Icon } from 'src/components';
-import {
-  saveStation,
-  queryCorpOrg,
-  queryStationDetail,
-  queryActivityList,
-  queryProductList
-} from 'src/apis/stationConfig';
-import { queryMarketArea } from 'src/apis/marketing';
+import { saveStation, queryCorpOrg, queryStationDetail } from 'src/apis/stationConfig';
+import { queryMarketArea, searchRecommendGoodsList } from 'src/apis/marketing';
 import style from './style.module.less';
+import { debounce } from 'src/utils/base';
 
 interface Activity {
   status: string;
@@ -41,8 +36,6 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [organization, setOrganization] = useState<any[]>([]);
   const [activityList, setActivityList] = useState<Activity[]>([]);
   const [productList, setProductList] = useState<Product[]>([]);
-  const [activityMessage, setActivityMessage] = useState<string[]>([]);
-  const [productMessage, setProductMessage] = useState<string[]>([]);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [areaText, setAreaText] = useState<any>({});
 
@@ -124,26 +117,6 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   /**
-   * 获取产品列表
-   */
-  const getProductList = async () => {
-    const res: any = await queryProductList();
-    if (Array.isArray(res)) {
-      setProductList(res);
-    }
-  };
-
-  /**
-   * 获取活动列表
-   */
-  const getActivityList = async () => {
-    const res: any = await queryActivityList();
-    if (Array.isArray(res)) {
-      setActivityList(res);
-    }
-  };
-
-  /**
    * 查询小站配置详情
    */
   const getStationDetail = async () => {
@@ -155,7 +128,8 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
         settingName,
         visibleScopeDeptIds: visibleScopeDeptIds.split(','),
         activityList: activityList.map(({ activityId, bannerUrl, status }: Activity) => ({
-          activityId: +status === 3 ? undefined : activityId,
+          activityId: activityId,
+          status,
           bannerUrl: [
             {
               uid: '00',
@@ -169,31 +143,21 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
             }
           ]
         })),
-        productList: productList.map(({ productId, status }: Product) => ({
-          productId: +status === 3 ? undefined : productId
-        }))
+        productList: productList
       });
       if (+type === 0) {
-        const activityMessages: string[] = [];
-        const productMessages: string[] = [];
-        activityList.forEach(({ status, activityName, activityId }: Activity) => {
-          if (+status === 3) {
-            activityMessages.push(`${activityName || activityId}已过期，请重新选择`);
-          } else {
-            activityMessages.push('请选择活动');
+        activityList.forEach(({ status, activityId }: Activity) => {
+          if (+status !== 3) {
             getAreaTips(1, activityId);
           }
         });
-        productList.forEach(({ status, productName, productId }: Product) => {
-          if (+status === 3) {
-            productMessages.push(`${productName || productId}已过期，请重新选择`);
-          } else {
-            productMessages.push('请选择产品');
+        productList.forEach(({ status, productId }: Product) => {
+          if (+status !== 3) {
             getAreaTips(2, productId);
           }
         });
-        setActivityMessage(activityMessages);
-        setProductMessage(productMessages);
+        setProductList(productList);
+        setActivityList(activityList);
         form.validateFields();
       }
     }
@@ -234,28 +198,6 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
       }
     });
 
-  /**
-   * 异步加载数据
-   * @param key
-   * @param children
-   * @param nodeData
-   */
-  /* const onLoadData = ({ key, children, nodeData }: any) => {
-    return new Promise<void>((resolve) => {
-      if (children) {
-        resolve();
-        return false;
-      }
-      getCorpOrgData(key).then((res: any) => {
-        if (nodeData) {
-          nodeData.children = res;
-        }
-        setOrganization((state) => [...state]);
-        resolve();
-      });
-    });
-  }; */
-
   const normFile = (e: any) => {
     if (Array.isArray(e)) {
       return e.slice(e.length - 1);
@@ -278,9 +220,53 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
   useEffect(() => {
     getStationDetail();
     initCorpOrgData();
-    getActivityList();
-    getProductList();
   }, []);
+
+  const onRecommendSearch = async (value: string, type: number) => {
+    // setFetching(true);
+    const res = await searchRecommendGoodsList({
+      title: value,
+      recommendType: type
+    });
+    if (type === 1) {
+      setActivityList(
+        res.map((item: any) => ({
+          ...item,
+          activityId: item.marketId,
+          activityName: item.title
+        }))
+      );
+    } else {
+      setProductList(
+        res.map((item: any) => ({
+          ...item,
+          productId: item.marketId,
+          productName: item.title
+        }))
+      );
+    }
+  };
+
+  // 防抖处理
+  const debounceFetcher = debounce<{ value: string; type: number }>(
+    async ({ value, type }: { value: string; type: number }) => {
+      await onRecommendSearch(value, type);
+    },
+    800
+  );
+
+  const onSelected = (value: string, index: number, type: number) => {
+    if (type === 1) {
+      const list = form.getFieldValue('activityList');
+      list[index] = activityList.filter((item) => item.activityId === value)[0];
+      form.setFieldsValue({ activityList: list });
+    } else {
+      const list = form.getFieldValue('productList');
+      list[index] = productList.filter((item) => item.productId === value)[0];
+      form.setFieldsValue({ productList: list });
+    }
+    getAreaTips(type, value);
+  };
 
   return (
     <Card title="新增小站配置">
@@ -325,22 +311,31 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                           wrapperCol={{ span: 15 }}
                           label={`${index === 0 ? '主推' : ''}活动${index > 0 ? index : ''}`}
                           name={[field.name, 'activityId']}
-                          fieldKey={[field.fieldKey, 'activityId']}
-                          rules={[{ required: true, message: activityMessage[index] }]}
+                          rules={[
+                            { required: true },
+                            ({ getFieldValue }) => ({
+                              validator (_, value) {
+                                const itemValue = getFieldValue('activityList')[index];
+                                console.log(itemValue);
+                                if (!value || +itemValue.status !== 3) {
+                                  return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('相关内容存在已下架/删除，请检查'));
+                              }
+                            })
+                          ]}
                           className={style.listFormItem}
                           extra={renderAreaTips('activity', index)}
                         >
                           <Select
                             disabled={+type === 1}
                             showSearch
-                            filterOption={(input, option) =>
-                              option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
+                            filterOption={false}
                             allowClear
                             placeholder="请选择"
-                            onChange={() => {
-                              const value = form.getFieldValue('activityList');
-                              getAreaTips(1, value[index]?.activityId);
+                            onSearch={(value) => debounceFetcher({ value, type: 1 })}
+                            onChange={(value) => {
+                              onSelected(value, index, 1);
                             }}
                           >
                             {activityList.map((item: Activity) => (
@@ -357,7 +352,6 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                         wrapperCol={{ span: 15 }}
                         label="banner图"
                         name={[field.name, 'bannerUrl']}
-                        fieldKey={[field.fieldKey, 'bannerUrl']}
                         rules={[{ required: true, message: '请上传图片' }]}
                         getValueFromEvent={normFile}
                         valuePropName="fileList"
@@ -391,6 +385,9 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                         if (value && value.length >= 6) {
                           message.warn('最多支持6个活动');
                         } else {
+                          if (activityList.length === 0) {
+                            onRecommendSearch('', 1);
+                          }
                           add();
                         }
                       }}
@@ -407,7 +404,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
             key="product"
             header={
               <div className={style.mainText}>
-                产品配置{' '}
+                产品配置
                 <span className={style.deputyText}>说明：该模块最多支持30个产品，如无配置，则该模块不展示</span>
               </div>
             }
@@ -423,22 +420,19 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                         wrapperCol={{ span: 15 }}
                         label={`${index === 0 ? '主推' : ''}产品${index > 0 ? index : ''}`}
                         name={[field.name, 'productId']}
-                        fieldKey={[field.fieldKey, 'productId']}
-                        rules={[{ required: true, message: productMessage[index] }]}
+                        rules={[{ required: true }]}
                         className={style.listFormItem}
                         extra={renderAreaTips('product', index)}
                       >
                         <Select
                           disabled={+type === 1}
                           showSearch
-                          filterOption={(input, option) =>
-                            option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                          }
+                          onSearch={(value) => debounceFetcher({ value, type: 2 })}
+                          filterOption={false}
                           allowClear
                           placeholder="请选择"
-                          onChange={() => {
-                            const value = form.getFieldValue('productList');
-                            getAreaTips(2, value[index]?.productId);
+                          onChange={(value) => {
+                            onSelected(value, index, 2);
                           }}
                         >
                           {productList.map((item: Product) => (
@@ -465,6 +459,9 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                         if (value && value.length >= 30) {
                           message.warn('最多支持30个产品');
                         } else {
+                          if (productList.length === 0) {
+                            onRecommendSearch('', 2);
+                          }
                           add();
                         }
                       }}
