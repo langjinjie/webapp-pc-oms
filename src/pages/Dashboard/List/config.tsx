@@ -1,19 +1,27 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ColumnsType } from 'antd/lib/table';
-import { UNKNOWN } from 'src/utils/base';
-import moment from 'moment';
 import { SmallLineChart } from '../components/SamllLineChart/SmallLineChat';
 
-interface ItemProps {
+export interface ItemProps {
   id: string;
+  [propKey: string]: any;
 }
 interface tableOperations {
   toDetailPage: (record: ItemProps) => void;
+  titleList: any[];
 }
-export const tableColumns = ({ toDetailPage }: tableOperations): ColumnsType<ItemProps> => {
+export const tableColumns = ({ toDetailPage, titleList }: tableOperations): ColumnsType<ItemProps> => {
+  const titleCols = useMemo(() => {
+    return titleList.map((item: any) => ({
+      title: item.label,
+      width: 120,
+      dataIndex: item.key
+    }));
+  }, [titleList]);
   return [
     {
       title: '排序',
+
       width: 80,
       align: 'center',
       fixed: 'left',
@@ -27,8 +35,8 @@ export const tableColumns = ({ toDetailPage }: tableOperations): ColumnsType<Ite
     {
       title: '业务模式',
       fixed: 'left',
-      dataIndex: 'taskName1',
-      key: 'taskName1',
+      dataIndex: 'businessModel',
+      key: 'businessModel',
       align: 'center',
       width: 120,
       onCell: (_, index) => {
@@ -42,8 +50,8 @@ export const tableColumns = ({ toDetailPage }: tableOperations): ColumnsType<Ite
     {
       title: '团队长',
       fixed: 'left',
-      dataIndex: 'taskName2',
-      key: 'taskName2',
+      dataIndex: 'leaderName',
+      key: 'leaderName',
       align: 'center',
       width: 80,
       onCell: (_, index) => {
@@ -54,55 +62,7 @@ export const tableColumns = ({ toDetailPage }: tableOperations): ColumnsType<Ite
         return { colSpan: 1 };
       }
     },
-    {
-      title: '12月人均',
-      key: 'createTime1',
-      dataIndex: 'createTime',
-      className: 'borderLeft',
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '12月人均',
-      key: 'createTime2',
-      dataIndex: 'createTime',
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '12月人均',
-      key: 'createTime3',
-      dataIndex: 'createTime',
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '12月人均',
-      key: 'createTime4',
-      dataIndex: 'createTime',
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '12月人均',
-      key: 'createTime5',
-      dataIndex: 'createTime',
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '12月人均',
-      key: 'createTime6',
-      dataIndex: 'createTime',
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
-    },
+    ...titleCols,
 
     {
       title: '趋势',
@@ -110,9 +70,10 @@ export const tableColumns = ({ toDetailPage }: tableOperations): ColumnsType<Ite
       fixed: 'right',
       align: 'center',
       render: (text: string, record) => {
+        const { data1 = 1, data2 = 4, data3 = 8, data4 = 15, data5 = 15, data6 = 0 } = record;
         return (
           <div className="cursor" onClick={() => toDetailPage(record)}>
-            <SmallLineChart data={[1, 4, 8, 20, 14, 18, 40]} key={record.id} />
+            <SmallLineChart width="96px" data={[data1, data2, data3, data4, data5, data6]} key={record.id} />
           </div>
         );
       }

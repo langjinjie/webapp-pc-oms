@@ -60,7 +60,6 @@ export const percentage = (num: number, total: number): number | string => {
 // 千分位格式化
 export const numFormat = (num: number, places = 3, symbol = ','): string => {
   const reg = new RegExp('\\B(?=(\\d{' + places + '})+(?!\\d))', 'g');
-  console.log(reg);
   return num.toString().replace(reg, symbol);
 };
 
