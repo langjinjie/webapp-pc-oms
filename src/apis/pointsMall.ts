@@ -147,3 +147,27 @@ export const queryPrizeDetail: HttpFunction = (param: Object) => {
 export const editPrize: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/lottery/goods/edit', param);
 };
+
+/**
+ * 中奖管理列表接口
+ * @param param
+ */
+export const requestGetLotteryManageList: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/lottery/manage/list', param);
+};
+
+/**
+ * 中奖管理导出接口
+ * @param param
+ */
+export const requestExportLotteryManage: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/lottery/manage/export', param);
+};
+
+/**
+ * 发放奖品接口
+ * @param param
+ */
+export const requestSendLotteryManage: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/lottery/manage/send', param);
+};
