@@ -1,7 +1,8 @@
-import React, { useState, useEffect, Key } from 'react';
+import React, { useState, useEffect, Key, useContext, Dispatch, SetStateAction } from 'react';
 import { Modal, Tree } from 'antd';
 import { requestGetLotteryDeptList, requestAddLotteryScope } from 'src/apis/pointsMall';
-import { ITreeDate, IDeptRecord } from 'src/utils/interface';
+import { ITreeDate, IDeptRecord, IConfirmModalParam } from 'src/utils/interface';
+import { Context } from 'src/store';
 import style from './style.module.less';
 
 interface IAddLotteryListProps {
@@ -22,6 +23,9 @@ interface ItreeProps {
 }
 
 const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopeParam, depLsit }) => {
+  const { setConfirmModalParam } = useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(
+    Context
+  );
   const [treeData, setTreeData] = useState<ITreeDate[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
   const [flatTreeData, setFlatTreeData] = useState<ITreeDate[]>([]);
@@ -75,7 +79,7 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
     // 过滤掉所有选中节点的后代节点
     return newArr.filter((item) => !newArr1.includes(item.deptId));
   };
-  const onOk = async () => {
+  const onConfirm = async () => {
     const deptIdList = flatTreeData.filter((item) => checkedKeys.includes(item.deptId));
     const res = await requestAddLotteryScope({
       deptIds: filterChildren(deptIdList)
@@ -86,6 +90,20 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
     if (res) {
       setAddScopeParam({ visible: false, added: true });
     }
+  };
+  const onOk = () => {
+    const deptIdNameList = flatTreeData
+      .filter((item) => checkedKeys.includes(item.deptId))
+      .map((mapItem) => mapItem.deptName)
+      .toString()
+      .replace(/,/g, '，');
+    setConfirmModalParam((param) => ({
+      ...param,
+      visible: true,
+      title: '温馨提示',
+      tips: `是否确定将 <b>${deptIdNameList}</b> 添加进抽奖可见名单？`,
+      onOk: onConfirm
+    }));
   };
   const onCancel = () => {
     setAddScopeParam({ visible: false, added: false });

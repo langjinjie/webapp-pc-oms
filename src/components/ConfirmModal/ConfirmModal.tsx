@@ -5,11 +5,10 @@ import { IConfirmModalParam } from 'src/utils/interface';
 import style from './style.module.less';
 
 const ConfirmModal: React.FC = () => {
-  const { confirmModalParam, setConfirmModalParam } =
-    useContext<{
-      confirmModalParam: IConfirmModalParam;
-      setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>>;
-    }>(Context);
+  const { confirmModalParam, setConfirmModalParam } = useContext<{
+    confirmModalParam: IConfirmModalParam;
+    setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>>;
+  }>(Context);
   const { visible, title, tips, onOk, onCancel, okText, cancelText } = confirmModalParam;
   const [isLoading, setIsLoading] = useState(false);
   const Ok = async () => {
@@ -41,7 +40,7 @@ const ConfirmModal: React.FC = () => {
         loading: isLoading
       }}
     >
-      <div className={style.content}>{tips || '确定执行该操作吗？'}</div>
+      <div className={style.content} dangerouslySetInnerHTML={{ __html: tips || '确定执行该操作吗？' }} />
     </Modal>
   );
 };

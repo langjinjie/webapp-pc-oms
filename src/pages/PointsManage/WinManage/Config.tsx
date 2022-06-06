@@ -6,25 +6,30 @@ import style from './style.module.less';
 import classNames from 'classnames';
 
 const TableColumns: (
-  setModalVisible: Dispatch<SetStateAction<{ visible: boolean; address: string }>>
+  setModalVisible: Dispatch<SetStateAction<{ visible: boolean; address: string; winName?: string; winId: string }>>
 ) => ColumnsType<any> = (setModalVisible) => {
   // 发放奖品
   const sendWin = (row: any) => {
-    if (row.status) return;
-    setModalVisible({ address: row.address, visible: true });
+    if (row.sendStatus) return;
+    setModalVisible({
+      address: row.correctAddress || row.deliverAddress,
+      visible: true,
+      winName: row.name,
+      winId: row.winId
+    });
   };
   return [
     { title: '客户经理姓名', dataIndex: 'staffName' },
     { title: '客户经理ID', dataIndex: 'staffId' },
-    { title: '奖品名称', dataIndex: 'winName' },
+    { title: '奖品名称', dataIndex: 'name' },
     { title: '中奖时间', dataIndex: 'winTime' },
     { title: '活动名称', dataIndex: 'activityName' },
-    { title: '团队长', dataIndex: 'leader' },
-    { title: '收货地址', dataIndex: 'address' },
-    { title: '地址纠错', dataIndex: 'addressCorrection' },
+    { title: '团队长', dataIndex: 'leaderName' },
+    { title: '收货地址', dataIndex: 'deliverAddress' },
+    { title: '地址纠错', dataIndex: 'correctAddress' },
     {
       title: '奖品发放状态',
-      dataIndex: 'winStatus',
+      dataIndex: 'sendStatus',
       render (text: number) {
         return <span className={classNames(style.status, { [style.sended]: text })}>{text ? '已发放' : '未发放'}</span>;
       }
@@ -36,14 +41,14 @@ const TableColumns: (
         return <>{text || UNKNOWN}</>;
       }
     },
-    { title: '操作人', dataIndex: 'operation' },
+    { title: '操作人', dataIndex: 'opName' },
     {
       title: '操作',
       fixed: 'right',
       render (row: any) {
         return (
-          <span onClick={() => sendWin(row)} className={style.sendWin}>
-            {row.status ? '/' : '发放奖品'}
+          <span onClick={() => sendWin(row)} className={classNames(style.sendWin, { [style.sended]: row.sendStatus })}>
+            {row.sendStatus ? '/' : '发放奖品'}
           </span>
         );
       }
