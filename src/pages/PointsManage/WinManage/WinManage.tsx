@@ -46,7 +46,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
       const link = document.createElement('a');
       link.style.display = 'none';
       link.href = url;
-      link.setAttribute('download', '员工信息表.xlsx');
+      link.setAttribute('download', '中奖列表.xlsx');
       document.body.appendChild(link);
       link.click(); // 点击下载
       link.remove(); // 下载完成移除元素
@@ -72,7 +72,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
       endTime = values.winTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
       delete values.winTime;
     }
-    const param = { ...values, ...paginationParam, startTime, endTime };
+    const param = { ...values, startTime, endTime };
     setSearchParam(param);
     setPaginationParam((param) => ({ ...param }));
   };

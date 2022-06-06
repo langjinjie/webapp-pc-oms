@@ -161,7 +161,9 @@ export const requestGetLotteryManageList: HttpFunction = (param) => {
  * @param param
  */
 export const requestExportLotteryManage: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/lottery/manage/export', param);
+  return http.post('/tenacity-admin/api/lottery/manage/export', param, {
+    responseType: 'blob'
+  });
 };
 
 /**
