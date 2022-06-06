@@ -4,6 +4,7 @@ import { PaginationProps } from 'antd';
 import { UNKNOWN } from 'src/utils/base';
 import style from './style.module.less';
 import classNames from 'classnames';
+import { AuthBtn } from 'src/components';
 
 const TableColumns: (
   setModalVisible: Dispatch<SetStateAction<{ visible: boolean; address: string; winName?: string; winId: string }>>
@@ -47,9 +48,14 @@ const TableColumns: (
       fixed: 'right',
       render (row: any) {
         return (
-          <span onClick={() => sendWin(row)} className={classNames(style.sendWin, { [style.sended]: row.sendStatus })}>
-            {row.sendStatus ? '/' : '发放奖品'}
-          </span>
+          <AuthBtn path="/send">
+            <span
+              onClick={() => sendWin(row)}
+              className={classNames(style.sendWin, { [style.sended]: row.sendStatus })}
+            >
+              {row.sendStatus ? '/' : '发放奖品'}
+            </span>
+          </AuthBtn>
         );
       }
     }

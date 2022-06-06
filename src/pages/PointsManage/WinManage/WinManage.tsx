@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { Button, Form, Input, Space, DatePicker, Select } from 'antd';
-import { NgModal, NgTable } from 'src/components';
+import { AuthBtn, NgModal, NgTable } from 'src/components';
 import { TableColumns, TableConfig } from './Config';
 import { Context } from 'src/store';
 import { IConfirmModalParam } from 'src/utils/interface';
@@ -123,42 +123,47 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
 
   return (
     <div className={style.wrap}>
-      <Button className={style.exportData} type="primary" onClick={downLoadStaffList}>
-        批量导出数据
-      </Button>
-      <Form className={style.form} form={form} layout="inline" onFinish={onFinish}>
-        <Space className={style.formSpace}>
-          <Item className={style.formItem} name="staffName" label="客户经理姓名：">
-            <Input style={{ width: 200 }} />
-          </Item>
-          <Item name="name" label="奖品名称：">
-            <Input style={{ width: 250 }} />
-          </Item>
-          <Item name="activityName" label="活动名称：">
-            <Input style={{ width: 250 }} />
-          </Item>
-        </Space>
-        <Space className={style.formSpace}>
-          <Item name="winTime" label="中奖时间：">
-            <RangePicker format={'YYYY年MM月DD日'} />
-          </Item>
-          <Item name="sendStatus" label="奖品发放状态：">
-            <Select style={{ width: 120 }}>
-              {sendStatusList.map((item) => (
-                <Select.Option key={item.value} value={item.value}>
-                  {item.label}
-                </Select.Option>
-              ))}
-            </Select>
-          </Item>
-          <Button className={style.submitBtn} type="primary" htmlType="submit">
-            查询
-          </Button>
-          <Button className={style.resetBtn} onClick={onReset} htmlType="reset">
-            重置
-          </Button>
-        </Space>
-      </Form>
+      <AuthBtn path="/export">
+        <Button className={style.exportData} type="primary" onClick={downLoadStaffList}>
+          批量导出数据
+        </Button>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <Form className={style.form} form={form} layout="inline" onFinish={onFinish}>
+          <Space className={style.formSpace}>
+            <Item className={style.formItem} name="staffName" label="客户经理姓名：">
+              <Input style={{ width: 200 }} />
+            </Item>
+            <Item name="name" label="奖品名称：">
+              <Input style={{ width: 250 }} />
+            </Item>
+            <Item name="activityName" label="活动名称：">
+              <Input style={{ width: 250 }} />
+            </Item>
+          </Space>
+          <Space className={style.formSpace}>
+            <Item name="winTime" label="中奖时间：">
+              <RangePicker format={'YYYY年MM月DD日'} />
+            </Item>
+            <Item name="sendStatus" label="奖品发放状态：">
+              <Select style={{ width: 120 }}>
+                {sendStatusList.map((item) => (
+                  <Select.Option key={item.value} value={item.value}>
+                    {item.label}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Item>
+            <Button className={style.submitBtn} type="primary" htmlType="submit">
+              查询
+            </Button>
+            <Button className={style.resetBtn} onClick={onReset} htmlType="reset">
+              重置
+            </Button>
+          </Space>
+        </Form>
+      </AuthBtn>
+
       <NgTable
         className={style.table}
         dataSource={list.list}
