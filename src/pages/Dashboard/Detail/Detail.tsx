@@ -6,6 +6,7 @@ import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './style.module.less';
 import { getDashboardTeamDetail } from 'src/apis/dashboard';
+import { TimeTypes } from '../List/config';
 
 interface StateProps {
   businessModel: string;
@@ -69,13 +70,13 @@ const DashboardDetail: React.FC<RouteComponentProps<{ id: string }, any, StatePr
             </span>
           </div>
           <Button type="primary" shape="round" ghost className={styles.smallTipBtn}>
-            {stateProps?.dayType === 2 ? '最近6周' : '最近6月'}
+            {TimeTypes[stateProps?.dayType as number]}
           </Button>
         </div>
         <div className={'ml20'}>
           业务模式：<span className="ml10">{stateProps?.businessModel}</span>
         </div>
-        <TrendChart data={dataSource} />
+        <TrendChart data={dataSource} legend={[stateProps?.dataCodeTitle as string]} />
       </div>
     </div>
   );

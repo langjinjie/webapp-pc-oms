@@ -4,6 +4,7 @@ import { Icon } from 'src/components';
 import { numFormat } from 'src/utils/tools';
 import styles from './style.module.less';
 import { dataCodeList } from '../../List/config';
+import { Image } from 'antd';
 
 interface DataItemProps {
   path?: string;
@@ -23,7 +24,7 @@ export const DataItem: React.FC<DataItemProps> = ({ onClick, data }) => {
     <div className={classNames(styles.wrapper, 'flex align-center justify-between cell mb30')} onClick={onClick}>
       <dl className="ml30 flex vertical align-center" style={{ width: '74px' }}>
         <dt>
-          <img src={data?.dataCodeImg} className={styles.iconType}></img>
+          <Image src={data?.dataCodeImg} className={styles.iconType}></Image>
         </dt>
         <dd className="bold font18 mt12">{title}</dd>
       </dl>

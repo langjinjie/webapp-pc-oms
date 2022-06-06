@@ -226,3 +226,9 @@ export const dataCodeList: CodeListType = [
     ]
   }
 ];
+
+export enum TimeTypes {
+  '最近30天' = 1,
+  '最近6周' = 2,
+  '最近6月' = 3
+}

@@ -146,16 +146,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
         <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
           {subMenus.map((subMenu: MenuItem) => (
             <li key={subMenu.menuId}>
-              <NavLink
-                to={subMenu.path}
-                activeClassName={'sub-menu-active'}
-                className="sub-menu-item"
-                // className={classNames('sub-menu-item', {
-                //   'sub-menu-active': subMenuIndex === index
-                // })}
-
-                // onClick={() => history.push(subMenu.path)}
-              >
+              <NavLink to={subMenu.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
                 {subMenu.menuName}
               </NavLink>
             </li>

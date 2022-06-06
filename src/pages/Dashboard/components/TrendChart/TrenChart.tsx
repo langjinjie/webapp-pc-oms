@@ -27,11 +27,13 @@ export function tooltipCustom (toolTipSource: toolTipSourceProps, data: any[]): 
 
 interface TrendChartProps {
   data: any[];
+  legend: string[];
 }
-export const TrendChart: React.FC<TrendChartProps> = ({ data }) => {
+export const TrendChart: React.FC<TrendChartProps> = ({ data, legend }) => {
+  console.log(legend);
   const options: ECOption = {
     legend: {
-      data: ['日人均客户信息调用数']
+      data: legend
     },
     xAxis: {
       type: 'category',
@@ -57,7 +59,7 @@ export const TrendChart: React.FC<TrendChartProps> = ({ data }) => {
     },
     series: [
       {
-        name: '日人均客户信息调用数',
+        name: legend[0],
         data: data.map((item) => item.dataY),
         type: 'line',
         smooth: true,

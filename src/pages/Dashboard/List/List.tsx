@@ -79,7 +79,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   };
 
   const getModels = async () => {
-    const res = await getModelList({});
+    const res = (await getModelList({})) || [];
     setModelList(res);
   };
   useEffect(() => {
@@ -161,6 +161,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
               <span className="f16 text-primary">全部团队</span>
             </div>
             <Radio.Group value={filterData.dayType} size="middle" onChange={(e) => onDayTypeChange(e.target.value)}>
+              <Radio.Button value={1}>最近30天</Radio.Button>
               <Radio.Button value={2}>最近6周</Radio.Button>
               <Radio.Button value={3}>最近6个月</Radio.Button>
             </Radio.Group>
@@ -195,7 +196,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
           </div>
 
           <div className="flex justify-center mt40">
-            <Button type="primary" shape="round" className={styles.confirmBtn} onClick={download}>
+            <Button type="primary" shape="round" className={styles.confirmBtn} onClick={() => download()}>
               下载
             </Button>
           </div>

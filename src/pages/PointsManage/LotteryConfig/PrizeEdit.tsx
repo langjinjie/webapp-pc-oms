@@ -4,7 +4,7 @@
  * @date 2022-05-26 14:22
  */
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, InputNumber, message, Space } from 'antd';
+import { Button, Form, Input, InputNumber, message, Select, Space } from 'antd';
 import classNames from 'classnames';
 import { BreadCrumbs } from 'src/components';
 import style from './style.module.less';
@@ -61,30 +61,50 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
         wrapperCol={{ span: 14 }}
         onFinish={(values) => onFinish(values)}
       >
-        <Form.Item label="奖品名称" name="name">
-          <Input placeholder="请输入" className="width420" />
+        <Form.Item label="奖品名称" name="name" rules={[{ required: true, message: '请输入奖品名称' }]}>
+          <Input placeholder="请输入" className="width420" maxLength={100} />
         </Form.Item>
         <Form.Item
+          rules={[{ required: true }]}
           name={'imgUrl'}
           label="奖品图片"
           extra="为确保最佳展示效果，请上传300*300像素透明底图片，大小不超过200k，仅支持.jpg格式"
         >
           <NgUpload showDeleteBtn></NgUpload>
         </Form.Item>
+        <Form.Item label="奖品类型" name={'goodsType'}>
+          <Select className="width240" disabled={detail?.goodsType === 1}>
+            <Select.Option value={1} disabled>
+              大奖
+            </Select.Option>
+            <Select.Option value={2}>红包类 </Select.Option>
+            <Select.Option value={3}>空气 </Select.Option>
+            <Select.Option value={4}>物流类 </Select.Option>
+          </Select>
+        </Form.Item>
         {detail?.goodsType !== 1
           ? (
           <>
-            <Form.Item name={'totalStock'} label="奖品库存" extra="件" className="customExtra">
-              <InputNumber className="width100" controls={false} max={999999999} />
-            </Form.Item>
-            <Form.Item name={'winWeight'} label="中奖概率" extra="%" className="customExtra">
+            {detail?.goodsType !== 3 && (
+              <Form.Item
+                name={'totalStock'}
+                label="奖品库存"
+                rules={[{ required: true }]}
+                extra="件"
+                className="customExtra"
+              >
+                <InputNumber className="width100" controls={false} max={999999999} />
+              </Form.Item>
+            )}
+
+            <Form.Item rules={[{ required: true }]} name={'winWeight'} label="中奖权重">
               <InputNumber controls={false} className="width100" max={100} />
             </Form.Item>
           </>
             )
           : null}
 
-        <Form.Item name={'exchangeDesc'} label="兑换流程说明">
+        <Form.Item name={'exchangeDesc'} label="兑换流程说明" rules={[{ required: true }]}>
           <Input.TextArea maxLength={300} showCount placeholder="请输入" autoSize={{ minRows: 4 }} />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 4 }} className="formFooter">

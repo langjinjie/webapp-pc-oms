@@ -11,7 +11,7 @@ import { editActivityConfig, queryActivityConfig } from 'src/apis/pointsMall';
 import style from './style.module.less';
 import classNames from 'classnames';
 
-enum GoodsTypes {
+export enum GoodsTypes {
   '大奖' = 1,
   '红包类',
   '空气',
