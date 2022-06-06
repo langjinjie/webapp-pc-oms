@@ -4,7 +4,7 @@
  * @date 2022-05-26 14:22
  */
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Space } from 'antd';
+import { Button, Form, Input, InputNumber, message, Space } from 'antd';
 import classNames from 'classnames';
 import { BreadCrumbs } from 'src/components';
 import style from './style.module.less';
@@ -12,13 +12,13 @@ import NgUpload from 'src/pages/Marketing/Components/Upload/Upload';
 import { RouteComponentProps } from 'react-router-dom';
 import { editPrize, queryPrizeDetail } from 'src/apis/pointsMall';
 import { PrizeItem } from './LotteryConfig';
+import { throttle } from 'src/utils/base';
 
 interface State {
   goodsId: string;
   goodsType: number;
 }
 const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, history }) => {
-  console.log(location);
   const [editForm] = Form.useForm();
   const [detail, setDetail] = useState<PrizeItem>();
   const getDetail = async (goodsId: string) => {
@@ -34,7 +34,7 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
     }
   }, []);
 
-  const onFinish = async (values: any) => {
+  const onFinish = throttle(async (values: any) => {
     const { name, imgUrl, totalStock, winWeight, exchangeDesc } = values;
     const res = await editPrize({
       goodsId: detail?.goodsId,
@@ -45,8 +45,12 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
       winWeight,
       exchangeDesc
     });
+    if (res) {
+      message.success('编辑成功');
+      history.goBack();
+    }
     console.log(res);
-  };
+  }, 500);
   return (
     <div className={classNames(style.prizeEdit, 'container')}>
       <BreadCrumbs navList={[{ name: '抽奖配置' }, { name: '奖品配置' }, { name: '奖品编辑' }]} />
@@ -65,10 +69,10 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
           ? (
           <>
             <Form.Item name={'totalStock'} label="奖品库存" extra="件" className="customExtra">
-              <Input className="width100"></Input>
+              <InputNumber className="width100" controls={false} max={999999999} />
             </Form.Item>
             <Form.Item name={'winWeight'} label="中奖概率" extra="%" className="customExtra">
-              <Input className="width100"></Input>
+              <InputNumber controls={false} className="width100" max={100} />
             </Form.Item>
           </>
             )

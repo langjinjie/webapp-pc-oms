@@ -12,18 +12,23 @@ interface toolTipSourceProps {
   seriesName: string;
   value: string;
 }
-export function tooltipCustom (toolTipSource: toolTipSourceProps): string {
+export function tooltipCustom (toolTipSource: toolTipSourceProps, data: any[]): string {
   if (!toolTipSource) {
     return '';
   }
+  const item = data.filter((item: any) => item.dataX === toolTipSource.name)[0];
+
   return `<div class="tooltip">
-    <div>${toolTipSource.name}</div>
+    <div>${item.dateStr}</div>
     <div class="mt10">${toolTipSource.seriesName} 
     <span class="ml10 count">${toolTipSource.value}</span></div>
   </div>`;
 }
 
-export const TrendChart: React.FC = () => {
+interface TrendChartProps {
+  data: any[];
+}
+export const TrendChart: React.FC<TrendChartProps> = ({ data }) => {
   const options: ECOption = {
     legend: {
       data: ['日人均客户信息调用数']
@@ -31,7 +36,7 @@ export const TrendChart: React.FC = () => {
     xAxis: {
       type: 'category',
       boundaryGap: false,
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      data: data.map((item) => item.dataX)
     },
     yAxis: {
       axisLine: {
@@ -42,7 +47,7 @@ export const TrendChart: React.FC = () => {
     tooltip: {
       trigger: 'axis',
       formatter (params: any) {
-        return tooltipCustom(params[0]);
+        return tooltipCustom(params[0], data);
       },
       backgroundColor: 'transparent',
       borderColor: 'transparent',
@@ -53,7 +58,7 @@ export const TrendChart: React.FC = () => {
     series: [
       {
         name: '日人均客户信息调用数',
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        data: data.map((item) => item.dataY),
         type: 'line',
         smooth: true,
         showSymbol: true, // 是否默认展示圆点

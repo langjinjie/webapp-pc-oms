@@ -2,11 +2,15 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { NgTable } from 'src/components';
-import { dataCodeList, tableColumns } from './config';
-import { Button, Divider, PaginationProps, Radio, Select, Tabs } from 'antd';
+import { dataCodeList, ItemProps, tableColumns } from './config';
+import { Button, Divider, Pagination, PaginationProps, Radio, Select, Tabs } from 'antd';
 
 import styles from '../style.module.less';
-import { getDashboardItemData } from 'src/apis/dashboard';
+import { getDashboardItemData, getListTotal, getModelList } from 'src/apis/dashboard';
+interface ModalProps {
+  businessModel: string;
+  staffNum: number;
+}
 
 const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, match }) => {
   const [currentCode, setCurrentCode] = useState<{
@@ -18,28 +22,64 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
       subTitle: string;
     }[];
   }>();
-  const [dayType, setDayType] = useState('2');
+  const [totalItem, setTotalItem] = useState<any>({});
+  const [dataSource, setDataSource] = useState<ItemProps[]>([]);
+  const [modelList, setModelList] = useState<ModalProps[]>([]);
+  const [filterData, setFilterData] = useState({
+    businessModel: '',
+    dayType: 2,
+    dataCode: ''
+  });
+  const [titleList, setTitleList] = useState<any[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>({
     simple: true,
     current: 1,
-    total: 100,
+    total: 0,
     pageSize: 10
   });
   const [currentItem, setCurrentItem] = useState<{ key: string; title: string; subTitle: string }>();
   const toDetailPage = (record: any) => {
-    console.log(history, match, record);
     const { id } = match.params;
-    history.push(`/dashboardList/${id}/detail`);
+    history.push(`/dashboardList/${id}/detail`, {
+      leaderName: record.leaderName,
+      leaderId: record.leaderId,
+      ...filterData,
+      businessModel: record.businessModel
+    });
+  };
+  const getTotal = async (params: any) => {
+    const res = await getListTotal({ ...filterData, ...params });
+    if (res) {
+      setTotalItem(res);
+    }
   };
   const getList = async (dataCode?: any) => {
+    const pageNum = dataCode.pageNum || pagination.current;
     const res = await getDashboardItemData({
       dayType: 2,
       queryType: 1,
-      dataCode: '',
+      dataCode: filterData.dataCode,
+      businessModel: '',
+      pageSize: 10,
+      pageNum,
       ...dataCode
     });
-    console.log(res);
+    if (res) {
+      let { titleList, list, total } = res;
+      titleList = titleList.map((item: string, index: number) => ({ key: 'data' + (index + 1), label: item }));
+      setTitleList(titleList);
+      setPagination((pagination) => ({ ...pagination, current: pageNum, total }));
+      setDataSource(list);
+    }
   };
+
+  const getModels = async () => {
+    const res = await getModelList({});
+    setModelList(res);
+  };
+  useEffect(() => {
+    getModels();
+  }, []);
 
   useEffect(() => {
     const { id } = match.params;
@@ -48,28 +88,41 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
     setCurrentCode(current);
     setCurrentItem(item);
     getList({ dataCode: id });
-    setDayType('2');
+    getTotal({ dataCode: id });
+    setFilterData({
+      businessModel: '',
+      dayType: 2,
+      dataCode: id
+    });
     setPagination((pagination) => ({ ...pagination, current: 1 }));
   }, [match]);
-  const handleModelChange = () => {
-    console.log('change');
+
+  // 模式切换时
+  const handleModelChange = (value: string) => {
+    setFilterData((filterData) => ({ ...filterData, businessModel: value }));
+    getList({ businessModel: value, pageNum: 1 });
+    getTotal({ businessModel: value });
   };
+
+  // tab切换时
   const onTabsChange = (activeKey: string) => {
     const item = currentCode?.children.filter((item) => item.key === activeKey)[0];
     setCurrentItem(item);
-    getList({ dataCode: item?.key });
+    getList({ dataCode: item?.key, pageNum: 1 });
+    getTotal({ dataCode: item?.key });
   };
 
+  // 时间类型切换时
   const onDayTypeChange = (value: any) => {
-    console.log(value);
-    setDayType(value);
-    getList({ datType: value });
+    setFilterData((filterData) => ({ ...filterData, dayType: value }));
+    getList({ dayType: value });
+    getTotal({ dayType: value });
   };
 
   const onPaginationChange = (pageNum: number) => {
-    console.log(pageNum);
     setPagination((pagination) => ({ ...pagination, current: pageNum }));
   };
+
   return (
     <div className={classNames(styles.addFriend)}>
       <Tabs defaultActiveKey={currentCode?.key} onChange={onTabsChange}>
@@ -91,16 +144,20 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
               />
               <span className="f16 text-primary">全部团队</span>
             </div>
-            <Radio.Group value={dayType} size="middle" onChange={(e) => onDayTypeChange(e.target.value)}>
-              <Radio.Button value="2">最近6周</Radio.Button>
-              <Radio.Button value="3">最近6个月</Radio.Button>
+            <Radio.Group value={filterData.dayType} size="middle" onChange={(e) => onDayTypeChange(e.target.value)}>
+              <Radio.Button value={2}>最近6周</Radio.Button>
+              <Radio.Button value={3}>最近6个月</Radio.Button>
             </Radio.Group>
           </div>
           <div className={'ml20 mt20 mb20'}>
             业务模式：
-            <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleModelChange}>
-              <Select.Option value="jack">Jack</Select.Option>
-              <Select.Option value="lucy">Lucy</Select.Option>
+            <Select value={filterData.businessModel} style={{ width: 120 }} onChange={handleModelChange}>
+              <Select.Option value="">全部</Select.Option>
+              {modelList.map((item) => (
+                <Select.Option value={item.businessModel} key={item.businessModel}>
+                  {item.businessModel}
+                </Select.Option>
+              ))}
             </Select>
           </div>
           <div className="ph20 mb20">
@@ -111,29 +168,14 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
                 }
                 return '';
               }}
-              columns={tableColumns({ toDetailPage })}
-              pagination={pagination}
-              paginationChange={onPaginationChange}
-              dataSource={[
-                {
-                  taskName1: '测试',
-                  id: 1,
-                  taskName2: '广东'
-                },
-                {
-                  taskName1: '开发',
-                  taskName2: '广东',
-                  id: 2
-                },
-                {
-                  taskName1: '产品',
-                  taskName2: '广东',
-                  id: 3
-                }
-              ]}
-              rowKey="id"
+              columns={tableColumns({ toDetailPage, titleList })}
+              dataSource={[totalItem, ...dataSource]}
+              rowKey={(record) => record.leaderId + record.leaderName || 'total'}
               loading={false}
             ></NgTable>
+            <div className={styles.paginationWrap}>
+              <Pagination {...pagination} onChange={onPaginationChange}></Pagination>
+            </div>
           </div>
 
           <div className="flex justify-center mt40">
