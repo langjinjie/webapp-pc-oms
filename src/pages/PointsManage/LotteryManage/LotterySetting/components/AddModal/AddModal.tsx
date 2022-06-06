@@ -88,6 +88,7 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
         .replace(/,/g, ';')
     });
     if (res) {
+      setConfirmModalParam((param) => ({ ...param, visible: false }));
       setAddScopeParam({ visible: false, added: true });
     }
   };
