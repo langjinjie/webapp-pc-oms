@@ -54,7 +54,13 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
   return (
     <div className={classNames(style.prizeEdit, 'container')}>
       <BreadCrumbs navList={[{ name: '抽奖配置' }, { name: '奖品配置' }, { name: '奖品编辑' }]} />
-      <Form form={editForm} className="edit mt30" labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} onFinish={onFinish}>
+      <Form
+        form={editForm}
+        className="edit mt30"
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 14 }}
+        onFinish={(values) => onFinish(values)}
+      >
         <Form.Item label="奖品名称" name="name">
           <Input placeholder="请输入" className="width420" />
         </Form.Item>

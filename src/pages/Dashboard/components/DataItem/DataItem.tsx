@@ -11,7 +11,7 @@ interface DataItemProps {
   dataCodeImg: string;
   data?: { key: string; title: string; children?: any[]; [prop: string]: any };
 }
-export const DataItem: React.FC<DataItemProps> = ({ onClick, dataCodeImg, data }) => {
+export const DataItem: React.FC<DataItemProps> = ({ onClick, data }) => {
   const title = useMemo(() => {
     if (data) {
       return dataCodeList.filter((item) => item.key === data?.dataCode)?.[0]?.title;
@@ -21,9 +21,9 @@ export const DataItem: React.FC<DataItemProps> = ({ onClick, dataCodeImg, data }
   }, [data]);
   return (
     <div className={classNames(styles.wrapper, 'flex align-center justify-between cell mb30')} onClick={onClick}>
-      <dl className="ml30 flex vertical align-center">
+      <dl className="ml30 flex vertical align-center" style={{ width: '74px' }}>
         <dt>
-          <img src={dataCodeImg} className={styles.iconType}></img>
+          <img src={data?.dataCodeImg} className={styles.iconType}></img>
         </dt>
         <dd className="bold font18 mt12">{title}</dd>
       </dl>

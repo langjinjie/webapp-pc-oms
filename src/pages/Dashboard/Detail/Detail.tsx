@@ -12,8 +12,13 @@ interface StateProps {
   dayType: number;
   leaderId: string;
   leaderName: string;
+  dataCodeTitle: string;
 }
-const DashboardDetail: React.FC<RouteComponentProps<{ id: string }, any, StateProps>> = ({ match, location }) => {
+const DashboardDetail: React.FC<RouteComponentProps<{ id: string }, any, StateProps>> = ({
+  match,
+  location,
+  history
+}) => {
   const [stateProps, setStateProps] = useState<StateProps>();
   const [dataSource, setDataSource] = useState<any[]>([]);
   const getDetail = async () => {
@@ -27,31 +32,31 @@ const DashboardDetail: React.FC<RouteComponentProps<{ id: string }, any, StatePr
     if (res) {
       setDataSource(res);
     }
-    console.log(res);
   };
   useEffect(() => {
     setStateProps(location.state);
     getDetail();
   }, []);
   const navigatorToList = () => {
-    console.log('aa');
+    history.goBack();
   };
-  console.log(match.params);
 
   return (
     <div className="container">
       <div className={'breadcrumbWrap'}>
         <span>当前位置：</span>
         <Breadcrumb>
-          <Breadcrumb.Item onClick={() => navigatorToList()}>标签配置</Breadcrumb.Item>
-          <Breadcrumb.Item>保存与推送记录</Breadcrumb.Item>
+          <Breadcrumb.Item onClick={() => navigatorToList()}>全部团队数据</Breadcrumb.Item>
+          <Breadcrumb.Item>
+            {stateProps?.leaderName ? stateProps.leaderName + '的团队趋势' : '全部团队趋势'}
+          </Breadcrumb.Item>
         </Breadcrumb>
       </div>
 
       <div className={styles.contentWrap}>
         <div className={classNames(styles.header, 'flex justify-between align-center ph20')}>
           <div className="flex align-center">
-            <h3 className="f18 bold">日均客户信息调用数</h3>
+            <h3 className="f18 bold">{stateProps?.dataCodeTitle}</h3>
             <Divider
               type="vertical"
               style={{

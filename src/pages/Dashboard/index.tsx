@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getDashboardData } from 'src/apis/dashboard';
-import { useDocumentTitle } from 'src/utils/base';
+import { exportFile, throttle, useDocumentTitle } from 'src/utils/base';
 import { groupArr } from 'src/utils/tools';
 import { DataItem } from './components/DataItem/DataItem';
 import { CodeListType, dataCodeList } from './List/config';
@@ -27,6 +27,16 @@ const Dashboard: React.FC<RouteComponentProps> = ({ history }) => {
   const navigateToDetail = (path: string) => {
     history.push(`dashboardList/${path}`);
   };
+
+  const download = throttle(async () => {
+    const { data } = await getDashboardData(
+      { queryType: 2 },
+      {
+        responseType: 'blob'
+      }
+    );
+    exportFile(data, '整体看板');
+  }, 500);
   return (
     <div className="container">
       {groupArr(dataSource!, 2)?.map((codes: CodeListType, index) => {
@@ -45,7 +55,7 @@ const Dashboard: React.FC<RouteComponentProps> = ({ history }) => {
       })}
 
       <div className="flex justify-center mt40">
-        <Button type="primary" shape="round" className={styles.confirmBtn}>
+        <Button type="primary" shape="round" className={styles.confirmBtn} onClick={download}>
           下载
         </Button>
       </div>

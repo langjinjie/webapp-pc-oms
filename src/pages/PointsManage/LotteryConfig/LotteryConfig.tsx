@@ -11,6 +11,12 @@ import { editActivityConfig, queryActivityConfig } from 'src/apis/pointsMall';
 import style from './style.module.less';
 import classNames from 'classnames';
 
+enum GoodsTypes {
+  '大奖' = 1,
+  '红包类',
+  '空气',
+  '物流类'
+}
 export interface PrizeItem {
   goodsId: string;
   name: string;
@@ -33,7 +39,7 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
   const columns: TableColumnType<PrizeItem>[] = [
     {
       title: '奖品序号',
-      width: '80',
+      width: 100,
       render: (_, r, index) => index + 1
     },
     {
@@ -56,6 +62,12 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
       render: (text: string) => <Image style={{ width: 44 }} src={text} alt="" />
     },
     {
+      width: 100,
+      title: '奖品类型',
+      dataIndex: 'goodsType',
+      render: (text: number) => <span>{GoodsTypes[text]}</span>
+    },
+    {
       title: '奖品库存',
       dataIndex: 'totalStock'
     },
@@ -66,7 +78,7 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
     {
       title: '中奖概率百分比',
       dataIndex: 'winWeight',
-      width: 100
+      width: 150
     },
     {
       title: '兑换流程说明',
@@ -80,6 +92,8 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
     {
       title: '操作',
       dataIndex: 'activityId',
+      width: 80,
+      fixed: 'right',
       render: (text: string, record) =>
         formValues.status < 3
           ? (
