@@ -42,6 +42,7 @@ const ActivityEdit: React.FC<ActivityEditProps> = ({ visible, onClose, onOk, typ
     if (data?.activityId) {
       param.activityId = data?.activityId;
     }
+    console.log('a');
     const res: any = await editActivity(param);
     if (res) {
       message.success(`${title}成功`);

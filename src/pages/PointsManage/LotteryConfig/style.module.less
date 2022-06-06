@@ -9,7 +9,6 @@
   .addBtn {
     margin-bottom: 30px;
     padding: 0 28px;
-    line-height: 40px;
   }
 
   .mb30 {
@@ -47,4 +46,61 @@
 
 .lotteryConfig {
   padding: 30px;
+}
+
+.panelTitle {
+  font-weight: 500;
+  color: #111;
+  font-size: 16px;
+  line-height: 16px;
+  margin-top: 30px;
+  &::before {
+    content: '';
+    display: block;
+    float: left;
+    margin-right: 6px;
+    width: 6px;
+    height: 16px;
+    background: #318cf5;
+  }
+}
+
+.configEdit {
+  :global {
+    .ant-form-item-label {
+      width: auto;
+      margin-right: 0;
+    }
+    .ant-form-item-extra {
+      margin-right: 30px;
+    }
+  }
+}
+
+.ruleInfo {
+  color: #999aa1;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.prizeType {
+  display: inline-block;
+  margin-left: 15px;
+  width: 24px;
+  width: 36px;
+  height: 18px;
+  border-radius: 9px;
+  text-align: center;
+  line-height: 18px;
+  color: #ddb100;
+  font-size: 12px;
+  background-color: #fbefd6;
+}
+
+.goodsName {
+  display: block;
+  float: left;
+  margin-top: 4px;
+  line-height: 1;
+  max-width: 100px;
 }
