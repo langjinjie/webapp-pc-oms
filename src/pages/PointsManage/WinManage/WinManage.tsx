@@ -55,14 +55,13 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
   };
   // 获取列表
   const getList = async () => {
+    console.log('searchParam', searchParam);
     const res = await requestGetLotteryManageList({ ...searchParam, ...paginationParam });
     setLoading(true);
     if (res) {
-      setTimeout(() => {
-        setList(res);
-        setLoading(false);
-      }, 1000);
+      setList(res);
     }
+    setLoading(false);
   };
   // 搜索
   const onFinish = (values: { [key: string]: any }) => {
@@ -108,16 +107,20 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
     });
   };
   useEffect(() => {
+    getList();
+  }, [paginationParam]);
+  useEffect(() => {
     const { activityName } = URLSearchParams(location.search) as { activityName: string };
     if (activityName) {
       form.setFieldsValue({ activityName });
       setSearchParam({ activityName });
-      setPaginationParam((param) => ({ ...param }));
+      setTimeout(() => {
+        // 带activityName的请求有时候会比不带activityName先返回
+        setPaginationParam((param) => ({ ...param }));
+      }, 100);
     }
   }, []);
-  useEffect(() => {
-    getList();
-  }, [paginationParam]);
+
   return (
     <div className={style.wrap}>
       <Button className={style.exportData} type="primary" onClick={downLoadStaffList}>
