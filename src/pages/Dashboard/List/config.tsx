@@ -70,7 +70,7 @@ export const tableColumns = ({ toDetailPage, titleList }: tableOperations): Colu
       fixed: 'right',
       align: 'center',
       render: (text: string, record) => {
-        const { data1 = 1, data2 = 4, data3 = 8, data4 = 15, data5 = 15, data6 = 0 } = record;
+        const { data1 = 0, data2 = 0, data3 = 0, data4 = 0, data5 = 0, data6 = 0 } = record;
         return (
           <div className="cursor" onClick={() => toDetailPage(record)}>
             <SmallLineChart width="96px" data={[data6, data5, data4, data3, data2, data1]} key={record.id} />
