@@ -38,7 +38,9 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
       const subMenus = menus[currentMenuIndex].children || [];
       setMenuIndex(currentMenuIndex);
       setSubMenus(subMenus);
-      const subIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(currentMenu));
+
+      // 根据路径来判断当前页面的按钮
+      const subIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(location.pathname));
       const btnList: MenuItem[] = subMenus[subIndex].children || [];
       setBtnList(btnList.map((item) => item.path));
     }

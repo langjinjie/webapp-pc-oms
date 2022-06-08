@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getDashboardData } from 'src/apis/dashboard';
+import { AuthBtn } from 'src/components';
 import { exportFile, throttle, useDocumentTitle } from 'src/utils/base';
 import { groupArr } from 'src/utils/tools';
 import { DataItem } from './components/DataItem/DataItem';
@@ -49,9 +50,11 @@ const Dashboard: React.FC<RouteComponentProps> = ({ history }) => {
 
       <div className="flex justify-center mt40">
         {dataSource.length > 0 && (
-          <Button type="primary" shape="round" className={styles.confirmBtn} onClick={() => download()}>
-            下载
-          </Button>
+          <AuthBtn path="/export">
+            <Button type="primary" shape="round" className={styles.confirmBtn} onClick={() => download()}>
+              下载
+            </Button>
+          </AuthBtn>
         )}
       </div>
     </div>

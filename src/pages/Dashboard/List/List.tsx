@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { NgTable } from 'src/components';
+import { AuthBtn, NgTable } from 'src/components';
 import { dataCodeList, ItemProps, tableColumns } from './config';
 import { Button, Divider, Pagination, PaginationProps, Radio, Select, Tabs } from 'antd';
 
@@ -196,9 +196,11 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
           </div>
 
           <div className="flex justify-center mt40">
-            <Button type="primary" shape="round" className={styles.confirmBtn} onClick={() => download()}>
-              下载
-            </Button>
+            <AuthBtn path="/export">
+              <Button type="primary" shape="round" className={styles.confirmBtn} onClick={() => download()}>
+                下载
+              </Button>
+            </AuthBtn>
           </div>
         </div>
       </div>
