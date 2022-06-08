@@ -130,19 +130,26 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
     getActivityConfig();
   }, []);
 
-  const onPressEnter: React.KeyboardEventHandler<HTMLInputElement> = () => {
-    lotteryConfigForm
-      .validateFields()
-      .then(async () => {
-        const values = lotteryConfigForm.getFieldsValue();
-        const res = await editActivityConfig({ ...values, activityId });
-        if (res) {
-          message.success('配置成功');
-        }
-      })
-      .catch(() => {
-        message.error('请配置正确后再提交');
-      });
+  // const onPressEnter: React.KeyboardEventHandler<HTMLInputElement> = () => {
+  //   lotteryConfigForm
+  //     .validateFields()
+  //     .then(async () => {
+  //       const values = lotteryConfigForm.getFieldsValue();
+  //       const res = await editActivityConfig({ ...values, activityId });
+  //       if (res) {
+  //         message.success('配置成功');
+  //       }
+  //     })
+  //     .catch(() => {
+  //       message.error('请配置正确后再提交');
+  //     });
+  // };
+
+  const onFinish = async (values: any) => {
+    const res = await editActivityConfig({ ...values, activityId });
+    if (res) {
+      message.success('配置成功');
+    }
   };
 
   return (
@@ -151,27 +158,46 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
       <PanelTitle title="奖品配置" />
       <NgTable style={{ marginTop: 20 }} rowKey="goodsId" columns={columns} dataSource={prizeList} />
 
-      <Form className={classNames('edit', style.configEdit)} form={lotteryConfigForm} initialValues={formValues}>
+      <Form
+        className={classNames('edit', style.configEdit)}
+        onFinish={onFinish}
+        form={lotteryConfigForm}
+        initialValues={formValues}
+      >
         <PanelTitle title="抽奖消耗积分配置" className="margin-bottom20" />
-        <Form.Item
-          label="抽奖积分"
-          extra="积分/次"
-          rules={[{ required: true }]}
-          name="costPoints"
-          className="customExtra"
-        >
-          <InputNumber
-            style={{ width: '120px' }}
-            controls={false}
-            disabled={formValues.status >= 3}
-            onPressEnter={onPressEnter}
-          />
-        </Form.Item>
+        <div className="flex">
+          <Form.Item
+            label="抽奖积分"
+            extra="积分/次"
+            rules={[{ required: true }]}
+            name="costPoints"
+            className="customExtra"
+          >
+            <InputNumber
+              style={{ width: '120px' }}
+              controls={false}
+              disabled={formValues.status >= 3}
+              // onPressEnter={onPressEnter}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              htmlType="submit"
+              style={{ width: '90px' }}
+              shape="round"
+              disabled={formValues.status >= 3}
+              type="primary"
+            >
+              确定
+            </Button>
+          </Form.Item>
+        </div>
         <PanelTitle title="中奖限制配置" className="margin-bottom20" />
         <div className="flex">
           <Form.Item label="限制每月" extra="次" name="monthLimit" className="customExtra">
             <InputNumber
-              onPressEnter={onPressEnter}
+              // onPressEnter={onPressEnter}
               controls={false}
               style={{ width: '70px' }}
               disabled={formValues.status >= 3}
@@ -179,7 +205,7 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
           </Form.Item>
           <Form.Item label="限制每周" extra="次" name="weekLimit" className="customExtra">
             <InputNumber
-              onPressEnter={onPressEnter}
+              // onPressEnter={onPressEnter}
               controls={false}
               style={{ width: '70px' }}
               disabled={formValues.status >= 3}
@@ -187,11 +213,22 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
           </Form.Item>
           <Form.Item label="限制每日" extra="次" name="dayLimit" className="customExtra">
             <InputNumber
-              onPressEnter={onPressEnter}
+              // onPressEnter={onPressEnter}
               controls={false}
               style={{ width: '70px' }}
               disabled={formValues.status >= 3}
             />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              style={{ width: '90px' }}
+              htmlType="submit"
+              shape="round"
+              disabled={formValues.status >= 3}
+              type="primary"
+            >
+              确定
+            </Button>
           </Form.Item>
         </div>
       </Form>
