@@ -16,11 +16,8 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState<{ total: Number; list: any[] }>({ total: 0, list: [] });
   const [searchParam, setSearchParam] = useState<{ [key: string]: any }>({});
-  const [modalParam, setModalParam] = useState<{ visible: boolean; address: string; winName?: string; winId: string }>({
-    visible: false,
-    address: '',
-    winId: ''
-  });
+  const [addresModalVisible, setAddresModalVisible] = useState(false);
+  const [sendWinInfo, setSendWinInfo] = useState<{ winId: string; name: string; goodsType: number }>();
   const [paginationParam, setPaginationParam] = useState<{ pageNum: number; pageSize: number }>({
     pageNum: 1,
     pageSize: 10
@@ -55,9 +52,14 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
   };
   // 获取列表
   const getList = async () => {
-    console.log('searchParam', searchParam);
-    const res = await requestGetLotteryManageList({ ...searchParam, ...paginationParam });
     setLoading(true);
+    const { activityName } = URLSearchParams(location.search) as { activityName: string };
+    const param: { [key: string]: any } = { ...searchParam, ...paginationParam };
+    if (activityName) {
+      param.activityName = activityName;
+      form.setFieldsValue({ activityName });
+    }
+    const res = await requestGetLotteryManageList(param);
     if (res) {
       setList(res);
     }
@@ -82,10 +84,11 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
     setPaginationParam({ pageNum: 1, pageSize: 10 });
   };
   const onCancel = () => {
-    setModalParam((param) => ({ ...param, visible: false }));
+    setAddresModalVisible(false);
   };
-  const onOk = () => {
-    const { winId } = modalParam;
+  const onOk = async () => {
+    await modalForm.validateFields();
+    const { winId } = sendWinInfo || {};
     const confirmOnOk = async () => {
       const res = await requestSendLotteryManage({ winId, ...modalForm.getFieldsValue() });
       if (res) {
@@ -98,7 +101,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
     };
     setConfirmModalParam({
       title: '奖品发放提醒',
-      tips: '是否确认发放 <b>' + modalParam.winName + '</b> 奖品？',
+      tips: '是否确认发放 <b>' + sendWinInfo?.name + '</b> 奖品？',
       visible: true,
       okText: '确认发放',
       onOk () {
@@ -106,20 +109,37 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
       }
     });
   };
+  // 发放非物流类奖品
+  const sendPrizeHandle = (param: { winId: string; name: string }) => {
+    const { winId, name } = param;
+    const confirmOnOk = async () => {
+      const res = await requestSendLotteryManage({ winId });
+      if (res) {
+        onCancel();
+        setConfirmModalParam((param) => ({ ...param, visible: false }));
+        // 刷新列表
+        setPaginationParam((param) => ({ ...param }));
+      }
+    };
+    setConfirmModalParam({
+      title: '奖品发放提醒',
+      tips: '是否确认发放 <b>' + name + '</b> 奖品？',
+      visible: true,
+      okText: '确认发放',
+      onOk () {
+        confirmOnOk();
+      }
+    });
+  };
+  // tableColumnsOnChange
+  const tableColumnsOnChange = (value: any) => {
+    setSendWinInfo(value);
+    modalForm.setFieldsValue({ deliverAddress: value.deliverAddress });
+    setAddresModalVisible(true);
+  };
   useEffect(() => {
     getList();
   }, [paginationParam]);
-  useEffect(() => {
-    const { activityName } = URLSearchParams(location.search) as { activityName: string };
-    if (activityName) {
-      form.setFieldsValue({ activityName });
-      setSearchParam({ activityName });
-      setTimeout(() => {
-        // 带activityName的请求有时候会比不带activityName先返回
-        setPaginationParam((param) => ({ ...param }));
-      }, 100);
-    }
-  }, []);
 
   return (
     <div className={style.wrap}>
@@ -167,7 +187,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
       <NgTable
         className={style.table}
         dataSource={list.list}
-        columns={TableColumns(setModalParam)}
+        columns={TableColumns(tableColumnsOnChange, sendPrizeHandle)}
         setRowKey={(record) => record.winId}
         loading={loading}
         scroll={{ x: 'max-content' }}
@@ -179,18 +199,23 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
         className={style.modalWrap}
         title="奖品发放提醒"
         okText="确认发放"
-        visible={modalParam.visible}
+        visible={addresModalVisible}
         onOk={onOk}
         onCancel={onCancel}
+        destroyOnClose
       >
         <Form className={style.form} form={modalForm}>
-          <Item className={style.formItem} name="deliverCompany">
+          <Item
+            className={style.formItem}
+            name="deliverCompany"
+            rules={[{ required: sendWinInfo?.goodsType === 4, message: '请输入物流公司' }]}
+          >
             <Input className={style.input} placeholder="请输入物流公司" />
           </Item>
-          <Item name="deliverCode">
+          <Item name="deliverCode" rules={[{ required: sendWinInfo?.goodsType === 4, message: '请输入物流单号' }]}>
             <Input className={style.input} placeholder="请输入物流单号" />
           </Item>
-          <Item name="deliverAddress" initialValue={modalParam.address}>
+          <Item name="deliverAddress" rules={[{ required: sendWinInfo?.goodsType === 4, message: '请输入收货地址' }]}>
             <TextArea className={style.textArea} placeholder="请输入收货地址" />
           </Item>
         </Form>
