@@ -27,9 +27,9 @@ export const DataItem: React.FC<DataItemProps> = ({ onClick, data }) => {
         </dt>
         <dd className="bold font18 mt12">{title}</dd>
       </dl>
-      <div className={styles.bigNum}> {numFormat(data?.totalCount || 100001)}</div>
+      <div className={styles.bigNum}> {numFormat(data?.totalCount || 0)}</div>
       <dl className="flex vertical align-center">
-        <dt className="f28 italic">{data?.monthDayAvg}</dt>
+        <dt className="f28 italic">{data?.monthDayAvg || 0}</dt>
         <dd className="color-text-regular font16 mt16">本月日人均</dd>
       </dl>
       <dl className="mr30 flex vertical align-center">

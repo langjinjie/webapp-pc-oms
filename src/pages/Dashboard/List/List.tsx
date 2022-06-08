@@ -92,15 +92,14 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
     const item = current.children.filter((item) => item.key === id)[0];
     setCurrentCode(current);
     setCurrentItem(item);
-    getList({ dataCode: id });
+    getList({ dataCode: id, PageNum: 1 });
     getTotal({ dataCode: id });
     setFilterData({
       businessModel: '',
       dayType: 2,
       dataCode: id
     });
-    setPagination((pagination) => ({ ...pagination, current: 1 }));
-  }, [match]);
+  }, [match.params.id]);
 
   // 模式切换时
   const handleModelChange = (value: string) => {
@@ -126,6 +125,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
 
   const onPaginationChange = (pageNum: number) => {
     setPagination((pagination) => ({ ...pagination, current: pageNum }));
+    getList({ pageNum });
   };
 
   // 下载表格

@@ -6,7 +6,7 @@ import { getDashboardData } from 'src/apis/dashboard';
 import { exportFile, throttle, useDocumentTitle } from 'src/utils/base';
 import { groupArr } from 'src/utils/tools';
 import { DataItem } from './components/DataItem/DataItem';
-import { CodeListType, dataCodeList } from './List/config';
+import { CodeListType } from './List/config';
 
 import styles from './style.module.less';
 
@@ -18,10 +18,8 @@ const Dashboard: React.FC<RouteComponentProps> = ({ history }) => {
     if (res) {
       setDataSource(res);
     }
-    console.log(res);
   };
   useEffect(() => {
-    setDataSource(dataCodeList);
     getData();
   }, []);
   const navigateToDetail = (path: string) => {
@@ -50,9 +48,11 @@ const Dashboard: React.FC<RouteComponentProps> = ({ history }) => {
       })}
 
       <div className="flex justify-center mt40">
-        <Button type="primary" shape="round" className={styles.confirmBtn} onClick={() => download()}>
-          下载
-        </Button>
+        {dataSource.length > 0 && (
+          <Button type="primary" shape="round" className={styles.confirmBtn} onClick={() => download()}>
+            下载
+          </Button>
+        )}
       </div>
     </div>
   );
