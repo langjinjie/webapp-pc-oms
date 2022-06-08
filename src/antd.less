@@ -130,6 +130,9 @@
   .ant-form-item-label {
     width: 119px;
     margin-right: 20px;
+    > label {
+      color: #111111;
+    }
   }
 
   .ant-select-multiple {
@@ -161,6 +164,31 @@
 
   .ant-input-number {
     border-radius: 16px;
+  }
+
+  .customExtra {
+    position: relative;
+    &.ant-form-item-with-help {
+      margin-bottom: 24px;
+    }
+    .ant-form-item-control-input {
+      display: inline-block;
+      flex: none;
+    }
+    .ant-form-item-control {
+      flex-direction: row;
+      align-items: center;
+    }
+    .ant-form-item-extra {
+      display: inline-block;
+      color: #111111;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    .ant-form-item-explain {
+      position: absolute;
+      top: 32px;
+    }
   }
 }
 

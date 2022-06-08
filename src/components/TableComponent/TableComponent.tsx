@@ -10,7 +10,7 @@ export interface PaginationProps {
 }
 interface TableComponentProps<T> extends TableProps<T> {
   className?: string;
-  loading: boolean;
+  loading?: boolean;
   columns: any;
   pagination?: TablePaginationConfig;
   paginationChange?: (pageNum: number, pageSize?: number) => void;

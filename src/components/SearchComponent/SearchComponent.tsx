@@ -90,7 +90,6 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
   const handleFinish = (values: any) => {
     // const {} = values;
     const rangePickerName = searchCols.filter((col) => col.type === 'rangePicker')[0]?.name;
-    console.log(rangePickerName);
     if (rangePickerName) {
       const rangePickerData: [Moment, Moment] = values[rangePickerName];
       if (rangePickerData?.length > 0) {

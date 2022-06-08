@@ -1,0 +1,66 @@
+.wrap {
+  padding: 30px;
+  .exportData {
+    width: 140px;
+    height: 36px;
+    border-radius: 18px;
+  }
+  .form {
+    margin-top: 30px;
+    .formSpace {
+      width: 100%;
+    }
+    .formSpace + .formSpace {
+      margin-top: 14px;
+    }
+    .submitBtn,
+    .resetBtn {
+      width: 88px;
+      height: 36px;
+      border-radius: 20px;
+    }
+  }
+  .table {
+    margin-top: 30px;
+    // config样式
+    .sendWin {
+      font-size: 14px;
+      font-weight: 400;
+      color: #318cf5;
+      line-height: 65px;
+      cursor: pointer;
+      &.sended {
+        cursor: not-allowed;
+      }
+    }
+    .status {
+      &::before {
+        content: ' ';
+        display: inline-block;
+        margin-right: 8px;
+        width: 8px;
+        height: 8px;
+        background-color: #ccccd0;
+        border-radius: 50%;
+      }
+      &.sended::before {
+        background-color: #33cdb8;
+      }
+    }
+  }
+}
+// Modal样式
+.modalWrap {
+  width: 360px !important;
+  .form {
+    margin: 0 auto;
+    width: 290px;
+    .input,
+    .textArea {
+      width: 290px;
+    }
+    .textArea {
+      min-height: 68px;
+    }
+  }
+}

@@ -1,0 +1,75 @@
+.confirmBtn {
+  height: 40px;
+  width: 112px;
+}
+
+.contentWrap {
+  background: #ffffff;
+  box-shadow: 2px 0px 16px 0px rgba(129, 141, 168, 0.2);
+  border-radius: 20px;
+
+  .header {
+    height: 84px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    .smallTipBtn {
+      height: 28px;
+      padding: 0;
+      width: 112px;
+      border-radius: 8px;
+    }
+  }
+}
+
+.addFriend {
+  :global {
+    .trHighlight {
+      background: #ffffff;
+      box-shadow: 2px 0px 16px 0px rgba(129, 141, 168, 0.2);
+      color: #318cf5;
+    }
+    .borderLeft {
+      border-left: 1px solid #e8e8e8;
+    }
+    .ant-tabs-nav-wrap {
+      padding-left: 20px;
+    }
+    .ant-tabs-nav-list {
+      height: 64px;
+
+      .ant-tabs-tab {
+        font-size: 16px;
+        padding: 0 10px;
+        font-weight: 500;
+        color: #111111;
+      }
+    }
+
+    .ant-radio-button-wrapper:first-child {
+      border-radius: 8px 0px 0px 8px;
+    }
+    .ant-radio-button-wrapper:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+    .ant-radio-group-middle {
+      .ant-radio-button-wrapper {
+        height: 28px;
+        line-height: 26px;
+        color: #7e8185;
+      }
+      .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+        color: #318cf5;
+      }
+    }
+  }
+}
+
+.isSingle {
+  width: 50%;
+  padding-right: 15px;
+}
+.paginationWrap {
+  float: right;
+  text-align: right;
+  margin: 20px 0;
+}
