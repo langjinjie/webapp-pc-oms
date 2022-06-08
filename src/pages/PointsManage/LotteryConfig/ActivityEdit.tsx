@@ -73,10 +73,10 @@ const ActivityEdit: React.FC<ActivityEditProps> = ({ visible, onClose, onOk, typ
           label="活动名称"
           rules={[
             { required: true, message: '请输入活动名称' },
-            { max: 10, message: '活动名称最多10个字符' }
+            { max: 10, message: '活动名称最多20个字符' }
           ]}
         >
-          <Input placeholder="请输入活动名称" maxLength={11} allowClear />
+          <Input placeholder="请输入活动名称" maxLength={21} allowClear />
         </Item>
         <Item name="time" label="活动时间" rules={[{ required: true, message: '请选择活动时间' }]}>
           <RangePicker

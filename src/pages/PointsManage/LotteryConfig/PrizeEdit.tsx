@@ -74,8 +74,18 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
         wrapperCol={{ span: 14 }}
         onFinish={(values) => onFinish(values)}
       >
-        <Form.Item label="奖品名称" name="name" rules={[{ required: true, message: '请输入奖品名称' }]}>
-          <Input placeholder="请输入" className="width420" maxLength={100} />
+        <Form.Item
+          label="奖品名称"
+          name="name"
+          rules={[
+            { required: true, message: '请输入奖品名称' },
+            {
+              max: 10,
+              message: '奖品名称最多10个字符'
+            }
+          ]}
+        >
+          <Input placeholder="请输入" className="width420" maxLength={11} />
         </Form.Item>
         <Form.Item
           rules={[{ required: true }]}
