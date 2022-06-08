@@ -1,23 +1,25 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { PaginationProps } from 'antd';
 import { UNKNOWN } from 'src/utils/base';
+import { AuthBtn } from 'src/components';
 import style from './style.module.less';
 import classNames from 'classnames';
-import { AuthBtn } from 'src/components';
 
-const TableColumns: (
-  setModalVisible: Dispatch<SetStateAction<{ visible: boolean; address: string; winName?: string; winId: string }>>
-) => ColumnsType<any> = (setModalVisible) => {
+const TableColumns: (onChange?: (param?: any) => any, onOk?: (param?: any) => any) => ColumnsType<any> = (
+  onChange,
+  onOk
+) => {
   // 发放奖品
   const sendWin = (row: any) => {
+    const { winId, name, deliverAddress, correctAddress, goodsType } = row;
     if (row.sendStatus) return;
-    setModalVisible({
-      address: row.correctAddress || row.deliverAddress,
-      visible: true,
-      winName: row.name,
-      winId: row.winId
-    });
+    if ([1, 4].includes(row.goodsType)) {
+      // 1: 大奖 4：物流类商品
+      onChange?.({ winId, name, deliverAddress: correctAddress || deliverAddress, goodsType });
+    } else {
+      onOk?.({ winId, name });
+    }
   };
   return [
     { title: '客户经理姓名', dataIndex: 'staffName' },
