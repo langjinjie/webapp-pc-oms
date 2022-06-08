@@ -43,19 +43,14 @@ const Dashboard: React.FC<RouteComponentProps> = ({ history }) => {
         return (
           <div className={classNames('flex', { [styles.isSingle]: codes.length === 1 })} key={index}>
             {codes?.map((code, index) => (
-              <DataItem
-                data={code}
-                onClick={() => navigateToDetail(code.dataCode!)}
-                dataCodeImg={require('../../assets/images/icon_dateboard.png')}
-                key={code.dataCode + '' + index}
-              />
+              <DataItem data={code} onClick={() => navigateToDetail(code.dataCode!)} key={code.dataCode + '' + index} />
             ))}
           </div>
         );
       })}
 
       <div className="flex justify-center mt40">
-        <Button type="primary" shape="round" className={styles.confirmBtn} onClick={download}>
+        <Button type="primary" shape="round" className={styles.confirmBtn} onClick={() => download()}>
           下载
         </Button>
       </div>

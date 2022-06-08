@@ -9,7 +9,6 @@ import { Image } from 'antd';
 interface DataItemProps {
   path?: string;
   onClick: () => void;
-  dataCodeImg: string;
   data?: { key: string; title: string; children?: any[]; [prop: string]: any };
 }
 export const DataItem: React.FC<DataItemProps> = ({ onClick, data }) => {
@@ -43,7 +42,7 @@ export const DataItem: React.FC<DataItemProps> = ({ onClick, data }) => {
             <Icon className={classNames(styles.contrastArrow, 'f24')} name="icon_common_12_Drop" />
               )}
 
-          <span className="italic">{Math.abs(data?.dataMOM)} %</span>
+          <span className="italic">{Math.abs(data?.dataMOM || 0)} %</span>
         </dt>
         <dd className="color-text-regular font16 mt16">环比上月</dd>
       </dl>

@@ -193,11 +193,11 @@ export const dataCodeList: CodeListType = [
     ]
   },
   {
-    key: 'avg_speechsend_count',
+    key: 'avg_speech_count',
     title: '我的收藏',
     children: [
       {
-        key: 'avg_speechsend_count',
+        key: 'avg_speech_count',
         title: '我的收藏',
         subTitle: '日人均我的收藏调用数'
       }

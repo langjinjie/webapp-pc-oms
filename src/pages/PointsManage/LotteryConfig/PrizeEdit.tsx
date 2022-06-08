@@ -10,7 +10,7 @@ import { BreadCrumbs } from 'src/components';
 import style from './style.module.less';
 import NgUpload from 'src/pages/Marketing/Components/Upload/Upload';
 import { RouteComponentProps } from 'react-router-dom';
-import { editPrize, queryPrizeDetail } from 'src/apis/pointsMall';
+import { editPrize, getGoodsExchangeDesc, queryPrizeDetail } from 'src/apis/pointsMall';
 import { PrizeItem } from './LotteryConfig';
 import { throttle } from 'src/utils/base';
 
@@ -21,16 +21,21 @@ interface State {
 const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, history }) => {
   const [editForm] = Form.useForm();
   const [detail, setDetail] = useState<PrizeItem>();
+  const [exchangeDesc, setExchangeDesc] = useState<{ goodsType: number; exchangeDesc: string }[]>([]);
   const getDetail = async (goodsId: string) => {
     const res = await queryPrizeDetail({ goodsId });
-    console.log(res);
     setDetail(res || {});
     editForm.setFieldsValue(res);
+  };
+  const getExchangeDesc = async () => {
+    const res = (await getGoodsExchangeDesc({})) || [];
+    setExchangeDesc(res);
   };
   useEffect(() => {
     const { goodsId } = location.state;
     if (goodsId) {
       getDetail(goodsId);
+      getExchangeDesc();
     }
   }, []);
 
@@ -49,8 +54,16 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
       message.success('编辑成功');
       history.goBack();
     }
-    console.log(res);
   }, 500);
+  const onGoodsTypeChange = async (value: number) => {
+    const currentDesc = exchangeDesc.filter((desc) => desc.goodsType === value)[0].exchangeDesc;
+    editForm.setFieldsValue({
+      exchangeDesc: currentDesc,
+      winWeight: '',
+      totalStock: ''
+    });
+    setDetail((detail) => ({ ...detail!, goodsType: value }));
+  };
   return (
     <div className={classNames(style.prizeEdit, 'container')}>
       <BreadCrumbs navList={[{ name: '抽奖配置' }, { name: '奖品配置' }, { name: '奖品编辑' }]} />
@@ -72,8 +85,8 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
         >
           <NgUpload showDeleteBtn></NgUpload>
         </Form.Item>
-        <Form.Item label="奖品类型" name={'goodsType'}>
-          <Select className="width240" disabled={detail?.goodsType === 1}>
+        <Form.Item label="奖品类型" name={'goodsType'} rules={[{ required: true }]}>
+          <Select className="width240" disabled={detail?.goodsType === 1} onChange={onGoodsTypeChange}>
             <Select.Option value={1} disabled>
               大奖
             </Select.Option>
