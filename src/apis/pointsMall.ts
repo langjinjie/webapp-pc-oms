@@ -113,7 +113,7 @@ export const editActivity: HttpFunction = (param: Object) => {
  * @param param
  */
 export const giveOutPrize: HttpFunction = (param: Object) => {
-  return http.post('/tenacity-admin/api/lottery/rest/prize/phone/send', param);
+  return http.post('/tenacity-admin/api/lottery/prize/phone/send', param);
 };
 
 /**
@@ -172,4 +172,11 @@ export const requestExportLotteryManage: HttpFunction = (param) => {
  */
 export const requestSendLotteryManage: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/lottery/manage/send', param);
+};
+/**
+ * 发放奖品接口
+ * @param param
+ */
+export const getGoodsExchangeDesc: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/lottery/goods/defaultExchangeDesc', param);
 };

@@ -1,13 +1,13 @@
 import http from 'src/utils/http';
-type HttpFC<T = { [key: string]: unknown }> = (param?: T) => Promise<any>;
+type HttpFC<T = { [key: string]: unknown }> = (param?: T, config?: any) => Promise<any>;
 
 /**
  * @description 获取看板整体数据
  * @param param param
  * @returns Promise<any>
  */
-export const getDashboardData: HttpFC = (param) => {
-  return http.post('/tenacity-admin/api/data/bi/generalView', param);
+export const getDashboardData: HttpFC = (param, config) => {
+  return http.post('/tenacity-admin/api/data/bi/generalView', param, config);
 };
 
 /**
@@ -15,8 +15,8 @@ export const getDashboardData: HttpFC = (param) => {
  * @param param param
  * @returns Promise<any>
  */
-export const getDashboardItemData: HttpFC = (param) => {
-  return http.post('/tenacity-admin/api/data/bi/whole/list', param);
+export const getDashboardItemData: HttpFC = (param, config) => {
+  return http.post('/tenacity-admin/api/data/bi/whole/list', param, config);
 };
 /**
  * @description 获取看单项数据列表

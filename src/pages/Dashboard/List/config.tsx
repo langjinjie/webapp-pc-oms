@@ -70,10 +70,10 @@ export const tableColumns = ({ toDetailPage, titleList }: tableOperations): Colu
       fixed: 'right',
       align: 'center',
       render: (text: string, record) => {
-        const { data1 = 1, data2 = 4, data3 = 8, data4 = 15, data5 = 15, data6 = 0 } = record;
+        const { data1 = 0, data2 = 0, data3 = 0, data4 = 0, data5 = 0, data6 = 0 } = record;
         return (
           <div className="cursor" onClick={() => toDetailPage(record)}>
-            <SmallLineChart width="96px" data={[data1, data2, data3, data4, data5, data6]} key={record.id} />
+            <SmallLineChart width="96px" data={[data6, data5, data4, data3, data2, data1]} key={record.id} />
           </div>
         );
       }
@@ -193,11 +193,11 @@ export const dataCodeList: CodeListType = [
     ]
   },
   {
-    key: 'avg_speechsend_count',
+    key: 'avg_speech_count',
     title: '我的收藏',
     children: [
       {
-        key: 'avg_speechsend_count',
+        key: 'avg_speech_count',
         title: '我的收藏',
         subTitle: '日人均我的收藏调用数'
       }
@@ -226,3 +226,9 @@ export const dataCodeList: CodeListType = [
     ]
   }
 ];
+
+export enum TimeTypes {
+  '最近30天' = 1,
+  '最近6周' = 2,
+  '最近6月' = 3
+}

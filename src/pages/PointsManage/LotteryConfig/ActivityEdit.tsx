@@ -36,8 +36,8 @@ const ActivityEdit: React.FC<ActivityEditProps> = ({ visible, onClose, onOk, typ
     const { activityName, time } = values;
     const param: any = {
       activityName,
-      startTime: time[0].format('YYYY-MM-DD HH:mm:ss'),
-      endTime: time[1].format('YYYY-MM-DD HH:mm:ss')
+      startTime: time[0].format('YYYY-MM-DD HH:mm'),
+      endTime: time[1].format('YYYY-MM-DD HH:mm')
     };
     if (data?.activityId) {
       param.activityId = data?.activityId;
@@ -75,7 +75,7 @@ const ActivityEdit: React.FC<ActivityEditProps> = ({ visible, onClose, onOk, typ
           <RangePicker
             disabledDate={(date: Moment) => date && date < moment().startOf('day')}
             showTime
-            format="YYYY-MM-DD HH:mm:ss"
+            format="YYYY-MM-DD HH:mm"
           />
         </Item>
       </Form>

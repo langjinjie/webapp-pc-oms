@@ -7,6 +7,7 @@ import { Button, Divider, Pagination, PaginationProps, Radio, Select, Tabs } fro
 
 import styles from '../style.module.less';
 import { getDashboardItemData, getListTotal, getModelList } from 'src/apis/dashboard';
+import { exportFile, throttle } from 'src/utils/base';
 interface ModalProps {
   businessModel: string;
   staffNum: number;
@@ -44,7 +45,8 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
       leaderName: record.leaderName,
       leaderId: record.leaderId,
       ...filterData,
-      businessModel: record.businessModel
+      businessModel: record.businessModel,
+      dataCodeTitle: currentItem?.subTitle
     });
   };
   const getTotal = async (params: any) => {
@@ -66,7 +68,10 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
     });
     if (res) {
       let { titleList, list, total } = res;
-      titleList = titleList.map((item: string, index: number) => ({ key: 'data' + (index + 1), label: item }));
+      titleList = titleList.map((item: string, index: number) => ({
+        key: 'data' + (titleList.length - index),
+        label: item
+      }));
       setTitleList(titleList);
       setPagination((pagination) => ({ ...pagination, current: pageNum, total }));
       setDataSource(list);
@@ -74,7 +79,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   };
 
   const getModels = async () => {
-    const res = await getModelList({});
+    const res = (await getModelList({})) || [];
     setModelList(res);
   };
   useEffect(() => {
@@ -87,15 +92,14 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
     const item = current.children.filter((item) => item.key === id)[0];
     setCurrentCode(current);
     setCurrentItem(item);
-    getList({ dataCode: id });
+    getList({ dataCode: id, PageNum: 1 });
     getTotal({ dataCode: id });
     setFilterData({
       businessModel: '',
       dayType: 2,
       dataCode: id
     });
-    setPagination((pagination) => ({ ...pagination, current: 1 }));
-  }, [match]);
+  }, [match.params.id]);
 
   // 模式切换时
   const handleModelChange = (value: string) => {
@@ -121,7 +125,19 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
 
   const onPaginationChange = (pageNum: number) => {
     setPagination((pagination) => ({ ...pagination, current: pageNum }));
+    getList({ pageNum });
   };
+
+  // 下载表格
+  const download = throttle(async () => {
+    const { data } = await getDashboardItemData(
+      { queryType: 2, ...filterData },
+      {
+        responseType: 'blob'
+      }
+    );
+    exportFile(data, currentItem?.title || '');
+  }, 500);
 
   return (
     <div className={classNames(styles.addFriend)}>
@@ -145,6 +161,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
               <span className="f16 text-primary">全部团队</span>
             </div>
             <Radio.Group value={filterData.dayType} size="middle" onChange={(e) => onDayTypeChange(e.target.value)}>
+              {/* <Radio.Button value={1}>最近30天</Radio.Button> */}
               <Radio.Button value={2}>最近6周</Radio.Button>
               <Radio.Button value={3}>最近6个月</Radio.Button>
             </Radio.Group>
@@ -179,7 +196,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
           </div>
 
           <div className="flex justify-center mt40">
-            <Button type="primary" shape="round" className={styles.confirmBtn}>
+            <Button type="primary" shape="round" className={styles.confirmBtn} onClick={() => download()}>
               下载
             </Button>
           </div>
