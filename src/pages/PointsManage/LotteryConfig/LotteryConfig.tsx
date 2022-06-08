@@ -10,6 +10,7 @@ import { BreadCrumbs, NgTable } from 'src/components';
 import { editActivityConfig, queryActivityConfig } from 'src/apis/pointsMall';
 import style from './style.module.less';
 import classNames from 'classnames';
+import { UNKNOWN } from 'src/utils/base';
 
 export enum GoodsTypes {
   '大奖' = 1,
@@ -49,7 +50,7 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
       render: (name, record) => {
         return (
           <div>
-            <span className={classNames('ellipsis', style.goodsName)}>{name}</span>
+            <span className={classNames('ellipsis', style.goodsName)}>{name || UNKNOWN}</span>
             {record.goodsType === 1 && <span className={style.prizeType}>大奖</span>}
           </div>
         );
@@ -58,8 +59,9 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
     {
       width: 100,
       title: '奖品图片',
+      align: 'center',
       dataIndex: 'imgUrl',
-      render: (text: string) => <Image style={{ width: 44 }} src={text} alt="" />
+      render: (text: string) => (text ? <Image style={{ width: 44 }} src={text} alt="" /> : UNKNOWN)
     },
     {
       width: 100,
@@ -69,16 +71,21 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
     },
     {
       title: '奖品库存',
-      dataIndex: 'totalStock'
+      width: 100,
+      dataIndex: 'totalStock',
+      render: (text) => <span>{text || UNKNOWN}</span>
     },
     {
       title: '消耗库存',
-      dataIndex: 'consumeStock'
+      width: 100,
+      dataIndex: 'consumeStock',
+      render: (text) => <span>{text || UNKNOWN}</span>
     },
     {
-      title: '中奖概率百分比',
+      title: '中奖概率',
       dataIndex: 'winWeight',
-      width: 150
+      width: 100,
+      render: (text) => <span>{text || UNKNOWN}</span>
     },
     {
       title: '兑换流程说明',
