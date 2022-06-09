@@ -82,10 +82,16 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
       render: (text) => <span>{text || UNKNOWN}</span>
     },
     {
-      title: '中奖概率',
+      title: '中奖权重',
       dataIndex: 'winWeight',
       width: 100,
       render: (text) => <span>{text || UNKNOWN}</span>
+    },
+    {
+      title: '中奖概率',
+      dataIndex: 'winProbability',
+      width: 100,
+      render: (text) => <span>{text ? text + '%' : UNKNOWN}</span>
     },
     {
       title: '兑换流程说明',
