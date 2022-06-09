@@ -179,6 +179,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
           </div>
           <div className="ph20 mb20">
             <NgTable
+              className={styles.listCustom}
               rowClassName={(record, index) => {
                 if (index === 0) {
                   return 'trHighlight';
