@@ -208,14 +208,20 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
           <Item
             className={style.formItem}
             name="deliverCompany"
-            rules={[{ required: sendWinInfo?.goodsType === 4, message: '请输入物流公司' }]}
+            rules={[{ required: [1, 4].includes(sendWinInfo?.goodsType as number), message: '请输入物流公司' }]}
           >
             <Input className={style.input} placeholder="请输入物流公司" />
           </Item>
-          <Item name="deliverCode" rules={[{ required: sendWinInfo?.goodsType === 4, message: '请输入物流单号' }]}>
+          <Item
+            name="deliverCode"
+            rules={[{ required: [1, 4].includes(sendWinInfo?.goodsType as number), message: '请输入物流单号' }]}
+          >
             <Input className={style.input} placeholder="请输入物流单号" />
           </Item>
-          <Item name="deliverAddress" rules={[{ required: sendWinInfo?.goodsType === 4, message: '请输入收货地址' }]}>
+          <Item
+            name="deliverAddress"
+            rules={[{ required: [1, 4].includes(sendWinInfo?.goodsType as number), message: '请输入收货地址' }]}
+          >
             <TextArea className={style.textArea} placeholder="请输入收货地址" />
           </Item>
         </Form>
