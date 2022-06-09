@@ -58,6 +58,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
     if (activityName) {
       param.activityName = activityName;
       form.setFieldsValue({ activityName });
+      setSearchParam({ activityName });
     }
     const res = await requestGetLotteryManageList(param);
     if (res) {
