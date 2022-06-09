@@ -58,6 +58,7 @@ const Dashboard: React.FC<RouteComponentProps> = ({ history }) => {
               </div>
             );
           })}
+          <div className={styles.desc}>从机构的坐席账号激活日期开始计算，截止昨日的累计数据</div>
 
           <div className="flex justify-center mt40">
             {dataSource.length > 0 && (
