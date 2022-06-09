@@ -188,7 +188,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
               }}
               columns={tableColumns({ toDetailPage, titleList })}
               dataSource={[totalItem, ...dataSource]}
-              rowKey={(record) => record.leaderId + record.leaderName || 'total'}
+              rowKey={(record) => record.leaderId + record.id || 'total'}
               loading={false}
             ></NgTable>
             <div className={styles.paginationWrap}>
