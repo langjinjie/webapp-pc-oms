@@ -14,7 +14,8 @@ export const tableColumns = ({ toDetailPage, titleList }: tableOperations): Colu
   const titleCols = useMemo(() => {
     return titleList.map((item: any) => ({
       title: item.label,
-      width: 120,
+      width: 100,
+      className: 'space-left',
       dataIndex: item.key
     }));
   }, [titleList]);
@@ -53,6 +54,7 @@ export const tableColumns = ({ toDetailPage, titleList }: tableOperations): Colu
       dataIndex: 'leaderName',
       key: 'leaderName',
       align: 'center',
+      className: 'border-right',
       width: 80,
       onCell: (_, index) => {
         if (index === 0) {
@@ -72,8 +74,13 @@ export const tableColumns = ({ toDetailPage, titleList }: tableOperations): Colu
       render: (text: string, record) => {
         const { data1 = 0, data2 = 0, data3 = 0, data4 = 0, data5 = 0, data6 = 0 } = record;
         return (
-          <div className="cursor" onClick={() => toDetailPage(record)}>
-            <SmallLineChart width="96px" data={[data6, data5, data4, data3, data2, data1]} key={record.id} />
+          <div className="cursor" onClick={() => toDetailPage(record)} style={{ width: '100px', margin: '0 auto' }}>
+            <SmallLineChart
+              width="96px"
+              height="22px"
+              data={[data6, data5, data4, data3, data2, data1]}
+              key={record.id}
+            />
           </div>
         );
       }
