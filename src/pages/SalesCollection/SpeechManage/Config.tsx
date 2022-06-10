@@ -106,6 +106,7 @@ export const ageTypeOptions = [
   { id: 2, name: '中年' },
   { id: 3, name: '青年' }
 ];
+
 export interface SpeechProps {
   sceneId: number; // 业务场景ID，1-车险流程，2-非车流程，3-异议处理，4-场景话术，5-问答知识，6-智能教练。
   contentId: string; // 话术id
@@ -123,6 +124,7 @@ export interface SpeechProps {
   lastUpdated?: string; // 更新时间;
   updateBy?: string; // 更新人;
   [propKey: string]: any;
+  contentObj: SpeechProps;
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
   const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight } = args;
