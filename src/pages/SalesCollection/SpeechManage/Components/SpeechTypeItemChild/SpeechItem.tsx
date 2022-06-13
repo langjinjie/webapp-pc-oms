@@ -40,7 +40,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
           // const height = image.height;
           isW750 = width === 750;
           if (!isW750) {
-            message.error('海报宽度必须为 750px');
+            message.error('图片宽度必须为 750px');
           }
           resolve(isJpg && isLt5M && isW750);
         };
