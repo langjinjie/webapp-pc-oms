@@ -93,7 +93,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
     const item = current.children.filter((item) => item.key === id)[0];
     setCurrentCode(current);
     setCurrentItem(item);
-    getList({ dataCode: id, PageNum: 1 });
+    getList({ dataCode: id, pageNum: 1 });
     getTotal({ dataCode: id });
     setFilterData({
       businessModel: '',
