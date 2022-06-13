@@ -120,9 +120,9 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
 
   // 时间类型切换时
   const onDayTypeChange = (value: any) => {
-    setFilterData((filterData) => ({ ...filterData, dayType: value }));
-    getList({ dayType: value });
-    getTotal({ dayType: value });
+    setFilterData((filterData) => ({ ...filterData, dayType: value, businessModel: '' }));
+    getList({ dayType: value, businessModel: '' });
+    getTotal({ dayType: value, businessModel: '' });
   };
 
   const onPaginationChange = (pageNum: number) => {
