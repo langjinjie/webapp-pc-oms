@@ -14,19 +14,17 @@ interface StateProps {
   leaderId: string;
   leaderName: string;
   dataCodeTitle: string;
+  dataCode: string;
 }
-const DashboardDetail: React.FC<RouteComponentProps<{ id: string }, any, StateProps>> = ({
-  match,
-  location,
-  history
-}) => {
+const DashboardDetail: React.FC<RouteComponentProps<{ id: string }, any, StateProps>> = ({ location, history }) => {
   const [stateProps, setStateProps] = useState<StateProps>();
   const [dataSource, setDataSource] = useState<any[]>([]);
   const getDetail = async () => {
+    console.log(location.state);
     const res = await getDashboardTeamDetail({
       dayType: location.state.dayType,
       queryType: 1,
-      dataCode: match.params.id,
+      dataCode: location.state.dataCode,
       leaderId: location.state.leaderId || '',
       businessModel: location.state.businessModel
     });

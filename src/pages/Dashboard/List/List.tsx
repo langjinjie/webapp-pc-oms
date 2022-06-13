@@ -41,6 +41,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   const [currentItem, setCurrentItem] = useState<{ key: string; title: string; subTitle: string }>();
   const toDetailPage = (record: any) => {
     const { id } = match.params;
+    console.log({ filterData });
     history.push(`/dashboardList/${id}/detail`, {
       leaderName: record.leaderName,
       leaderId: record.leaderId,
@@ -112,6 +113,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   const onTabsChange = (activeKey: string) => {
     const item = currentCode?.children.filter((item) => item.key === activeKey)[0];
     setCurrentItem(item);
+    setFilterData((filterData) => ({ ...filterData, dataCode: activeKey }));
     getList({ dataCode: item?.key, pageNum: 1 });
     getTotal({ dataCode: item?.key });
   };

@@ -27,18 +27,6 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/noPermission',
     component: lazy(() => import('src/pages/NoPermission/NoPermission'))
-  },
-  {
-    path: '/dashboard',
-    component: lazy(() => import('src/pages/Dashboard/index'))
-  },
-  {
-    path: '/dashboardList/:id',
-    component: lazy(() => import('src/pages/Dashboard/List/List'))
-  },
-  {
-    path: '/dashboardList/:id/detail',
-    component: lazy(() => import('src/pages/Dashboard/Detail/Detail'))
   }
 ];
 
@@ -297,6 +285,16 @@ export const routes: RouteProps[] = [
   {
     path: '/winManage',
     component: lazy(() => import('src/pages/PointsManage/WinManage/WinManage'))
+  },
+  // 数据看板
+  {
+    path: '/dashboard',
+    component: lazy(() => import('src/pages/Dashboard/index'))
+  },
+
+  {
+    path: '/dashboardList/:id/detail',
+    component: lazy(() => import('src/pages/Dashboard/Detail/Detail'))
   }
 ];
 
@@ -334,6 +332,11 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/personal/addTask',
     component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
+  },
+  // 数据看板
+  {
+    path: '/dashboardList/:id',
+    component: lazy(() => import('src/pages/Dashboard/List/List'))
   }
 ];
 
