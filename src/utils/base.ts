@@ -297,5 +297,5 @@ export const updateTreeData = (list: any[], key: React.Key, children: any[]): an
  */
 export const replaceEnter = (str: string): string => {
   // \n 匹配一个换行符, \r 匹配一个回车符
-  return str.replace(/\\n|\\r|\r\n/g, '<br/>');
+  return str.replace(/\\n|\n/g, '<br/>');
 };
