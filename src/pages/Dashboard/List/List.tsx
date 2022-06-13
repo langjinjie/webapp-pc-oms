@@ -113,9 +113,9 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   const onTabsChange = (activeKey: string) => {
     const item = currentCode?.children.filter((item) => item.key === activeKey)[0];
     setCurrentItem(item);
-    setFilterData((filterData) => ({ ...filterData, dataCode: activeKey }));
-    getList({ dataCode: item?.key, pageNum: 1 });
-    getTotal({ dataCode: item?.key });
+    setFilterData((filterData) => ({ ...filterData, dataCode: activeKey, businessModel: '' }));
+    getList({ dataCode: item?.key, pageNum: 1, businessModel: '' });
+    getTotal({ dataCode: item?.key, businessModel: '' });
   };
 
   // 时间类型切换时
