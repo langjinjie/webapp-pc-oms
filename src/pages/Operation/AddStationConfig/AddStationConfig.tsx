@@ -334,6 +334,11 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                             allowClear
                             placeholder="请选择"
                             onSearch={(value) => debounceFetcher({ value, type: 1 })}
+                            onDropdownVisibleChange={() => {
+                              if (activityList.length < 5) {
+                                debounceFetcher({ value: '', type: 1 });
+                              }
+                            }}
                             onChange={(value) => {
                               onSelected(value, index, 1);
                             }}
@@ -427,6 +432,11 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                         <Select
                           disabled={+type === 1}
                           showSearch
+                          onDropdownVisibleChange={() => {
+                            if (productList.length < 5) {
+                              debounceFetcher({ value: '', type: 2 });
+                            }
+                          }}
                           onSearch={(value) => debounceFetcher({ value, type: 2 })}
                           filterOption={false}
                           allowClear

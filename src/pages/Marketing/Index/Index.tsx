@@ -195,8 +195,8 @@ const MarketIndex: React.FC = () => {
         form.setFieldsValue({
           productTypeList: oldSelectedList
         });
-        setFormData((formData) => ({
-          ...formData,
+        setFormData((formData: any) => ({
+          ...formData!,
           productTypeList: oldSelectedList.filter((item: any) => item.productId)
         }));
       } else {
@@ -222,7 +222,7 @@ const MarketIndex: React.FC = () => {
         form.setFieldsValue({
           posterList: oldSelectedList
         });
-        setFormData((formData) => ({
+        setFormData((formData: any) => ({
           ...formData,
           posterList: oldSelectedList.filter((item: any) => item.posterId)
         }));
@@ -249,7 +249,7 @@ const MarketIndex: React.FC = () => {
         form.setFieldsValue({
           activityList: oldSelectedList
         });
-        setFormData((formData) => ({
+        setFormData((formData: any) => ({
           ...formData,
           activityList: oldSelectedList.filter((item: any) => item.activityId)
         }));
@@ -370,6 +370,11 @@ const MarketIndex: React.FC = () => {
                             notFoundContent={
                               fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>
                             }
+                            onDropdownVisibleChange={() => {
+                              if (productList.length < 5) {
+                                debounceFetcher({ value: '', marketType: 2 });
+                              }
+                            }}
                             onChange={(value) => onRecommendSelected(value, index, 2)}
                             onSearch={(value) => debounceFetcher({ value: value, marketType: 2 })}
                           >
@@ -438,6 +443,11 @@ const MarketIndex: React.FC = () => {
                             notFoundContent={
                               fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>
                             }
+                            onDropdownVisibleChange={() => {
+                              if (articleList.length < 5) {
+                                debounceFetcher({ value: '', marketType: 0 });
+                              }
+                            }}
                             onChange={(value) => onRecommendSelected(value, index, 3)}
                             onSearch={(value) => debounceFetcher({ value: value, marketType: 0 })}
                           >
@@ -503,6 +513,11 @@ const MarketIndex: React.FC = () => {
                             defaultActiveFirstOption={false}
                             showArrow={false}
                             filterOption={false}
+                            onDropdownVisibleChange={() => {
+                              if (posterList.length < 5) {
+                                debounceFetcher({ value: '', marketType: 3 });
+                              }
+                            }}
                             notFoundContent={
                               fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>
                             }
@@ -575,6 +590,11 @@ const MarketIndex: React.FC = () => {
                               fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>
                             }
                             onChange={(value) => onRecommendSelected(value, index, 1)}
+                            onDropdownVisibleChange={() => {
+                              if (activityList.length < 5) {
+                                debounceFetcher({ value: '', marketType: 1 });
+                              }
+                            }}
                             onSearch={(value) => debounceFetcher({ value: value, marketType: 1 })}
                           >
                             {activityList.map((option) => {

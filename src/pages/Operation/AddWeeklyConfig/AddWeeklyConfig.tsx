@@ -349,7 +349,6 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const isEdit = (filed: string) => editField === filed;
 
   const onRecommendSearch = async (value: string, index: number) => {
-    console.log(value, index);
     const current = form.getFieldValue('marketCateList')[index];
     // 文章类型
     const res = await searchRecommendGoodsList({
@@ -385,9 +384,12 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   // 防抖处理
-  const debounceFetcher = debounce(async (value: string, index: number) => {
-    await onRecommendSearch(value, index);
-  }, 800);
+  const debounceFetcher = debounce<{ value: string; index: number }>(
+    async ({ value, index }: { value: string; index: number }) => {
+      await onRecommendSearch(value, index);
+    },
+    800
+  );
   useEffect(() => {
     const paperId: string = getQueryParam('paperId');
     getWeeklyDetail(paperId);
@@ -746,7 +748,12 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
                                         allowClear
                                         showSearch
                                         filterOption={false}
-                                        onSearch={(value) => debounceFetcher(value, index)}
+                                        onDropdownVisibleChange={() => {
+                                          if (getMaterialData(materialList[index] || 'article').length < 5) {
+                                            debounceFetcher({ value: '', index });
+                                          }
+                                        }}
+                                        onSearch={(value) => debounceFetcher({ value, index })}
                                         onChange={(value) => onSelected(value, index, materialIndex)}
                                       >
                                         {getMaterialData(materialList[index] || 'article')?.map(
