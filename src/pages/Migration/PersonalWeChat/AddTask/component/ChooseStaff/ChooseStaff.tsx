@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Icon } from 'src/components';
-import { StaffModal } from 'src/pages/Migration/EnterpriseWeChat/AddTask/component';
+import { StaffModal } from 'src/pages/Migration/PersonalWeChat/AddTask/component';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import style from './style.module.less';
 import { Context } from 'src/store';

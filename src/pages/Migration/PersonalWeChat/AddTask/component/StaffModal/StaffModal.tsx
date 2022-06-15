@@ -2,7 +2,7 @@ import React, { Key, useEffect, useState, Dispatch, SetStateAction } from 'react
 import { Modal, Icon, Empty } from 'src/components';
 import { Checkbox, Input, Pagination } from 'antd';
 import { CheckboxValueType, CheckboxOptionType } from 'antd/lib/checkbox/Group';
-import { queryTransferStaffList } from 'src/apis/migration';
+import { requestGetWechatTransferStaffScope } from 'src/apis/migration';
 import { debounce } from 'src/utils/base';
 import style from './style.module.less';
 import classNames from 'classnames';
@@ -47,7 +47,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({
   const CheckboxGroup = Checkbox.Group;
   // 获取执行人员列表
   const getStaffList = async () => {
-    const res = await queryTransferStaffList({ name, ...paginationParam });
+    const res = await requestGetWechatTransferStaffScope({ name, ...paginationParam });
     if (res) {
       const list = res.list.map((item: IStaffInfo) => {
         if (showCheckbox) {

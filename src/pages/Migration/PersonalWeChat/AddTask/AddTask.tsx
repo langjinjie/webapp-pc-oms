@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Form, Input, Button, Radio, DatePicker, message } from 'antd';
+import { Form, Input, Button, DatePicker, message } from 'antd';
 import { ChoosedStaffList } from './component';
 import { ImageUpload } from 'src/components';
 import { getQueryParam } from 'tenacity-tools';
-import { requestCreateTransferTask, requestGetTaskDetail } from 'src/apis/migration';
+import { requestCreateWechatTransferTask, requestGetTaskDetail } from 'src/apis/migration';
 import moment, { Moment } from 'moment';
-import DetailModal from 'src/pages/Migration/EnterpriseWeChat/components/DetailModal/DetailModal';
+import DetailModal from '../components/DetailModal/DetailModal';
 import style from './style.module.less';
 import classNames from 'classnames';
 
 interface IFormValues {
   taskName: string;
-  clientType: number;
+  targetTransferNum: number;
   executionTime: Moment[];
   thumbnail: string;
   title: string;
@@ -27,17 +27,11 @@ const AddTask: React.FC = () => {
   const [defaultValue, setDefaultValue] = useState(moment());
   const [form] = Form.useForm();
   const { Item } = Form;
-  const { Group } = Radio;
   const { TextArea } = Input;
   const { RangePicker } = DatePicker;
   const history = useHistory();
   const location = useLocation();
   let noSubmitForm: any = null;
-  const displayTypeList = [
-    { value: 0, label: '发送待迁移客户' },
-    { value: 1, label: '发送迁移成功客户' },
-    { value: 2, label: '发送全部客户' }
-  ];
   // 禁止选择今天及之前的日期
   const disabledDate = (current: Moment) => {
     return current < moment().startOf('days');
@@ -108,14 +102,14 @@ const AddTask: React.FC = () => {
     if (isReadOnly) {
       history.goBack();
     } else {
-      const { taskName, clientType, executionTime, thumbnail, title, summary, speechcraft, staffList } = value;
+      const { taskName, targetTransferNum, executionTime, thumbnail, title, summary, speechcraft, staffList } = value;
       const startTime = executionTime[0].format('YYYY-MM-DD HH:mm:ss');
       // const startTime = executionTime[0].startOf('minute').format('YYYY-MM-DD HH:mm:ss');
       const endTime = executionTime[1].format('YYYY-MM-DD HH:mm:ss');
       // const endTime = executionTime[1].endOf('minute').format('YYYY-MM-DD HH:mm:ss');
-      const res = await requestCreateTransferTask({
+      const res = await requestCreateWechatTransferTask({
         taskName,
-        clientType,
+        targetTransferNum,
         startTime,
         endTime,
         thumbnail,
@@ -127,7 +121,7 @@ const AddTask: React.FC = () => {
       if (res) {
         form.resetFields();
         message.success('创建任务成功');
-        history.push('/enterprise');
+        history.push('/personal');
       }
     }
   };
@@ -175,18 +169,18 @@ const AddTask: React.FC = () => {
             </Item>
               )}
           <Item
-            name="clientType"
+            name="targetTransferNum"
             className={style.formItem}
-            label="客户类型"
-            rules={[{ required: true, message: '请选择客户类型' }]}
+            label="目标迁移数："
+            rules={[{ required: true, message: '请输入目标迁移数' }]}
           >
-            <Group disabled={isReadOnly}>
-              {displayTypeList.map((item) => (
-                <Radio key={item.value + item.label} value={item.value}>
-                  {item.label}
-                </Radio>
-              ))}
-            </Group>
+            <Input
+              className={classNames(style.input, style.numInput)}
+              showCount={!isReadOnly}
+              maxLength={30}
+              placeholder="请输入链接标题"
+              readOnly={isReadOnly}
+            />
           </Item>
           <Item
             name="executionTime"

@@ -44,7 +44,7 @@ const devServerOptions = {
   proxy: [
     {
       context: ['/api', '/tenacity-admin'],
-      target: 'https://dev.tenacity.com.cn',
+      target: 'https://test.tenacity.com.cn',
       // target: 'https://uat.tenacity.com.cn',
       secure: false,
       changeOrigin: true,
