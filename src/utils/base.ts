@@ -81,12 +81,12 @@ export const useDocumentTitle = (title: string, keepOnUumount = true): void => {
 };
 export const UNKNOWN = '— —';
 
-export const debounce = (fn: { apply: (arg0: any, arg1: any) => void }, delay: number): (() => void) => {
+export const debounce = <T>(fn: { apply: (arg0: any, arg1: any) => void }, delay: number): ((param?: T) => void) => {
   // 定时器
   let timer: NodeJS.Timeout;
 
   // 将debounce处理结果当作函数返回
-  return (...args: any) => {
+  return (...args) => {
     // 保留调用时的this上下文
     // 保留调用时传入的参数
     // 每次事件被触发时，都去清除之前的旧定时器
@@ -98,6 +98,26 @@ export const debounce = (fn: { apply: (arg0: any, arg1: any) => void }, delay: n
       console.log(args);
       fn.apply(this, args);
     }, delay);
+  };
+};
+
+// throttle 函数节流， 规定一个时间n，n秒内，将触发的事件合并为一次并执行
+export const throttle = (fn: { apply: (arg0: any, arg1: any) => void }, interval: number): Function => {
+  // last为上一次触发回调的时间
+  let last = 0;
+
+  // 将throttle处理结果当作函数返回
+  return function (this: any, ...args: any) {
+    // 保留调用时传入的参数
+    // 记录本次触发回调的时间
+    const now = +new Date();
+
+    // 判断上次触发的时间和本次触发的时间差是否小于时间间隔的阈值
+    if (now - last >= interval) {
+      // 如果时间间隔大于我们设定的时间间隔阈值，则执行回调
+      last = now;
+      fn.apply(this, args);
+    }
   };
 };
 

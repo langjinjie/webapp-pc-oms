@@ -1,0 +1,113 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2022-05-26 14:24
+*/
+.activityList {
+  padding: 30px;
+
+  .addBtn {
+    margin-bottom: 30px;
+    padding: 0 28px;
+  }
+
+  .mb30 {
+    margin-bottom: 30px;
+  }
+}
+
+.circle {
+  margin-right: 8px;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #f25555;
+  border-radius: 50%;
+
+  &.green {
+    background-color: #52c41a;
+  }
+
+  &.grey {
+    background-color: #d1d1d1;
+  }
+}
+
+.activityEdit {
+  :global {
+    .ant-form-item-control-input {
+      .ant-input-affix-wrapper,
+      .ant-picker {
+        border-radius: 20px;
+      }
+    }
+  }
+}
+
+.lotteryConfig {
+  padding: 30px;
+
+  :global {
+    .ant-input-number-input {
+      height: 36px;
+      border-radius: 18px;
+    }
+  }
+}
+
+.panelTitle {
+  font-weight: 500;
+  color: #111;
+  font-size: 16px;
+  line-height: 16px;
+  margin-top: 30px;
+  &::before {
+    content: '';
+    display: block;
+    float: left;
+    margin-right: 6px;
+    width: 6px;
+    height: 16px;
+    background: #318cf5;
+  }
+}
+
+.configEdit {
+  :global {
+    .ant-form-item-label {
+      width: auto;
+      margin-right: 0;
+    }
+    .ant-form-item-extra {
+      margin-right: 30px;
+    }
+  }
+}
+
+.ruleInfo {
+  color: #999aa1;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.prizeType {
+  display: inline-block;
+  margin-left: 15px;
+  width: 24px;
+  width: 36px;
+  height: 18px;
+  border-radius: 9px;
+  text-align: center;
+  line-height: 18px;
+  color: #ddb100;
+  font-size: 12px;
+  background-color: #fbefd6;
+}
+
+.goodsName {
+  display: block;
+  float: left;
+  margin-top: 4px;
+  line-height: 1;
+  max-width: 100px;
+}

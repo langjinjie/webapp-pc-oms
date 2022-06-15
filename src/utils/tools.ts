@@ -56,3 +56,20 @@ export const percentage = (num: number, total: number): number | string => {
   }
   return Math.round((num / total) * 10000) / 100 + '%';
 };
+
+// 千分位格式化
+export const numFormat = (num: number, places = 3, symbol = ','): string => {
+  const reg = new RegExp('\\B(?=(\\d{' + places + '})+(?!\\d))', 'g');
+  return num.toString().replace(reg, symbol);
+};
+
+export const groupArr = (array: any[], subGroupLength = 0): any[] => {
+  let index = 0;
+  const newArray = [];
+  console.log(subGroupLength);
+  while (index < array.length) {
+    newArray.push(array.slice(index, index + subGroupLength));
+    index += subGroupLength;
+  }
+  return newArray;
+};

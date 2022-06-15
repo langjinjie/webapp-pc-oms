@@ -17,6 +17,10 @@ export interface Menu {
 
 export const noVerRoutes: RouteProps[] = [
   {
+    path: '/',
+    component: lazy(() => import('src/pages/Index/Index'))
+  },
+  {
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
   },
@@ -181,7 +185,7 @@ export const routes: RouteProps[] = [
 
   {
     path: '/menu/edit',
-    component: lazy(() => import('src/pages/OrgManage/Menu/Edit'))
+    component: lazy(() => import('src/pages/SystemSettings/Menu/Edit'))
   },
   // 坐席详情
   {
@@ -263,6 +267,34 @@ export const routes: RouteProps[] = [
   {
     path: '/userGroup/add',
     component: lazy(() => import('src/pages/OrgManage/UserGroup/components/AddGroup/AddGroup'))
+  },
+  // 抽奖配置
+  {
+    path: '/lotteryConfig',
+    component: lazy(() => import('src/pages/PointsManage/LotteryConfig/ActivityList'))
+  },
+  {
+    path: '/lotteryConfig/prize',
+    component: lazy(() => import('src/pages/PointsManage/LotteryConfig/LotteryConfig'))
+  },
+  {
+    path: '/lotteryConfig/prizeAdd',
+    component: lazy(() => import('src/pages/PointsManage/LotteryConfig/PrizeEdit'))
+  },
+  // 中奖管理
+  {
+    path: '/winManage',
+    component: lazy(() => import('src/pages/PointsManage/WinManage/WinManage'))
+  },
+  // 数据看板
+  {
+    path: '/dashboard',
+    component: lazy(() => import('src/pages/Dashboard/index'))
+  },
+
+  {
+    path: '/dashboardList/:id/detail',
+    component: lazy(() => import('src/pages/Dashboard/Detail/Detail'))
   }
 ];
 
@@ -271,7 +303,7 @@ export const cacheRoutes: CacheRouteProps[] = [
   // 系统菜单管理
   {
     path: '/menu',
-    component: lazy(() => import('src/pages/OrgManage/Menu/List'))
+    component: lazy(() => import('src/pages/SystemSettings/Menu/List'))
   },
   {
     path: '/organization',
@@ -300,6 +332,11 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/personal/addTask',
     component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
+  },
+  // 数据看板
+  {
+    path: '/dashboardList/:id',
+    component: lazy(() => import('src/pages/Dashboard/List/List'))
   }
 ];
 

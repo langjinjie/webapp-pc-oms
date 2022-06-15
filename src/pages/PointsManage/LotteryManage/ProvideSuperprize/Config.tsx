@@ -8,6 +8,7 @@ const TableColumns = (): ColumnsType<any> => {
       title: '大奖发放时间',
       dataIndex: 'sendTime'
     },
+    { title: '活动名称', dataIndex: 'activityName' },
     { title: '操作人', dataIndex: 'opName' }
   ];
 };

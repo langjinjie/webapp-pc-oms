@@ -2,6 +2,7 @@ import { Breadcrumb, Button, Form, Input, InputNumber, message, Radio, Space } f
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { addOrEditMenu } from 'src/apis/orgManage';
+import { throttle } from 'src/utils/base';
 import { btnTypes, MenuProps, systemList } from './Config';
 
 interface S {
@@ -79,6 +80,9 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
     }
   };
 
+  // 对提交进行节流处理
+  const throttleSubmit = throttle(onFinish, 400);
+
   const onCancel = () => {
     history.replace('/menu');
   };
@@ -100,7 +104,7 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
           wrapperCol={{ span: 8 }}
           className="edit"
           form={menuForm}
-          onFinish={onFinish}
+          onFinish={throttleSubmit}
           initialValues={formParams}
           onValuesChange={onValuesChange}
         >

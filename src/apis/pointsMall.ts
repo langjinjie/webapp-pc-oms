@@ -1,7 +1,7 @@
 /**
  * 积分商城接口
  *  */
-import http from 'src/utils/http';
+import http, { HttpFunction } from 'src/utils/http';
 type HttpFC<T = { [key: string]: unknown }> = (param?: T) => Promise<any>;
 type VoidFC = () => Promise<any>;
 
@@ -74,4 +74,109 @@ export const getExclusiveTypeList: HttpFC = () => {
 // 专属任务积分发放
 export const setPointsOfExclusive: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/points/specsend', param);
+};
+
+/**
+ * 查询抽奖活动列表
+ * @param param
+ */
+export const queryLotteryActivity: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/lottery/activity/list', param);
+};
+
+/**
+ * 查询活动详情
+ * @param param
+ */
+export const queryActivityDetail: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/activity/detail', param);
+};
+
+/**
+ * 上架抽奖活动
+ * @param param
+ */
+export const operateActivity: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/activity/manage', param);
+};
+
+/**
+ * 编辑抽奖活动
+ * @param param
+ */
+export const editActivity: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/activity/edit', param);
+};
+
+/**
+ * 发放大奖
+ * @param param
+ */
+export const giveOutPrize: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/prize/phone/send', param);
+};
+
+/**
+ * 查询活动配置
+ * @param param
+ */
+export const queryActivityConfig: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/goods/list', param);
+};
+
+/**
+ * 配置活动
+ * @param param
+ */
+export const editActivityConfig: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/activity/config', param);
+};
+
+/**
+ * 查询奖品详情
+ * @param param
+ */
+export const queryPrizeDetail: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/goods/detail', param);
+};
+
+/**
+ * 编辑奖品
+ * @param param
+ */
+export const editPrize: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/lottery/goods/edit', param);
+};
+
+/**
+ * 中奖管理列表接口
+ * @param param
+ */
+export const requestGetLotteryManageList: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/lottery/manage/list', param);
+};
+
+/**
+ * 中奖管理导出接口
+ * @param param
+ */
+export const requestExportLotteryManage: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/lottery/manage/export', param, {
+    responseType: 'blob'
+  });
+};
+
+/**
+ * 发放奖品接口
+ * @param param
+ */
+export const requestSendLotteryManage: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/lottery/manage/send', param);
+};
+/**
+ * 发放奖品接口
+ * @param param
+ */
+export const getGoodsExchangeDesc: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/lottery/goods/defaultExchangeDesc', param);
 };
