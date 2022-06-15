@@ -18,6 +18,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
   const [searchParam, setSearchParam] = useState<{ [key: string]: any }>({});
   const [addresModalVisible, setAddresModalVisible] = useState(false);
   const [sendWinInfo, setSendWinInfo] = useState<{ winId: string; name: string; goodsType: number }>();
+  const [firstRequest, setFirstRequest] = useState(true);
   const [paginationParam, setPaginationParam] = useState<{ pageNum: number; pageSize: number }>({
     pageNum: 1,
     pageSize: 10
@@ -55,7 +56,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
     setLoading(true);
     const { activityName } = URLSearchParams(location.search) as { activityName: string };
     const param: { [key: string]: any } = { ...searchParam, ...paginationParam };
-    if (activityName) {
+    if (firstRequest && activityName) {
       param.activityName = activityName;
       form.setFieldsValue({ activityName });
       setSearchParam({ activityName });
@@ -63,6 +64,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
     const res = await requestGetLotteryManageList(param);
     if (res) {
       setList(res);
+      setFirstRequest(false);
     }
     setLoading(false);
   };
