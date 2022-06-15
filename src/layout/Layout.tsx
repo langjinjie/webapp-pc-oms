@@ -32,7 +32,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
     const pathArr: string[] = window.location.pathname.split('/');
     const currentMenu: string = pathArr.length > 3 ? pathArr[pathArr.length - 2] : pathArr[pathArr.length - 1];
     const currentMenuIndex = menus.findIndex((menu: MenuItem) =>
-      menu.children?.some((subMenu: MenuItem) => subMenu.path.includes(currentMenu))
+      menu.children?.some((subMenu: MenuItem) => subMenu.path?.includes(currentMenu))
     );
     if (currentMenuIndex > -1) {
       const subMenus = menus[currentMenuIndex].children || [];
