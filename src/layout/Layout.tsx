@@ -157,13 +157,17 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
         </Affix>
         <Affix offsetTop={80}>
           <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
-            {subMenus.map((subMenu: MenuItem) => (
-              <li key={subMenu.menuId}>
-                <NavLink to={subMenu.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
-                  {subMenu.menuName}
-                </NavLink>
-              </li>
-            ))}
+            {subMenus.map((subMenu: MenuItem) => {
+              return (
+                subMenu?.path && (
+                  <li key={subMenu.menuId}>
+                    <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
+                      {subMenu.menuName}
+                    </NavLink>
+                  </li>
+                )
+              );
+            })}
           </ul>
         </Affix>
 
