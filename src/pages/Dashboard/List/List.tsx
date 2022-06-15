@@ -41,6 +41,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   const [currentItem, setCurrentItem] = useState<{ key: string; title: string; subTitle: string }>();
   const toDetailPage = (record: any) => {
     const { id } = match.params;
+    console.log({ filterData });
     history.push(`/dashboardList/${id}/detail`, {
       leaderName: record.leaderName,
       leaderId: record.leaderId,
@@ -92,7 +93,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
     const item = current.children.filter((item) => item.key === id)[0];
     setCurrentCode(current);
     setCurrentItem(item);
-    getList({ dataCode: id, PageNum: 1 });
+    getList({ dataCode: id, pageNum: 1 });
     getTotal({ dataCode: id });
     setFilterData({
       businessModel: '',
@@ -112,15 +113,16 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   const onTabsChange = (activeKey: string) => {
     const item = currentCode?.children.filter((item) => item.key === activeKey)[0];
     setCurrentItem(item);
-    getList({ dataCode: item?.key, pageNum: 1 });
-    getTotal({ dataCode: item?.key });
+    setFilterData((filterData) => ({ ...filterData, dataCode: activeKey, businessModel: '' }));
+    getList({ dataCode: item?.key, pageNum: 1, businessModel: '' });
+    getTotal({ dataCode: item?.key, businessModel: '' });
   };
 
   // 时间类型切换时
   const onDayTypeChange = (value: any) => {
-    setFilterData((filterData) => ({ ...filterData, dayType: value }));
-    getList({ dayType: value });
-    getTotal({ dayType: value });
+    setFilterData((filterData) => ({ ...filterData, dayType: value, businessModel: '' }));
+    getList({ dayType: value, businessModel: '' });
+    getTotal({ dayType: value, businessModel: '' });
   };
 
   const onPaginationChange = (pageNum: number) => {
