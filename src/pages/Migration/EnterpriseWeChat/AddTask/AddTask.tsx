@@ -52,6 +52,7 @@ const AddTask: React.FC = () => {
   // 选中时间的回调
   const onCalendarChange: (value: any) => void = (value) => {
     if (value && value[0]) {
+      console.log('value', value);
       setDefaultValue(value[0]);
     }
   };
@@ -64,14 +65,16 @@ const AddTask: React.FC = () => {
       };
     }
     if (type === 'end') {
-      return {
-        disabledHours: () => range(0, defaultValue.hours()),
-        disabledMinutes: (selectHours: number) => {
-          if (selectHours === defaultValue.hours()) {
-            return range(0, defaultValue.minutes());
+      if (date.format('YY-MM-DD') === defaultValue.format('YY-MM-DD')) {
+        return {
+          disabledHours: () => range(0, defaultValue.hours()),
+          disabledMinutes: (selectHours: number) => {
+            if (selectHours === defaultValue.hours()) {
+              return range(0, defaultValue.minutes());
+            }
           }
-        }
-      };
+        };
+      }
     }
     // 判断日期是否选中的是当前
     if (date.format('YY-MM-DD') === moment().format('YY-MM-DD')) {
@@ -203,7 +206,7 @@ const AddTask: React.FC = () => {
               disabledTime={disabledDataTime}
               onCalendarChange={onCalendarChange}
               disabled={isReadOnly}
-              order={false}
+              order={true}
             />
           </Item>
           <Item
