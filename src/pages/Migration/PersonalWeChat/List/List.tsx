@@ -1,38 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import classNames from 'classnames';
-
-import styles from './style.module.less';
-import { Button, message, PaginationProps } from 'antd';
+import { Button, message, PaginationProps, Form, Input } from 'antd';
 import { NgTable, AuthBtn } from 'src/components';
 import { columns, TaskProps } from './Config';
 import { exportFile, useDocumentTitle } from 'src/utils/base';
 import {
   requestGetWechatTransferTaskList,
-  exportTransferTask,
-  operationTransferTask,
-  queryTransferCorp
+  requestExportTransferWechatTask,
+  requestOpWechatTransferTask,
+  requestGetCreateButtonStatus
 } from 'src/apis/migration';
-import { StaffModal } from '../AddTask/component';
+import { Context } from 'src/store';
 import moment from 'moment';
+import classNames from 'classnames';
+import styles from './style.module.less';
 
-interface TransferInfoProps {
-  corpId: string;
-  corpName: string;
-  targetCorpId: string;
-  targetCorpName: string;
-}
 const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('好友迁移-个微好友');
-  const [visibleDetail, setVisibleDetail] = useState(false);
+  const { currentCorpId: corpId } = useContext(Context);
+  const [searchParam, setSearchParam] = useState<{ [key: string]: any }>({});
   const [btnDisabled, setBtnDisabled] = useState(false);
-  const [transferInfo, setTransferInfo] = useState<TransferInfoProps>({
-    corpId: '',
-    corpName: '',
-    targetCorpId: '',
-    targetCorpName: ''
-  });
-
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -44,20 +31,38 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [tableSource, setTableSource] = useState<TaskProps[]>([]);
 
+  const [form] = Form.useForm();
+  const { Item } = Form;
+
+  // 获取任务列表
   const getTaskList = async (params?: any) => {
-    const { list, total } = await requestGetWechatTransferTaskList({
+    setLoading(true);
+    const res = await requestGetWechatTransferTaskList({
       pageNum: pagination.current,
       pageSize: pagination.pageSize,
       ...params
     });
-    setTableSource(list || []);
-    setPagination((pagination) => ({ ...pagination, total }));
-    console.log('查询列表', list);
+    if (res) {
+      const { list, total } = res;
+      setTableSource(list || []);
+      setPagination((pagination) => ({ ...pagination, total }));
+    }
+    setLoading(false);
+  };
+
+  // 点击查询
+  const onFinish = (values: { [key: string]: any }) => {
+    setSearchParam(values);
+    getTaskList({
+      pageNum: 1,
+      pageSize: pagination.pageSize,
+      ...values
+    });
   };
 
   // 操作任务
   const operateItem = async (task: TaskProps, operateType: number, index: number) => {
-    const res = await operationTransferTask({ taskId: task.taskId, corpId: transferInfo.corpId, opType: operateType });
+    const res = await requestOpWechatTransferTask({ taskId: task.taskId, corpId, opType: operateType });
     if (res) {
       if (operateType === 1) {
         message.success('关闭成功');
@@ -73,51 +78,37 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
         } else {
           getTaskList({
             pageNum: 1,
-            pageSize: pagination.pageSize
+            pageSize: pagination.pageSize,
+            ...searchParam
           });
         }
       }
-      console.log(res);
     }
   };
   // 查看任务详情
   const viewItem = (taskId: string) => {
-    history.push('/enterprise/addTask?taskId=' + taskId);
+    history.push('/personal/addTask?taskId=' + taskId);
   };
   // 导出任务详情数据
   const exportData = async (task: TaskProps) => {
-    const { data } = await exportTransferTask({ taskId: task.taskId });
+    const { data } = await requestExportTransferWechatTask({ taskId: task.taskId });
     const fileName = task.taskName + moment().format('YYYY-MM-DD');
     exportFile(data, fileName);
   };
 
   // 查询 新增任务按钮状态
-  const getCreateBtnStatus = () => {
-    setBtnDisabled(false);
+  const getCreateBtnStatus = async () => {
+    const res = await requestGetCreateButtonStatus();
+    if (res) {
+      setBtnDisabled(!!res.status);
+    }
   };
 
   const myColumns = columns({ operateItem, viewItem, exportData });
 
-  useEffect(() => {
-    setLoading(false);
-  }, []);
-
-  const getTransferData = async () => {
-    const res: TransferInfoProps = await queryTransferCorp();
-    if (res.corpId) {
-      setTransferInfo(res);
-      getTaskList();
-    }
-  };
-
-  useEffect(() => {
-    getCreateBtnStatus();
-    getTransferData();
-  }, []);
-
   const onPaginationChange = (pageNum: number, pageSize?: number) => {
     setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize }));
-    getTaskList({ pageNum, pageSize });
+    getTaskList({ pageNum, pageSize, ...searchParam });
   };
 
   // 点击创建任务
@@ -125,6 +116,11 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     if (btnDisabled) return message.info('联系迁移前机构的企微管理员，配置出单宝A端的可见范围');
     history.push('/personal/addTask');
   };
+
+  useEffect(() => {
+    getCreateBtnStatus();
+    getTaskList();
+  }, []);
   return (
     <div className={classNames(styles.migration, 'container')}>
       <div className={classNames(styles.addTask, 'flex align-center')}>
@@ -143,6 +139,14 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
           {/* 温馨提示：企业每天可对同一个客户发送1条消息，超过上限，客户当天将无法再收到群发消息。 */}
         </div>
       </div>
+      <Form form={form} className={styles.form} onFinish={onFinish} layout="inline">
+        <Item label="任务名称" name="taskName">
+          <Input className={styles.input} />
+        </Item>
+        <Button className={styles.searchBtn} htmlType="submit" type="primary">
+          查询
+        </Button>
+      </Form>
 
       <NgTable
         loading={loading}
@@ -152,7 +156,6 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
         rowKey={(scope) => scope.taskId}
         paginationChange={onPaginationChange}
       />
-      <StaffModal visible={visibleDetail} onClose={() => setVisibleDetail(false)} />
     </div>
   );
 };

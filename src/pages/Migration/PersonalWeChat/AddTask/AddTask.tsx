@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Form, Input, Button, DatePicker, message } from 'antd';
+import { Form, Input, Button, DatePicker, message, Spin } from 'antd';
 import { ChoosedStaffList } from './component';
 import { ImageUpload } from 'src/components';
 import { getQueryParam } from 'tenacity-tools';
-import { requestCreateWechatTransferTask, requestGetTaskDetail } from 'src/apis/migration';
+import { requestCreateWechatTransferTask, requestGetWechatTaskDetail } from 'src/apis/migration';
 import moment, { Moment } from 'moment';
 import DetailModal from '../components/DetailModal/DetailModal';
 import style from './style.module.less';
@@ -25,6 +25,7 @@ const AddTask: React.FC = () => {
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [detailVisible, setDetailVisible] = useState(false);
   const [defaultValue, setDefaultValue] = useState(moment());
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const { Item } = Form;
   const { TextArea } = Input;
@@ -58,14 +59,16 @@ const AddTask: React.FC = () => {
       };
     }
     if (type === 'end') {
-      return {
-        disabledHours: () => range(0, defaultValue.hours()),
-        disabledMinutes: (selectHours: number) => {
-          if (selectHours === defaultValue.hours()) {
-            return range(0, defaultValue.minutes());
+      if (date.format('YY-MM-DD') === defaultValue.format('YY-MM-DD')) {
+        return {
+          disabledHours: () => range(0, defaultValue.hours()),
+          disabledMinutes: (selectHours: number) => {
+            if (selectHours === defaultValue.hours()) {
+              return range(0, defaultValue.minutes());
+            }
           }
-        }
-      };
+        };
+      }
     }
     // 判断日期是否选中的是当前
     if (date.format('YY-MM-DD') === moment().format('YY-MM-DD')) {
@@ -87,12 +90,14 @@ const AddTask: React.FC = () => {
   };
   // 获取任务详情
   const getTaskDetail = async (taskId: string) => {
-    const res = await requestGetTaskDetail({ taskId });
+    setLoading(true);
+    const res = await requestGetWechatTaskDetail({ taskId });
     const executionTime = [
       moment(res.startTime || '', 'YYYY年MM月DD日 HH:mm'),
       moment(res.endTime || '', 'YYYY年MM月DD日 HH:mm')
     ];
     form.setFieldsValue({ ...res, executionTime, staffTotalNum: res.staffTotalNum + '人' });
+    setLoading(false);
   };
   // 查看任务明细
   const clickTaskDetail = () => {
@@ -126,7 +131,7 @@ const AddTask: React.FC = () => {
     }
   };
   useEffect(() => {
-    if (location.pathname === '/enterprise/addTask' && getQueryParam().taskId) {
+    if (location.pathname === '/personal/addTask' && getQueryParam().taskId) {
       setIsReadOnly(true);
       noSubmitForm = form.getFieldsValue();
       getTaskDetail(getQueryParam().taskId);
@@ -134,18 +139,24 @@ const AddTask: React.FC = () => {
       setIsReadOnly(false);
     }
     return () => {
-      if (location.pathname === '/enterprise/addTask' && location.search.includes('taskId')) {
+      if (location.pathname === '/personal/addTask' && location.search.includes('taskId')) {
         form.setFieldsValue(noSubmitForm);
       }
     };
   }, [location]);
   return (
-    <>
+    <Spin spinning={loading}>
       <header className={style.addTask}>创建任务</header>
       <div className={style.content}>
         <Form form={form} className={style.form} onFinish={onFinish}>
           <Item name="taskName" className={style.formItem} label="任务名称：">
-            <Input className={style.input} showCount={true} maxLength={50} placeholder="请输入任务名称" />
+            <Input
+              className={style.input}
+              showCount={true}
+              maxLength={50}
+              placeholder="请输入任务名称"
+              readOnly={isReadOnly}
+            />
           </Item>
           {isReadOnly
             ? (
@@ -260,7 +271,7 @@ const AddTask: React.FC = () => {
         visible={detailVisible}
         onClose={() => setDetailVisible(false)}
       />
-    </>
+    </Spin>
   );
 };
 export default AddTask;

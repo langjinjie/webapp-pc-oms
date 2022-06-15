@@ -53,7 +53,7 @@ export const requestGetTaskStaffDetail: HttpFC = (param) => {
  * @param
  */
 export const requestGetWechatTransferTaskList: HttpFC = (param) => {
-  return http.post('/tenacity-admin/api/wechat/transfer/task/list', param);
+  return http.post('/tenacity-admin/api/wechat/transfer/list', param);
 };
 
 /**
@@ -61,14 +61,14 @@ export const requestGetWechatTransferTaskList: HttpFC = (param) => {
  * @param
  */
 export const requestGetWechatTaskDetail: HttpFC = (param) => {
-  return http.post('/tenacity-admin/api/wechat/transfer/task/detail', param);
+  return http.post('/tenacity-admin/api/wechat/transfer/detail', param);
 };
 
 /**
  * 2.3 个微好友迁移-任务详情-查看明细接口（管理端）
  */
 export const requestGetWechatTransferTaskDetailStaffList: HttpFC = (param) => {
-  return http.post('/tenacity-admin/api/wechat/transfer/task/staff/list', param);
+  return http.post('/tenacity-admin/api/wechat/transfer/staff/list', param);
 };
 
 /**
@@ -82,7 +82,9 @@ export const requestOpWechatTransferTask: HttpFC = (param) => {
  * 2.5 个微好友迁移-任务数据下载接口（管理端）
  */
 export const requestExportTransferWechatTask: HttpFC = (param) => {
-  return http.post('/tenacity-admin/api /transfer/wechat /task/export', param);
+  return http.post('/tenacity-admin/api/transfer/wechat/task/export', param, {
+    responseType: 'blob'
+  });
 };
 
 /**

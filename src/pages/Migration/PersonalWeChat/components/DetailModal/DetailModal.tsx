@@ -1,6 +1,6 @@
 import Modal from 'src/components/Modal/Modal';
 import React, { useEffect, useState } from 'react';
-import { requestGetTaskStaffDetail } from 'src/apis/migration';
+import { requestGetWechatTransferTaskDetailStaffList } from 'src/apis/migration';
 import styles from './style.module.less';
 import classNames from 'classnames';
 import { Pagination } from 'antd';
@@ -25,7 +25,11 @@ const DetailModal: React.FC<DetailModalProps> = ({ taskId, visible, onClose }) =
   });
   // 查询群发任务员工明细
   const getStaffList = async () => {
-    const res = await requestGetTaskStaffDetail({ taskId, pageNum: pagination.current, pageSize: pagination.pageSize });
+    const res = await requestGetWechatTransferTaskDetailStaffList({
+      taskId,
+      pageNum: pagination.current,
+      pageSize: pagination.pageSize
+    });
     if (res) {
       setStaffList(res.list);
       setPagination((pagination) => ({ ...pagination, total: res.total }));

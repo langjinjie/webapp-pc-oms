@@ -59,10 +59,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       title: '每人目标迁移数',
       key: 'targetTransferNum',
       dataIndex: 'targetTransferNum',
-      width: 160,
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
+      width: 160
     },
     {
       title: '开始时间',
@@ -108,7 +105,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       key: 'operation',
       fixed: 'right',
       width: 100,
-      render: (text, record, index) => (
+      render: (_, record, index) => (
         <Space size="small">
           <AuthBtn path="/view">
             <a onClick={() => viewItem(record.taskId)}>查看</a>
