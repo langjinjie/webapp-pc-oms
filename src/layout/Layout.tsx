@@ -41,10 +41,11 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
 
       // 根据路径来判断当前页面的按钮
       const currentIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(currentMenu));
-      const subIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(location.pathname));
+      const subIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path?.includes(location.pathname));
       // 针对路径和，菜单路径来判断，路由未查找到的时，取菜单的值
       const resIndex = subIndex !== currentIndex && subIndex !== -1 ? subIndex : currentIndex;
       const btnList: MenuItem[] = resIndex > -1 ? subMenus[resIndex].children || [] : [];
+      console.log({ btnList, subMenus });
       setBtnList(btnList.map((item) => item.path));
     }
   };
