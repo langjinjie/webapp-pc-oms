@@ -22,6 +22,13 @@ export interface RecommendMarketProps {
   whetherDelete?: number;
   otherData: any;
 }
+
+interface formDataProps {
+  newsList: any[];
+  posterList: any[];
+  productTypeList: any[];
+  activityList: any[];
+}
 const MarketIndex: React.FC = () => {
   useDocumentTitle('移动端首页配置');
   const [posterList, setPosterList] = useState<any[]>([]);
@@ -29,7 +36,12 @@ const MarketIndex: React.FC = () => {
   const [productList, setProductList] = useState<any[]>([]);
   const [activityList, setActivityList] = useState<any[]>([]);
   const [fetching, setFetching] = useState(false);
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<formDataProps>({
+    newsList: [],
+    posterList: [],
+    productTypeList: [],
+    activityList: []
+  });
 
   const [form] = useForm();
 
@@ -175,6 +187,7 @@ const MarketIndex: React.FC = () => {
       } else {
         const oldSelectedList = [...formData.newsList];
         oldSelectedList.splice(index, 1, {});
+        setFormData((formData) => ({ ...formData, newsList: oldSelectedList }));
         form.setFieldsValue({
           newsList: oldSelectedList
         });
@@ -195,8 +208,8 @@ const MarketIndex: React.FC = () => {
         form.setFieldsValue({
           productTypeList: oldSelectedList
         });
-        setFormData((formData: any) => ({
-          ...formData!,
+        setFormData((formData) => ({
+          ...formData,
           productTypeList: oldSelectedList.filter((item: any) => item.productId)
         }));
       } else {
@@ -205,6 +218,10 @@ const MarketIndex: React.FC = () => {
         form.setFieldsValue({
           productTypeList: oldSelectedList
         });
+        setFormData((formData) => ({
+          ...formData,
+          productTypeList: oldSelectedList
+        }));
       }
     }
     // 海报
@@ -232,6 +249,10 @@ const MarketIndex: React.FC = () => {
         form.setFieldsValue({
           posterList: oldSelectedList
         });
+        setFormData((formData: any) => ({
+          ...formData,
+          posterList: oldSelectedList
+        }));
       }
     }
     // 活动
@@ -259,6 +280,10 @@ const MarketIndex: React.FC = () => {
         form.setFieldsValue({
           activityList: oldSelectedList
         });
+        setFormData((formData: any) => ({
+          ...formData,
+          activityList: oldSelectedList
+        }));
       }
     }
   };
