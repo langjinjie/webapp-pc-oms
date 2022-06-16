@@ -17,6 +17,7 @@ interface NgUploadProps {
   btnText?: string;
   showDeleteBtn?: boolean;
   bizKey?: string;
+  disabled?: boolean;
 }
 
 const getBase64 = (img: any, callback: (str: any) => void) => {
@@ -24,7 +25,7 @@ const getBase64 = (img: any, callback: (str: any) => void) => {
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 };
-const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, bizKey = 'pdf' }) => {
+const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, bizKey = 'pdf', disabled }) => {
   const [states, setStates] = useState({
     loading: false,
     imageUrl: ''
@@ -110,6 +111,7 @@ const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, 
         : (
         <div className={styles.uploadWrap}>
           <Upload.Dragger
+            disabled={disabled}
             onChange={handleChange}
             listType="picture-card"
             maxCount={1}

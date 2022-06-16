@@ -5,6 +5,7 @@ interface InputShowLengthProps {
   value?: string;
   onChange?: (val: string) => void;
   maxLength: number;
+  disabled?: boolean;
   [propKey: string]: any;
 }
 export const Suffix: React.FC<{ maxLength: number; count: number }> = ({ maxLength, count = 0 }) => {
