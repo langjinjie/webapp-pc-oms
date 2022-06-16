@@ -1,5 +1,5 @@
 import { Button, Tag } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { createSingleGroup } from 'src/apis/marketing';
 import { NgModal } from 'src/components';
 import { OrganizationalTree } from 'src/pages/RoleManage/components';
@@ -35,9 +35,15 @@ const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValu
   const handleShowSelectModal = () => {
     setVisibleUserGroup(true);
   };
+
   const tagList = useMemo(() => {
-    return propValue ? [...propValue?.staffList, ...propValue.deptList] : [];
+    if (propValue) {
+      return [...(propValue.staffList || []), ...(propValue?.deptList || [])];
+    } else {
+      return [];
+    }
   }, [propValue]);
+
   return (
     <>
       {tagList.map((item: any, index: number) => {
