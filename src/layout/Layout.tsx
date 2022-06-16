@@ -45,7 +45,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
       // 针对路径和，菜单路径来判断，路由未查找到的时，取菜单的值
       const resIndex = subIndex !== currentIndex && subIndex !== -1 ? subIndex : currentIndex;
       const btnList: MenuItem[] = resIndex > -1 ? subMenus[resIndex].children || [] : [];
-      console.log({ btnList, subMenus });
       setBtnList(btnList.map((item) => item.path));
     }
   };
