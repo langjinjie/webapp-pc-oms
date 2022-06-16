@@ -162,9 +162,17 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
               return (
                 subMenu?.path && (
                   <li key={subMenu.menuId}>
-                    <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
-                      {subMenu.menuName}
-                    </NavLink>
+                    {subMenu?.path.indexOf('http') > -1
+                      ? (
+                      <a target={'_blank'} className="sub-menu-item" href={subMenu?.path as string} rel="noreferrer">
+                        {subMenu.menuName}
+                      </a>
+                        )
+                      : (
+                      <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
+                        {subMenu.menuName}
+                      </NavLink>
+                        )}
                   </li>
                 )
               );
