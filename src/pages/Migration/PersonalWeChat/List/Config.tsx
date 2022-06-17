@@ -104,7 +104,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 100,
+      width: 200,
       render: (_, record, index) => (
         <Space size="small">
           <AuthBtn path="/view">
@@ -122,7 +122,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
           )}
           {record.taskStatus !== 0 && (
             <AuthBtn path="/download">
-              <a onClick={() => exportData(record)}>数据</a>
+              <a onClick={() => exportData(record)}>下载明细</a>
             </AuthBtn>
           )}
           {record.taskStatus === 0 && (
