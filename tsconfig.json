@@ -19,6 +19,6 @@
       "@": ["src"]
     }
   },
-  "include": ["src", "typings"],
+  "include": ["src", "typings", "static/iconfonts"],
   "exclude": ["node_modules", "scripts/"]
 }
