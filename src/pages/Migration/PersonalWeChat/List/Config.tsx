@@ -104,7 +104,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       title: '操作',
       key: 'operation',
       fixed: 'right',
-      width: 200,
+      width: 160,
       render: (_, record, index) => (
         <Space size="small">
           <AuthBtn path="/view">
