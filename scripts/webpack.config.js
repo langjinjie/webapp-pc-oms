@@ -93,7 +93,10 @@ module.exports = function () {
     return ('' + num).length < length ? (new Array(length + 1).join('0') + num).slice(-length) : '' + num;
   };
   const date = new Date();
-  const time = `${date.getFullYear()}${fix(date.getMonth() + 1, 2)}${fix(date.getDate(), 2)}${fix(date.getHours(), 2)}${fix(date.getMinutes(), 2)}${fix(date.getSeconds(), 2)}`;
+  const time = `${date.getFullYear()}${fix(date.getMonth() + 1, 2)}${fix(date.getDate(), 2)}${fix(
+    date.getHours(),
+    2
+  )}${fix(date.getMinutes(), 2)}${fix(date.getSeconds(), 2)}`;
 
   return {
     entry: {
@@ -195,6 +198,7 @@ module.exports = function () {
       new HtmlPlugin({
         template: path.resolve(ROOT_PATH, './public/index.html'),
         favicon: path.resolve(ROOT_PATH, './public/favicon.ico'),
+        projectPath: process.env.NODE_ENV === 'production' ? '/tenacity-oms' : '',
         // html压缩
         minify: {
           collapseWhitespace: true,
