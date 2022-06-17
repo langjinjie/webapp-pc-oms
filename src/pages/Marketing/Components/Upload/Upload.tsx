@@ -130,33 +130,37 @@ const NgUpload: React.FC<NgUploadProps> = ({
       {type === 'audio' && (
         <>
           {states.imageUrl && <audio controls className={styles.audio} src={states.imageUrl}></audio>}
-
-          <Upload
-            onChange={handleChange}
-            listType="picture-card"
-            beforeUpload={beforeUpload}
-            showUploadList={false}
-            className={classNames({ 'avatar-uploader': !type })}
-            customRequest={posterUploadFile}
-          >
-            {uploadButton}
-          </Upload>
+          {!disabled && (
+            <Upload
+              disabled={disabled}
+              onChange={handleChange}
+              listType="picture-card"
+              beforeUpload={beforeUpload}
+              showUploadList={false}
+              className={classNames({ 'avatar-uploader': !type })}
+              customRequest={posterUploadFile}
+            >
+              {uploadButton}
+            </Upload>
+          )}
         </>
       )}
       {type === 'video' && (
         <>
           {states.imageUrl && <video controls className={styles.video} src={states.imageUrl}></video>}
-
-          <Upload
-            onChange={handleChange}
-            listType="picture-card"
-            beforeUpload={beforeUpload}
-            showUploadList={false}
-            className={classNames({ 'avatar-uploader': !type })}
-            customRequest={posterUploadFile}
-          >
-            {uploadButton}
-          </Upload>
+          {!disabled && (
+            <Upload
+              disabled={disabled}
+              onChange={handleChange}
+              listType="picture-card"
+              beforeUpload={beforeUpload}
+              showUploadList={false}
+              className={classNames({ 'avatar-uploader': !type })}
+              customRequest={posterUploadFile}
+            >
+              {uploadButton}
+            </Upload>
+          )}
         </>
       )}
     </>
