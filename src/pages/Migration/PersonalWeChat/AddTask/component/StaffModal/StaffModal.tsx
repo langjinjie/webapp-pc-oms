@@ -50,18 +50,10 @@ const StaffModal: React.FC<IStaffModalProps> = ({
     const res = await requestGetWechatTransferStaffScope({ name, ...paginationParam });
     if (res) {
       const list = res.list.map((item: IStaffInfo) => {
-        if (showCheckbox) {
-          return {
-            value: item.staffId,
-            label: `${item.staffName}（${item.deptName ? item.deptName.split('/').slice(1).join('-') : ''}）`,
-            disabled: !item.targetStaffId
-          };
-        } else {
-          return {
-            value: item.staffId,
-            label: `${item.staffName}（${item.deptName ? item.deptName.split('/').slice(1).join('-') : ''}）`
-          };
-        }
+        return {
+          value: item.staffId,
+          label: `${item.staffName}${item.deptName ? '（' + item.deptName + '）' : ''}`
+        };
       });
       setBtnDisabled?.(!list.length);
       setStaffList({ total: res.total, list });
