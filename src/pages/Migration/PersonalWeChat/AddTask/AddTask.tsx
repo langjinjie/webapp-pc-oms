@@ -146,7 +146,7 @@ const AddTask: React.FC = () => {
   }, [location]);
   return (
     <Spin spinning={loading}>
-      <header className={style.addTask}>创建任务</header>
+      <header className={style.addTask}>{isReadOnly ? '查看' : '新增'}任务</header>
       <div className={style.content}>
         <Form form={form} className={style.form} onFinish={onFinish}>
           <Item name="taskName" className={style.formItem} label="任务名称：">

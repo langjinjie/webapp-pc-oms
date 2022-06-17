@@ -120,9 +120,9 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
               </Popconfirm>
             </AuthBtn>
           )}
-          {record.taskStatus === 2 && (
+          {record.taskStatus !== 0 && (
             <AuthBtn path="/download">
-              <a onClick={() => exportData(record)}>明细</a>
+              <a onClick={() => exportData(record)}>数据</a>
             </AuthBtn>
           )}
           {record.taskStatus === 0 && (
