@@ -32,7 +32,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
     const pathArr: string[] = window.location.pathname.split('/');
     const currentMenu: string = pathArr.length > 3 ? pathArr[pathArr.length - 2] : pathArr[pathArr.length - 1];
     const currentMenuIndex = menus.findIndex((menu: MenuItem) =>
-      menu.children?.some((subMenu: MenuItem) => subMenu.path.includes(currentMenu))
+      menu.children?.some((subMenu: MenuItem) => subMenu.path?.includes(currentMenu))
     );
     if (currentMenuIndex > -1) {
       const subMenus = menus[currentMenuIndex].children || [];
@@ -41,7 +41,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
 
       // 根据路径来判断当前页面的按钮
       const currentIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(currentMenu));
-      const subIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(location.pathname));
+      const subIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path?.includes(location.pathname));
       // 针对路径和，菜单路径来判断，路由未查找到的时，取菜单的值
       const resIndex = subIndex !== currentIndex && subIndex !== -1 ? subIndex : currentIndex;
       const btnList: MenuItem[] = resIndex > -1 ? subMenus[resIndex].children || [] : [];
@@ -157,13 +157,25 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
         </Affix>
         <Affix offsetTop={80}>
           <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
-            {subMenus.map((subMenu: MenuItem) => (
-              <li key={subMenu.menuId}>
-                <NavLink to={subMenu.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
-                  {subMenu.menuName}
-                </NavLink>
-              </li>
-            ))}
+            {subMenus.map((subMenu: MenuItem) => {
+              return (
+                subMenu?.path && (
+                  <li key={subMenu.menuId}>
+                    {subMenu?.path.indexOf('http') > -1
+                      ? (
+                      <a target={'_blank'} className="sub-menu-item" href={subMenu?.path as string} rel="noreferrer">
+                        {subMenu.menuName}
+                      </a>
+                        )
+                      : (
+                      <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
+                        {subMenu.menuName}
+                      </NavLink>
+                        )}
+                  </li>
+                )
+              );
+            })}
           </ul>
         </Affix>
 
