@@ -114,6 +114,8 @@ const MarketIndex: React.FC = () => {
         setProductList(() => productTypeList);
         const spliceIndex: number = productTypeList.length;
         productTypeList = productTypeList.concat(defaultProductList.splice(spliceIndex, 3));
+      } else {
+        productTypeList = defaultProductList;
       }
       if (posterList && posterList.length > 0) {
         posterList = await Promise.all(
