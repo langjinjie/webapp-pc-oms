@@ -27,6 +27,10 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/noPermission',
     component: lazy(() => import('src/pages/NoPermission/NoPermission'))
+  },
+  {
+    path: '/strategyTask/edit',
+    component: lazy(() => import('src/pages/Task/StrategyTask/Edit'))
   }
 ];
 
@@ -295,6 +299,12 @@ export const routes: RouteProps[] = [
   {
     path: '/dashboardList/:id/detail',
     component: lazy(() => import('src/pages/Dashboard/Detail/Detail'))
+  },
+
+  // 任务系统
+  {
+    path: '/strategyTask',
+    component: lazy(() => import('src/pages/Task/StrategyTask/List'))
   }
 ];
 
