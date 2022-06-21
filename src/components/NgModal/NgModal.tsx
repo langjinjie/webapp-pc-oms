@@ -9,7 +9,7 @@ import classNames from 'classnames';
 //   className?: string;
 // }
 
-type NgModalProps = ModalProps;
+export type NgModalProps = ModalProps;
 
 export const NgModal: React.FC<NgModalProps> = ({ children, onOk, className, ...props }) => {
   return (

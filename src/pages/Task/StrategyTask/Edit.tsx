@@ -1,4 +1,4 @@
-import { Breadcrumb, Form, Input, Radio } from 'antd';
+import { Breadcrumb, Button, Form, Input, Radio, Space } from 'antd';
 import React from 'react';
 import FormBlock from './components/FormBlock/FormBlock';
 
@@ -45,6 +45,18 @@ const StrategyTaskEdit: React.FC = () => {
           <div className="formListTitle">配置操作区</div>
           <Form.Item>
             <FormBlock />
+          </Form.Item>
+          <Form.Item>
+            <div className="flex justify-center formFooter">
+              <Space size={30}>
+                <Button type="primary" shape="round" ghost>
+                  取消
+                </Button>
+                <Button type="primary" shape="round">
+                  确认
+                </Button>
+              </Space>
+            </div>
           </Form.Item>
         </Form>
       </div>
