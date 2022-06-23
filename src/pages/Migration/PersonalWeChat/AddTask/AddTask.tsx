@@ -191,6 +191,7 @@ const AddTask: React.FC = () => {
               max={10000}
               maxLength={5}
               controls={false}
+              precision={0}
               placeholder="请输入1-10000以内的整数"
               readOnly={isReadOnly}
             />
