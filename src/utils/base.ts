@@ -171,7 +171,7 @@ const result = treeFindPath(myTree, (node) => node.id === '2-2-1-1');
 console.log(result);
  * @returns  ["2","2-1"]
  */
-export function treeFindPath (tree: any[], func: (node: any) => boolean, path: any[] = []): any[] {
+export function treeFindPath(tree: any[], func: (node: any) => boolean, path: any[] = []): any[] {
   if (!tree) return [];
   for (const data of tree) {
     path.push(data);
@@ -297,5 +297,5 @@ export const updateTreeData = (list: any[], key: React.Key, children: any[]): an
  */
 export const replaceEnter = (str: string): string => {
   // \n 匹配一个换行符, \r 匹配一个回车符
-  return str.replace(/\\n|\\r|\r\n/g, '<br/>');
+  return str.replace(/\\n|\n/g, '<br/>');
 };

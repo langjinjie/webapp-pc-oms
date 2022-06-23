@@ -5,7 +5,6 @@ import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { UNKNOWN } from 'src/utils/base';
 import { Popconfirm, Space, Tooltip } from 'antd';
-import { percentage } from 'src/utils/tools';
 import { AuthBtn } from 'src/components';
 
 export interface TaskProps {
@@ -40,7 +39,7 @@ type colargsType = {
 };
 const columns = (args: colargsType): ColumnsType<TaskProps> => {
   const { exportData, viewItem, operateItem } = args;
-
+  const taskStatusList = ['未开始', '进行中', '已结束'];
   return [
     {
       title: '任务名称',
@@ -57,19 +56,10 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       )
     },
     {
-      title: '创建任务时间',
-      key: 'createTime',
-      dataIndex: 'createTime',
-      width: 160,
-      render: (text: string) => {
-        return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '创建人',
-      dataIndex: 'opName',
-      key: 'opName',
-      width: 140
+      title: '每人目标迁移数',
+      key: 'targetTransferNum',
+      dataIndex: 'targetTransferNum',
+      width: 160
     },
     {
       title: '开始时间',
@@ -89,48 +79,33 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
         return <span>{text ? moment(text).format('YYYY-MM-DD HH:mm') : UNKNOWN}</span>;
       }
     },
-
-    {
-      title: '员工执行进度',
-      width: 140,
-      key: 'categoryName',
-      align: 'center',
-      render: (text, record) => {
-        return (
-          <span>
-            <span>{`${record.staffExecNum}/${record.staffTotalNum}`}</span>
-            <span className="ml10">{`(${percentage(record.staffExecNum, record.staffTotalNum)})`}</span>
-          </span>
-        );
-      }
-    },
-    {
-      title: '客户迁移进度',
-      width: 260,
-      align: 'center',
-      render: (text, record) => (
-        <span>
-          <span>{`${record.clientTransferNum}/${record.clientTotalNum}`}</span>
-          <span className="ml10">{`(${percentage(record.clientTransferNum, record.clientTotalNum)})`}</span>
-        </span>
-      )
-    },
     {
       title: '任务状态',
-      width: 140,
-      key: 'taskStatus',
       dataIndex: 'taskStatus',
-      render: (status: number) => {
-        return <span>{status === 0 ? '未开始' : status === 1 ? '进行中' : '已结束'}</span>;
+      key: 'opName',
+      width: 140,
+      render(status: number) {
+        return <span>{taskStatusList[status]}</span>;
       }
     },
-
+    {
+      title: '完成任务数',
+      key: 'staffExecNum',
+      dataIndex: 'staffExecNum',
+      width: 160
+    },
+    {
+      title: '好友迁移数',
+      key: 'clientTransferNum',
+      dataIndex: 'clientTransferNum',
+      width: 160
+    },
     {
       title: '操作',
       key: 'operation',
       fixed: 'right',
       width: 160,
-      render: (text, record, index) => (
+      render: (_, record, index) => (
         <Space size="small">
           <AuthBtn path="/view">
             <a onClick={() => viewItem(record.taskId)}>查看</a>
