@@ -153,7 +153,12 @@ const AddTask: React.FC = () => {
       <header className={style.addTask}>{isReadOnly ? '查看' : '新增'}任务</header>
       <div className={style.content}>
         <Form form={form} className={style.form} onFinish={onFinish}>
-          <Item name="taskName" className={style.formItem} label="任务名称：">
+          <Item
+            name="taskName"
+            className={style.formItem}
+            label="任务名称："
+            rules={[{ required: true, message: '请输入任务名称' }]}
+          >
             <Input className={style.input} showCount={true} maxLength={50} placeholder="请输入任务名称" />
           </Item>
           {isReadOnly
