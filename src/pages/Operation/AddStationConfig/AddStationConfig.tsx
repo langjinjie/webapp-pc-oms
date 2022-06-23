@@ -226,7 +226,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     // setFetching(true);
     const res = await searchRecommendGoodsList({
       title: value,
-      specType: 1,
+      specType: 0,
       recommendType: type
     });
     if (type === 1) {
