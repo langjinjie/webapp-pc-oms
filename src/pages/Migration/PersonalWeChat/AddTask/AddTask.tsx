@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Form, Input, Button, DatePicker, message, Spin } from 'antd';
+import { Form, Input, Button, DatePicker, message, Spin, InputNumber } from 'antd';
 import { ChoosedStaffList } from './component';
 import { ImageUpload } from 'src/components';
 import { getQueryParam } from 'tenacity-tools';
@@ -158,7 +158,8 @@ const AddTask: React.FC = () => {
               readOnly={isReadOnly}
             />
           </Item>
-          {isReadOnly ? (
+          {isReadOnly
+            ? (
             <Item className={style.formItem} label="执行人员：">
               <Item name="staffTotalNum" noStyle>
                 <Input className={style.readOnlyInput} readOnly />
@@ -167,7 +168,8 @@ const AddTask: React.FC = () => {
                 查看明细
               </span>
             </Item>
-          ) : (
+              )
+            : (
             <Item
               name="staffList"
               className={style.formItem}
@@ -176,18 +178,20 @@ const AddTask: React.FC = () => {
             >
               <ChoosedStaffList />
             </Item>
-          )}
+              )}
           <Item
             name="targetTransferNum"
             className={style.formItem}
             label="目标迁移数："
             rules={[{ required: true, message: '请输入目标迁移数' }]}
           >
-            <Input
+            <InputNumber
               className={classNames(style.input, style.numInput)}
-              showCount={!isReadOnly}
-              maxLength={30}
-              placeholder="请输入链接标题"
+              min={0}
+              max={10000}
+              maxLength={5}
+              controls={false}
+              placeholder="请输入1-10000以内的整数"
               readOnly={isReadOnly}
             />
           </Item>

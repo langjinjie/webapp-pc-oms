@@ -44,13 +44,8 @@ const devServerOptions = {
   proxy: [
     {
       context: ['/api', '/tenacity-admin'],
-<<<<<<< HEAD
       target: 'https://dev.tenacity.com.cn',
       // target: 'http://172.30.15.141:7060',
-=======
-      target: 'https://test.tenacity.com.cn',
-      // target: 'https://uat.tenacity.com.cn',
->>>>>>> develop#feature_transfer
       secure: false,
       changeOrigin: true
     }

@@ -84,7 +84,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       dataIndex: 'taskStatus',
       key: 'opName',
       width: 140,
-      render(status: number) {
+      render (status: number) {
         return <span>{taskStatusList[status]}</span>;
       }
     },

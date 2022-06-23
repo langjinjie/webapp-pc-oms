@@ -23,7 +23,7 @@ const ChoosedStaffList: React.FC<IChoosedStaffListProps> = ({ value, onChange })
       visible: true,
       title: '温馨提示',
       tips: '是否需要全部删除已选中的执行人员？',
-      onOk() {
+      onOk () {
         onChange?.(staffList);
         setConfirmModalParam({ visible: false });
       }

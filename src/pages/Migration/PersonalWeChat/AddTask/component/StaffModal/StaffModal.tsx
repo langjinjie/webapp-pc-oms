@@ -170,7 +170,8 @@ const StaffModal: React.FC<IStaffModalProps> = ({
           )}
         </div>
       )}
-      {staffList.list.length ? (
+      {staffList.list.length
+        ? (
         <>
           <CheckboxGroup
             className={classNames(style.checkboxGroupWrap, { [style.hideCheckbox]: !showCheckbox })}
@@ -196,11 +197,12 @@ const StaffModal: React.FC<IStaffModalProps> = ({
             showSizeChanger={false}
           />
         </>
-      ) : (
+          )
+        : (
         <div className={classNames(style.emptyWrap, { [style.hideCheckboxEmptyWrap]: !showCheckbox })}>
           <Empty />
         </div>
-      )}
+          )}
     </Modal>
   );
 };

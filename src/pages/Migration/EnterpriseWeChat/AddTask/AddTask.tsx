@@ -156,7 +156,8 @@ const AddTask: React.FC = () => {
           <Item name="taskName" className={style.formItem} label="任务名称：">
             <Input className={style.input} showCount={true} maxLength={50} placeholder="请输入任务名称" />
           </Item>
-          {isReadOnly ? (
+          {isReadOnly
+            ? (
             <Item className={style.formItem} label="执行人员：">
               <Item name="staffTotalNum" noStyle>
                 <Input className={style.readOnlyInput} readOnly />
@@ -165,7 +166,8 @@ const AddTask: React.FC = () => {
                 查看明细
               </span>
             </Item>
-          ) : (
+              )
+            : (
             <Item
               name="staffList"
               className={style.formItem}
@@ -174,7 +176,7 @@ const AddTask: React.FC = () => {
             >
               <ChoosedStaffList />
             </Item>
-          )}
+              )}
           <Item
             name="clientType"
             className={style.formItem}

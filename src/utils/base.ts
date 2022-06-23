@@ -171,7 +171,7 @@ const result = treeFindPath(myTree, (node) => node.id === '2-2-1-1');
 console.log(result);
  * @returns  ["2","2-1"]
  */
-export function treeFindPath(tree: any[], func: (node: any) => boolean, path: any[] = []): any[] {
+export function treeFindPath (tree: any[], func: (node: any) => boolean, path: any[] = []): any[] {
   if (!tree) return [];
   for (const data of tree) {
     path.push(data);
