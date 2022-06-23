@@ -839,18 +839,45 @@ ul {
 .text-center {
   text-align: center;
 }
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+.menu-list::-webkit-scrollbar {
+  width: 0;
 }
-::-webkit-scrollbar-thumb {
+.menu-list:hover::-webkit-scrollbar {
+  width: 5px;
+  // height: 220px;
+  // background: #3078db;
+}
+.menu-list::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  background: rgba(0, 0, 0, 0.2);
-}
-::-webkit-scrollbar-track {
+  // position: fixed;
+  // left: 100px;
+  max-height: 400px !important;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-  border-radius: 0;
   background: rgba(0, 0, 0, 0.1);
 }
+// .menu-list::-webkit-scrollbar-button {
+//   height: 100px;
+//   width: 5px;
+//   background: #111;
+// }
+.menu-list::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0);
+  height: 260px;
+}
+
+// ::-webkit-scrollbar {
+//   width: 10px;
+//   height: 10px;
+// }
+// ::-webkit-scrollbar-thumb {
+//   border-radius: 5px;
+//   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+//   background: rgba(0, 0, 0, 0.2);
+// }
+// ::-webkit-scrollbar-track {
+//   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+//   border-radius: 0;
+//   background: rgba(0, 0, 0, 0.1);
+// }
