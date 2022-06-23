@@ -46,7 +46,8 @@ const EmptyTask: React.FC<EmptyTaskProps> = ({ createdSuccess }) => {
   };
   return (
     <div className={styles.emptyWrap}>
-      {isNext ? (
+      {isNext
+        ? (
         <div className="flex vertical">
           <h2 className={'f26 color-text-regular'}>企微好友迁移，从未如此简单！</h2>
           <div className={styles.choiceWrap}>
@@ -94,11 +95,12 @@ const EmptyTask: React.FC<EmptyTaskProps> = ({ createdSuccess }) => {
             </div>
           </div>
         </div>
-      ) : (
+          )
+        : (
         <header className={classNames(styles.emptyWrap, 'flex align-center justify-center')}>
           <h2 className={'f26 color-text-regular'}>企微好友迁移，从未如此简单！</h2>
         </header>
-      )}
+          )}
     </div>
   );
 };
