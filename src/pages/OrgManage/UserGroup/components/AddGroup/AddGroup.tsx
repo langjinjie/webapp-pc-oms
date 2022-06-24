@@ -39,7 +39,7 @@ const AddGroup: React.FC = () => {
     const param = { ...values, filterId: modalParam.add ? modalParam.filterId : undefined, groupId };
     const res = await requestAddGroup(param);
     if (res) {
-      message.success(groupId ? '用户组编辑成功' : '用户组添加成功');
+      message.success(groupId ? '员工组编辑成功' : '员工组添加成功');
       history.replace('/userGroup');
     }
   };
@@ -48,7 +48,7 @@ const AddGroup: React.FC = () => {
     if (!modalParam.filterId) return message.info('先点击筛选才能查看人员');
     setModalParam((param) => ({ ...param, visible: true }));
   };
-  // 获取用户组详情
+  // 获取员工组详情
   const getGroupDetail = async () => {
     const urlSearch = URLSearchParams(location.search);
     if (urlSearch.groupId) {
@@ -71,7 +71,7 @@ const AddGroup: React.FC = () => {
       <div className={style.breadcrumbs}>
         当前位置：
         <span className={style.goBack} onClick={clickBreadCrumbs}>
-          用户组管理
+          员工组管理
         </span>
         <span className={style.line}>/</span>
         <span className={style.current}>
@@ -80,7 +80,7 @@ const AddGroup: React.FC = () => {
               ? '查看'
               : '修改'
             : '新增'}
-          用户组
+          员工组
         </span>
       </div>
       <div className={style.title}>
@@ -89,14 +89,14 @@ const AddGroup: React.FC = () => {
             ? '查看'
             : '修改'
           : '新增'}
-        用户组
+        员工组
       </div>
       <Form form={form} className={style.form} onFinish={onFinish}>
-        <div className={style.title}>用户组基本信息</div>
-        <Form.Item name="groupName" label="用户组名称：" required>
+        <div className={style.title}>员工组基本信息</div>
+        <Form.Item name="groupName" label="员工组名称：" required>
           <Input placeholder="待输入" allowClear style={{ width: 300 }} showCount maxLength={30} readOnly={readOnly} />
         </Form.Item>
-        <Form.Item name="desc" label="用户组说明：" required>
+        <Form.Item name="desc" label="员工组说明：" required>
           <Input.TextArea
             className={style.textArea}
             placeholder="待输入"
@@ -107,7 +107,7 @@ const AddGroup: React.FC = () => {
             readOnly={readOnly}
           />
         </Form.Item>
-        <div className={style.title}>用户组人员配置</div>
+        <div className={style.title}>员工组人员配置</div>
         <Form.Item name="groupTagList" label="标签选择：">
           <ChooseTags readOnly={readOnly} />
         </Form.Item>

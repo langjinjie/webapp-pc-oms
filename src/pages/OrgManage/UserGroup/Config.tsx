@@ -11,25 +11,25 @@ const TableColumns = (readonly?: boolean): ColumnType<any>[] => {
   // const { setConfirmModalParam } =
   //   useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(Context);
   const history = useHistory();
-  // 查看用户组
+  // 查看员工组
   const viewGroup = (groupId: string) => {
     history.push('/userGroup/add?groupId=' + groupId + '&type=view');
   };
-  // 编辑用户组
+  // 编辑员工组
   const editGroup = (groupId: string) => {
     history.push('/userGroup/add?groupId=' + groupId + '&type=edit');
   };
   return [
     {
-      title: '用户组编号',
+      title: '员工组编号',
       dataIndex: 'groupCode'
     },
     {
-      title: '用户组名称',
+      title: '员工组名称',
       dataIndex: 'groupName'
     },
     {
-      title: '用户组说明',
+      title: '员工组说明',
       dataIndex: 'desc'
     },
     {
@@ -50,7 +50,7 @@ const TableColumns = (readonly?: boolean): ColumnType<any>[] => {
             <AuthBtn path="/edit">
               {readonly || (
                 <span className={style.modifyGroup} onClick={() => editGroup(row.groupId)}>
-                  修改用户组
+                  修改员工组
                 </span>
               )}
             </AuthBtn>
