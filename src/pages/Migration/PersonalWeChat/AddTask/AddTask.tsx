@@ -108,9 +108,9 @@ const AddTask: React.FC = () => {
       history.goBack();
     } else {
       const { taskName, targetTransferNum, executionTime, thumbnail, title, summary, speechcraft, staffList } = value;
-      const startTime = executionTime[0].format('YYYY-MM-DD HH:mm:ss');
+      const startTime = executionTime[0].format('YYYY-MM-DD HH:mm') + ':00';
       // const startTime = executionTime[0].startOf('minute').format('YYYY-MM-DD HH:mm:ss');
-      const endTime = executionTime[1].format('YYYY-MM-DD HH:mm:ss');
+      const endTime = executionTime[1].format('YYYY-MM-DD HH:mm') + ':00';
       // const endTime = executionTime[1].endOf('minute').format('YYYY-MM-DD HH:mm:ss');
       const res = await requestCreateWechatTransferTask({
         taskName,
