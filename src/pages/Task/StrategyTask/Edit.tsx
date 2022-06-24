@@ -1,6 +1,7 @@
-import { Breadcrumb, Button, Form, Input, Radio, Space } from 'antd';
 import React from 'react';
+import { Breadcrumb, Button, Form, Input, Radio, Space } from 'antd';
 import FormBlock from './components/FormBlock/FormBlock';
+import { FormBlockPreview } from './components/FormBlockPreview/FormBlockPreview';
 
 const StrategyTaskEdit: React.FC = () => {
   const navigatorToList = () => {
@@ -46,6 +47,8 @@ const StrategyTaskEdit: React.FC = () => {
           <Form.Item>
             <FormBlock />
           </Form.Item>
+          <div className="formListTitle">策略行事历预览</div>
+          <FormBlockPreview value={[{}]} />
           <Form.Item>
             <div className="flex justify-center formFooter">
               <Space size={30}>

@@ -1,6 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Select, Space } from 'antd';
+import { Button, Input, Select, Space, TimePicker } from 'antd';
 import classNames from 'classnames';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
 import styles from './style.module.less';
@@ -84,6 +85,12 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
                   </label>
                   <Input className={styles.attrItemContent}></Input>
                 </div>
+                <div className={classNames(styles.attrItem, 'flex align-center')}>
+                  <label className={styles.attrItemLabel} htmlFor="">
+                    节点说明:
+                  </label>
+                  <Input placeholder="钱输入节点名称" className={styles.attrItemContent}></Input>
+                </div>
 
                 <div className={classNames(styles.attrItem, 'flex align-center')}>
                   <label className={styles.attrItemLabel} htmlFor="">
@@ -127,7 +134,9 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
                             readOnly
                           ></Input>
                         </div>
-                        <div className={classNames(styles.timeCol)}>09：00</div>
+                        <div className={classNames(styles.timeCol)}>
+                          <TimePicker bordered={false} defaultValue={moment('09:00', 'HH:mm')} format={'HH:mm'} />
+                        </div>
                         <div className={styles.operateCol}>
                           <Space>
                             <Button type="link">查看</Button>

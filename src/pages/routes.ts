@@ -31,6 +31,10 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/strategyTask/edit',
     component: lazy(() => import('src/pages/Task/StrategyTask/Edit'))
+  },
+  {
+    path: '/taskScene/detail',
+    component: lazy(() => import('src/pages/Task/SceneTask/Detail/Detail'))
   }
 ];
 
@@ -305,6 +309,14 @@ export const routes: RouteProps[] = [
   {
     path: '/strategyTask',
     component: lazy(() => import('src/pages/Task/StrategyTask/List'))
+  },
+  {
+    path: '/taskScene',
+    component: lazy(() => import('src/pages/Task/SceneTask/List/List'))
+  },
+  {
+    path: '/taskRule',
+    component: lazy(() => import('src/pages/Task/RuleManage/List'))
   }
 ];
 
