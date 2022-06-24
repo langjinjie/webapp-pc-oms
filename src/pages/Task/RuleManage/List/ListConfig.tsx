@@ -15,7 +15,7 @@ export const ruleTypeOptions = [
   }
 ];
 
-export const searchCols: SearchCol[] = [
+export const nodeSearchCols: SearchCol[] = [
   {
     name: 'sceneCode',
     type: 'input',
@@ -43,6 +43,40 @@ export const searchCols: SearchCol[] = [
     label: '节点类别',
     placeholder: '请输入',
     width: '220px'
+  }
+];
+export const actionSearchCols: SearchCol[] = [
+  {
+    name: 'actionRuleCode',
+    type: 'input',
+    label: '动作规则编号',
+    width: '220px',
+    placeholder: '请输入'
+  },
+  {
+    name: 'actionRuleType',
+    type: 'select',
+    label: '动作规则类型',
+    placeholder: '请输入',
+    width: '220px',
+    options: [
+      { id: 1, name: '文章' },
+      { id: 2, name: '海报' },
+      { id: 3, name: '产品' },
+      { id: 4, name: '活动' },
+      { id: 5, name: '话术' }
+    ]
+  },
+  {
+    name: 'contentSource',
+    type: 'select',
+    label: '内容来源',
+    placeholder: '请输入',
+    width: '220px',
+    options: [
+      { id: 1, name: '公有库' },
+      { id: 2, name: '机构库' }
+    ]
   }
 ];
 
@@ -102,6 +136,55 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<RuleColumns> =>
     },
     {
       title: '规则修改时间',
+      dataIndex: 'updateTime',
+      width: 260,
+      align: 'center'
+    },
+    {
+      title: '操作',
+      dataIndex: 'fromSource',
+      width: 260,
+      align: 'center',
+      render: (value, record) => {
+        return (
+          <Button type="link" key={record.nodeRuleId} onClick={() => args.onOperate()}>
+            查看
+          </Button>
+        );
+      }
+    }
+  ];
+};
+export const actionTableColumnsFun = (args: OperateProps): ColumnsType<RuleColumns> => {
+  return [
+    {
+      title: '动作规则编号',
+      dataIndex: 'sceneCode',
+      key: 'sceneCode',
+      width: 200
+    },
+    {
+      title: '动作类型',
+      dataIndex: 'sceneName',
+      key: 'sceneName',
+      width: 200
+    },
+    {
+      title: '内容来源',
+      dataIndex: 'categoryName',
+      width: 160,
+      key: 'categoryName',
+      align: 'center',
+      render: (categoryName: string) => categoryName || UNKNOWN
+    },
+    {
+      title: '动作规则修改人',
+      dataIndex: 'nodeId',
+      width: 260,
+      align: 'center'
+    },
+    {
+      title: '动作规则修改时间',
       dataIndex: 'updateTime',
       width: 260,
       align: 'center'
