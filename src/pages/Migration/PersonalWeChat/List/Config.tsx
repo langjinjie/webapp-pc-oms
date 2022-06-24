@@ -22,7 +22,6 @@ export interface TaskProps {
   staffExecNum: number; // 已执行群发任务的员工数
   clientTotalNum: number; // 客户总数
   clientTransferNum: number; // 迁移成功的客户数
-  targetTransferNum: number;
   taskStatus: number; // 任务状态 0-未开始；1-进行中；2-已结束
 }
 export interface PaginationProps {
@@ -107,8 +106,8 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       render (row: TaskProps) {
         return (
           <span>
-            {row.clientTransferNum + '/' + row.targetTransferNum}（
-            {Math.round((row.clientTransferNum / row.targetTransferNum) * 100 * 10) / 10}%） {/* 保留最多一位小数 */}
+            {row.clientTransferNum + '/' + row.clientTotalNum}（
+            {Math.round((row.clientTransferNum / row.clientTotalNum) * 100 * 10) / 10}%） {/* 保留最多一位小数 */}
           </span>
         );
       },
