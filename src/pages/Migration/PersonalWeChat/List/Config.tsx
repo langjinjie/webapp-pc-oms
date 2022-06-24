@@ -19,7 +19,6 @@ export interface TaskProps {
   corpId: string;
   corpNames: string[];
   staffTotalNum: number; // 需执行群发任务的员工总数
-
   staffExecNum: number; // 已执行群发任务的员工数
   clientTotalNum: number; // 客户总数
   clientTransferNum: number; // 迁移成功的客户数
@@ -91,13 +90,27 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
     {
       title: '完成任务数',
       key: 'staffExecNum',
-      dataIndex: 'staffExecNum',
+      render (row: TaskProps) {
+        return (
+          <span>
+            {row.staffExecNum + '/' + row.staffTotalNum}（
+            {Math.round((row.staffExecNum / row.staffTotalNum) * 100 * 10) / 10}%） {/* 保留最多一位小数 */}
+          </span>
+        );
+      },
       width: 160
     },
     {
       title: '好友迁移数',
       key: 'clientTransferNum',
-      dataIndex: 'clientTransferNum',
+      render (row: TaskProps) {
+        return (
+          <span>
+            {row.clientTransferNum + '/' + row.clientTotalNum}（
+            {Math.round((row.clientTransferNum / row.clientTotalNum) * 100 * 10) / 10}%） {/* 保留最多一位小数 */}
+          </span>
+        );
+      },
       width: 160
     },
     {

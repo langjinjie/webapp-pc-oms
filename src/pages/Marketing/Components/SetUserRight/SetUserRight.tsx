@@ -105,7 +105,7 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
         <>
           <Form.Item name={'groupType'}>
             <Radio.Group onChange={(e) => onChangeWithGroupType(e.target.value)}>
-              <Radio value={1}>按照用户组选择</Radio>
+              <Radio value={1}>按照员工组选择</Radio>
               <Radio value={2}>按照组织架构选择</Radio>
             </Radio.Group>
           </Form.Item>

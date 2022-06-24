@@ -216,7 +216,7 @@ export const SetUserRight: React.FC<SetUserRightProps> = ({
               <>
                 <Form.Item name={'groupType'}>
                   <Radio.Group>
-                    <Radio value={1}>按照用户组选择</Radio>
+                    <Radio value={1}>按照员工组选择</Radio>
                     <Radio value={2}>按照组织架构选择</Radio>
                   </Radio.Group>
                 </Form.Item>
