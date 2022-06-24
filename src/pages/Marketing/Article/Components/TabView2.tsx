@@ -111,6 +111,7 @@ const TabView2: React.FC = () => {
     setFetching(true);
     const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
+      specType: 0,
       recommendType: formData.recommendType
     });
     const resList = [...formData.recommendList.filter((item) => item !== undefined), ...res];
