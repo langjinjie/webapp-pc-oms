@@ -1,3 +1,10 @@
+.blockWrap {
+  :global {
+    .ant-form-item-label {
+      width: auto;
+    }
+  }
+}
 .formBlock {
   margin: 20px;
   padding-bottom: 20px;
@@ -28,6 +35,14 @@
       border-radius: 10px;
     }
 
+    .nodeBody {
+      :global {
+        .ant-form-item {
+          margin-bottom: 0;
+        }
+      }
+    }
+
     .nodeItem {
       border-top: 1px solid #e1e2e6;
       padding: 14px 24px;
@@ -53,8 +68,6 @@
   .blockAttr {
     padding: 17px 0 20px;
     .attrItem {
-      width: 230px;
-      margin-right: 20px;
       .attrItemLabel {
         display: inline-block;
         margin-right: 10px;
@@ -63,7 +76,14 @@
         width: 160px;
       }
     }
-  }
-  .nodeType {
+    :global {
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+      .ant-form-item-control {
+        width: 180px;
+        margin-right: 20px;
+      }
+    }
   }
 }

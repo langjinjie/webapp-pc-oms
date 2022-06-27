@@ -1,12 +1,23 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { editTplDisplay, getTaskStrategyTplList, offLineTaskTpl, onLineTaskTplWithCorps } from 'src/apis/task';
 import { NgFormSearch, NgTable } from 'src/components';
-import { searchCols, tableColumnsFun, StrategyTaskProps } from './components/ModalConfig';
+import { OnlineModal } from 'src/pages/Marketing/Components/OnlineModal/OnlineModal';
+import OffLineModal from './components/OffLineModal/OffLineModal';
+import { TelDisplaySetModal } from './components/TelDisplaySetModal/TelDisplaySetModal';
+import { searchCols, tableColumnsFun, StrategyTaskProps, OperateType } from './ListConfig';
 const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
-  const [tableSource] = useState<StrategyTaskProps[]>([{ id: 'ID21221ABC01' }]);
+  const [visibleOnlineModal, setVisibleOnlineModal] = useState(false);
+  const [visibleOfflineModal, setVisibleOfflineModal] = useState(false);
+  const [visibleDisplayModal, setVisibleDisplayModal] = useState(false);
+  const [tableSource] = useState<Partial<StrategyTaskProps>[]>([
+    { tplId: 'ID21221ABC01', status: 1 },
+    { tplId: 'ID21221ABC11', status: 2 }
+  ]);
+  const [currentTpl, setCurrentTpl] = useState<StrategyTaskProps>();
   const [pagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -15,6 +26,21 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
+
+  const getTplList = async (params?: any) => {
+    const res = getTaskStrategyTplList({
+      ...params,
+      pageNum: pagination.current,
+      pageSize: pagination.pageSize
+    });
+    if (res) {
+      console.log(res);
+    }
+    console.log(res);
+  };
+  useEffect(() => {
+    getTplList();
+  }, []);
   const onSearch = (values: any) => {
     console.log(values);
   };
@@ -24,6 +50,51 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const paginationChange = () => {
     console.log();
+  };
+
+  const onOperate = (operateType: OperateType, record: StrategyTaskProps) => {
+    setCurrentTpl(record);
+    console.log(currentTpl);
+    if (operateType === 'putAway') {
+      console.log(record);
+      setVisibleOnlineModal(true);
+    } else if (operateType === 'outline') {
+      setVisibleOfflineModal(true);
+    } else if (operateType === 'other') {
+      setVisibleDisplayModal(true);
+    }
+  };
+  // 确定上架
+  const putAway = async (values: any[]) => {
+    setVisibleOnlineModal(false);
+    const postData = {
+      tplId: currentTpl?.tplId as string,
+      onlineCorps: values.map((item) => ({ onlineCorpId: item }))
+    };
+    const res = await onLineTaskTplWithCorps(postData);
+    if (res) {
+      message.success('上架成功！');
+      getTplList({ pageNum: 1 });
+    }
+
+    console.log(values);
+  };
+  // 下线模块
+  const offLine = async () => {
+    setVisibleOfflineModal(false);
+    const res = await offLineTaskTpl({ tplId: currentTpl?.tplId as string });
+    console.log(res);
+  };
+  // 设置模板展示信息
+  const setDisplayInfo = async (values: any) => {
+    setVisibleDisplayModal(false);
+    const res = await editTplDisplay({
+      tplId: currentTpl?.tplId as string,
+      ...values
+    });
+    if (res) {
+      message.success('设置成功');
+    }
   };
 
   return (
@@ -51,19 +122,25 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
         <div className="mt20">
           <NgTable
             columns={tableColumnsFun({
-              onOperate: () => {
-                console.log('');
-              }
+              onOperate
             })}
             dataSource={tableSource}
             pagination={pagination}
             paginationChange={paginationChange}
-            setRowKey={(record: any) => {
-              return record.id;
+            setRowKey={(record: StrategyTaskProps) => {
+              return record.tplId;
             }}
           />
         </div>
       </div>
+
+      <OnlineModal onOk={putAway} visible={visibleOnlineModal} onCancel={() => setVisibleOnlineModal(false)} />
+      <OffLineModal visible={visibleOfflineModal} onCancel={() => setVisibleOfflineModal(false)} onOK={offLine} />
+      <TelDisplaySetModal
+        visible={visibleDisplayModal}
+        onCancel={() => setVisibleDisplayModal(false)}
+        onOk={setDisplayInfo}
+      />
     </div>
   );
 };

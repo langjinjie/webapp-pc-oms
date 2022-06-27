@@ -57,16 +57,11 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
       width: 260,
       align: 'center'
     },
-    {
-      title: '上架机构',
-      dataIndex: 'fromSource',
-      width: 260,
-      align: 'center'
-    },
+
     {
       title: '操作',
       dataIndex: 'fromSource',
-      width: 260,
+      width: 180,
       align: 'center',
       render: (value, record) => {
         return (
@@ -79,9 +74,6 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
             </Button>
             <Button type="link" key={record.id} onClick={() => args.onOperate()}>
               编辑
-            </Button>
-            <Button type="link" key={record.id} onClick={() => args.onOperate()}>
-              配置展示信息
             </Button>
           </Space>
         );

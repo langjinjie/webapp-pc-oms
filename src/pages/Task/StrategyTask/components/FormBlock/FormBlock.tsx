@@ -1,8 +1,8 @@
+import React from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Select, Space, TimePicker } from 'antd';
+import { Button, Form, Input, Select, Space, TimePicker } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
 import styles from './style.module.less';
 
@@ -12,173 +12,149 @@ interface FormBlockProps {
 }
 const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onChange }) => {
   console.log(value, onChange);
-  const [nodeList, setNodeList] = useState<any[]>([{}]);
-  const [blockList, setBlockList] = useState<any[]>([{}, {}]);
-  const [currentNode, setCurrentNode] = useState<any>();
+  const [blockForm] = Form.useForm();
 
-  // 配置弹框
-  const [speechVisible, setSpeechVisible] = useState(false);
-
-  const handleAddNodeItem = () => {
-    setNodeList((nodeList) => [...nodeList, {}]);
-  };
-  useEffect(() => {
-    setBlockList(value);
-  }, []);
-
-  const handleAddBlock = () => {
-    onChange?.([...value, {}]);
-    setBlockList((blockList) => [...blockList, {}]);
-  };
-
-  const handleDeleteBlock = (index: number) => {
-    const data = [...blockList];
-    data.splice(index, 1);
-    console.log(data);
-    setBlockList(data);
-  };
-
-  const setSpeech = (value: string) => {
-    console.log(value);
-    setSpeechVisible(false);
-    console.log(currentNode);
-    setCurrentNode((currentNode: any) => ({ ...currentNode!, speech: value }));
-  };
-
-  const showSpeechModal = (current: any, index: number, nodeIndex: number) => {
-    setSpeechVisible(true);
-    setCurrentNode(current);
-    console.log(current, index, nodeIndex);
+  const onFieldsChange = (changedValues: any, values: any) => {
+    console.log(values);
   };
 
   return (
-    <div>
-      {blockList?.map((item, index) => {
-        return (
-          <div className={styles.formBlock} key={'block' + index}>
-            <div className={classNames(styles.blockTitle, 'flex justify-between align-center')}>
-              <span>序号 {index + 1}</span>
-              <Button
-                className={styles.blockDelete}
-                type="link"
-                disabled={index === 0}
-                onClick={() => handleDeleteBlock(index)}
-              >
-                删除
-              </Button>
-            </div>
-            <div className="ph20">
-              <div className={classNames(styles.blockAttr, 'flex align-center')}>
-                <div className={classNames(styles.nodeType, styles.attrItem, 'flex align-center')}>
-                  <label className={styles.attrItemLabel} htmlFor="">
-                    节点类别:
-                  </label>
-                  <Select className={styles.attrItemContent}>
-                    <Select.Option value={'date'}>日历类</Select.Option>
-                    <Select.Option value={'1'}>节日类</Select.Option>
-                    <Select.Option value={'2'}>新闻类</Select.Option>
-                  </Select>
-                </div>
-                <div className={classNames(styles.attrItem, 'flex align-center')}>
-                  <label className={styles.attrItemLabel} htmlFor="">
-                    选择日期:
-                  </label>
-                  <Input className={styles.attrItemContent}></Input>
-                </div>
-                <div className={classNames(styles.attrItem, 'flex align-center')}>
-                  <label className={styles.attrItemLabel} htmlFor="">
-                    节点说明:
-                  </label>
-                  <Input placeholder="钱输入节点名称" className={styles.attrItemContent}></Input>
-                </div>
-
-                <div className={classNames(styles.attrItem, 'flex align-center')}>
-                  <label className={styles.attrItemLabel} htmlFor="">
-                    节点名称:
-                  </label>
-                  <span>{'10月1日(国庆节)'}</span>
-                </div>
-              </div>
-
-              <div className={styles.taskNode}>
-                <ul className={classNames(styles.nodeTitle, 'flex justify-between')}>
-                  <li className={styles.nodeCol}>配置节点规则</li>
-                  <li className={styles.nodeCol}>触达方式</li>
-                  <li className={styles.ruleCol}>动作规则区</li>
-                  <li className={styles.speechCol}>手工自定义话(点击可修改)</li>
-                  <li className={styles.timeCol}>建议推送时间</li>
-                  <li className={classNames(styles.operateCol, 'flex justify-center')}>操作</li>
-                </ul>
-                <ul className={styles.nodeBody}>
-                  {nodeList.map((node, nodeIndex: number) => {
-                    return (
-                      <li className={classNames(styles.nodeItem, 'flex justify-between')} key={nodeIndex}>
-                        <div className={styles.nodeCol}>
-                          <Select placeholder="待输入">
-                            <Select.Option value={1}>10月1日国庆节</Select.Option>
-                          </Select>
-                        </div>
-                        <div className={styles.nodeCol}>
-                          <Select placeholder="待输入">
-                            <Select.Option value={1}>10月1日国庆节</Select.Option>
-                          </Select>
-                        </div>
-                        <div className={styles.ruleCol}>
-                          <Button type="link">配置</Button>
-                        </div>
-                        <div className={styles.speechCol}>
-                          <Input
-                            placeholder="点击输入文本"
-                            value={node.speech}
-                            onClick={() => showSpeechModal()}
-                            readOnly
-                          ></Input>
-                        </div>
-                        <div className={classNames(styles.timeCol)}>
-                          <TimePicker bordered={false} defaultValue={moment('09:00', 'HH:mm')} format={'HH:mm'} />
-                        </div>
-                        <div className={styles.operateCol}>
-                          <Space>
-                            <Button type="link">查看</Button>
-                            <Button type="link">删除</Button>
-                            <Button type="link">复制</Button>
-                          </Space>
-                        </div>
-                      </li>
-                    );
-                  })}
-                  <li className={styles.nodeItem}>
-                    <Button shape="round" ghost type="primary" onClick={handleAddNodeItem}>
-                      新增
+    <>
+      <Form form={blockForm} className={styles.blockWrap} onValuesChange={onFieldsChange}>
+        <Form.List name={'sceneList'}>
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ name, key, ...restFiled }, index) => (
+                <Form.Item key={key} className={styles.formBlock} {...restFiled}>
+                  <div className={classNames(styles.blockTitle, 'flex justify-between align-center')}>
+                    <span>序号 {index + 1}</span>
+                    <Button
+                      className={styles.blockDelete}
+                      type="link"
+                      disabled={index === 0}
+                      onClick={() => remove(index)}
+                    >
+                      删除
                     </Button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-      })}
+                  </div>
+                  <div className="ph20">
+                    <div className={classNames(styles.blockAttr, 'flex align-center')}>
+                      <Form.Item
+                        name={[name, 'nodeTypeId']}
+                        label="节点类别"
+                        className={classNames(styles.nodeType, styles.attrItem, 'flex align-center')}
+                      >
+                        <Select className={styles.attrItemContent}>
+                          <Select.Option value={'date'}>日历类</Select.Option>
+                          <Select.Option value={'1'}>节日类</Select.Option>
+                          <Select.Option value={'2'}>新闻类</Select.Option>
+                        </Select>
+                      </Form.Item>
+                      <Form.Item label="选择日期" className={classNames(styles.attrItem, 'flex align-center')}>
+                        <Input className={styles.attrItemContent}></Input>
+                      </Form.Item>
+                      <Form.Item
+                        name={[name, 'nodeDesc']}
+                        label="节点说明"
+                        className={classNames(styles.attrItem, 'flex align-center')}
+                      >
+                        <Input placeholder="钱输入节点名称" className={styles.attrItemContent}></Input>
+                      </Form.Item>
 
-      <Button
-        className="ml20"
-        icon={<PlusOutlined />}
-        type="primary"
-        shape="round"
-        ghost
-        onClick={() => handleAddBlock()}
-        size="large"
-      >
-        新增节点
-      </Button>
+                      <Form.Item
+                        name={[name, 'nodeName']}
+                        label="节点名称"
+                        className={classNames(styles.attrItem, 'flex align-center')}
+                      >
+                        <span>{'10月1日(国庆节)'}</span>
+                      </Form.Item>
+                    </div>
 
-      {/* 添加话术modal */}
-      <ManuallyAddSpeech
-        visible={speechVisible}
-        speech="请输入话术"
-        onOk={setSpeech}
-        onCancel={() => setSpeechVisible(false)}
-      />
-    </div>
+                    <div className={styles.taskNode}>
+                      <ul className={classNames(styles.nodeTitle, 'flex justify-between')}>
+                        <li className={styles.nodeCol}>配置节点规则</li>
+                        <li className={styles.nodeCol}>触达方式</li>
+                        <li className={styles.ruleCol}>动作规则区</li>
+                        <li className={styles.speechCol}>手工自定义话(点击可修改)</li>
+                        <li className={styles.timeCol}>建议推送时间</li>
+                        <li className={classNames(styles.operateCol, 'flex justify-center')}>操作</li>
+                      </ul>
+                      <div className={styles.nodeBody}>
+                        <Form.List name={[name, 'nodeRuleList']}>
+                          {(fields, { add, remove }) => (
+                            <>
+                              {fields.map(({ name: nodeName, key }, nodeIndex) => (
+                                <Form.Item key={key + nodeIndex}>
+                                  <div className={classNames(styles.nodeItem, 'flex justify-between')}>
+                                    <Form.Item className={styles.nodeCol} name={[name, nodeName, 'nodeRuleId']}>
+                                      <Select placeholder="待输入">
+                                        <Select.Option value={1}>10月1日国庆节</Select.Option>
+                                      </Select>
+                                    </Form.Item>
+                                    <Form.Item className={styles.nodeCol} name={[name, nodeName, 'wayCode']}>
+                                      <Select placeholder="待输入">
+                                        <Select.Option value={1}>10月1日国庆节</Select.Option>
+                                      </Select>
+                                    </Form.Item>
+                                    <Form.Item className={styles.ruleCol}>
+                                      <Button type="link">配置</Button>
+                                    </Form.Item>
+                                    <Form.Item name={[name, nodeName, 'speechcraft']} className={styles.speechCol}>
+                                      <ManuallyAddSpeech />
+                                    </Form.Item>
+                                    <Form.Item
+                                      name={[name, nodeName, 'pushTime']}
+                                      className={classNames(styles.timeCol)}
+                                    >
+                                      <TimePicker
+                                        bordered={false}
+                                        defaultValue={moment('09:00', 'HH:mm')}
+                                        format={'HH:mm'}
+                                      />
+                                    </Form.Item>
+                                    <div className={styles.operateCol}>
+                                      <Space>
+                                        <Button type="link">查看</Button>
+                                        <Button type="link" onClick={() => remove(nodeIndex)}>
+                                          删除
+                                        </Button>
+                                        <Button type="link">复制</Button>
+                                      </Space>
+                                    </div>
+                                  </div>
+                                </Form.Item>
+                              ))}
+                              <li className={styles.nodeItem}>
+                                <Button shape="round" ghost type="primary" onClick={() => add()}>
+                                  新增
+                                </Button>
+                              </li>
+                            </>
+                          )}
+                        </Form.List>
+                      </div>
+                    </div>
+                  </div>
+                </Form.Item>
+              ))}
+              <li className={classNames(styles.nodeItem, 'mt20 mb20')}>
+                <Button
+                  className="ml20"
+                  icon={<PlusOutlined />}
+                  type="primary"
+                  shape="round"
+                  ghost
+                  onClick={() => add()}
+                  size="large"
+                >
+                  新增节点
+                </Button>
+              </li>
+            </>
+          )}
+        </Form.List>
+      </Form>
+    </>
   );
 };
 

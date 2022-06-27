@@ -1,5 +1,5 @@
 import React from 'react';
-import { Breadcrumb, Button, Form, Input, Radio, Space } from 'antd';
+import { Breadcrumb, Button, Form, Input, Radio, Select, Space } from 'antd';
 import FormBlock from './components/FormBlock/FormBlock';
 import { FormBlockPreview } from './components/FormBlockPreview/FormBlockPreview';
 
@@ -7,6 +7,7 @@ const StrategyTaskEdit: React.FC = () => {
   const navigatorToList = () => {
     console.log('a');
   };
+  const [basicForm] = Form.useForm();
   return (
     <div className="edit container">
       <div className={'breadcrumbWrap'}>
@@ -18,50 +19,61 @@ const StrategyTaskEdit: React.FC = () => {
       </div>
 
       <div className="content">
-        <Form>
+        <Form form={basicForm}>
           <div className="formListTitle mb20">基本信息</div>
-          <Form.Item label="策略任务模板名称">
-            <Input placeholder="待输入"></Input>
+          <Form.Item
+            label="策略任务模板名称"
+            name={'tplName'}
+            rules={[{ required: true }, { max: 30, message: '最多30个字' }]}
+          >
+            <Input placeholder="待输入" className="width320"></Input>
           </Form.Item>
-          <Form.Item label="任务类型">
-            <Input placeholder="系统类型"></Input>
+          <Form.Item label="任务类型" name={'taskType'}>
+            <Select className="width320">
+              <Select.Option value={1}>策略任务</Select.Option>
+            </Select>
           </Form.Item>
-          <Form.Item label="策略任务运营说明">
-            <Input.TextArea placeholder="选填，如不填则默认抓取选定任务推荐话术"></Input.TextArea>
+          <Form.Item label="策略执行周期" name={'runCycle'}>
+            <Radio.Group>
+              <Radio value={1}>长期有效</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item label="策略任务运营说明" name={'opDesc'}>
+            <Input.TextArea placeholder="选填，如不填则默认抓取选定任务推荐话术" className="width400"></Input.TextArea>
           </Form.Item>
           <Form.Item label="策略任务覆盖范围">
-            <Form.Item label="员工筛选">
+            <Form.Item label="员工筛选" name={'staffScope'}>
               <Radio.Group>
                 <Radio value={1}>全部员工</Radio>
                 <Radio value={2}>部分员工</Radio>
               </Radio.Group>
             </Form.Item>
-            <Form.Item label="客户筛选">
+            <Form.Item label="客户筛选" name={'clientScope'}>
               <Radio.Group>
                 <Radio value={1}>全部员工</Radio>
                 <Radio value={2}>部分员工</Radio>
               </Radio.Group>
             </Form.Item>
           </Form.Item>
-          <div className="formListTitle">配置操作区</div>
-          <Form.Item>
-            <FormBlock />
-          </Form.Item>
-          <div className="formListTitle">策略行事历预览</div>
-          <FormBlockPreview value={[{}]} />
-          <Form.Item>
-            <div className="flex justify-center formFooter">
-              <Space size={30}>
-                <Button type="primary" shape="round" ghost>
-                  取消
-                </Button>
-                <Button type="primary" shape="round">
-                  确认
-                </Button>
-              </Space>
-            </div>
-          </Form.Item>
+          {/* <Form.Item> */}
         </Form>
+        <div className="formListTitle">配置操作区</div>
+        <FormBlock />
+        {/* </Form.Item> */}
+        <div className="formListTitle">策略行事历预览</div>
+        <FormBlockPreview value={[{}]} />
+        <Form.Item>
+          <div className="flex justify-center formFooter">
+            <Space size={30}>
+              <Button type="primary" shape="round" ghost>
+                取消
+              </Button>
+              <Button type="primary" shape="round">
+                确认
+              </Button>
+            </Space>
+          </div>
+        </Form.Item>
       </div>
     </div>
   );
