@@ -21,30 +21,31 @@ interface OperateProps {
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns> => {
   return [
-    { title: '节点动作规则编号', dataIndex: 'sceneCode', key: 'sceneCode', width: 160 },
+    { title: '节点动作规则编号', dataIndex: 'nodeRuleCode', key: 'nodeRuleCode', width: 160 },
     {
       title: '节点规则名称',
-      dataIndex: 'sceneName',
-      key: 'sceneName',
+      dataIndex: 'nodeRuleName',
+      key: 'nodeRuleName',
       width: 140
     },
     {
       title: '触发逻辑',
-      dataIndex: 'categoryName',
+      dataIndex: 'logicName',
       width: 140,
-      key: 'categoryName',
+      key: 'logicName',
       align: 'center',
       render: (categoryName: string) => categoryName || UNKNOWN
     },
     {
       title: '动作规则名称',
-      dataIndex: 'nodeId',
+      dataIndex: 'actionRuleType',
       width: 140,
-      align: 'center'
+      align: 'center',
+      render: (text) => text
     },
     {
       title: '触达形式',
-      dataIndex: 'nodeId',
+      dataIndex: 'wayName',
       width: 120,
       align: 'center'
     },
@@ -56,19 +57,18 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns
     },
     {
       title: '动作类型',
-      dataIndex: 'updateTime',
+      dataIndex: 'actionRuleType',
       width: 120,
       align: 'center'
     },
     {
       title: '建议推送时间',
-      dataIndex: 'updateTime',
+      dataIndex: 'pushTime',
       width: 120,
       align: 'center'
     },
     {
       title: '操作',
-      dataIndex: 'fromSource',
       width: 80,
       align: 'center',
       fixed: 'right',

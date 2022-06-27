@@ -1,22 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Space, TimePicker } from 'antd';
 import classNames from 'classnames';
-import moment from 'moment';
+// import moment from 'moment';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
 import styles from './style.module.less';
+import { getNodeTypeList } from 'src/apis/task';
 
 interface FormBlockProps {
   value?: any[];
   onChange?: (value: any) => void;
 }
-const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onChange }) => {
-  console.log(value, onChange);
+const FormBlock: React.FC<FormBlockProps> = () => {
+  const [nodeTypeOptions, setNodeTypeOptions] = useState<any[]>([]);
   const [blockForm] = Form.useForm();
+  const getNodeTypeOptions = async () => {
+    const res = await getNodeTypeList();
+    console.log(res);
+    setNodeTypeOptions([]);
+  };
 
   const onFieldsChange = (changedValues: any, values: any) => {
     console.log(values);
   };
+  useEffect(() => {
+    blockForm.setFieldsValue({
+      sceneList: [
+        {
+          nodeRuleList: [{}]
+        }
+      ]
+    });
+    getNodeTypeOptions();
+  }, []);
 
   return (
     <>
@@ -45,9 +61,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
                         className={classNames(styles.nodeType, styles.attrItem, 'flex align-center')}
                       >
                         <Select className={styles.attrItemContent}>
-                          <Select.Option value={'date'}>日历类</Select.Option>
-                          <Select.Option value={'1'}>节日类</Select.Option>
-                          <Select.Option value={'2'}>新闻类</Select.Option>
+                          {nodeTypeOptions.map((option) => (
+                            <Select.Option value={option.typeId} key={option.typeId}>
+                              {option.typeName}
+                            </Select.Option>
+                          ))}
                         </Select>
                       </Form.Item>
                       <Form.Item label="选择日期" className={classNames(styles.attrItem, 'flex align-center')}>
@@ -108,7 +126,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
                                     >
                                       <TimePicker
                                         bordered={false}
-                                        defaultValue={moment('09:00', 'HH:mm')}
+                                        // defaultValue={moment('09:00', 'HH:mm')}
                                         format={'HH:mm'}
                                       />
                                     </Form.Item>

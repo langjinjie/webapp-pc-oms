@@ -17,28 +17,28 @@ export const ruleTypeOptions = [
 
 export const nodeSearchCols: SearchCol[] = [
   {
-    name: 'sceneCode',
+    name: 'nodeRuleCode',
     type: 'input',
     label: '节点规则编号',
     width: '220px',
     placeholder: '请输入'
   },
   {
-    name: 'sceneName',
+    name: 'nodeRuleName',
     type: 'input',
     label: '节点规则名称',
     placeholder: '请输入',
     width: '220px'
   },
   {
-    name: 'sceneName',
+    name: 'nodeId',
     type: 'input',
     label: '触发节点',
     placeholder: '请输入',
     width: '220px'
   },
   {
-    name: 'sceneName',
+    name: 'nodeTypeCode',
     type: 'input',
     label: '节点类别',
     placeholder: '请输入',
@@ -94,37 +94,38 @@ export interface RuleColumns {
 interface OperateProps {
   onOperate: () => void;
 }
+
 export const tableColumnsFun = (args: OperateProps): ColumnsType<RuleColumns> => {
   return [
     {
       title: '节点规则编号',
-      dataIndex: 'sceneCode',
-      key: 'sceneCode',
+      dataIndex: 'nodeRuleCode',
+      key: 'nodeRuleCode',
       width: 200
     },
     {
       title: '节点规则名称',
-      dataIndex: 'sceneName',
-      key: 'sceneName',
+      dataIndex: 'nodeRuleName',
+      key: 'nodeRuleName',
       width: 200
     },
     {
       title: '节点类别',
-      dataIndex: 'categoryName',
+      dataIndex: 'nodeTypeName',
       width: 160,
-      key: 'categoryName',
+      key: 'nodeTypeName',
       align: 'center',
       render: (categoryName: string) => categoryName || UNKNOWN
     },
     {
       title: '触发节点',
-      dataIndex: 'nodeId',
+      dataIndex: 'nodeName',
       width: 260,
       align: 'center'
     },
     {
       title: '触发逻辑',
-      dataIndex: 'nodeId',
+      dataIndex: 'logicName',
       width: 260,
       align: 'center'
     },
@@ -142,10 +143,9 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<RuleColumns> =>
     },
     {
       title: '操作',
-      dataIndex: 'fromSource',
       width: 260,
       align: 'center',
-      render: (value, record) => {
+      render: (_, record) => {
         return (
           <Button type="link" key={record.nodeRuleId} onClick={() => args.onOperate()}>
             查看
@@ -155,31 +155,42 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<RuleColumns> =>
     }
   ];
 };
-export const actionTableColumnsFun = (args: OperateProps): ColumnsType<RuleColumns> => {
+
+interface ActionRuleColumns {
+  actionRuleId: string;
+  actionRuleCode: string;
+  actionRuleName: string;
+  actionRuleType: number;
+  contentSource: number;
+  updateTime: string;
+  updateBy: string;
+}
+export const actionTableColumnsFun = (args: OperateProps): ColumnsType<ActionRuleColumns> => {
   return [
     {
       title: '动作规则编号',
-      dataIndex: 'sceneCode',
-      key: 'sceneCode',
+      dataIndex: 'actionRuleCode',
+      key: 'actionRuleCode',
       width: 200
     },
     {
       title: '动作类型',
-      dataIndex: 'sceneName',
-      key: 'sceneName',
-      width: 200
+      dataIndex: 'actionRuleType',
+      key: 'actionRuleType',
+      width: 200,
+      render: (actionRuleType) => actionRuleType
     },
     {
       title: '内容来源',
-      dataIndex: 'categoryName',
+      dataIndex: 'contentSource',
       width: 160,
-      key: 'categoryName',
+      key: 'contentSource',
       align: 'center',
-      render: (categoryName: string) => categoryName || UNKNOWN
+      render: (contentSource) => <span>{contentSource === 1 ? '共有库' : '机构库'} </span>
     },
     {
       title: '动作规则修改人',
-      dataIndex: 'nodeId',
+      dataIndex: 'updateBy',
       width: 260,
       align: 'center'
     },
@@ -191,12 +202,11 @@ export const actionTableColumnsFun = (args: OperateProps): ColumnsType<RuleColum
     },
     {
       title: '操作',
-      dataIndex: 'fromSource',
       width: 260,
       align: 'center',
       render: (value, record) => {
         return (
-          <Button type="link" key={record.nodeRuleId} onClick={() => args.onOperate()}>
+          <Button type="link" key={record.actionRuleId} onClick={() => args.onOperate()}>
             查看
           </Button>
         );

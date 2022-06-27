@@ -1,7 +1,8 @@
 import React from 'react';
 import { Breadcrumb, Button, Form, Input, Radio, Select, Space } from 'antd';
 import FormBlock from './components/FormBlock/FormBlock';
-import { FormBlockPreview } from './components/FormBlockPreview/FormBlockPreview';
+import { FormBlockPreview } from './components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
+import RuleActionSetModal from './components/RuleActionSetModal/RuleActionSetModal';
 
 const StrategyTaskEdit: React.FC = () => {
   const navigatorToList = () => {
@@ -75,6 +76,8 @@ const StrategyTaskEdit: React.FC = () => {
           </div>
         </Form.Item>
       </div>
+
+      <RuleActionSetModal />
     </div>
   );
 };
