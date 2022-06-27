@@ -54,7 +54,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ taskId, visible, onClose }) =
         <div className={styles.listContent}>
           {staffList.map((item, index) => (
             <ul key={item.staffName + index} className={classNames('flex align-center', styles.item)}>
-              <li className={classNames(styles.taskNo)}>{index < 10 ? '0' + index : index}</li>
+              <li className={classNames(styles.taskNo)}>{index + 1 < 10 ? '0' + (index + 1) : index + 1}</li>
               <li className={classNames(styles.name)}>{item.staffName}</li>
               <li className={classNames(styles.taskRes)}>{item.execStatus ? '已群发' : '未群发'}</li>
             </ul>
