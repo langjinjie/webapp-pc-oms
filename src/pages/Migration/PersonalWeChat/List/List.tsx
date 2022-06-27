@@ -148,17 +148,19 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
           {/* 温馨提示：企业每天可对同一个客户发送1条消息，超过上限，客户当天将无法再收到群发消息。 */}
         </div>
       </div>
-      <Form form={form} className={styles.form} onFinish={onFinish} onReset={onResetHandle} layout="inline">
-        <Item label="任务名称" name="taskName">
-          <Input className={styles.input} />
-        </Item>
-        <Button className={styles.searchBtn} htmlType="submit" type="primary">
-          查询
-        </Button>
-        <Button className={styles.resetBtn} htmlType="reset">
-          重置
-        </Button>
-      </Form>
+      <AuthBtn path="/query">
+        <Form form={form} className={styles.form} onFinish={onFinish} onReset={onResetHandle} layout="inline">
+          <Item label="任务名称" name="taskName">
+            <Input className={styles.input} />
+          </Item>
+          <Button className={styles.searchBtn} htmlType="submit" type="primary">
+            查询
+          </Button>
+          <Button className={styles.resetBtn} htmlType="reset">
+            重置
+          </Button>
+        </Form>
+      </AuthBtn>
 
       <NgTable
         loading={loading}
