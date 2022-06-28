@@ -78,8 +78,9 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       setCurrentScenesState(currentScenes);
 
       if (res?.contentType === 9 || contentObj?.contentType === 9) {
-        const { appId, appPath } = JSON.parse(res.contentUrl || '{}');
-        const { appId: contentObjAppId, appPath: appPathAppPath } = JSON.parse(contentObj.contentUrl || '{}');
+        const { appId, appPath } = res?.contentType === 9 && JSON.parse(res.contentUrl || '{}');
+        const { appId: contentObjAppId, appPath: appPathAppPath } =
+          contentObj?.contentType === 9 && JSON.parse(contentObj?.contentUrl || '{}');
         console.log({ appId, appPath, res1, contentObjAppId, appPathAppPath, contentObj });
         // delete res1.contentUrl;
         speechForm.setFieldsValue({
