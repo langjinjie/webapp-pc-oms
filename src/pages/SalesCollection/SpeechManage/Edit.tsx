@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button, Card, Cascader, Form, Input, message, Select, Space, Switch } from 'antd';
 import styles from './style.module.less';
@@ -71,24 +71,28 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       if (res1['contentObj.contentType']) {
         setIsCustomType(true);
       }
-      console.log(res1);
       setSpeech(res1);
       setOriginSpeech(res1);
-      const { contentObj, sceneId } = res;
+      const { sceneId, contentObj } = res;
       const currentScenes = scenesStates.filter((scenes) => scenes.sceneId === sceneId)[0];
       setCurrentScenesState(currentScenes);
 
-      if (contentObj?.contentType === 9) {
-        const { appId, appPath } = JSON.parse(contentObj.contentUrl || '{}');
+      if (res?.contentType === 9 || contentObj?.contentType === 9) {
+        const { appId, appPath } = JSON.parse(res.contentUrl || '{}');
+        const { appId: contentObjAppId, appPath: appPathAppPath } = JSON.parse(contentObj.contentUrl || '{}');
+        console.log({ appId, appPath, res1, contentObjAppId, appPathAppPath, contentObj });
+        // delete res1.contentUrl;
         speechForm.setFieldsValue({
-          'contentObj.appId': appId,
-          'contentObj.appPath': appPath,
-          ...res1
+          ...res1,
+          appId,
+          appPath,
+          'contentObj.appId': contentObjAppId,
+          'contentObj.appPath': appPathAppPath
         });
         setOriginSpeech({
-          ...res1,
-          'contentObj.appId': appId,
-          'contentObj.appPath': appPath
+          ...res1
+          // 'contentObj.appId': appId,
+          // 'contentObj.appPath': appPath
         });
       } else {
         speechForm.setFieldsValue({ ...res1 });
@@ -229,12 +233,12 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     setCategories([...categories]);
   };
 
-  useMemo(() => {
-    if (originSpeech) {
-      const { contentType, contentUrl, title, summary, thumbnail, appId, appPath } = originSpeech;
-      speechForm.setFieldsValue({ contentType, contentUrl, title, summary, thumbnail, appId, appPath });
-    }
-  }, [originSpeech]);
+  // useMemo(() => {
+  //   if (originSpeech) {
+  //     const { contentType, contentUrl, title, summary, thumbnail, appId, appPath } = originSpeech;
+  //     speechForm.setFieldsValue({ contentType, contentUrl, title, summary, thumbnail, appId, appPath });
+  //   }
+  // }, [originSpeech]);
 
   // 类目改变
   const onCascaderChange = async (value: any, selectedOptions: any) => {

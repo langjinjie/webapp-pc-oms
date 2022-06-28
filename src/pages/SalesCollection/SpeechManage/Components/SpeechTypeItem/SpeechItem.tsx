@@ -97,7 +97,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
           rules={[{ required: true }]}
           extra="图片宽度750px，高度不限，仅支持.jpg格式"
         >
-          <NgUpload beforeUpload={beforeUpload}></NgUpload>
+          <NgUpload beforeUpload={beforeUpload} disabled></NgUpload>
         </Form.Item>
       )}
 
@@ -189,7 +189,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
             rules={[{ required: true }]}
             extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
           >
-            <NgUpload beforeUpload={beforeUploadSmallPic}></NgUpload>
+            <NgUpload beforeUpload={beforeUploadSmallPic} disabled></NgUpload>
           </Form.Item>
           <Form.Item name="title" label="目录小程序标题" rules={[{ required: true }, { max: 30 }]}>
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
