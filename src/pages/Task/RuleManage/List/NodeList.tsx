@@ -5,9 +5,11 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
+import CreateNodeModal from '../components/CreateNodeModal';
 
 export const NodeList: React.FC = () => {
   const history = useHistory();
+  const [visibleCreateNodeModal, setVisibleCreateNodeModal] = useState(false);
   const [tableSource] = useState<Partial<RuleColumns>[]>([
     {
       nodeRuleId: '1212121'
@@ -42,7 +44,7 @@ export const NodeList: React.FC = () => {
         type="primary"
         shape="round"
         icon={<PlusOutlined />}
-        onClick={() => history.push('/strategyTask/edit')}
+        onClick={() => setVisibleCreateNodeModal(true)}
         size="large"
       >
         新建节点规则
@@ -69,6 +71,7 @@ export const NodeList: React.FC = () => {
           }}
         />
       </div>
+      <CreateNodeModal visible={visibleCreateNodeModal} onCancel={() => setVisibleCreateNodeModal(false)} />
     </div>
   );
 };

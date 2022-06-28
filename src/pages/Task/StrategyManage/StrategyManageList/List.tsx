@@ -29,7 +29,13 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
     <div>
       <div className="container">
         <div className="search-wrap">
-          <Button type="primary" shape="round" ghost onClick={() => history.push('/strategyTask/edit')} size="large">
+          <Button
+            type="primary"
+            shape="round"
+            ghost
+            onClick={() => history.push('/strategyManage/tmpList')}
+            size="large"
+          >
             策略模板库
           </Button>
           <div className={'pt20'}>
