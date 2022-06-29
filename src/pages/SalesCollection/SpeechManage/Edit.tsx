@@ -81,8 +81,6 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
         const { appId, appPath } = res?.contentType === 9 && JSON.parse(res.contentUrl || '{}');
         const { appId: contentObjAppId, appPath: appPathAppPath } =
           contentObj?.contentType === 9 && JSON.parse(contentObj?.contentUrl || '{}');
-        console.log({ appId, appPath, res1, contentObjAppId, appPathAppPath, contentObj });
-        // delete res1.contentUrl;
         speechForm.setFieldsValue({
           ...res1,
           appId,
@@ -92,8 +90,6 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
         });
         setOriginSpeech({
           ...res1
-          // 'contentObj.appId': appId,
-          // 'contentObj.appPath': appPath
         });
       } else {
         speechForm.setFieldsValue({ ...res1 });
@@ -106,9 +102,17 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     if (res) {
       if (res.contentType === 9) {
         const { appId, appPath } = JSON.parse(res.contentUrl || '{}');
+        speechForm.setFieldsValue({
+          ...res,
+          appId,
+          appPath
+        });
         setOriginSpeech(() => ({ ...res, appId, appPath }));
       } else {
         setOriginSpeech(res);
+        speechForm.setFieldsValue({
+          ...res
+        });
       }
     }
   };
