@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
 import { CreateNodeModal } from './components/CrateNodeModal';
+import TagFilterComponents from './components/TagModal/TagFilterComponent';
+
 import { NodeColumns, searchCols, tableColumnsFun } from './ListConfig';
 
 const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
@@ -66,6 +68,8 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
       </div>
 
       <CreateNodeModal visible={visibleCreateNode} onCancel={() => setVisibleCreateNode(false)} />
+
+      <TagFilterComponents />
     </div>
   );
 };

@@ -2,6 +2,17 @@ import http from 'src/utils/http';
 type HttpFC<T = any> = (param?: T, fn?: Function) => Promise<any>;
 
 /**
+ * 获取标签库接口
+ *
+ */
+export const queryTagList: HttpFC = (params) => {
+  return http.post('/tenacity-manage/api/tag/lib/query', params);
+};
+
+export const searchTagList: HttpFC = (params) => {
+  return http.post('/tenacity-manage/api/tag/search', params);
+};
+/**
  * 1.1 获取策略模板列表
  * @param param
  */
