@@ -329,6 +329,10 @@ export const routes: RouteProps[] = [
   {
     path: '/strategyManage/tmpList',
     component: lazy(() => import('src/pages/Task/StrategyManage/TmlManage/Manage'))
+  },
+  {
+    path: '/strategyManage/detail',
+    component: lazy(() => import('src/pages/Task/StrategyManage/Edit'))
   }
 ];
 

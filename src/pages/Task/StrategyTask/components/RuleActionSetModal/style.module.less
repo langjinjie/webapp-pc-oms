@@ -11,3 +11,34 @@
     width: 180px;
   }
 }
+
+.marketingWarp {
+  background: #f7f8fc;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.customTag {
+  display: inline-block;
+  height: 24px;
+  line-height: 24px;
+  background: #eaf3fe;
+  border-radius: 8px;
+  padding: 0 8px;
+  color: #318cf5;
+  font-size: 14px;
+
+  .closeIcon {
+    float: right;
+    font-size: 10px;
+    color: #666;
+    margin-left: 8px;
+    margin-top: 7px;
+    &:hover {
+      color: #333;
+    }
+  }
+  & + .customTag {
+    margin-left: 10px;
+  }
+}

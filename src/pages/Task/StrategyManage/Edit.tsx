@@ -1,7 +1,7 @@
 import React from 'react';
 import { Breadcrumb, Button, Form, Input, Radio, Select, Space } from 'antd';
-import FormBlock from './components/FormBlock/FormBlock';
-import { FormBlockPreview } from './components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
+import FormBlock from '../StrategyTask/components/FormBlock/FormBlock';
+import { FormBlockPreview } from '../StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 
 const StrategyTaskEdit: React.FC = () => {
   const navigatorToList = () => {
@@ -39,7 +39,7 @@ const StrategyTaskEdit: React.FC = () => {
             </Radio.Group>
           </Form.Item>
           <Form.Item label="机构策略任务名称" name={'runCycle'}>
-            <Input></Input>
+            <Input className="width320"></Input>
           </Form.Item>
 
           <Form.Item label="策略任务运营说明" name={'opDesc'}>
@@ -62,7 +62,7 @@ const StrategyTaskEdit: React.FC = () => {
           {/* <Form.Item> */}
         </Form>
         <div className="formListTitle">配置操作区</div>
-        <FormBlock />
+        <FormBlock hideAdd />
         {/* </Form.Item> */}
         <div className="formListTitle">策略行事历预览</div>
         <FormBlockPreview value={[{}]} />

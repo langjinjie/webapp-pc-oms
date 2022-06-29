@@ -4,10 +4,15 @@ import style from './style.module.less';
 import classNames from 'classnames';
 import { NgFormSearch } from 'src/components';
 import { searchCols } from './config';
+import { RouteComponentProps } from 'react-router-dom';
 
-const Manage: React.FC = () => {
+const Manage: React.FC<RouteComponentProps> = ({ history }) => {
   const onSearch = (values: any) => {
     console.log(values);
+  };
+
+  const selectedTemplate = () => {
+    history.push('/strategyManage/detail');
   };
   return (
     <div>
@@ -25,7 +30,7 @@ const Manage: React.FC = () => {
               <div className={style.taskName}>生日场景</div>
               <div className={style.taskTarget}>效果：提升转化百分之100%</div>
               <div className={style.taskTips}>任务说明：适用于在销售期的转化， 任务场景：保险转化</div>
-              <Button className={style.useBtn} type="primary">
+              <Button className={style.useBtn} type="primary" onClick={() => selectedTemplate()}>
                 立即使用
               </Button>
             </div>

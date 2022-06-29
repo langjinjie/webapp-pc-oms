@@ -3,14 +3,15 @@ import { Button, PaginationProps } from 'antd';
 import React, { useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
+import { CreateNodeModal } from './components/CrateNodeModal';
 import { NodeColumns, searchCols, tableColumnsFun } from './ListConfig';
 
 const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
+  const [visibleCreateNode, setVisibleCreateNode] = useState(false);
   const [tableSource] = useState<Partial<NodeColumns>[]>([
     {
-      sceneId: '1212121',
-      sceneCode: 'SCENE_CODE121',
-      sceneName: 'DEMO 数据'
+      nodeId: 'SCENE_CODE121',
+      nodeName: 'DEMO 数据'
     }
   ]);
   const [pagination] = useState<PaginationProps>({
@@ -43,7 +44,7 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
         type="primary"
         shape="round"
         icon={<PlusOutlined />}
-        onClick={() => history.push('/strategyTask/edit')}
+        onClick={() => setVisibleCreateNode(true)}
         size="large"
       >
         新建节点
@@ -59,10 +60,12 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
           pagination={pagination}
           paginationChange={paginationChange}
           setRowKey={(record: NodeColumns) => {
-            return record.sceneId;
+            return record.nodeId;
           }}
         />
       </div>
+
+      <CreateNodeModal visible={visibleCreateNode} onCancel={() => setVisibleCreateNode(false)} />
     </div>
   );
 };

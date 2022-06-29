@@ -6,14 +6,17 @@ import classNames from 'classnames';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
 import styles from './style.module.less';
 import { getNodeTypeList } from 'src/apis/task';
+import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 
 interface FormBlockProps {
   value?: any[];
+  hideAdd?: boolean;
   onChange?: (value: any) => void;
 }
-const FormBlock: React.FC<FormBlockProps> = () => {
+const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
   const [nodeTypeOptions, setNodeTypeOptions] = useState<any[]>([]);
   const [blockForm] = Form.useForm();
+  const [visibleRuleActionModal, setVisibleRuleActionModal] = useState(false);
   const getNodeTypeOptions = async () => {
     const res = await getNodeTypeList();
     console.log(res);
@@ -33,6 +36,11 @@ const FormBlock: React.FC<FormBlockProps> = () => {
     });
     getNodeTypeOptions();
   }, []);
+
+  const setAction = (sceneIndex: number, nodeIndex: number) => {
+    console.log(sceneIndex, nodeIndex);
+    setVisibleRuleActionModal(true);
+  };
 
   return (
     <>
@@ -115,7 +123,9 @@ const FormBlock: React.FC<FormBlockProps> = () => {
                                       </Select>
                                     </Form.Item>
                                     <Form.Item className={styles.ruleCol}>
-                                      <Button type="link">配置</Button>
+                                      <Button type="link" onClick={() => setAction(index, nodeIndex)}>
+                                        配置
+                                      </Button>
                                     </Form.Item>
                                     <Form.Item name={[name, nodeName, 'speechcraft']} className={styles.speechCol}>
                                       <ManuallyAddSpeech />
@@ -155,23 +165,26 @@ const FormBlock: React.FC<FormBlockProps> = () => {
                   </div>
                 </Form.Item>
               ))}
-              <li className={classNames(styles.nodeItem, 'mt20 mb20')}>
-                <Button
-                  className="ml20"
-                  icon={<PlusOutlined />}
-                  type="primary"
-                  shape="round"
-                  ghost
-                  onClick={() => add()}
-                  size="large"
-                >
-                  新增节点
-                </Button>
-              </li>
+              {!hideAdd && (
+                <li className={classNames(styles.nodeItem, 'mt20 mb20')}>
+                  <Button
+                    className="ml20"
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    shape="round"
+                    ghost
+                    onClick={() => add()}
+                    size="large"
+                  >
+                    新增节点
+                  </Button>
+                </li>
+              )}
             </>
           )}
         </Form.List>
       </Form>
+      <RuleActionSetModal visible={visibleRuleActionModal} onCancel={() => setVisibleRuleActionModal(false)} />
     </>
   );
 };
