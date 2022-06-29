@@ -187,11 +187,11 @@ export const dataCodeList: CodeListType = [
         title: '客户雷达',
         subTitle: '日人均客户雷达调用数'
       },
-      // {
-      //   key: '',
-      //   title: '客户列表',
-      //   subTitle: '日人均客户列表调用数'
-      // },
+      {
+        key: 'avg_cust_list_count',
+        title: '客户列表',
+        subTitle: '日人均客户列表调用数'
+      },
       {
         key: 'avg_tag_count',
         title: '客户标签',

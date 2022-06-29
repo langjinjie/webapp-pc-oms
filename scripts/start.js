@@ -23,7 +23,7 @@ const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 
 const startConfig = {
   devtool: 'inline-source-map',
-  target: 'web',
+  target: 'web'
 };
 
 const compiler = webpack(merge(webpackConfig(), startConfig));
@@ -39,17 +39,17 @@ const devServerOptions = {
   progress: true,
   overlay: {
     errors: true,
-    warnings: true,
+    warnings: true
   },
   proxy: [
     {
       context: ['/api', '/tenacity-admin'],
       target: 'https://dev.tenacity.com.cn',
-      // target: 'https://uat.tenacity.com.cn',
+      // target: 'http://172.30.15.141:7060',
       secure: false,
-      changeOrigin: true,
-    },
-  ],
+      changeOrigin: true
+    }
+  ]
 };
 
 const server = new WebpackDevServer(compiler, devServerOptions);

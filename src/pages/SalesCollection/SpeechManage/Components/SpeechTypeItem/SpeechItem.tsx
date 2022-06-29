@@ -92,18 +92,18 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
       {/* type = 2 长图 */}
       {type === 2 && (
         <Form.Item
-          label={'上传图片'}
+          label={'目录图片'}
           name="contentUrl"
           rules={[{ required: true }]}
           extra="图片宽度750px，高度不限，仅支持.jpg格式"
         >
-          <NgUpload beforeUpload={beforeUpload}></NgUpload>
+          <NgUpload beforeUpload={beforeUpload} disabled></NgUpload>
         </Form.Item>
       )}
 
       {/* type = 3 名片 */}
       {type === 3 && (
-        <Form.Item label="名片样式" name="pic">
+        <Form.Item label="目录名片样式" name="pic">
           <div className={styles.posterWrap}>
             <img src={require('src/assets/images/sales/business_demo.jpg')} alt="" />
           </div>
@@ -111,7 +111,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
       )}
       {/* type = 4 小站 */}
       {type === 4 && (
-        <Form.Item label="小站样式" name="pic">
+        <Form.Item label="目录小站样式" name="pic">
           <div className={styles.userHomeWrap}>
             <img src={require('src/assets/images/sales/userHome_demo.jpg')} alt="" />
           </div>
@@ -122,20 +122,20 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
       {(type === 5 || type === 8) && (
         <>
           <Form.Item
-            label={'上传图片'}
+            label={'目录图片'}
             name="thumbnail"
             extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
           >
-            <NgUpload beforeUpload={beforeUploadSmallPic}></NgUpload>
+            <NgUpload beforeUpload={beforeUploadSmallPic} disabled></NgUpload>
           </Form.Item>
-          <Form.Item label="图文标题" name="title">
-            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
+          <Form.Item label="目录图文标题" name="title">
+            <InputShowLength className="width480" disabled maxLength={30} placeholder={'请输入'} />
           </Form.Item>
-          <Form.Item label="图文摘要" name="summary">
-            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
+          <Form.Item label="目录图文摘要" name="summary">
+            <InputShowLength className="width480" disabled maxLength={30} placeholder={'请输入'} />
           </Form.Item>
-          <Form.Item label="图文链接" name="contentUrl" rules={[{ required: true }]}>
-            <Input className={'width480'}></Input>
+          <Form.Item label="目录图文链接" name="contentUrl" rules={[{ required: true }]}>
+            <Input className={'width480'} disabled></Input>
           </Form.Item>
         </>
       )}
@@ -143,7 +143,7 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
       {(type === 6 || type === 7) && (
         <>
           <Form.Item
-            label={type === 6 ? '上传语音' : '上传视频'}
+            label={type === 6 ? '目录语音' : '目录视频'}
             name="contentUrl"
             rules={[{ required: true }]}
             extra={type === 6 ? '仅支持MP3格式，最大20M' : '仅支持MP4格式，最大100M'}
@@ -152,35 +152,36 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
               beforeUpload={(file) => beforeUploadMedia(file, type)}
               type={type === 6 ? 'audio' : 'video'}
               btnText={type === 6 ? '上传音频' : '上传视频'}
+              disabled
             />
           </Form.Item>
           <Form.Item
-            label={'上传封面'}
+            label={'目录封面'}
             name="thumbnail"
             extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
           >
-            <NgUpload beforeUpload={beforeUploadSmallPic} showDeleteBtn />
+            <NgUpload disabled beforeUpload={beforeUploadSmallPic} />
           </Form.Item>
           <Form.Item
             name="title"
-            label={type === 6 ? '音频标题' : '视频标题'}
+            label={type === 6 ? '目录音频标题' : '目录视频标题'}
             rules={[{ required: true }, { max: 30 }]}
           >
-            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
+            <InputShowLength disabled className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
-          <Form.Item label="摘要" name="summary" rules={[{ required: true }, { max: 30 }]}>
-            <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
+          <Form.Item label="目录摘要" name="summary" rules={[{ required: true }, { max: 30 }]}>
+            <InputShowLength disabled className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
         </>
       )}
       {/* { id: 9, name: '小程序链接' } */}
       {type === 9 && (
         <>
-          <Form.Item name="appId" label="小程序Id" rules={[{ required: true }, { max: 40 }]}>
-            <Input className="width480" placeholder={'请输入'} />
+          <Form.Item name="appId" label="目录小程序Id" rules={[{ required: true }, { max: 40 }]}>
+            <Input className="width480" disabled placeholder={'请输入'} />
           </Form.Item>
-          <Form.Item name="appPath" label="路径">
-            <Input className="width480" placeholder={'请输入'} />
+          <Form.Item name="appPath" label="目录路径">
+            <Input className="width480" disabled placeholder={'请输入'} />
           </Form.Item>
           <Form.Item
             label={'上传图片'}
@@ -188,12 +189,12 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
             rules={[{ required: true }]}
             extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
           >
-            <NgUpload beforeUpload={beforeUploadSmallPic}></NgUpload>
+            <NgUpload beforeUpload={beforeUploadSmallPic} disabled></NgUpload>
           </Form.Item>
-          <Form.Item name="title" label="小程序标题" rules={[{ required: true }, { max: 30 }]}>
+          <Form.Item name="title" label="目录小程序标题" rules={[{ required: true }, { max: 30 }]}>
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
-          <Form.Item name="summary" label="小程序摘要" rules={[{ required: true }, { max: 30 }]}>
+          <Form.Item name="summary" label="目录小程序摘要" rules={[{ required: true }, { max: 30 }]}>
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
         </>
@@ -201,20 +202,20 @@ const SpeechItem: React.FC<SpeechItemProps> = ({ type }) => {
       {type === 10 && (
         <>
           <Form.Item
-            label={'上传图片'}
+            label={'目录图片'}
             name="thumbnail"
             rules={[{ required: true }]}
             extra="为确保最佳展示效果，请上传200*200像素高清图片，仅支持.jpg格式"
           >
-            <NgUpload beforeUpload={beforeUploadSmallPic}></NgUpload>
+            <NgUpload beforeUpload={beforeUploadSmallPic} disabled></NgUpload>
           </Form.Item>
-          <Form.Item label={'上传PDF'} name="contentUrl" rules={[{ required: true }]}>
-            <NgUploadFile />
+          <Form.Item label={'目录PDF'} name="contentUrl" rules={[{ required: true }]}>
+            <NgUploadFile disabled />
           </Form.Item>
-          <Form.Item name="title" label="PDF标题" rules={[{ required: true }, { max: 30 }]}>
+          <Form.Item name="title" label="目录PDF标题" rules={[{ required: true }, { max: 30 }]}>
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
-          <Form.Item name="summary" label="PDF摘要" rules={[{ required: true }, { max: 30 }]}>
+          <Form.Item name="summary" label="目录PDF摘要" rules={[{ required: true }, { max: 30 }]}>
             <InputShowLength className="width480" maxLength={30} placeholder={'请输入'} />
           </Form.Item>
         </>

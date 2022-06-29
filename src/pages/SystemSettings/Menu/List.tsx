@@ -1,5 +1,5 @@
 import { Button, message, Tabs } from 'antd';
-import { Icon } from 'tenacity-ui';
+import Icon from 'src/components/SvgIcon/SvgIcon';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { deleteMenu, getMenuList, operateMenu, searchMenu } from 'src/apis/orgManage';

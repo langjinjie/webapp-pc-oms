@@ -31,11 +31,11 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly, selectedKey }) 
   });
   const [form] = Form.useForm();
   const history = useHistory();
-  // 新增用户组
+  // 新增员工组
   const addGroup = () => {
     history.push('/userGroup/add');
   };
-  // 获取用户组列表
+  // 获取员工组列表
   const getGroupList = async () => {
     setLoading(true);
     const res = await requestGetGroupList({ ...searchParam, ...paginationParam });
@@ -64,7 +64,7 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly, selectedKey }) 
       name: record.name
     })
   };
-  useDocumentTitle('机构管理-用户组管理');
+  useDocumentTitle('员工组管理');
   useEffect(() => {
     getGroupList();
   }, [paginationParam]);
@@ -74,15 +74,15 @@ const UserGroup: React.FC<UserGroupProps> = ({ change, readonly, selectedKey }) 
         <>
           <AuthBtn path="/add">
             <Button className={style.addBtn} icon={<PlusOutlined />} type="primary" onClick={addGroup}>
-              新增用户组
+              新增员工组
             </Button>
           </AuthBtn>
           <AuthBtn path="/query">
             <Form className={style.form} form={form} layout="inline" onFinish={onSearchHandle} onReset={onSearchHandle}>
-              <Form.Item name="groupName" label="用户组名称：">
+              <Form.Item name="groupName" label="员工组名称：">
                 <Input placeholder="待输入" allowClear style={{ width: 180 }} />
               </Form.Item>
-              <Form.Item name="groupCode" label="用户组编号：">
+              <Form.Item name="groupCode" label="员工组编号：">
                 <Input placeholder="待输入" allowClear style={{ width: 180 }} />
               </Form.Item>
               <Form.Item style={{ width: 186 }}>

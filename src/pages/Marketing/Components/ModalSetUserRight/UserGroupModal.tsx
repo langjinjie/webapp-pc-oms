@@ -28,7 +28,7 @@ const UserGroupModal: React.FC<UserGroupModalProps> = ({ onChange, value: propVa
       <NgModal
         width={'940px'}
         visible={visibleUserGroup}
-        title="选择用户组"
+        title="选择员工组"
         onCancel={() => setVisibleUserGroup(false)}
         onOk={() => handleOnOK()}
       >

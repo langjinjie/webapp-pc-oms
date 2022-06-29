@@ -47,3 +47,63 @@ export const requestGetTaskDetail: HttpFC = (param) => {
 export const requestGetTaskStaffDetail: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/transfer/task/staff/list', param);
 };
+
+/**
+ * 2.1 个微好友迁移-任务列表查询接口（管理端）
+ * @param
+ */
+export const requestGetWechatTransferTaskList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/wechat/transfer/list', param);
+};
+
+/**
+ * 2.2 个微好友迁移-任务详情接口（管理端）
+ * @param
+ */
+export const requestGetWechatTaskDetail: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/wechat/transfer/detail', param);
+};
+
+/**
+ * 2.3 个微好友迁移-任务详情-查看明细接口（管理端）
+ */
+export const requestGetWechatTransferTaskDetailStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/wechat/transfer/staff/list', param);
+};
+
+/**
+ * 2.4 个微好友迁移-删除/关闭任务接口（管理端）
+ */
+export const requestOpWechatTransferTask: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/wechat/transfer/task/op', param);
+};
+
+/**
+ * 2.5 个微好友迁移-任务数据下载接口（管理端）
+ */
+export const requestExportTransferWechatTask: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/transfer/wechat/task/export', param, {
+    responseType: 'blob'
+  });
+};
+
+/**
+ * 2.6 个微好友迁移-新增任务按钮状态获取接口（管理端）
+ */
+export const requestGetCreateButtonStatus: HttpVoid = () => {
+  return http.post('/tenacity-admin/api/wechat/transfer/get/create/button/status');
+};
+
+/**
+ * 2.7 个微好友迁移-任务创建接口（管理端）
+ */
+export const requestCreateWechatTransferTask: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/wechat/transfer/task/create', param);
+};
+
+/**
+ * 2.8 个微好友迁移-任务创建-获取执行员工接口（管理端）
+ */
+export const requestGetWechatTransferStaffScope: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/wechat/transfer/staff/scope', param);
+};

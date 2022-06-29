@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { Button, Card, Cascader, Form, Input, message, Modal, Select, Space } from 'antd';
+import { Button, Card, Cascader, Form, Input, message, Select, Space, Switch } from 'antd';
 import styles from './style.module.less';
 import CustomTextArea from './Components/CustomTextArea';
 import { useForm } from 'antd/lib/form/Form';
 import { speechContentTypes, SpeechProps } from './Config';
 import SpeechItem from './Components/SpeechTypeItem/SpeechItem';
+import SpeechItemChild from './Components/SpeechTypeItemChild/SpeechItem';
 import { RouteComponentProps } from 'react-router';
 import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
@@ -22,6 +23,7 @@ const scenesStates = [
 const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   useDocumentTitle('话术编辑');
   const [speechForm] = useForm();
+  const [isCustomType, setIsCustomType] = useState(false);
   const [speech, setSpeech] = useState<SpeechProps>();
   const [originSpeech, setOriginSpeech] = useState<SpeechProps>();
   const [categories, setCategories] = useState<any[]>([]);
@@ -43,72 +45,58 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       return res;
     }
   };
+  const getObjectData = (data: any, obj: any, keyName = '') => {
+    for (const key in data) {
+      let str = '';
+      if (keyName) {
+        str = keyName + '.' + key;
+      } else {
+        str = key;
+      }
+      if (typeof data[key] === 'object' && isNaN(data[key]?.length)) {
+        getObjectData(data[key], obj, str);
+      } else {
+        obj[str] = data[key];
+      }
+    }
+    return obj;
+  };
   const getDetail = async (contentId: string, sceneId: string) => {
     const res = await getSpeechDetail({
       sceneId,
       contentId
     });
     if (res) {
-      setSpeech(res);
-      setOriginSpeech(res);
-      const {
-        ageType,
-        groupId,
-        catalogId,
-        content,
-        contentType,
-        contentUrl,
-        fullCatalogId,
-        fullName,
-        genderType,
-        logoUrl,
-        name,
-        sceneId,
-        sensitive,
-        sensitiveWord,
-        status,
-        summary,
-        thumbnail,
-        tip,
-        title,
-        videoDuration,
-        videoSize
-      } = res;
+      const res1 = getObjectData(res, {}, '');
+      if (res1['contentObj.contentType']) {
+        setIsCustomType(true);
+      }
+      setSpeech(res1);
+      setOriginSpeech(res1);
+      const { sceneId, contentObj } = res;
       const currentScenes = scenesStates.filter((scenes) => scenes.sceneId === sceneId)[0];
       setCurrentScenesState(currentScenes);
-      const formData = {
-        groupId,
-        ageType,
-        catalogId,
-        content,
-        contentType,
-        contentUrl,
-        fullCatalogId,
-        fullName,
-        genderType,
-        logoUrl,
-        name,
-        sceneId,
-        sensitive,
-        sensitiveWord,
-        status,
-        summary,
-        thumbnail,
-        tip,
-        title,
-        videoDuration,
-        videoSize
-      };
-      if (contentType === 9) {
-        const { appId, appPath } = JSON.parse(contentUrl || '{}');
+
+      if (res?.contentType === 9 || contentObj?.contentType === 9) {
+        const { appId, appPath } = res?.contentType === 9 && JSON.parse(res.contentUrl || '{}');
+        const { appId: contentObjAppId, appPath: appPathAppPath } =
+          contentObj?.contentType === 9 && JSON.parse(contentObj?.contentUrl || '{}');
+        console.log({ appId, appPath, res1, contentObjAppId, appPathAppPath, contentObj });
+        // delete res1.contentUrl;
         speechForm.setFieldsValue({
-          ...formData,
+          ...res1,
           appId,
-          appPath
+          appPath,
+          'contentObj.appId': contentObjAppId,
+          'contentObj.appPath': appPathAppPath
         });
-        setOriginSpeech((originSpeech) => ({ ...originSpeech!, appId, appPath }));
+        setOriginSpeech({
+          ...res1
+          // 'contentObj.appId': appId,
+          // 'contentObj.appPath': appPath
+        });
       } else {
-        speechForm.setFieldsValue(formData);
+        speechForm.setFieldsValue({ ...res1 });
       }
     }
   };
@@ -188,26 +176,26 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
 
   const onFinish = async (values: any) => {
     const {
-      content,
-      contentType,
-      tip,
-      ageType,
-      genderType,
-      contentUrl,
-      title,
-      summary,
-      thumbnail,
-      appId,
-      appPath = '',
+      'contentObj.content': content,
+      'contentObj.contentType': contentType,
+      'contentObj.tip': tip,
+      'contentObj.ageType': ageType,
+      'contentObj.genderType': genderType,
+      'contentObj.contentUrl': contentUrl,
+      'contentObj.title': title,
+      'contentObj.summary': summary,
+      'contentObj.thumbnail': thumbnail,
+      'contentObj.appId': appId,
+      'contentObj.appPath': appPath,
       groupId
     } = values;
 
     const submitData = {
       sceneId: originSpeech?.sceneId,
       catalogId: originSpeech?.catalogId,
-      contentId: speech?.contentId || '',
+      contentId: originSpeech?.['contentObj.contentId'] || '',
       content,
-      contentType,
+      contentType: contentType,
       ageType,
       tip,
       genderType,
@@ -217,36 +205,8 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       groupId: groupId || '',
       summary: summary || originSpeech?.summary
     };
-    if (
-      (originSpeech?.contentType === 2 && contentUrl !== originSpeech.contentUrl) ||
-      ((originSpeech?.contentType === 7 || originSpeech?.contentType === 6 || originSpeech?.contentType === 10) &&
-        (title !== originSpeech?.title ||
-          originSpeech.contentUrl !== contentUrl ||
-          summary !== originSpeech.summary ||
-          thumbnail !== originSpeech.thumbnail)) ||
-      ((originSpeech?.contentType === 5 || originSpeech?.contentType === 8) &&
-        (title !== originSpeech?.title ||
-          thumbnail !== originSpeech.thumbnail ||
-          summary !== originSpeech.summary ||
-          contentUrl !== originSpeech.contentUrl)) ||
-      (originSpeech?.contentType === 9 &&
-        (title !== originSpeech?.title ||
-          thumbnail !== originSpeech.thumbnail ||
-          appId !== originSpeech.appId ||
-          appPath !== originSpeech.appPath ||
-          summary !== originSpeech.summary))
-    ) {
-      Modal.confirm({
-        content: '修改目录会对已上架话术产生影响，企微前端能实时看到变化',
-        cancelText: '取消',
-        okText: '确定',
-        onOk: async () => {
-          await onSubmit(submitData);
-        }
-      });
-    } else {
-      await onSubmit(submitData);
-    }
+
+    await onSubmit(submitData);
   };
 
   const onValuesChange = (values: any) => {
@@ -274,12 +234,12 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     setCategories([...categories]);
   };
 
-  useMemo(() => {
-    if (originSpeech) {
-      const { contentType, contentUrl, title, summary, thumbnail, appId, appPath } = originSpeech;
-      speechForm.setFieldsValue({ contentType, contentUrl, title, summary, thumbnail, appId, appPath });
-    }
-  }, [originSpeech]);
+  // useMemo(() => {
+  //   if (originSpeech) {
+  //     const { contentType, contentUrl, title, summary, thumbnail, appId, appPath } = originSpeech;
+  //     speechForm.setFieldsValue({ contentType, contentUrl, title, summary, thumbnail, appId, appPath });
+  //   }
+  // }, [originSpeech]);
 
   // 类目改变
   const onCascaderChange = async (value: any, selectedOptions: any) => {
@@ -298,6 +258,10 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     }
   };
 
+  const handleCustomTypeChange = (value: any) => {
+    setOriginSpeech((originSpeech) => ({ ...originSpeech!, 'contentObj.contentType': value }));
+  };
+
   return (
     <Card title="新增话术" bordered={false} className="edit">
       <Form
@@ -307,7 +271,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
           onValuesChange(values);
         }}
       >
-        {originSpeech?.contentId
+        {originSpeech?.['contentObj.contentId']
           ? (
           <Form.Item label="选择目录" required>
             <Input type="text" value={originSpeech?.fullName || ''} className="width420" readOnly />
@@ -327,7 +291,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
             )}
 
         {originSpeech?.contentType && (
-          <Form.Item label="话术格式" name="contentType" rules={[{ required: true }]}>
+          <Form.Item label="目录话术格式" name="contentType" rules={[{ required: true }]}>
             <Select placeholder="请选择" className="width240" disabled>
               {speechContentTypes.map((contentType) => (
                 <Select.Option key={contentType.id} value={contentType.id}>
@@ -338,14 +302,39 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
           </Form.Item>
         )}
         {originSpeech?.contentType && <SpeechItem type={originSpeech?.contentType}></SpeechItem>}
+        <Form.Item label="设置话术格式">
+          <Switch
+            onChange={(value) => setIsCustomType(value)}
+            checkedChildren="开启"
+            size="default"
+            unCheckedChildren="关闭"
+            checked={isCustomType}
+          />
+        </Form.Item>
+        {isCustomType && (
+          <>
+            <Form.Item label="话术格式" name="contentObj.contentType" rules={[{ required: true }]}>
+              <Select placeholder="请选择" className="width240" onChange={handleCustomTypeChange}>
+                {speechContentTypes.map((contentType) => (
+                  <Select.Option key={contentType.id} value={contentType.id}>
+                    {contentType.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            {originSpeech?.['contentObj.contentType'] && (
+              <SpeechItemChild type={originSpeech?.['contentObj.contentType']}></SpeechItemChild>
+            )}
+          </>
+        )}
 
-        <Form.Item label="话术内容" name="content" rules={[{ required: true }]}>
+        <Form.Item label="话术内容" name="contentObj.content" rules={[{ required: true }]}>
           <CustomTextArea sensitiveWord={speech?.sensitiveWord} sensitive={speech?.sensitive} maxLength={1200} />
         </Form.Item>
         {currentScenesState?.sceneId !== 3 && currentScenesState?.sceneId !== 5 && currentScenesState?.sceneId !== 0 && (
           <Form.Item label="客户分类" required={true} className={styles.formItem__selectGroup}>
             {currentScenesState?.needGenderType === 1 && (
-              <Form.Item name="genderType" rules={[{ required: true, message: '请选择性别' }]}>
+              <Form.Item name="contentObj.genderType" rules={[{ required: true, message: '请选择性别' }]}>
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={0}>全部性别</Select.Option>
                   <Select.Option value={1}>男性</Select.Option>
@@ -354,7 +343,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
               </Form.Item>
             )}
             {currentScenesState?.needAgeType === 1 && (
-              <Form.Item name={'ageType'} rules={[{ required: true, message: '请选择年龄' }]}>
+              <Form.Item name={'contentObj.ageType'} rules={[{ required: true, message: '请选择年龄' }]}>
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={0}>全部年龄</Select.Option>
                   <Select.Option value={1}>老</Select.Option>
@@ -365,7 +354,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
             )}
           </Form.Item>
         )}
-        <Form.Item label="话术小贴士" name="tip">
+        <Form.Item label="话术小贴士" name={'contentObj.tip'}>
           <InputShowLength className="width360" maxLength={20} placeholder={'请输入'} />
         </Form.Item>
         <Form.Item label="可见范围设置" name={'groupId'}>

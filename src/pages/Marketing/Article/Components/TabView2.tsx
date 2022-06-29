@@ -111,6 +111,7 @@ const TabView2: React.FC = () => {
     setFetching(true);
     const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
+      specType: 0,
       recommendType: formData.recommendType
     });
     const resList = [...formData.recommendList.filter((item) => item !== undefined), ...res];
@@ -134,6 +135,7 @@ const TabView2: React.FC = () => {
       setFetching(true);
       const res = await searchRecommendGoodsList({
         title: '',
+        specType: 0,
         recommendType: +e.target.value
       });
       setRecommendList(res || []);
@@ -424,6 +426,7 @@ const TabView2: React.FC = () => {
                           if (recommendList.length < 5) {
                             const res = await searchRecommendGoodsList({
                               title: '',
+                              specType: 0,
                               recommendType
                             });
 

@@ -32,7 +32,6 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   const [paginationParam, setPaginationParam] = useState({ pageNum: 1, pageSize: 10 });
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [tableHeight, setTableHeight] = useState(0);
   const [renderedList, setRenderedList] = useState<{ [key: string]: IProviderPointsParams }>({});
   const [sendStatus, setSendStatus] = useState(false); // 告诉发放列表详情页是否发生了一键发放
   const wrapRef: MutableRefObject<any> = useRef(null);
@@ -109,10 +108,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
   useEffect(() => {
     ponitsParam.visible && getSendPonitsDetail();
   }, [ponitsParam.visible, paginationParam]);
-  useEffect(() => {
-    const drawerHeight = document.getElementsByClassName(style.drawerWrap)[0] as HTMLDivElement;
-    setTableHeight(drawerHeight?.offsetHeight - 237 || 0);
-  }, [sendPointsDetail]);
+
   return (
     <div className={style.wrap} ref={wrapRef}>
       <Drawer
@@ -144,7 +140,7 @@ const PonitsDetail: React.FC<IPonitsDetail> = ({ ponitsParam, setPonitsParam }) 
           dataSource={sendPointsDetail.list}
           columns={TableColumns(setPaginationParam)}
           loading={isLoading}
-          scroll={{ x: 'max-content', y: tableHeight }}
+          scroll={{ x: 'max-content' }}
           {...TablePagination({
             dataSource: sendPointsDetail,
             paginationParam,

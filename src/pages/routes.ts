@@ -253,7 +253,7 @@ export const routes: RouteProps[] = [
   },
   {
     path: '/personal',
-    component: lazy(() => import('src/pages/Migration/PersonalWeChat/AddTask/AddTask'))
+    component: lazy(() => import('src/pages/Migration/PersonalWeChat/List/List'))
   },
   {
     path: '/exclusive',
@@ -477,8 +477,8 @@ export const menus: Menu[] = [
     icon: 'a-bianzu101',
     path: 'migration',
     children: [
-      { name: '企微好友', path: '/enterprise' }
-      // { name: '个微好友', path: '/personal' }
+      { name: '企微好友', path: '/enterprise' },
+      { name: '个微好友', path: '/personal' }
     ]
   },
   // {

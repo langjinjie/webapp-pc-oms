@@ -134,7 +134,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
             dangerouslySetInnerHTML={{
               __html:
                 replaceEnter(
-                  row.roles.reduce((prev: string, now: any, index: number) => {
+                  (row.roles || []).reduce((prev: string, now: any, index: number) => {
                     prev +=
                       roleType2Name[+now.roleType - 1] +
                       '：' +
