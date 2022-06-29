@@ -389,6 +389,7 @@ export interface TagItem {
 export interface TagInterface {
   tagId: string;
   tagName: string;
+  groupName: string;
   groupId: string;
   tagList?: TagItem[];
 }
@@ -401,4 +402,22 @@ export interface TagGroup {
 export interface TagCategory {
   category: number;
   groupList: TagGroup[];
+}
+// 节点预览内容
+export interface IPreviewValue {
+  speechcraft: string;
+  pushTime: string;
+  actionRule: IActionRule;
+}
+
+export interface IActionRule {
+  contentType: number; // 动作规则类型: 1-文章、2-海报、3-产品、4-活动、5-销售宝典话术
+  itemIds: IItemIds[];
+}
+export interface IItemIds {
+  itemId: string;
+  speechcraft?: string; // 话术
+  imgUrl?: string; // 海报或者分享图(文章/产品/活动)
+  title?: string;
+  desc?: string;
 }

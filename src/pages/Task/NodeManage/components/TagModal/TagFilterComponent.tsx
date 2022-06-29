@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from 'antd';
-import { Icon } from 'src/components';
+import { Input } from 'antd';
 import TagFilter from './TagFilter';
 import { TagInterface } from 'src/utils/interface';
-import style from './tag.module.less';
+import { DownOutlined } from '@ant-design/icons';
 interface ComponentsProps {
   onChange?: (values: TagInterface) => void;
   value?: TagInterface;
@@ -28,9 +27,14 @@ const TagFilterComponents: React.FC<ComponentsProps> = (props) => {
 
   return (
     <>
-      <Button shape="round" className={style.addBtn} style={{ color: '#E1E2E6' }} onClick={() => setVisible(true)}>
-        <Icon className="font20" name="xinjian"></Icon>
-      </Button>
+      <Input
+        readOnly
+        suffix={<DownOutlined />}
+        className="width320"
+        value={tag?.groupName}
+        style={{ color: '#E1E2E6' }}
+        onClick={() => setVisible(true)}
+      ></Input>
       <TagFilter
         onChoose={(tags: TagInterface) => {
           filterClients(tags);

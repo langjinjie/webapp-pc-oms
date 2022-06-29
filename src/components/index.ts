@@ -22,3 +22,4 @@ export { default as UploadFile } from 'src/components/UploadFile/UploadFile';
 export { NgModal } from './NgModal/NgModal';
 export { default as BreadCrumbs } from './BreadCrumbs/BreadCrumbs';
 export { default as AuthBtn } from './AuthBtn/AuthBtn';
+export { default as Preview } from './Preview/Preview';
