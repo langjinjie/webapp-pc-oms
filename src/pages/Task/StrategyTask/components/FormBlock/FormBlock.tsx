@@ -1,20 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Space, TimePicker } from 'antd';
 import classNames from 'classnames';
-import moment from 'moment';
+// import moment from 'moment';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
 import NodePreview from '../NodePreview/NodePreview';
 import styles from './style.module.less';
+import { getNodeTypeList } from 'src/apis/task';
+import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 
 interface FormBlockProps {
   value?: any[];
+  hideAdd?: boolean;
   onChange?: (value: any) => void;
 }
-const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onChange }) => {
+const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
   const [previewVisible, setPreviewVisible] = useState(false);
-  console.log(value, onChange);
+  const [nodeTypeOptions, setNodeTypeOptions] = useState<any[]>([]);
   const [blockForm] = Form.useForm();
+  const [visibleRuleActionModal, setVisibleRuleActionModal] = useState(false);
+  const getNodeTypeOptions = async () => {
+    const res = await getNodeTypeList();
+    console.log(res);
+    setNodeTypeOptions([]);
+  };
 
   const onFieldsChange = (changedValues: any, values: any) => {
     console.log(values);
@@ -55,6 +64,22 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
       ]
     }
   };
+  useEffect(() => {
+    blockForm.setFieldsValue({
+      sceneList: [
+        {
+          nodeRuleList: [{}]
+        }
+      ]
+    });
+    getNodeTypeOptions();
+  }, []);
+
+  const setAction = (sceneIndex: number, nodeIndex: number) => {
+    console.log(sceneIndex, nodeIndex);
+    setVisibleRuleActionModal(true);
+  };
+
   return (
     <>
       <Form form={blockForm} className={styles.blockWrap} onValuesChange={onFieldsChange}>
@@ -82,9 +107,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
                         className={classNames(styles.nodeType, styles.attrItem, 'flex align-center')}
                       >
                         <Select className={styles.attrItemContent}>
-                          <Select.Option value={'date'}>日历类</Select.Option>
-                          <Select.Option value={'1'}>节日类</Select.Option>
-                          <Select.Option value={'2'}>新闻类</Select.Option>
+                          {nodeTypeOptions.map((option) => (
+                            <Select.Option value={option.typeId} key={option.typeId}>
+                              {option.typeName}
+                            </Select.Option>
+                          ))}
                         </Select>
                       </Form.Item>
                       <Form.Item label="选择日期" className={classNames(styles.attrItem, 'flex align-center')}>
@@ -134,7 +161,9 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
                                       </Select>
                                     </Form.Item>
                                     <Form.Item className={styles.ruleCol}>
-                                      <Button type="link">配置</Button>
+                                      <Button type="link" onClick={() => setAction(index, nodeIndex)}>
+                                        配置
+                                      </Button>
                                     </Form.Item>
                                     <Form.Item name={[name, nodeName, 'speechcraft']} className={styles.speechCol}>
                                       <ManuallyAddSpeech />
@@ -145,7 +174,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
                                     >
                                       <TimePicker
                                         bordered={false}
-                                        defaultValue={moment('09:00', 'HH:mm')}
+                                        // defaultValue={moment('09:00', 'HH:mm')}
                                         format={'HH:mm'}
                                       />
                                     </Form.Item>
@@ -176,24 +205,27 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
                   </div>
                 </Form.Item>
               ))}
-              <li className={classNames(styles.nodeItem, 'mt20 mb20')}>
-                <Button
-                  className="ml20"
-                  icon={<PlusOutlined />}
-                  type="primary"
-                  shape="round"
-                  ghost
-                  onClick={() => add()}
-                  size="large"
-                >
-                  新增节点
-                </Button>
-              </li>
+              {!hideAdd && (
+                <li className={classNames(styles.nodeItem, 'mt20 mb20')}>
+                  <Button
+                    className="ml20"
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    shape="round"
+                    ghost
+                    onClick={() => add()}
+                    size="large"
+                  >
+                    新增节点
+                  </Button>
+                </li>
+              )}
             </>
           )}
         </Form.List>
       </Form>
       <NodePreview value={previewValue} visible={previewVisible} onClose={() => setPreviewVisible(false)} />
+      <RuleActionSetModal visible={visibleRuleActionModal} onCancel={() => setVisibleRuleActionModal(false)} />
     </>
   );
 };

@@ -43,6 +43,7 @@ interface SearchComponentProps {
     | undefined;
   defaultValues?: any;
   className?: string;
+  hideReset?: boolean;
 }
 const { RangePicker } = DatePicker;
 
@@ -55,7 +56,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     loadData,
     onChangeOfCascader,
     onReset,
-    firstRowChildCount
+    firstRowChildCount,
+    hideReset
   } = props;
   const [from] = Form.useForm();
   const handleReset = () => {
@@ -171,9 +173,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               <Button type="primary" htmlType="submit" className={style.btnConfirm} shape="round">
                 查询
               </Button>
-              <Button htmlType="reset" type="primary" className={style.btnReset} shape="round" ghost>
-                重置
-              </Button>
+              {!hideReset && (
+                <Button htmlType="reset" type="primary" className={style.btnReset} shape="round" ghost>
+                  重置
+                </Button>
+              )}
             </Space>
           </Form.Item>
         </Form>
@@ -246,9 +250,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 <Button type="primary" htmlType="submit" className={style.btnConfirm} shape="round">
                   查询
                 </Button>
-                <Button htmlType="reset" type="primary" className={style.btnReset} shape="round" ghost>
-                  重置
-                </Button>
+                {!hideReset && (
+                  <Button htmlType="reset" type="primary" className={style.btnReset} shape="round" ghost>
+                    重置
+                  </Button>
+                )}
               </Space>
             </Form.Item>
           </Row>

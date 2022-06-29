@@ -1,6 +1,7 @@
 import { PaginationProps } from 'antd';
 import React, { useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { getSceneList } from 'src/apis/task';
 import { NgFormSearch, NgTable } from 'src/components';
 import { SceneColumns, searchCols, tableColumnsFun } from './ListConfig';
 
@@ -12,6 +13,7 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
       sceneName: 'DEMO 数据'
     }
   ]);
+
   const [pagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -20,9 +22,16 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
+  const getList = async () => {
+    const res = await getSceneList({});
+    console.log(res);
+  };
 
   const onSearch = (values: any) => {
     console.log(values);
+    getList({
+      ...values
+    });
   };
 
   const onValuesChange = () => {

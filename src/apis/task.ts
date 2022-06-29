@@ -1,5 +1,5 @@
 import http from 'src/utils/http';
-type HttpFC<T = any> = (param: T, fn?: Function) => Promise<any>;
+type HttpFC<T = any> = (param?: T, fn?: Function) => Promise<any>;
 
 /**
  * 1.1 获取策略模板列表
@@ -41,5 +41,31 @@ export const offLineTaskTpl: HttpFC<{ tplId: string }> = (param) => {
  * @param param
  */
 export const editTplDisplay: HttpFC<{ tplId: string }> = (param) => {
-  return http.get('/tenacity-admin/apistrategy/display/edit', param);
+  return http.get('/tenacity-admin/api/strategy/display/edit', param);
+};
+/**
+ * 1.6、获取节点类别接口
+ * @param param
+ */
+export const getNodeTypeList: HttpFC = () => {
+  return http.get('/tenacity-admin/api/strategy/node/type/list');
+};
+
+/**
+ * 场景模块
+ *
+ */
+/**
+ * 1.15、查询场景列表接口
+ * @param param
+ */
+export const getSceneList: HttpFC = () => {
+  return http.get('/tenacity-admin/api/strategy/scene/list');
+};
+/**
+ * 1.16、查询场景详情接口
+ * @param param
+ */
+export const getSceneDetail: HttpFC = () => {
+  return http.get('/tenacity-admin/api/strategy/scene/detail');
 };
