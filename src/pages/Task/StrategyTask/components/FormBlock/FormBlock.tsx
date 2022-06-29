@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Space, TimePicker } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
+import NodePreview from '../NodePreview/NodePreview';
 import styles from './style.module.less';
 
 interface FormBlockProps {
@@ -11,13 +12,49 @@ interface FormBlockProps {
   onChange?: (value: any) => void;
 }
 const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onChange }) => {
+  const [previewVisible, setPreviewVisible] = useState(false);
   console.log(value, onChange);
   const [blockForm] = Form.useForm();
 
   const onFieldsChange = (changedValues: any, values: any) => {
     console.log(values);
   };
-
+  // 预览内容
+  const previewValue = {
+    nodeRuleCode: 'GZ0001',
+    nodeRuleName: '保险到期前14天',
+    contentType: 1,
+    logicName: '前14天',
+    wayName: '群发朋友圈', // 群发朋友圈 下发任务
+    speechcraft: '送你一张专属4.8折【幸运有礼】专享券',
+    pushTime: '2022/6/29 9:30',
+    actionRule: {
+      contentType: 2,
+      itemIds: [
+        {
+          itemId: '1',
+          imgUrl:
+            'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20211211/a77373316d054f14ad8e430ab593bdd2.jpg?timestamp=1639212002250&imageView2/1/w/120',
+          title: '无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！',
+          desc: '描述无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！'
+        },
+        {
+          itemId: '2',
+          imgUrl:
+            'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20211211/a77373316d054f14ad8e430ab593bdd2.jpg?timestamp=1639212002250&imageView2/1/w/120',
+          title: '无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！',
+          desc: '描述无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！'
+        } /* ,
+        {
+          itemId: '3',
+          imgUrl:
+            'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20211211/a77373316d054f14ad8e430ab593bdd2.jpg?timestamp=1639212002250&imageView2/1/w/120',
+          title: '无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！',
+          desc: '描述无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！'
+        } */
+      ]
+    }
+  };
   return (
     <>
       <Form form={blockForm} className={styles.blockWrap} onValuesChange={onFieldsChange}>
@@ -114,7 +151,9 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
                                     </Form.Item>
                                     <div className={styles.operateCol}>
                                       <Space>
-                                        <Button type="link">查看</Button>
+                                        <Button type="link" onClick={() => setPreviewVisible(true)}>
+                                          查看
+                                        </Button>
                                         <Button type="link" onClick={() => remove(nodeIndex)}>
                                           删除
                                         </Button>
@@ -154,6 +193,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value = [{ name: 'yuyd' }], onCha
           )}
         </Form.List>
       </Form>
+      <NodePreview value={previewValue} visible={previewVisible} onClose={() => setPreviewVisible(false)} />
     </>
   );
 };
