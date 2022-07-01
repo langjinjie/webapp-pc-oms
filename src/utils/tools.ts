@@ -52,7 +52,7 @@ export const isObject = (abj: unknown): boolean => {
 // 小数点后两位百分比
 export const percentage = (num: number, total: number): number | string => {
   if (num === 0 || total === 0) {
-    return 0;
+    return '0%';
   }
   return Math.round((num / total) * 10000) / 100 + '%';
 };

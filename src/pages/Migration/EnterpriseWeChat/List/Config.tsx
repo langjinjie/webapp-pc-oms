@@ -7,6 +7,7 @@ import { UNKNOWN } from 'src/utils/base';
 import { Popconfirm, Space, Tooltip } from 'antd';
 import { percentage } from 'src/utils/tools';
 import { AuthBtn } from 'src/components';
+import style from './style.module.less';
 
 export interface TaskProps {
   taskId: string;
@@ -37,9 +38,10 @@ type colargsType = {
   exportData: (task: TaskProps) => void;
   viewItem: (taskId: string) => void;
   operateItem: (task: TaskProps, operateType: number, index: number) => void;
+  viewStaffDetail: (taskId: string) => void;
 };
 const columns = (args: colargsType): ColumnsType<TaskProps> => {
-  const { exportData, viewItem, operateItem } = args;
+  const { exportData, viewItem, operateItem, viewStaffDetail } = args;
 
   return [
     {
@@ -97,7 +99,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
       align: 'center',
       render: (text, record) => {
         return (
-          <span>
+          <span className={style.staffProgress} onClick={() => viewStaffDetail(record.taskId)}>
             <span>{`${record.staffExecNum}/${record.staffTotalNum}`}</span>
             <span className="ml10">{`(${percentage(record.staffExecNum, record.staffTotalNum)})`}</span>
           </span>
@@ -147,7 +149,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
           )}
           {record.taskStatus !== 0 && (
             <AuthBtn path="/download">
-              <a onClick={() => exportData(record)}>下载明细</a>
+              <a onClick={() => exportData(record)}>导出数据</a>
             </AuthBtn>
           )}
           {record.taskStatus === 0 && (
