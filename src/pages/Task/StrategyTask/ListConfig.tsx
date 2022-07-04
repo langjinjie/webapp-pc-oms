@@ -48,24 +48,25 @@ interface OperateProps {
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskProps> => {
   return [
-    { title: '策略任务模板编号', dataIndex: 'newsId', key: 'newsId', width: 200 },
+    { title: '策略任务模板编号', dataIndex: 'tplCode', key: 'tplCode', width: 200 },
     {
       title: '策略任务模板名称',
-      dataIndex: 'title',
-      key: 'title',
+      dataIndex: 'tplName',
+      key: 'tplName',
       width: 200
     },
     {
       title: '策略修改时间',
-      dataIndex: 'categoryName',
+      dataIndex: 'updateTime',
       width: 160,
-      key: 'categoryName',
+      key: 'updateTime',
       align: 'center',
-      render: (categoryName: string) => categoryName || UNKNOWN
+      render: (updateTime: string) => updateTime || UNKNOWN
     },
     {
       title: '修改人',
-      dataIndex: 'fromSource',
+      dataIndex: 'staffScope',
+      key: 'staffScope',
       width: 260,
       align: 'center'
     },

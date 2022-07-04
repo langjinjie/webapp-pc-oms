@@ -13,12 +13,10 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visibleOnlineModal, setVisibleOnlineModal] = useState(false);
   const [visibleOfflineModal, setVisibleOfflineModal] = useState(false);
   const [visibleDisplayModal, setVisibleDisplayModal] = useState(false);
-  const [tableSource] = useState<Partial<StrategyTaskProps>[]>([
-    { tplId: 'ID21221ABC01', status: 1 },
-    { tplId: 'ID21221ABC11', status: 2 }
-  ]);
+  const [dataSource, setDataSource] = useState<Partial<StrategyTaskProps>[]>([]);
   const [currentTpl, setCurrentTpl] = useState<StrategyTaskProps>();
-  const [pagination] = useState<PaginationProps>({
+  const [queryParams, setQueryParams] = useState({});
+  const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
     total: 0,
@@ -28,28 +26,34 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
   });
 
   const getTplList = async (params?: any) => {
-    const res = getTaskStrategyTplList({
+    const pageNum = params?.pageNum || pagination.current;
+    const pageSize = params?.pageSize || pagination.pageSize;
+    const res = await getTaskStrategyTplList({
+      ...queryParams,
       ...params,
-      pageNum: pagination.current,
-      pageSize: pagination.pageSize
+      pageNum,
+      pageSize
     });
     if (res) {
-      console.log(res);
+      const { list, total } = res;
+      setDataSource(list || []);
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
     }
-    console.log(res);
   };
   useEffect(() => {
     getTplList();
   }, []);
   const onSearch = (values: any) => {
-    console.log(values);
+    const { tplCode = '', tplName = '' } = values;
+    getTplList({ tplCode, tplName, pageNum: 1 });
+    setQueryParams({ tplCode, tplName });
   };
   const onValuesChange = (changeValues: any, values: any) => {
-    console.log({ changeValues, values });
+    setQueryParams(values);
   };
 
-  const paginationChange = () => {
-    console.log();
+  const paginationChange = (pageNum: number, pageSize?: number) => {
+    getTplList({ pageNum, pageSize });
   };
 
   const onOperate = (operateType: OperateType, record: StrategyTaskProps) => {
@@ -124,7 +128,7 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
             columns={tableColumnsFun({
               onOperate
             })}
-            dataSource={tableSource}
+            dataSource={dataSource}
             pagination={pagination}
             paginationChange={paginationChange}
             setRowKey={(record: StrategyTaskProps) => {

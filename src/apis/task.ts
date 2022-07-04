@@ -24,14 +24,16 @@ export const getTaskStrategyTplList: HttpFC<
     pageSize: number;
   }>
 > = (param) => {
-  return http.get('/tenacity-admin/api/strategy/tpl/list', param);
+  // return http.get('/tenacity-admin/api/strategy/tpl/list', param);
+  return http.post('http://127.0.0.1:4523/m1/1226778-0-default/tenacity-oms/api/strategy/tpl/list', param);
 };
 /**
  * 1.2、查询策略任务模板详情接口（Admin端和策略服务）
  * @param param
  */
 export const getTaskStrategyTplDetail: HttpFC<{ tplId: string }> = (param) => {
-  return http.get('/tenacity-admin/api/strategy/tpl/detail', param);
+  return http.post('http://127.0.0.1:4523/m1/1226778-0-default/tenacity-oms/api/strategy/tpl/detail', param);
+  // return http.get('/tenacity-admin/api/strategy/tpl/detail', param);
 };
 /**
  * 1.3、上架策略任务模板到机构接口
