@@ -134,7 +134,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       sensitive = '',
       status = '',
       times = undefined,
-      tip = ''
+      tip = '',
+      contentId = ''
     } = values;
     let updateBeginTime = '';
     let updateEndTime = '';
@@ -159,7 +160,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       status,
       tip,
       updateBeginTime,
-      updateEndTime
+      updateEndTime,
+      contentId
     }));
 
     await getList({
@@ -171,7 +173,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       tip,
       updateBeginTime,
       updateEndTime,
-      sceneId
+      sceneId,
+      contentId
     });
   };
 
