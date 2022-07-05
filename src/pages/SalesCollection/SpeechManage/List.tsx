@@ -37,7 +37,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     status: '',
     tip: '',
     updateBeginTime: '',
-    updateEndTime: ''
+    updateEndTime: '',
+    contentId: ''
   });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -317,7 +318,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
         res = await exportSpeech({ list });
       } else {
         // 批量导出
-        const { status, sensitive, updateBeginTime, updateEndTime, content, tip, contentType } = formParams;
+        const { status, sensitive, updateBeginTime, updateEndTime, content, tip, contentType, contentId } = formParams;
         const params = {
           sceneId: lastCategory?.sceneId || '',
           catalogId: lastCategory?.catalogId || '',
@@ -327,7 +328,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
           status,
           sensitive,
           updateBeginTime,
-          updateEndTime
+          updateEndTime,
+          contentId
         };
         res = await batchExportSpeech(params);
       }
