@@ -135,7 +135,7 @@ const columns = (args: colargsType): ColumnsType<TaskProps> => {
           )}
           {record.taskStatus !== 0 && (
             <AuthBtn path="/download">
-              <a onClick={() => exportData(record)}>下载明细</a>
+              <a onClick={() => exportData(record)}>导出数据</a>
             </AuthBtn>
           )}
           {record.taskStatus === 0 && (

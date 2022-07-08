@@ -83,6 +83,13 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       type: 'rangePicker',
       width: 160,
       label: '更新时间'
+    },
+    {
+      name: 'contentId',
+      type: 'input',
+      label: '话术ID',
+      width: '280px',
+      placeholder: '请输入'
     }
   ];
 };
@@ -138,6 +145,11 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     tip = ''
   } = formParams;
   return [
+    {
+      title: '话术ID',
+      dataIndex: 'contentId',
+      width: 200
+    },
     {
       title: '目录',
       dataIndex: 'fullName',
