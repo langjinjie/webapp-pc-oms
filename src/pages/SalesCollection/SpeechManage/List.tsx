@@ -164,8 +164,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       updateEndTime,
       contentId
     }));
-
     await getList({
+      pageNum: 1,
       catalogId,
       content,
       contentType,
