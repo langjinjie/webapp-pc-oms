@@ -47,6 +47,10 @@ export const requestGetTaskDetail: HttpFC = (param) => {
 export const requestGetTaskStaffDetail: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/transfer/task/staff/list', param);
 };
+// 1.11 迁移任务坐席执行详情接口
+export const requestGetTaskStaffExeclist: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/transfer/task/staff/execList', param);
+};
 
 /**
  * 2.1 个微好友迁移-任务列表查询接口（管理端）

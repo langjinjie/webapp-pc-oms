@@ -252,6 +252,10 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/List/List'))
   },
   {
+    path: '/enterprise/staffList',
+    component: lazy(() => import('src/pages/Migration/EnterpriseWeChat/List/StaffList'))
+  },
+  {
     path: '/personal',
     component: lazy(() => import('src/pages/Migration/PersonalWeChat/List/List'))
   },

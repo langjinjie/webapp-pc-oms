@@ -116,7 +116,6 @@ const SeatReport: React.FC = () => {
   const getReportDetail = async (reportId: string, boardId: string) => {
     const res: any = await queryReportDetail({ reportId, boardId });
     if (res) {
-      setReportDetail(res);
       const promiseList: Promise<any>[] = [];
       const areaIndexes: number[] = [];
       const moduleList: AreaItem[] = res.bodyList || [];
@@ -128,6 +127,8 @@ const SeatReport: React.FC = () => {
       });
       const allSettledPromise = Promise.all(promiseList);
       const allRes: any = await allSettledPromise;
+      console.log(areaIndexes);
+
       allRes.forEach((item: any, index: number) => {
         if (item) {
           moduleList[areaIndexes[index]].areaList = item.bodyList || [];
@@ -137,6 +138,8 @@ const SeatReport: React.FC = () => {
         reportBaseInfo: res.reportBaseInfo,
         bodyList: moduleList
       });
+
+      console.log(moduleList);
       Array.from(document.getElementsByTagName('dt')).forEach((ele) => {
         ele.contentEditable = 'true';
       });
@@ -186,7 +189,7 @@ const SeatReport: React.FC = () => {
     return (
       <ul className={style.areaData}>
         {areaList.map((area: string[], index) => (
-          <li key={index} className={style.areaRow}>
+          <li key={index + 'col'} className={style.areaRow}>
             {area.map((val, i) => (
               <dt key={i} className={style.areaCol} style={getColWidth(areaList[0][i].length)}>
                 {areaList.length > 2 && index === 1 && i === 0 ? <span className={style.hot}>{val}</span> : val}
@@ -202,12 +205,12 @@ const SeatReport: React.FC = () => {
    * 渲染区域
    * @param item
    */
-  const renderArea = (item: AreaItem) => {
+  const renderArea = (item: AreaItem, index: number) => {
     switch (item.moduleType) {
       case 1:
         return (
           <div
-            key={item.sort}
+            key={item.sort + index}
             style={{
               color: item.modulTextColor,
               backgroundColor: item.modulBackColor,
@@ -226,27 +229,27 @@ const SeatReport: React.FC = () => {
         );
       case 2:
         return (
-          <div key={item.sort} className={style.areaLineWrap}>
+          <div key={item.sort + index} className={style.areaLineWrap}>
             <div className={style.areaLine} style={{ backgroundColor: item.modulLineColor }} />
           </div>
         );
       case 3:
         return (
-          <div key={item.sort} className={style.areaItem}>
+          <div key={item.sort + index} className={style.areaItem}>
             <dt className={style.areaMark}>{item.moduleName}</dt>
             {renderCommonRow(item.areaList || [])}
           </div>
         );
       case 4:
         return (
-          <div key={item.sort} className={style.areaItem}>
+          <div key={item.sort + index} className={style.areaItem}>
             <dt className={style.areaMark} />
             {renderCommonRow(item.areaList || [])}
           </div>
         );
       case 5:
         return (
-          <div key={item.sort} className={style.teamArea}>
+          <div key={item.sort + index} className={style.teamArea}>
             <div className={style.teamName}>
               <img
                 className={style.teamImg}
@@ -346,7 +349,9 @@ const SeatReport: React.FC = () => {
           />
           <div className={style.titleTips} dangerouslySetInnerHTML={{ __html: reportConfig?.useDesc || '' }} />
         </div>
-        <div className={style.areaWrap}>{(reportDetail.bodyList || []).map((item) => renderArea(item))}</div>
+        <div className={style.areaWrap}>
+          {(reportDetail.bodyList || []).map((item, index) => renderArea(item, index))}
+        </div>
         <img
           className={style.footerImg}
           src={`${reportConfig?.footBannUrl}?t=${Date.now()}`}

@@ -59,6 +59,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   const [tableSource, setTableSource] = useState<TaskProps[]>([]);
 
   const getTaskList = async (params?: any) => {
+    setLoading(true);
     const { list, total } = await getTransferTaskList({
       pageNum: pagination.current,
       pageSize: pagination.pageSize,
@@ -67,6 +68,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     setTableSource(list || []);
     setPagination((pagination) => ({ ...pagination, total }));
     console.log('查询列表', list);
+    setLoading(false);
   };
 
   // 操作任务
@@ -98,6 +100,9 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   const viewItem = (taskId: string) => {
     history.push('/enterprise/addTask?taskId=' + taskId);
   };
+  // 查看员工任务详情
+  const viewStaffDetail = (taskId: string) => history.push('/enterprise/staffList?taskId=' + taskId);
+
   // 导出任务详情数据
   const exportData = async (task: TaskProps) => {
     const { data } = await exportTransferTask({ taskId: task.taskId });
@@ -106,11 +111,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   //
-  const myColumns = columns({ operateItem, viewItem, exportData });
-
-  useEffect(() => {
-    setLoading(false);
-  }, []);
+  const myColumns = columns({ operateItem, viewItem, exportData, viewStaffDetail });
 
   const getPieInfo = async () => {
     const res: TransferDataProps = await queryTransferSummary();
@@ -200,7 +201,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
                     <div>
                       <div className={styles.pieBar}>
                         <i className={classNames(styles.pieTag, styles.pieTag_success)}></i>
-                        <span className="font12 color-text-regular">迁移成功</span>
+                        <span className="font12 color-text-regular">已迁移好友</span>
                       </div>
                       <div className="mt10 font16">
                         {pieInfo
@@ -217,7 +218,7 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
                     <div className="ml50">
                       <div className={styles.pieBar}>
                         <i className={classNames(styles.pieTag, styles.pieTag_wait)}></i>
-                        <span className="font12 color-text-regular">待迁移</span>
+                        <span className="font12 color-text-regular">待迁移好友总数</span>
                       </div>
                       <div className="mt10 font16">
                         {pieInfo
