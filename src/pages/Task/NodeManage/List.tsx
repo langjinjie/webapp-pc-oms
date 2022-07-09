@@ -1,21 +1,19 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, PaginationProps } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { getNodeList, getNodeTypeList } from 'src/apis/task';
 import { NgFormSearch, NgTable } from 'src/components';
-import { CreateNodeModal } from './components/CrateNodeModal';
+import { CreateNodeModal, NodeTypeProps } from './components/CrateNodeModal';
 import TagFilterComponents from './components/TagModal/TagFilterComponent';
 
-import { NodeColumns, searchCols, tableColumnsFun } from './ListConfig';
+import { NodeColumns, searchColsFun, tableColumnsFun } from './ListConfig';
 
 const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visibleCreateNode, setVisibleCreateNode] = useState(false);
-  const [tableSource] = useState<Partial<NodeColumns>[]>([
-    {
-      nodeId: 'SCENE_CODE121',
-      nodeName: 'DEMO 数据'
-    }
-  ]);
+
+  const [typeOptions, setTypeOptions] = useState<NodeTypeProps[]>([]);
+  const [tableSource, setTableSource] = useState<Partial<NodeColumns>[]>([]);
   const [pagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -24,6 +22,30 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
+
+  const getTypeList = async () => {
+    const res = (await getNodeTypeList({})) as NodeTypeProps[];
+    console.log(res);
+    if (res) {
+      const filterData = res.filter((item) => item.typeCode !== 'node_calendar');
+      setTypeOptions(filterData);
+    }
+  };
+
+  // 获取列表数据
+  const getList = async () => {
+    const res = await getNodeList({});
+    console.log(res);
+    if (res) {
+      const { list } = res;
+      setTableSource(list || []);
+    }
+  };
+
+  useEffect(() => {
+    getList();
+    getTypeList();
+  }, []);
 
   const onSearch = (values: any) => {
     console.log(values);
@@ -51,7 +73,12 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
       >
         新建节点
       </Button>
-      <NgFormSearch className="mt20" searchCols={searchCols} onSearch={onSearch} onValuesChange={onValuesChange} />
+      <NgFormSearch
+        className="mt20"
+        searchCols={searchColsFun(typeOptions)}
+        onSearch={onSearch}
+        onValuesChange={onValuesChange}
+      />
 
       <div className="mt20">
         <NgTable
@@ -67,7 +94,7 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
         />
       </div>
 
-      <CreateNodeModal visible={visibleCreateNode} onCancel={() => setVisibleCreateNode(false)} />
+      <CreateNodeModal visible={visibleCreateNode} onCancel={() => setVisibleCreateNode(false)} options={typeOptions} />
 
       <TagFilterComponents />
     </div>

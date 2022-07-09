@@ -40,7 +40,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, onChoose, currentTag, on
    *  @param queryType
    */
   const getTagList = async (queryType: number) => {
-    const res: any = await queryTagList({ queryType });
+    const res: any = await queryTagList();
     let resList = Array.isArray(res) ? res : [];
     if (queryType === 1) {
       resList = [
@@ -1742,10 +1742,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, onChoose, currentTag, on
   useEffect(() => {
     if (visible) {
       setChooseTag(currentTag);
-      getTagList(1);
-      getTagList(2);
-      getTagList(3);
-      getTagList(4);
+      getTagList();
     }
   }, [visible]);
 

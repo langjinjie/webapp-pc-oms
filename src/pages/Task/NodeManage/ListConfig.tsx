@@ -4,30 +4,34 @@ import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 
-export const searchCols: SearchCol[] = [
-  {
-    name: 'nodeCode',
-    type: 'input',
-    label: '节点编号',
-    width: '180px',
-    placeholder: '请输入'
-  },
-  {
-    name: 'codeName',
-    type: 'input',
-    label: '节点名称',
-    placeholder: '请输入',
-    width: '280px'
-  },
-  {
-    name: 'nodeTypeCode',
-    type: 'select',
-    label: '节点类别',
-    placeholder: '请输入',
-    width: 180,
-    options: [{ name: '112', id: '12111' }]
-  }
-];
+export const searchColsFun = (options: any[]): SearchCol[] => {
+  return [
+    {
+      name: 'nodeCode',
+      type: 'input',
+      label: '节点编号',
+      width: '180px',
+      placeholder: '请输入'
+    },
+    {
+      name: 'codeName',
+      type: 'input',
+      label: '节点名称',
+      placeholder: '请输入',
+      width: '280px'
+    },
+    {
+      name: 'nodeTypeCode',
+      type: 'select',
+      label: '节点类别',
+      placeholder: '请输入',
+      width: 180,
+      selectNameKey: 'typeName',
+      selectValueKey: 'typeId',
+      options: options
+    }
+  ];
+};
 
 export interface NodeColumns {
   nodeId: string;
@@ -43,37 +47,35 @@ interface OperateProps {
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> => {
   return [
-    { title: '节点编号', dataIndex: 'sceneCode', key: 'sceneCode', width: 200 },
+    { title: '节点编号', dataIndex: 'nodeCode', key: 'nodeCode', width: 200 },
     {
       title: '节点类别',
-      dataIndex: 'sceneName',
-      key: 'sceneName',
+      dataIndex: 'typeName',
+      key: 'typeName',
       width: 200
     },
     {
       title: '节点名称',
-      dataIndex: 'categoryName',
+      dataIndex: 'nodeName',
       width: 160,
-      key: 'categoryName',
-      align: 'center',
+      key: 'nodeName',
       render: (categoryName: string) => categoryName || UNKNOWN
     },
     {
       title: '节点新增人',
-      dataIndex: 'nodeId',
+      dataIndex: 'createBy',
       width: 260,
       align: 'center'
     },
 
     {
       title: '节点新增时间',
-      dataIndex: 'updateTime',
+      dataIndex: 'createTime',
       width: 260,
       align: 'center'
     },
     {
       title: '操作',
-      dataIndex: 'fromSource',
       width: 80,
       align: 'center',
       fixed: 'right',

@@ -1,20 +1,14 @@
 import { PaginationProps } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getSceneList } from 'src/apis/task';
 import { NgFormSearch, NgTable } from 'src/components';
 import { SceneColumns, searchCols, tableColumnsFun } from './ListConfig';
 
 const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
-  const [tableSource] = useState<Partial<SceneColumns>[]>([
-    {
-      sceneId: '1212121',
-      sceneCode: 'SCENE_CODE121',
-      sceneName: 'DEMO 数据'
-    }
-  ]);
+  const [tableSource, setTableSource] = useState<Partial<SceneColumns>[]>([]);
 
-  const [pagination] = useState<PaginationProps>({
+  const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
     total: 0,
@@ -22,10 +16,21 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
-  const getList = async () => {
-    const res = await getSceneList({});
+  const getList = async (params?: any) => {
+    const res = await getSceneList({
+      ...params
+    });
+    if (res) {
+      const { list, total } = res;
+      setTableSource(list);
+      setPagination((pagination) => ({ ...pagination, total }));
+    }
     console.log(res);
   };
+
+  useEffect(() => {
+    getList();
+  }, []);
 
   const onSearch = (values: any) => {
     console.log(values);

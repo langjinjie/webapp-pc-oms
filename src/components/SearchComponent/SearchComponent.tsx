@@ -21,6 +21,8 @@ export interface SearchCol {
   placeholder?: string | [string, string];
   options?: OptionProps[] | null;
   cascaderOptions?: any[];
+  selectNameKey?: string;
+  selectValueKey?: string;
 
   fieldNames?: {
     label: string;
@@ -135,8 +137,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                     {col.options &&
                       col.options.map((option) => (
-                        <Select.Option key={option.id} value={option.id}>
-                          {option.name}
+                        <Select.Option
+                          key={option[col.selectValueKey!] || option.id}
+                          value={option[col.selectValueKey!] || option.id}
+                        >
+                          {option[col.selectNameKey || 'name']}
                         </Select.Option>
                       ))}
                   </Select>
@@ -203,8 +208,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                       {col.options &&
                         col.options.map((option) => (
-                          <Select.Option key={option.id} value={option.id}>
-                            {option.name}
+                          <Select.Option
+                            key={option[col.selectValueKey!] || option.id}
+                            value={option[col.selectValueKey!] || option.id}
+                          >
+                            {option[col.selectNameKey || 'name']}
                           </Select.Option>
                         ))}
                     </Select>
@@ -231,8 +239,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                       {col.options &&
                         col.options.map((option) => (
-                          <Select.Option key={option.id} value={option.id}>
-                            {option.name}
+                          <Select.Option
+                            key={option[col.selectValueKey!] || option.id}
+                            value={option[col.selectValueKey!] || option.id}
+                          >
+                            {option[col.selectNameKey || 'name']}
                           </Select.Option>
                         ))}
                     </Select>
