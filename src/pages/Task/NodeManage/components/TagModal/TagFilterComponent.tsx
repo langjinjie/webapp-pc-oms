@@ -3,8 +3,11 @@ import { Input } from 'antd';
 import TagFilter from './TagFilter';
 import { TagInterface } from 'src/utils/interface';
 import { DownOutlined } from '@ant-design/icons';
+
+import styles from './tag.module.less';
+
 interface ComponentsProps {
-  onChange?: (values: TagInterface) => void;
+  onChange?: (value: TagInterface) => void;
   value?: TagInterface;
 }
 const TagFilterComponents: React.FC<ComponentsProps> = (props) => {
@@ -30,7 +33,7 @@ const TagFilterComponents: React.FC<ComponentsProps> = (props) => {
       <Input
         readOnly
         suffix={<DownOutlined />}
-        className="width320"
+        className={styles.viewInput}
         value={tag?.groupName}
         style={{ color: '#E1E2E6' }}
         onClick={() => setVisible(true)}

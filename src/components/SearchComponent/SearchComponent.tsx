@@ -61,13 +61,14 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     firstRowChildCount,
     hideReset
   } = props;
-  const [from] = Form.useForm();
+  const [searchForm] = Form.useForm();
   const handleReset = () => {
+    const values = searchForm.getFieldsValue();
     if (onReset) {
       onReset();
     } else {
       onChangeOfCascader?.([''], []);
-      onSearch({});
+      onSearch(values);
     }
   };
   // 对数据进行处理
@@ -81,14 +82,14 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         }
       });
       if (lastOption?.lastLevel === 1) {
-        from.resetFields(fields);
+        searchForm.resetFields(fields);
       }
     }
     onChangeOfCascader?.(value, selectedOptions);
   };
   useEffect(() => {
     if (props.defaultValues?.catalogIds) {
-      from.setFieldsValue({ catalogIds: props.defaultValues.catalogIds });
+      searchForm.setFieldsValue({ catalogIds: props.defaultValues.catalogIds });
     }
   }, [props.defaultValues]);
   const handleFinish = (values: any) => {
@@ -111,12 +112,10 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
       {isInline
         ? (
         <Form
-          form={from}
+          form={searchForm}
           layout="inline"
           onFinish={handleFinish}
-          onReset={() => {
-            handleReset();
-          }}
+          onReset={handleReset}
           className={classNames(style['search-wrap'], [props.className])}
           onValuesChange={onValuesChange}
         >
@@ -189,7 +188,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           )
         : (
         <Form
-          form={from}
+          form={searchForm}
           onFinish={handleFinish}
           onReset={handleReset}
           className={style.customLayout}

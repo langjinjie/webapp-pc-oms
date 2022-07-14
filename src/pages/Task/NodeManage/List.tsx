@@ -1,20 +1,24 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, PaginationProps } from 'antd';
+import { Button, message, PaginationProps } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
-import { getNodeList, getNodeTypeList } from 'src/apis/task';
+import { addNode, deleteNode, getNodeList, getNodeTypeList } from 'src/apis/task';
 import { NgFormSearch, NgTable } from 'src/components';
 import { CreateNodeModal, NodeTypeProps } from './components/CrateNodeModal';
-import TagFilterComponents from './components/TagModal/TagFilterComponent';
 
 import { NodeColumns, searchColsFun, tableColumnsFun } from './ListConfig';
 
-const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
+type QueryParamsType = Partial<{
+  nodeCode: string;
+  nodeName: string;
+  nodeTypeCode: string;
+}>;
+const TaskNodeList: React.FC = () => {
   const [visibleCreateNode, setVisibleCreateNode] = useState(false);
 
   const [typeOptions, setTypeOptions] = useState<NodeTypeProps[]>([]);
   const [tableSource, setTableSource] = useState<Partial<NodeColumns>[]>([]);
-  const [pagination] = useState<PaginationProps>({
+  const [queryParams, setQueryParams] = useState<QueryParamsType>();
+  const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
     total: 0,
@@ -33,12 +37,16 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   // 获取列表数据
-  const getList = async () => {
-    const res = await getNodeList({});
+  const getList = async (params?: any) => {
+    console.log(params);
+    const pageNum = params?.pageNum || pagination.current;
+    const pageSize = params?.pageSize || pagination.pageSize;
+    const res = await getNodeList({ ...queryParams, ...params, pageNum, pageSize });
     console.log(res);
     if (res) {
-      const { list } = res;
+      const { list, total } = res;
       setTableSource(list || []);
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
     }
   };
 
@@ -47,20 +55,56 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
     getTypeList();
   }, []);
 
-  const onSearch = (values: any) => {
+  const onSearch = (values: QueryParamsType) => {
     console.log(values);
+    setQueryParams(values);
+    getList({ ...values, pageNum: 1 });
   };
 
-  const onValuesChange = () => {
-    console.log('onValuesChange');
+  const onValuesChange = (changeValue: any, values: QueryParamsType) => {
+    setQueryParams(values);
   };
 
-  const paginationChange = () => {
-    console.log();
+  const paginationChange = (pageNum: number, pageSize?: number) => {
+    console.log(pageNum, pageSize);
+
+    getList({ pageNum, pageSize });
   };
 
-  const jumpToDetail = () => {
-    history.push('/taskScene/detail');
+  const deleteNodeItem = async (nodeId: string, index: number) => {
+    const res = await deleteNode({ nodeId });
+    if (res) {
+      const copyList = [...tableSource];
+      copyList.splice(index, 1);
+      if (copyList.length > 0) {
+        setTableSource(copyList);
+        setPagination((pagination) => ({ ...pagination, total: pagination.total! - 1 }));
+      } else {
+        const pageNum = pagination.current! - 1 || 1;
+        getList({ pageNum });
+      }
+      message.success('删除成功');
+    }
+  };
+
+  // 创建节点
+  const createNode = async (values: any) => {
+    const params = {
+      nodeDesc: values.nodeDesc,
+      nodeName:
+        values.nodeTypeCode === 'node_date'
+          ? values.nodeDateName
+          : values.nodeTypeCode === 'node_tag'
+            ? values.nodeTagName?.groupName
+            : '',
+      nodeTypeCode: values.nodeTypeCode
+    };
+    const res = await addNode(params);
+    setVisibleCreateNode(false);
+    if (res) {
+      message.success('添加成功');
+      getList({ pageNum: 1 });
+    }
   };
   return (
     <div className="container">
@@ -83,7 +127,7 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
       <div className="mt20">
         <NgTable
           columns={tableColumnsFun({
-            onOperate: () => jumpToDetail()
+            onOperate: deleteNodeItem
           })}
           dataSource={tableSource}
           pagination={pagination}
@@ -94,9 +138,12 @@ const TaskNodeList: React.FC<RouteComponentProps> = ({ history }) => {
         />
       </div>
 
-      <CreateNodeModal visible={visibleCreateNode} onCancel={() => setVisibleCreateNode(false)} options={typeOptions} />
-
-      <TagFilterComponents />
+      <CreateNodeModal
+        visible={visibleCreateNode}
+        onCancel={() => setVisibleCreateNode(false)}
+        onSubmit={createNode}
+        options={typeOptions}
+      />
     </div>
   );
 };

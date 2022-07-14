@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Select } from 'antd';
 import { NgModal } from 'src/components';
-import { getNodeNameWithDate } from 'src/apis/task';
+import { getNodeNameWithDate, queryTargetList } from 'src/apis/task';
 
 import TagFilterComponents from '../components/TagModal/TagFilterComponent';
 
@@ -12,9 +12,10 @@ export interface NodeTypeProps {
 }
 type CreateNodeModalProps = React.ComponentProps<typeof NgModal> & {
   options: NodeTypeProps[];
+  onSubmit: (values: any) => void;
 };
 type CodeType = 'node_tag' | 'node_date' | 'node_quota';
-export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, ...props }) => {
+export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSubmit, ...props }) => {
   const [currentNodeType, setCurrentNodeType] = useState<CodeType>();
   const [dateCodeOptions, setDateCodeOptions] = useState<any[]>([]);
   const getDateList = async () => {
@@ -34,12 +35,26 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, ...pr
   }, [props.visible]);
   const [nodeForm] = Form.useForm();
 
+  const getOptions = async () => {
+    const res = await queryTargetList();
+    console.log(res);
+  };
   const onNodeTypeChange = (typeCode: CodeType) => {
     console.log(typeCode);
     setCurrentNodeType(typeCode);
+    if (typeCode === 'node_quota') {
+      getOptions();
+    }
+  };
+
+  const handleOk = () => {
+    nodeForm.validateFields().then((values) => {
+      console.log(values);
+      onSubmit(values);
+    });
   };
   return (
-    <NgModal {...props} width={520} title="新建节点规则">
+    <NgModal {...props} width={520} title="新建节点规则" onOk={handleOk}>
       <Form form={nodeForm} labelAlign="right" labelCol={{ span: 6 }}>
         <Form.Item label="选择节点类别" name={'nodeTypeCode'} rules={[{ required: true }]}>
           <Select className="width180" onChange={onNodeTypeChange}>
@@ -52,13 +67,13 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, ...pr
         </Form.Item>
 
         {currentNodeType === 'node_tag' && (
-          <Form.Item label="节点名称" name={'nodeName'} key="node_tag" rules={[{ required: true }]}>
+          <Form.Item label="节点名称" name={'nodeTagName'} key="node_tag" rules={[{ required: true }]}>
             <TagFilterComponents />
           </Form.Item>
         )}
 
         {currentNodeType === 'node_date' && (
-          <Form.Item label="节点名称" name={'nodeName1'} key="node_date" rules={[{ required: true }]}>
+          <Form.Item label="节点名称" name={'nodeDateName'} key="node_date" rules={[{ required: true }]}>
             <Select className="width320">
               {dateCodeOptions.map((item: any) => {
                 return (

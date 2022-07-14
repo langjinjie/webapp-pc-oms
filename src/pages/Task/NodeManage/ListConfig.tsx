@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
@@ -27,7 +27,7 @@ export const searchColsFun = (options: any[]): SearchCol[] => {
       placeholder: '请输入',
       width: 180,
       selectNameKey: 'typeName',
-      selectValueKey: 'typeId',
+      selectValueKey: 'typeCode',
       options: options
     }
   ];
@@ -43,7 +43,7 @@ export interface NodeColumns {
 }
 
 interface OperateProps {
-  onOperate: () => void;
+  onOperate: (nodeId: string, index: number) => void;
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> => {
   return [
@@ -79,11 +79,11 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> =>
       width: 80,
       align: 'center',
       fixed: 'right',
-      render: (value, record) => {
+      render: (value, record, index) => {
         return (
-          <Button type="link" key={record.nodeId} onClick={() => args.onOperate()}>
-            删除
-          </Button>
+          <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => args.onOperate(record.nodeId, index)}>
+            <Button type="link">删除</Button>
+          </Popconfirm>
         );
       }
     }

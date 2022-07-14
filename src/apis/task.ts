@@ -5,9 +5,6 @@ type HttpFC<T = any> = (param?: T, fn?: Function) => Promise<any>;
  * 获取标签库接口
  *
  */
-export const queryTagList: HttpFC = () => {
-  return http.post('/tenacity-admin/api/strategy/node/taggroup/list');
-};
 
 export const searchTagList: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/tag/group/info2', params);
@@ -91,10 +88,28 @@ export const getNodeRuleList: HttpFC = () => {
 };
 
 // 1.23、查询节点列表接口（Admin端和策略服务）
-export const getNodeList: HttpFC = () => {
-  return http.post('/tenacity-admin/api/strategy/node/list');
+export const getNodeList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/node/list', params);
 };
+// 1.24、删除节点接口（Admin端和策略服务）
+export const deleteNode: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/node/del', params);
+};
+// 1.25、新增节点接口（Admin端和策略服务）
+export const addNode: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/node/add', params);
+};
+
 // 1.26、获取日期类节点的到期日列表接口
 export const getNodeNameWithDate: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/strategy/node/expiredate/list', params);
+};
+// 1.27、获取标签类节点的标签组列表接口
+export const queryTagList: HttpFC = () => {
+  return http.post('/tenacity-admin/api/strategy/node/taggroup/list');
+};
+
+// 1.29、获取指标类节点的指标列表接口
+export const queryTargetList: HttpFC = () => {
+  return http.post('/tenacity-admin/api/strategy/node/data/list');
 };
