@@ -421,3 +421,11 @@ export interface IItemIds {
   title?: string;
   desc?: string;
 }
+
+export type NodeType = {
+  typeCode: string;
+  typeId: string;
+  typeName: string;
+};
+
+export type CodeType = 'node_tag' | 'node_date' | 'node_quota';

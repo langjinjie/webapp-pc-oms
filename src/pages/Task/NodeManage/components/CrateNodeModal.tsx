@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Select } from 'antd';
+import { Cascader, Form, Input, Select } from 'antd';
 import { NgModal } from 'src/components';
 import { getNodeNameWithDate, queryTargetList } from 'src/apis/task';
 
@@ -18,6 +18,7 @@ type CodeType = 'node_tag' | 'node_date' | 'node_quota';
 export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSubmit, ...props }) => {
   const [currentNodeType, setCurrentNodeType] = useState<CodeType>();
   const [dateCodeOptions, setDateCodeOptions] = useState<any[]>([]);
+  const [quotaOptions, setQuotaOptions] = useState<any[]>([]);
   const getDateList = async () => {
     const res = await getNodeNameWithDate({
       pageSize: 100,
@@ -26,7 +27,6 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
     if (res) {
       setDateCodeOptions(res.list || []);
     }
-    console.log(dateCodeOptions);
   };
   useEffect(() => {
     if (props.visible) {
@@ -38,9 +38,13 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
   const getOptions = async () => {
     const res = await queryTargetList();
     console.log(res);
+    if (res) {
+      const { list } = res;
+      const formatList = list.map((item: any) => ({ ...item, name: item.category }));
+      setQuotaOptions(formatList || []);
+    }
   };
   const onNodeTypeChange = (typeCode: CodeType) => {
-    console.log(typeCode);
     setCurrentNodeType(typeCode);
     if (typeCode === 'node_quota') {
       getOptions();
@@ -48,10 +52,15 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
   };
 
   const handleOk = () => {
-    nodeForm.validateFields().then((values) => {
-      console.log(values);
-      onSubmit(values);
-    });
+    nodeForm
+      .validateFields()
+      .then((values) => {
+        console.log(values);
+        onSubmit(values);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
   return (
     <NgModal {...props} width={520} title="新建节点规则" onOk={handleOk}>
@@ -85,17 +94,18 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
             </Select>
           </Form.Item>
         )}
+        {currentNodeType === 'node_quota' && (
+          <Form.Item label="节点名称" name={'nodeQuotaName'} rules={[{ required: true }]}>
+            <Cascader
+              className="width320"
+              options={quotaOptions}
+              fieldNames={{ children: 'nameList', label: 'name', value: 'name' }}
+            ></Cascader>
+          </Form.Item>
+        )}
 
-        {/*
-        <Form.Item label="节点名称">
-          <Select className="width320">
-            <Select.Option value={1}>标签类</Select.Option>
-            <Select.Option value={2}>日期类</Select.Option>
-            <Select.Option value={3}>指标类</Select.Option>
-          </Select>
-        </Form.Item> */}
         <Form.Item label="节点说明" name={'nodeDesc'} rules={[{ required: true }]}>
-          <Input.TextArea className="width320"></Input.TextArea>
+          <Input.TextArea className="width320" maxLength={200}></Input.TextArea>
         </Form.Item>
       </Form>
     </NgModal>

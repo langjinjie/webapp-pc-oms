@@ -1,11 +1,12 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, PaginationProps } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { addNode, deleteNode, getNodeList, getNodeTypeList } from 'src/apis/task';
 import { NgFormSearch, NgTable } from 'src/components';
 import { CreateNodeModal, NodeTypeProps } from './components/CrateNodeModal';
 
 import { NodeColumns, searchColsFun, tableColumnsFun } from './ListConfig';
+import { Context } from 'src/store/index';
 
 type QueryParamsType = Partial<{
   nodeCode: string;
@@ -14,8 +15,8 @@ type QueryParamsType = Partial<{
 }>;
 const TaskNodeList: React.FC = () => {
   const [visibleCreateNode, setVisibleCreateNode] = useState(false);
+  const { nodeOptions, setNodeOptions } = useContext(Context);
 
-  const [typeOptions, setTypeOptions] = useState<NodeTypeProps[]>([]);
   const [tableSource, setTableSource] = useState<Partial<NodeColumns>[]>([]);
   const [queryParams, setQueryParams] = useState<QueryParamsType>();
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -28,21 +29,20 @@ const TaskNodeList: React.FC = () => {
   });
 
   const getTypeList = async () => {
+    if (nodeOptions.length > 0) return;
+
     const res = (await getNodeTypeList({})) as NodeTypeProps[];
-    console.log(res);
     if (res) {
       const filterData = res.filter((item) => item.typeCode !== 'node_calendar');
-      setTypeOptions(filterData);
+      setNodeOptions(filterData);
     }
   };
 
   // 获取列表数据
   const getList = async (params?: any) => {
-    console.log(params);
     const pageNum = params?.pageNum || pagination.current;
     const pageSize = params?.pageSize || pagination.pageSize;
     const res = await getNodeList({ ...queryParams, ...params, pageNum, pageSize });
-    console.log(res);
     if (res) {
       const { list, total } = res;
       setTableSource(list || []);
@@ -56,7 +56,6 @@ const TaskNodeList: React.FC = () => {
   }, []);
 
   const onSearch = (values: QueryParamsType) => {
-    console.log(values);
     setQueryParams(values);
     getList({ ...values, pageNum: 1 });
   };
@@ -96,7 +95,9 @@ const TaskNodeList: React.FC = () => {
           ? values.nodeDateName
           : values.nodeTypeCode === 'node_tag'
             ? values.nodeTagName?.groupName
-            : '',
+            : values.nodeTypeCode === 'node_quota'
+              ? values.nodeQuotaName?.[1]
+              : '',
       nodeTypeCode: values.nodeTypeCode
     };
     const res = await addNode(params);
@@ -119,7 +120,7 @@ const TaskNodeList: React.FC = () => {
       </Button>
       <NgFormSearch
         className="mt20"
-        searchCols={searchColsFun(typeOptions)}
+        searchCols={searchColsFun(nodeOptions)}
         onSearch={onSearch}
         onValuesChange={onValuesChange}
       />
@@ -142,7 +143,7 @@ const TaskNodeList: React.FC = () => {
         visible={visibleCreateNode}
         onCancel={() => setVisibleCreateNode(false)}
         onSubmit={createNode}
-        options={typeOptions}
+        options={nodeOptions}
       />
     </div>
   );

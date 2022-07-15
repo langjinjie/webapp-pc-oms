@@ -64,15 +64,19 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> =>
     {
       title: '节点新增人',
       dataIndex: 'createBy',
+      width: 260
+    },
+    {
+      title: '节点说明',
+      dataIndex: 'nodeDesc',
       width: 260,
-      align: 'center'
+      ellipsis: true
     },
 
     {
       title: '节点新增时间',
       dataIndex: 'createTime',
-      width: 260,
-      align: 'center'
+      width: 260
     },
     {
       title: '操作',

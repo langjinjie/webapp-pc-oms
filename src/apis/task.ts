@@ -2,14 +2,6 @@ import http from 'src/utils/http';
 type HttpFC<T = any> = (param?: T, fn?: Function) => Promise<any>;
 
 /**
- * 获取标签库接口
- *
- */
-
-export const searchTagList: HttpFC = (params) => {
-  return http.post('/tenacity-admin/api/tag/group/info2', params);
-};
-/**
  * 1.1 获取策略模板列表
  * @param param
  */
@@ -84,9 +76,13 @@ export const getSceneDetail: HttpFC = () => {
  * @param param
  */
 export const getNodeRuleList: HttpFC = () => {
-  return http.post('/tenacity-admin/api/strategy/noderule/list');
+  return http.post('/tenacity-admin/api/strategy/noderuleV2/list');
 };
 
+// 1.21、新建/编辑节点规则接口
+export const createNodeRule: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/noderule/addoredit', params);
+};
 // 1.23、查询节点列表接口（Admin端和策略服务）
 export const getNodeList: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/strategy/node/list', params);
@@ -112,4 +108,11 @@ export const queryTagList: HttpFC = () => {
 // 1.29、获取指标类节点的指标列表接口
 export const queryTargetList: HttpFC = () => {
   return http.post('/tenacity-admin/api/strategy/node/data/list');
+};
+/**
+ * 1. 28获取标签库接口
+ *
+ */
+export const searchTagList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/tag/group/info2', params);
 };

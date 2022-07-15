@@ -1,15 +1,39 @@
 .lineWrap {
+  padding: 16px;
+  border-radius: 8px;
+  background: #f7f8fc;
+
   .nodeName {
     width: 180px;
   }
   .smallInput {
     width: 80px;
   }
+  .lineText {
+    line-height: 30px;
+  }
   :global {
+    .ant-space-align-center {
+      align-items: flex-start;
+    }
     .ant-space {
       .ant-form-item {
         margin-bottom: 0;
       }
+    }
+  }
+}
+
+.customItem {
+  padding: 16px 0;
+  border-radius: 8px;
+  background: #f7f8fc;
+  :global {
+    .ant-switch {
+      margin-left: 16px;
+    }
+    .ant-form-item {
+      margin-bottom: 0;
     }
   }
 }
