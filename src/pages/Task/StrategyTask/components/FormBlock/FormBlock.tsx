@@ -6,9 +6,9 @@ import classNames from 'classnames';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
 import NodePreview from '../NodePreview/NodePreview';
 import styles from './style.module.less';
-import { getNodeTypeList } from 'src/apis/task';
+import { getNodeList, getNodeRuleList, getNodeTypeList } from 'src/apis/task';
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
-
+import { CodeType } from 'src/utils/interface';
 interface FormBlockProps {
   value?: any[];
   hideAdd?: boolean;
@@ -16,13 +16,14 @@ interface FormBlockProps {
 }
 const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [nodeOptions, setNodeOptions] = useState<any>({});
+  const [nodeDetails, setNodeDetails] = useState<any[]>([]);
   const [nodeTypeOptions, setNodeTypeOptions] = useState<any[]>([]);
   const [blockForm] = Form.useForm();
   const [visibleRuleActionModal, setVisibleRuleActionModal] = useState(false);
   const getNodeTypeOptions = async () => {
     const res = await getNodeTypeList();
-    console.log(res);
-    setNodeTypeOptions([]);
+    setNodeTypeOptions(res || []);
   };
 
   const onFieldsChange = (changedValues: any, values: any) => {
@@ -80,9 +81,39 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
     setVisibleRuleActionModal(true);
   };
 
+  // 获取列表数据
+  const getNodeOptions = async (params?: any) => {
+    const res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
+    if (res) {
+      setNodeOptions(() => ({ ...nodeOptions, [params.nodeTypeCode]: res.list || [] }));
+    }
+  };
+
+  // 节点类别改变
+  const onNodeTypeChange = (typeCode: CodeType, index: number) => {
+    console.log(index);
+    getNodeOptions({ nodeTypeCode: typeCode });
+  };
+
+  // 节点改变时，设置节点说明
+  const onNodeChange = async (nodeId: string, index: number) => {
+    const nodeTypeId = blockForm.getFieldValue('sceneList')[index].nodeTypeId;
+    const nodeDesc = nodeOptions[nodeTypeId].filter((item: any) => item.nodeId === nodeId)[0].nodeDesc;
+    console.log(nodeDesc);
+    const copyData = [...nodeDetails];
+    copyData[index] = { nodeDesc };
+
+    // 获取节点规则列表
+    const res = await getNodeRuleList({ nodeId: nodeId, nodeTypeCode: nodeTypeId });
+    if (res) {
+      copyData[index].options = res.list || [];
+    }
+    setNodeDetails(copyData);
+  };
+
   return (
     <>
-      <Form form={blockForm} className={styles.blockWrap} onValuesChange={onFieldsChange}>
+      <Form form={blockForm} name="blockForm" className={styles.blockWrap} onValuesChange={onFieldsChange}>
         <Form.List name={'sceneList'}>
           {(fields, { add, remove }) => (
             <>
@@ -104,34 +135,51 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
                       <Form.Item
                         name={[name, 'nodeTypeId']}
                         label="节点类别"
+                        rules={[{ required: true }]}
                         className={classNames(styles.nodeType, styles.attrItem, 'flex align-center')}
                       >
-                        <Select className={styles.attrItemContent}>
+                        <Select className={styles.attrItemContent} onChange={(value) => onNodeTypeChange(value, index)}>
                           {nodeTypeOptions.map((option) => (
-                            <Select.Option value={option.typeId} key={option.typeId}>
+                            <Select.Option value={option.typeCode} key={option.typeId}>
                               {option.typeName}
                             </Select.Option>
                           ))}
                         </Select>
                       </Form.Item>
-                      <Form.Item label="选择日期" className={classNames(styles.attrItem, 'flex align-center')}>
-                        <Input className={styles.attrItemContent}></Input>
-                      </Form.Item>
-                      <Form.Item
-                        name={[name, 'nodeDesc']}
-                        label="节点说明"
-                        className={classNames(styles.attrItem, 'flex align-center')}
-                      >
-                        <Input placeholder="钱输入节点名称" className={styles.attrItemContent}></Input>
-                      </Form.Item>
 
-                      <Form.Item
-                        name={[name, 'nodeName']}
-                        label="节点名称"
-                        className={classNames(styles.attrItem, 'flex align-center')}
-                      >
-                        <span>{'10月1日(国庆节)'}</span>
-                      </Form.Item>
+                      {blockForm.getFieldValue('sceneList')[index].nodeTypeId === 'node_calendar'
+                        ? (
+                        <>
+                          <Form.Item label="选择日期" className={classNames(styles.attrItem, 'flex align-center')}>
+                            <Input className={styles.attrItemContent}></Input>
+                          </Form.Item>
+                          <Form.Item
+                            name={[name, 'nodeName']}
+                            label="节点名称"
+                            className={classNames(styles.attrItem, 'flex align-center')}
+                          >
+                            <span>{'10月1日(国庆节)'}</span>
+                          </Form.Item>
+                        </>
+                          )
+                        : (
+                        <>
+                          <Form.Item label="选择节点">
+                            <Select onChange={(value) => onNodeChange(value, index)}>
+                              {nodeOptions[blockForm.getFieldValue('sceneList')[index]?.nodeTypeId]?.map(
+                                (option: any) => (
+                                  <Select.Option value={option.nodeId} key={option.nodeId}>
+                                    {option.nodeName}
+                                  </Select.Option>
+                                )
+                              )}
+                            </Select>
+                          </Form.Item>
+                          <Form.Item label="节点说明" className={classNames(styles.attrItem, 'flex align-center')}>
+                            <span>{nodeDetails[index]?.nodeDesc}</span>
+                          </Form.Item>
+                        </>
+                          )}
                     </div>
 
                     <div className={styles.taskNode}>
@@ -152,7 +200,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
                                   <div className={classNames(styles.nodeItem, 'flex justify-between')}>
                                     <Form.Item className={styles.nodeCol} name={[name, nodeName, 'nodeRuleId']}>
                                       <Select placeholder="待输入">
-                                        <Select.Option value={1}>10月1日国庆节</Select.Option>
+                                        {nodeDetails[index]?.options.map((rule: any) => (
+                                          <Select.Option value={rule.nodeRuleId} key={rule.nodeRuleId}>
+                                            {rule.nodeRuleName}
+                                          </Select.Option>
+                                        ))}
                                       </Select>
                                     </Form.Item>
                                     <Form.Item className={styles.nodeCol} name={[name, nodeName, 'wayCode']}>

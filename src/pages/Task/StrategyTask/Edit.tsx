@@ -5,18 +5,30 @@ import { FormBlockPreview } from './components/ManuallyAddSpeech/FormBlockPrevie
 import { getTaskStrategyTplDetail } from 'src/apis/task';
 
 import styles from './style.module.less';
+import { RouteComponentProps } from 'react-router-dom';
+import { URLSearchParams } from 'src/utils/base';
 
-const StrategyTaskEdit: React.FC = () => {
+const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location }) => {
   const [basicForm] = Form.useForm();
   const navigatorToList = () => {
     console.log('a');
   };
   const getDetail = async () => {
-    const res = await getTaskStrategyTplDetail();
-    console.log(res);
-    if (res) {
+    const { tplId } = URLSearchParams(location.search) as { tplId: string };
+    if (tplId) {
+      const res = await getTaskStrategyTplDetail({ tplId });
+      console.log(res);
+      if (res) {
+        basicForm.setFieldsValue({
+          ...res
+        });
+      }
+    } else {
       basicForm.setFieldsValue({
-        ...res
+        staffScope: 1,
+        clientScope: 1,
+        runCycle: 1,
+        taskType: 1
       });
     }
   };
@@ -25,6 +37,16 @@ const StrategyTaskEdit: React.FC = () => {
     getDetail();
   }, []);
 
+  const onFormChange = (formName: string, forms: any) => {
+    console.log(formName, forms);
+  };
+  const onFinish = (values: any) => {
+    console.log(values);
+  };
+  const onBasicSubmit = () => {
+    console.log('Finish:');
+    basicForm.submit();
+  };
   return (
     <div className="edit container">
       <div className={'breadcrumbWrap'}>
@@ -36,8 +58,13 @@ const StrategyTaskEdit: React.FC = () => {
       </div>
 
       <div className="content">
-        <Form.Provider>
-          <Form form={basicForm} labelCol={{ span: 3 }}>
+        <Form.Provider
+          onFormFinish={(name, { values, forms }) => {
+            console.log(name, forms, values);
+          }}
+          onFormChange={(formName, { forms }) => onFormChange(formName, forms)}
+        >
+          <Form form={basicForm} name="basicForm" labelCol={{ span: 3 }} onFinish={onFinish}>
             <div className="formListTitle mb20">基本信息</div>
             <Form.Item
               label="策略任务模板名称"
@@ -64,13 +91,13 @@ const StrategyTaskEdit: React.FC = () => {
             </Form.Item>
             <Form.Item label="策略任务覆盖范围">
               <Form.Item label="员工筛选" name={'staffScope'} className={styles.interiorItem}>
-                <Radio.Group>
+                <Radio.Group disabled>
                   <Radio value={1}>全部员工</Radio>
                   <Radio value={2}>部分员工</Radio>
                 </Radio.Group>
               </Form.Item>
               <Form.Item label="客户筛选" name={'clientScope'} className={styles.interiorItem}>
-                <Radio.Group>
+                <Radio.Group disabled>
                   <Radio value={1}>全部员工</Radio>
                   <Radio value={2}>部分员工</Radio>
                 </Radio.Group>
@@ -89,7 +116,7 @@ const StrategyTaskEdit: React.FC = () => {
                 <Button type="primary" shape="round" ghost>
                   取消
                 </Button>
-                <Button type="primary" shape="round">
+                <Button type="primary" shape="round" onClick={onBasicSubmit}>
                   确认
                 </Button>
               </Space>

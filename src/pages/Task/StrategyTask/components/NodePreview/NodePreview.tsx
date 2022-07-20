@@ -4,7 +4,7 @@ import { Drawer } from 'antd';
 import { IActionRule } from 'src/utils/interface';
 import style from './style.module.less';
 
-interface IValue {
+export interface IValue {
   nodeRuleCode: string; // 节点动作规则编号
   nodeRuleName: string; // 节点规则名称
   contentType: number; // 动作规则类型: 1-文章、2-海报、3-产品、4-活动、5-销售宝典话术

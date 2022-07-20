@@ -72,6 +72,13 @@ export const getSceneDetail: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/strategy/scene/detail', params);
 };
 /**
+ * 1.17、查询动作规则详情接口
+ * @param param
+ */
+export const getActionRuleDetail: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/actionrule/detail', params);
+};
+/**
  * 1.19、查询节点规则列表接口（Admin端和策略服务）
  * @param param
  */

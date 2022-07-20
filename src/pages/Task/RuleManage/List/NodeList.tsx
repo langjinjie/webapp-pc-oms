@@ -64,7 +64,7 @@ export const NodeList: React.FC = () => {
     setQueryParams(values);
   };
 
-  const paginationChange = (pageNum: number, pageSize: number) => {
+  const paginationChange = (pageNum: number, pageSize?: number) => {
     getList({ pageNum, pageSize });
   };
 

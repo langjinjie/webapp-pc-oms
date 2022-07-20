@@ -17,7 +17,7 @@ interface TaskNodeColumns {
   createTime: string;
 }
 interface OperateProps {
-  onOperate: () => void;
+  onOperate: (actionRuleId: string) => void;
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns> => {
   return [
@@ -75,7 +75,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns
       render: (value, record) => {
         return (
           <Space size={20}>
-            <Button type="link" key={record.nodeRuleId} onClick={() => args.onOperate()}>
+            <Button type="link" key={record.nodeRuleId} onClick={() => args.onOperate(record.actionRuleId)}>
               查看
             </Button>
           </Space>

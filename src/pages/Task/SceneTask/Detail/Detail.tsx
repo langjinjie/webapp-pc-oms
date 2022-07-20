@@ -1,13 +1,16 @@
 import { Breadcrumb, Form, Input } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { getSceneDetail } from 'src/apis/task';
+import { getActionRuleDetail, getSceneDetail } from 'src/apis/task';
 import { NgTable } from 'src/components';
 import { URLSearchParams } from 'src/utils/base';
+import NodePreview, { IValue } from '../../StrategyTask/components/NodePreview/NodePreview';
 import { tableColumnsFun } from './DetailConfig';
 
 const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location }) => {
   const [detail, setDetail] = useState<any>({});
+  const [visible, setVisible] = useState(false);
+  const [nodeValue, setNodeValue] = useState<IValue>();
   const navigatorToList = () => {
     console.log('1');
   };
@@ -16,6 +19,12 @@ const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location }) => {
     const res = await getSceneDetail({ sceneId });
     console.log(res);
     setDetail(res || {});
+  };
+  const previewItem = async (actionRuleId: string) => {
+    const res = await getActionRuleDetail({ actionRuleId });
+    console.log(res);
+    setVisible(true);
+    setNodeValue(undefined);
   };
   useEffect(() => {
     getDetail();
@@ -49,10 +58,12 @@ const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location }) => {
         <NgTable
           dataSource={detail.sceneRuleList || []}
           columns={tableColumnsFun({
-            onOperate: () => console.log('查看')
+            onOperate: previewItem
           })}
         ></NgTable>
       </div>
+
+      <NodePreview value={nodeValue} visible={visible} onClose={() => setVisible(false)} />
     </div>
   );
 };
