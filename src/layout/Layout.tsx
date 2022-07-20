@@ -141,8 +141,13 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
                 })}
                 key={menu.menuId}
                 onClick={() => {
-                  setMenuIndex(index);
                   if (menu.children && menu.children.length > 0) {
+                    const path = ((menu.children || [])[0] || {}).path;
+                    if (path.indexOf('http') > -1) {
+                      window.open(path, '_blank');
+                      return false;
+                    }
+                    setMenuIndex(index);
                     history.push(((menu.children || [])[0] || {}).path);
                   } else {
                     message.warn('无子级菜单，请联系管理员');
@@ -158,6 +163,7 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
         <Affix offsetTop={80}>
           <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
             {subMenus.map((subMenu: MenuItem) => {
+              console.log(subMenu);
               return (
                 subMenu?.path && (
                   <li key={subMenu.menuId}>
