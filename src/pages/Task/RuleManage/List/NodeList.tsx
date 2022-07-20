@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import { nodeSearchCols, tableColumnsFun, RuleColumns } from './ListConfig';
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
@@ -7,7 +7,7 @@ import { NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
 import CreateRuleModal from '../components/CreateNodeRuleModal';
 import { Context } from 'src/store';
-import { createNodeRule, getNodeRuleList, getNodeTypeList } from 'src/apis/task';
+import { getNodeRuleList, getNodeTypeList } from 'src/apis/task';
 import { NodeType } from 'src/utils/interface';
 
 type QueryParamsType = Partial<{
@@ -72,14 +72,10 @@ export const NodeList: React.FC = () => {
     history.push('/taskScene/detail');
   };
 
-  const createRule = async (values: any) => {
-    console.log(values);
-    const res = await createNodeRule(values);
+  const createRule = async () => {
     setVisible(false);
-    if (res) {
-      message.success('添加成功');
-      getList({ pageNum: 1 });
-    }
+
+    getList({ pageNum: 1 });
   };
   return (
     <div className="search-wrap">

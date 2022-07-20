@@ -52,6 +52,13 @@ export const editTplDisplay: HttpFC<{ tplId: string }> = (param) => {
 export const getNodeTypeList: HttpFC = () => {
   return http.post('/tenacity-admin/api/strategy/node/type/list');
 };
+/**
+ * 1.9、获取触达方式
+ * @param param
+ */
+export const getTouchWayList: HttpFC = () => {
+  return http.post('/tenacity-admin/api/strategy/touchway/list');
+};
 
 /**
  * 场景模块

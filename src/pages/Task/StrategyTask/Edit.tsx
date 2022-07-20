@@ -13,6 +13,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location }) => {
   const navigatorToList = () => {
     console.log('a');
   };
+
   const getDetail = async () => {
     const { tplId } = URLSearchParams(location.search) as { tplId: string };
     if (tplId) {

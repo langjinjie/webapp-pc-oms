@@ -1,23 +1,28 @@
-import { Form, Input, InputNumber, Radio, Select, Space, Switch } from 'antd';
+import { Form, Input, InputNumber, message, Radio, Select, Space, Switch } from 'antd';
 import classNames from 'classnames';
-import React, { useState } from 'react';
-import { getNodeList, searchTagList } from 'src/apis/task';
+import React, { useMemo, useState } from 'react';
+import { createNodeRule, getNodeList, searchTagList } from 'src/apis/task';
 import { NgModal } from 'src/components';
 import { CodeType, NodeType, TagInterface } from 'src/utils/interface';
 import styles from './style.module.less';
 
 type CreateNodeModalProps = React.ComponentProps<typeof NgModal> & {
   options: NodeType[];
-  onSubmit: (values: any) => void;
+  onSubmit: () => void;
+  childOption?: any[];
+  nodeCode?: CodeType;
 };
 
-const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSubmit, ...props }) => {
+const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption, nodeCode, onSubmit, ...props }) => {
   const [ruleForm] = Form.useForm();
   const [currentNodeType, setCurrentNodeType] = useState<CodeType>();
   const [currentNode, setCurrentNode] = useState<any>();
   const [nodeOptions, setNodeOptions] = useState<any[]>([]);
   const [tagOptions, setTagOptions] = useState<TagInterface[]>([]);
   const [formValues, setFormValues] = useState<any>({});
+
+  console.log(childOption, nodeCode);
+
   // 获取列表数据
   const getNodeOptions = async (params?: any) => {
     const res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
@@ -26,22 +31,14 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSubmit, ..
     }
   };
 
-  const onNodeTypeChange = (typeCode: CodeType) => {
-    setCurrentNodeType(typeCode);
-    getNodeOptions({ nodeTypeCode: typeCode });
-  };
-
   const getTagList = async (tagGroupName: string) => {
     const res = await searchTagList({ groupName: tagGroupName });
-    console.log(res);
     if (res) {
       setTagOptions(res.tagList || []);
     }
   };
-
   const nodeChange = async (value: string) => {
-    console.log(value);
-    const node = nodeOptions.filter((node) => node.nodeId === value)?.[0];
+    const node = (nodeOptions.length > 0 ? nodeOptions : childOption!).filter((node) => node.nodeId === value)?.[0];
     setCurrentNode(node);
     // 如果是标签类型
     if (currentNodeType === 'node_tag') {
@@ -49,10 +46,35 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSubmit, ..
     }
   };
 
+  useMemo(() => {
+    if (nodeCode) {
+      setCurrentNodeType(nodeCode);
+      setNodeOptions(childOption || []);
+      const node = childOption?.[0];
+      setCurrentNode(node);
+      ruleForm.setFieldsValue({
+        nodeId: node.nodeId
+      });
+      nodeChange(node.nodeId);
+    }
+  }, [nodeCode, childOption]);
+
+  const onNodeTypeChange = (typeCode: CodeType) => {
+    setCurrentNodeType(typeCode);
+    getNodeOptions({ nodeTypeCode: typeCode });
+  };
+
   const onValuesChange = (values: any) => {
     setFormValues(values);
   };
 
+  const handleSubmit = async (values: any) => {
+    const res = await createNodeRule(values);
+    if (res) {
+      message.success('添加成功');
+      onSubmit();
+    }
+  };
   const onConfirm = () => {
     ruleForm
       .validateFields()
@@ -63,24 +85,24 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSubmit, ..
           const { dateLogicType, ...otherValues } = values;
           // 1.1当天
           if (dateLogicType === 1) {
-            onSubmit({ ...otherValues, days: 0 });
+            handleSubmit({ ...otherValues, days: 0 });
           } else {
             // 1.2 后多少天
-            onSubmit({ ...otherValues });
+            handleSubmit({ ...otherValues });
           }
           return false;
         } else if (currentNodeType === 'node_quota') {
           const { dateLogicType, ...otherValues } = values;
           // 1.1当天
           if (dateLogicType === 1) {
-            onSubmit({ ...otherValues, days: 0 });
+            handleSubmit({ ...otherValues, days: 0 });
           } else {
             // 1.2 后多少天
-            onSubmit({ ...otherValues });
+            handleSubmit({ ...otherValues });
           }
           return;
         }
-        onSubmit(values);
+        handleSubmit(values);
       })
       .catch((err) => {
         console.error(err);
@@ -95,7 +117,13 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSubmit, ..
         onValuesChange={(changedValues: any, values: any) => onValuesChange(values)}
       >
         <Form.Item label="选择节点类别" labelAlign="right">
-          <Select className="width240" onChange={onNodeTypeChange} placeholder="请选择">
+          <Select
+            className="width240"
+            disabled={!!nodeCode}
+            onChange={onNodeTypeChange}
+            placeholder="请选择"
+            value={nodeCode}
+          >
             {options.map((option) => (
               <Select.Option value={option.typeCode} key={option.typeId}>
                 {option.typeName}
