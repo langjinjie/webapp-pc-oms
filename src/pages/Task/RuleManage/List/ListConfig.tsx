@@ -139,7 +139,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<RuleColumns> =>
       title: '规则修改时间',
       dataIndex: 'updateTime',
       width: 260,
-      align: 'center'
+      render: (updateTime: string) => updateTime || UNKNOWN
     },
     {
       title: '操作',
@@ -191,14 +191,13 @@ export const actionTableColumnsFun = (args: OperateProps): ColumnsType<ActionRul
     {
       title: '动作规则修改人',
       dataIndex: 'updateBy',
-      width: 260,
-      align: 'center'
+      width: 260
     },
     {
       title: '动作规则修改时间',
       dataIndex: 'updateTime',
       width: 260,
-      align: 'center'
+      render: (updateTime: string) => updateTime || UNKNOWN
     },
     {
       title: '操作',

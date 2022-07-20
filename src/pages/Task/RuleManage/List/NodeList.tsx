@@ -57,15 +57,15 @@ export const NodeList: React.FC = () => {
   }, []);
 
   const onSearch = (values: any) => {
-    console.log(values);
+    getList({ ...values, pageNum: 1 });
     setQueryParams(values);
   };
   const onValuesChange = (changeValues: any, values: any) => {
-    console.log({ changeValues, values });
+    setQueryParams(values);
   };
 
-  const paginationChange = () => {
-    console.log();
+  const paginationChange = (pageNum: number, pageSize: number) => {
+    getList({ pageNum, pageSize });
   };
 
   const jumpToDetail = () => {

@@ -39,7 +39,7 @@ export interface SceneColumns {
 }
 
 interface OperateProps {
-  onOperate: () => void;
+  onOperate: (sceneId: string) => void;
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<SceneColumns> => {
   return [
@@ -90,7 +90,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<SceneColumns> =
       render: (value, record) => {
         return (
           <Space size={20}>
-            <Button type="link" key={record.sceneId} onClick={() => args.onOperate()}>
+            <Button type="link" key={record.sceneId} onClick={() => args.onOperate(record.sceneId)}>
               查看
             </Button>
           </Space>

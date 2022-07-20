@@ -36,8 +36,7 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
   const [nodeForm] = Form.useForm();
 
   const getOptions = async () => {
-    const res = await queryTargetList();
-    console.log(res);
+    const res = await queryTargetList({ pageSize: 100, pageNum: 1 });
     if (res) {
       const { list } = res;
       const formatList = list.map((item: any) => ({ ...item, name: item.category }));

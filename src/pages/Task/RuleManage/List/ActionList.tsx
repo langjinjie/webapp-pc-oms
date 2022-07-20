@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { actionSearchCols, actionTableColumnsFun, RuleColumns } from './ListConfig';
 import { useHistory } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
+import { getActionRuleList } from 'src/apis/task';
 
+type QueryParamsType = {};
 export const ActionList: React.FC = () => {
   const history = useHistory();
-  const [tableSource] = useState<Partial<RuleColumns>[]>([
-    {
-      nodeRuleId: '1212121'
-    }
-  ]);
-  const [pagination] = useState<PaginationProps>({
+  const [queryParams, setQueryParams] = useState<QueryParamsType>();
+  const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
     total: 0,
@@ -19,16 +17,34 @@ export const ActionList: React.FC = () => {
       return `共 ${total} 条记录`;
     }
   });
+  const [tableSource, setTableSource] = useState<Partial<RuleColumns>[]>([]);
+
+  // 获取列表数据
+  const getList = async (params?: any) => {
+    const pageNum = params?.pageNum || pagination.current;
+    const pageSize = params?.pageSize || pagination.pageSize;
+    const res = await getActionRuleList({ ...queryParams, ...params, pageNum, pageSize });
+    if (res) {
+      const { list, total } = res;
+      setTableSource(list || []);
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
+    }
+  };
+
+  useEffect(() => {
+    getList();
+  }, []);
 
   const onSearch = (values: any) => {
-    console.log(values);
+    setQueryParams(values);
+    getList({ ...values, pageNum: 1 });
   };
   const onValuesChange = (changeValues: any, values: any) => {
-    console.log({ changeValues, values });
+    setQueryParams(values);
   };
 
-  const paginationChange = () => {
-    console.log();
+  const paginationChange = (pageNum: number, pageSize: number) => {
+    getList({ pageNum, pageSize });
   };
 
   const jumpToDetail = () => {

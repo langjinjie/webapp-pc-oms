@@ -61,27 +61,31 @@ export const getNodeTypeList: HttpFC = () => {
  * 1.15、查询场景列表接口
  * @param param
  */
-export const getSceneList: HttpFC = () => {
-  return http.post('/tenacity-admin/api/strategy/scene/list');
+export const getSceneList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/scene/list', params);
 };
 /**
  * 1.16、查询场景详情接口
  * @param param
  */
-export const getSceneDetail: HttpFC = () => {
-  return http.post('/tenacity-admin/api/strategy/scene/detail');
+export const getSceneDetail: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/scene/detail', params);
 };
 /**
  * 1.19、查询节点规则列表接口（Admin端和策略服务）
  * @param param
  */
-export const getNodeRuleList: HttpFC = () => {
-  return http.post('/tenacity-admin/api/strategy/noderuleV2/list');
+export const getNodeRuleList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/noderuleV2/list', params);
 };
 
 // 1.21、新建/编辑节点规则接口
 export const createNodeRule: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/strategy/noderule/addoredit', params);
+};
+// 1.22、查询动作规则列表接口
+export const getActionRuleList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/actionrule/list', params);
 };
 // 1.23、查询节点列表接口（Admin端和策略服务）
 export const getNodeList: HttpFC = (params) => {
