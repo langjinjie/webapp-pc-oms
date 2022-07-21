@@ -1,25 +1,26 @@
-import React, { useEffect } from 'react';
-import { Breadcrumb, Button, Form, Input, Radio, Select, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Breadcrumb, Button, Form, Input, Radio, Select, Space, FormInstance, message } from 'antd';
 import FormBlock from './components/FormBlock/FormBlock';
 import { FormBlockPreview } from './components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
-import { getTaskStrategyTplDetail } from 'src/apis/task';
+import { getTaskStrategyTplDetail, saveScene } from 'src/apis/task';
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
 import { URLSearchParams } from 'src/utils/base';
 
-const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location }) => {
+const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [basicForm] = Form.useForm();
+  const [tplDetail, setTplDetail] = useState<any>();
   const navigatorToList = () => {
-    console.log('a');
+    history.push('/strategyTask');
   };
 
   const getDetail = async () => {
     const { tplId } = URLSearchParams(location.search) as { tplId: string };
     if (tplId) {
       const res = await getTaskStrategyTplDetail({ tplId });
-      console.log(res);
       if (res) {
+        setTplDetail(res);
         basicForm.setFieldsValue({
           ...res
         });
@@ -38,14 +39,41 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location }) => {
     getDetail();
   }, []);
 
-  const onFormChange = (formName: string, forms: any) => {
-    console.log(formName, forms);
+  const onFormFinish = async (forms: { basicForm: FormInstance; blockForm: FormInstance }) => {
+    const { blockForm, basicForm } = forms;
+    blockForm.validateFields().then((values) => {
+      const basicValues = basicForm.getFieldsValue();
+      const { sceneList } = values;
+      if (sceneList.length < 1) {
+        return false;
+      } else {
+        sceneList.map((scene: any) => {
+          delete scene.nodeTypeId;
+          scene.sceneId = scene.sceneId || '';
+          scene.nodeRuleList.map((rule: any) => {
+            console.log(rule.pushTime);
+            rule.pushTime = rule.pushTime?.format('HH:mm') || '';
+            return rule;
+          });
+          return scene;
+        });
+
+        console.log({ ...basicValues, sceneList });
+        saveScene({
+          tplId: tplDetail.tplId || '',
+          baseInfo: {
+            ...basicValues,
+            sceneList
+          }
+        }).then(() => {
+          message.success('保存成功');
+          history.push('/strategyTask');
+        });
+      }
+    });
   };
-  const onFinish = (values: any) => {
-    console.log(values);
-  };
+
   const onBasicSubmit = () => {
-    console.log('Finish:');
     basicForm.submit();
   };
   return (
@@ -59,13 +87,8 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location }) => {
       </div>
 
       <div className="content">
-        <Form.Provider
-          onFormFinish={(name, { values, forms }) => {
-            console.log(name, forms, values);
-          }}
-          onFormChange={(formName, { forms }) => onFormChange(formName, forms)}
-        >
-          <Form form={basicForm} name="basicForm" labelCol={{ span: 3 }} onFinish={onFinish}>
+        <Form.Provider onFormFinish={(formName, { forms }) => onFormFinish(forms as any)}>
+          <Form form={basicForm} name="basicForm" labelCol={{ span: 3 }}>
             <div className="formListTitle mb20">基本信息</div>
             <Form.Item
               label="策略任务模板名称"
@@ -107,10 +130,10 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location }) => {
             {/* <Form.Item> */}
           </Form>
           <div className="formListTitle">配置操作区</div>
-          <FormBlock />
+          <FormBlock value={tplDetail?.sceneList} />
           {/* </Form.Item> */}
           <div className="formListTitle">策略行事历预览</div>
-          <FormBlockPreview value={[{}]} />
+          <FormBlockPreview value={tplDetail?.sceneList || []} />
           <Form.Item>
             <div className="flex justify-center formFooter">
               <Space size={30}>

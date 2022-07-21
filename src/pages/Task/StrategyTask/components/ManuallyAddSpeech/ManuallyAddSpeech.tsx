@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { NgModal } from 'src/components';
 import { Input } from 'antd';
 import { NgModalProps } from 'src/components/NgModal/NgModal';
@@ -15,6 +15,9 @@ export const ManuallyAddSpeech: React.FC<ManuallyAddSpeechProps> = ({ value, onC
     console.log(e.target.value);
     setValue(e.target.value);
   };
+  useMemo(() => {
+    setValue(value || '');
+  }, [value]);
   const handleOK = () => {
     setSpeechVisible(false);
     onChange?.(inputValue);
@@ -30,7 +33,7 @@ export const ManuallyAddSpeech: React.FC<ManuallyAddSpeechProps> = ({ value, onC
         onCancel={() => setSpeechVisible(false)}
       >
         <div className="mb10">话术详情</div>
-        <Input.TextArea rows={4} defaultValue={value} onChange={onHandleChange} />
+        <Input.TextArea rows={4} defaultValue={inputValue} onChange={onHandleChange} />
       </NgModal>
     </>
   );

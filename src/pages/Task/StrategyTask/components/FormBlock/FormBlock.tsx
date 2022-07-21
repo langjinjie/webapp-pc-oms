@@ -11,12 +11,13 @@ import styles from './style.module.less';
 import { getNodeList, getNodeRuleList, getNodeTypeList, getTouchWayList } from 'src/apis/task';
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 import { CodeType } from 'src/utils/interface';
+import moment from 'moment';
 interface FormBlockProps {
   value?: any[];
   hideAdd?: boolean;
   onChange?: (value: any) => void;
 }
-const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
+const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
   const [formValues, setFormValues] = useState<any>();
   const [previewVisible, setPreviewVisible] = useState(false);
   const [nodeOptions, setNodeOptions] = useState<any>({});
@@ -33,14 +34,12 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
     }[]
   >([]);
   const [blockForm] = Form.useForm();
-  const [visibleRuleActionModal, setVisibleRuleActionModal] = useState(false);
   const getNodeTypeOptions = async () => {
     const res = await getNodeTypeList();
     setNodeTypeOptions(res || []);
   };
 
   const onFieldsChange = (changedValues: any, values: any) => {
-    console.log(formValues);
     setFormValues(values);
   };
   // 预览内容
@@ -84,22 +83,43 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
     const res = await getTouchWayList();
     if (res) setTouchWayOptions(res.list || []);
   };
+
   useEffect(() => {
-    blockForm.setFieldsValue({
-      sceneList: [
-        {
-          nodeRuleList: [{}]
-        }
-      ]
-    });
+    if (value) {
+      console.log(value);
+      const copyValue = [...value];
+      console.log(copyValue);
+      copyValue.map((item) => {
+        item?.nodeRuleList.map((child: any) => {
+          child.pushTime = moment(child.pushTime) || undefined;
+          return child;
+        });
+        return item;
+      });
+      blockForm.setFieldsValue({
+        sceneList: copyValue
+      });
+      setFormValues({
+        sceneList: copyValue
+      });
+    } else {
+      blockForm.setFieldsValue({
+        sceneList: [
+          {
+            nodeRuleList: [
+              {
+                pushTime: moment('09:00')
+              }
+            ]
+          }
+        ]
+      });
+    }
+  }, [value]);
+  useEffect(() => {
     getTouchWayOptions();
     getNodeTypeOptions();
   }, []);
-
-  const setAction = (sceneIndex: number, nodeIndex: number) => {
-    console.log(sceneIndex, nodeIndex);
-    setVisibleRuleActionModal(true);
-  };
 
   // 获取列表数据
   const getNodeOptions = async (params?: any) => {
@@ -111,20 +131,19 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
 
   // 节点类别改变
   const onNodeTypeChange = (typeCode: CodeType, index: number) => {
-    console.log(index);
     getNodeOptions({ nodeTypeCode: typeCode });
+    console.log(index);
   };
 
   // 节点改变时，设置节点说明
   const onNodeChange = async (nodeId: string, index: number) => {
-    const nodeTypeId = blockForm.getFieldValue('sceneList')[index].nodeTypeId;
-    const node = nodeOptions[nodeTypeId].filter((item: any) => item.nodeId === nodeId)[0];
-    console.log(node);
+    const nodeTypeCode = blockForm.getFieldValue('sceneList')[index].nodeTypeCode;
+    const node = nodeOptions[nodeTypeCode].filter((item: any) => item.nodeId === nodeId)[0];
     const copyData = [...nodeDetails];
     copyData[index] = { node };
 
     // 获取节点规则列表
-    const res = await getNodeRuleList({ nodeId: nodeId, nodeTypeCode: nodeTypeId });
+    const res = await getNodeRuleList({ nodeId: nodeId, nodeTypeCode: nodeTypeCode });
     if (res) {
       copyData[index].options = res.list || [];
     }
@@ -133,8 +152,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
 
   const onFocusNodeRuleItem = (index: number) => {
     const currentItem = formValues?.sceneList[index] || {};
-    console.log(currentItem);
-    if (!currentItem.nodeTypeId || !currentItem.nodeId) {
+    if (!currentItem.nodeTypeCode || !currentItem.nodeId) {
       blockForm.validateFields();
       message.warning('请选择节点信息');
     }
@@ -154,7 +172,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
           {(fields, { add, remove }) => (
             <>
               {fields.map(({ name, key, ...restFiled }, index) => (
-                <Form.Item key={key} className={styles.formBlock} {...restFiled}>
+                <Form.Item key={key + name} className={styles.formBlock} {...restFiled}>
                   <div className={classNames(styles.blockTitle, 'flex justify-between align-center')}>
                     <span>序号 {index + 1}</span>
                     <Button
@@ -169,7 +187,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
                   <div className="ph20">
                     <div className={classNames(styles.blockAttr, 'flex align-start')}>
                       <Form.Item
-                        name={[name, 'nodeTypeId']}
+                        name={[name, 'nodeTypeCode']}
                         label="节点类别"
                         rules={[{ required: true }]}
                         className={classNames(styles.nodeType, styles.attrItem, 'flex align-center')}
@@ -183,7 +201,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
                         </Select>
                       </Form.Item>
 
-                      {blockForm.getFieldValue('sceneList')[index]?.nodeTypeId === 'node_calendar'
+                      {formValues?.sceneList?.[index]?.nodeTypeCode === 'node_calendar'
                         ? (
                         <>
                           <Form.Item label="选择日期" className={classNames(styles.attrItem, 'flex align-center')}>
@@ -206,13 +224,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
                             className={classNames(styles.attrItem, 'flex align-center')}
                           >
                             <Select onChange={(value) => onNodeChange(value, index)}>
-                              {nodeOptions[blockForm.getFieldValue('sceneList')[index]?.nodeTypeId]?.map(
-                                (option: any) => (
-                                  <Select.Option value={option.nodeId} key={option.nodeId}>
-                                    {option.nodeName}
-                                  </Select.Option>
-                                )
-                              )}
+                              {nodeOptions[formValues?.sceneList?.[index]?.nodeTypeCode]?.map((option: any) => (
+                                <Select.Option value={option.nodeId} key={option.nodeId}>
+                                  {option.nodeName}
+                                </Select.Option>
+                              ))}
                             </Select>
                           </Form.Item>
                           <Form.Item label="节点说明" className={classNames(styles.attrItem, 'flex align-center')}>
@@ -238,7 +254,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
                               {fields.map(({ name: nodeName, key }, nodeIndex) => (
                                 <Form.Item key={key + nodeIndex}>
                                   <div className={classNames(styles.nodeItem, 'flex justify-between')}>
-                                    <Form.Item className={styles.nodeCol} name={[name, nodeName, 'nodeRuleId']}>
+                                    <Form.Item className={styles.nodeCol} name={[nodeName, 'nodeRuleId']}>
                                       <Select
                                         onFocus={() => {
                                           onFocusNodeRuleItem(index);
@@ -249,7 +265,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
                                             {menu}
                                             <Button
                                               disabled={
-                                                !formValues?.sceneList?.[index]?.nodeTypeId ||
+                                                !formValues?.sceneList?.[index]?.nodeTypeCode ||
                                                 !formValues?.sceneList?.[index]?.nodeId
                                               }
                                               onClick={() => addNodeRule(formValues?.sceneList?.[index], index)}
@@ -266,7 +282,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
                                         ))}
                                       </Select>
                                     </Form.Item>
-                                    <Form.Item className={styles.nodeCol} name={[name, nodeName, 'wayCode']}>
+                                    <Form.Item className={styles.nodeCol} name={[nodeName, 'wayCode']}>
                                       <Select placeholder="待输入">
                                         {touchWayOptions.map((touchWay) => (
                                           <Select.Option key={touchWay.wayId} value={touchWay.wayCode}>
@@ -275,23 +291,14 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
                                         ))}
                                       </Select>
                                     </Form.Item>
-                                    <Form.Item className={styles.ruleCol}>
-                                      <Button type="link" onClick={() => setAction(index, nodeIndex)}>
-                                        配置
-                                      </Button>
+                                    <Form.Item className={styles.ruleCol} name={[nodeName, 'actionRule']}>
+                                      <RuleActionSetModal />
                                     </Form.Item>
-                                    <Form.Item name={[name, nodeName, 'speechcraft']} className={styles.speechCol}>
+                                    <Form.Item name={[nodeName, 'speechcraft']} className={styles.speechCol}>
                                       <ManuallyAddSpeech />
                                     </Form.Item>
-                                    <Form.Item
-                                      name={[name, nodeName, 'pushTime']}
-                                      className={classNames(styles.timeCol)}
-                                    >
-                                      <TimePicker
-                                        bordered={false}
-                                        // defaultValue={moment('09:00', 'HH:mm')}
-                                        format={'HH:mm'}
-                                      />
+                                    <Form.Item name={[nodeName, 'pushTime']} className={classNames(styles.timeCol)}>
+                                      <TimePicker bordered={false} format={'HH:mm'} />
                                     </Form.Item>
                                     <div className={styles.operateCol}>
                                       <Space>
@@ -340,12 +347,12 @@ const FormBlock: React.FC<FormBlockProps> = ({ hideAdd }) => {
         </Form.List>
       </Form>
       <NodePreview value={previewValue} visible={previewVisible} onClose={() => setPreviewVisible(false)} />
-      <RuleActionSetModal visible={visibleRuleActionModal} onCancel={() => setVisibleRuleActionModal(false)} />
+
       <CreateNodeRuleModal
         options={nodeTypeOptions}
         visible={visibleRule}
         onCancel={() => setVisibleRule(false)}
-        nodeCode={currentItem?.nodeTypeId}
+        nodeCode={currentItem?.nodeTypeCode}
         childOption={[currentItem?.node]}
         onSubmit={() => setVisibleRule(false)}
       />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Timeline } from 'antd';
 import styles from './style.module.less';
+import { contentTypeList } from '../../RuleActionSetModal/config';
 interface FormBlockPreviewProps {
   value: any[];
 }
@@ -8,62 +9,30 @@ interface FormBlockPreviewProps {
 const DotComponent: React.FC<{ title: string }> = ({ title }) => {
   return <div className={styles.timelineLabel}>{title}</div>;
 };
-export const FormBlockPreview: React.FC<FormBlockPreviewProps> = () => {
+export const FormBlockPreview: React.FC<FormBlockPreviewProps> = ({ value }) => {
+  console.log('propValue:', value, '==================');
   return (
     <div className={styles.timelineWrap}>
       <Timeline>
-        <Timeline.Item dot={<DotComponent title="保险到期日" />}>
-          <div className="flex">
-            {[1, 2, 3, 4, 5].map((item) => {
-              return (
-                <div className={styles.nodeItem} key={item}>
-                  <div className={styles.nodeTitle}>保险到期日前14天</div>
-                  <div className={styles.nodeContent}>09:00 群发消息 发送文章</div>
-                  <div className={styles.nodeContent}>09:00 群发消息 发送文章</div>
-                </div>
-              );
-            })}
-          </div>
-        </Timeline.Item>
-        <Timeline.Item dot={<DotComponent title="国庆节" />}>
-          <div className="flex">
-            {[1, 2, 3, 4, 5].map((item) => {
-              return (
-                <div className={styles.nodeItem} key={item}>
-                  <div className={styles.nodeTitle}>保险到期日前14天</div>
-                  <div className={styles.nodeContent}>09:00 群发消息 发送文章</div>
-                  <div className={styles.nodeContent}>09:00 群发消息 发送文章</div>
-                </div>
-              );
-            })}
-          </div>
-        </Timeline.Item>
-        <Timeline.Item dot={<DotComponent title="端午节" />}>
-          <div className="flex">
-            {[1, 5].map((item) => {
-              return (
-                <div className={styles.nodeItem} key={item}>
-                  <div className={styles.nodeTitle}>保险到期日前14天</div>
-                  <div className={styles.nodeContent}>09:00 群发消息 发送文章</div>
-                  <div className={styles.nodeContent}>09:00 群发消息 发送文章</div>
-                </div>
-              );
-            })}
-          </div>
-        </Timeline.Item>
-        <Timeline.Item dot={<DotComponent title="中秋节" />}>
-          <div className="flex">
-            {[1, 2, 5].map((item) => {
-              return (
-                <div className={styles.nodeItem} key={item}>
-                  <div className={styles.nodeTitle}>保险到期日前14天</div>
-                  <div className={styles.nodeContent}>09:00 群发消息 发送文章</div>
-                  <div className={styles.nodeContent}>09:00 群发消息 发送文章</div>
-                </div>
-              );
-            })}
-          </div>
-        </Timeline.Item>
+        {value.map((item) => (
+          <Timeline.Item key={item.sceneId} dot={<DotComponent title={item.nodeName} />}>
+            <div className="flex">
+              {item.nodeRuleList?.map((rule: any, index: number) => {
+                console.log(rule.pushTime);
+
+                return (
+                  <div className={styles.nodeItem} key={rule.actionRuleId + index}>
+                    <div className={styles.nodeTitle}>{rule.nodeRuleName}</div>
+                    <div className={styles.nodeContent}>
+                      {rule.pushTime} {rule.wayName}{' '}
+                      {contentTypeList.filter((item) => item.value === rule.actionRuleType)[0].label}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Timeline.Item>
+        ))}
       </Timeline>
     </div>
   );

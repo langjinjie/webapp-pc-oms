@@ -21,8 +21,6 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
   const [tagOptions, setTagOptions] = useState<TagInterface[]>([]);
   const [formValues, setFormValues] = useState<any>({});
 
-  console.log(childOption, nodeCode);
-
   // 获取列表数据
   const getNodeOptions = async (params?: any) => {
     const res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
@@ -79,7 +77,6 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
     ruleForm
       .validateFields()
       .then((values) => {
-        console.log(values);
         // 1. 节点类型时
         if (currentNodeType === 'node_tag') {
           const { dateLogicType, ...otherValues } = values;

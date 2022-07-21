@@ -21,7 +21,7 @@ export const getTaskStrategyTplList: HttpFC<
  * @param param
  */
 export const getTaskStrategyTplDetail: HttpFC<{ tplId: string }> = (param) => {
-  return http.post('http://127.0.0.1:4523/m1/1226778-0-default/tenacity-oms/api/strategy/tpl/detail', param);
+  return http.post('/tenacity-admin/api/strategy/tpl/detail', param);
   // return http.post('/tenacity-admin/api/strategy/tpl/detail', param);
 };
 /**
@@ -64,6 +64,14 @@ export const getTouchWayList: HttpFC = () => {
  * 场景模块
  *
  */
+
+/**
+ * 1.14、新建/编辑策略任务模板接口
+ * @param param
+ */
+export const saveScene: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/addoredit', params);
+};
 /**
  * 1.15、查询场景列表接口
  * @param param

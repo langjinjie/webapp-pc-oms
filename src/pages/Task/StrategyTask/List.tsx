@@ -66,6 +66,8 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
       setVisibleOfflineModal(true);
     } else if (operateType === 'other') {
       setVisibleDisplayModal(true);
+    } else if (operateType === 'view') {
+      history.push('/strategyTask/edit?tplId=' + record.tplId);
     }
   };
   // 确定上架

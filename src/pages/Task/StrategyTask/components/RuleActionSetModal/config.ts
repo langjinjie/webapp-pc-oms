@@ -9,3 +9,23 @@ export const searchCols: SearchCol[] = [
     placeholder: '待输入'
   }
 ];
+
+export const contentTypeList = [
+  {
+    label: '文章',
+    value: 1
+  },
+  {
+    value: 2,
+    label: '海报'
+  },
+  {
+    label: '产品',
+    value: 3
+  },
+  {
+    value: 4,
+    label: '活动'
+  },
+  { value: 5, label: '话术' }
+];
