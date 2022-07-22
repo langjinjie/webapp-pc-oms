@@ -1,5 +1,5 @@
 import { Form, Input } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NgModal } from 'src/components';
 import NgUpload from 'src/pages/Marketing/Components/Upload/Upload';
 
@@ -7,16 +7,35 @@ interface TelDisplaySetModalProps {
   visible: boolean;
   onOk: (values: any) => void;
   onCancel: () => void;
+  values?: {
+    displayCoverImg: string;
+    resultDesc: string;
+    taskDesc: string;
+    sceneDesc: string;
+    [prop: string]: any;
+  };
 }
 
-export const TelDisplaySetModal: React.FC<TelDisplaySetModalProps> = ({ visible, onOk, onCancel }) => {
+export const TelDisplaySetModal: React.FC<TelDisplaySetModalProps> = ({ visible, onOk, onCancel, values }) => {
   const [displayForm] = Form.useForm();
+
   const handleOk = () => {
     displayForm.validateFields().then((values) => {
       console.log(values);
       onOk(values);
     });
   };
+  useEffect(() => {
+    if (values) {
+      const { displayCoverImg = '', resultDesc = '', taskDesc = '', sceneDesc = '' } = values;
+      displayForm.setFieldsValue({
+        displayCoverImg,
+        resultDesc,
+        taskDesc,
+        sceneDesc
+      });
+    }
+  }, [values, visible]);
 
   const handleCancel = () => {
     displayForm.resetFields();
@@ -32,13 +51,43 @@ export const TelDisplaySetModal: React.FC<TelDisplaySetModalProps> = ({ visible,
         >
           <NgUpload></NgUpload>
         </Form.Item>
-        <Form.Item label="效果" name={'resultDesc'}>
+        <Form.Item
+          label="效果"
+          name={'resultDesc'}
+          rules={[
+            { required: true, message: '效果描述不可以为空' },
+            {
+              max: 50,
+              message: '限定不超过50个字'
+            }
+          ]}
+        >
           <Input placeholder="限定不超过50个字"></Input>
         </Form.Item>
-        <Form.Item label="任务说明" name={'taskDesc'}>
+        <Form.Item
+          label="任务说明"
+          name={'taskDesc'}
+          rules={[
+            { required: true, message: '任务说明不可以为空' },
+            {
+              max: 50,
+              message: '限定不超过100个字'
+            }
+          ]}
+        >
           <Input.TextArea placeholder="限定不超过100个字"></Input.TextArea>
         </Form.Item>
-        <Form.Item label="任务场景" name={'sceneDesc'}>
+        <Form.Item
+          label="任务场景"
+          name={'sceneDesc'}
+          rules={[
+            { required: true, message: '任务场景不可以为空' },
+            {
+              max: 50,
+              message: '限定不超过100个字'
+            }
+          ]}
+        >
           <Input.TextArea placeholder="限定不超过100个字"></Input.TextArea>
         </Form.Item>
       </Form>

@@ -60,7 +60,6 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const onOperate = (operateType: OperateType, record: StrategyTaskProps) => {
     setCurrentTpl(record);
-    console.log(currentTpl);
     if (operateType === 'putAway') {
       console.log(record);
       setVisibleOnlineModal(true);
@@ -147,6 +146,7 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
       <OnlineModal onOk={putAway} visible={visibleOnlineModal} onCancel={() => setVisibleOnlineModal(false)} />
       <OffLineModal visible={visibleOfflineModal} onCancel={() => setVisibleOfflineModal(false)} onOK={offLine} />
       <TelDisplaySetModal
+        values={currentTpl}
         visible={visibleDisplayModal}
         onCancel={() => setVisibleDisplayModal(false)}
         onOk={setDisplayInfo}
