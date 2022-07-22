@@ -59,7 +59,9 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ actionRuleId, v
     <>
       {value?.contentType
         ? (
-            '发' + contentTypeList.filter((type) => type.value === value.contentType)[0].label
+        <Button type="link" onClick={() => setVisible(true)}>
+          {'发' + contentTypeList.filter((type) => type.value === value.contentType)[0].label}
+        </Button>
           )
         : (
         <Button type="link" onClick={() => setVisible(true)}>

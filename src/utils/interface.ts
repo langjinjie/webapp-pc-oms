@@ -429,3 +429,4 @@ export type NodeType = {
 };
 
 export type CodeType = 'node_tag' | 'node_date' | 'node_quota';
+export type OperateType = 'add' | 'putAway' | 'delete' | 'view' | 'outline' | 'edit' | 'other';

@@ -6,9 +6,11 @@ import { RouteComponentProps } from 'react-router-dom';
 import { editTplDisplay, getTaskStrategyTplList, offLineTaskTpl, onLineTaskTplWithCorps } from 'src/apis/task';
 import { NgFormSearch, NgTable } from 'src/components';
 import { OnlineModal } from 'src/pages/Marketing/Components/OnlineModal/OnlineModal';
+import { OperateType } from 'src/utils/interface';
 import OffLineModal from './components/OffLineModal/OffLineModal';
 import { TelDisplaySetModal } from './components/TelDisplaySetModal/TelDisplaySetModal';
-import { searchCols, tableColumnsFun, StrategyTaskProps, OperateType } from './ListConfig';
+import { searchCols, tableColumnsFun, StrategyTaskProps } from './ListConfig';
+
 const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visibleOnlineModal, setVisibleOnlineModal] = useState(false);
   const [visibleOfflineModal, setVisibleOfflineModal] = useState(false);
@@ -67,6 +69,8 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
     } else if (operateType === 'other') {
       setVisibleDisplayModal(true);
     } else if (operateType === 'view') {
+      history.push('/strategyTask/edit?tplId=' + record.tplId + '&view=1');
+    } else if (operateType === 'edit') {
       history.push('/strategyTask/edit?tplId=' + record.tplId);
     }
   };
@@ -134,7 +138,7 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
             pagination={pagination}
             paginationChange={paginationChange}
             setRowKey={(record: StrategyTaskProps) => {
-              return record.tplId;
+              return record.tplId + record.tplCode;
             }}
           />
         </div>

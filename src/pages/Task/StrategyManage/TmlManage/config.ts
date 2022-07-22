@@ -9,3 +9,13 @@ export const searchCols: SearchCol[] = [
     placeholder: '待输入'
   }
 ];
+
+export type TplType = {
+  displayCoverImg: string;
+  resultDesc: string;
+  sceneDesc: string;
+  taskDesc: string;
+  tplCode: string;
+  tplId: string;
+  tplName: string;
+};

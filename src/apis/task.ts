@@ -142,3 +142,13 @@ export const queryTargetList: HttpFC = () => {
 export const searchTagList: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/tag/group/info2', params);
 };
+
+// 1.30、查询机构策略任务列表接口
+export const getTaskListOfCorp: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/corp/tpl/list', params);
+};
+
+// 1. 31 查询机构可运行策略任务接口
+export const getTplListOfCorp: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/corp/run/tpl/list', params);
+};

@@ -7,6 +7,7 @@ import { getTaskStrategyTplDetail, saveScene } from 'src/apis/task';
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
 import { URLSearchParams } from 'src/utils/base';
+import moment from 'moment';
 
 const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [basicForm] = Form.useForm();
@@ -44,30 +45,33 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
     blockForm.validateFields().then((values) => {
       const basicValues = basicForm.getFieldsValue();
       const { sceneList } = values;
+      const copySceneList = JSON.parse(JSON.stringify(sceneList));
       if (sceneList.length < 1) {
         return false;
       } else {
-        sceneList.map((scene: any) => {
+        copySceneList.map((scene: any) => {
           delete scene.nodeTypeId;
           scene.sceneId = scene.sceneId || '';
           scene.nodeRuleList.map((rule: any) => {
             console.log(rule.pushTime);
-            rule.pushTime = rule.pushTime?.format('HH:mm') || '';
+            rule.pushTime = moment(rule.pushTime)?.format('HH:mm') || '';
             return rule;
           });
           return scene;
         });
 
-        console.log({ ...basicValues, sceneList });
+        console.log({ ...basicValues, copySceneList });
         saveScene({
-          tplId: tplDetail.tplId || '',
+          tplId: tplDetail?.tplId || '',
           baseInfo: {
             ...basicValues,
-            sceneList
+            sceneList: copySceneList
           }
-        }).then(() => {
-          message.success('保存成功');
-          history.push('/strategyTask');
+        }).then((res) => {
+          if (res) {
+            message.success('保存成功');
+            history.push('/strategyTask');
+          }
         });
       }
     });
@@ -107,7 +111,11 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
                 <Radio value={1}>长期有效</Radio>
               </Radio.Group>
             </Form.Item>
-            <Form.Item label="策略任务运营说明" name={'opDesc'}>
+            <Form.Item
+              label="策略任务运营说明"
+              name={'opDesc'}
+              rules={[{ required: true, message: '请输入任务运营说明' }]}
+            >
               <Input.TextArea
                 placeholder="选填，如不填则默认抓取选定任务推荐话术"
                 className="width400"

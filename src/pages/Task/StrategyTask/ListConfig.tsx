@@ -4,6 +4,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
+import { OperateType } from 'src/utils/interface';
 
 export const searchCols: SearchCol[] = [
   {
@@ -42,7 +43,6 @@ export interface StrategyTaskProps {
   sceneDesc: string;
   onlineCorps: CorpProps[];
 }
-export type OperateType = 'add' | 'putAway' | 'delete' | 'view' | 'outline' | 'edit' | 'other';
 interface OperateProps {
   onOperate: (operateType: OperateType, record: StrategyTaskProps) => void;
 }
@@ -81,7 +81,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
             <i
               className={classNames('status-point', [
                 {
-                  'status-point-gray': status === 2,
+                  'status-point-gray': status === 0,
                   'status-point-green': status === 1
                 }
               ])}
@@ -95,16 +95,28 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
       title: '上架机构',
       dataIndex: 'onlineCorps',
       width: 260,
-      align: 'center',
-      render: (onlineCorps: CorpProps[]) =>
-        onlineCorps?.map((corp) => <span key={corp.onlineCorpId}>{corp.onlineCorpName}</span>) || UNKNOWN
+      render: (onlineCorps: CorpProps[]) => (
+        <>
+          {onlineCorps?.map((corp, index) => {
+            if (index <= 1) {
+              return (
+                <span key={corp.onlineCorpId + index}>
+                  <span>{corp.onlineCorpName}</span>
+                  {index === 0 ? <br></br> : ''}
+                </span>
+              );
+            }
+            return '';
+          })}
+          {onlineCorps.length > 2 ? '...' : null}
+        </>
+      )
     },
     {
       title: '操作',
       dataIndex: 'status',
       width: 240,
       fixed: 'right',
-      align: 'center',
       render: (status, record) => {
         return (
           <Space size={0}>
@@ -117,7 +129,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
               </Button>
             )}
 
-            {status === 2 && (
+            {status === 0 && (
               <>
                 <Button type="link" onClick={() => args.onOperate('putAway', record)}>
                   上架

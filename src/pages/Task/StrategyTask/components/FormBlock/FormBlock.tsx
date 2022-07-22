@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, message, Select, Space, TimePicker } from 'antd';
 import classNames from 'classnames';
-// import moment from 'moment';
+import moment from 'moment';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
 import CreateNodeRuleModal from '../../../RuleManage/components/CreateNodeRuleModal';
 
@@ -11,7 +11,7 @@ import styles from './style.module.less';
 import { getNodeList, getNodeRuleList, getNodeTypeList, getTouchWayList } from 'src/apis/task';
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 import { CodeType } from 'src/utils/interface';
-import moment from 'moment';
+import { debounce } from 'src/utils/base';
 interface FormBlockProps {
   value?: any[];
   hideAdd?: boolean;
@@ -20,7 +20,7 @@ interface FormBlockProps {
 const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
   const [formValues, setFormValues] = useState<any>();
   const [previewVisible, setPreviewVisible] = useState(false);
-  const [nodeOptions, setNodeOptions] = useState<any>({});
+  const [nodeOptions, setNodeOptions] = useState<any[]>([]);
   const [nodeDetails, setNodeDetails] = useState<any[]>([]);
   const [nodeTypeOptions, setNodeTypeOptions] = useState<any[]>([]);
 
@@ -40,6 +40,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
   };
 
   const onFieldsChange = (changedValues: any, values: any) => {
+    console.log('=====values=====', values);
     setFormValues(values);
   };
   // 预览内容
@@ -53,29 +54,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
     pushTime: '2022/6/29 9:30',
     actionRule: {
       contentType: 2,
-      itemIds: [
-        {
-          itemId: '1',
-          imgUrl:
-            'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20211211/a77373316d054f14ad8e430ab593bdd2.jpg?timestamp=1639212002250&imageView2/1/w/120',
-          title: '无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！',
-          desc: '描述无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！'
-        },
-        {
-          itemId: '2',
-          imgUrl:
-            'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20211211/a77373316d054f14ad8e430ab593bdd2.jpg?timestamp=1639212002250&imageView2/1/w/120',
-          title: '无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！',
-          desc: '描述无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！'
-        } /* ,
-        {
-          itemId: '3',
-          imgUrl:
-            'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20211211/a77373316d054f14ad8e430ab593bdd2.jpg?timestamp=1639212002250&imageView2/1/w/120',
-          title: '无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！',
-          desc: '描述无法抵达的远方，不如去川西，这9个美得纯粹的地方，在等你！'
-        } */
-      ]
+      itemIds: []
     }
   };
 
@@ -84,18 +63,30 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
     if (res) setTouchWayOptions(res.list || []);
   };
 
-  useEffect(() => {
+  // form表单数据初始化
+  const initFormData = (value: any) => {
     if (value) {
-      console.log(value);
       const copyValue = [...value];
-      console.log(copyValue);
-      copyValue.map((item) => {
+      // 节点下拉列表数据
+      const nodeOptions: any[] = [];
+      // 节点规则数据回显
+      const nodeDetails: any[] = [];
+      copyValue.map((item, index) => {
+        nodeOptions.push([{ nodeId: item.nodeId, nodeName: item.nodeName }]);
+        nodeDetails[index] = {
+          node: { nodeId: item.nodeId, nodeName: item.nodeName, nodeDesc: item.nodeDesc },
+          options: []
+        };
         item?.nodeRuleList.map((child: any) => {
-          child.pushTime = moment(child.pushTime) || undefined;
+          nodeDetails[index].options.push({ nodeRuleId: child.nodeRuleId, nodeRuleName: child.nodeRuleName });
+          child.pushTime = moment(child.pushTime, 'HH:mm') || undefined;
+
           return child;
         });
         return item;
       });
+      setNodeDetails(nodeDetails);
+      setNodeOptions(nodeOptions);
       blockForm.setFieldsValue({
         sceneList: copyValue
       });
@@ -108,13 +99,17 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
           {
             nodeRuleList: [
               {
-                pushTime: moment('09:00')
+                pushTime: moment('09:00', 'HH:mm')
               }
             ]
           }
         ]
       });
     }
+  };
+
+  useEffect(() => {
+    initFormData(value);
   }, [value]);
   useEffect(() => {
     getTouchWayOptions();
@@ -122,23 +117,32 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
   }, []);
 
   // 获取列表数据
-  const getNodeOptions = async (params?: any) => {
+  const getNodeOptions = async (params: any, index: number) => {
     const res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
     if (res) {
-      setNodeOptions(() => ({ ...nodeOptions, [params.nodeTypeCode]: res.list || [] }));
+      const copyData = [...nodeOptions];
+      copyData[index] = res.list || [];
+      setNodeOptions(() => copyData);
     }
   };
 
+  /**
+   * @desc 获取节点里边 防抖处理
+   */
+  const debounceFetcherNodeOptions = (index: number) =>
+    debounce(async (value: string) => {
+      await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, codeName: value }, index);
+    }, 300);
+
   // 节点类别改变
   const onNodeTypeChange = (typeCode: CodeType, index: number) => {
-    getNodeOptions({ nodeTypeCode: typeCode });
-    console.log(index);
+    getNodeOptions({ nodeTypeCode: typeCode }, index);
   };
 
   // 节点改变时，设置节点说明
   const onNodeChange = async (nodeId: string, index: number) => {
     const nodeTypeCode = blockForm.getFieldValue('sceneList')[index].nodeTypeCode;
-    const node = nodeOptions[nodeTypeCode].filter((item: any) => item.nodeId === nodeId)[0];
+    const node = nodeOptions[index].filter((item: any) => item.nodeId === nodeId)[0];
     const copyData = [...nodeDetails];
     copyData[index] = { node };
 
@@ -223,8 +227,13 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                             name={[name, 'nodeId']}
                             className={classNames(styles.attrItem, 'flex align-center')}
                           >
-                            <Select onChange={(value) => onNodeChange(value, index)}>
-                              {nodeOptions[formValues?.sceneList?.[index]?.nodeTypeCode]?.map((option: any) => (
+                            <Select
+                              filterOption={false}
+                              onSearch={debounceFetcherNodeOptions(index)}
+                              onChange={(value) => onNodeChange(value, index)}
+                              showSearch={true}
+                            >
+                              {nodeOptions[index]?.map((option: any) => (
                                 <Select.Option value={option.nodeId} key={option.nodeId}>
                                   {option.nodeName}
                                 </Select.Option>
@@ -270,12 +279,12 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                                               }
                                               onClick={() => addNodeRule(formValues?.sceneList?.[index], index)}
                                             >
-                                              添加节点规则
+                                              新增
                                             </Button>
                                           </>
                                         )}
                                       >
-                                        {nodeDetails[index]?.options.map((rule: any) => (
+                                        {nodeDetails[index]?.options?.map((rule: any) => (
                                           <Select.Option value={rule.nodeRuleId} key={rule.nodeRuleId}>
                                             {rule.nodeRuleName}
                                           </Select.Option>

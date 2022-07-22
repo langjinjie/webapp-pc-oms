@@ -25,7 +25,7 @@ export const FormBlockPreview: React.FC<FormBlockPreviewProps> = ({ value }) => 
                     <div className={styles.nodeTitle}>{rule.nodeRuleName}</div>
                     <div className={styles.nodeContent}>
                       {rule.pushTime} {rule.wayName}{' '}
-                      {contentTypeList.filter((item) => item.value === rule.actionRuleType)[0].label}
+                      {contentTypeList?.filter((item) => item.value === rule.actionRuleType)[0]?.label}
                     </div>
                   </div>
                 );

@@ -3,17 +3,19 @@ import { Button, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
+import { OperateType } from 'src/utils/interface';
+import classNames from 'classnames';
 
 export const searchCols: SearchCol[] = [
   {
-    name: 'title',
+    name: 'tplCode',
     type: 'input',
     label: '策略任务模板编号',
     width: '180px',
     placeholder: '请输入'
   },
   {
-    name: 'categoryId',
+    name: 'tplName',
     type: 'input',
     label: '策略任务模板名称',
     placeholder: '请输入',
@@ -22,57 +24,84 @@ export const searchCols: SearchCol[] = [
 ];
 
 export interface StrategyTaskProps {
-  id: string;
+  corpTplId: string;
+  tplCode: string;
+  corpTplName: string;
+  updateTime: string;
+  updateBy: string;
+  status: number;
 }
 
 interface OperateProps {
-  onOperate: () => void;
+  onOperate: (record: string, operateType: OperateType) => void;
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskProps> => {
   return [
-    { title: '策略任务模板编号', dataIndex: 'newsId', key: 'newsId', width: 200 },
+    { title: '策略任务模板编号', dataIndex: 'tplCode', key: 'tplCode', width: 200 },
     {
       title: '策略任务模板名称',
-      dataIndex: 'title',
-      key: 'title',
+      dataIndex: 'corpTplName',
+      key: 'corpTplName',
       width: 200
     },
     {
       title: '策略修改时间',
-      dataIndex: 'categoryName',
+      dataIndex: 'updateTime',
       width: 160,
-      key: 'categoryName',
+      key: 'updateTime',
       align: 'center',
       render: (categoryName: string) => categoryName || UNKNOWN
     },
     {
       title: '修改人',
-      dataIndex: 'fromSource',
-      width: 260,
-      align: 'center'
+      dataIndex: 'updateBy',
+      width: 260
     },
     {
       title: '状态',
-      dataIndex: 'fromSource',
+      dataIndex: 'status',
       width: 260,
-      align: 'center'
+      render: (status) => {
+        return (
+          <span>
+            <i
+              className={classNames('status-point', [
+                {
+                  'status-point-gray': status === 0,
+                  'status-point-green': status === 1
+                }
+              ])}
+            ></i>
+            {status === 1 ? '已上架' : '已下架'}
+          </span>
+        );
+      }
     },
 
     {
       title: '操作',
-      dataIndex: 'fromSource',
+      dataIndex: 'status',
       width: 180,
-      align: 'center',
-      render: (value, record) => {
+      align: 'right',
+      render: (status, record) => {
         return (
           <Space size={20}>
-            <Button type="link" key={record.id} onClick={() => args.onOperate()}>
+            <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'view')}>
               查看
             </Button>
-            <Button type="link" key={record.id} onClick={() => args.onOperate()}>
-              下架
-            </Button>
-            <Button type="link" key={record.id} onClick={() => args.onOperate()}>
+            {status === 1
+              ? (
+              <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'outline')}>
+                下架
+              </Button>
+                )
+              : (
+              <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'putAway')}>
+                上架
+              </Button>
+                )}
+
+            <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'edit')}>
               编辑
             </Button>
           </Space>

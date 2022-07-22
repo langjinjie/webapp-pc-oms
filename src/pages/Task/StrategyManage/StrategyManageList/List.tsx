@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, ConfigProvider, Empty } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import { RouteComponentProps } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, tableColumnsFun, StrategyTaskProps } from './Config';
-
+import { getTaskListOfCorp } from 'src/apis/task';
+type QueryParamsType = Partial<{
+  nodeCode: string;
+  nodeName: string;
+  nodeTypeCode: string;
+}>;
 const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
-  const [tableSource] = useState<StrategyTaskProps[]>([]);
-  const [pagination] = useState<PaginationProps>({
+  const [tableSource, setTableSource] = useState<StrategyTaskProps[]>([]);
+  const [queryParams, setQueryParams] = useState<QueryParamsType>();
+  const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
     total: 0,
@@ -15,8 +21,24 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
+
+  const getList = async (params?: any) => {
+    const pageNum = params?.pageNum || pagination.current;
+    const pageSize = params?.pageSize || pagination.pageSize;
+    const res = await getTaskListOfCorp({ ...queryParams, ...params, pageNum, pageSize });
+    if (res) {
+      const { list, total } = res;
+      setTableSource(list || []);
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
+    }
+  };
+
+  useEffect(() => {
+    getList();
+  });
   const onSearch = (values: any) => {
-    console.log(values);
+    getList({ ...values, pageNum: 1 });
+    setQueryParams(values);
   };
   const onValuesChange = (changeValues: any, values: any) => {
     console.log({ changeValues, values });
@@ -68,8 +90,8 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
                 dataSource={tableSource}
                 pagination={pagination}
                 paginationChange={paginationChange}
-                setRowKey={(record: any) => {
-                  return record.id;
+                setRowKey={(record: StrategyTaskProps) => {
+                  return record.corpTplId;
                 }}
               />
             </ConfigProvider>
