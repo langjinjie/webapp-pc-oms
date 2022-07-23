@@ -61,7 +61,9 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
   const onOperate = (operateType: OperateType, record: StrategyTaskProps) => {
     setCurrentTpl(record);
     if (operateType === 'putAway') {
-      console.log(record);
+      if (!record.displayCoverImg) {
+        return message.warning('请先配置展示信息后再进行上架');
+      }
       setVisibleOnlineModal(true);
     } else if (operateType === 'outline') {
       setVisibleOfflineModal(true);

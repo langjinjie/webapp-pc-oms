@@ -1,7 +1,10 @@
-import { Button, Form, Radio, Select } from 'antd';
+import { Button, Form, message, PaginationProps, Radio, Select } from 'antd';
 import classNames from 'classnames';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { getNewsList, getTagsOrCategorys } from 'src/apis/marketing';
 import { Icon, NgFormSearch, NgModal, NgTable } from 'src/components';
+import { Article } from 'src/pages/Marketing/Article/Config';
+import { Context } from 'src/store';
 import { contentTypeList } from './config';
 
 import styles from './style.module.less';
@@ -13,26 +16,73 @@ interface ActinRuleProps {
   [prop: string]: any;
 }
 type RuleActionSetModalProps = React.ComponentProps<typeof NgModal> & {
-  actionRuleId?: string;
   value?: ActinRuleProps;
   onChange?: (value: any) => void;
 };
-const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ actionRuleId, value, onChange, ...props }) => {
+
+interface RowProps extends Article {
+  itemId?: string;
+  itemName?: string;
+}
+const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange, ...props }) => {
+  const { articleCategoryList, setArticleCategoryList } = useContext(Context);
   const [values, setValues] = useState<any>({});
   const [actionForm] = Form.useForm();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
+  const [selectRows, setSelectRows] = useState<RowProps[]>([]);
+  const [pagination, setPagination] = useState<PaginationProps>({
+    current: 1,
+    pageSize: 9,
+    total: 0,
+    simple: true
+  });
+  useEffect(() => {
+    if (value) {
+      setValues(value);
+      actionForm.setFieldsValue({
+        ...value
+      });
+      if (value.contentSource === 1) {
+        setSelectRows(value?.itemIds || []);
+        setSelectRowKeys(value?.itemIds.map((item: any) => item.itemId) || []);
+      }
+    }
+  }, [value]);
+  const asyncGetTagsOrCategory = async () => {
+    try {
+      if (articleCategoryList.length > 0) return;
+      const res = await getTagsOrCategorys({ type: 'category' });
+      if (res) {
+        setArticleCategoryList(res);
+      }
+    } catch (err) {
+      // throw Error(err);
+    }
+  };
 
   useEffect(() => {
-    if (actionRuleId) {
-      console.log('加载动作规则详情');
-    }
-  }, [actionRuleId]);
+    asyncGetTagsOrCategory();
+  }, []);
 
   const handleOk = () => {
     actionForm.validateFields().then((values) => {
-      console.log(values);
+      // 对表单数据进行拷贝，防止污染表单渲染
+      const copyData = JSON.parse(JSON.stringify(values));
+      const { contentSource } = copyData;
+
+      // 1. 判断来源
+      // 公有库
+      if (contentSource === 1) {
+        if (selectRowKeys.length === 0) return message.warning('请选择营销素材');
+        copyData.itemIds = selectRowKeys.map((key) => ({ itemId: key }));
+        onChange?.(copyData);
+      } else {
+        // 私有库
+        onChange?.(values);
+      }
       setVisible(false);
-      onChange?.(values);
     });
   };
 
@@ -44,16 +94,46 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ actionRuleId, v
     setValues(values);
   };
 
-  const onSearch = (values: any) => {
-    console.log(values);
+  const getList = async (params?: any) => {
+    const pageNum = params.pageNum || pagination.current;
+    const res = await getNewsList({
+      syncBank: 1,
+      pageSize: pagination.pageSize,
+      ...params,
+      pageNum
+    });
+    if (res) {
+      const { newsList: list, total } = res;
+      setDataSource(list || []);
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum }));
+    }
+  };
+  const onSearch = async (values: any) => {
+    getList({ ...values, pageNum: 1 });
   };
 
-  const removeItem = () => {
-    console.log('remove');
+  const paginationChange = (pageNum: number) => {
+    setPagination((pagination) => ({ ...pagination, current: pageNum }));
+    getList({ pageNum });
+  };
+
+  const removeItem = (index: number) => {
+    const copyRow = [...selectRows];
+    const copyKeys = [...selectRowKeys];
+    copyRow.splice(index, 1);
+    copyKeys.splice(index, 1);
+    setSelectRows(copyRow);
+    setSelectRowKeys(copyKeys);
   };
 
   const contentSourceChange = (value: number) => {
     console.log(value);
+  };
+
+  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
+    console.log(selectRows, selectRowKeys);
+    setSelectRowKeys(selectedRowKeys);
+    setSelectRows(selectedRows);
   };
   return (
     <>
@@ -69,7 +149,15 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ actionRuleId, v
         </Button>
           )}
 
-      <NgModal width={808} {...props} visible={visible} title="内容选择" onOk={handleOk} onCancel={() => onCancel()}>
+      <NgModal
+        width={808}
+        forceRender
+        {...props}
+        visible={visible}
+        title="内容选择"
+        onOk={handleOk}
+        onCancel={() => onCancel()}
+      >
         <Form form={actionForm} onValuesChange={onValuesChange} labelCol={{ span: 3 }}>
           <Form.Item label="内容来源" name={'contentSource'} rules={[{ required: true }]}>
             <Select className="width320" onChange={contentSourceChange} placeholder="请选择">
@@ -113,72 +201,86 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ actionRuleId, v
             </Form.Item>
           )}
         </Form>
-        {values.contentSource === 1 && (
-          <div>
-            <div className={classNames(styles.marketingWarp, 'container')}>
-              <NgFormSearch
-                onSearch={onSearch}
-                searchCols={[
-                  {
-                    name: 'title',
-                    type: 'input',
-                    label: '文章名称',
-                    width: '200px',
-                    placeholder: '待输入'
-                  },
-                  {
-                    name: 'title1',
-                    type: 'select',
-                    label: '文章分类',
-                    width: '200px',
-                    placeholder: '待输入'
-                  }
-                ]}
-                hideReset
-              />
-              <NgTable
-                className="mt20"
-                size="small"
-                scroll={{ x: 600 }}
-                bordered
-                columns={[
-                  { title: '策略任务模板编号', dataIndex: 'newsId', key: 'newsId', width: 100 },
-                  {
-                    title: '策略任务模板名称',
-                    dataIndex: 'title',
-                    key: 'title',
-                    width: 300
-                  },
-                  {
-                    title: '详情',
-                    dataIndex: 'title',
-                    key: 'title',
-                    width: 80
-                  }
-                ]}
-              ></NgTable>
-            </div>
+        {/* {values.contentSource === 1 && ( */}
+        <div>
+          <div className={classNames(styles.marketingWarp, 'container')}>
+            <NgFormSearch
+              onSearch={onSearch}
+              searchCols={[
+                {
+                  name: 'title',
+                  type: 'input',
+                  label: '文章名称',
+                  width: '200px',
+                  placeholder: '待输入'
+                },
+                {
+                  name: 'categoryId',
+                  type: 'select',
+                  label: '文章分类',
+                  options: articleCategoryList,
+                  width: '200px',
+                  placeholder: '待输入'
+                }
+              ]}
+              hideReset
+            />
+            <NgTable
+              className="mt20"
+              size="small"
+              scroll={{ x: 600 }}
+              dataSource={dataSource}
+              bordered
+              pagination={pagination}
+              rowSelection={{
+                type: 'radio',
+                onChange: (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
+                  onSelectChange(selectedRowKeys, selectedRows);
+                }
+              }}
+              rowKey="newsId"
+              paginationChange={paginationChange}
+              columns={[
+                { title: '文章名称', dataIndex: 'title', key: 'title', width: 300 },
+                {
+                  title: '文章分类',
+                  dataIndex: 'tagNameList',
+                  key: 'tagNameList',
+                  width: 100
+                },
+                {
+                  title: '详情',
 
-            {/* 已经选择的 */}
-            <div>
-              <div className="color-text-primary mt22">已选择</div>
-              <div className={classNames(styles.marketingWarp, 'mt12')}>
-                <div className={classNames(styles.customTag)}>
-                  <span>保险到期日前14天</span>
-                  <Icon className={styles.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem()}></Icon>
+                  width: 80,
+                  render: (text: string, record: any) => (
+                    <Button
+                      type="link"
+                      onClick={() => {
+                        console.log(record);
+                      }}
+                    >
+                      详情
+                    </Button>
+                  )
+                }
+              ]}
+            ></NgTable>
+          </div>
+
+          {/* 已经选择的 */}
+          <div>
+            <div className="color-text-primary mt22">已选择</div>
+            <div className={classNames(styles.marketingWarp, 'mt12')}>
+              {selectRows.map((row, index) => (
+                <div className={classNames(styles.customTag)} key={row.newsId || row.itemId}>
+                  <span>{row.title || row.itemName}</span>
+                  <Icon className={styles.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(index)}></Icon>
                 </div>
-                <div className={classNames(styles.customTag)}>
-                  <span>保险到期日前14天</span>
-                  <Icon className={styles.closeIcon} name="biaoqian_quxiao"></Icon>
-                </div>
-                <div className={classNames(styles.customTag)}>
-                  <span>保险到期日前14天</span>
-                  <Icon className={styles.closeIcon} name="biaoqian_quxiao"></Icon>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        )}
+        </div>
+        {/* )} */}
       </NgModal>
     </>
   );

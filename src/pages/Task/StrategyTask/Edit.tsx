@@ -12,12 +12,14 @@ import moment from 'moment';
 const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [basicForm] = Form.useForm();
   const [tplDetail, setTplDetail] = useState<any>();
+  const [isReadonly, setIsReadonly] = useState(false);
   const navigatorToList = () => {
     history.push('/strategyTask');
   };
 
   const getDetail = async () => {
-    const { tplId } = URLSearchParams(location.search) as { tplId: string };
+    const { tplId, view } = URLSearchParams(location.search) as { tplId: string; view: string };
+    if (view) setIsReadonly(true);
     if (tplId) {
       const res = await getTaskStrategyTplDetail({ tplId });
       if (res) {
@@ -91,7 +93,13 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
       </div>
 
       <div className="content">
-        <Form.Provider onFormFinish={(formName, { forms }) => onFormFinish(forms as any)}>
+        <Form.Provider
+          onFormFinish={(formName, { forms }) => {
+            if (formName === 'basicForm') {
+              onFormFinish(forms as any);
+            }
+          }}
+        >
           <Form form={basicForm} name="basicForm" labelCol={{ span: 3 }}>
             <div className="formListTitle mb20">基本信息</div>
             <Form.Item
@@ -99,7 +107,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               name={'tplName'}
               rules={[{ required: true }, { max: 30, message: '最多30个字' }]}
             >
-              <Input placeholder="待输入" className="width320"></Input>
+              <Input placeholder="待输入" readOnly={isReadonly} className="width320"></Input>
             </Form.Item>
             <Form.Item label="任务类型" name={'taskType'}>
               <Select className="width320">
@@ -117,6 +125,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               rules={[{ required: true, message: '请输入任务运营说明' }]}
             >
               <Input.TextArea
+                readOnly={isReadonly}
                 placeholder="选填，如不填则默认抓取选定任务推荐话术"
                 className="width400"
               ></Input.TextArea>
@@ -142,18 +151,20 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           {/* </Form.Item> */}
           <div className="formListTitle">策略行事历预览</div>
           <FormBlockPreview value={tplDetail?.sceneList || []} />
-          <Form.Item>
-            <div className="flex justify-center formFooter">
-              <Space size={30}>
-                <Button type="primary" shape="round" ghost>
-                  取消
-                </Button>
-                <Button type="primary" shape="round" onClick={onBasicSubmit}>
-                  确认
-                </Button>
-              </Space>
-            </div>
-          </Form.Item>
+          {!isReadonly && (
+            <Form.Item>
+              <div className="flex justify-center formFooter">
+                <Space size={30}>
+                  <Button type="primary" shape="round" ghost onClick={() => history.goBack()}>
+                    取消
+                  </Button>
+                  <Button type="primary" shape="round" onClick={onBasicSubmit}>
+                    确认
+                  </Button>
+                </Space>
+              </div>
+            </Form.Item>
+          )}
         </Form.Provider>
       </div>
     </div>

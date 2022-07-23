@@ -53,6 +53,13 @@ export const getNodeTypeList: HttpFC = () => {
   return http.post('/tenacity-admin/api/strategy/node/type/list');
 };
 /**
+ * 1.7、获取日历节点类别接口
+ * @param param
+ */
+export const getDateNodeList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/node/datetype/add', params);
+};
+/**
  * 1.9、获取触达方式
  * @param param
  */

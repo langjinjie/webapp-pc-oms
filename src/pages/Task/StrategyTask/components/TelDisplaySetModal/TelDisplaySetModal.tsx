@@ -42,7 +42,7 @@ export const TelDisplaySetModal: React.FC<TelDisplaySetModalProps> = ({ visible,
     onCancel();
   };
   return (
-    <NgModal title="配置展示信息" width={620} visible={visible} onOk={handleOk} onCancel={handleCancel}>
+    <NgModal title="配置展示信息" forceRender width={620} visible={visible} onOk={handleOk} onCancel={handleCancel}>
       <Form layout="vertical" form={displayForm}>
         <Form.Item
           name={'displayCoverImg'}

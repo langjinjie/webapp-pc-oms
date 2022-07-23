@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, message, Select, Space, TimePicker } from 'antd';
+import { Button, DatePicker, Form, message, Select, Space, TimePicker } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
@@ -8,7 +8,7 @@ import CreateNodeRuleModal from '../../../RuleManage/components/CreateNodeRuleMo
 
 import NodePreview from '../NodePreview/NodePreview';
 import styles from './style.module.less';
-import { getNodeList, getNodeRuleList, getNodeTypeList, getTouchWayList } from 'src/apis/task';
+import { getDateNodeList, getNodeList, getNodeRuleList, getNodeTypeList, getTouchWayList } from 'src/apis/task';
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 import { CodeType } from 'src/utils/interface';
 import { debounce } from 'src/utils/base';
@@ -118,7 +118,14 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
 
   // 获取列表数据
   const getNodeOptions = async (params: any, index: number) => {
-    const res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
+    let res: any;
+    if (params.nodeTypeCode !== 'node_calendar') {
+      res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
+    } else {
+      const date = formValues?.sceneList?.[index]?.calendar.format('MMDD');
+      console.log(date);
+      res = await getDateNodeList({ type: 2, date, nodeDesc: params.codeName });
+    }
     if (res) {
       const copyData = [...nodeOptions];
       copyData[index] = res.list || [];
@@ -129,10 +136,18 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
   /**
    * @desc 获取节点里边 防抖处理
    */
-  const debounceFetcherNodeOptions = (index: number) =>
-    debounce(async (value: string) => {
+  const debounceFetcherNodeOptions = debounce<{ value: string; index: number }>(
+    async ({ value, index }: { value: string; index: number }) => {
       await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, codeName: value }, index);
-    }, 300);
+    },
+    300
+  );
+
+  const onFocusNodeSelect = async (index: number) => {
+    if (nodeOptions[index]?.length <= 1 || !nodeOptions[index]) {
+      await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, codeName: '' }, index);
+    }
+  };
 
   // 节点类别改变
   const onNodeTypeChange = (typeCode: CodeType, index: number) => {
@@ -154,11 +169,20 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
     setNodeDetails(copyData);
   };
 
-  const onFocusNodeRuleItem = (index: number) => {
+  const onFocusNodeRuleItem = async (index: number) => {
     const currentItem = formValues?.sceneList[index] || {};
     if (!currentItem.nodeTypeCode || !currentItem.nodeId) {
       blockForm.validateFields();
       message.warning('请选择节点信息');
+    } else if (nodeDetails[index]?.options?.length <= 1) {
+      const copyData = [...nodeDetails];
+
+      // 获取节点规则列表
+      const res = await getNodeRuleList({ nodeId: currentItem.nodeId, nodeTypeCode: currentItem.nodeTypeCode });
+      if (res) {
+        copyData[index].options = res.list || [];
+      }
+      setNodeDetails(copyData);
     }
   };
 
@@ -208,15 +232,39 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                       {formValues?.sceneList?.[index]?.nodeTypeCode === 'node_calendar'
                         ? (
                         <>
-                          <Form.Item label="选择日期" className={classNames(styles.attrItem, 'flex align-center')}>
-                            <Input className={styles.attrItemContent}></Input>
+                          <Form.Item
+                            label="选择日期"
+                            name={[name, 'calendar']}
+                            className={classNames(styles.attrItem, 'flex align-center')}
+                          >
+                            <DatePicker format={'MM-DD'} />
                           </Form.Item>
                           <Form.Item
-                            name={[name, 'nodeName']}
+                            label="节点说明"
+                            name={[name, 'nodeId']}
+                            className={classNames(styles.attrItem, 'flex align-center')}
+                          >
+                            <Select
+                              disabled={!formValues?.sceneList?.[index]?.calendar}
+                              filterOption={false}
+                              onFocus={() => onFocusNodeSelect(index)}
+                              onSearch={(value) => debounceFetcherNodeOptions({ value, index })}
+                              onChange={(value) => onNodeChange(value, index)}
+                              showSearch={true}
+                            >
+                              {nodeOptions[index]?.map((option: any) => (
+                                <Select.Option value={option.nodeId} key={option.nodeId}>
+                                  {option.nodeName}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
+                          <Form.Item
+                            rules={[{ required: true }]}
                             label="节点名称"
                             className={classNames(styles.attrItem, 'flex align-center')}
                           >
-                            <span>{'10月1日(国庆节)'}</span>
+                            <span>{nodeDetails[index]?.node?.nodeDesc || '--'}</span>
                           </Form.Item>
                         </>
                           )
@@ -225,11 +273,13 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                           <Form.Item
                             label="选择节点"
                             name={[name, 'nodeId']}
+                            rules={[{ required: true }]}
                             className={classNames(styles.attrItem, 'flex align-center')}
                           >
                             <Select
                               filterOption={false}
-                              onSearch={debounceFetcherNodeOptions(index)}
+                              onFocus={() => onFocusNodeSelect(index)}
+                              onSearch={(value) => debounceFetcherNodeOptions({ value, index })}
                               onChange={(value) => onNodeChange(value, index)}
                               showSearch={true}
                             >
@@ -252,7 +302,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                         <li className={styles.nodeCol}>配置节点规则</li>
                         <li className={styles.nodeCol}>触达方式</li>
                         <li className={styles.ruleCol}>动作规则区</li>
-                        <li className={styles.speechCol}>手工自定义话(点击可修改)</li>
+                        <li className={styles.speechCol}>手工自定义话术(点击可修改)</li>
                         <li className={styles.timeCol}>建议推送时间</li>
                         <li className={classNames(styles.operateCol, 'flex justify-center')}>操作</li>
                       </ul>
@@ -263,16 +313,21 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                               {fields.map(({ name: nodeName, key }, nodeIndex) => (
                                 <Form.Item key={key + nodeIndex}>
                                   <div className={classNames(styles.nodeItem, 'flex justify-between')}>
-                                    <Form.Item className={styles.nodeCol} name={[nodeName, 'nodeRuleId']}>
+                                    <Form.Item
+                                      className={styles.nodeCol}
+                                      name={[nodeName, 'nodeRuleId']}
+                                      rules={[{ required: true, message: '请选择节点规则' }]}
+                                    >
                                       <Select
                                         onFocus={() => {
                                           onFocusNodeRuleItem(index);
                                         }}
-                                        placeholder="待输入"
+                                        placeholder="请选择"
                                         dropdownRender={(menu) => (
                                           <>
                                             {menu}
                                             <Button
+                                              type="primary"
                                               disabled={
                                                 !formValues?.sceneList?.[index]?.nodeTypeCode ||
                                                 !formValues?.sceneList?.[index]?.nodeId
@@ -291,8 +346,12 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                                         ))}
                                       </Select>
                                     </Form.Item>
-                                    <Form.Item className={styles.nodeCol} name={[nodeName, 'wayCode']}>
-                                      <Select placeholder="待输入">
+                                    <Form.Item
+                                      className={styles.nodeCol}
+                                      name={[nodeName, 'wayCode']}
+                                      rules={[{ required: true, message: '请选择触达方式' }]}
+                                    >
+                                      <Select placeholder="请选择">
                                         {touchWayOptions.map((touchWay) => (
                                           <Select.Option key={touchWay.wayId} value={touchWay.wayCode}>
                                             {touchWay.wayName}
@@ -300,13 +359,25 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                                         ))}
                                       </Select>
                                     </Form.Item>
-                                    <Form.Item className={styles.ruleCol} name={[nodeName, 'actionRule']}>
+                                    <Form.Item
+                                      rules={[{ required: true, message: '请配置动作规则' }]}
+                                      className={styles.ruleCol}
+                                      name={[nodeName, 'actionRule']}
+                                    >
                                       <RuleActionSetModal />
                                     </Form.Item>
-                                    <Form.Item name={[nodeName, 'speechcraft']} className={styles.speechCol}>
+                                    <Form.Item
+                                      name={[nodeName, 'speechcraft']}
+                                      rules={[{ required: true, message: '请输入自定义话术' }]}
+                                      className={styles.speechCol}
+                                    >
                                       <ManuallyAddSpeech />
                                     </Form.Item>
-                                    <Form.Item name={[nodeName, 'pushTime']} className={classNames(styles.timeCol)}>
+                                    <Form.Item
+                                      name={[nodeName, 'pushTime']}
+                                      rules={[{ required: true, message: '请选择推送时间' }]}
+                                      className={classNames(styles.timeCol)}
+                                    >
                                       <TimePicker bordered={false} format={'HH:mm'} />
                                     </Form.Item>
                                     <div className={styles.operateCol}>
@@ -324,7 +395,12 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                                 </Form.Item>
                               ))}
                               <li className={styles.nodeItem}>
-                                <Button shape="round" ghost type="primary" onClick={() => add()}>
+                                <Button
+                                  shape="round"
+                                  ghost
+                                  type="primary"
+                                  onClick={() => add({ pushTime: moment('09:00', 'HH:mm') })}
+                                >
                                   新增
                                 </Button>
                               </li>

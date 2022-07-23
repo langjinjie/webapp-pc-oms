@@ -81,7 +81,10 @@ export const useDocumentTitle = (title: string, keepOnUumount = true): void => {
 };
 export const UNKNOWN = '— —';
 
-export const debounce = <T>(fn: { apply: (arg0: any, arg1: any) => void }, delay: number): ((param?: T) => void) => {
+export const debounce = <T = any>(
+  fn: { apply: (arg0: any, arg1: T) => void },
+  delay: number
+): ((param?: T) => void) => {
   // 定时器
   let timer: NodeJS.Timeout;
 
