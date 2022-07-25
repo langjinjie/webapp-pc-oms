@@ -1,3 +1,5 @@
+import { Moment } from 'moment';
+
 export interface Nav {
   name: string;
   path?: string;
@@ -406,7 +408,7 @@ export interface TagCategory {
 // 节点预览内容
 export interface IPreviewValue {
   speechcraft: string;
-  pushTime: string;
+  pushTime: string | Moment;
   actionRule: IActionRule;
 }
 
@@ -420,6 +422,7 @@ export interface IItemIds {
   imgUrl?: string; // 海报或者分享图(文章/产品/活动)
   title?: string;
   desc?: string;
+  itemName?: string;
 }
 
 export type NodeType = {

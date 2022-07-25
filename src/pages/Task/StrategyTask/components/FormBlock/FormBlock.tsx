@@ -44,19 +44,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
     setFormValues(values);
   };
   // 预览内容
-  const previewValue = {
-    nodeRuleCode: 'GZ0001',
-    nodeRuleName: '保险到期前14天',
-    contentType: 1,
-    logicName: '前14天',
-    wayName: '群发朋友圈', // 群发朋友圈 下发任务
-    speechcraft: '送你一张专属4.8折【幸运有礼】专享券',
-    pushTime: '2022/6/29 9:30',
-    actionRule: {
-      contentType: 2,
-      itemIds: []
-    }
-  };
+  const [previewValue, setPreviewVale] = useState<any>({});
 
   const getTouchWayOptions = async () => {
     const res = await getTouchWayList();
@@ -191,6 +179,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
     item.node = nodeDetails[index].node;
     setVisibleRule(true);
     setCurrentItem(item);
+  };
+  const preViewNodeAndAction = (index: number, nodeIndex: number) => {
+    console.log(index, nodeIndex);
+    setPreviewVale(formValues?.sceneList?.[index]?.nodeRuleList?.[nodeIndex] || {});
+    setPreviewVisible(true);
   };
 
   return (
@@ -382,7 +375,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd }) => {
                                     </Form.Item>
                                     <div className={styles.operateCol}>
                                       <Space>
-                                        <Button type="link" onClick={() => setPreviewVisible(true)}>
+                                        <Button type="link" onClick={() => preViewNodeAndAction(index, nodeIndex)}>
                                           查看
                                         </Button>
                                         <Button type="link" onClick={() => remove(nodeIndex)}>

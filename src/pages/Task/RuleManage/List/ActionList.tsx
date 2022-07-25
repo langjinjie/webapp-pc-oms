@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { actionSearchCols, actionTableColumnsFun, RuleColumns } from './ListConfig';
-import { useHistory } from 'react-router-dom';
+import { actionSearchCols, actionTableColumnsFun, ActionRuleColumns } from './ListConfig';
 import { NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
-import { getActionRuleList } from 'src/apis/task';
+import { getActionRuleDetail, getActionRuleList } from 'src/apis/task';
+import RuleActionSetModal from '../../StrategyTask/components/RuleActionSetModal/RuleActionSetModal';
 
 type QueryParamsType = {};
 export const ActionList: React.FC = () => {
-  const history = useHistory();
+  const [visible, setVisible] = useState(false);
+  const [currentValue, setCurrentValue] = useState<any>();
   const [queryParams, setQueryParams] = useState<QueryParamsType>();
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -17,7 +18,7 @@ export const ActionList: React.FC = () => {
       return `共 ${total} 条记录`;
     }
   });
-  const [tableSource, setTableSource] = useState<Partial<RuleColumns>[]>([]);
+  const [tableSource, setTableSource] = useState<Partial<ActionRuleColumns>[]>([]);
 
   // 获取列表数据
   const getList = async (params?: any) => {
@@ -43,12 +44,19 @@ export const ActionList: React.FC = () => {
     setQueryParams(values);
   };
 
-  const paginationChange = (pageNum: number, pageSize: number) => {
+  const paginationChange = (pageNum: number, pageSize?: number) => {
     getList({ pageNum, pageSize });
   };
 
-  const jumpToDetail = () => {
-    history.push('/taskScene/detail');
+  const showDetail = async (actionRuleId: string) => {
+    console.log(actionRuleId);
+    const res = await getActionRuleDetail({ actionRuleId });
+    console.log(res);
+    if (res) {
+      setCurrentValue(res);
+    }
+
+    setVisible(true);
   };
   return (
     <div className="search-wrap">
@@ -58,16 +66,22 @@ export const ActionList: React.FC = () => {
       <div className="mt20">
         <NgTable
           columns={actionTableColumnsFun({
-            onOperate: () => jumpToDetail()
+            onOperate: showDetail
           })}
           dataSource={tableSource}
           pagination={pagination}
           paginationChange={paginationChange}
-          setRowKey={(record: RuleColumns) => {
-            return record.nodeRuleId;
+          setRowKey={(record: ActionRuleColumns) => {
+            return record.actionRuleId;
           }}
         />
       </div>
+      <RuleActionSetModal
+        visible={visible}
+        value={currentValue}
+        onCancel={() => setVisible(false)}
+        footer={null}
+      ></RuleActionSetModal>
     </div>
   );
 };

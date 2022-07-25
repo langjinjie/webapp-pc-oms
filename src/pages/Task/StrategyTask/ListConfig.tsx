@@ -65,8 +65,8 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
     },
     {
       title: '修改人',
-      dataIndex: 'staffScope',
-      key: 'staffScope',
+      dataIndex: 'updateBy',
+      key: 'updateBy',
       width: 260,
       align: 'center'
     },

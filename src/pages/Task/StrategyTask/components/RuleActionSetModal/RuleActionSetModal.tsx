@@ -27,7 +27,7 @@ interface RowProps extends Article {
   itemName?: string;
   [prop: string]: any;
 }
-const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange, ...props }) => {
+const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel, onChange, ...props }) => {
   const { articleCategoryList, setArticleCategoryList } = useContext(Context);
   const [values, setValues] = useState<any>({});
   const [actionForm] = Form.useForm();
@@ -59,8 +59,9 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange
     });
   };
 
-  const onCancel = () => {
+  const handleCancel = (e: any) => {
     setVisible(false);
+    onCancel?.(e);
   };
 
   const onValuesChange = (changedValues: any, values: any) => {
@@ -115,7 +116,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange
   };
 
   useEffect(() => {
-    if (value && visible) {
+    if (value && (visible || props.visible)) {
       setValues(value);
 
       if (value.contentSource === 1) {
@@ -131,7 +132,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange
         ...value
       });
     }
-  }, [visible, value]);
+  }, [visible, value, props.visible]);
 
   const contentSourceChange = (value: number) => {
     console.log(value);
@@ -166,21 +167,26 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange
         width={808}
         forceRender
         {...props}
-        maskClosable={false}
-        visible={visible}
+        maskClosable={!!props.visible}
+        visible={visible || props.visible}
         title="内容选择"
         onOk={handleOk}
-        onCancel={() => onCancel()}
+        onCancel={(e) => handleCancel(e)}
       >
         <Form form={actionForm} onValuesChange={onValuesChange} labelCol={{ span: 3 }}>
           <Form.Item label="内容来源" name={'contentSource'} rules={[{ required: true }]}>
-            <Select className="width320" onChange={contentSourceChange} placeholder="请选择">
+            <Select
+              className="width320"
+              onChange={contentSourceChange}
+              placeholder="请选择"
+              disabled={props.footer === null}
+            >
               <Select.Option value={1}>公有库</Select.Option>
               <Select.Option value={2}>机构库</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item label="动作类型" name={'contentType'} rules={[{ required: true }]}>
-            <Radio.Group onChange={(e) => onContentChange(e.target.value)}>
+            <Radio.Group onChange={(e) => onContentChange(e.target.value)} disabled={props.footer === null}>
               <Radio value={1}>文章</Radio>
               <Radio value={2}>海报</Radio>
               {values.contentSource === 2 && (
@@ -195,7 +201,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange
           {values.contentSource === 2 && (
             <Form.Item label="选择内容" required>
               <Form.Item name={'contentCategory'} rules={[{ required: true, message: '请选择规则' }]}>
-                <Radio.Group>
+                <Radio.Group disabled={props.footer === null}>
                   <Radio value={1}>机构自定义配置</Radio>
                   {values.contentType < 4 && <Radio value={2}>按照规则配置</Radio>}
                 </Radio.Group>
@@ -211,6 +217,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange
                       name="categoryId"
                     >
                       <Cascader
+                        disabled={props.footer === null}
                         placeholder="请选择"
                         options={contentTypeOptions}
                         onChange={posterTypeChange}
@@ -229,6 +236,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange
                       name="categoryId"
                     >
                       <Select
+                        disabled={props.footer === null}
                         placeholder="请选择类目"
                         onChange={(value, options) => {
                           catagoryChange(options);
@@ -252,7 +260,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange
             </Form.Item>
           )}
         </Form>
-        {values.contentSource === 1 && values.contentType && (
+        {values.contentSource === 1 && values.contentType && props.footer !== null && (
           <div>
             <div className={classNames(styles.marketingWarp, 'container')}>
               {values.contentType === 1
@@ -276,21 +284,19 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onChange
                     )
                   : null}
             </div>
-
-            {/* 已经选择的 */}
-            <div>
-              <div className="color-text-primary mt22">已选择</div>
-              <div className={classNames(styles.marketingWarp, 'mt12')}>
-                {selectRows.map((row, index) => (
-                  <div
-                    className={classNames(styles.customTag)}
-                    key={(row.newsId || row.itemId || row.posterId) + index}
-                  >
-                    <span>{row.title || row.itemName || row.name}</span>
-                    <Icon className={styles.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(index)}></Icon>
-                  </div>
-                ))}
-              </div>
+          </div>
+        )}
+        {/* 已经选择的 */}
+        {values.contentSource === 1 && values.contentType && (
+          <div>
+            <div className="color-text-primary mt22">已选择</div>
+            <div className={classNames(styles.marketingWarp, 'mt12')}>
+              {selectRows.map((row, index) => (
+                <div className={classNames(styles.customTag)} key={(row.newsId || row.itemId || row.posterId) + index}>
+                  <span>{row.title || row.itemName || row.name}</span>
+                  <Icon className={styles.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(index)}></Icon>
+                </div>
+              ))}
             </div>
           </div>
         )}

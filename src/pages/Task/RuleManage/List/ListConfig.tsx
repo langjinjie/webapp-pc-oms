@@ -92,71 +92,57 @@ export interface RuleColumns {
 }
 
 interface OperateProps {
-  onOperate: () => void;
+  onOperate: (actionRuleId: string) => void;
 }
 
-export const tableColumnsFun = (args: OperateProps): ColumnsType<RuleColumns> => {
-  return [
-    {
-      title: '节点规则编号',
-      dataIndex: 'nodeRuleCode',
-      key: 'nodeRuleCode',
-      width: 200
-    },
-    {
-      title: '节点规则名称',
-      dataIndex: 'nodeRuleName',
-      key: 'nodeRuleName',
-      width: 200
-    },
-    {
-      title: '节点类别',
-      dataIndex: 'nodeTypeName',
-      width: 160,
-      key: 'nodeTypeName',
-      align: 'center',
-      render: (categoryName: string) => categoryName || UNKNOWN
-    },
-    {
-      title: '触发节点',
-      dataIndex: 'nodeName',
-      width: 260,
-      align: 'center'
-    },
-    {
-      title: '触发逻辑',
-      dataIndex: 'logicName',
-      width: 260,
-      align: 'center'
-    },
-    {
-      title: '规则修改人',
-      dataIndex: 'updateBy',
-      width: 260,
-      align: 'center'
-    },
-    {
-      title: '规则修改时间',
-      dataIndex: 'updateTime',
-      width: 260,
-      render: (updateTime: string) => updateTime || UNKNOWN
-    },
-    {
-      title: '操作',
-      width: 260,
-      align: 'center',
-      render: (_, record) => {
-        return (
-          <Button type="link" key={record.nodeRuleId} onClick={() => args.onOperate()}>
-            查看
-          </Button>
-        );
-      }
-    }
-  ];
-};
+export const tableColumns: ColumnsType<RuleColumns> = [
+  {
+    title: '节点规则编号',
+    dataIndex: 'nodeRuleCode',
+    key: 'nodeRuleCode',
+    width: 200
+  },
+  {
+    title: '节点规则名称',
+    dataIndex: 'nodeRuleName',
+    key: 'nodeRuleName',
+    width: 200
+  },
+  {
+    title: '节点类别',
+    dataIndex: 'nodeTypeName',
+    width: 160,
+    key: 'nodeTypeName',
+    align: 'center',
+    render: (categoryName: string) => categoryName || UNKNOWN
+  },
+  {
+    title: '触发节点',
+    dataIndex: 'nodeName',
+    width: 260,
+    align: 'center'
+  },
+  {
+    title: '触发逻辑',
+    dataIndex: 'logicName',
+    width: 260,
+    align: 'center'
+  },
+  {
+    title: '规则修改人',
+    dataIndex: 'updateBy',
+    width: 260,
+    align: 'center'
+  },
+  {
+    title: '规则修改时间',
+    dataIndex: 'updateTime',
+    width: 260,
+    render: (updateTime: string) => updateTime || UNKNOWN
+  }
+];
 
-interface ActionRuleColumns {
+export interface ActionRuleColumns {
   actionRuleId: string;
   actionRuleCode: string;
   actionRuleName: string;
@@ -186,7 +172,7 @@ export const actionTableColumnsFun = (args: OperateProps): ColumnsType<ActionRul
       width: 160,
       key: 'contentSource',
       align: 'center',
-      render: (contentSource) => <span>{contentSource === 1 ? '共有库' : '机构库'} </span>
+      render: (contentSource) => <span>{contentSource === 1 ? '公有库' : '机构库'} </span>
     },
     {
       title: '动作规则修改人',
@@ -205,7 +191,7 @@ export const actionTableColumnsFun = (args: OperateProps): ColumnsType<ActionRul
       align: 'center',
       render: (value, record) => {
         return (
-          <Button type="link" key={record.actionRuleId} onClick={() => args.onOperate()}>
+          <Button type="link" key={record.actionRuleId} onClick={() => args.onOperate(record.actionRuleId)}>
             查看
           </Button>
         );

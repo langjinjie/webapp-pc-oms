@@ -24,6 +24,7 @@ interface INodePreviewProps {
 }
 
 const NodePreview: React.FC<INodePreviewProps> = ({ visible, title, onClose, value }) => {
+  console.log(value);
   const contentType2Name = ['发文章', '发海报', '发产品', '发活动', '发营销宝典话术'];
   // 关闭弹窗
   const onCloseHandle = () => {

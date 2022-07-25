@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button } from 'antd';
-import { nodeSearchCols, tableColumnsFun, RuleColumns } from './ListConfig';
+import { nodeSearchCols, tableColumns, RuleColumns } from './ListConfig';
 import { PlusOutlined } from '@ant-design/icons';
-import { useHistory } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
 import CreateRuleModal from '../components/CreateNodeRuleModal';
@@ -16,7 +15,6 @@ type QueryParamsType = Partial<{
   nodeTypeCode: string;
 }>;
 export const NodeList: React.FC = () => {
-  const history = useHistory();
   const [visible, setVisible] = useState(false);
   const { nodeOptions, setNodeOptions } = useContext(Context);
   const [queryParams, setQueryParams] = useState<QueryParamsType>();
@@ -68,10 +66,6 @@ export const NodeList: React.FC = () => {
     getList({ pageNum, pageSize });
   };
 
-  const jumpToDetail = () => {
-    history.push('/taskScene/detail');
-  };
-
   const createRule = async () => {
     setVisible(false);
 
@@ -93,9 +87,7 @@ export const NodeList: React.FC = () => {
       </div>
       <div className="mt20">
         <NgTable
-          columns={tableColumnsFun({
-            onOperate: () => jumpToDetail()
-          })}
+          columns={tableColumns}
           dataSource={tableSource}
           pagination={pagination}
           paginationChange={paginationChange}
