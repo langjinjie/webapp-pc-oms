@@ -41,8 +41,8 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
     getList();
   }, []);
 
-  const selectedTemplate = () => {
-    history.push('/strategyManage/detail');
+  const selectedTemplate = (tplId: string) => {
+    history.push('/strategyManage/detail?tplId=' + tplId);
   };
   return (
     <div>
@@ -60,7 +60,7 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
               <div className={style.taskName}>{item.tplName}</div>
               <div className={style.taskTarget}>效果：{item.taskDesc}</div>
               <div className={style.taskTips}>任务说明：{item.sceneDesc}</div>
-              <Button className={style.useBtn} type="primary" onClick={() => selectedTemplate()}>
+              <Button className={style.useBtn} type="primary" onClick={() => selectedTemplate(item.tplId)}>
                 立即使用
               </Button>
             </div>

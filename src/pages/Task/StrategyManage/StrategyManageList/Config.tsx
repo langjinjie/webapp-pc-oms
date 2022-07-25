@@ -33,7 +33,7 @@ export interface StrategyTaskProps {
 }
 
 interface OperateProps {
-  onOperate: (record: string, operateType: OperateType) => void;
+  onOperate: (corpTplId: string, operateType: OperateType) => void;
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskProps> => {
   return [

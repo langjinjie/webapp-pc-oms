@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Button, ConfigProvider, Empty } from 'antd';
+import { Button, ConfigProvider, Empty, message } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import { RouteComponentProps } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, tableColumnsFun, StrategyTaskProps } from './Config';
-import { getTaskListOfCorp } from 'src/apis/task';
+import { changeStatusCorpTpl, getTaskListOfCorp } from 'src/apis/task';
+import { OperateType } from 'src/utils/interface';
+import OffLineModal from '../../StrategyTask/components/OffLineModal/OffLineModal';
 type QueryParamsType = Partial<{
   nodeCode: string;
   nodeName: string;
   nodeTypeCode: string;
 }>;
 const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
+  const [visible, setVisible] = useState(false);
   const [tableSource, setTableSource] = useState<StrategyTaskProps[]>([]);
   const [queryParams, setQueryParams] = useState<QueryParamsType>();
+  const [current, setCurrent] = useState<StrategyTaskProps>();
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -46,6 +50,33 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const paginationChange = () => {
     console.log();
+  };
+
+  const onOperate = (corpTplId: string, operateType: OperateType) => {
+    console.log(corpTplId, operateType);
+    if (operateType === 'view') {
+      history.push('/strategyManage/detail?tplId=' + corpTplId + '&view=1');
+    } else if (operateType === 'putAway' || operateType === 'outline') {
+      setVisible(true);
+      const currentItem = tableSource.filter((item) => item.corpTplId === corpTplId)[0];
+      setCurrent(currentItem);
+    }
+  };
+
+  const upOrOffLine = async () => {
+    const res = await changeStatusCorpTpl({ corpTplId: current?.corpTplId, status: current?.status === 0 ? 1 : 0 });
+    if (res) {
+      message.success('操作成功');
+      const copyData = [...tableSource];
+      copyData.map((item) => {
+        if (item.corpTplId === current?.corpTplId) {
+          item.status = current?.status === 0 ? 1 : 0;
+        }
+        return item;
+      });
+      setTableSource(copyData);
+    }
+    setVisible(false);
   };
   return (
     <div>
@@ -83,9 +114,7 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
             >
               <NgTable
                 columns={tableColumnsFun({
-                  onOperate: () => {
-                    console.log('');
-                  }
+                  onOperate
                 })}
                 dataSource={tableSource}
                 pagination={pagination}
@@ -98,6 +127,13 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
           </div>
         </div>
       </div>
+
+      <OffLineModal
+        visible={visible}
+        content={current?.status === 0 ? '确定要上架吗' : '确定下架'}
+        onCancel={() => setVisible(false)}
+        onOK={upOrOffLine}
+      />
     </div>
   );
 };

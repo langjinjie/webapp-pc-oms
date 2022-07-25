@@ -159,3 +159,13 @@ export const getTaskListOfCorp: HttpFC = (params) => {
 export const getTplListOfCorp: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/strategy/corp/run/tpl/list', params);
 };
+// 1. 33 机构可运行策略任务-立即使用保存接口
+export const applyTpl: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/corp/run/tpl/copy', params);
+};
+// 1. 35 机构策略任务上下架接口（
+export const changeStatusCorpTpl: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/corp/tpl/status/man', params);
+};
+
+//
