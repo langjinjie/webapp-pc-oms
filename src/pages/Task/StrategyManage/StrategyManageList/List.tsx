@@ -45,17 +45,19 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
     setQueryParams(values);
   };
   const onValuesChange = (changeValues: any, values: any) => {
-    console.log({ changeValues, values });
+    setQueryParams(values);
   };
 
-  const paginationChange = () => {
-    console.log();
+  const paginationChange = (pageNum: number, pageSize?: number) => {
+    getList({ pageNum, pageSize });
   };
 
   const onOperate = (corpTplId: string, operateType: OperateType) => {
     console.log(corpTplId, operateType);
     if (operateType === 'view') {
       history.push('/strategyManage/detail?tplId=' + corpTplId + '&view=1');
+    } else if (operateType === 'edit') {
+      history.push('/strategyManage/detail?tplId=' + corpTplId);
     } else if (operateType === 'putAway' || operateType === 'outline') {
       setVisible(true);
       const currentItem = tableSource.filter((item) => item.corpTplId === corpTplId)[0];
