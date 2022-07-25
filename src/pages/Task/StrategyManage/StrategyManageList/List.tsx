@@ -35,7 +35,7 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     getList();
-  });
+  }, []);
   const onSearch = (values: any) => {
     getList({ ...values, pageNum: 1 });
     setQueryParams(values);
