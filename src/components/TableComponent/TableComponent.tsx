@@ -21,6 +21,7 @@ interface TableComponentProps<T> extends TableProps<T> {
     onChange: (selectedRowKeys: React.Key[], selectedRows: T[]) => void;
     getCheckboxProps?: (record: T) => { disabled: boolean; name: string };
     hideSelectAll?: boolean;
+    preserveSelectedRowKeys?: boolean;
   };
 }
 
