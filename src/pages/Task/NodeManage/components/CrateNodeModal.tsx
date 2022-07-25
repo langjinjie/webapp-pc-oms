@@ -21,7 +21,7 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
   const [quotaOptions, setQuotaOptions] = useState<any[]>([]);
   const getDateList = async () => {
     const res = await getNodeNameWithDate({
-      pageSize: 100,
+      pageSize: 1000,
       pageNum: 1
     });
     if (res) {
@@ -36,7 +36,7 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
   const [nodeForm] = Form.useForm();
 
   const getOptions = async () => {
-    const res = await queryTargetList({ pageSize: 100, pageNum: 1 });
+    const res = await queryTargetList({ pageSize: 1000, pageNum: 1 });
     if (res) {
       const { list } = res;
       const formatList = list.map((item: any) => ({ ...item, name: item.category }));

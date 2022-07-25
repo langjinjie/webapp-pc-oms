@@ -1,9 +1,10 @@
 import { Form, Input, InputNumber, message, Radio, Select, Space, Switch } from 'antd';
 import classNames from 'classnames';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createNodeRule, getNodeList, searchTagList } from 'src/apis/task';
 import { NgModal } from 'src/components';
 import { CodeType, NodeType, TagInterface } from 'src/utils/interface';
+import { useResetFormOnCloseModal } from 'src/utils/use-ResetFormOnCloseModal';
 import styles from './style.module.less';
 
 type CreateNodeModalProps = React.ComponentProps<typeof NgModal> & {
@@ -21,6 +22,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
   const [tagOptions, setTagOptions] = useState<TagInterface[]>([]);
   const [formValues, setFormValues] = useState<any>({});
 
+  useResetFormOnCloseModal({ form: ruleForm, visible: props.visible! });
   // 获取列表数据
   const getNodeOptions = async (params?: any) => {
     const res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
@@ -56,6 +58,12 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
       nodeChange(node.nodeId);
     }
   }, [nodeCode, childOption]);
+  useEffect(() => {
+    if (!props.visible) {
+      setFormValues({});
+      setCurrentNode(undefined);
+    }
+  }, [props.visible]);
 
   const onNodeTypeChange = (typeCode: CodeType) => {
     setCurrentNodeType(typeCode);

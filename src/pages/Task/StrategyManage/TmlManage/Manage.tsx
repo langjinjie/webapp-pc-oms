@@ -9,6 +9,7 @@ import { getTplListOfCorp } from 'src/apis/task';
 
 const Manage: React.FC<RouteComponentProps> = ({ history }) => {
   const [tplList, setTplList] = useState<TplType[]>([]);
+  const [formValues, setFormValues] = useState({ tplName: '' });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -17,19 +18,23 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
-  const onSearch = (values: any) => {
-    console.log(values);
-  };
-
   const getList = async (params?: any) => {
+    const pageNum = params?.pageNum || pagination.current;
     const res = await getTplListOfCorp({
-      ...params
+      ...formValues,
+      ...params,
+      pageNum,
+      pageSize: pagination.pageSize
     });
     if (res) {
       const { total, list } = res;
       setTplList(list || []);
-      setPagination((pagination) => ({ ...pagination, total }));
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum }));
     }
+  };
+  const onSearch = (values: any) => {
+    getList({ ...values, pageNum: 1 });
+    setFormValues(values);
   };
 
   const onPaginationChange = (pageNum: number) => {
@@ -44,13 +49,22 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
   const selectedTemplate = (tplId: string) => {
     history.push('/strategyManage/detail?tplId=' + tplId);
   };
+
+  const onFormValuesChange = (values: any) => {
+    setFormValues(values);
+  };
   return (
     <div>
       <div className={classNames(style.banner, 'flex align-center justify-end')}>
         <h3>自动化运营体系,助力机构效率提升</h3>
       </div>
       <div className="ph20">
-        <NgFormSearch searchCols={searchCols} onSearch={onSearch} hideReset />
+        <NgFormSearch
+          searchCols={searchCols}
+          onValuesChange={(changeValue, values) => onFormValuesChange(values)}
+          onSearch={onSearch}
+          hideReset
+        />
         <div className={style.taskWrap}>
           {tplList.map((item) => (
             <div className={style.taskItem} key={item.tplId}>

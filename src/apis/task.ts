@@ -139,8 +139,8 @@ export const queryTagList: HttpFC = () => {
 };
 
 // 1.29、获取指标类节点的指标列表接口
-export const queryTargetList: HttpFC = () => {
-  return http.post('/tenacity-admin/api/strategy/node/data/list');
+export const queryTargetList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/node/data/list', params);
 };
 /**
  * 1. 28获取标签库接口
