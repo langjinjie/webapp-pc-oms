@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button, Form, Input, Radio, Select, Space, FormInstance, message, InputNumber } from 'antd';
 import FormBlock from 'src/pages/Task/StrategyTask/components/FormBlock/FormBlock';
 import { FormBlockPreview } from 'src/pages/Task/StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
-import { getTaskStrategyTplDetail, applyTpl } from 'src/apis/task';
+import { getTaskStrategyTplDetail, applyTpl, getCorpTplDetail } from 'src/apis/task';
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
@@ -18,7 +18,11 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
   };
 
   const getDetail = async () => {
-    const { tplId, view } = URLSearchParams(location.search) as { tplId: string; view: string };
+    const { tplId, view, corpTplId } = URLSearchParams(location.search) as {
+      tplId: string;
+      view: string;
+      corpTplId: string;
+    };
     if (view) setIsReadonly(true);
     if (tplId) {
       const res = await getTaskStrategyTplDetail({ tplId });
@@ -29,13 +33,15 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           corpTplName: res.corpTplName || res.tplName
         });
       }
-    } else {
-      basicForm.setFieldsValue({
-        staffScope: 1,
-        clientScope: 1,
-        runCycle: 1,
-        taskType: 1
-      });
+    } else if (corpTplId) {
+      const res = await getCorpTplDetail({ corpTplId });
+      if (res) {
+        setTplDetail(res);
+        basicForm.setFieldsValue({
+          ...res,
+          corpTplName: res.corpTplName || res.tplName
+        });
+      }
     }
   };
 
@@ -111,10 +117,10 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               name={'tplName'}
               rules={[{ required: true }, { max: 30, message: '最多30个字' }]}
             >
-              <Input placeholder="待输入" readOnly className="width320"></Input>
+              <Input placeholder="待输入" disabled className="width320"></Input>
             </Form.Item>
             <Form.Item label="任务类型" name={'taskType'}>
-              <Select className="width320">
+              <Select className="width320" disabled>
                 <Select.Option value={1}>策略任务</Select.Option>
               </Select>
             </Form.Item>
@@ -140,7 +146,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               rules={[{ required: true, message: '请输入任务运营说明' }]}
             >
               <Input.TextArea
-                readOnly={isReadonly}
+                disabled
                 placeholder="选填，如不填则默认抓取选定任务推荐话术"
                 className="width400"
               ></Input.TextArea>
@@ -169,7 +175,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
             {/* <Form.Item> */}
           </Form>
           <div className="formListTitle">配置操作区</div>
-          <FormBlock value={tplDetail?.sceneList} />
+          <FormBlock value={tplDetail?.sceneList} isCorp isReadonly={isReadonly} />
           {/* </Form.Item> */}
           <div className="formListTitle">策略行事历预览</div>
           <FormBlockPreview value={tplDetail?.sceneList || []} />

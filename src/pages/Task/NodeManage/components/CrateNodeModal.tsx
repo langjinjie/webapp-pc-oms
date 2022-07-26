@@ -62,7 +62,7 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
       });
   };
   return (
-    <NgModal {...props} width={520} title="新建节点规则" onOk={handleOk}>
+    <NgModal {...props} width={520} title="新建节点" onOk={handleOk}>
       <Form form={nodeForm} labelAlign="right" labelCol={{ span: 6 }}>
         <Form.Item label="选择节点类别" name={'nodeTypeCode'} rules={[{ required: true }]}>
           <Select className="width180" onChange={onNodeTypeChange}>

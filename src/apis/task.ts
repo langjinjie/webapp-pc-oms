@@ -154,6 +154,9 @@ export const searchTagList: HttpFC = (params) => {
 export const getTaskListOfCorp: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/strategy/corp/tpl/list', params);
 };
+export const getCorpTplDetail: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/strategy/corp/tpl/detail', params);
+};
 
 // 1. 31 查询机构可运行策略任务接口
 export const getTplListOfCorp: HttpFC = (params) => {

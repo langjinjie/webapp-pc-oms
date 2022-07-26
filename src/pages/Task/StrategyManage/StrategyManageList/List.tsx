@@ -55,9 +55,9 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
   const onOperate = (corpTplId: string, operateType: OperateType) => {
     console.log(corpTplId, operateType);
     if (operateType === 'view') {
-      history.push('/strategyManage/detail?tplId=' + corpTplId + '&view=1');
+      history.push('/strategyManage/detail?corpTplId=' + corpTplId + '&view=1');
     } else if (operateType === 'edit') {
-      history.push('/strategyManage/detail?tplId=' + corpTplId);
+      history.push('/strategyManage/detail?corpTplId=' + corpTplId);
     } else if (operateType === 'putAway' || operateType === 'outline') {
       setVisible(true);
       const currentItem = tableSource.filter((item) => item.corpTplId === corpTplId)[0];

@@ -71,9 +71,9 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
               <div className={style.taskImgWrap}>
                 <img className={style.taskImg} src={item.displayCoverImg} />
               </div>
-              <div className={style.taskName}>{item.tplName}</div>
-              <div className={style.taskTarget}>效果：{item.taskDesc}</div>
-              <div className={style.taskTips}>任务说明：{item.sceneDesc}</div>
+              <div className={classNames(style.taskName, 'ellipsis')}>{item.tplName}</div>
+              <div className={classNames(style.taskTarget, 'ellipsis')}>效果：{item.taskDesc}</div>
+              <div className={classNames(style.taskTips, 'two-line-ellipsis')}>任务说明：{item.sceneDesc}</div>
               <Button className={style.useBtn} type="primary" onClick={() => selectedTemplate(item.tplId)}>
                 立即使用
               </Button>

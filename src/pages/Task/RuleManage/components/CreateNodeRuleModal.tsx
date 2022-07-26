@@ -136,7 +136,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
             ))}
           </Select>
         </Form.Item>
-        {currentNodeType === 'node_date' && (
+        {(currentNodeType === 'node_date' || currentNodeType === 'node_calendar') && (
           <>
             <Form.Item label="触发节点" labelAlign="right" name={'nodeId'}>
               <Select className="width320" placeholder="请选择触发节点" onChange={nodeChange}>
