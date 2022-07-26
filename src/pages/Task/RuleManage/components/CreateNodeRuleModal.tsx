@@ -44,6 +44,14 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
     if (currentNodeType === 'node_tag') {
       getTagList(node.nodeName);
     }
+
+    ruleForm.setFieldsValue({
+      dateLogicType: undefined,
+      days: undefined,
+      tagLogicType: undefined,
+      sourceTagName: undefined,
+      targetTagName: undefined
+    });
   };
 
   useMemo(() => {
@@ -61,6 +69,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
   useEffect(() => {
     if (!props.visible) {
       setFormValues({});
+
       setCurrentNode(undefined);
     }
   }, [props.visible]);
@@ -68,6 +77,13 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
   const onNodeTypeChange = (typeCode: CodeType) => {
     setCurrentNodeType(typeCode);
     getNodeOptions({ nodeTypeCode: typeCode });
+    ruleForm.resetFields();
+    setFormValues({});
+    setCurrentNode(undefined);
+
+    ruleForm.setFieldsValue({
+      nodeCode: typeCode
+    });
   };
 
   const onValuesChange = (values: any) => {
@@ -87,13 +103,14 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
       .then((values) => {
         // 1. 节点类型时
         if (currentNodeType === 'node_tag') {
-          const { dateLogicType, ...otherValues } = values;
+          const { dateLogicType, tagLogicSwitch, ...otherValues } = values;
+          console.log(tagLogicSwitch);
           // 1.1当天
           if (dateLogicType === 1) {
-            handleSubmit({ ...otherValues, days: 0 });
+            handleSubmit({ ...otherValues, days: 0, tagLogicSwitch: tagLogicSwitch ? 1 : 0 });
           } else {
             // 1.2 后多少天
-            handleSubmit({ ...otherValues });
+            handleSubmit({ ...otherValues, tagLogicSwitch: tagLogicSwitch ? 1 : 0 });
           }
           return false;
         } else if (currentNodeType === 'node_quota') {
@@ -121,7 +138,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
         labelCol={{ span: 4 }}
         onValuesChange={(changedValues: any, values: any) => onValuesChange(values)}
       >
-        <Form.Item label="选择节点类别" labelAlign="right">
+        <Form.Item label="选择节点类别" labelAlign="right" name={'nodeCode'}>
           <Select
             className="width240"
             disabled={!!nodeCode}
@@ -199,7 +216,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
               {formValues.tagLogicType === 1
                 ? (
                 <div className={styles.customItem}>
-                  <Form.Item>
+                  <Form.Item name={'tagLogicSwitch'} valuePropName="checked">
                     <Switch checkedChildren="开启" unCheckedChildren="关闭" defaultChecked />
                   </Form.Item>
                   <div className={classNames('flex', styles.lineWrap)}>

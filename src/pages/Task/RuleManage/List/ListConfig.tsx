@@ -29,20 +29,6 @@ export const nodeSearchCols: SearchCol[] = [
     label: '节点规则名称',
     placeholder: '请输入',
     width: '220px'
-  },
-  {
-    name: 'nodeId',
-    type: 'input',
-    label: '触发节点',
-    placeholder: '请输入',
-    width: '220px'
-  },
-  {
-    name: 'nodeTypeCode',
-    type: 'input',
-    label: '节点类别',
-    placeholder: '请输入',
-    width: '220px'
   }
 ];
 export const actionSearchCols: SearchCol[] = [
@@ -161,15 +147,15 @@ export const actionTableColumnsFun = (args: OperateProps): ColumnsType<ActionRul
     },
     {
       title: '动作类型',
-      dataIndex: 'actionRuleType',
-      key: 'actionRuleType',
-      width: 200,
+      dataIndex: 'actionRuleName',
+      key: 'actionRuleName',
+      width: 160,
       render: (actionRuleType) => actionRuleType
     },
     {
       title: '内容来源',
       dataIndex: 'contentSource',
-      width: 160,
+      width: 140,
       key: 'contentSource',
       align: 'center',
       render: (contentSource) => <span>{contentSource === 1 ? '公有库' : '机构库'} </span>
@@ -177,7 +163,7 @@ export const actionTableColumnsFun = (args: OperateProps): ColumnsType<ActionRul
     {
       title: '动作规则修改人',
       dataIndex: 'updateBy',
-      width: 260
+      width: 130
     },
     {
       title: '动作规则修改时间',

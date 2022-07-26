@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import { nodeSearchCols, tableColumns, RuleColumns } from './ListConfig';
 import { PlusOutlined } from '@ant-design/icons';
 import { NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
 import CreateRuleModal from '../components/CreateNodeRuleModal';
 import { Context } from 'src/store';
-import { getNodeRuleList, getNodeTypeList } from 'src/apis/task';
+import { getNodeList, getNodeRuleList, getNodeTypeList } from 'src/apis/task';
 import { NodeType } from 'src/utils/interface';
+import DebounceSelect from 'src/components/DebounceSelect/DebounceSelect';
 
 type QueryParamsType = Partial<{
   nodeCode: string;
@@ -32,8 +33,7 @@ export const NodeList: React.FC = () => {
 
     const res = (await getNodeTypeList({})) as NodeType[];
     if (res) {
-      const filterData = res.filter((item) => item.typeCode !== 'node_calendar');
-      setNodeOptions(filterData);
+      setNodeOptions(res);
     }
   };
 
@@ -71,19 +71,31 @@ export const NodeList: React.FC = () => {
 
     getList({ pageNum: 1 });
   };
+
+  const fetchUserList = async (codeName: string): Promise<any[]> => {
+    const res = await getNodeList({ codeName: codeName });
+    if (res) {
+      const { list } = res;
+      return list.map((item: any) => ({
+        label: item.nodeName,
+        value: item.nodeId,
+        key: item.nodeId
+      }));
+    } else {
+      return [];
+    }
+  };
   return (
     <div className="search-wrap">
       <Button type="primary" shape="round" icon={<PlusOutlined />} onClick={() => setVisible(true)} size="large">
         新建节点规则
       </Button>
       <div className={'pt20'}>
-        <NgFormSearch
-          isInline={false}
-          firstRowChildCount={2}
-          searchCols={nodeSearchCols}
-          onSearch={onSearch}
-          onValuesChange={onValuesChange}
-        />
+        <NgFormSearch isInline searchCols={nodeSearchCols} onSearch={onSearch} onValuesChange={onValuesChange}>
+          <Form.Item label="触发节点" name={'node'}>
+            <DebounceSelect placeholder="请输入" style={{ width: '180px' }} fetchOptions={fetchUserList} />
+          </Form.Item>
+        </NgFormSearch>
       </div>
       <div className="mt20">
         <NgTable
@@ -100,7 +112,7 @@ export const NodeList: React.FC = () => {
         onSubmit={createRule}
         visible={visible}
         onCancel={() => setVisible(false)}
-        options={nodeOptions}
+        options={nodeOptions.filter((item: any) => item.typeCode !== 'node_calendar')}
       />
     </div>
   );

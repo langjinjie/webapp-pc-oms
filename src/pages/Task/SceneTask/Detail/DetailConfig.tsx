@@ -51,7 +51,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns
     },
     {
       title: '添加时间',
-      dataIndex: 'updateBy',
+      dataIndex: 'createTime',
       width: 160,
       align: 'center'
     },

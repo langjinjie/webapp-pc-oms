@@ -132,7 +132,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, onChoose, currentTag, on
   return (
     <NgModal
       width={1000}
-      title="筛选标签"
+      title="标签"
       visible={visible}
       maskClosable={false}
       className={style.filterModal}
@@ -152,7 +152,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, onChoose, currentTag, on
               取消
             </Button>
             <Button onClick={() => onChoose(chooseTag!)} type="primary" shape="round">
-              确定筛选
+              确定
             </Button>
           </Space>
         </div>

@@ -1,8 +1,9 @@
-import { PaginationProps } from 'antd';
+import { Form, PaginationProps } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { getSceneList } from 'src/apis/task';
+import { getNodeList, getSceneList } from 'src/apis/task';
 import { NgFormSearch, NgTable } from 'src/components';
+import DebounceSelect from 'src/components/DebounceSelect/DebounceSelect';
 import { SceneColumns, searchCols, tableColumnsFun } from './ListConfig';
 
 const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
@@ -38,15 +39,17 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   const onSearch = (values: any) => {
-    console.log(values);
+    const { node, ...others } = values;
     getList({
-      ...values,
+      nodeId: node?.value || '',
+      ...others,
       pageNum: 1
     });
   };
 
   const onValuesChange = (changeValues: any, values: any) => {
-    setQueryParams(values);
+    const { node, ...others } = values;
+    setQueryParams({ nodeId: node?.value || '', ...others });
   };
 
   const paginationChange = (pageNum: number, pageSize?: number) => {
@@ -57,6 +60,20 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
   const jumpToDetail = (sceneId: string) => {
     history.push('/taskScene/detail?sceneId=' + sceneId);
   };
+
+  const fetchUserList = async (codeName: string): Promise<any[]> => {
+    const res = await getNodeList({ codeName: codeName });
+    if (res) {
+      const { list } = res;
+      return list.map((item: any) => ({
+        label: item.nodeName,
+        value: item.nodeId,
+        key: item.nodeId
+      }));
+    } else {
+      return [];
+    }
+  };
   return (
     <div className="container">
       <NgFormSearch
@@ -65,7 +82,11 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
         firstRowChildCount={3}
         onSearch={onSearch}
         onValuesChange={onValuesChange}
-      ></NgFormSearch>
+      >
+        <Form.Item label="场景关联节点" name={'node'}>
+          <DebounceSelect placeholder="请输入" style={{ width: '180px' }} fetchOptions={fetchUserList} />
+        </Form.Item>
+      </NgFormSearch>
 
       <div className="mt20">
         <NgTable

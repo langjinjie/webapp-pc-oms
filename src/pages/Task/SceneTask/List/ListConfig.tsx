@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { UNKNOWN } from 'src/utils/base';
 
 export const searchCols: SearchCol[] = [
   {
@@ -18,13 +17,6 @@ export const searchCols: SearchCol[] = [
     label: '场景名称',
     placeholder: '请输入',
     width: '280px'
-  },
-  {
-    name: 'nodeId',
-    type: 'select',
-    label: '场景关联节点',
-    placeholder: '请输入',
-    width: '180'
   }
 ];
 
@@ -50,23 +42,16 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<SceneColumns> =
       key: 'sceneName',
       width: 200
     },
-    {
-      title: '场景说明',
-      dataIndex: 'categoryName',
-      width: 160,
-      key: 'categoryName',
-      align: 'center',
-      render: (categoryName: string) => categoryName || UNKNOWN
-    },
+
     {
       title: '场景关联节点类别',
-      dataIndex: 'nodeId',
+      dataIndex: 'typeName',
       width: 260,
       align: 'center'
     },
     {
       title: '场景关联节点',
-      dataIndex: 'nodeId',
+      dataIndex: 'nodeName',
       width: 260,
       align: 'center'
     },

@@ -46,6 +46,7 @@ interface SearchComponentProps {
   defaultValues?: any;
   className?: string;
   hideReset?: boolean;
+  children?: React.ReactNode;
 }
 const { RangePicker } = DatePicker;
 
@@ -171,6 +172,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               ))
             );
           })}
+          {props.children}
 
           <Form.Item>
             <Space>
@@ -255,6 +257,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 ))
               );
             })}
+            {props.children}
             <Form.Item>
               <Space>
                 <Button type="primary" htmlType="submit" className={style.btnConfirm} shape="round">

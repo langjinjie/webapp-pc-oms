@@ -11,6 +11,7 @@ import { Context } from 'src/store/index';
 type QueryParamsType = Partial<{
   nodeCode: string;
   nodeName: string;
+  nodeName1?: string;
   nodeTypeCode: string;
 }>;
 const TaskNodeList: React.FC = () => {
@@ -33,8 +34,7 @@ const TaskNodeList: React.FC = () => {
 
     const res = (await getNodeTypeList({})) as NodeTypeProps[];
     if (res) {
-      const filterData = res.filter((item) => item.typeCode !== 'node_calendar');
-      setNodeOptions(filterData);
+      setNodeOptions(res);
     }
   };
 
@@ -55,13 +55,13 @@ const TaskNodeList: React.FC = () => {
     getTypeList();
   }, []);
 
-  const onSearch = (values: QueryParamsType) => {
-    setQueryParams(values);
-    getList({ ...values, pageNum: 1 });
+  const onSearch = ({ nodeName1: nodeName, ...values }: QueryParamsType) => {
+    setQueryParams({ ...values, nodeName });
+    getList({ ...values, nodeName, pageNum: 1 });
   };
 
-  const onValuesChange = (changeValue: any, values: QueryParamsType) => {
-    setQueryParams(values);
+  const onValuesChange = (changeValue: any, { nodeName1: nodeName, ...values }: QueryParamsType) => {
+    setQueryParams({ ...values, nodeName });
   };
 
   const paginationChange = (pageNum: number, pageSize?: number) => {
@@ -143,7 +143,7 @@ const TaskNodeList: React.FC = () => {
         visible={visibleCreateNode}
         onCancel={() => setVisibleCreateNode(false)}
         onSubmit={createNode}
-        options={nodeOptions}
+        options={nodeOptions.filter((item: any) => item.typeCode !== 'node_calendar')}
       />
     </div>
   );

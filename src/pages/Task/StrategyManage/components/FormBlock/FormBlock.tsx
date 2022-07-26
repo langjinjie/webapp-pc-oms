@@ -61,7 +61,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
       // 节点规则数据回显
       const nodeDetails: any[] = [];
       copyValue.map((item, index) => {
-        nodeOptions.push([{ nodeId: item.nodeId, nodeName: item.nodeName }]);
+        nodeOptions.push([{ nodeId: item.nodeId, nodeName: item.nodeName, nodeDesc: item.nodeDesc }]);
         nodeDetails[index] = {
           node: { nodeId: item.nodeId, nodeName: item.nodeName, nodeDesc: item.nodeDesc },
           options: []
@@ -267,7 +267,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                           ))}
                         </Select>
                       </Form.Item>
-
                       {formValues?.sceneList?.[index]?.nodeTypeCode === 'node_calendar'
                         ? (
                         <>
@@ -319,7 +318,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                             >
                               {nodeOptions[index]?.map((option: any) => (
                                 <Select.Option value={option.nodeId} key={option.nodeId}>
-                                  {option.nodeName}
+                                  {option.nodeDesc}
                                 </Select.Option>
                               ))}
                             </Select>
@@ -356,11 +355,12 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                               ))}
                             </Select>
                           </Form.Item>
-                          <Form.Item label="节点说明" className={classNames(styles.attrItem, 'flex align-center')}>
-                            <span>{nodeDetails[index]?.node?.nodeDesc || '--'}</span>
+                          <Form.Item label="节点说明" className={classNames(styles.attrItem, 'flex align-center ml30')}>
+                            <span>{nodeDetails[index]?.node?.nodeName || '--'}</span>
                           </Form.Item>
                         </>
                           )}
+                      nodeName{' '}
                     </div>
 
                     <div className={styles.taskNode}>

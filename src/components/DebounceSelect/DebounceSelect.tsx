@@ -41,6 +41,8 @@ const DebounceSelect = <ValueType extends { key?: string; label: React.ReactNode
     <Select<ValueType>
       labelInValue
       filterOption={false}
+      showSearch
+      allowClear
       onSearch={debounceFetcher}
       notFoundContent={fetching ? <Spin size="small" /> : null}
       {...props}

@@ -37,9 +37,9 @@ interface OperateProps {
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskProps> => {
   return [
-    { title: '策略任务模板编号', dataIndex: 'tplCode', key: 'tplCode', width: 200 },
+    { title: '机构策略任务编号', dataIndex: 'tplCode', key: 'tplCode', width: 200 },
     {
-      title: '策略任务模板名称',
+      title: '机构策略任务编号',
       dataIndex: 'corpTplName',
       key: 'corpTplName',
       width: 200
@@ -53,7 +53,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
       render: (categoryName: string) => categoryName || UNKNOWN
     },
     {
-      title: '修改人',
+      title: '策略修改人',
       dataIndex: 'updateBy',
       width: 260
     },
