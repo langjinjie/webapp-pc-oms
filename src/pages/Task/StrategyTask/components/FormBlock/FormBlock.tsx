@@ -66,6 +66,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
           node: { nodeId: item.nodeId, nodeName: item.nodeName, nodeDesc: item.nodeDesc },
           options: []
         };
+        item.date = moment(item.date, 'MMDD') || undefined;
         item?.nodeRuleList.map((child: any) => {
           nodeDetails[index].options.push({ nodeRuleId: child.nodeRuleId, nodeRuleName: child.nodeRuleName });
           child.pushTime = moment(child.pushTime, 'HH:mm') || undefined;
@@ -111,7 +112,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     if (params.nodeTypeCode !== 'node_calendar') {
       res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
     } else {
-      const date = formValues?.sceneList?.[index]?.calendar.format('MMDD');
+      const date = formValues?.sceneList?.[index]?.date.format('MMDD');
       console.log(date);
       res = await getDateNodeList({ type: 2, date, nodeDesc: params.codeName });
     }
@@ -209,7 +210,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
       });
       const { list } = res;
       nodeOptions[index] = list;
-      console.log(res);
     }
   };
 
@@ -218,10 +218,9 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   const addDateNode = async (index: number) => {
-    console.log(nodeName);
     const res = await getDateNodeList({
       type: 1,
-      date: formValues.sceneList?.[index].calendar.format('MMDD'),
+      date: formValues.sceneList?.[index].date.format('MMDD'),
       nodeDesc: nodeName
     });
     console.log(res);
@@ -274,7 +273,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                         <>
                           <Form.Item
                             label="选择日期"
-                            name={[name, 'calendar']}
+                            name={[name, 'date']}
                             className={classNames(styles.attrItem, 'flex align-center')}
                           >
                             <DatePicker
@@ -290,7 +289,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                           >
                             <Select
                               className={styles.nodeDate}
-                              disabled={!formValues?.sceneList?.[index]?.calendar || !!isCorp}
+                              disabled={!formValues?.sceneList?.[index]?.date || !!isCorp}
                               filterOption={false}
                               onFocus={() => onFocusNodeSelect(index)}
                               onSearch={(value) => debounceFetcherNodeOptions({ value, index })}
