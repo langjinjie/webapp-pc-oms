@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button, Form, Input, Radio, Select, Space, FormInstance, message, InputNumber } from 'antd';
-import FormBlock from 'src/pages/Task/StrategyTask/components/FormBlock/FormBlock';
+import FormBlock from './components/FormBlock/FormBlock';
 import { FormBlockPreview } from 'src/pages/Task/StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { getTaskStrategyTplDetail, applyTpl, getCorpTplDetail } from 'src/apis/task';
 

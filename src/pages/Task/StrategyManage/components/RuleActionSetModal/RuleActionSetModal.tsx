@@ -5,8 +5,11 @@ import { getPosterCategoryList, getTagsOrCategorys, productConfig } from 'src/ap
 import { Icon, NgModal } from 'src/components';
 import { Article } from 'src/pages/Marketing/Article/Config';
 import { Context } from 'src/store';
+import { ActivitySelectComponent } from './components/ActivitySelectComponent';
 import { ArticleSelectComponent } from './components/ArticleSelectComponent';
 import { PosterSelectComponent } from './components/PosterSelectComponent';
+import { ProductSelectComponent } from './components/ProductSelectComponent';
+import { SpeechSelectComponent } from './components/SpeechSelectComponent';
 import { contentTypeList } from './config';
 
 import styles from './style.module.less';
@@ -32,7 +35,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
   const { articleCategoryList, setArticleCategoryList } = useContext(Context);
   const [values, setValues] = useState<any>({});
   const [actionForm] = Form.useForm();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectRows, setSelectRows] = useState<RowProps[]>([]);
   const [contentTypeOptions, setContentTypeOptions] = useState<any[]>([]);
@@ -79,6 +82,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
   };
 
   const removeItem = (index: number) => {
+    if (values.contentSource === 1) return;
     const copyRow = [...selectRows];
     const copyKeys = [...selectRowKeys];
     copyRow.splice(index, 1);
@@ -114,6 +118,8 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
 
   const onContentChange = (contentType: number) => {
     getActionTypeList(contentType);
+    setSelectRows([]);
+    setSelectRowKeys([]);
   };
 
   useEffect(() => {
@@ -135,8 +141,29 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
     }
   }, [visible, value, props.visible]);
 
-  const contentSourceChange = (value: number) => {
-    console.log(value);
+  const contentSourceChange = (contentSource: number) => {
+    if (contentSource === value?.contentSource) {
+      if (value) {
+        setValues(value);
+
+        if (value.contentSource === 1) {
+          setSelectRows(value?.itemIds || []);
+          setSelectRowKeys(value?.itemIds.map((item: any) => item.itemId) || []);
+        }
+        if (value.contentSource === 2 && value.contentCategory === 2) {
+          getActionTypeList(value.contentType);
+          value.categoryId = value.categoryId?.indexOf(';') ? value.categoryId.split(';') : value.categoryId;
+        }
+
+        actionForm.setFieldsValue({
+          ...value,
+          contentSource
+        });
+      }
+    } else {
+      setSelectRows([]);
+      setSelectRowKeys([]);
+    }
   };
 
   const posterTypeChange = (values: any, selectedOptions: any) => {
@@ -182,12 +209,14 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
               placeholder="请选择"
               disabled={props.footer === null}
             >
-              <Select.Option value={1}>公有库</Select.Option>
+              <Select.Option value={1} disabled={value?.contentSource === 2}>
+                公有库
+              </Select.Option>
               <Select.Option value={2}>机构库</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item label="动作类型" name={'contentType'} rules={[{ required: true }]}>
-            <Radio.Group onChange={(e) => onContentChange(e.target.value)} disabled={props.footer === null}>
+            <Radio.Group onChange={(e) => onContentChange(e.target.value)} disabled={values?.contentSource === 1}>
               <Radio value={1}>文章</Radio>
               <Radio value={2}>海报</Radio>
               {values.contentSource === 2 && (
@@ -202,7 +231,13 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
           {values.contentSource === 2 && (
             <Form.Item label="选择内容" required>
               <Form.Item name={'contentCategory'} rules={[{ required: true, message: '请选择规则' }]}>
-                <Radio.Group disabled={props.footer === null}>
+                <Radio.Group
+                  disabled={props.footer === null}
+                  onChange={() => {
+                    setSelectRows([]);
+                    setSelectRowKeys([]);
+                  }}
+                >
                   <Radio value={1}>机构自定义配置</Radio>
                   {values.contentType < 4 && <Radio value={2}>按照规则配置</Radio>}
                 </Radio.Group>
@@ -261,7 +296,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
             </Form.Item>
           )}
         </Form>
-        {values.contentSource === 1 && values.contentType && props.footer !== null && (
+        {values.contentSource === 2 && values.contentType && values.contentCategory === 1 && props.footer !== null && (
           <div>
             <div className={classNames(styles.marketingWarp, 'container')}>
               {values.contentType === 1
@@ -283,12 +318,37 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
                   }}
                 />
                     )
-                  : null}
+                  : values.contentType === 3
+                    ? (
+                <ProductSelectComponent
+                  onChange={(keys, rows) => {
+                    setSelectRowKeys(keys);
+                    setSelectRows(rows);
+                  }}
+                />
+                      )
+                    : values.contentType === 4
+                      ? (
+                <ActivitySelectComponent
+                  onChange={(keys, rows) => {
+                    setSelectRowKeys(keys);
+                    setSelectRows(rows);
+                  }}
+                />
+                        )
+                      : (
+                <SpeechSelectComponent
+                  onChange={(keys, rows) => {
+                    setSelectRowKeys(keys);
+                    setSelectRows(rows);
+                  }}
+                />
+                        )}
             </div>
           </div>
         )}
         {/* 已经选择的 */}
-        {values.contentSource === 1 && values.contentType && (
+        {values.contentType && values.contentCategory !== 2 && (
           <div>
             <div className="color-text-primary mt22">已选择</div>
             <div className={classNames(styles.marketingWarp, 'mt12')}>

@@ -39,6 +39,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
 
   const handleOk = () => {
     actionForm.validateFields().then((values) => {
+      setVisible(false);
       // 对表单数据进行拷贝，防止污染表单渲染
       const copyData = JSON.parse(JSON.stringify(values));
       const { contentSource } = copyData;
@@ -56,7 +57,6 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
         // 私有库
         onChange?.(values);
       }
-      setVisible(false);
     });
   };
 
@@ -117,7 +117,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
   };
 
   useEffect(() => {
-    if (value && (visible || props.visible)) {
+    if (value && (!!visible || !!props.visible)) {
       setValues(value);
 
       if (value.contentSource === 1) {
@@ -126,7 +126,8 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
       }
       if (value.contentSource === 2 && value.contentCategory === 2) {
         getActionTypeList(value.contentType);
-        value.categoryId = value.categoryId?.indexOf(';') ? value.categoryId.split(';') : value.categoryId;
+        console.log(value.categoryId, visible, props.visible);
+        value.categoryId = value.categoryId?.indexOf(';') ? value.categoryId?.split(';') : value.categoryId;
       }
 
       actionForm.setFieldsValue({
