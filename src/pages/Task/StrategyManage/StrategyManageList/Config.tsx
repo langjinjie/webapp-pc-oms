@@ -96,14 +96,15 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
               </Button>
                 )
               : (
-              <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'putAway')}>
-                上架
-              </Button>
+              <>
+                <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'putAway')}>
+                  上架
+                </Button>
+                <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'edit')}>
+                  编辑
+                </Button>
+              </>
                 )}
-
-            <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'edit')}>
-              编辑
-            </Button>
           </Space>
         );
       }

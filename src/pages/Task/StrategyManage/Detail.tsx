@@ -63,7 +63,9 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           scene.sceneId = scene.sceneId || '';
           scene.nodeRuleList.map((rule: any) => {
             if (rule.actionRule.contentType === 2 && rule.actionRule.contentCategory === 2) {
-              rule.actionRule.categoryId = rule.actionRule.categoryId.join(';');
+              if (rule.actionRule.categoryId.indexOf(';') > -1) {
+                rule.actionRule.categoryId = rule.actionRule.categoryId.join(';');
+              }
             }
             rule.pushTime = moment(rule.pushTime)?.format('HH:mm') || '';
             return rule;
