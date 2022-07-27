@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button, Form, Input, Radio, Select, Space, FormInstance, message } from 'antd';
 import FormBlock from './components/FormBlock/FormBlock';
-import { FormBlockPreview } from 'src/pages/Task/StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { getTaskStrategyTplDetail, applyTpl, getCorpTplDetail } from 'src/apis/task';
 
 import styles from './style.module.less';
@@ -165,9 +164,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           </Form>
           <div className="formListTitle">配置操作区</div>
           <FormBlock value={tplDetail?.sceneList} isCorp isReadonly={isReadonly} />
-          {/* </Form.Item> */}
-          <div className="formListTitle">策略行事历预览</div>
-          <FormBlockPreview value={tplDetail?.sceneList || []} />
+
           {!isReadonly && (
             <Form.Item>
               <div className="flex justify-center formFooter">

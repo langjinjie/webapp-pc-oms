@@ -10,8 +10,9 @@ import NodePreview from '../NodePreview/NodePreview';
 import styles from './style.module.less';
 import { getDateNodeList, getNodeList, getNodeRuleList, getNodeTypeList, getTouchWayList } from 'src/apis/task';
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
-import { CodeType } from 'src/utils/interface';
+import { NodeCodeType } from 'src/utils/interface';
 import { debounce } from 'src/utils/base';
+import { FormBlockPreview } from '../ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 interface FormBlockProps {
   value?: any[];
   isCorp?: boolean;
@@ -42,7 +43,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   const onFieldsChange = (changedValues: any, values: any) => {
-    setFormValues(values);
+    console.log(values);
+    setTimeout(() => {
+      const res = blockForm.getFieldsValue();
+      setFormValues(res);
+    }, 500);
   };
   // 预览内容
   const [previewValue, setPreviewVale] = useState<any>({});
@@ -140,7 +145,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   // 节点类别改变
-  const onNodeTypeChange = (typeCode: CodeType, index: number) => {
+  const onNodeTypeChange = (typeCode: NodeCodeType, index: number) => {
     const sceneListValues = [...blockForm.getFieldValue('sceneList')];
     const values = { ...sceneListValues[index] };
     values.nodeId = '';
@@ -230,7 +235,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     <>
       <Form form={blockForm} name="blockForm" className={styles.blockWrap} onValuesChange={onFieldsChange}>
         <Form.List name={'sceneList'}>
-          {(fields, { add, remove }) => (
+          {(fields, { add, remove: listItemRemove }) => (
             <>
               {fields.map(({ name, key, ...restFiled }, index) => (
                 <Form.Item key={key + name} className={styles.formBlock} {...restFiled}>
@@ -241,7 +246,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                         className={styles.blockDelete}
                         type="link"
                         disabled={index === 0}
-                        onClick={() => remove(index)}
+                        onClick={() => listItemRemove(index)}
                       >
                         删除
                       </Button>
@@ -514,6 +519,8 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
         childOption={[currentItem?.node]}
         onSubmit={() => setVisibleRule(false)}
       />
+      <div className="formListTitle">策略行事历预览</div>
+      <FormBlockPreview value={formValues?.sceneList || []} />
     </>
   );
 };

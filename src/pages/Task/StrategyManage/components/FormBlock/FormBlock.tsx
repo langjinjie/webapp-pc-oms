@@ -12,6 +12,7 @@ import { getDateNodeList, getNodeList, getNodeRuleList, getNodeTypeList, getTouc
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 import { NodeCodeType } from 'src/utils/interface';
 import { debounce } from 'src/utils/base';
+import { FormBlockPreview } from 'src/pages/Task/StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 interface FormBlockProps {
   value?: any[];
   isCorp?: boolean;
@@ -514,6 +515,8 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
         childOption={[currentItem?.node]}
         onSubmit={() => setVisibleRule(false)}
       />
+      <div className="formListTitle">策略行事历预览</div>
+      <FormBlockPreview value={formValues?.sceneList || []} />
     </>
   );
 };
