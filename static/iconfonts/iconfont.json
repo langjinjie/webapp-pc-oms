@@ -6,6 +6,55 @@
   "description": "tenacity-pc A B端",
   "glyphs": [
     {
+      "icon_id": "30518435",
+      "name": "icon_导航_28_机器人(1)",
+      "font_class": "a-icon_daohang_28_jiqiren1",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "30516941",
+      "name": "icon_导航_28_驾驶舱",
+      "font_class": "icon_daohang_28_jiashicang",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "30494331",
+      "name": "合规管理",
+      "font_class": "heguiguanli",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "30494332",
+      "name": "权限管理",
+      "font_class": "quanxianguanli",
+      "unicode": "e630",
+      "unicode_decimal": 58928
+    },
+    {
+      "icon_id": "30494333",
+      "name": "标签管理",
+      "font_class": "biaoqianguanli",
+      "unicode": "e631",
+      "unicode_decimal": 58929
+    },
+    {
+      "icon_id": "30494334",
+      "name": "抽奖活动",
+      "font_class": "choujianghuodong",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "30493457",
+      "name": "icon_导航_28_任务系统",
+      "font_class": "icon_icon-task",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
       "icon_id": "30213101",
       "name": "transform",
       "font_class": "transform",

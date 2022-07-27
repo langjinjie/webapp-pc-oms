@@ -14,7 +14,13 @@ export const ruleTypeOptions = [
     title: '动作规则管理'
   }
 ];
-
+const actionTypeList = [
+  { id: 1, name: '文章' },
+  { id: 2, name: '海报' },
+  { id: 3, name: '产品' },
+  { id: 4, name: '活动' },
+  { id: 5, name: '话术' }
+];
 export const nodeSearchCols: SearchCol[] = [
   {
     name: 'nodeRuleCode',
@@ -45,13 +51,7 @@ export const actionSearchCols: SearchCol[] = [
     label: '动作规则类型',
     placeholder: '请输入',
     width: '220px',
-    options: [
-      { id: 1, name: '文章' },
-      { id: 2, name: '海报' },
-      { id: 3, name: '产品' },
-      { id: 4, name: '活动' },
-      { id: 5, name: '话术' }
-    ]
+    options: actionTypeList
   },
   {
     name: 'contentSource',
@@ -147,10 +147,10 @@ export const actionTableColumnsFun = (args: OperateProps): ColumnsType<ActionRul
     },
     {
       title: '动作类型',
-      dataIndex: 'actionRuleName',
+      dataIndex: 'actionRuleType',
       key: 'actionRuleName',
-      width: 160,
-      render: (actionRuleType) => actionRuleType
+      width: 120,
+      render: (actionRuleType) => actionTypeList.filter((item) => item.id === actionRuleType)[0]?.name || UNKNOWN
     },
     {
       title: '内容来源',

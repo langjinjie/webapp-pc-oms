@@ -5,6 +5,7 @@ import { NgFormSearch, NgTable } from 'src/components';
 import { Poster } from 'src/pages/Marketing/Poster/Config';
 import { UNKNOWN } from 'src/utils/base';
 import { setSearchCols } from './config';
+import style from './style.module.less';
 
 interface PosterSelectComponentProps {
   onChange: (keys: React.Key[], rows: any[]) => void;
@@ -27,9 +28,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
     const res = (await getPosterCategoryList({})) || [];
     setCategoryList(res);
   };
-  useEffect(() => {
-    getCategoryList();
-  }, []);
+
   const getList = async (params?: any) => {
     // 列表数据跟新前，先清空操作状态和选中项
 
@@ -45,8 +44,11 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
       setDataSource(list);
       setPagination((pagination) => ({ ...pagination, total }));
     }
-    console.log(res);
   };
+  useEffect(() => {
+    getCategoryList();
+    getList();
+  }, []);
   const handleSearch = (values: any) => {
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     const { typeIds: [fatherTypeId, typeId] = [undefined, undefined], name } = values;
@@ -59,7 +61,6 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-    console.log(selectedRowKeys, selectedRows);
     onChange(selectedRowKeys, selectedRows);
   };
 
@@ -77,6 +78,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
     <div>
       <NgFormSearch
         hideReset
+        className={style.customerInput}
         searchCols={setSearchCols(categoryList)}
         onSearch={handleSearch}
         onValuesChange={(changesValue, values) => {

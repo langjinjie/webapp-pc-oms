@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Form, Input, Radio, Select, Space, FormInstance, message, InputNumber } from 'antd';
+import { Breadcrumb, Button, Form, Input, Radio, Select, Space, FormInstance, message } from 'antd';
 import FormBlock from './components/FormBlock/FormBlock';
 import { FormBlockPreview } from 'src/pages/Task/StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { getTaskStrategyTplDetail, applyTpl, getCorpTplDetail } from 'src/apis/task';
@@ -84,7 +84,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
         }).then((res) => {
           if (res) {
             message.success('保存成功');
-            history.push('/strategyTask');
+            history.push('/strategyManage');
           }
         });
       }
@@ -130,15 +130,6 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               <Form.Item name={'runCycle'}>
                 <Radio.Group>
                   <Radio value={1}>长期有效</Radio> <br />
-                  <Radio value={2}>
-                    <div className="flex mt20">
-                      <span className="lh30 mr10">填写执行周期天数 </span>
-                      <Form.Item name={'taskType'}>
-                        <InputNumber controls={false}></InputNumber>
-                      </Form.Item>
-                      <span className="lh30 ml10">天</span>
-                    </div>
-                  </Radio>
                 </Radio.Group>
               </Form.Item>
             </Form.Item>
@@ -147,11 +138,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               name={'opDesc'}
               rules={[{ required: true, message: '请输入任务运营说明' }]}
             >
-              <Input.TextArea
-                disabled
-                placeholder="选填，如不填则默认抓取选定任务推荐话术"
-                className="width400"
-              ></Input.TextArea>
+              <Input.TextArea disabled placeholder="请输入" className="width400"></Input.TextArea>
             </Form.Item>
             <Form.Item label="策略任务覆盖范围">
               <Form.Item label="员工筛选" name={'staffScope'} className={styles.interiorItem}>

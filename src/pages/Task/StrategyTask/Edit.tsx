@@ -130,11 +130,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               name={'opDesc'}
               rules={[{ required: true, message: '请输入任务运营说明' }]}
             >
-              <Input.TextArea
-                readOnly={isReadonly}
-                placeholder="选填，如不填则默认抓取选定任务推荐话术"
-                className="width400"
-              ></Input.TextArea>
+              <Input.TextArea readOnly={isReadonly} placeholder="请输入" className="width400"></Input.TextArea>
             </Form.Item>
             <Form.Item label="策略任务覆盖范围">
               <Form.Item label="员工筛选" name={'staffScope'} className={styles.interiorItem}>

@@ -44,7 +44,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
     actionForm.validateFields().then((values) => {
       // 对表单数据进行拷贝，防止污染表单渲染
       const copyData = JSON.parse(JSON.stringify(values));
-      const { contentSource } = copyData;
+      const { contentSource, contentCategory } = copyData;
 
       // 1. 判断来源
       // 公有库
@@ -56,8 +56,17 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
         }));
         onChange?.(copyData);
       } else {
+        if (contentCategory === 1) {
+          if (selectRows.length === 0) return message.warning('请选择营销素材');
+          copyData.itemIds = selectRows.map((item) => ({
+            itemId: item.newsId || item.posterId,
+            itemName: item.name || item.title
+          }));
+        }
         // 私有库
-        onChange?.(values);
+        console.log(copyData);
+
+        onChange?.(copyData);
       }
       setVisible(false);
     });

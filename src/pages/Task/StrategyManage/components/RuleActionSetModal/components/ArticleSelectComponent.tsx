@@ -4,7 +4,7 @@ import { NgFormSearch, NgTable } from 'src/components';
 import { getNewsList, getTagsOrCategorys } from 'src/apis/marketing';
 import { Context } from 'src/store';
 import { Article } from 'src/pages/Marketing/Article/Config';
-
+import style from './style.module.less';
 interface RowProps extends Article {
   itemId?: string;
   itemName?: string;
@@ -25,7 +25,7 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
     simple: true
   });
   const getList = async (params?: any) => {
-    const pageNum = params.pageNum || pagination.current;
+    const pageNum = params?.pageNum || pagination.current;
     const res = await getNewsList({
       syncBank: 1,
       pageSize: pagination.pageSize,
@@ -58,6 +58,7 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
 
   useEffect(() => {
     asyncGetTagsOrCategory();
+    getList();
   }, []);
   const onSearch = async (values: any) => {
     setFormValues(values);
@@ -69,6 +70,7 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
   return (
     <>
       <NgFormSearch
+        className={style.customerInput}
         onSearch={onSearch}
         onValuesChange={(changeValue, values) => setFormValues(values)}
         searchCols={[

@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Button, Space, Tabs } from 'antd';
 import { NgModal } from 'src/components';
-import { queryTagList, searchTagList } from 'src/apis/task';
+import { queryTagList, searchTagByTagName as searchTagList } from 'src/apis/task';
 import { TagCategory, TagInterface } from 'src/utils/interface';
 import EmptyTag from './EmptyTag';
 import PanelList from './PanelList';

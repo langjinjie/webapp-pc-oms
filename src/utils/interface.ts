@@ -431,5 +431,6 @@ export type NodeType = {
   typeName: string;
 };
 
-export type CodeType = 'node_tag' | 'node_date' | 'node_quota' | 'node_calendar';
 export type OperateType = 'add' | 'putAway' | 'delete' | 'view' | 'outline' | 'edit' | 'other';
+
+export type NodeCodeType = 'node_tag' | 'node_date' | 'node_quota' | 'node_calendar';

@@ -170,5 +170,9 @@ export const applyTpl: HttpFC = (params) => {
 export const changeStatusCorpTpl: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/strategy/corp/tpl/status/man', params);
 };
+// 1. 35 机构策略任务上下架接口（
+export const searchTagByTagName: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/tag/search', params);
+};
 
 //

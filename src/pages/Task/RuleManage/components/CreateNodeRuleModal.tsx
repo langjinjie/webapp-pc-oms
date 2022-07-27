@@ -103,14 +103,22 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
       .then((values) => {
         // 1. 节点类型时
         if (currentNodeType === 'node_tag') {
-          const { dateLogicType, tagLogicSwitch, ...otherValues } = values;
-          console.log(tagLogicSwitch);
+          const { dateLogicType, tagLogicType, tagLogicSwitch, ...otherValues } = values;
           // 1.1当天
           if (dateLogicType === 1) {
-            handleSubmit({ ...otherValues, days: 0, tagLogicSwitch: tagLogicSwitch ? 1 : 0 });
+            handleSubmit({
+              ...otherValues,
+              days: 0,
+              tagLogicType,
+              ...{ tagLogicSwitch: tagLogicType === 1 ? (tagLogicSwitch ? 1 : 0) : undefined }
+            });
           } else {
             // 1.2 后多少天
-            handleSubmit({ ...otherValues, tagLogicSwitch: tagLogicSwitch ? 1 : 0 });
+            handleSubmit({
+              ...otherValues,
+              tagLogicType,
+              ...{ tagLogicSwitch: tagLogicType === 1 ? (tagLogicSwitch ? 1 : 0) : undefined }
+            });
           }
           return false;
         } else if (currentNodeType === 'node_quota') {

@@ -10,7 +10,7 @@ import NodePreview from '../NodePreview/NodePreview';
 import styles from './style.module.less';
 import { getDateNodeList, getNodeList, getNodeRuleList, getNodeTypeList, getTouchWayList } from 'src/apis/task';
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
-import { CodeType } from 'src/utils/interface';
+import { NodeCodeType } from 'src/utils/interface';
 import { debounce } from 'src/utils/base';
 interface FormBlockProps {
   value?: any[];
@@ -140,7 +140,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   // 节点类别改变
-  const onNodeTypeChange = (typeCode: CodeType, index: number) => {
+  const onNodeTypeChange = (typeCode: NodeCodeType, index: number) => {
     const sceneListValues = [...blockForm.getFieldValue('sceneList')];
     const values = { ...sceneListValues[index] };
     values.nodeId = '';
@@ -326,7 +326,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                           <Form.Item
                             rules={[{ required: true }]}
                             label="节点名称"
-                            className={classNames(styles.attrItem, 'flex align-center')}
+                            className={classNames(styles.attrItem, 'flex align-center ml40')}
                           >
                             <span>{nodeDetails[index]?.node?.nodeDesc || '--'}</span>
                           </Form.Item>
@@ -356,11 +356,10 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                             </Select>
                           </Form.Item>
                           <Form.Item label="节点说明" className={classNames(styles.attrItem, 'flex align-center ml30')}>
-                            <span>{nodeDetails[index]?.node?.nodeName || '--'}</span>
+                            <span>{nodeDetails[index]?.node?.nodeDesc || '--'}</span>
                           </Form.Item>
                         </>
                           )}
-                      nodeName{' '}
                     </div>
 
                     <div className={styles.taskNode}>
@@ -471,6 +470,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                                 <Button
                                   shape="round"
                                   ghost
+                                  disabled={isReadonly}
                                   type="primary"
                                   onClick={() => add({ pushTime: moment('09:00', 'HH:mm') })}
                                 >
