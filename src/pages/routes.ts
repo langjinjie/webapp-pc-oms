@@ -27,6 +27,14 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/noPermission',
     component: lazy(() => import('src/pages/NoPermission/NoPermission'))
+  },
+  {
+    path: '/strategyTask/edit',
+    component: lazy(() => import('src/pages/Task/StrategyTask/Edit'))
+  },
+  {
+    path: '/taskScene/detail',
+    component: lazy(() => import('src/pages/Task/SceneTask/Detail/Detail'))
   }
 ];
 
@@ -299,6 +307,36 @@ export const routes: RouteProps[] = [
   {
     path: '/dashboardList/:id/detail',
     component: lazy(() => import('src/pages/Dashboard/Detail/Detail'))
+  },
+
+  // 任务系统
+  {
+    path: '/strategyTask',
+    component: lazy(() => import('src/pages/Task/StrategyTask/List'))
+  },
+  {
+    path: '/taskScene',
+    component: lazy(() => import('src/pages/Task/SceneTask/List/List'))
+  },
+  {
+    path: '/taskRule',
+    component: lazy(() => import('src/pages/Task/RuleManage/List/List'))
+  },
+  {
+    path: '/taskNode',
+    component: lazy(() => import('src/pages/Task/NodeManage/List'))
+  },
+  {
+    path: '/strategyManage',
+    component: lazy(() => import('src/pages/Task/StrategyManage/StrategyManageList/List'))
+  },
+  {
+    path: '/strategyManage/tmpList',
+    component: lazy(() => import('src/pages/Task/StrategyManage/TmlManage/Manage'))
+  },
+  {
+    path: '/strategyManage/detail',
+    component: lazy(() => import('src/pages/Task/StrategyManage/Detail'))
   }
 ];
 

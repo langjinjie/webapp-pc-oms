@@ -21,6 +21,8 @@ export interface SearchCol {
   placeholder?: string | [string, string];
   options?: OptionProps[] | null;
   cascaderOptions?: any[];
+  selectNameKey?: string;
+  selectValueKey?: string;
 
   fieldNames?: {
     label: string;
@@ -43,6 +45,8 @@ interface SearchComponentProps {
     | undefined;
   defaultValues?: any;
   className?: string;
+  hideReset?: boolean;
+  children?: React.ReactNode;
 }
 const { RangePicker } = DatePicker;
 
@@ -55,15 +59,17 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     loadData,
     onChangeOfCascader,
     onReset,
-    firstRowChildCount
+    firstRowChildCount,
+    hideReset
   } = props;
-  const [from] = Form.useForm();
+  const [searchForm] = Form.useForm();
   const handleReset = () => {
+    const values = searchForm.getFieldsValue();
     if (onReset) {
       onReset();
     } else {
       onChangeOfCascader?.([''], []);
-      onSearch({});
+      onSearch(values);
     }
   };
   // 对数据进行处理
@@ -77,14 +83,14 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         }
       });
       if (lastOption?.lastLevel === 1) {
-        from.resetFields(fields);
+        searchForm.resetFields(fields);
       }
     }
     onChangeOfCascader?.(value, selectedOptions);
   };
   useEffect(() => {
     if (props.defaultValues?.catalogIds) {
-      from.setFieldsValue({ catalogIds: props.defaultValues.catalogIds });
+      searchForm.setFieldsValue({ catalogIds: props.defaultValues.catalogIds });
     }
   }, [props.defaultValues]);
   const handleFinish = (values: any) => {
@@ -107,12 +113,10 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
       {isInline
         ? (
         <Form
-          form={from}
+          form={searchForm}
           layout="inline"
           onFinish={handleFinish}
-          onReset={() => {
-            handleReset();
-          }}
+          onReset={handleReset}
           className={classNames(style['search-wrap'], [props.className])}
           onValuesChange={onValuesChange}
         >
@@ -133,8 +137,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                     {col.options &&
                       col.options.map((option) => (
-                        <Select.Option key={option.id} value={option.id}>
-                          {option.name}
+                        <Select.Option
+                          key={option[col.selectValueKey!] || option.id}
+                          value={option[col.selectValueKey!] || option.id}
+                        >
+                          {option[col.selectNameKey || 'name']}
                         </Select.Option>
                       ))}
                   </Select>
@@ -165,22 +172,25 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               ))
             );
           })}
+          {props.children}
 
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit" className={style.btnConfirm} shape="round">
                 查询
               </Button>
-              <Button htmlType="reset" type="primary" className={style.btnReset} shape="round" ghost>
-                重置
-              </Button>
+              {!hideReset && (
+                <Button htmlType="reset" type="primary" className={style.btnReset} shape="round" ghost>
+                  重置
+                </Button>
+              )}
             </Space>
           </Form.Item>
         </Form>
           )
         : (
         <Form
-          form={from}
+          form={searchForm}
           onFinish={handleFinish}
           onReset={handleReset}
           className={style.customLayout}
@@ -199,8 +209,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                       {col.options &&
                         col.options.map((option) => (
-                          <Select.Option key={option.id} value={option.id}>
-                            {option.name}
+                          <Select.Option
+                            key={option[col.selectValueKey!] || option.id}
+                            value={option[col.selectValueKey!] || option.id}
+                          >
+                            {option[col.selectNameKey || 'name']}
                           </Select.Option>
                         ))}
                     </Select>
@@ -227,8 +240,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                       {col.options &&
                         col.options.map((option) => (
-                          <Select.Option key={option.id} value={option.id}>
-                            {option.name}
+                          <Select.Option
+                            key={option[col.selectValueKey!] || option.id}
+                            value={option[col.selectValueKey!] || option.id}
+                          >
+                            {option[col.selectNameKey || 'name']}
                           </Select.Option>
                         ))}
                     </Select>
@@ -241,14 +257,17 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 ))
               );
             })}
+            {props.children}
             <Form.Item>
               <Space>
                 <Button type="primary" htmlType="submit" className={style.btnConfirm} shape="round">
                   查询
                 </Button>
-                <Button htmlType="reset" type="primary" className={style.btnReset} shape="round" ghost>
-                  重置
-                </Button>
+                {!hideReset && (
+                  <Button htmlType="reset" type="primary" className={style.btnReset} shape="round" ghost>
+                    重置
+                  </Button>
+                )}
               </Space>
             </Form.Item>
           </Row>

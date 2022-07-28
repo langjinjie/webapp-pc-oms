@@ -1,3 +1,5 @@
+import { Moment } from 'moment';
+
 export interface Nav {
   name: string;
   path?: string;
@@ -378,3 +380,57 @@ export interface MenuItem {
   menuCode: string;
   children: MenuItem[];
 }
+export interface TagItem {
+  tagId: string;
+  tagName: string;
+  groupId?: string;
+  groupName?: string;
+  modified?: number;
+  displayType?: number;
+}
+export interface TagInterface {
+  tagId: string;
+  tagName: string;
+  groupName: string;
+  groupId: string;
+  tagList?: TagItem[];
+}
+export interface TagGroup {
+  groupId: string;
+  groupName: string;
+  tagList: TagInterface[];
+}
+
+export interface TagCategory {
+  category: number;
+  groupList: TagGroup[];
+}
+// 节点预览内容
+export interface IPreviewValue {
+  speechcraft: string;
+  pushTime: string | Moment;
+  actionRule: IActionRule;
+}
+
+export interface IActionRule {
+  contentType: number; // 动作规则类型: 1-文章、2-海报、3-产品、4-活动、5-销售宝典话术
+  itemIds: IItemIds[];
+}
+export interface IItemIds {
+  itemId: string;
+  speechcraft?: string; // 话术
+  imgUrl?: string; // 海报或者分享图(文章/产品/活动)
+  title?: string;
+  desc?: string;
+  itemName?: string;
+}
+
+export type NodeType = {
+  typeCode: string;
+  typeId: string;
+  typeName: string;
+};
+
+export type OperateType = 'add' | 'putAway' | 'delete' | 'view' | 'outline' | 'edit' | 'other';
+
+export type NodeCodeType = 'node_tag' | 'node_date' | 'node_quota' | 'node_calendar';
