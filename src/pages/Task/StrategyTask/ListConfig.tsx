@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Space } from 'antd';
+import { Button, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
@@ -75,6 +75,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
       dataIndex: 'status',
       width: 260,
       align: 'center',
+
       render: (status) => {
         return (
           <span>
@@ -95,21 +96,38 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
       title: '上架机构',
       dataIndex: 'onlineCorps',
       width: 260,
+      ellipsis: {
+        showTitle: false
+      },
       render: (onlineCorps: CorpProps[]) => (
-        <>
-          {onlineCorps?.map((corp, index) => {
-            if (index <= 1) {
-              return (
-                <span key={corp.onlineCorpId + index}>
-                  <span>{corp.onlineCorpName}</span>
-                  {index === 0 ? <br></br> : ''}
-                </span>
-              );
-            }
-            return '';
-          })}
-          {onlineCorps.length > 2 ? '...' : null}
-        </>
+        <Tooltip
+          placement="topLeft"
+          title={
+            <>
+              {onlineCorps.map((item, index) => (
+                <div key={index + 'corp'}>
+                  <span key={item.onlineCorpId + index}>{item.onlineCorpName}</span>
+                  {index < onlineCorps.length && <br></br>}
+                </div>
+              ))}
+            </>
+          }
+        >
+          <div>
+            {onlineCorps?.map((corp, index) => {
+              if (index <= 1) {
+                return (
+                  <span key={corp.onlineCorpId + index}>
+                    <span>{corp.onlineCorpName}</span>
+                    {index === 0 ? <br></br> : ''}
+                  </span>
+                );
+              }
+              return '';
+            })}
+            {onlineCorps.length > 2 ? '...' : null}
+          </div>
+        </Tooltip>
       )
     },
     {
@@ -134,11 +152,11 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
                 <Button type="link" onClick={() => args.onOperate('putAway', record)}>
                   上架
                 </Button>
-                <Button type="link" onClick={() => args.onOperate('edit', record)}>
-                  编辑
-                </Button>
               </>
             )}
+            <Button type="link" onClick={() => args.onOperate('edit', record)}>
+              编辑
+            </Button>
 
             <Button type="link" onClick={() => args.onOperate('other', record)}>
               配置展示信息

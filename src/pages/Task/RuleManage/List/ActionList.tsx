@@ -79,6 +79,7 @@ export const ActionList: React.FC = () => {
       <RuleActionSetModal
         visible={visible}
         value={currentValue}
+        hideBtn
         onCancel={() => setVisible(false)}
         footer={null}
       ></RuleActionSetModal>

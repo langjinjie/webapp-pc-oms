@@ -12,7 +12,6 @@ import { getDateNodeList, getNodeList, getNodeRuleList, getNodeTypeList, getTouc
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 import { NodeCodeType } from 'src/utils/interface';
 import { debounce } from 'src/utils/base';
-import { FormBlockPreview } from '../ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 interface FormBlockProps {
   value?: any[];
   isCorp?: boolean;
@@ -178,7 +177,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   const onFocusNodeRuleItem = async (index: number) => {
     const currentItem = formValues?.sceneList[index] || {};
     if (!currentItem.nodeTypeCode || !currentItem.nodeId) {
-      blockForm.validateFields();
       message.warning('请选择节点信息');
     } else {
       const copyData = [...nodeDetails];
@@ -307,27 +305,29 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                               onChange={(value) => onNodeChange(value, index)}
                               showSearch={true}
                               placeholder="请选择"
-                              dropdownRender={(menu) => (
-                                <>
-                                  {menu}
-                                  <Divider style={{ margin: '8px 0' }} />
-                                  <Space align="center" style={{ padding: '0 8px 4px' }}>
-                                    <Input
-                                      className="width200"
-                                      placeholder="请输入节点说明"
-                                      value={nodeName}
-                                      maxLength={10}
-                                      onChange={onNameChange}
-                                    />
-                                    <Typography.Link
-                                      onClick={() => addDateNode(index)}
-                                      style={{ whiteSpace: 'nowrap' }}
-                                    >
-                                      <PlusOutlined /> 新增
-                                    </Typography.Link>
-                                  </Space>
-                                </>
-                              )}
+                              dropdownRender={(menu) => {
+                                return (
+                                  <>
+                                    {menu}
+                                    <Divider style={{ margin: '8px 0' }} />
+                                    <Space align="center" style={{ padding: '0 8px 4px' }}>
+                                      <Input
+                                        className="width200"
+                                        placeholder="请输入节点说明"
+                                        value={nodeName}
+                                        maxLength={10}
+                                        onChange={onNameChange}
+                                      />
+                                      <Typography.Link
+                                        onClick={() => addDateNode(index)}
+                                        style={{ whiteSpace: 'nowrap' }}
+                                      >
+                                        <PlusOutlined /> 新增
+                                      </Typography.Link>
+                                    </Space>
+                                  </>
+                                );
+                              }}
                             >
                               {nodeOptions[index]?.map((option: any) => (
                                 <Select.Option value={option.nodeId} key={option.nodeId}>
@@ -526,8 +526,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
         childOption={[currentItem?.node]}
         onSubmit={() => setVisibleRule(false)}
       />
-      <div className="formListTitle">策略行事历预览</div>
-      <FormBlockPreview value={formValues?.sceneList || []} />
     </>
   );
 };

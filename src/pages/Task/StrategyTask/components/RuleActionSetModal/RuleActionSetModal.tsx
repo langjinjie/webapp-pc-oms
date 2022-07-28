@@ -21,6 +21,7 @@ type RuleActionSetModalProps = React.ComponentProps<typeof NgModal> & {
   value?: ActinRuleProps;
   onChange?: (value: any) => void;
   isReadonly?: boolean;
+  hideBtn?: boolean;
 };
 
 interface RowProps extends Article {
@@ -28,7 +29,14 @@ interface RowProps extends Article {
   itemName?: string;
   [prop: string]: any;
 }
-const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel, onChange, isReadonly, ...props }) => {
+const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
+  value,
+  onCancel,
+  onChange,
+  hideBtn,
+  isReadonly,
+  ...props
+}) => {
   const { articleCategoryList, setArticleCategoryList } = useContext(Context);
   const [values, setValues] = useState<any>({});
   const [actionForm] = Form.useForm();
@@ -153,17 +161,21 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
 
   return (
     <>
-      {value?.contentType
-        ? (
-        <Button type="link" disabled={isReadonly} onClick={() => setVisible(true)}>
-          {'发' + contentTypeList.filter((type) => type.value === value.contentType)[0].label}
-        </Button>
-          )
-        : (
-        <Button type="link" onClick={() => setVisible(true)}>
-          配置
-        </Button>
-          )}
+      {!hideBtn && (
+        <>
+          {value?.contentType
+            ? (
+            <Button type="link" disabled={isReadonly} onClick={() => setVisible(true)}>
+              {'发' + contentTypeList.filter((type) => type.value === value.contentType)[0].label}
+            </Button>
+              )
+            : (
+            <Button type="link" onClick={() => setVisible(true)}>
+              配置
+            </Button>
+              )}
+        </>
+      )}
 
       <NgModal
         width={808}

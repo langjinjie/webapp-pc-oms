@@ -4,7 +4,6 @@ import { Button, DatePicker, Divider, Form, Input, message, Select, Space, TimeP
 import classNames from 'classnames';
 import moment, { Moment } from 'moment';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
-import CreateNodeRuleModal from '../../../RuleManage/components/CreateNodeRuleModal';
 
 import NodePreview from '../NodePreview/NodePreview';
 import styles from './style.module.less';
@@ -12,7 +11,6 @@ import { getDateNodeList, getNodeList, getNodeRuleList, getNodeTypeList, getTouc
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 import { NodeCodeType } from 'src/utils/interface';
 import { debounce } from 'src/utils/base';
-import { FormBlockPreview } from 'src/pages/Task/StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 interface FormBlockProps {
   value?: any[];
   isCorp?: boolean;
@@ -27,8 +25,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   const [nodeDetails, setNodeDetails] = useState<any[]>([]);
   const [nodeTypeOptions, setNodeTypeOptions] = useState<any[]>([]);
   const [nodeName, setNodeName] = useState('');
-  const [currentItem, setCurrentItem] = useState<any>();
-  const [visibleRule, setVisibleRule] = useState(false);
   const [touchWayOptions, setTouchWayOptions] = useState<
     {
       wayCode: string;
@@ -147,8 +143,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     values.nodeId = '';
     values.nodeRuleList = values.nodeRuleList.map((item: any) => ({ ...item, nodeRuleId: undefined }));
     sceneListValues.splice(index, 1, values);
-    console.log(sceneListValues);
-    console.log(values);
 
     blockForm.setFieldsValue({
       sceneList: sceneListValues
@@ -178,7 +172,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     if (!currentItem.nodeTypeCode || !currentItem.nodeId) {
       blockForm.validateFields();
       message.warning('请选择节点信息');
-    } else if (nodeDetails[index]?.options?.length <= 1) {
+    } else {
       const copyData = [...nodeDetails];
 
       // 获取节点规则列表
@@ -190,14 +184,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     }
   };
 
-  // 新增节点规则
-  const addNodeRule = (item: any, index: number) => {
-    item.node = nodeDetails[index].node;
-    setVisibleRule(true);
-    setCurrentItem(item);
-  };
   const preViewNodeAndAction = (index: number, nodeIndex: number) => {
-    console.log(index, nodeIndex);
     setPreviewVale(formValues?.sceneList?.[index]?.nodeRuleList?.[nodeIndex] || {});
     setPreviewVisible(true);
   };
@@ -390,21 +377,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                                           onFocusNodeRuleItem(index);
                                         }}
                                         placeholder="请选择"
-                                        dropdownRender={(menu) => (
-                                          <>
-                                            {menu}
-                                            <Button
-                                              type="primary"
-                                              disabled={
-                                                !formValues?.sceneList?.[index]?.nodeTypeCode ||
-                                                !formValues?.sceneList?.[index]?.nodeId
-                                              }
-                                              onClick={() => addNodeRule(formValues?.sceneList?.[index], index)}
-                                            >
-                                              新增
-                                            </Button>
-                                          </>
-                                        )}
                                       >
                                         {nodeDetails[index]?.options?.map((rule: any) => (
                                           <Select.Option value={rule.nodeRuleId} key={rule.nodeRuleId}>
@@ -506,17 +478,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
         </Form.List>
       </Form>
       <NodePreview value={previewValue} visible={previewVisible} onClose={() => setPreviewVisible(false)} />
-
-      <CreateNodeRuleModal
-        options={nodeTypeOptions}
-        visible={visibleRule}
-        onCancel={() => setVisibleRule(false)}
-        nodeCode={currentItem?.nodeTypeCode}
-        childOption={[currentItem?.node]}
-        onSubmit={() => setVisibleRule(false)}
-      />
-      <div className="formListTitle">策略行事历预览</div>
-      <FormBlockPreview value={formValues?.sceneList || []} />
     </>
   );
 };

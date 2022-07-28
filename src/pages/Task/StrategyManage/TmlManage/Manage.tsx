@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, PaginationProps, Pagination } from 'antd';
+import { Button, PaginationProps, Pagination, Image } from 'antd';
 import style from './style.module.less';
 import classNames from 'classnames';
 import { NgFormSearch } from 'src/components';
@@ -69,11 +69,17 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
           {tplList.map((item) => (
             <div className={style.taskItem} key={item.tplId}>
               <div className={style.taskImgWrap}>
-                <img className={style.taskImg} src={item.displayCoverImg} />
+                <Image
+                  height={'100%'}
+                  width={'100%'}
+                  className={style.taskImg}
+                  preview={false}
+                  src={item.displayCoverImg}
+                />
               </div>
               <div className={classNames(style.taskName, 'ellipsis')}>{item.tplName}</div>
-              <div className={classNames(style.taskTarget, 'ellipsis')}>效果：{item.taskDesc}</div>
-              <div className={classNames(style.taskTips, 'ellipsis')}>任务说明：{item.sceneDesc}</div>
+              <div className={classNames(style.taskTarget, 'ellipsis')}>效果：{item.resultDesc}</div>
+              <div className={classNames(style.taskTips, 'ellipsis mt8')}>任务说明：{item.taskDesc}</div>
               <div className={classNames(style.taskTips, 'ellipsis')}>任务场景：{item.sceneDesc}</div>
               <Button className={style.useBtn} type="primary" onClick={() => selectedTemplate(item.tplId)}>
                 立即使用

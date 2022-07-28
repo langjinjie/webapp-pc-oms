@@ -7,6 +7,7 @@ import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
 import { URLSearchParams } from 'src/utils/base';
 import moment from 'moment';
+import { FormBlockPreview } from '../StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 
 const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [basicForm] = Form.useForm();
@@ -148,8 +149,8 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               </Form.Item>
               <Form.Item label="客户筛选" name={'clientScope'} className={styles.interiorItem}>
                 <Radio.Group disabled>
-                  <Radio value={1}>全部员工</Radio>
-                  <Radio value={2}>部分员工</Radio>
+                  <Radio value={1}>全部客户</Radio>
+                  <Radio value={2}>部分客户</Radio>
                 </Radio.Group>
               </Form.Item>
             </Form.Item>
@@ -181,6 +182,8 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           )}
         </Form.Provider>
       </div>
+      <div className="formListTitle">策略行事历预览</div>
+      <FormBlockPreview value={tplDetail?.sceneList || []} />
     </div>
   );
 };
