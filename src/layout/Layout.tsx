@@ -163,7 +163,6 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
         <Affix offsetTop={80}>
           <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
             {subMenus.map((subMenu: MenuItem) => {
-              console.log(subMenu);
               return (
                 subMenu?.path && (
                   <li key={subMenu.menuId}>

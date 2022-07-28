@@ -135,7 +135,10 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
       if (value.contentSource === 2 && value.contentCategory === 2) {
         getActionTypeList(value.contentType);
         console.log(value.categoryId, visible, props.visible);
-        value.categoryId = value.categoryId?.indexOf(';') ? value.categoryId?.split(';') : value.categoryId;
+        value.categoryId =
+          typeof value?.categoryId === 'string' && value?.categoryId?.indexOf(';')
+            ? value.categoryId?.split(';')
+            : value.categoryId;
       }
 
       actionForm.setFieldsValue({
