@@ -8,7 +8,7 @@ import { setSearchCols } from './config';
 
 interface PosterSelectComponentProps {
   onChange: (keys: React.Key[], rows: any[]) => void;
-  selectedRowKeys: React.Key[];
+  selectedRowKeys: any[];
 }
 export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
   const [categoryList, setCategoryList] = useState<any[]>([]);
@@ -27,9 +27,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
     const res = (await getPosterCategoryList({})) || [];
     setCategoryList(res);
   };
-  useEffect(() => {
-    getCategoryList();
-  }, []);
+
   const getList = async (params?: any) => {
     // 列表数据跟新前，先清空操作状态和选中项
 
@@ -45,8 +43,11 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
       setDataSource(list);
       setPagination((pagination) => ({ ...pagination, total }));
     }
-    console.log(res);
   };
+  useEffect(() => {
+    getList();
+    getCategoryList();
+  }, []);
   const handleSearch = (values: any) => {
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     const { typeIds: [fatherTypeId, typeId] = [undefined, undefined], name } = values;
@@ -59,7 +60,6 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-    console.log(selectedRowKeys, selectedRows);
     onChange(selectedRowKeys, selectedRows);
   };
 
@@ -92,6 +92,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
           hideSelectAll: true,
           type: 'checkbox',
           preserveSelectedRowKeys: true,
+          defaultSelectedRowKeys: selectedRowKeys,
 
           onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
             onSelectChange(selectedRowKeys, selectedRows);

@@ -2,6 +2,7 @@ import { Button, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
 import { UNKNOWN } from 'src/utils/base';
+import { actionTypeList } from '../../RuleManage/List/ListConfig';
 
 interface TaskNodeColumns {
   nodeRuleId: string;
@@ -26,23 +27,19 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns
       title: '节点规则名称',
       dataIndex: 'nodeRuleName',
       key: 'nodeRuleName',
+      ellipsis: true,
       width: 140
     },
     {
       title: '触发逻辑',
       dataIndex: 'logicName',
+      ellipsis: true,
       width: 140,
       key: 'logicName',
       align: 'center',
       render: (categoryName: string) => categoryName || UNKNOWN
     },
-    {
-      title: '动作规则名称',
-      dataIndex: 'actionRuleType',
-      width: 140,
-      align: 'center',
-      render: (text) => text
-    },
+
     {
       title: '触达形式',
       dataIndex: 'wayName',
@@ -59,7 +56,8 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns
       title: '动作类型',
       dataIndex: 'actionRuleType',
       width: 120,
-      align: 'center'
+      align: 'center',
+      render: (type) => actionTypeList.filter((item) => item.id === type)[0]?.name
     },
     {
       title: '建议推送时间',

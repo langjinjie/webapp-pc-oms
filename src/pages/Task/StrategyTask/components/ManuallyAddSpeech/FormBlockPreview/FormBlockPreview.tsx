@@ -12,7 +12,6 @@ const DotComponent: React.FC<{ title: string }> = ({ title }) => {
   return <div className={styles.timelineLabel}>{title}</div>;
 };
 export const FormBlockPreview: React.FC<FormBlockPreviewProps> = ({ value }) => {
-  console.log('propValue:', value, '==================');
   return (
     <div className={styles.timelineWrap}>
       <Timeline>

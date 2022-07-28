@@ -268,6 +268,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
               {values.contentType === 1
                 ? (
                 <ArticleSelectComponent
+                  selectedRowKeys={selectRowKeys}
                   onChange={(keys, rows) => {
                     setSelectRowKeys(keys);
                     setSelectRows(rows);

@@ -14,14 +14,14 @@ export const ruleTypeOptions = [
     title: '动作规则管理'
   }
 ];
-const actionTypeList = [
+export const actionTypeList = [
   { id: 1, name: '文章' },
   { id: 2, name: '海报' },
   { id: 3, name: '产品' },
   { id: 4, name: '活动' },
   { id: 5, name: '话术' }
 ];
-export const nodeSearchCols: SearchCol[] = [
+export const nodeSearchColsFun = (options: any[]): SearchCol[] => [
   {
     name: 'nodeRuleCode',
     type: 'input',
@@ -33,6 +33,16 @@ export const nodeSearchCols: SearchCol[] = [
     name: 'nodeRuleName',
     type: 'input',
     label: '节点规则名称',
+    placeholder: '请输入',
+    width: '220px'
+  },
+  {
+    name: 'nodeTypeCode',
+    type: 'select',
+    label: '节点类别',
+    options: options,
+    selectNameKey: 'typeName',
+    selectValueKey: 'typeCode',
     placeholder: '请输入',
     width: '220px'
   }

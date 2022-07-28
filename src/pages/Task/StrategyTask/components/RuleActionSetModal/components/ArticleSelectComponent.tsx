@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, PaginationProps } from 'antd';
+import { PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { getNewsList, getTagsOrCategorys } from 'src/apis/marketing';
 import { Context } from 'src/store';
@@ -12,9 +12,10 @@ interface RowProps extends Article {
 
 interface ArticleSelectComponentProps {
   onChange: (keys: React.Key[], rows: RowProps[]) => void;
+  selectedRowKeys?: any[];
 }
 
-export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ onChange }) => {
+export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
   const { articleCategoryList, setArticleCategoryList } = useContext(Context);
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [formValues, setFormValues] = useState<any>();
@@ -25,7 +26,7 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
     simple: true
   });
   const getList = async (params?: any) => {
-    const pageNum = params.pageNum || pagination.current;
+    const pageNum = params?.pageNum || pagination.current;
     const res = await getNewsList({
       syncBank: 1,
       pageSize: pagination.pageSize,
@@ -58,6 +59,7 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
 
   useEffect(() => {
     asyncGetTagsOrCategory();
+    getList();
   }, []);
   const onSearch = async (values: any) => {
     setFormValues(values);
@@ -99,6 +101,7 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
         pagination={pagination}
         rowSelection={{
           type: 'radio',
+          defaultSelectedRowKeys: selectedRowKeys,
           onChange: (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
             onSelectChange(selectedRowKeys, selectedRows);
           }
@@ -112,21 +115,6 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
             dataIndex: 'tagNameList',
             key: 'tagNameList',
             width: 100
-          },
-          {
-            title: '详情',
-
-            width: 80,
-            render: (text: string, record: any) => (
-              <Button
-                type="link"
-                onClick={() => {
-                  console.log(record);
-                }}
-              >
-                详情
-              </Button>
-            )
           }
         ]}
       ></NgTable>

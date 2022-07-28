@@ -118,8 +118,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
       res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
     } else {
       const date = formValues?.sceneList?.[index]?.date.format('MMDD');
-      console.log(date);
-      res = await getDateNodeList({ type: 2, date, nodeDesc: params.codeName });
+      res = await getDateNodeList({ type: 2, date, nodeDesc: params.nodeName });
     }
     if (res) {
       const copyData = [...nodeOptions];
@@ -133,15 +132,13 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
    */
   const debounceFetcherNodeOptions = debounce<{ value: string; index: number }>(
     async ({ value, index }: { value: string; index: number }) => {
-      await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, codeName: value }, index);
+      await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, nodeName: value }, index);
     },
     300
   );
 
   const onFocusNodeSelect = async (index: number) => {
-    if (nodeOptions[index]?.length <= 1 || !nodeOptions[index]) {
-      await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, codeName: '' }, index);
-    }
+    await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, nodeName: '' }, index);
   };
 
   // 节点类别改变
@@ -149,6 +146,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     const sceneListValues = [...blockForm.getFieldValue('sceneList')];
     const values = { ...sceneListValues[index] };
     values.nodeId = '';
+    values.date = undefined;
     values.nodeRuleList = values.nodeRuleList.map((item: any) => ({ ...item, nodeRuleId: undefined }));
     sceneListValues.splice(index, 1, values);
     console.log(sceneListValues);
@@ -182,7 +180,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     if (!currentItem.nodeTypeCode || !currentItem.nodeId) {
       blockForm.validateFields();
       message.warning('请选择节点信息');
-    } else if (nodeDetails[index]?.options?.length <= 1) {
+    } else {
       const copyData = [...nodeDetails];
 
       // 获取节点规则列表
@@ -228,7 +226,15 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
       date: formValues.sceneList?.[index].date.format('MMDD'),
       nodeDesc: nodeName
     });
-    console.log(res);
+    if (res) {
+      message.success('添加成功');
+      console.log(nodeOptions);
+      const copyData = [...nodeOptions];
+      copyData[index].push(res.list[0]);
+      setNodeName('');
+
+      setNodeOptions(copyData);
+    }
   };
 
   return (
@@ -310,6 +316,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                                       className="width200"
                                       placeholder="请输入节点说明"
                                       value={nodeName}
+                                      maxLength={10}
                                       onChange={onNameChange}
                                     />
                                     <Typography.Link

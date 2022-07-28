@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Form } from 'antd';
-import { nodeSearchCols, tableColumns, RuleColumns } from './ListConfig';
+import { nodeSearchColsFun, tableColumns, RuleColumns } from './ListConfig';
 import { PlusOutlined } from '@ant-design/icons';
 import { NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
@@ -54,12 +54,12 @@ export const NodeList: React.FC = () => {
     getList();
   }, []);
 
-  const onSearch = (values: any) => {
-    getList({ ...values, pageNum: 1 });
+  const onSearch = ({ node, ...values }: any) => {
+    getList({ ...values, pageNum: 1, nodeId: node?.id || undefined });
     setQueryParams(values);
   };
-  const onValuesChange = (changeValues: any, values: any) => {
-    setQueryParams(values);
+  const onValuesChange = (changeValues: any, { node, ...values }: any) => {
+    setQueryParams({ ...values, nodeId: node?.id || undefined });
   };
 
   const paginationChange = (pageNum: number, pageSize?: number) => {
@@ -91,7 +91,13 @@ export const NodeList: React.FC = () => {
         新建节点规则
       </Button>
       <div className={'pt20'}>
-        <NgFormSearch isInline searchCols={nodeSearchCols} onSearch={onSearch} onValuesChange={onValuesChange}>
+        <NgFormSearch
+          firstRowChildCount={2}
+          isInline={false}
+          searchCols={nodeSearchColsFun(nodeOptions)}
+          onSearch={onSearch}
+          onValuesChange={onValuesChange}
+        >
           <Form.Item label="触发节点" name={'node'}>
             <DebounceSelect placeholder="请输入" style={{ width: '180px' }} fetchOptions={fetchUserList} />
           </Form.Item>

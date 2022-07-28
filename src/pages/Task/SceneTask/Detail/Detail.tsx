@@ -7,12 +7,12 @@ import { URLSearchParams } from 'src/utils/base';
 import NodePreview, { IValue } from '../../StrategyTask/components/NodePreview/NodePreview';
 import { tableColumnsFun } from './DetailConfig';
 
-const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location }) => {
+const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [detail, setDetail] = useState<any>({});
   const [visible, setVisible] = useState(false);
   const [nodeValue, setNodeValue] = useState<IValue>();
   const navigatorToList = () => {
-    console.log('1');
+    history.goBack();
   };
   const getDetail = async () => {
     const { sceneId } = URLSearchParams(location.search);
@@ -56,6 +56,7 @@ const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location }) => {
         </Form>
         <div className="formListTitle mb20">场景规则信息</div>
         <NgTable
+          rowKey={'nodeRuleId'}
           dataSource={detail.sceneRuleList || []}
           columns={tableColumnsFun({
             onOperate: previewItem

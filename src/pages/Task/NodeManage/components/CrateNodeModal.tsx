@@ -4,6 +4,7 @@ import { NgModal } from 'src/components';
 import { getNodeNameWithDate, queryTargetList } from 'src/apis/task';
 
 import TagFilterComponents from '../components/TagModal/TagFilterComponent';
+import { useResetFormOnCloseModal } from 'src/utils/use-ResetFormOnCloseModal';
 
 export interface NodeTypeProps {
   typeId: string;
@@ -16,6 +17,7 @@ type CreateNodeModalProps = React.ComponentProps<typeof NgModal> & {
 };
 type CodeType = 'node_tag' | 'node_date' | 'node_quota';
 export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSubmit, ...props }) => {
+  const [nodeForm] = Form.useForm();
   const [currentNodeType, setCurrentNodeType] = useState<CodeType>();
   const [dateCodeOptions, setDateCodeOptions] = useState<any[]>([]);
   const [quotaOptions, setQuotaOptions] = useState<any[]>([]);
@@ -28,12 +30,12 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
       setDateCodeOptions(res.list || []);
     }
   };
+  useResetFormOnCloseModal({ form: nodeForm, visible: props.visible! });
   useEffect(() => {
     if (props.visible) {
       getDateList();
     }
   }, [props.visible]);
-  const [nodeForm] = Form.useForm();
 
   const getOptions = async () => {
     const res = await queryTargetList({ pageSize: 1000, pageNum: 1 });
@@ -54,7 +56,6 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
     nodeForm
       .validateFields()
       .then((values) => {
-        console.log(values);
         onSubmit(values);
       })
       .catch((err) => {
