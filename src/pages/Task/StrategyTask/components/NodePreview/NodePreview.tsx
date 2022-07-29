@@ -13,6 +13,7 @@ export interface IValue {
   speechcraft: string; // 自定义话术
   pushTime: string;
   actionRule: IActionRule;
+  [prop: string]: string;
 }
 
 interface INodePreviewProps {
@@ -31,17 +32,17 @@ const NodePreview: React.FC<INodePreviewProps> = ({ visible, title, onClose, val
   };
   return (
     <Drawer
-      maskClosable={false}
+      maskClosable={true}
       className={style.drawerWrap}
       width={490}
       visible={visible}
       title={title || '节点动作规则详情'}
       onClose={onCloseHandle}
     >
-      <div className={style.infoItem}>
+      {/* <div className={style.infoItem}>
         <div className={style.key}>节点动作规则编号：</div>
         <div className={style.value}>{value?.nodeRuleCode}</div>
-      </div>
+      </div> */}
       <div className={style.infoItem}>
         <div className={style.key}>节点规则名称：</div>
         <div className={style.value}>{value?.nodeRuleName}</div>
@@ -50,16 +51,28 @@ const NodePreview: React.FC<INodePreviewProps> = ({ visible, title, onClose, val
         <div className={style.key}>动作规则名称：</div>
         <div className={style.value}>{contentType2Name[(value?.contentType || 0) + 1]}</div>
       </div>
-      <div className={style.infoItem}>
+      {/* <div className={style.infoItem}>
         <div className={style.key}>触发逻辑：</div>
         <div className={style.value}>{value?.logicName}</div>
-      </div>
+      </div> */}
       <div className={style.infoItem}>
         <div className={style.key}>触达形式：</div>
         <div className={style.value}>{value?.wayName}</div>
       </div>
       <div className={style.preItem}>
-        <div className={style.key}>发送内容预览：</div>
+        <div className={style.key}>
+          发送内容预览：
+          {value?.actionRule?.category
+            ? (
+            <span
+              dangerouslySetInnerHTML={{
+                __html: `按照 <span class="italic"> ${value.actionRule.category} </span> 最新发布的内容`
+              }}
+            ></span>
+              )
+            : null}
+        </div>
+
         <div className={style.value}>
           <Preview value={value} isMoment={value?.wayName === '群发朋友圈'} />
         </div>

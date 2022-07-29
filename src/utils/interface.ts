@@ -415,14 +415,16 @@ export interface IPreviewValue {
 export interface IActionRule {
   contentType: number; // 动作规则类型: 1-文章、2-海报、3-产品、4-活动、5-销售宝典话术
   itemIds: IItemIds[];
+  [prop: string]: any;
 }
 export interface IItemIds {
   itemId: string;
   speechcraft?: string; // 话术
-  imgUrl?: string; // 海报或者分享图(文章/产品/活动)
-  title?: string;
+  itemShareImgUrl?: string; // 海报或者分享图(文章/产品/活动)
+  itemShareTitle?: string;
   desc?: string;
   itemName?: string;
+  [prop: string]: any;
 }
 
 export type NodeType = {

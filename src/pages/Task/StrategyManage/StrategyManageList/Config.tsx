@@ -19,7 +19,7 @@ export const searchCols: SearchCol[] = [
     type: 'input',
     label: '策略任务模板名称',
     placeholder: '请输入',
-    width: '320px'
+    width: '180px'
   }
 ];
 
@@ -39,7 +39,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
   return [
     { title: '机构策略任务编号', dataIndex: 'tplCode', key: 'tplCode', width: 200 },
     {
-      title: '机构策略任务编号',
+      title: '机构策略任务名称',
       dataIndex: 'corpTplName',
       key: 'corpTplName',
       width: 200
@@ -85,7 +85,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
       align: 'right',
       render: (status, record) => {
         return (
-          <Space size={20}>
+          <Space size={5}>
             <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'view')}>
               查看
             </Button>

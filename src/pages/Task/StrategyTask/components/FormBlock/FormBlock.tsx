@@ -197,7 +197,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     setCurrentItem(item);
   };
   const preViewNodeAndAction = (index: number, nodeIndex: number) => {
-    console.log(index, nodeIndex);
     setPreviewVale(formValues?.sceneList?.[index]?.nodeRuleList?.[nodeIndex] || {});
     setPreviewVisible(true);
   };

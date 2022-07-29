@@ -5,12 +5,12 @@ import classNames from 'classnames';
 import moment, { Moment } from 'moment';
 import { ManuallyAddSpeech } from '../ManuallyAddSpeech/ManuallyAddSpeech';
 
-import NodePreview from '../NodePreview/NodePreview';
 import styles from './style.module.less';
 import { getDateNodeList, getNodeList, getNodeRuleList, getNodeTypeList, getTouchWayList } from 'src/apis/task';
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 import { NodeCodeType } from 'src/utils/interface';
 import { debounce } from 'src/utils/base';
+import NodePreview from 'src/pages/Task/StrategyTask/components/NodePreview/NodePreview';
 interface FormBlockProps {
   value?: any[];
   isCorp?: boolean;

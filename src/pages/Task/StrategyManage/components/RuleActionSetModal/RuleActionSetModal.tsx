@@ -129,6 +129,9 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
     getActionTypeList(contentType);
     setSelectRows([]);
     setSelectRowKeys([]);
+    actionForm.setFieldsValue({
+      categoryId: undefined
+    });
   };
 
   useEffect(() => {

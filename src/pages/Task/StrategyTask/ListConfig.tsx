@@ -19,7 +19,7 @@ export const searchCols: SearchCol[] = [
     type: 'input',
     label: '策略任务模板名称',
     placeholder: '请输入',
-    width: '320px'
+    width: '180px'
   }
 ];
 

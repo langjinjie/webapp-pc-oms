@@ -13,7 +13,7 @@ interface IPreviewProps {
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
   const itemIds = value?.actionRule.itemIds || [];
-  console.log('++++++++++++++++++++++++++++++++', typeof itemIds);
+  console.log('++++++++++++++++++++++++++++++++', value);
   return (
     <div className={classNames(style.phoneWrap, className)}>
       <div className={style.inner}>
@@ -53,18 +53,18 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                     {/* 海报 */}
                     {value?.actionRule?.contentType === 2 && (
                       <div className={style.posterWrap}>
-                        <img className={style.poster} src={mapItem.imgUrl} />
+                        <img className={style.poster} src={mapItem.itemShareImgUrl || mapItem.imgUrl} />
                       </div>
                     )}
                     {[1, 3, 4].includes(value?.actionRule.contentType as number) && (
-                      <div className={style.cardMessage}>
-                        <div className={classNames(style.title, 'two-line-ellipsis')}>{mapItem.title}</div>
-                        <div className={style.imgAndDesc}>
-                          <div className={classNames(style.desc, 'two-line-ellipsis')}>
-                            90年代生人开始相信圣诞老人了
-                          </div>
+                      <div className={classNames(style.cardMessage, 'flex')}>
+                        <div className={' flex  cell'}>
+                          <div className={classNames(style.title, 'ellipsis')}>{mapItem.itemName}</div>
+                          <div className={classNames(style.desc, 'two-line-ellipsis')}>{mapItem.itemShareTitle}</div>
+                        </div>
+                        <div className={classNames(style.imgAndDesc, 'fixed ml10')}>
                           <div className={style.img}>
-                            <img src={mapItem.imgUrl} />
+                            <img src={mapItem.itemShareImgUrl || mapItem.imgUrl} />
                           </div>
                         </div>
                       </div>
@@ -97,7 +97,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                               { [style.twoImg]: value?.actionRule?.itemIds?.length === 2 },
                               { [style.multiImg]: value?.actionRule?.itemIds?.length > 2 }
                             )}
-                            src={mapItem.imgUrl}
+                            src={mapItem.itemShareTitle}
                           />
                         ))}
                       </div>
@@ -105,7 +105,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                     {[1, 3, 4].includes(value?.actionRule.contentType) &&
                       value?.actionRule?.itemIds?.map((mapItem) => (
                         <div className={style.card} key={mapItem.itemId}>
-                          <img className={style.shareImg} src={mapItem.imgUrl} />
+                          <img className={style.shareImg} src={mapItem.itemShareImgUrl} />
                           <div className={style.shareTitle}>
                             <span className="two-line-ellipsis">{mapItem.itemName}</span>
                           </div>
