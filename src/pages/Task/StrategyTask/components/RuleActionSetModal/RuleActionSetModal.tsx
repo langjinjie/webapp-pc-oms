@@ -47,7 +47,6 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
 
   const handleOk = () => {
     actionForm.validateFields().then((values) => {
-      setVisible(false);
       // 对表单数据进行拷贝，防止污染表单渲染
       const copyData = JSON.parse(JSON.stringify(values));
       const { contentSource } = copyData;
@@ -66,6 +65,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
         // 私有库
         onChange?.(values);
       }
+      setVisible(false);
     });
   };
 
@@ -286,7 +286,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
                         }}
                       >
                         {contentTypeOptions.map((option) => (
-                          <Select.Option key={option.id} value={option.id}>
+                          <Select.Option key={option.id} value={option.id + ''}>
                             {option.name}
                           </Select.Option>
                         ))}

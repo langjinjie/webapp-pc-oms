@@ -74,7 +74,11 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
         rowSelection={{
           type: 'radio',
           onChange: (selectedRowKeys: React.Key[], selectedRows: ActivityProps[]) => {
-            const rows = selectedRows.map((item) => ({ itemId: item.activityId, itemName: item.activityName }));
+            const rows = selectedRows.map((item) => ({
+              ...item,
+              itemId: item.activityId,
+              itemName: item.activityName
+            }));
             onSelectChange(selectedRowKeys, rows);
           }
         }}

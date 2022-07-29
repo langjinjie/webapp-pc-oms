@@ -28,6 +28,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   const [nodeName, setNodeName] = useState('');
   const [currentItem, setCurrentItem] = useState<any>();
   const [visibleRule, setVisibleRule] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState<number>();
   const [touchWayOptions, setTouchWayOptions] = useState<
     {
       wayCode: string;
@@ -136,9 +137,9 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     300
   );
 
-  const onFocusNodeSelect = async (index: number) => {
-    await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, nodeName: '' }, index);
-  };
+  // const onFocusNodeSelect = async (index: number) => {
+  //   await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, nodeName: '' }, index);
+  // };
 
   // 节点类别改变
   const onNodeTypeChange = (typeCode: NodeCodeType, index: number) => {
@@ -148,8 +149,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     values.date = undefined;
     values.nodeRuleList = values.nodeRuleList.map((item: any) => ({ ...item, nodeRuleId: undefined }));
     sceneListValues.splice(index, 1, values);
-    console.log(sceneListValues);
-    console.log(values);
 
     blockForm.setFieldsValue({
       sceneList: sceneListValues
@@ -195,6 +194,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     item.node = nodeDetails[index].node;
     setVisibleRule(true);
     setCurrentItem(item);
+    setCurrentIndex(index);
   };
   const preViewNodeAndAction = (index: number, nodeIndex: number) => {
     setPreviewVale(formValues?.sceneList?.[index]?.nodeRuleList?.[nodeIndex] || {});
@@ -234,6 +234,21 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     }
   };
 
+  // 新增节点规则后回调
+  const createdNodeRuleCallback = () => {
+    setVisibleRule(false);
+    const nodeId = formValues.sceneList[currentIndex!].nodeId;
+    onNodeChange(nodeId, currentIndex!);
+  };
+
+  const deleteSceneCallback = (index: number) => {
+    const copyNodeOptions = [...nodeOptions];
+    const copyNodeDetails = [...nodeDetails];
+    copyNodeOptions.splice(index, 1);
+    copyNodeDetails.splice(index, 1);
+    setNodeOptions(copyNodeOptions);
+    setNodeDetails(copyNodeDetails);
+  };
   return (
     <>
       <Form form={blockForm} name="blockForm" className={styles.blockWrap} onValuesChange={onFieldsChange}>
@@ -248,8 +263,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                       <Button
                         className={styles.blockDelete}
                         type="link"
-                        disabled={index === 0}
-                        onClick={() => listItemRemove(index)}
+                        disabled={!(formValues?.sceneList?.length > 1)}
+                        onClick={() => {
+                          listItemRemove(index);
+                          deleteSceneCallback(index);
+                        }}
                       >
                         删除
                       </Button>
@@ -299,7 +317,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                               className={styles.nodeDate}
                               disabled={!formValues?.sceneList?.[index]?.date || !!isCorp}
                               filterOption={false}
-                              onFocus={() => onFocusNodeSelect(index)}
                               onSearch={(value) => debounceFetcherNodeOptions({ value, index })}
                               onChange={(value) => onNodeChange(value, index)}
                               showSearch={true}
@@ -355,7 +372,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                             <Select
                               disabled={isCorp}
                               filterOption={false}
-                              onFocus={() => onFocusNodeSelect(index)}
                               onSearch={(value) => debounceFetcherNodeOptions({ value, index })}
                               onChange={(value) => onNodeChange(value, index)}
                               showSearch={true}
@@ -523,7 +539,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
         onCancel={() => setVisibleRule(false)}
         nodeCode={currentItem?.nodeTypeCode}
         childOption={[currentItem?.node]}
-        onSubmit={() => setVisibleRule(false)}
+        onSubmit={createdNodeRuleCallback}
       />
     </>
   );

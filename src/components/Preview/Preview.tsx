@@ -12,7 +12,7 @@ interface IPreviewProps {
 }
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
-  const itemIds = value?.actionRule.itemIds || [];
+  const itemIds = value?.actionRule?.itemIds || [];
   console.log('++++++++++++++++++++++++++++++++', value);
   return (
     <div className={classNames(style.phoneWrap, className)}>

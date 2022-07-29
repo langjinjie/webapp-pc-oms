@@ -51,6 +51,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
       if (contentSource === 1) {
         if (selectRows.length === 0) return message.warning('请选择营销素材');
         copyData.itemIds = selectRows.map((item) => ({
+          ...item,
           itemId: item.newsId || item.posterId || item.itemId,
           itemName: item.name || item.title || item.itemName
         }));
@@ -59,6 +60,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
         if (contentCategory === 1) {
           if (selectRows.length === 0) return message.warning('请选择营销素材');
           copyData.itemIds = selectRows.map((item) => ({
+            ...item,
             itemId: item.newsId || item.posterId || item.itemId,
             itemName: item.name || item.title || item.itemName
           }));
@@ -310,7 +312,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
                         }}
                       >
                         {contentTypeOptions.map((option) => (
-                          <Select.Option key={option.id} value={option.id}>
+                          <Select.Option key={option.id} value={option.id + ''}>
                             {option.name}
                           </Select.Option>
                         ))}

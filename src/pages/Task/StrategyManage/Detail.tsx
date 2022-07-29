@@ -8,13 +8,14 @@ import { RouteComponentProps } from 'react-router-dom';
 import { URLSearchParams } from 'src/utils/base';
 import moment from 'moment';
 import { FormBlockPreview } from '../StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
+import { isArray } from 'src/utils/tools';
 
 const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [basicForm] = Form.useForm();
   const [tplDetail, setTplDetail] = useState<any>();
   const [isReadonly, setIsReadonly] = useState(false);
   const navigatorToList = () => {
-    history.push('/strategyTask');
+    history.goBack();
   };
 
   const getDetail = async () => {
@@ -63,9 +64,16 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           scene.sceneId = scene.sceneId || '';
           scene.nodeRuleList.map((rule: any) => {
             if (rule.actionRule.contentCategory === 2) {
-              if (typeof rule.actionRule.categoryId !== 'string') {
+              if (isArray(rule.actionRule.categoryId)) {
                 rule.actionRule.categoryId = rule.actionRule.categoryId.join(';');
               }
+            }
+            if (rule.actionRule?.itemIds?.length > 0) {
+              rule.actionRule.itemIds = rule.actionRule?.itemIds.map((item: any) => ({
+                itemId: item.itemId,
+                smartSceneId: item.sceneId || item.smartSceneId
+              }));
+              console.log(rule.actionRule.itemIds);
             }
             rule.pushTime = moment(rule.pushTime)?.format('HH:mm') || '';
             return rule;

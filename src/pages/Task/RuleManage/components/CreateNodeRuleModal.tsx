@@ -15,6 +15,7 @@ type CreateNodeModalProps = React.ComponentProps<typeof NgModal> & {
 };
 
 const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption, nodeCode, onSubmit, ...props }) => {
+  console.log(options, childOption, nodeCode);
   const [ruleForm] = Form.useForm();
   const [currentNodeType, setCurrentNodeType] = useState<NodeCodeType>();
   const [currentNode, setCurrentNode] = useState<any>({});
@@ -62,7 +63,8 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
       const node = childOption?.[0];
       setCurrentNode(node);
       ruleForm.setFieldsValue({
-        nodeId: node.nodeId
+        nodeId: node.nodeId,
+        nodeCode: nodeCode
       });
       nodeChange(node.nodeId);
     }
