@@ -8,6 +8,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { URLSearchParams } from 'src/utils/base';
 import moment from 'moment';
 import { FormBlockPreview } from './components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
+import { isArray } from 'src/utils/tools';
 
 const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [basicForm] = Form.useForm();
@@ -56,7 +57,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           scene.sceneId = scene.sceneId || '';
           scene.nodeRuleList.map((rule: any) => {
             if (rule.actionRule.contentType === 2 && rule.actionRule.contentCategory === 2) {
-              if (typeof rule.actionRule.categoryId !== 'string') {
+              if (isArray(rule.actionRule.categoryId)) {
                 rule.actionRule.categoryId = rule.actionRule.categoryId.join(';');
               }
             }
