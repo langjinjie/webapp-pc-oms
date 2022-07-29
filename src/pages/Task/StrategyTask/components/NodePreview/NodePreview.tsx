@@ -1,7 +1,6 @@
 import React from 'react';
 import { Preview } from 'src/components';
 import { Drawer } from 'antd';
-import { IActionRule } from 'src/utils/interface';
 import style from './style.module.less';
 
 export interface IValue {
@@ -12,7 +11,7 @@ export interface IValue {
   wayName: string; // 触达方式
   speechcraft: string; // 自定义话术
   pushTime: string;
-  actionRule: IActionRule;
+  actionRule: any;
   [prop: string]: string;
 }
 
@@ -49,7 +48,7 @@ const NodePreview: React.FC<INodePreviewProps> = ({ visible, title, onClose, val
       </div>
       <div className={style.infoItem}>
         <div className={style.key}>动作规则名称：</div>
-        <div className={style.value}>{contentType2Name[(value?.contentType || 0) + 1]}</div>
+        <div className={style.value}>{contentType2Name[(value?.actionRule?.contentType || 0) - 1]}</div>
       </div>
       {/* <div className={style.infoItem}>
         <div className={style.key}>触发逻辑：</div>

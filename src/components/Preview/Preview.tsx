@@ -58,7 +58,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                     )}
                     {[1, 3, 4].includes(value?.actionRule.contentType as number) && (
                       <div className={classNames(style.cardMessage, 'flex')}>
-                        <div className={' flex  cell'}>
+                        <div className={'flex vertical cell'}>
                           <div className={classNames(style.title, 'ellipsis')}>{mapItem.itemName}</div>
                           <div className={classNames(style.desc, 'two-line-ellipsis')}>{mapItem.itemShareTitle}</div>
                         </div>
