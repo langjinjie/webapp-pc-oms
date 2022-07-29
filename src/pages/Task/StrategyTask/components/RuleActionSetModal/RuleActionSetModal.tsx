@@ -57,8 +57,9 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
       if (contentSource === 1) {
         if (selectRows.length === 0) return message.warning('请选择营销素材');
         copyData.itemIds = selectRows.map((item) => ({
-          itemId: item.newsId || item.posterId,
-          itemName: item.name || item.title
+          ...item,
+          itemId: item.newsId || item.posterId || item.itemId,
+          itemName: item.name || item.title || item.itemName
         }));
         onChange?.(copyData);
       } else {
@@ -162,6 +163,23 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
     });
   };
 
+  const onContentCategoryChange = (value: number) => {
+    if (value === 2) {
+      getActionTypeList(values.contentType);
+    }
+  };
+
+  // 海报选中
+  const posterSelectChange = (keys: React.Key[], rows: any[]) => {
+    setSelectRowKeys(keys);
+    // 针对海报选中未加载的数据进行过滤重组处理
+    const res = rows.filter((row) => row !== undefined);
+    const filterKeys = keys.filter((key) => !res.map((item) => item.posterId).includes(key));
+
+    const filterRows = selectRows.filter((row) => filterKeys.includes(row.itemId!));
+    setSelectRows([...res, ...filterRows]);
+  };
+
   return (
     <>
       {!hideBtn && (
@@ -218,7 +236,14 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
           {values.contentSource === 2 && (
             <Form.Item label="选择内容" required>
               <Form.Item name={'contentCategory'} rules={[{ required: true, message: '请选择规则' }]}>
-                <Radio.Group disabled={props.footer === null}>
+                <Radio.Group
+                  disabled={props.footer === null}
+                  onChange={(e) => {
+                    setSelectRows([]);
+                    setSelectRowKeys([]);
+                    onContentCategoryChange(e.target.value);
+                  }}
+                >
                   <Radio value={1}>机构自定义配置</Radio>
                   {values.contentType < 4 && <Radio value={2}>按照规则配置</Radio>}
                 </Radio.Group>
@@ -292,13 +317,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
                   )
                 : values.contentType === 2
                   ? (
-                <PosterSelectComponent
-                  selectedRowKeys={selectRowKeys}
-                  onChange={(keys, rows) => {
-                    setSelectRowKeys(keys);
-                    setSelectRows(rows);
-                  }}
-                />
+                <PosterSelectComponent selectedRowKeys={selectRowKeys} onChange={posterSelectChange} />
                     )
                   : null}
             </div>

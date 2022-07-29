@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { useEffect, useMemo, useState } from 'react';
 import { createNodeRule, getNodeList, searchTagList } from 'src/apis/task';
 import { NgModal } from 'src/components';
-import { CodeType, NodeType, TagInterface } from 'src/utils/interface';
+import { NodeCodeType, NodeType, TagInterface } from 'src/utils/interface';
 import { useResetFormOnCloseModal } from 'src/utils/use-ResetFormOnCloseModal';
 import styles from './style.module.less';
 
@@ -11,16 +11,17 @@ type CreateNodeModalProps = React.ComponentProps<typeof NgModal> & {
   options: NodeType[];
   onSubmit: () => void;
   childOption?: any[];
-  nodeCode?: CodeType;
+  nodeCode?: NodeCodeType;
 };
 
 const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption, nodeCode, onSubmit, ...props }) => {
   const [ruleForm] = Form.useForm();
-  const [currentNodeType, setCurrentNodeType] = useState<CodeType>();
-  const [currentNode, setCurrentNode] = useState<any>();
+  const [currentNodeType, setCurrentNodeType] = useState<NodeCodeType>();
+  const [currentNode, setCurrentNode] = useState<any>({});
   const [nodeOptions, setNodeOptions] = useState<any[]>([]);
   const [tagOptions, setTagOptions] = useState<TagInterface[]>([]);
   const [formValues, setFormValues] = useState<any>({});
+  const defaultFormValues = { tagLogicSwitch: true };
 
   useResetFormOnCloseModal({ form: ruleForm, visible: props.visible! });
   // 获取列表数据
@@ -74,7 +75,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
     }
   }, [props.visible]);
 
-  const onNodeTypeChange = (typeCode: CodeType) => {
+  const onNodeTypeChange = (typeCode: NodeCodeType) => {
     setCurrentNodeType(typeCode);
     getNodeOptions({ nodeTypeCode: typeCode });
     ruleForm.resetFields();
@@ -97,27 +98,33 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
       onSubmit();
     }
   };
+
+  const dataLogicTypeOptions = [
+    { id: 0, name: '小于' },
+    { id: 1, name: '等于' },
+    { id: 2, name: '大于' }
+  ];
   const onConfirm = () => {
     ruleForm
       .validateFields()
       .then((values) => {
         // 1. 节点类型时
+        const { dateLogicType, tagLogicType, tagLogicSwitch, ...otherValues } = values;
         if (currentNodeType === 'node_tag') {
-          const { dateLogicType, tagLogicType, tagLogicSwitch, ...otherValues } = values;
           // 1.1当天
           if (dateLogicType === 1) {
             handleSubmit({
               ...otherValues,
               days: 0,
               tagLogicType,
-              ...{ tagLogicSwitch: tagLogicType === 1 ? (tagLogicSwitch ? 1 : 0) : undefined }
+              tagLogicSwitch: tagLogicType === 1 ? (tagLogicSwitch ? 1 : 0) : undefined
             });
           } else {
             // 1.2 后多少天
             handleSubmit({
               ...otherValues,
               tagLogicType,
-              ...{ tagLogicSwitch: tagLogicType === 1 ? (tagLogicSwitch ? 1 : 0) : undefined }
+              tagLogicSwitch: tagLogicType === 1 ? (tagLogicSwitch ? 1 : 0) : undefined
             });
           }
           return false;
@@ -142,6 +149,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
     <NgModal {...props} width={780} title="新建节点规则" onOk={onConfirm}>
       <Form
         form={ruleForm}
+        initialValues={defaultFormValues}
         labelAlign="right"
         labelCol={{ span: 4 }}
         onValuesChange={(changedValues: any, values: any) => onValuesChange(values)}
@@ -173,7 +181,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
               </Select>
             </Form.Item>
             <Form.Item label="触发逻辑" labelAlign="right">
-              <div className={classNames('flex', styles.lineWrap)}>
+              <div className={classNames('flex', styles.lineWrap, styles.pa0)}>
                 <Space size={8}>
                   <Form.Item>
                     <Input className={styles.nodeName} value={currentNode?.nodeName} readOnly></Input>
@@ -190,14 +198,22 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
                       <Form.Item name={'days'}>
                         <InputNumber min={1} className={styles.smallInput} controls={false}></InputNumber>
                       </Form.Item>
-                      天
+                      <span className={styles.lineText}>天</span>
                     </>
                   )}
                 </Space>
               </div>
             </Form.Item>
             <Form.Item label="节点规则名称" labelAlign="right">
-              {currentNode?.nodeName}前{formValues.days || 0}天
+              {currentNode?.nodeName}
+              {formValues.dateLogicType === 0
+                ? '前'
+                : formValues.dateLogicType === 1
+                  ? '当'
+                  : formValues.dateLogicType === 2
+                    ? '后'
+                    : ''}
+              {(formValues.dateLogicType !== 1 && formValues.days) || ''}天
             </Form.Item>
           </>
         )}
@@ -205,7 +221,12 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
         {/* 标签类 */}
         {currentNodeType === 'node_tag' && (
           <>
-            <Form.Item label="触发节点" labelAlign="right" name={'nodeId'}>
+            <Form.Item
+              label="触发节点"
+              labelAlign="right"
+              name={'nodeId'}
+              rules={[{ required: true, message: '请选择' }]}
+            >
               <Select className="width320" placeholder="请选择触发节点" onChange={nodeChange}>
                 {nodeOptions.map((option: any) => (
                   <Select.Option value={option.nodeId} key={option.nodeId}>
@@ -215,7 +236,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
               </Select>
             </Form.Item>
             <Form.Item label="触发逻辑" labelAlign="right">
-              <Form.Item name={'tagLogicType'} rules={[{ required: true }]} className="mb6">
+              <Form.Item name={'tagLogicType'} rules={[{ required: true, message: '请选择' }]} className="mb6">
                 <Radio.Group>
                   <Radio value={0}>单独触发</Radio>
                   <Radio value={1}>关联触发</Radio>
@@ -253,7 +274,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
                         </Select>
                       </Form.Item>
                       <span className={styles.lineText}>的客户</span>
-                      <Form.Item name={'dateLogicType'}>
+                      <Form.Item name={'dateLogicType'} rules={[{ required: true, message: '请选择' }]}>
                         <Select className={styles.smallInput}>
                           <Select.Option value={1}>当天</Select.Option>
                           <Select.Option value={2}>后</Select.Option>
@@ -304,8 +325,17 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
                   )}
             </Form.Item>
             <Form.Item label="节点规则名称" labelAlign="right">
-              {currentNode?.nodeName}属于{formValues.sourceTagName || '--'} 客户
-              {formValues.days || '当'}天
+              {currentNode?.nodeName}
+              {formValues.sourceTagName && !formValues.tagLogicSwitch ? formValues.sourceTagName : ''}
+              {formValues.targetTagName ? '修改成' + formValues.targetTagName : '--'}
+              {formValues.dateLogicType === 0
+                ? '前'
+                : formValues.dateLogicType === 1
+                  ? '当'
+                  : formValues.dateLogicType === 2
+                    ? '后'
+                    : ''}
+              {(formValues.dateLogicType !== 1 && formValues.days) || ''}天
             </Form.Item>
           </>
         )}
@@ -322,7 +352,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
               </Select>
             </Form.Item>
             <Form.Item label="触发逻辑" labelAlign="right">
-              <div className={classNames('flex', styles.lineWrap)}>
+              <div className={classNames('flex', styles.lineWrap, styles.pa0)}>
                 <Space size={8}>
                   <span className={styles.lineText}>当</span>
                   <Form.Item>
@@ -335,18 +365,26 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
                   </Form.Item>
 
                   <Form.Item name={'dataLogicType'}>
-                    <Select className={styles.smallInput}>
-                      <Select.Option value={0}>小于</Select.Option>
-                      <Select.Option value={1}>等于</Select.Option>
-                      <Select.Option value={2}>大于</Select.Option>
+                    <Select className={styles.smallInput} placeholder="请选择">
+                      {dataLogicTypeOptions.map((option) => (
+                        <Select.Option value={option.id} key={option.id}>
+                          {option.name}
+                        </Select.Option>
+                      ))}
                     </Select>
                   </Form.Item>
                   <Form.Item name={'dataValue'}>
-                    <InputNumber precision={2} min={1} className={styles.smallInput} controls={false}></InputNumber>
+                    <InputNumber
+                      precision={2}
+                      min={1}
+                      placeholder="请输入"
+                      className={styles.smallInput}
+                      controls={false}
+                    ></InputNumber>
                   </Form.Item>
                   <span className={styles.lineText}>时</span>
-                  <Form.Item name={'dateLogicType'}>
-                    <Select className={styles.smallInput}>
+                  <Form.Item name={'dateLogicType'} rules={[{ required: true, message: '请选择' }]}>
+                    <Select className={styles.smallInput} placeholder="请选择">
                       <Select.Option value={1}>当天</Select.Option>
                       <Select.Option value={2}>后</Select.Option>
                     </Select>
@@ -354,17 +392,19 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
 
                   {formValues.dateLogicType !== 1 && (
                     <>
-                      <Form.Item name={'days'}>
+                      <Form.Item name={'days'} rules={[{ required: true, message: '请输入天数' }]}>
                         <InputNumber min={1} className={styles.smallInput} controls={false}></InputNumber>
                       </Form.Item>
-                      天
+                      <span className={styles.lineText}>天</span>
                     </>
                   )}
                 </Space>
               </div>
             </Form.Item>
             <Form.Item label="节点规则名称" labelAlign="right">
-              {currentNode?.nodeName}前{formValues.days || 0}天
+              {currentNode?.nodeName || '触发节点'}
+              {dataLogicTypeOptions.filter((item) => item.id === formValues?.dataLogicType)[0]?.name}
+              {formValues?.dataValue} 时{formValues?.days ? '后' : '当'}天
             </Form.Item>
           </>
         )}

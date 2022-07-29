@@ -60,6 +60,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+    console.log(selectedRows);
     onChange(selectedRowKeys, selectedRows);
   };
 
@@ -92,9 +93,10 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
           hideSelectAll: true,
           type: 'checkbox',
           preserveSelectedRowKeys: true,
-          defaultSelectedRowKeys: selectedRowKeys,
+          selectedRowKeys: selectedRowKeys,
 
           onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+            console.log({ selectedRowKeys, selectedRows });
             onSelectChange(selectedRowKeys, selectedRows);
           },
           getCheckboxProps: (record: Poster) => {

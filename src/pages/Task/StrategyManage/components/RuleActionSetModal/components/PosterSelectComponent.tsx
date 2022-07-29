@@ -9,7 +9,7 @@ import style from './style.module.less';
 
 interface PosterSelectComponentProps {
   onChange: (keys: React.Key[], rows: any[]) => void;
-  selectedRowKeys: React.Key[];
+  selectedRowKeys: any[];
 }
 export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
   const [categoryList, setCategoryList] = useState<any[]>([]);
@@ -94,7 +94,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
           hideSelectAll: true,
           type: 'checkbox',
           preserveSelectedRowKeys: true,
-
+          selectedRowKeys: selectedRowKeys,
           onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
             onSelectChange(selectedRowKeys, selectedRows);
           },

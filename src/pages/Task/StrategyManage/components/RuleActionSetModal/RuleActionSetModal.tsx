@@ -51,16 +51,16 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
       if (contentSource === 1) {
         if (selectRows.length === 0) return message.warning('请选择营销素材');
         copyData.itemIds = selectRows.map((item) => ({
-          itemId: item.newsId || item.posterId,
-          itemName: item.name || item.title
+          itemId: item.newsId || item.posterId || item.itemId,
+          itemName: item.name || item.title || item.itemName
         }));
         onChange?.(copyData);
       } else {
         if (contentCategory === 1) {
           if (selectRows.length === 0) return message.warning('请选择营销素材');
           copyData.itemIds = selectRows.map((item) => ({
-            itemId: item.newsId || item.posterId,
-            itemName: item.name || item.title
+            itemId: item.newsId || item.posterId || item.itemId,
+            itemName: item.name || item.title || item.itemName
           }));
         }
         // 私有库
@@ -135,13 +135,14 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
     if (value && (visible || props.visible)) {
       setValues(value);
 
-      if (value.contentSource === 1) {
-        setSelectRows(value?.itemIds || []);
-        setSelectRowKeys(value?.itemIds.map((item: any) => item.itemId) || []);
-      }
+      setSelectRows(value?.itemIds || []);
+      setSelectRowKeys(value?.itemIds.map((item: any) => item.itemId) || []);
       if (value.contentSource === 2 && value.contentCategory === 2) {
         getActionTypeList(value.contentType);
-        value.categoryId = value.categoryId?.indexOf(';') ? value.categoryId.split(';') : value.categoryId;
+        value.categoryId =
+          typeof value?.categoryId === 'string' && value?.categoryId?.indexOf(';')
+            ? value.categoryId?.split(';')
+            : value.categoryId;
       }
 
       actionForm.setFieldsValue({
@@ -155,10 +156,9 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
       if (value) {
         setValues(value);
 
-        if (value.contentSource === 1) {
-          setSelectRows(value?.itemIds || []);
-          setSelectRowKeys(value?.itemIds.map((item: any) => item.itemId) || []);
-        }
+        setSelectRows(value?.itemIds || []);
+        setSelectRowKeys(value?.itemIds.map((item: any) => item.itemId) || []);
+
         if (value.contentSource === 2 && value.contentCategory === 2) {
           getActionTypeList(value.contentType);
           value.categoryId = value.categoryId?.indexOf(';') ? value.categoryId.split(';') : value.categoryId;
@@ -184,6 +184,23 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
     actionForm.setFieldsValue({
       category: option.children
     });
+  };
+
+  const onContentCategoryChange = (value: number) => {
+    if (value === 2) {
+      getActionTypeList(values.contentType);
+    }
+  };
+
+  // 海报选中
+  const posterSelectChange = (keys: React.Key[], rows: any[]) => {
+    setSelectRowKeys(keys);
+    // 针对海报选中未加载的数据进行过滤重组处理
+    const res = rows.filter((row) => row !== undefined);
+    const filterKeys = keys.filter((key) => !res.map((item) => item.posterId).includes(key));
+
+    const filterRows = selectRows.filter((row) => filterKeys.includes(row.itemId!));
+    setSelectRows([...res, ...filterRows]);
   };
 
   return (
@@ -242,9 +259,10 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
               <Form.Item name={'contentCategory'} rules={[{ required: true, message: '请选择规则' }]}>
                 <Radio.Group
                   disabled={props.footer === null}
-                  onChange={() => {
+                  onChange={(e) => {
                     setSelectRows([]);
                     setSelectRowKeys([]);
+                    onContentCategoryChange(e.target.value);
                   }}
                 >
                   <Radio value={1}>机构自定义配置</Radio>
@@ -319,13 +337,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
                   )
                 : values.contentType === 2
                   ? (
-                <PosterSelectComponent
-                  selectedRowKeys={selectRowKeys}
-                  onChange={(keys, rows) => {
-                    setSelectRowKeys(keys);
-                    setSelectRows(rows);
-                  }}
-                />
+                <PosterSelectComponent selectedRowKeys={selectRowKeys} onChange={posterSelectChange} />
                     )
                   : values.contentType === 3
                     ? (
