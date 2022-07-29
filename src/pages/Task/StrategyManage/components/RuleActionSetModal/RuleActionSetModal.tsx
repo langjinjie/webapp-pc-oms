@@ -135,14 +135,15 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
     if (value && (visible || props.visible)) {
       setValues(value);
 
-      setSelectRows(value?.itemIds || []);
-      setSelectRowKeys(value?.itemIds.map((item: any) => item.itemId) || []);
       if (value.contentSource === 2 && value.contentCategory === 2) {
         getActionTypeList(value.contentType);
         value.categoryId =
           typeof value?.categoryId === 'string' && value?.categoryId?.indexOf(';')
             ? value.categoryId?.split(';')
             : value.categoryId;
+      } else {
+        setSelectRows(value?.itemIds || []);
+        setSelectRowKeys(value?.itemIds?.map((item: any) => item.itemId) || []);
       }
 
       actionForm.setFieldsValue({

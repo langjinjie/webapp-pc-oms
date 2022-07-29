@@ -55,10 +55,8 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           delete scene.nodeTypeId;
           scene.sceneId = scene.sceneId || '';
           scene.nodeRuleList.map((rule: any) => {
-            console.log(rule.pushTime);
             if (rule.actionRule.contentType === 2 && rule.actionRule.contentCategory === 2) {
-              console.log(rule.actionRule.categoryId);
-              if (rule.actionRule.categoryId.indexOf(';') > -1) {
+              if (typeof rule.actionRule.categoryId !== 'string') {
                 rule.actionRule.categoryId = rule.actionRule.categoryId.join(';');
               }
             }

@@ -78,9 +78,15 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
                 />
               </div>
               <div className={classNames(style.taskName, 'ellipsis')}>{item.tplName}</div>
-              <div className={classNames(style.taskTarget, 'ellipsis')}>效果：{item.resultDesc}</div>
-              <div className={classNames(style.taskTips, 'ellipsis mt8')}>任务说明：{item.taskDesc}</div>
-              <div className={classNames(style.taskTips, 'ellipsis')}>任务场景：{item.sceneDesc}</div>
+              {item.resultDesc && (
+                <div className={classNames(style.taskTarget, 'ellipsis')}>效果：{item.resultDesc}</div>
+              )}
+              {item.taskDesc && (
+                <div className={classNames(style.taskTips, 'ellipsis mt8')}>任务说明：{item.taskDesc}</div>
+              )}
+              {item.sceneDesc && (
+                <div className={classNames(style.taskTips, 'ellipsis')}>任务场景：{item.sceneDesc}</div>
+              )}
               <Button className={style.useBtn} type="primary" onClick={() => selectedTemplate(item.tplId)}>
                 立即使用
               </Button>

@@ -63,7 +63,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           scene.sceneId = scene.sceneId || '';
           scene.nodeRuleList.map((rule: any) => {
             if (rule.actionRule.contentType === 2 && rule.actionRule.contentCategory === 2) {
-              if (rule.actionRule.categoryId.indexOf(';') > -1) {
+              if (typeof rule.actionRule.categoryId !== 'string') {
                 rule.actionRule.categoryId = rule.actionRule.categoryId.join(';');
               }
             }
@@ -73,7 +73,6 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           return scene;
         });
 
-        console.log({ ...basicValues, copySceneList });
         applyTpl({
           tplId: tplDetail?.tplId,
           corpTplId: tplDetail?.corpTplId || '',

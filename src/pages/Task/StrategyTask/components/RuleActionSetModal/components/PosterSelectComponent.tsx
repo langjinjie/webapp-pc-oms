@@ -33,6 +33,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
 
     const postParams = {
       ...formValues,
+      status: 2,
       pageSize: pagination.pageSize,
       pageNum: pagination.current,
       ...params
@@ -96,7 +97,6 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
           selectedRowKeys: selectedRowKeys,
 
           onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-            console.log({ selectedRowKeys, selectedRows });
             onSelectChange(selectedRowKeys, selectedRows);
           },
           getCheckboxProps: (record: Poster) => {

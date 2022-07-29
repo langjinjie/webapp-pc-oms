@@ -34,6 +34,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
 
     const postParams = {
       ...formValues,
+      status: 2,
       pageSize: pagination.pageSize,
       pageNum: pagination.current,
       ...params
