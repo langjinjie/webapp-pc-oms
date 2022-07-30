@@ -1,6 +1,6 @@
 import { Form, Input, InputNumber, message, Radio, Select, Space, Switch } from 'antd';
 import classNames from 'classnames';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createNodeRule, getNodeList, searchTagList } from 'src/apis/task';
 import { NgModal } from 'src/components';
 import { NodeCodeType, NodeType, TagInterface } from 'src/utils/interface';
@@ -15,7 +15,6 @@ type CreateNodeModalProps = React.ComponentProps<typeof NgModal> & {
 };
 
 const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption, nodeCode, onSubmit, ...props }) => {
-  console.log(options, childOption, nodeCode);
   const [ruleForm] = Form.useForm();
   const [currentNodeType, setCurrentNodeType] = useState<NodeCodeType>();
   const [currentNode, setCurrentNode] = useState<any>({});
@@ -56,23 +55,22 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
     });
   };
 
-  useMemo(() => {
-    if (nodeCode) {
-      setCurrentNodeType(nodeCode);
-      setNodeOptions(childOption || []);
-      const node = childOption?.[0];
-      setCurrentNode(node);
-      ruleForm.setFieldsValue({
-        nodeId: node.nodeId,
-        nodeCode: nodeCode
-      });
-      nodeChange(node.nodeId);
-    }
-  }, [nodeCode, childOption]);
   useEffect(() => {
-    if (!props.visible) {
+    if (props.visible) {
+      if (nodeCode) {
+        setCurrentNodeType(nodeCode);
+        setNodeOptions(childOption || []);
+        const node = childOption?.[0];
+        setCurrentNode(node);
+        getTagList(node.nodeName);
+        ruleForm.setFieldsValue({
+          nodeId: node.nodeId,
+          nodeCode: nodeCode
+        });
+        nodeChange(node.nodeId);
+      }
+    } else {
       setFormValues({});
-
       setCurrentNode(undefined);
     }
   }, [props.visible]);
@@ -253,7 +251,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
                   <div className={classNames('flex', styles.lineWrap)}>
                     <Space size={8}>
                       <Form.Item name={'sourceTagName'} rules={[{ required: true, message: '请选择' }]}>
-                        <Select style={{ width: '120px' }} allowClear>
+                        <Select style={{ width: '120px' }} allowClear placeholder="请选择">
                           {tagOptions.map((tag) => (
                             <Select.Option key={tag.tagId + tag.tagName} value={tag.tagName}>
                               {tag.tagName}
@@ -263,7 +261,7 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
                       </Form.Item>
                       <span className={styles.lineText}>修改成</span>
                       <Form.Item name={'targetTagName'} rules={[{ required: true, message: '请选择' }]}>
-                        <Select style={{ width: '120px' }} allowClear>
+                        <Select style={{ width: '120px' }} allowClear placeholder="请选择">
                           {tagOptions.map((tag) => (
                             <Select.Option
                               disabled={tag.tagName === formValues.sourceTagName}
@@ -298,8 +296,8 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
                 <div className={classNames('flex', styles.lineWrap)}>
                   <Space size={8}>
                     <span className={styles.lineText}>属于</span>
-                    <Form.Item name={'sourceTagName'}>
-                      <Select style={{ width: '120px' }}>
+                    <Form.Item name={'sourceTagName'} rules={[{ required: true, message: '请选择' }]}>
+                      <Select style={{ width: '120px' }} placeholder="请选择">
                         {tagOptions.map((tag) => (
                           <Select.Option key={tag.tagId + tag.tagName} value={tag.tagName}>
                             {tag.tagName}
