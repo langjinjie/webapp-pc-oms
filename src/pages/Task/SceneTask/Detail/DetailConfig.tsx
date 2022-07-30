@@ -4,7 +4,7 @@ import React from 'react';
 import { UNKNOWN } from 'src/utils/base';
 import { actionTypeList } from '../../RuleManage/List/ListConfig';
 
-interface TaskNodeColumns {
+export interface TaskNodeColumns {
   nodeRuleId: string;
   nodeRuleCode: string;
   nodeRuleName: string;
@@ -18,7 +18,7 @@ interface TaskNodeColumns {
   createTime: string;
 }
 interface OperateProps {
-  onOperate: (actionRuleId: string) => void;
+  onOperate: (record: TaskNodeColumns) => void;
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns> => {
   return [
@@ -73,7 +73,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns
       render: (value, record) => {
         return (
           <Space size={20}>
-            <Button type="link" key={record.nodeRuleId} onClick={() => args.onOperate(record.actionRuleId)}>
+            <Button type="link" key={record.nodeRuleId} onClick={() => args.onOperate(record)}>
               查看
             </Button>
           </Space>

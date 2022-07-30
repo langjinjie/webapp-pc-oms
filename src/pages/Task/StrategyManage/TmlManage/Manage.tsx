@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, PaginationProps, Pagination, Image } from 'antd';
 import style from './style.module.less';
 import classNames from 'classnames';
-import { NgFormSearch } from 'src/components';
+import { AuthBtn, NgFormSearch } from 'src/components';
 import { searchCols, TplType } from './config';
 import { RouteComponentProps } from 'react-router-dom';
 import { getTplListOfCorp } from 'src/apis/task';
@@ -59,12 +59,14 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
         <h3>自动化运营体系,助力机构效率提升</h3>
       </div>
       <div className="ph20">
-        <NgFormSearch
-          searchCols={searchCols}
-          onValuesChange={(changeValue, values) => onFormValuesChange(values)}
-          onSearch={onSearch}
-          hideReset
-        />
+        <AuthBtn path="/add/query">
+          <NgFormSearch
+            searchCols={searchCols}
+            onValuesChange={(changeValue, values) => onFormValuesChange(values)}
+            onSearch={onSearch}
+            hideReset
+          />
+        </AuthBtn>
         <div className={style.taskWrap}>
           {tplList.map((item) => (
             <div className={style.taskItem} key={item.tplId}>
@@ -89,9 +91,11 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
                   <div className={classNames(style.taskTips, 'ellipsis')}>任务场景：{item.sceneDesc}</div>
                 )}
               </div>
-              <Button className={style.useBtn} type="primary" onClick={() => selectedTemplate(item.tplId)}>
-                立即使用
-              </Button>
+              <AuthBtn path="/add/apply">
+                <Button className={style.useBtn} type="primary" onClick={() => selectedTemplate(item.tplId)}>
+                  立即使用
+                </Button>
+              </AuthBtn>
             </div>
           ))}
         </div>

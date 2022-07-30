@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, ConfigProvider, Empty, message } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import { RouteComponentProps } from 'react-router-dom';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, tableColumnsFun, StrategyTaskProps } from './Config';
 import { changeStatusCorpTpl, getTaskListOfCorp } from 'src/apis/task';
 import { OperateType } from 'src/utils/interface';
@@ -84,15 +84,17 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
     <div>
       <div className="container">
         <div className="search-wrap">
-          <Button
-            type="primary"
-            shape="round"
-            ghost
-            onClick={() => history.push('/strategyManage/tmpList')}
-            size="large"
-          >
-            策略模板库
-          </Button>
+          <AuthBtn path="/add">
+            <Button
+              type="primary"
+              shape="round"
+              ghost
+              onClick={() => history.push('/strategyManage/tmpList')}
+              size="large"
+            >
+              策略模板库
+            </Button>
+          </AuthBtn>
           <div className={'pt20'}>
             <NgFormSearch
               isInline

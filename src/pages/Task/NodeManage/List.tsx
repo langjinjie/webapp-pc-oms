@@ -2,7 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, PaginationProps } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { addNode, deleteNode, getNodeList, getNodeTypeList } from 'src/apis/task';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { CreateNodeModal, NodeTypeProps } from './components/CrateNodeModal';
 
 import { NodeColumns, searchColsFun, tableColumnsFun } from './ListConfig';
@@ -67,8 +67,6 @@ const TaskNodeList: React.FC = () => {
   };
 
   const paginationChange = (pageNum: number, pageSize?: number) => {
-    console.log(pageNum, pageSize);
-
     getList({ pageNum, pageSize });
   };
 
@@ -111,15 +109,17 @@ const TaskNodeList: React.FC = () => {
   };
   return (
     <div className="container">
-      <Button
-        type="primary"
-        shape="round"
-        icon={<PlusOutlined />}
-        onClick={() => setVisibleCreateNode(true)}
-        size="large"
-      >
-        新建节点
-      </Button>
+      <AuthBtn path="/create">
+        <Button
+          type="primary"
+          shape="round"
+          icon={<PlusOutlined />}
+          onClick={() => setVisibleCreateNode(true)}
+          size="large"
+        >
+          新建节点
+        </Button>
+      </AuthBtn>
       <NgFormSearch
         className="mt20"
         searchCols={searchColsFun(nodeOptions)}

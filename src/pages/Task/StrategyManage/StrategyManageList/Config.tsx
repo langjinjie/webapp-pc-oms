@@ -5,6 +5,7 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { OperateType } from 'src/utils/interface';
 import classNames from 'classnames';
+import { AuthBtn } from 'src/components';
 
 export const searchCols: SearchCol[] = [
   {
@@ -86,23 +87,31 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
       render: (status, record) => {
         return (
           <Space size={5}>
-            <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'view')}>
-              查看
-            </Button>
+            <AuthBtn path="/view">
+              <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'view')}>
+                查看
+              </Button>
+            </AuthBtn>
             {status === 1
               ? (
-              <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'outline')}>
-                下架
-              </Button>
+              <AuthBtn path="/operate">
+                <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'outline')}>
+                  下架
+                </Button>
+              </AuthBtn>
                 )
               : (
               <>
-                <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'putAway')}>
-                  上架
-                </Button>
-                <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'edit')}>
-                  编辑
-                </Button>
+                <AuthBtn path="/operate">
+                  <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'putAway')}>
+                    上架
+                  </Button>
+                </AuthBtn>
+                <AuthBtn path="/edit">
+                  <Button type="link" onClick={() => args.onOperate(record.corpTplId, 'edit')}>
+                    编辑
+                  </Button>
+                </AuthBtn>
               </>
                 )}
           </Space>

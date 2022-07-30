@@ -4,7 +4,7 @@ import { PaginationProps } from 'antd/es/pagination';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { editTplDisplay, getTaskStrategyTplList, offLineTaskTpl, onLineTaskTplWithCorps } from 'src/apis/task';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { OnlineModal } from 'src/pages/Marketing/Components/OnlineModal/OnlineModal';
 import { OperateType } from 'src/utils/interface';
 import OffLineModal from './components/OffLineModal/OffLineModal';
@@ -111,15 +111,17 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <div className="container">
       <div className="search-wrap">
-        <Button
-          type="primary"
-          shape="round"
-          icon={<PlusOutlined />}
-          onClick={() => history.push('/strategyTask/edit')}
-          size="large"
-        >
-          新增策略任务模版
-        </Button>
+        <AuthBtn path="/add">
+          <Button
+            type="primary"
+            shape="round"
+            icon={<PlusOutlined />}
+            onClick={() => history.push('/strategyTask/edit')}
+            size="large"
+          >
+            新增策略任务模版
+          </Button>
+        </AuthBtn>
         <div className={'pt20'}>
           <NgFormSearch
             isInline

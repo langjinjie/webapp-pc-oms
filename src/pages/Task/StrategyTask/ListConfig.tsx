@@ -5,6 +5,7 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
 import { OperateType } from 'src/utils/interface';
+import { AuthBtn } from 'src/components';
 
 export const searchCols: SearchCol[] = [
   {
@@ -138,29 +139,36 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
       render: (status, record) => {
         return (
           <Space size={0}>
-            <Button type="link" onClick={() => args.onOperate('view', record)}>
-              查看
-            </Button>
-            {status === 1 && (
-              <Button type="link" onClick={() => args.onOperate('outline', record)}>
-                下架
+            <AuthBtn path="/view">
+              <Button type="link" onClick={() => args.onOperate('view', record)}>
+                查看
               </Button>
+            </AuthBtn>
+            {status === 1 && (
+              <AuthBtn path="/operate">
+                <Button type="link" onClick={() => args.onOperate('outline', record)}>
+                  下架
+                </Button>
+              </AuthBtn>
             )}
 
             {status === 0 && (
-              <>
+              <AuthBtn path="/operate">
                 <Button type="link" onClick={() => args.onOperate('putAway', record)}>
                   上架
                 </Button>
-              </>
+              </AuthBtn>
             )}
-            <Button type="link" onClick={() => args.onOperate('edit', record)}>
-              编辑
-            </Button>
-
-            <Button type="link" onClick={() => args.onOperate('other', record)}>
-              配置展示信息
-            </Button>
+            <AuthBtn path="/edit">
+              <Button type="link" onClick={() => args.onOperate('edit', record)}>
+                编辑
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/edit">
+              <Button type="link" onClick={() => args.onOperate('other', record)}>
+                配置展示信息
+              </Button>
+            </AuthBtn>
           </Space>
         );
       }

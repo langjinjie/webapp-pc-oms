@@ -53,7 +53,10 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                     {/* 海报 */}
                     {value?.actionRule?.contentType === 2 && (
                       <div className={style.posterWrap}>
-                        <img className={style.poster} src={mapItem.itemShareImgUrl || mapItem.imgUrl} />
+                        <img
+                          className={style.poster}
+                          src={mapItem.itemShareImgUrl || mapItem.imgUrl || mapItem.itemUrl}
+                        />
                       </div>
                     )}
                     {[1, 3, 4].includes(value?.actionRule.contentType as number) && (

@@ -4,13 +4,13 @@ import { RouteComponentProps } from 'react-router-dom';
 import { getActionRuleDetail, getSceneDetail } from 'src/apis/task';
 import { NgTable } from 'src/components';
 import { URLSearchParams } from 'src/utils/base';
-import NodePreview, { IValue } from '../../StrategyTask/components/NodePreview/NodePreview';
-import { tableColumnsFun } from './DetailConfig';
+import NodePreview from '../../StrategyTask/components/NodePreview/NodePreview';
+import { tableColumnsFun, TaskNodeColumns } from './DetailConfig';
 
 const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [detail, setDetail] = useState<any>({});
   const [visible, setVisible] = useState(false);
-  const [nodeValue, setNodeValue] = useState<IValue>();
+  const [nodeValue, setNodeValue] = useState<any>({});
   const navigatorToList = () => {
     history.goBack();
   };
@@ -20,11 +20,10 @@ const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location, history }) =
     console.log(res);
     setDetail(res || {});
   };
-  const previewItem = async (actionRuleId: string) => {
-    const res = await getActionRuleDetail({ actionRuleId });
-    console.log(res);
+  const previewItem = async (record: TaskNodeColumns) => {
+    const res = await getActionRuleDetail({ actionRuleId: record.actionRuleId });
     setVisible(true);
-    setNodeValue(undefined);
+    setNodeValue({ ...record, actionRule: res });
   };
   useEffect(() => {
     getDetail();

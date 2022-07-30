@@ -3,6 +3,7 @@ import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
+import { AuthBtn } from 'src/components';
 
 export const searchColsFun = (options: any[]): SearchCol[] => {
   return [
@@ -79,9 +80,14 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> =>
       fixed: 'right',
       render: (value, record, index) => {
         return (
-          <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => args.onOperate(record.nodeId, index)}>
-            <Button type="link">删除</Button>
-          </Popconfirm>
+          <AuthBtn path="/delete">
+            <Popconfirm
+              title="删除后会影响所有机构，确定要删除?"
+              onConfirm={() => args.onOperate(record.nodeId, index)}
+            >
+              <Button type="link">删除</Button>
+            </Popconfirm>
+          </AuthBtn>
         );
       }
     }

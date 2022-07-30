@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
+import { AuthBtn } from 'src/components';
 
 export const ruleTypeOptions = [
   {
@@ -187,9 +188,11 @@ export const actionTableColumnsFun = (args: OperateProps): ColumnsType<ActionRul
       align: 'center',
       render: (value, record) => {
         return (
-          <Button type="link" key={record.actionRuleId} onClick={() => args.onOperate(record.actionRuleId)}>
-            查看
-          </Button>
+          <AuthBtn path="/view">
+            <Button type="link" key={record.actionRuleId} onClick={() => args.onOperate(record.actionRuleId)}>
+              查看
+            </Button>
+          </AuthBtn>
         );
       }
     }

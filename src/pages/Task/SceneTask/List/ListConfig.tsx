@@ -1,7 +1,8 @@
 import React from 'react';
-import { Button, Space } from 'antd';
+import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { AuthBtn } from 'src/components';
 
 export const searchCols: SearchCol[] = [
   {
@@ -74,11 +75,11 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<SceneColumns> =
       align: 'center',
       render: (value, record) => {
         return (
-          <Space size={20}>
+          <AuthBtn path="/view">
             <Button type="link" key={record.sceneId} onClick={() => args.onOperate(record.sceneId)}>
               查看
             </Button>
-          </Space>
+          </AuthBtn>
         );
       }
     }

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Form } from 'antd';
 import { nodeSearchColsFun, tableColumns, RuleColumns } from './ListConfig';
 import { PlusOutlined } from '@ant-design/icons';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
 import CreateRuleModal from '../components/CreateNodeRuleModal';
 import { Context } from 'src/store';
@@ -87,9 +87,11 @@ export const NodeList: React.FC = () => {
   };
   return (
     <div className="search-wrap">
-      <Button type="primary" shape="round" icon={<PlusOutlined />} onClick={() => setVisible(true)} size="large">
-        新建节点规则
-      </Button>
+      <AuthBtn path="/add">
+        <Button type="primary" shape="round" icon={<PlusOutlined />} onClick={() => setVisible(true)} size="large">
+          新建节点规则
+        </Button>
+      </AuthBtn>
       <div className={'pt20'}>
         <NgFormSearch
           firstRowChildCount={2}
