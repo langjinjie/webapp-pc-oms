@@ -2,6 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, message } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import React, { useEffect, useState } from 'react';
+import { useDidRecover } from 'react-router-cache-route';
 import { RouteComponentProps } from 'react-router-dom';
 import { editTplDisplay, getTaskStrategyTplList, offLineTaskTpl, onLineTaskTplWithCorps } from 'src/apis/task';
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
@@ -42,6 +43,7 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
       setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
     }
   };
+
   useEffect(() => {
     getTplList();
   }, []);
@@ -50,6 +52,16 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
     getTplList({ tplCode, tplName, pageNum: 1 });
     setQueryParams({ tplCode, tplName });
   };
+  // 监听页面是否需要刷新
+  useDidRecover(() => {
+    if (window.location.href.indexOf('pageNum') > 0) {
+      onSearch({});
+      history.replace('/strategyTask', {});
+    } else if (window.location.href.indexOf('refresh') > 0) {
+      getTplList();
+      history.replace('/strategyTask', {});
+    }
+  });
   const onValuesChange = (changeValues: any, values: any) => {
     setQueryParams(values);
   };
@@ -87,14 +99,14 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
       message.success('上架成功！');
       getTplList({ pageNum: 1 });
     }
-
-    console.log(values);
   };
   // 下线模块
   const offLine = async () => {
     setVisibleOfflineModal(false);
     const res = await offLineTaskTpl({ tplId: currentTpl?.tplId as string });
-    console.log(res);
+    if (res) {
+      message.success('操作成功');
+    }
   };
   // 设置模板展示信息
   const setDisplayInfo = async (values: any) => {

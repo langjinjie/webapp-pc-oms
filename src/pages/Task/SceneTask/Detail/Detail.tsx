@@ -17,7 +17,6 @@ const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location, history }) =
   const getDetail = async () => {
     const { sceneId } = URLSearchParams(location.search);
     const res = await getSceneDetail({ sceneId });
-    console.log(res);
     setDetail(res || {});
   };
   const previewItem = async (record: TaskNodeColumns) => {
@@ -55,7 +54,7 @@ const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location, history }) =
         </Form>
         <div className="formListTitle mb20">场景规则信息</div>
         <NgTable
-          rowKey={'nodeRuleId'}
+          rowKey={(record: any, index) => record.actionRuleId + index}
           dataSource={detail.sceneRuleList || []}
           columns={tableColumnsFun({
             onOperate: previewItem

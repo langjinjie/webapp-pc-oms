@@ -17,6 +17,7 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
+
   const getList = async (params?: any) => {
     const pageNum = params?.pageNum || pagination.current;
     const pageSize = params?.pageSize || pagination.pageSize;
@@ -29,9 +30,8 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
     if (res) {
       const { list, total } = res;
       setTableSource(list);
-      setPagination((pagination) => ({ ...pagination, total }));
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum }));
     }
-    console.log(res);
   };
 
   useEffect(() => {

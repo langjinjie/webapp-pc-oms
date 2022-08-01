@@ -147,7 +147,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     const values = { ...sceneListValues[index] };
     values.nodeId = '';
     values.date = undefined;
-    values.nodeRuleList = values.nodeRuleList.map((item: any) => ({ ...item, nodeRuleId: undefined }));
+    values.nodeRuleList = values.nodeRuleList?.map((item: any) => ({ ...item, nodeRuleId: undefined }));
     sceneListValues.splice(index, 1, values);
 
     blockForm.setFieldsValue({
@@ -164,6 +164,15 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     const node = nodeOptions[index].filter((item: any) => item.nodeId === nodeId)[0];
     const copyData = [...nodeDetails];
     copyData[index] = { node };
+    // 表单关联的节点数据处理
+    const sceneListValues = [...blockForm.getFieldValue('sceneList')];
+    const values = { ...sceneListValues[index] };
+    values.nodeRuleList = values.nodeRuleList?.map((item: any) => ({ ...item, nodeRuleId: undefined }));
+    sceneListValues.splice(index, 1, values);
+
+    blockForm.setFieldsValue({
+      sceneList: sceneListValues
+    });
 
     // 获取节点规则列表
     const res = await getNodeRuleList({ nodeId: nodeId, nodeTypeCode: nodeTypeCode });

@@ -67,7 +67,6 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           return scene;
         });
 
-        console.log({ ...basicValues, copySceneList });
         saveScene({
           tplId: tplDetail?.tplId || '',
           baseInfo: {
@@ -77,7 +76,13 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
         }).then((res) => {
           if (res) {
             message.success('保存成功');
-            history.push('/strategyTask');
+            const pathUrl =
+              tplDetail.tplId && !isReadonly
+                ? '/strategyTask?refresh=1'
+                : !tplDetail.tplId
+                    ? '/strategyTask?pageNum=1'
+                    : '/strategyTask';
+            history.push(pathUrl);
           }
         });
       }
