@@ -9,6 +9,7 @@ import { URLSearchParams } from 'src/utils/base';
 import moment from 'moment';
 import { FormBlockPreview } from './components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { isArray } from 'src/utils/tools';
+import { throttle } from 'echarts';
 
 const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [basicForm] = Form.useForm();
@@ -77,11 +78,13 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           if (res) {
             message.success('保存成功');
             const pathUrl =
-              tplDetail.tplId && !isReadonly
+              tplDetail?.tplId && !isReadonly
                 ? '/strategyTask?refresh=1'
                 : !tplDetail.tplId
                     ? '/strategyTask?pageNum=1'
                     : '/strategyTask';
+
+            console.log(pathUrl);
             history.push(pathUrl);
           }
         });
@@ -89,9 +92,9 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
     });
   };
 
-  const onBasicSubmit = () => {
+  const onBasicSubmit = throttle(() => {
     basicForm.submit();
-  };
+  }, 500);
   return (
     <div className="edit container">
       <div className={'breadcrumbWrap'}>
