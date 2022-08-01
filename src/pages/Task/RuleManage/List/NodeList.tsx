@@ -55,11 +55,11 @@ export const NodeList: React.FC = () => {
   }, []);
 
   const onSearch = ({ node, ...values }: any) => {
-    getList({ ...values, pageNum: 1, nodeId: node?.id || undefined });
+    getList({ ...values, pageNum: 1, nodeId: node?.value || undefined });
     setQueryParams(values);
   };
   const onValuesChange = (changeValues: any, { node, ...values }: any) => {
-    setQueryParams({ ...values, nodeId: node?.id || undefined });
+    setQueryParams({ ...values, nodeId: node?.value || undefined });
   };
 
   const paginationChange = (pageNum: number, pageSize?: number) => {

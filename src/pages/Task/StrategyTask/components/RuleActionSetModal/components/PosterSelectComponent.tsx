@@ -101,7 +101,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
           },
           getCheckboxProps: (record: Poster) => {
             return {
-              disabled: selectedRowKeys.length > 9 && !selectedRowKeys.includes(record.posterId),
+              disabled: selectedRowKeys.length >= 9 && !selectedRowKeys.includes(record.posterId),
               name: record.name
             };
           }
