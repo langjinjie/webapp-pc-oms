@@ -111,7 +111,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     } else {
       const date = formValues?.sceneList?.[index]?.date.format('MMDD');
       console.log(date);
-      res = await getDateNodeList({ type: 2, date, nodeDesc: params.codeName });
+      res = await getDateNodeList({ type: 2, date, nodeDesc: params.nodeName });
     }
     if (res) {
       const copyData = [...nodeOptions];
@@ -125,14 +125,14 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
    */
   const debounceFetcherNodeOptions = debounce<{ value: string; index: number }>(
     async ({ value, index }: { value: string; index: number }) => {
-      await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, codeName: value }, index);
+      await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, nodeName: value }, index);
     },
     300
   );
 
   const onFocusNodeSelect = async (index: number) => {
     if (nodeOptions[index]?.length <= 1 || !nodeOptions[index]) {
-      await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, codeName: '' }, index);
+      await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, nodeName: '' }, index);
     }
   };
 

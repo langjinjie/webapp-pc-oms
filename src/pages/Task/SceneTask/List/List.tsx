@@ -62,7 +62,7 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const fetchUserList = async (codeName: string): Promise<any[]> => {
-    const res = await getNodeList({ codeName: codeName });
+    const res = await getNodeList({ nodeName: codeName });
     if (res) {
       const { list } = res;
       return list.map((item: any) => ({
