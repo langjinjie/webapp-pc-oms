@@ -3,11 +3,9 @@ import { Tabs } from 'antd';
 
 import { NodeList } from './NodeList';
 import { ActionList } from './ActionList';
-import { useDocumentTitle } from 'src/utils/base';
 
 const RuleManageList: React.FC = () => {
   const [currentTab, setCurrentTab] = useState('1');
-  useDocumentTitle('智能运营-规则管理');
   const onTapsChange = (current: string) => {
     setCurrentTab(current);
   };

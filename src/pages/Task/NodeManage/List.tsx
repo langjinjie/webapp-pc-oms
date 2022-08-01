@@ -7,7 +7,6 @@ import { CreateNodeModal, NodeTypeProps } from './components/CrateNodeModal';
 
 import { NodeColumns, searchColsFun, tableColumnsFun } from './ListConfig';
 import { Context } from 'src/store/index';
-import { useDocumentTitle } from 'src/utils/base';
 
 type QueryParamsType = Partial<{
   nodeCode: string;
@@ -16,7 +15,6 @@ type QueryParamsType = Partial<{
   nodeTypeCode: string;
 }>;
 const TaskNodeList: React.FC = () => {
-  useDocumentTitle('智能运营-节点管理');
   const [visibleCreateNode, setVisibleCreateNode] = useState(false);
   const { nodeOptions, setNodeOptions } = useContext(Context);
 

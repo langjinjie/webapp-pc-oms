@@ -5,7 +5,7 @@ import { getTaskStrategyTplDetail, applyTpl, getCorpTplDetail } from 'src/apis/t
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
-import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { URLSearchParams } from 'src/utils/base';
 import moment from 'moment';
 import { FormBlockPreview } from '../StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { isArray } from 'src/utils/tools';
@@ -14,7 +14,6 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
   const [basicForm] = Form.useForm();
   const [tplDetail, setTplDetail] = useState<any>();
   const [isReadonly, setIsReadonly] = useState(false);
-  useDocumentTitle('策略管理-策略运营模板详情');
   const navigatorToList = () => {
     history.goBack();
   };

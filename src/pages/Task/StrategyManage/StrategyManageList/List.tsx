@@ -8,7 +8,6 @@ import { changeStatusCorpTpl, getTaskListOfCorp } from 'src/apis/task';
 import { OperateType } from 'src/utils/interface';
 import OffLineModal from '../../StrategyTask/components/OffLineModal/OffLineModal';
 import { useDidRecover } from 'react-router-cache-route';
-import { useDocumentTitle } from 'src/utils/base';
 type QueryParamsType = Partial<{
   nodeCode: string;
   nodeName: string;
@@ -19,7 +18,6 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
   const [tableSource, setTableSource] = useState<StrategyTaskProps[]>([]);
   const [queryParams, setQueryParams] = useState<QueryParamsType>();
   const [current, setCurrent] = useState<StrategyTaskProps>();
-  useDocumentTitle('智能运营-策略管理');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,

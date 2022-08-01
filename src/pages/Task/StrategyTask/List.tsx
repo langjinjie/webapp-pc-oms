@@ -7,7 +7,6 @@ import { RouteComponentProps } from 'react-router-dom';
 import { editTplDisplay, getTaskStrategyTplList, offLineTaskTpl, onLineTaskTplWithCorps } from 'src/apis/task';
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { OnlineModal } from 'src/pages/Marketing/Components/OnlineModal/OnlineModal';
-import { useDocumentTitle } from 'src/utils/base';
 import { OperateType } from 'src/utils/interface';
 import OffLineModal from './components/OffLineModal/OffLineModal';
 import { TelDisplaySetModal } from './components/TelDisplaySetModal/TelDisplaySetModal';
@@ -20,7 +19,6 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
   const [dataSource, setDataSource] = useState<Partial<StrategyTaskProps>[]>([]);
   const [currentTpl, setCurrentTpl] = useState<StrategyTaskProps>();
   const [queryParams, setQueryParams] = useState({});
-  useDocumentTitle('智能运营-策略运营');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
