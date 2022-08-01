@@ -5,7 +5,7 @@ import { getTaskStrategyTplDetail, applyTpl, getCorpTplDetail } from 'src/apis/t
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
-import { URLSearchParams } from 'src/utils/base';
+import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import moment from 'moment';
 import { FormBlockPreview } from '../StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { isArray } from 'src/utils/tools';
@@ -14,6 +14,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
   const [basicForm] = Form.useForm();
   const [tplDetail, setTplDetail] = useState<any>();
   const [isReadonly, setIsReadonly] = useState(false);
+  useDocumentTitle('策略管理-策略运营模板详情');
   const navigatorToList = () => {
     history.goBack();
   };
@@ -73,7 +74,6 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
                 itemId: item.itemId,
                 smartSceneId: item.sceneId || item.smartSceneId
               }));
-              console.log(rule.actionRule.itemIds);
             }
             rule.pushTime = moment(rule.pushTime)?.format('HH:mm') || '';
             return rule;
@@ -90,8 +90,17 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           sceneList: copySceneList
         }).then((res) => {
           if (res) {
-            message.success('保存成功');
-            history.push('/strategyManage');
+            if (res) {
+              message.success('保存成功');
+              const pathUrl =
+                tplDetail?.corpTplId && !isReadonly
+                  ? '/strategyManage?refresh=1'
+                  : !tplDetail?.corpTplId
+                      ? '/strategyManage?pageNum=1'
+                      : '/strategyManage';
+
+              history.push(pathUrl);
+            }
           }
         });
       }
@@ -106,8 +115,10 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
       <div className={'breadcrumbWrap'}>
         <span>当前位置：</span>
         <Breadcrumb>
-          <Breadcrumb.Item onClick={() => navigatorToList()}>全部团队数据</Breadcrumb.Item>
-          <Breadcrumb.Item>策略任务模板</Breadcrumb.Item>
+          <Breadcrumb.Item onClick={() => navigatorToList()}>
+            {tplDetail?.corpTplId ? '策略管理' : '策略模板库'}
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>策略运营模板</Breadcrumb.Item>
         </Breadcrumb>
       </div>
 

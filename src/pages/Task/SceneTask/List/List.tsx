@@ -4,11 +4,13 @@ import { RouteComponentProps } from 'react-router-dom';
 import { getNodeList, getSceneList } from 'src/apis/task';
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import DebounceSelect from 'src/components/DebounceSelect/DebounceSelect';
+import { useDocumentTitle } from 'src/utils/base';
 import { SceneColumns, searchCols, tableColumnsFun } from './ListConfig';
 
 const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
   const [tableSource, setTableSource] = useState<Partial<SceneColumns>[]>([]);
   const [queryParams, setQueryParams] = useState<any>();
+  useDocumentTitle('智能运营-场景管理');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,

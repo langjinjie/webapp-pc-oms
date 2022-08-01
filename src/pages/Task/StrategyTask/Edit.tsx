@@ -80,11 +80,10 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
             const pathUrl =
               tplDetail?.tplId && !isReadonly
                 ? '/strategyTask?refresh=1'
-                : !tplDetail.tplId
+                : !tplDetail?.tplId
                     ? '/strategyTask?pageNum=1'
                     : '/strategyTask';
 
-            console.log(pathUrl);
             history.push(pathUrl);
           }
         });

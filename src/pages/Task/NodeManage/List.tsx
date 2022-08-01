@@ -16,7 +16,7 @@ type QueryParamsType = Partial<{
   nodeTypeCode: string;
 }>;
 const TaskNodeList: React.FC = () => {
-  useDocumentTitle('节点管理');
+  useDocumentTitle('智能运营-节点管理');
   const [visibleCreateNode, setVisibleCreateNode] = useState(false);
   const { nodeOptions, setNodeOptions } = useContext(Context);
 

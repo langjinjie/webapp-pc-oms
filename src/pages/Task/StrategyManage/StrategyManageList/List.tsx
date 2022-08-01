@@ -7,6 +7,8 @@ import { searchCols, tableColumnsFun, StrategyTaskProps } from './Config';
 import { changeStatusCorpTpl, getTaskListOfCorp } from 'src/apis/task';
 import { OperateType } from 'src/utils/interface';
 import OffLineModal from '../../StrategyTask/components/OffLineModal/OffLineModal';
+import { useDidRecover } from 'react-router-cache-route';
+import { useDocumentTitle } from 'src/utils/base';
 type QueryParamsType = Partial<{
   nodeCode: string;
   nodeName: string;
@@ -17,6 +19,7 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
   const [tableSource, setTableSource] = useState<StrategyTaskProps[]>([]);
   const [queryParams, setQueryParams] = useState<QueryParamsType>();
   const [current, setCurrent] = useState<StrategyTaskProps>();
+  useDocumentTitle('智能运营-策略管理');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -53,7 +56,6 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onOperate = (corpTplId: string, operateType: OperateType) => {
-    console.log(corpTplId, operateType);
     if (operateType === 'view') {
       history.push('/strategyManage/detail?corpTplId=' + corpTplId + '&view=1');
     } else if (operateType === 'edit') {
@@ -64,6 +66,17 @@ const StrategyManageList: React.FC<RouteComponentProps> = ({ history }) => {
       setCurrent(currentItem);
     }
   };
+
+  // 监听页面是否需要刷新
+  useDidRecover(() => {
+    if (window.location.href.indexOf('pageNum') > 0) {
+      onSearch({});
+      history.replace('/strategyManage', {});
+    } else if (window.location.href.indexOf('refresh') > 0) {
+      getList();
+      history.replace('/strategyManage', {});
+    }
+  });
 
   const upOrOffLine = async () => {
     const res = await changeStatusCorpTpl({ corpTplId: current?.corpTplId, status: current?.status === 0 ? 1 : 0 });
