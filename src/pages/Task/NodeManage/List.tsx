@@ -120,12 +120,14 @@ const TaskNodeList: React.FC = () => {
           新建节点
         </Button>
       </AuthBtn>
-      <NgFormSearch
-        className="mt20"
-        searchCols={searchColsFun(nodeOptions)}
-        onSearch={onSearch}
-        onValuesChange={onValuesChange}
-      />
+      <AuthBtn path="/query">
+        <NgFormSearch
+          className="mt20"
+          searchCols={searchColsFun(nodeOptions)}
+          onSearch={onSearch}
+          onValuesChange={onValuesChange}
+        />
+      </AuthBtn>
 
       <div className="mt20">
         <NgTable

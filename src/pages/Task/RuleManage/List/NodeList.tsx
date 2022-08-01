@@ -93,17 +93,19 @@ export const NodeList: React.FC = () => {
         </Button>
       </AuthBtn>
       <div className={'pt20'}>
-        <NgFormSearch
-          firstRowChildCount={2}
-          isInline={false}
-          searchCols={nodeSearchColsFun(nodeOptions)}
-          onSearch={onSearch}
-          onValuesChange={onValuesChange}
-        >
-          <Form.Item label="触发节点" name={'node'}>
-            <DebounceSelect placeholder="请输入" style={{ width: '180px' }} fetchOptions={fetchUserList} />
-          </Form.Item>
-        </NgFormSearch>
+        <AuthBtn path="/queryNode">
+          <NgFormSearch
+            firstRowChildCount={2}
+            isInline={false}
+            searchCols={nodeSearchColsFun(nodeOptions)}
+            onSearch={onSearch}
+            onValuesChange={onValuesChange}
+          >
+            <Form.Item label="触发节点" name={'node'}>
+              <DebounceSelect placeholder="请输入" style={{ width: '180px' }} fetchOptions={fetchUserList} />
+            </Form.Item>
+          </NgFormSearch>
+        </AuthBtn>
       </div>
       <div className="mt20">
         <NgTable

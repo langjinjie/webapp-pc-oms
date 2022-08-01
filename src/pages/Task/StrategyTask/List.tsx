@@ -131,17 +131,19 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
             onClick={() => history.push('/strategyTask/edit')}
             size="large"
           >
-            新增策略任务模版
+            新增策略运营模版
           </Button>
         </AuthBtn>
         <div className={'pt20'}>
-          <NgFormSearch
-            isInline
-            firstRowChildCount={3}
-            searchCols={searchCols}
-            onSearch={onSearch}
-            onValuesChange={onValuesChange}
-          />
+          <AuthBtn path="/query">
+            <NgFormSearch
+              isInline
+              firstRowChildCount={3}
+              searchCols={searchCols}
+              onSearch={onSearch}
+              onValuesChange={onValuesChange}
+            />
+          </AuthBtn>
         </div>
 
         <div className="mt20">

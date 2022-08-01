@@ -2,7 +2,7 @@ import { Form, PaginationProps } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getNodeList, getSceneList } from 'src/apis/task';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import DebounceSelect from 'src/components/DebounceSelect/DebounceSelect';
 import { SceneColumns, searchCols, tableColumnsFun } from './ListConfig';
 
@@ -76,17 +76,19 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   return (
     <div className="container">
-      <NgFormSearch
-        searchCols={searchCols}
-        isInline
-        firstRowChildCount={3}
-        onSearch={onSearch}
-        onValuesChange={onValuesChange}
-      >
-        <Form.Item label="场景关联节点" name={'node'}>
-          <DebounceSelect placeholder="请输入" style={{ width: '180px' }} fetchOptions={fetchUserList} />
-        </Form.Item>
-      </NgFormSearch>
+      <AuthBtn path="/query">
+        <NgFormSearch
+          searchCols={searchCols}
+          isInline
+          firstRowChildCount={3}
+          onSearch={onSearch}
+          onValuesChange={onValuesChange}
+        >
+          <Form.Item label="场景关联节点" name={'node'}>
+            <DebounceSelect placeholder="请输入" style={{ width: '180px' }} fetchOptions={fetchUserList} />
+          </Form.Item>
+        </NgFormSearch>
+      </AuthBtn>
 
       <div className="mt20">
         <NgTable

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { actionSearchCols, actionTableColumnsFun, ActionRuleColumns } from './ListConfig';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
 import { getActionRuleDetail, getActionRuleList } from 'src/apis/task';
 import RuleActionSetModal from '../../StrategyTask/components/RuleActionSetModal/RuleActionSetModal';
@@ -49,9 +49,7 @@ export const ActionList: React.FC = () => {
   };
 
   const showDetail = async (actionRuleId: string) => {
-    console.log(actionRuleId);
     const res = await getActionRuleDetail({ actionRuleId });
-    console.log(res);
     if (res) {
       setCurrentValue(res);
     }
@@ -61,7 +59,9 @@ export const ActionList: React.FC = () => {
   return (
     <div className="search-wrap">
       <div className={'pt20'}>
-        <NgFormSearch isInline searchCols={actionSearchCols} onSearch={onSearch} onValuesChange={onValuesChange} />
+        <AuthBtn path="/queryAction">
+          <NgFormSearch isInline searchCols={actionSearchCols} onSearch={onSearch} onValuesChange={onValuesChange} />
+        </AuthBtn>
       </div>
       <div className="mt20">
         <NgTable

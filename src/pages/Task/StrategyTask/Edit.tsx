@@ -100,8 +100,8 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
       <div className={'breadcrumbWrap'}>
         <span>当前位置：</span>
         <Breadcrumb>
-          <Breadcrumb.Item onClick={() => navigatorToList()}>全部团队数据</Breadcrumb.Item>
-          <Breadcrumb.Item>策略任务模板</Breadcrumb.Item>
+          <Breadcrumb.Item onClick={() => navigatorToList()}>策略运营</Breadcrumb.Item>
+          <Breadcrumb.Item>策略运营模板</Breadcrumb.Item>
         </Breadcrumb>
       </div>
 
