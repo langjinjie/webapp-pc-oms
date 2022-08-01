@@ -159,10 +159,10 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Operation/AddWeeklyConfig/AddWeeklyConfig'))
   },
   // 销售宝典
-  {
-    path: '/speechManage',
-    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/List'))
-  },
+  // {
+  //   path: '/speechManage',
+  //   component: lazy(() => import('src/pages/SalesCollection/SpeechManage/List'))
+  // },
   {
     path: '/speechManage/edit',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/Edit'))
@@ -379,6 +379,11 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/dashboardList/:id',
     component: lazy(() => import('src/pages/Dashboard/List/List'))
+  },
+  // 销售宝典
+  {
+    path: '/speechManage',
+    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/List'))
   }
 ];
 
