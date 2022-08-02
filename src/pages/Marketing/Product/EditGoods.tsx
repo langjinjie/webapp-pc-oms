@@ -363,6 +363,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     <Card title="新增产品" className="edit">
       <Form
         form={form}
+        className={style.productFrom}
         name="validate_other"
         onFinish={onFinish}
         scrollToFirstError
