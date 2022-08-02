@@ -143,7 +143,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
       if (value.contentSource === 2 && value.contentCategory === 2) {
         getActionTypeList(value.contentType);
         value.categoryId =
-          typeof value?.categoryId === 'string' && value?.categoryId?.indexOf(';')
+          typeof value?.categoryId === 'string' && value?.categoryId?.indexOf(';') > -1
             ? value.categoryId?.split(';')
             : value.categoryId;
       } else {
