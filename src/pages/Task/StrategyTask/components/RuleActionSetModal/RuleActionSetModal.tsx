@@ -50,7 +50,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
       // 对表单数据进行拷贝，防止污染表单渲染
       const copyData = JSON.parse(JSON.stringify(values));
       const { contentSource } = copyData;
-
+      console.log(values);
       // 1. 判断来源
       // 公有库
       if (contentSource === 1) {
@@ -139,7 +139,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
       if (value.contentSource === 2 && value.contentCategory === 2) {
         getActionTypeList(value.contentType);
         value.categoryId =
-          typeof value?.categoryId === 'string' && value?.categoryId?.indexOf(';')
+          value?.categoryId === 'string' && value?.categoryId?.indexOf(';')
             ? value.categoryId?.split(';')
             : value.categoryId;
       }

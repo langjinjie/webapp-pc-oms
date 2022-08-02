@@ -313,6 +313,10 @@ export const routes: RouteProps[] = [
   {
     path: '/strategyManage/detail',
     component: lazy(() => import('src/pages/Task/StrategyManage/Detail'))
+  },
+  {
+    path: '/strategyManage/tmpList',
+    component: lazy(() => import('src/pages/Task/StrategyManage/TmlManage/Manage'))
   }
 ];
 
@@ -377,10 +381,6 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/strategyManage',
     component: lazy(() => import('src/pages/Task/StrategyManage/StrategyManageList/List'))
-  },
-  {
-    path: '/strategyManage/tmpList',
-    component: lazy(() => import('src/pages/Task/StrategyManage/TmlManage/Manage'))
   }
 ];
 

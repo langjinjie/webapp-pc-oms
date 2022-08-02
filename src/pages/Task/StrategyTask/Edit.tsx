@@ -49,6 +49,8 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
     blockForm.validateFields().then((values) => {
       const basicValues = basicForm.getFieldsValue();
       const { sceneList } = values;
+      console.log({ sceneList });
+
       const copySceneList = JSON.parse(JSON.stringify(sceneList));
       if (sceneList.length < 1) {
         return false;
