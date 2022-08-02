@@ -48,8 +48,9 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                         src="http://wx.qlogo.cn/mmhead/7j1UQofaR9ckJPex8aHRlKzfvEq8FIZxIBvBDyQZibvTeIHtYiaB3z2g/0"
                       />
                     </div>
+                    {'aaaaaaaaaa'}
                     {/* 话术 */}
-                    {value?.actionRule?.contentType === 5 && <div className={style.news}>{mapItem.speechcraft}</div>}
+                    {value?.actionRule?.contentType === 5 && <div className={style.news}>{mapItem.itemName}</div>}
                     {/* 海报 */}
                     {value?.actionRule?.contentType === 2 && (
                       <div className={style.posterWrap}>
@@ -89,7 +90,10 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                 <div className={style.moment}>
                   <div className={style.nickName}>李思</div>
                   <div className={style.momentContent}>
-                    <div className={classNames(style.momentText, 'two-line-ellipsis')}>{value?.speechcraft}</div>
+                    <div className={classNames(style.momentText, 'two-line-ellipsis')}>
+                      {value?.speechcraft + ' '}
+                      {value?.actionRule?.contentType === 5 && value?.actionRule?.itemIds[0]?.itemName}
+                    </div>
                     {value?.actionRule.contentType === 2 && (
                       <div className={style.momentImg}>
                         {value?.actionRule?.itemIds?.map((mapItem) => (
@@ -105,6 +109,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                         ))}
                       </div>
                     )}
+
                     {[1, 3, 4].includes(value?.actionRule.contentType) &&
                       value?.actionRule?.itemIds?.map((mapItem) => (
                         <div className={style.card} key={mapItem.itemId}>
@@ -115,6 +120,8 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                         </div>
                       ))}
                   </div>
+                  {/* 话术 */}
+
                   <div className={style.momentItemFooter}>
                     <div className={style.footerTime}>{(value.pushTime as Moment).format('HH:mm')}</div>
                     <div className={style.footerOp}>
