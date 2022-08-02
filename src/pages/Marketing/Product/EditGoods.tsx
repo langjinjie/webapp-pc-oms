@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Card, Form, Input, message, Button, Select, Space, Row, Col, Radio } from 'antd';
 import { productEdit, productConfig, productDetail } from 'src/apis/marketing';
 import NumberInput from 'src/components/NumberInput/NumberInput';
@@ -34,6 +34,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const { userInfo } = useContext(Context);
   const [form] = Form.useForm();
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isCopy, setIsCopy] = useState(false);
   const [premiumValue, setPremiumValue] = useState('0');
 
   const [shareInfo, setShareInfo] = useState({
@@ -41,6 +42,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     shareTitle: '',
     productName: '',
     posterImgUrl: '',
+    specType: 0,
     whetherAssociated: 1 // 是否被推荐 0 已推荐，1 未推荐
   });
 
@@ -62,15 +64,9 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const [oldSourceUrlParam, setOldSourceUrlParam] = useState({ displayType: 0, sourceUrl: '' });
   const [oldUrlParam, setOldUrlParam] = useState({ displayType: 0, url: '' });
 
-  useMemo(() => {
-    const state = location.state || {};
-    const { id = '', type = '0' } = state;
-    setPropsState({ id, type });
-  }, [location]);
-
   // 获取详情
-  const getProductDetail = async () => {
-    const res = await productDetail({ productId: propsState.id });
+  const getProductDetail = async (id: string) => {
+    const res = await productDetail({ productId: id });
     if (res) {
       const {
         productName,
@@ -98,7 +94,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         groupId
       } = res;
 
-      setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl, whetherAssociated });
+      setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl, whetherAssociated, specType });
       const premium = (res.premium as number) / 100;
       setPremiumValue(premium + '');
       setCurrency(res.premiumTypeId);
@@ -250,7 +246,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     delete otherValues.isSet;
     const editParams = {
       ...otherValues,
-      productId: propsState.id || null,
+      productId: isCopy ? null : propsState.id || null,
       premium: +premiumValue * 100,
       premiumTypeId: currency,
       tags: tags.join(','),
@@ -297,11 +293,19 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   };
 
   useEffect(() => {
+    const state = location.state || {};
+    const { id = '', type = '0' } = state;
+    setPropsState({ id, type });
     getProductConfig();
-    propsState.id && getProductDetail();
+    id && getProductDetail(id);
     const isView = getQueryParam('isView');
+    const isCopy = getQueryParam('isCopy');
+
     if (isView) {
       setIsReadOnly(isView === 'true');
+    }
+    if (isCopy) {
+      setIsCopy(isCopy === 'true');
     }
   }, []);
   const validatorProductId = (_: any, value: string): any => {
@@ -318,8 +322,8 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     form.setFields([{ name: 'highlights', value: inputValue }]);
   };
   const onFormValuesChange = (values: any) => {
-    const { shareTitle, activityName, productName, shareCoverImgUrl } = values;
-    setShareInfo((active) => ({ ...active, shareTitle, activityName, productName, shareCoverImgUrl }));
+    const { shareTitle, activityName, productName, shareCoverImgUrl, specType } = values;
+    setShareInfo((active) => ({ ...active, shareTitle, activityName, productName, shareCoverImgUrl, specType }));
   };
   const onChangeDisplayType = (e: any) => {
     if (e.target.value === 1) {
@@ -406,7 +410,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         </Form.Item>
         {displayType === 1 && (
           <Form.Item
-            label="通用产品链接"
+            label={shareInfo.specType === 1 ? '个性化产品缺省链接' : '通用产品链接'}
             name="corpProductLink"
             rules={[
               { required: true, message: '请输入产品链接' },

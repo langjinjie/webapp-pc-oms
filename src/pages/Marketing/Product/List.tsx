@@ -98,6 +98,9 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   const viewItem = (record: ProductProps) => {
     history.push('/marketingProduct/edit' + '?isView=' + true, { id: record.productId, type: '1' });
   };
+  const copyItem = (record: ProductProps) => {
+    history.push('/marketingProduct/edit' + '?isCopy=' + true, { id: record.productId });
+  };
   const changeItemStatus = async (record: ProductProps, index: number) => {
     const res = await productManage({
       type: record.status === 2 ? 2 : 1,
@@ -159,7 +162,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     setVisibleSetUserRight(true);
   };
 
-  const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleSort, setRight });
+  const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleSort, setRight, copyItem });
 
   // 添加商品
   const addProduct = () => {

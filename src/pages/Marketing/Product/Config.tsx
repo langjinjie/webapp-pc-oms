@@ -72,12 +72,13 @@ type ColumnsArgs = {
   handleEdit: (record: ProductProps) => void;
   changeItemStatus: (record: ProductProps, index: number) => void;
   viewItem: (record: ProductProps) => void;
+  copyItem: (record: ProductProps) => void;
   deleteItem: (record: ProductProps, index: number) => void;
   handleSort: (record: ProductProps) => void;
   setRight: (record: ProductProps) => void;
 };
 const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
-  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort, setRight } = args;
+  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort, setRight, copyItem } = args;
   return [
     { title: '产品名称', dataIndex: 'productName', width: 200, ellipsis: { showTitle: true } },
     {
@@ -150,7 +151,7 @@ const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
     },
     {
       title: '操作',
-      width: 230,
+      width: 300,
       dataIndex: 'status',
       align: 'left',
       fixed: 'right',
@@ -164,6 +165,11 @@ const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
           <AuthBtn path="/view">
             <Button type="link" onClick={() => viewItem(obj)}>
               查看
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/add">
+            <Button type="link" onClick={() => copyItem(obj)}>
+              复制
             </Button>
           </AuthBtn>
           <AuthBtn path="/edit">

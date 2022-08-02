@@ -42,6 +42,7 @@ const statusHandle = (status: number | undefined | null) => {
 };
 interface OperateProps {
   viewItem: (id: string) => void;
+  copyItem: (id: string) => void;
   handleSort: (record: ActivityProps) => void;
   handleOperate: (operateType: number, activityId: string, index: number) => void;
   setRight: (record: ActivityProps) => void;
@@ -59,7 +60,7 @@ export interface ActivityProps {
   groupId: string;
 }
 export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
-  const { viewItem, handleOperate, handleSort, setRight } = args;
+  const { viewItem, handleOperate, handleSort, setRight, copyItem } = args;
   return [
     {
       title: '活动名称',
@@ -125,7 +126,7 @@ export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
     {
       title: '操作',
       dataIndex: 'status',
-      width: 280,
+      width: 320,
       align: 'left',
       fixed: 'right',
       render: (status: number, record: any, index: number) => (
@@ -138,6 +139,11 @@ export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
           <AuthBtn path="/view">
             <Button type="link" onClick={() => viewItem(record.activityId)}>
               查看
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/add">
+            <Button type="link" onClick={() => copyItem(record.activityId)}>
+              复制
             </Button>
           </AuthBtn>
           {status === 1 && (

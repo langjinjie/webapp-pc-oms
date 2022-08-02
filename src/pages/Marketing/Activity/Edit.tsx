@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Row, Col, Card, Form, Input, message, Button, Select, Radio } from 'antd';
-import { getQueryParam } from 'tenacity-tools';
 import { Context } from 'src/store';
 import { activityDetail, activityEdit, productConfig } from 'src/apis/marketing';
 import style from './style.module.less';
@@ -9,11 +8,12 @@ import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
 import { UploadFile } from 'src/components';
 import { SetUserRightFormItem } from '../Components/SetUserRight/SetUserRight';
+import { URLSearchParams } from 'src/utils/base';
+import { RouteComponentProps } from 'react-router-dom';
 
-interface ActivityPageProps {
+interface ActivityPageProps extends RouteComponentProps {
   id: number;
   type: number;
-  history: any;
 }
 
 interface ActivityProps {
@@ -36,7 +36,7 @@ interface Tag {
 
 const { Group } = Radio;
 
-const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
+const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
   const { userInfo } = useContext(Context);
   const [active, setActive] = useState<ActivityProps>({
     activityId: '',
@@ -47,6 +47,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
   });
   const [tags, setTags] = useState<Tag[]>([]);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isCopy, setIsCopy] = useState(false);
   const [displayType, setDisplayType] = useState<number>(1);
   const [oldSourceUrlParam, setOldSourceUrlParam] = useState({ displayType: 0, sourceUrl: '' });
   const [oldUrlParam, setOldUrlParam] = useState({ displayType: 0, url: '' });
@@ -103,14 +104,17 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
   };
 
   useEffect(() => {
-    const activityId = getQueryParam('activityId');
-    const isView = getQueryParam('isView');
+    const { activityId, isView, isCopy } = URLSearchParams(location.search) as {
+      activityId: string;
+      isView: string;
+      isCopy: string;
+    };
+
     if (activityId) {
       getDetail(activityId);
     }
-    if (isView) {
-      setIsReadOnly(isView === 'true');
-    }
+    setIsReadOnly(!!isView);
+    setIsCopy(!!isCopy);
     getSystemAcTagConfig();
   }, []);
 
@@ -123,7 +127,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history }) => {
       tags: tags.join(','),
       groupId: groupId || '',
       shareCoverImgUrl: active.shareCoverImgUrl,
-      activityId: active.activityId
+      activityId: isCopy ? '' : active.activityId
     };
     const res = await activityEdit(editParams);
     if (res) {

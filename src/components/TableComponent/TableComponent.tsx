@@ -16,8 +16,8 @@ interface TableComponentProps<T> extends TableProps<T> {
   paginationChange?: (pageNum: number, pageSize?: number) => void;
   setRowKey?: (record: any) => string;
   rowSelection?: {
-    selectedRowKeys?: string[];
-    defaultSelectedRowKeys?: string[];
+    selectedRowKeys?: any[];
+    defaultSelectedRowKeys?: any[];
     type?: 'checkbox' | 'radio';
     onChange: (selectedRowKeys: React.Key[], selectedRows: T[]) => void;
     getCheckboxProps?: (record: T) => { disabled: boolean; name: string };

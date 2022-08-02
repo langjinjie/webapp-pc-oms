@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, PaginationProps, Pagination, Image } from 'antd';
 import style from './style.module.less';
 import classNames from 'classnames';
-import { AuthBtn, NgFormSearch } from 'src/components';
+import { AuthBtn, Empty, NgFormSearch } from 'src/components';
 import { searchCols, TplType } from './config';
 import { RouteComponentProps } from 'react-router-dom';
 import { getTplListOfCorp } from 'src/apis/task';
@@ -99,6 +99,7 @@ const Manage: React.FC<RouteComponentProps> = ({ history }) => {
             </div>
           ))}
         </div>
+        {tplList.length === 0 && <Empty />}
         <div className={style.paginationWrap}>
           <Pagination {...pagination} onChange={onPaginationChange}></Pagination>
         </div>

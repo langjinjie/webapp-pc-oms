@@ -845,25 +845,38 @@ ul {
 .menu-list::-webkit-scrollbar {
   width: 0;
 }
+
+// 导航条样式自定义
 .menu-list:hover::-webkit-scrollbar {
   width: 5px;
-  // height: 220px;
-  // background: #3078db;
 }
 .menu-list::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  // position: fixed;
-  // left: 100px;
   max-height: 400px !important;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
   background: rgba(0, 0, 0, 0.1);
 }
-// .menu-list::-webkit-scrollbar-button {
-//   height: 100px;
-//   width: 5px;
-//   background: #111;
-// }
+
 .menu-list::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0);
+  height: 260px;
+}
+.sub-menu-list::-webkit-scrollbar {
+  width: 0;
+}
+.sub-menu-list:hover::-webkit-scrollbar {
+  width: 5px;
+}
+.sub-menu-list::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  max-height: 400px !important;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.sub-menu-list::-webkit-scrollbar-track {
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0);
   border-radius: 0;
   background: rgba(0, 0, 0, 0);

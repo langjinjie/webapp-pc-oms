@@ -425,6 +425,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                                         onFocus={() => {
                                           onFocusNodeRuleItem(index);
                                         }}
+                                        dropdownClassName={styles.dropDownStyle}
                                         placeholder="请选择"
                                         dropdownRender={(menu) => (
                                           <>

@@ -125,6 +125,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
     getActionTypeList(contentType);
     setSelectRows([]);
     setSelectRowKeys([]);
+    actionForm.setFieldsValue({ categoryId: undefined });
   };
 
   useEffect(() => {
@@ -236,7 +237,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
           </Form.Item>
           {values.contentSource === 2 && (
             <Form.Item label="选择内容" required>
-              <Form.Item name={'contentCategory'} rules={[{ required: true, message: '请选择规则' }]}>
+              <Form.Item name={'contentCategory'} rules={[{ required: true, message: '请选择内容' }]}>
                 <Radio.Group
                   disabled={props.footer === null}
                   onChange={(e) => {
