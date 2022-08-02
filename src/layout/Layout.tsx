@@ -16,9 +16,9 @@ import { getCookie } from 'src/utils/base';
 import { MenuItem } from 'src/utils/interface';
 import Header from './Header';
 import './style.less';
-import { Affix, message } from 'antd';
+import { Layout, message } from 'antd';
 
-const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
+const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList, setBtnList } = useContext(Context);
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
   const [subMenus, setSubMenus] = useState<MenuItem[]>([]);
@@ -123,74 +123,89 @@ const Layout: React.FC<RouteComponentProps> = ({ history, location }) => {
   }, []);
 
   return (
-    <div className="layout-wrap">
-      <Header setMenuIndex={setMenuIndex} setSubMenus={setSubMenus} />
-      <div className="layout-content">
-        <div
-          className={classNames('collapse-wrap', isCollapse ? 'is-collapse' : 'is-expand')}
-          onClick={() => setIsCollapse((state) => !state)}
-        >
-          <Icon className="arrow-icon" name={isCollapse ? 'iconfontjiantou2' : 'zuojiantou-copy'} />
-        </div>
-        <Affix offsetTop={80}>
-          <ul className="menu-list">
-            {menuList.map((menu: MenuItem, index: number) => (
-              <li
-                className={classNames('menu-item', {
-                  'menu-active': menuIndex === index
-                })}
-                key={menu.menuId}
-                onClick={() => {
-                  if (menu.children && menu.children.length > 0) {
-                    const path = ((menu.children || [])[0] || {}).path;
-                    if (path.indexOf('http') > -1) {
-                      window.open(path, '_blank');
-                      return false;
-                    }
-                    setMenuIndex(index);
-                    history.push(((menu.children || [])[0] || {}).path);
-                  } else {
-                    message.warn('无子级菜单，请联系管理员');
+    <Layout className="layout">
+      <Layout.Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
+        <Header setMenuIndex={setMenuIndex} setSubMenus={setSubMenus} />
+      </Layout.Header>
+      <Layout.Sider
+        trigger={null}
+        collapsible
+        width={260}
+        collapsed={isCollapse}
+        // style={{
+        //   overflow: 'auto',
+        //   height: '100vh',
+        //   position: 'fixed',
+        //   marginTop: 80,
+        //   left: 0,
+        //   top: 0,
+        //   bottom: 0
+        // }}
+      >
+        <ul className="menu-list">
+          {menuList.map((menu: MenuItem, index: number) => (
+            <li
+              className={classNames('menu-item', {
+                'menu-active': menuIndex === index
+              })}
+              key={menu.menuId}
+              onClick={() => {
+                if (menu.children && menu.children.length > 0) {
+                  const path = ((menu.children || [])[0] || {}).path;
+                  if (path.indexOf('http') > -1) {
+                    window.open(path, '_blank');
+                    return false;
                   }
-                }}
-              >
-                <Icon className="menu-icon" name={menu.menuIcon!} />
-                <span className="menu-name">{menu.menuName}</span>
-              </li>
-            ))}
-          </ul>
-        </Affix>
-        <Affix offsetTop={80}>
-          <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
-            {subMenus.map((subMenu: MenuItem) => {
-              return (
-                subMenu?.path && (
-                  <li key={subMenu.menuId}>
-                    {subMenu?.path.indexOf('http') > -1
-                      ? (
-                      <a target={'_blank'} className="sub-menu-item" href={subMenu?.path as string} rel="noreferrer">
-                        {subMenu.menuName}
-                      </a>
-                        )
-                      : (
-                      <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
-                        {subMenu.menuName}
-                      </NavLink>
-                        )}
-                  </li>
-                )
-              );
-            })}
-          </ul>
-        </Affix>
+                  setMenuIndex(index);
+                  history.push(((menu.children || [])[0] || {}).path);
+                } else {
+                  message.warn('无子级菜单，请联系管理员');
+                }
+              }}
+            >
+              <Icon className="menu-icon" name={menu.menuIcon!} />
+              <span className="menu-name">{menu.menuName}</span>
+            </li>
+          ))}
+        </ul>
 
-        <div className="content-wrap">
-          <div className="route-content">{renderRoute()}</div>
-        </div>
-      </div>
+        <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
+          {subMenus.map((subMenu: MenuItem) => {
+            return (
+              subMenu?.path && (
+                <li key={subMenu.menuId}>
+                  {subMenu?.path.indexOf('http') > -1
+                    ? (
+                    <a target={'_blank'} className="sub-menu-item" href={subMenu?.path as string} rel="noreferrer">
+                      {subMenu.menuName}
+                    </a>
+                      )
+                    : (
+                    <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
+                      {subMenu.menuName}
+                    </NavLink>
+                      )}
+                </li>
+              )
+            );
+          })}
+        </ul>
+      </Layout.Sider>
+      <Layout style={{ marginTop: 80, background: '#fff' }}>
+        <Layout.Content>
+          <div>{renderRoute()}</div>
+        </Layout.Content>
+      </Layout>
+
       <ConfirmModal />
-    </div>
+      <div
+        className={classNames('collapse-wrap', isCollapse ? 'is-collapse' : 'is-expand')}
+        onClick={() => setIsCollapse((state) => !state)}
+      >
+        <Icon className="arrow-icon" name={isCollapse ? 'iconfontjiantou2' : 'zuojiantou-copy'} />
+      </div>
+    </Layout>
   );
 };
 
-export default withRouter(Layout);
+export default withRouter(MyLayout);
