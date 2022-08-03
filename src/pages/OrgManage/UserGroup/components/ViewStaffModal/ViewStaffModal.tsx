@@ -26,16 +26,17 @@ const ViewStaffModal: React.FC<IViewStaffModal> = ({ modalParam, setModalParam }
       dataIndex: 'deptName'
     }
   ];
-  const onCancel = () => {
-    setModalParam((param: any) => ({ ...param, visible: false }));
-  };
-  const onOk = () => {
-    onCancel();
-  };
   const onReset = () => {
     form.resetFields();
     setSearchParam({ staffName: '' });
     setPaginationPram({ pageNum: 1, pageSize: 10 });
+  };
+  const onCancel = () => {
+    setModalParam((param: any) => ({ ...param, visible: false }));
+    onReset();
+  };
+  const onOk = () => {
+    onCancel();
   };
   const onFinish = (values: any) => {
     setSearchParam(values);
@@ -54,7 +55,6 @@ const ViewStaffModal: React.FC<IViewStaffModal> = ({ modalParam, setModalParam }
   };
   useEffect(() => {
     modalParam.visible && getStaffList();
-    modalParam.visible || onReset();
   }, [paginationPram, modalParam.visible]);
   return (
     <Modal
