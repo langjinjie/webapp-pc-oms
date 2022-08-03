@@ -12,8 +12,8 @@ interface IPreviewProps {
 }
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
+  console.log('================', value);
   const itemIds = value?.actionRule?.itemIds || [];
-  console.log('++++++++++++++++++++++++++++++++', value);
   return (
     <div className={classNames(style.phoneWrap, className)}>
       <div className={style.inner}>
@@ -48,7 +48,6 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                         src="http://wx.qlogo.cn/mmhead/7j1UQofaR9ckJPex8aHRlKzfvEq8FIZxIBvBDyQZibvTeIHtYiaB3z2g/0"
                       />
                     </div>
-                    {'aaaaaaaaaa'}
                     {/* 话术 */}
                     {value?.actionRule?.contentType === 5 && <div className={style.news}>{mapItem.itemName}</div>}
                     {/* 海报 */}
@@ -68,7 +67,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                         </div>
                         <div className={classNames(style.imgAndDesc, 'fixed ml10')}>
                           <div className={style.img}>
-                            <img src={mapItem.itemShareImgUrl || mapItem.imgUrl} />
+                            <img src={mapItem.itemShareImgUrl || mapItem.imgUrl || mapItem.itemUrl} />
                           </div>
                         </div>
                       </div>
@@ -91,7 +90,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                   <div className={style.nickName}>李思</div>
                   <div className={style.momentContent}>
                     <div className={classNames(style.momentText, 'two-line-ellipsis')}>
-                      {value?.speechcraft + ' '}
+                      {value?.speechcraft || '' + ' '}
                       {value?.actionRule?.contentType === 5 && value?.actionRule?.itemIds[0]?.itemName}
                     </div>
                     {value?.actionRule.contentType === 2 && (
@@ -104,7 +103,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                               { [style.twoImg]: value?.actionRule?.itemIds?.length === 2 },
                               { [style.multiImg]: value?.actionRule?.itemIds?.length > 2 }
                             )}
-                            src={mapItem.itemShareTitle}
+                            src={mapItem.itemShareTitle || mapItem.itemUrl || mapItem.imgUrl}
                           />
                         ))}
                       </div>

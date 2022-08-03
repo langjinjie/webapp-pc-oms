@@ -73,7 +73,7 @@ const NodePreview: React.FC<INodePreviewProps> = ({ visible, title, onClose, val
         </div>
 
         <div className={style.value}>
-          <Preview value={value} isMoment={value?.wayName === '群发朋友圈'} />
+          <Preview value={value} isMoment={value?.wayName === '群发朋友圈' || value?.wayCode === 'batch_moment'} />
         </div>
       </div>
     </Drawer>

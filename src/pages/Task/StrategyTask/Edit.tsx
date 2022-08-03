@@ -64,6 +64,11 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
                 rule.actionRule.categoryId = rule.actionRule.categoryId.join(';');
               }
             }
+            if (isArray(rule.actionRule.itemIds)) {
+              rule.actionRule.itemIds = rule.actionRule.itemIds.map((item: any) => ({
+                itemId: item.itemId
+              }));
+            }
             rule.pushTime = moment(rule.pushTime)?.format('HH:mm') || '';
             return rule;
           });
