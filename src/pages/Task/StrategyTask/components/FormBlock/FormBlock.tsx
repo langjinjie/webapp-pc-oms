@@ -145,7 +145,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   const onNodeTypeChange = (typeCode: NodeCodeType, index: number) => {
     const sceneListValues = [...blockForm.getFieldValue('sceneList')];
     const values = { ...sceneListValues[index] };
-    values.nodeId = '';
+    values.nodeId = undefined;
     values.date = undefined;
     values.nodeRuleList = values.nodeRuleList?.map((item: any) => ({ ...item, nodeRuleId: undefined }));
     sceneListValues.splice(index, 1, values);
@@ -299,6 +299,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                       >
                         <Select
                           disabled={isCorp}
+                          placeholder="请选择"
                           className={styles.attrItemContent}
                           onChange={(value) => onNodeTypeChange(value, index)}
                         >
@@ -336,7 +337,8 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                               onSearch={(value) => debounceFetcherNodeOptions({ value, index })}
                               onChange={(value) => onNodeChange(value, index)}
                               showSearch={true}
-                              placeholder="请选择"
+                              placeholder="请输入查询"
+                              allowClear
                               dropdownRender={(menu) => {
                                 return (
                                   <>
@@ -388,6 +390,8 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                             <Select
                               disabled={isCorp}
                               filterOption={false}
+                              allowClear
+                              placeholder="请输入查询"
                               onSearch={(value) => debounceFetcherNodeOptions({ value, index })}
                               onChange={(value) => onNodeChange(value, index)}
                               showSearch={true}
