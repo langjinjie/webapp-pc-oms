@@ -244,10 +244,17 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   // 新增节点规则后回调
-  const createdNodeRuleCallback = () => {
+  const createdNodeRuleCallback = async () => {
     setVisibleRule(false);
     const nodeId = formValues.sceneList[currentIndex!].nodeId;
-    onNodeChange(nodeId, currentIndex!);
+    const nodeTypeCode = blockForm.getFieldValue('sceneList')[currentIndex!].nodeTypeCode;
+    const copyData = [...nodeDetails];
+    // 获取节点规则列表
+    const res = await getNodeRuleList({ nodeId: nodeId, nodeTypeCode: nodeTypeCode });
+    if (res) {
+      copyData[currentIndex!].options = res.list || [];
+    }
+    setNodeDetails(copyData);
   };
 
   const deleteSceneCallback = (index: number) => {
