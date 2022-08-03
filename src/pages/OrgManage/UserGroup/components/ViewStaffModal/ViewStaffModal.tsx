@@ -54,9 +54,7 @@ const ViewStaffModal: React.FC<IViewStaffModal> = ({ modalParam, setModalParam }
   };
   useEffect(() => {
     modalParam.visible && getStaffList();
-    return () => {
-      onReset();
-    };
+    modalParam.visible || onReset();
   }, [paginationPram, modalParam.visible]);
   return (
     <Modal
