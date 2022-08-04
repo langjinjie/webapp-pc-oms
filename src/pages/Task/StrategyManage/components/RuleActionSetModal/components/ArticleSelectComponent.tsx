@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, PaginationProps } from 'antd';
+import { PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { getNewsList, getTagsOrCategorys } from 'src/apis/marketing';
 import { Context } from 'src/store';
@@ -113,22 +113,7 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
             title: '文章分类',
             dataIndex: 'tagNameList',
             key: 'tagNameList',
-            width: 100
-          },
-          {
-            title: '详情',
-
-            width: 80,
-            render: (text: string, record: any) => (
-              <Button
-                type="link"
-                onClick={() => {
-                  console.log(record);
-                }}
-              >
-                详情
-              </Button>
-            )
+            width: 180
           }
         ]}
       ></NgTable>

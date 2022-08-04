@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, PaginationProps } from 'antd';
+import { PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { getProductList, productConfig } from 'src/apis/marketing';
 import { ProductProps } from 'src/pages/Marketing/Product/Config';
@@ -110,22 +110,7 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
             title: '分类',
             dataIndex: 'categoryName',
             key: 'categoryName',
-            width: 100
-          },
-          {
-            title: '详情',
-
-            width: 80,
-            render: (text: string, record: any) => (
-              <Button
-                type="link"
-                onClick={() => {
-                  console.log(record);
-                }}
-              >
-                详情
-              </Button>
-            )
+            width: 160
           }
         ]}
       ></NgTable>
