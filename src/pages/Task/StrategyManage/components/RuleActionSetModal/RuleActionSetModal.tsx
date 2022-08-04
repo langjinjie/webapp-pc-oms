@@ -183,7 +183,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
 
   const posterTypeChange = (values: any, selectedOptions: any) => {
     actionForm.setFieldsValue({
-      category: selectedOptions ? selectedOptions[0].name + ';' + selectedOptions[1].name : ''
+      category: selectedOptions ? selectedOptions.map((item: any) => item.name).join(';') : ''
     });
   };
   const catagoryChange = (option: any) => {
