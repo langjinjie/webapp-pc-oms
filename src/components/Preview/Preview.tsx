@@ -30,10 +30,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
               {value?.speechcraft && (
                 <div className={style.newsItem}>
                   <div className={style.avatar}>
-                    <img
-                      className={style.avatarImg}
-                      src="http://wx.qlogo.cn/mmhead/7j1UQofaR9ckJPex8aHRlKzfvEq8FIZxIBvBDyQZibvTeIHtYiaB3z2g/0"
-                    />
+                    <img className={style.avatarImg} src={require('src/assets/images/avater.jpg')} />
                   </div>
                   <div className={style.news}>{value?.speechcraft}</div>
                 </div>
@@ -43,10 +40,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                 itemIds.map((mapItem) => (
                   <div className={style.newsItem} key={'0' + mapItem.itemId}>
                     <div className={style.avatar}>
-                      <img
-                        className={style.avatarImg}
-                        src="http://wx.qlogo.cn/mmhead/7j1UQofaR9ckJPex8aHRlKzfvEq8FIZxIBvBDyQZibvTeIHtYiaB3z2g/0"
-                      />
+                      <img className={style.avatarImg} src={require('src/assets/images/avater.jpg')} />
                     </div>
                     {/* 话术 */}
                     {value?.actionRule?.contentType === 5 && <div className={style.news}>{mapItem.itemName}</div>}
@@ -81,10 +75,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
             <>
               <div className={style.momentItem}>
                 <div className={style.avatar}>
-                  <img
-                    className={style.avatarImg}
-                    src="http://wx.qlogo.cn/mmhead/7j1UQofaR9ckJPex8aHRlKzfvEq8FIZxIBvBDyQZibvTeIHtYiaB3z2g/0"
-                  />
+                  <img className={style.avatarImg} src={require('src/assets/images/avater.jpg')} />
                 </div>
                 <div className={style.moment}>
                   <div className={style.nickName}>李思</div>
