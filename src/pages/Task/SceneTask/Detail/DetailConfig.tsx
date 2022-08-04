@@ -22,7 +22,7 @@ interface OperateProps {
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns> => {
   return [
-    { title: '节点动作规则编号', dataIndex: 'nodeRuleCode', key: 'nodeRuleCode', width: 160 },
+    { title: '节点动作规则编号', dataIndex: 'nodeRuleCode', key: 'nodeRuleCode', width: 180 },
     {
       title: '节点规则名称',
       dataIndex: 'nodeRuleName',
@@ -36,27 +36,28 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<TaskNodeColumns
       ellipsis: true,
       width: 140,
       key: 'logicName',
-      align: 'center',
       render: (categoryName: string) => categoryName || UNKNOWN
     },
-
     {
       title: '触达形式',
       dataIndex: 'wayName',
-      width: 120,
-      align: 'center'
+      width: 120
+    },
+
+    {
+      title: '动作规则编号',
+      dataIndex: 'actionRuleCode',
+      width: 200
     },
     {
       title: '添加时间',
       dataIndex: 'createTime',
-      width: 160,
-      align: 'center'
+      width: 160
     },
     {
       title: '动作类型',
       dataIndex: 'actionRuleType',
       width: 120,
-      align: 'center',
       render: (type) => actionTypeList.filter((item) => item.id === type)[0]?.name
     },
     {

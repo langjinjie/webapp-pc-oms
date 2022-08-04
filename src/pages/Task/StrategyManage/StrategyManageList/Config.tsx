@@ -11,14 +11,14 @@ export const searchCols: SearchCol[] = [
   {
     name: 'tplCode',
     type: 'input',
-    label: '策略任务模板编号',
+    label: '机构策略任务编号',
     width: '180px',
     placeholder: '请输入'
   },
   {
     name: 'tplName',
     type: 'input',
-    label: '策略任务模板名称',
+    label: '机构策略任务名称',
     placeholder: '请输入',
     width: '180px'
   }
@@ -50,7 +50,6 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<StrategyTaskPro
       dataIndex: 'updateTime',
       width: 160,
       key: 'updateTime',
-      align: 'center',
       render: (categoryName: string) => categoryName || UNKNOWN
     },
     {
