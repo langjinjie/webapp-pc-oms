@@ -275,7 +275,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                 <Form.Item key={key + name} className={styles.formBlock} {...restFiled}>
                   <div className={classNames(styles.blockTitle, 'flex justify-between align-center')}>
                     <span>序号 {index + 1}</span>
-                    {!isCorp && (
+                    {!isCorp && !isReadonly && (
                       <Button
                         className={styles.blockDelete}
                         type="link"
@@ -298,7 +298,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                         className={classNames(styles.nodeType, styles.attrItem, 'flex align-center')}
                       >
                         <Select
-                          disabled={isCorp}
+                          disabled={isCorp || isReadonly}
                           placeholder="请选择"
                           className={styles.attrItemContent}
                           onChange={(value) => onNodeTypeChange(value, index)}
@@ -321,7 +321,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                           >
                             <DatePicker
                               onChange={(date) => onDateChange(date, index)}
-                              disabled={isCorp}
+                              disabled={isCorp || isReadonly}
                               format={'MM-DD'}
                             />
                           </Form.Item>
@@ -332,7 +332,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                           >
                             <Select
                               className={styles.nodeDate}
-                              disabled={!formValues?.sceneList?.[index]?.date || !!isCorp}
+                              disabled={!formValues?.sceneList?.[index]?.date || !!isCorp || isReadonly}
                               filterOption={false}
                               onSearch={(value) => debounceFetcherNodeOptions({ value, index })}
                               onChange={(value) => onNodeChange(value, index)}
@@ -388,7 +388,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                             className={classNames(styles.attrItem, 'flex align-center')}
                           >
                             <Select
-                              disabled={isCorp}
+                              disabled={isCorp || isReadonly}
                               filterOption={false}
                               allowClear
                               placeholder="请输入查询"
@@ -515,16 +515,18 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                                   </div>
                                 </Form.Item>
                               ))}
-                              <li className={styles.nodeItem}>
-                                <Button
-                                  shape="round"
-                                  ghost
-                                  type="primary"
-                                  onClick={() => add({ pushTime: moment('09:00', 'HH:mm') })}
-                                >
-                                  新增
-                                </Button>
-                              </li>
+                              {!isReadonly && (
+                                <li className={styles.nodeItem}>
+                                  <Button
+                                    shape="round"
+                                    ghost
+                                    type="primary"
+                                    onClick={() => add({ pushTime: moment('09:00', 'HH:mm') })}
+                                  >
+                                    新增
+                                  </Button>
+                                </li>
+                              )}
                             </>
                           )}
                         </Form.List>
@@ -533,7 +535,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                   </div>
                 </Form.Item>
               ))}
-              {!hideAdd && !isCorp && (
+              {!hideAdd && !isCorp && !isReadonly && (
                 <li className={classNames(styles.nodeItem, 'mt20 mb20')}>
                   <Button
                     className="ml20"

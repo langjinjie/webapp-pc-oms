@@ -126,15 +126,15 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               name={'tplName'}
               rules={[{ required: true }, { max: 30, message: '最多30个字' }]}
             >
-              <Input placeholder="待输入" readOnly={isReadonly} className="width320"></Input>
+              <Input placeholder="待输入" disabled={isReadonly} className="width320"></Input>
             </Form.Item>
             <Form.Item label="任务类型" name={'taskType'}>
-              <Select className="width320">
+              <Select className="width320" disabled={isReadonly}>
                 <Select.Option value={1}>策略任务</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item label="策略执行周期" name={'runCycle'}>
-              <Radio.Group>
+              <Radio.Group disabled={isReadonly}>
                 <Radio value={1}>长期有效</Radio>
               </Radio.Group>
             </Form.Item>
@@ -143,7 +143,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               name={'opDesc'}
               rules={[{ required: true, message: '请输入任务运营说明' }]}
             >
-              <Input.TextArea readOnly={isReadonly} placeholder="请输入" className="width400"></Input.TextArea>
+              <Input.TextArea disabled={isReadonly} placeholder="请输入" className="width400"></Input.TextArea>
             </Form.Item>
             <Form.Item label="策略任务覆盖范围">
               <Form.Item label="员工筛选" name={'staffScope'} className={styles.interiorItem}>
@@ -162,22 +162,22 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
             {/* <Form.Item> */}
           </Form>
           <div className="formListTitle">配置操作区</div>
-          <FormBlock value={tplDetail?.sceneList} />
+          <FormBlock value={tplDetail?.sceneList} isReadonly={isReadonly} />
 
-          {!isReadonly && (
-            <Form.Item>
-              <div className="flex justify-center formFooter">
-                <Space size={30}>
-                  <Button type="primary" shape="round" ghost onClick={() => history.goBack()}>
-                    取消
-                  </Button>
+          <Form.Item>
+            <div className="flex justify-center formFooter">
+              <Space size={30}>
+                <Button type="primary" shape="round" ghost onClick={() => history.goBack()}>
+                  {isReadonly ? '返回' : '取消'}
+                </Button>
+                {!isReadonly && (
                   <Button type="primary" shape="round" onClick={onBasicSubmit}>
                     确认
                   </Button>
-                </Space>
-              </div>
-            </Form.Item>
-          )}
+                )}
+              </Space>
+            </div>
+          </Form.Item>
         </Form.Provider>
         <div className="formListTitle">策略行事历预览</div>
         <FormBlockPreview value={tplDetail?.sceneList || []} />

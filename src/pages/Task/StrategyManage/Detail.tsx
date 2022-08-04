@@ -183,20 +183,20 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           <div className="formListTitle">配置操作区</div>
           <FormBlock value={tplDetail?.sceneList} isCorp isReadonly={isReadonly} />
 
-          {!isReadonly && (
-            <Form.Item>
-              <div className="flex justify-center formFooter">
-                <Space size={30}>
-                  <Button type="primary" shape="round" ghost onClick={() => history.goBack()}>
-                    取消
-                  </Button>
+          <Form.Item>
+            <div className="flex justify-center formFooter">
+              <Space size={30}>
+                <Button type="primary" shape="round" ghost onClick={() => history.goBack()}>
+                  {isReadonly ? '返回' : '取消'}
+                </Button>
+                {!isReadonly && (
                   <Button type="primary" shape="round" onClick={onBasicSubmit}>
                     确认
                   </Button>
-                </Space>
-              </div>
-            </Form.Item>
-          )}
+                )}
+              </Space>
+            </div>
+          </Form.Item>
         </Form.Provider>
       </div>
       <div className="formListTitle">策略行事历预览</div>
