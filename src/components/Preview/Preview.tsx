@@ -3,7 +3,7 @@ import { Icon } from 'src/components';
 import { IPreviewValue } from 'src/utils/interface';
 import style from './style.module.less';
 import classNames from 'classnames';
-import { Moment } from 'moment';
+import moment from 'moment';
 
 interface IPreviewProps {
   value?: IPreviewValue;
@@ -12,7 +12,6 @@ interface IPreviewProps {
 }
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
-  console.log('================', value);
   const itemIds = value?.actionRule?.itemIds || [];
   return (
     <div className={classNames(style.phoneWrap, className)}>
@@ -113,7 +112,9 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                   {/* 话术 */}
 
                   <div className={style.momentItemFooter}>
-                    <div className={style.footerTime}>{(value.pushTime as Moment).format('HH:mm')}</div>
+                    <div className={style.footerTime}>
+                      {moment(JSON.parse(JSON.stringify(value.pushTime)), 'HH:mm').format('HH:mm')}
+                    </div>
                     <div className={style.footerOp}>
                       <div className={style.dot} />
                       <div className={style.dot} />

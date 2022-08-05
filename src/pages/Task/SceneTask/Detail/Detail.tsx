@@ -54,7 +54,7 @@ const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location, history }) =
         </Form>
         <div className="formListTitle mb20">场景规则信息</div>
         <NgTable
-          rowKey={(record: any, index) => record.actionRuleId + index}
+          rowKey={(record: any) => record.actionRuleId + record.nodeRuleId}
           dataSource={detail.sceneRuleList || []}
           columns={tableColumnsFun({
             onOperate: previewItem
