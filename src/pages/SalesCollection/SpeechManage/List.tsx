@@ -648,7 +648,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       )}
       <NgTable
         dataSource={dataSource}
-        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight })}
+        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight, getList })}
         setRowKey={(record: SpeechProps) => {
           return record.contentId;
         }}

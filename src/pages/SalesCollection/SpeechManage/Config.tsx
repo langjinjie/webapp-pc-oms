@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 // import classNames from 'classnames';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { Button, Space, Tooltip } from 'antd';
+import { Button, Space, Tooltip, Modal, message } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { AuthBtn } from 'src/components';
+import { Context } from 'src/store';
+import { operateSpeechStatus } from 'src/apis/salesCollection';
+
 export const sensitiveOptions = [
   { id: 0, name: '未知' },
   { id: 1, name: '是' },
@@ -102,6 +105,7 @@ interface OperateProps {
   pagination: any;
   formParams: any;
   isNew: boolean;
+  getList?: (pageNum?: number) => void;
 }
 export const genderTypeOptions = [
   { id: 1, name: '男性' },
@@ -134,7 +138,9 @@ export interface SpeechProps {
   contentObj: SpeechProps;
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
-  const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight } = args;
+  const { currentCorpId } = useContext(Context);
+
+  const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight, getList } = args;
   const {
     content = '',
     contentType = '',
@@ -144,6 +150,33 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     updateEndTime = '',
     tip = ''
   } = formParams;
+  // 上下架
+  const operateSpeechStatusHandle = async (operateType: 1 | 2, row: SpeechProps) => {
+    Modal.confirm({
+      title: operateType === 1 ? '上架提醒' : '下架提醒',
+      content: operateType === 1 ? '确定上架当前话术吗？' : '确定下架当前话术？',
+      cancelText: '取消',
+      okText: '确定',
+      onOk: async () => {
+        const res = await operateSpeechStatus({
+          corpId: currentCorpId,
+          type: operateType,
+          list: [{ sceneId: row.sceneId, contentId: row.contentId }]
+        });
+        if (res) {
+          const { successNum, failNum } = res;
+          message.success(
+            failNum > 0
+              ? `已完成！操作成功${successNum}条，操作失败${failNum}条，敏感词检测异常和未知会导致上架失败！`
+              : '已完成！操作成功'
+          );
+          // 重新更新列表
+          getList?.();
+        }
+      }
+    });
+  };
+
   return [
     {
       title: '话术ID',
@@ -300,6 +333,17 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
                 编辑
               </Button>
             </AuthBtn>
+            <></>
+            {[0, 2].includes(record.status) && (
+              <Button onClick={() => operateSpeechStatusHandle(1, record)} type="link">
+                上架
+              </Button>
+            )}
+            {record.status === 1 && (
+              <Button onClick={() => operateSpeechStatusHandle(2, record)} type="link">
+                下架
+              </Button>
+            )}
             <AuthBtn path="/sort">
               {(index !== 0 || (pagination.current === 1 && index !== 0) || pagination.current !== 1) && (
                 <Button
