@@ -93,6 +93,10 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
   const viewItem = (activityId: string) => {
     history.push('/marketingActivity/edit?activityId=' + activityId + '&isView=' + true);
   };
+  // 查看
+  const copyItem = (activityId: string) => {
+    history.push('/marketingActivity/edit?activityId=' + activityId + '&isCopy=' + true);
+  };
 
   // 显示配置可见范围模块
   const setRight = (record?: ActivityProps) => {
@@ -303,7 +307,7 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
               return record.activityId;
             }}
             loading={loading}
-            columns={columns({ handleOperate, viewItem, handleSort, setRight })}
+            columns={columns({ handleOperate, viewItem, handleSort, setRight, copyItem })}
             rowSelection={rowSelection}
             dataSource={dataSource}
             pagination={pagination}

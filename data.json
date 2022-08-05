@@ -1,0 +1,21 @@
+{
+  "ret": 0,
+  "retmsg": "ok",
+  "retdata": {
+    "id": null,
+    "corpId": "wwcb58cb32fb9b697a",
+    "businessModel": null,
+    "leaderName": null,
+    "leaderId": null,
+    "data1": "0.01",
+    "data2": "0.00",
+    "data3": "0.16",
+    "data4": "0.00",
+    "data5": "0.19",
+    "data6": "0.00"
+  },
+  "traceId": null,
+  "exception": null,
+  "page": null,
+  "throw": true
+}

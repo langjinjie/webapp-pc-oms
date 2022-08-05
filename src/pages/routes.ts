@@ -27,6 +27,14 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/noPermission',
     component: lazy(() => import('src/pages/NoPermission/NoPermission'))
+  },
+  {
+    path: '/strategyTask/edit',
+    component: lazy(() => import('src/pages/Task/StrategyTask/Edit'))
+  },
+  {
+    path: '/taskScene/detail',
+    component: lazy(() => import('src/pages/Task/SceneTask/Detail/Detail'))
   }
 ];
 
@@ -299,6 +307,16 @@ export const routes: RouteProps[] = [
   {
     path: '/dashboardList/:id/detail',
     component: lazy(() => import('src/pages/Dashboard/Detail/Detail'))
+  },
+
+  // 任务系统
+  {
+    path: '/strategyManage/detail',
+    component: lazy(() => import('src/pages/Task/StrategyManage/Detail'))
+  },
+  {
+    path: '/strategyManage/tmpList',
+    component: lazy(() => import('src/pages/Task/StrategyManage/TmlManage/Manage'))
   }
 ];
 
@@ -341,6 +359,28 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/dashboardList/:id',
     component: lazy(() => import('src/pages/Dashboard/List/List'))
+  },
+
+  // 任务模块列表页面，开启缓存
+  {
+    path: '/strategyTask',
+    component: lazy(() => import('src/pages/Task/StrategyTask/List'))
+  },
+  {
+    path: '/taskScene',
+    component: lazy(() => import('src/pages/Task/SceneTask/List/List'))
+  },
+  {
+    path: '/taskRule',
+    component: lazy(() => import('src/pages/Task/RuleManage/List/List'))
+  },
+  {
+    path: '/taskNode',
+    component: lazy(() => import('src/pages/Task/NodeManage/List'))
+  },
+  {
+    path: '/strategyManage',
+    component: lazy(() => import('src/pages/Task/StrategyManage/StrategyManageList/List'))
   }
 ];
 
@@ -485,15 +525,6 @@ export const menus: Menu[] = [
       { name: '个微好友', path: '/personal' }
     ]
   },
-  // {
-  //   name: '好友迁移',
-  //   icon: 'a-bianzu101',
-  //   path: 'migration',
-  //   children: [
-  //     { name: '企微好友', path: '/enterprise' },
-  //     { name: '个位好友', path: '/personal' }
-  //   ]
-  // },
 
   {
     name: '角色管理',
@@ -506,21 +537,3 @@ export const menus: Menu[] = [
     ]
   }
 ];
-
-if (process.env.NODE_ENV === 'development') {
-  menus.push({
-    name: '调试',
-    icon: 'icon_daohang_28_xitongshezhi',
-    path: 'test',
-    children: [
-      {
-        name: '视频',
-        path: '/test/video'
-      },
-      {
-        name: '企业接入',
-        path: '/company'
-      }
-    ]
-  });
-}

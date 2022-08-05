@@ -19,6 +19,6 @@
       "@": ["src"]
     }
   },
-  "include": ["src", "typings", "src/components/IconSvgs/.tsx"],
+  "include": ["src", "typings", "static/iconfonts"],
   "exclude": ["node_modules", "scripts/"]
 }

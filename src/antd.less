@@ -57,7 +57,8 @@
 }
 .ant-select-single .ant-select-selector .ant-select-selection-item,
 .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
-  line-height: 36px !important;
+  line-height: 34px !important;
+  height: 34px;
 }
 .ant-upload.ant-upload-select-picture-card {
   border-radius: 8px !important;
@@ -189,6 +190,28 @@
       position: absolute;
       top: 32px;
     }
+  }
+
+  // 面包屑样式
+  .ant-breadcrumb li:last-child {
+    color: #3078db;
+    .ant-breadcrumb-link {
+      cursor: default !important;
+    }
+  }
+  .ant-breadcrumb-link:hover {
+    color: #3078db;
+    cursor: pointer;
+  }
+
+  // panelTitle
+  .formListTitle {
+    height: 44px;
+    line-height: 44px;
+    background: rgba(107, 151, 255, 0.08);
+    border-radius: 8px;
+    font-size: 14px;
+    padding-left: 20px;
   }
 }
 
