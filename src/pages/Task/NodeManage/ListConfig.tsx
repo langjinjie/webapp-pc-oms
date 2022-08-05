@@ -21,6 +21,7 @@ export const searchColsFun = (options: any[]): SearchCol[] => {
       placeholder: '请输入',
       width: '280px'
     },
+
     {
       name: 'nodeTypeCode',
       type: 'select',
@@ -58,14 +59,22 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> =>
     {
       title: '节点名称',
       dataIndex: 'nodeName',
-      width: 160,
+      width: 180,
       key: 'nodeName',
+      ellipsis: true,
       render: (categoryName: string) => categoryName || UNKNOWN
+    },
+    {
+      title: '节点说明',
+      dataIndex: 'nodeDesc',
+      width: 180,
+      key: 'nodeDesc',
+      ellipsis: true
     },
     {
       title: '节点新增人',
       dataIndex: 'createBy',
-      width: 260
+      width: 100
     },
 
     {

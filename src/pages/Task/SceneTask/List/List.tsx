@@ -32,7 +32,7 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
     if (res) {
       const { list, total } = res;
       setTableSource(list);
-      setPagination((pagination) => ({ ...pagination, total, current: pageNum }));
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
     }
   };
 
