@@ -5,11 +5,10 @@ import { getTaskStrategyTplDetail, saveScene } from 'src/apis/task';
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
-import { URLSearchParams } from 'src/utils/base';
+import { throttle, URLSearchParams } from 'src/utils/base';
 import moment from 'moment';
 import { FormBlockPreview } from './components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { isArray } from 'src/utils/tools';
-import { throttle } from 'echarts';
 
 const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [basicForm] = Form.useForm();
