@@ -5,7 +5,7 @@ import { getTaskStrategyTplDetail, applyTpl, getCorpTplDetail } from 'src/apis/t
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
-import { URLSearchParams } from 'src/utils/base';
+import { throttle, URLSearchParams } from 'src/utils/base';
 import moment from 'moment';
 import { FormBlockPreview } from '../StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { isArray } from 'src/utils/tools';
@@ -106,9 +106,9 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
     });
   };
 
-  const onBasicSubmit = () => {
+  const onBasicSubmit = throttle(() => {
     basicForm.submit();
-  };
+  }, 500);
   return (
     <div className="edit container">
       <div className={'breadcrumbWrap'}>
