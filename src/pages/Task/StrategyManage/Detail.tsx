@@ -190,7 +190,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
                   {isReadonly ? '返回' : '取消'}
                 </Button>
                 {!isReadonly && (
-                  <Button type="primary" shape="round" onClick={onBasicSubmit}>
+                  <Button type="primary" shape="round" onClick={() => onBasicSubmit()}>
                     确认
                   </Button>
                 )}
