@@ -66,7 +66,7 @@ export const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, onSub
     <NgModal {...props} width={520} title="新建节点" onOk={handleOk}>
       <Form form={nodeForm} labelAlign="right" labelCol={{ span: 6 }}>
         <Form.Item label="选择节点类别" name={'nodeTypeCode'} rules={[{ required: true }]}>
-          <Select className="width180" onChange={onNodeTypeChange}>
+          <Select className="width320" onChange={onNodeTypeChange}>
             {options.map((option) => (
               <Select.Option value={option.typeCode} key={option.typeId}>
                 {option.typeName}

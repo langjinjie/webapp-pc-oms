@@ -27,7 +27,7 @@ export const nodeSearchColsFun = (options: any[]): SearchCol[] => [
     name: 'nodeRuleCode',
     type: 'input',
     label: '节点规则编号',
-    width: '220px',
+    width: '200px',
     placeholder: '请输入'
   },
   {
@@ -35,7 +35,7 @@ export const nodeSearchColsFun = (options: any[]): SearchCol[] => [
     type: 'input',
     label: '节点规则名称',
     placeholder: '请输入',
-    width: '220px'
+    width: '200px'
   },
   {
     name: 'nodeTypeCode',
@@ -45,7 +45,7 @@ export const nodeSearchColsFun = (options: any[]): SearchCol[] => [
     selectNameKey: 'typeName',
     selectValueKey: 'typeCode',
     placeholder: '请输入',
-    width: '220px'
+    width: '150px'
   }
 ];
 export const actionSearchCols: SearchCol[] = [

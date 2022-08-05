@@ -95,8 +95,7 @@ export const NodeList: React.FC = () => {
       <div className={'pt20'}>
         <AuthBtn path="/queryNode">
           <NgFormSearch
-            firstRowChildCount={2}
-            isInline={false}
+            isInline
             searchCols={nodeSearchColsFun(nodeOptions)}
             onSearch={onSearch}
             onValuesChange={onValuesChange}
