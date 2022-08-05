@@ -124,10 +124,17 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   return (
     <Layout className="layout">
-      <Layout.Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
+      <Layout.Header style={{ position: 'fixed', zIndex: 1000, width: '100%' }}>
         <Header setMenuIndex={setMenuIndex} setSubMenus={setSubMenus} />
       </Layout.Header>
-      <Layout.Sider trigger={null} collapsible width={260} collapsedWidth={88} collapsed={isCollapse}>
+      <Layout.Sider
+        trigger={null}
+        collapsible
+        width={260}
+        collapsedWidth={88}
+        className={'navWrap'}
+        collapsed={isCollapse}
+      >
         <ul className="menu-list">
           {menuList.map((menu: MenuItem, index: number) => (
             <li
