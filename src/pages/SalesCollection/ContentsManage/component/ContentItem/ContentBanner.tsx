@@ -1,5 +1,5 @@
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
-import { AuthBtn, Icon } from 'src/components/index';
+import { AuthBtn, Icon } from 'src/components';
 import { ICatalogItem, IEditOrAddCatalogParam, IFirmModalParam } from 'src/utils/interface';
 import { getCategoryList, requestSaveSortCatalog, requestDeleteCatalog } from 'src/apis/salesCollection';
 import { useHistory } from 'react-router';
@@ -227,6 +227,10 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       history.push(`/speechManage/edit?catalog=${res.join(',')}`);
     }
   };
+  // 同步话术
+  const syncSpeechHandle = (e: MouseEvent) => {
+    e.stopPropagation();
+  };
   return (
     <>
       <div
@@ -265,6 +269,9 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
               </AuthBtn>
             </>
           )}
+          <Button type="link" onClick={syncSpeechHandle}>
+            同步话术
+          </Button>
           <AuthBtn path="/edit">
             <Button type="link" onClick={editClickHandle}>
               <Icon className={'svgIcon'} name="bianji" />
