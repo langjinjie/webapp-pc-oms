@@ -104,8 +104,12 @@ const StrategyTaskList: React.FC<RouteComponentProps> = ({ history }) => {
   const offLine = async () => {
     setVisibleOfflineModal(false);
     const res = await offLineTaskTpl({ tplId: currentTpl?.tplId as string });
+    const currentIndex = dataSource.findIndex((item) => item.tplId === currentTpl?.tplId);
+    const copyData = [...dataSource];
+    copyData.splice(currentIndex, 1, { ...currentTpl, status: 0 });
+    setDataSource(copyData);
     if (res) {
-      message.success('操作成功');
+      message.success('下架成功操作成功');
     }
   };
   // 设置模板展示信息

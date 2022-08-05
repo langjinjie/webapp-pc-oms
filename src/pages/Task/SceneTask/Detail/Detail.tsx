@@ -46,7 +46,7 @@ const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location, history }) =
           <Form.Item label="场景关联节点类别">
             <Input className={'width320'} value={detail.nodeTypeName} readOnly />
           </Form.Item>
-          <Form.Item label="场景关联节点" extra="*保险到期日选择为：用户投保的商业车险到期日以及交强险到期日。">
+          <Form.Item label="场景关联节点" extra={'*' + detail.nodeDesc}>
             <Input className={'width320'} value={detail.nodeName} readOnly />
           </Form.Item>
           <Form.Item label="场景修改人">{detail.updateBy}</Form.Item>
