@@ -106,3 +106,7 @@ export const getAutoParams: HttpFunction = (params) => {
 export const setUserRightWithSpeech: HttpFunction = (params) => {
   return http.post('/tenacity-admin/api/smart/content/batch/setscope', params);
 };
+// 全量查询目录树接口
+export const requestGetSmartCatalogTree: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/smart/catalog/tree', param);
+};

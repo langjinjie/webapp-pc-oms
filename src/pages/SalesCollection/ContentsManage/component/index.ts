@@ -6,3 +6,4 @@ export { default as ConfirmModal } from './ConfirmModal/ConfirmModal';
 export { default as UploadImg } from './UploadImg/UploadImg';
 export { default as UploadFile } from './UploadFile/UploadFile';
 export { default as SyncSpeech } from './SyncSpeech/SyncSpeech';
+export { default as SpeechModal } from './SpeechModal/SpeechModal';

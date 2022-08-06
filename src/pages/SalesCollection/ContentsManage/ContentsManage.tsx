@@ -87,7 +87,7 @@ const ContentsManage: React.FC = () => {
         setFirmModalParam={setFirmModalParam}
       />
       <ConfirmModal firmModalParam={firmModalParam} />
-      <SyncSpeech syncSpeechParam={{ visible: true }} />
+      <SyncSpeech syncSpeechParam={{ visible: true, islastLevel: false }} />
     </>
   );
 };
