@@ -1,84 +1,10 @@
 import React /* , { useContext } */ from 'react';
 import classNames from 'classnames';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { /* Button, Space,  */ Tooltip /* , Modal, message */ } from 'antd';
+import { Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
-
+import style from './style.module.less';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-// import { AuthBtn } from 'src/components';
-// import { Context } from 'src/store';
-// import { operateSpeechStatus } from 'src/apis/salesCollection';
-
-export const sensitiveOptions = [
-  { id: 0, name: '未知' },
-  { id: 1, name: '是' },
-  { id: 2, name: '否' }
-];
-export const speechContentTypes = [
-  { id: 1, name: '纯文字' },
-  { id: 2, name: '图片' },
-  { id: 3, name: '名片' },
-  { id: 4, name: '小站' },
-  { id: 5, name: '图文链接' },
-  { id: 6, name: '音频' },
-  { id: 7, name: '视频' },
-  { id: 9, name: '小程序' },
-  { id: 10, name: 'PDF' }
-];
-// export const excelDemoUrl =
-//   'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/%E5%90%8E%E7%AE%A1%E7%AB%AF%E8%AF%9D%E6%9C%AF%E6%A8%A1%E6%9D%BF.xlsx';
-
-export const statusOptions = [
-  { id: 0, name: '待上架' },
-  { id: 1, name: '已上架' },
-  { id: 2, name: '已下架' }
-];
-
-export const setSearchCols = (options: any[]): SearchCol[] => {
-  return [
-    {
-      name: 'catalogIds',
-      type: 'cascader',
-      label: '选择目录',
-      width: '260px',
-      placeholder: '请输入',
-      fieldNames: { label: 'name', value: 'catalogId', children: 'children' },
-      cascaderOptions: options
-    },
-    {
-      name: 'content',
-      type: 'input',
-      label: '话术内容',
-      width: '260px',
-      placeholder: '请输入'
-    },
-    {
-      name: 'tip',
-      type: 'input',
-      label: '话术小贴士',
-      width: '128px',
-      placeholder: '请输入'
-    },
-    {
-      name: 'contentType',
-      type: 'select',
-      width: 128,
-      label: '话术格式',
-      options: speechContentTypes
-    }
-  ];
-};
-export const genderTypeOptions = [
-  { id: 1, name: '男性' },
-  { id: 2, name: '女性' }
-];
-
-export const ageTypeOptions = [
-  { id: 1, name: '老年' },
-  { id: 2, name: '中年' },
-  { id: 3, name: '青年' }
-];
 
 export interface SpeechProps {
   sceneId: number; // 业务场景ID，1-车险流程，2-非车流程，3-异议处理，4-场景话术，5-问答知识，6-智能教练。
@@ -99,6 +25,40 @@ export interface SpeechProps {
   [propKey: string]: any;
   contentObj: SpeechProps;
 }
+
+export const sensitiveOptions = [
+  { id: 0, name: '未知' },
+  { id: 1, name: '是' },
+  { id: 2, name: '否' }
+];
+export const speechContentTypes = [
+  { id: 1, name: '纯文字' },
+  { id: 2, name: '图片' },
+  { id: 3, name: '名片' },
+  { id: 4, name: '小站' },
+  { id: 5, name: '图文链接' },
+  { id: 6, name: '音频' },
+  { id: 7, name: '视频' },
+  { id: 9, name: '小程序' },
+  { id: 10, name: 'PDF' }
+];
+
+export const genderTypeOptions = [
+  { id: 1, name: '男性' },
+  { id: 2, name: '女性' }
+];
+
+export const ageTypeOptions = [
+  { id: 1, name: '老年' },
+  { id: 2, name: '中年' },
+  { id: 3, name: '青年' }
+];
+export const statusOptions = [
+  { id: 0, name: '待上架' },
+  { id: 1, name: '已上架' },
+  { id: 2, name: '已下架' }
+];
+
 export const columns = (/* args: OperateProps */): ColumnsType<SpeechProps> => {
   return [
     {
@@ -132,7 +92,7 @@ export const columns = (/* args: OperateProps */): ColumnsType<SpeechProps> => {
       },
       render: (content) => (
         <Tooltip placement="topLeft" title={content}>
-          {content || UNKNOWN}
+          <span className={classNames(style.speechContent, 'ellipsis')}>{content || UNKNOWN}</span>
         </Tooltip>
       )
     },
@@ -232,21 +192,4 @@ export const columns = (/* args: OperateProps */): ColumnsType<SpeechProps> => {
       }
     }
   ];
-};
-
-// 组织架构将已被选中的节点的所有后代节点过滤掉
-export const filterChildren = (arr: any[]): any[] => {
-  const newArr = [...arr];
-  const newArr1: string[] = [];
-  newArr.forEach((item) => {
-    newArr.forEach((childrenItem) => {
-      if (item === childrenItem) return;
-      // 找出该选中节点的所有后代节点
-      if (childrenItem.fullCatalogId.split('-').includes(item.catalogId)) {
-        newArr1.push(childrenItem.catalogId);
-      }
-    });
-  });
-  // 过滤掉所有选中节点的后代节点
-  return newArr.filter((item) => !newArr1.includes(item.catalogId));
 };

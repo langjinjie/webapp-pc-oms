@@ -110,3 +110,9 @@ export const setUserRightWithSpeech: HttpFunction = (params) => {
 export const requestGetSmartCatalogTree: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/smart/catalog/tree', param);
 };
+/**
+ * @description 同步公有库目录接口
+ */
+export const requestSmartSyncCatalog: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/smart/sync/catalog', param);
+};

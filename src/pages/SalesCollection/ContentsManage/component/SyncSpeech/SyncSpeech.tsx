@@ -1,25 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Icon, NgFormSearch, NgTable } from 'src/components';
+import React, { useEffect, useMemo, useState, Key } from 'react';
+import { Modal, /* Icon,  */ NgFormSearch, NgTable } from 'src/components';
 import { Tag, Tree } from 'antd';
 import { SpeechModal } from '../index';
-import { requestGetSmartCatalogTree, getCategoryList, getSpeechList } from 'src/apis/salesCollection';
+import {
+  requestGetSmartCatalogTree,
+  getCategoryList,
+  getSpeechList,
+  requestSmartSyncCatalog
+} from 'src/apis/salesCollection';
 import { ICatalogItem } from 'src/utils/interface';
-import { columns, /* excelDemoUrl, */ setSearchCols, SpeechProps } from './Config';
+import { columns, /* excelDemoUrl, */ setSearchCols, SpeechProps, filterChildren } from './Config';
+import { tree2Arry, arry2Tree } from 'src/utils/base';
 import style from './style.module.less';
 import classNames from 'classnames';
 
 export interface ISyncSpeechProps {
-  syncSpeechParam: ISyncSpeechParam;
-  onClose?: () => void;
-}
-
-export interface ISyncSpeechParam {
   visible: boolean;
+  value?: ICatalogItem;
+  onClose?: () => void;
+  onChange?: (value: any) => void;
+  onOk?: () => void;
   title?: string;
-  islastLevel?: boolean;
+  catalog?: ICatalogItem; // 当前要同步的目录
 }
 
-const SyncSpeech: React.FC<ISyncSpeechProps> = ({ syncSpeechParam, onClose }) => {
+const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk, title, catalog }) => {
   const [treeData, setTreeData] = useState<ICatalogItem[]>([]);
   const [checkedNodes, setCheckedNodes] = useState<ICatalogItem[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -37,26 +42,62 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ syncSpeechParam, onClose }) =>
   const [selectedRows, setSelectedRows] = useState<SpeechProps[]>([]);
   const [speechVisible, setSpeechVisible] = useState(false);
   const [catalogId, setCatalogId] = useState('');
+  const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
 
+  // 重置
+  const onResetHandle = () => {
+    setCatalogId('');
+    setCheckedKeys([]);
+    setSelectRowKeys([]);
+    setCheckedNodes([]);
+  };
+
+  // 取消同步
   const onCloseHandle = () => {
     onClose?.();
+    onResetHandle();
   };
-  // 获取树列表
-  const getSmartCatalogTree = async () => {
-    const promiseList = [1, 2, 3, 4, 5, 6].map((sceneId) => requestGetSmartCatalogTree({ sceneId, queryMain: 1 }));
-    const res = (await Promise.allSettled(promiseList)).filter((filterItem: any) => filterItem.value);
+  // 同步话术
+  const onOkHandle = async () => {
+    const res = await requestSmartSyncCatalog({
+      sceneId: value?.sceneId,
+      catalogId: value?.catalogId,
+      list: checkedNodes
+    });
     if (res) {
-      const treeData = res.map((mapItem: any) => mapItem.value);
-      console.log('treeData', [...treeData]);
-      setTreeData([...treeData]);
+      onOk?.();
+      onClose?.();
+      onResetHandle();
     }
   };
 
-  // 点击复选框
-  const onCheckHandle = (_: any, e: any) => {
-    setCheckedNodes(e.checkedNodes);
-    console.log('e', e);
-    console.log('checkedNodes', checkedNodes);
+  // 获取树列表
+  const getSmartCatalogTree = async () => {
+    const res = await requestGetSmartCatalogTree({ sceneId: value?.sceneId, queryMain: 1 });
+    if (res) {
+      const flatList = tree2Arry([res]);
+      const levelNode = [...flatList].find((findItem) => findItem.level === value?.level);
+      const filterFlatList = tree2Arry([res])
+        .filter((filterItem) => {
+          if (filterItem.level < levelNode.level) {
+            return levelNode?.fullCatalogId.split('-').includes(filterItem.catalogId);
+            // return
+          }
+          return true;
+        })
+        .map((flatItem) => ({
+          ...flatItem,
+          disabled: flatItem.level <= (value?.level || 0)
+        }));
+      const flatListTree: any = arry2Tree(filterFlatList, res.catalogId, 'catalogId');
+      setTreeData([flatListTree]);
+    }
+  };
+
+  // 点击Tree的复选框
+  const onCheckHandle = (checkedKeys: any, e: any) => {
+    setCheckedKeys(checkedKeys);
+    setCheckedNodes(filterChildren(e.checkedNodes));
   };
 
   const loadData = async (selectedOptions: any) => {
@@ -160,7 +201,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ syncSpeechParam, onClose }) =>
     console.log('params', params);
   };
 
-  const onValuesChange = (changeValues: any, values: any) => {
+  const onValuesChange = (_: any, values: any) => {
     const {
       catalogIds
       // content = '',
@@ -212,51 +253,72 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ syncSpeechParam, onClose }) =>
     }));
     getList({ pageNum, pageSize });
   };
-
-  // // 动态计算是否显示全选框
-  // const hideSelectAll = useMemo(() => {
-  //   if (formParams.status !== '' && isNew) {
-  //     return false;
-  //   }
-  //   return true;
-  // }, [formParams.status, isNew]);
-
   // 查看目录下的话术
   const viewSpeechHandle = (catalogId: string) => {
     setSpeechVisible(true);
     setCatalogId(catalogId);
   };
 
+  const speechNum = useMemo(() => {
+    return checkedNodes.reduce((prev: number, now: ICatalogItem) => {
+      prev += now.contentNum;
+      return prev;
+    }, 0);
+  }, [checkedNodes]);
+
   useEffect(() => {
-    getSmartCatalogTree();
-  }, []);
-  // useEffect(() => {
-  //   if (syncSpeechParam.visible) {
-  //     getSmartCatalogTree();
-  //   }
-  // }, [syncSpeechParam.visible]);
+    visible && console.log('onOk', onOk);
+    visible && getSmartCatalogTree();
+  }, [visible]);
   return (
     <Modal
       centered
-      title={syncSpeechParam.title || '同步目录'}
-      visible={syncSpeechParam.visible}
+      title={title || '同步目录'}
+      visible={visible}
       className={style.modalWrap}
       onClose={onCloseHandle}
-      onOk={() => 1}
+      onOk={onOkHandle}
+      destroyOnClose
     >
       {/* 同步目录 */}
-      {syncSpeechParam.islastLevel || (
+      {catalog?.lastLevel === 1 || (
         <div className={style.wrap}>
           <div className={style.treeWrap}>
             <div className={style.title}>主机构目录</div>
             <div className={classNames(style.treeContent, 'scroll-strip')}>
+              {true && (
+                <Tree
+                  // @ts-ignore
+                  treeData={treeData}
+                  blockNode
+                  checkedKeys={checkedKeys}
+                  onCheck={onCheckHandle}
+                  checkable
+                  fieldNames={{ title: 'name', key: 'catalogId' }}
+                  // @ts-ignore
+                  titleRender={(node: ICatalogItem) => (
+                    <div className={style.nodeItem}>
+                      {node.name}
+                      <span className={style.contentNum}>
+                        （{`上架${node.onlineContentNum}/全部${node.contentNum}`}）
+                      </span>
+                    </div>
+                  )}
+                />
+              )}
+            </div>
+          </div>
+          <div className={style.seleectWrap}>
+            <div className={style.seleectTitle}>
+              已选择{<span className={style.boldText}> {speechNum} </span>}条话术到
+              {<span className={style.boldText}> [{value?.name}] </span>}目录下
+            </div>
+            <div className={classNames(style.treeContent, 'scroll-strip')}>
               <Tree
                 // @ts-ignore
-                treeData={treeData}
+                treeData={checkedNodes}
                 blockNode
-                onCheck={onCheckHandle}
-                checkable
-                fieldNames={{ title: 'name', key: 'fullCatalogId' }}
+                fieldNames={{ title: 'name', key: 'sid' }}
                 // @ts-ignore
                 titleRender={(node: ICatalogItem) => (
                   <div className={style.nodeItem}>
@@ -264,44 +326,20 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ syncSpeechParam, onClose }) =>
                     <span className={style.contentNum}>
                       （{`上架${node.onlineContentNum}/全部${node.contentNum}`}）
                     </span>
+                    {!node.lastLevel || (
+                      <span className={style.viewSpeech} onClick={() => viewSpeechHandle(node.catalogId)}>
+                        查看话术
+                      </span>
+                    )}
                   </div>
                 )}
               />
             </div>
           </div>
-          <div className={style.seleectWrap}>
-            <div className={style.seleectTitle}></div>
-            <div className={classNames(style.selectList, 'scroll-strip')}>
-              {checkedNodes
-                .filter((filterItem) => filterItem.lastLevel)
-                .map((nodeItem) => (
-                  <div
-                    key={nodeItem.catalogId}
-                    onClick={() => viewSpeechHandle(nodeItem.catalogId)}
-                    className={style.selectItem}
-                  >
-                    <div className={style.treeName}>
-                      <span className={style.name}>{nodeItem.name}</span>
-                      <span className={style.contentNum}>
-                        （{`上架${nodeItem.onlineContentNum}/全部${nodeItem.contentNum}`}）
-                      </span>
-                    </div>
-                    <div className={style.operation}>
-                      {!nodeItem.lastLevel || <span className={style.viewSpeech}>查看话术</span>}
-                      <Icon
-                        className={style.delIcon}
-                        name="icon_common_16_inputclean"
-                        // onClick={() => clickDelStaffHandle(item)}
-                      />
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
         </div>
       )}
       {/* 同步话术 */}
-      {syncSpeechParam.islastLevel && (
+      {catalog?.lastLevel === 1 && (
         <>
           <div className={style.title}>主机构话术</div>
           <div className={classNames(style.speechWrap, 'form-inline pt20')}>
@@ -321,6 +359,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ syncSpeechParam, onClose }) =>
               }}
               scroll={{ x: 'max-content' }}
               loading={loading}
+              // @ts-ignore
               rowSelection={{ ...rowSelection }}
               pagination={{ ...pagination, simple: true }}
               paginationChange={paginationChange}

@@ -23,8 +23,14 @@ const ContentsManage: React.FC = () => {
   const [editOrAddCatalogParam, setEditOrAddCatalogParam] = useState<IEditOrAddCatalogParam>();
   const [editOrAddLastCatalogParam, setEditOrAddLastCatalogParam] = useState<IEditOrAddCatalogParam>();
   const [firmModalParam, setFirmModalParam] = useState<IFirmModalParam>({ visible: false, title: '', content: '' });
-  // 同步话术
-  // const [syncSpeechVisible, setSyncSpeechVisible] = useState(false);
+  // 同步话术visible
+  const [syncSpeechVisible, setSyncSpeechVisible] = useState(false);
+  // 同步话术Title
+  const [syncSpeechTitle, setSyncSpeechTitle] = useState('');
+  // 同步话术的当前目录
+  const [syncSpeechCatalog, setSyncSpeechCatalog] = useState<ICatalogItem>();
+  // 同步成功后重新获取数据
+  const [onOk, setOnOk] = useState<any>();
 
   // 获取一级目录列表
   const getCatalogList = async () => {
@@ -66,6 +72,10 @@ const ContentsManage: React.FC = () => {
               setFirmModalParam={setFirmModalParam}
               setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
               setParentChildrenList={setContentList}
+              setSyncSpeechVisible={setSyncSpeechVisible}
+              setSyncSpeechTitle={setSyncSpeechTitle}
+              setSyncSpeechCatalog={setSyncSpeechCatalog}
+              setOnOk={setOnOk}
             />
           </div>
         ))}
@@ -87,7 +97,14 @@ const ContentsManage: React.FC = () => {
         setFirmModalParam={setFirmModalParam}
       />
       <ConfirmModal firmModalParam={firmModalParam} />
-      <SyncSpeech syncSpeechParam={{ visible: true, islastLevel: false }} />
+      <SyncSpeech
+        value={syncSpeechCatalog}
+        visible={syncSpeechVisible}
+        title={syncSpeechTitle}
+        catalog={syncSpeechCatalog}
+        onClose={() => setSyncSpeechVisible(false)}
+        onOk={onOk}
+      />
     </>
   );
 };

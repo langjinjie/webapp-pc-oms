@@ -5,7 +5,6 @@ import { getCategoryList, requestSaveSortCatalog, requestDeleteCatalog } from 's
 import { useHistory } from 'react-router';
 import { catalogLastLeve } from 'src/utils/commonData';
 import { Context } from 'src/store';
-
 import classNames from 'classnames';
 import style from './style.module.less';
 import { Button, message } from 'antd';
@@ -24,6 +23,10 @@ interface IContentBannerProps {
   setEditOrAddLastCatalogParam: (param: IEditOrAddCatalogParam) => void;
   setParentChildrenList: (param: ICatalogItem[]) => void;
   parentCatalog?: any;
+  setSyncSpeechVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setSyncSpeechTitle: React.Dispatch<React.SetStateAction<string>>;
+  setSyncSpeechCatalog: React.Dispatch<React.SetStateAction<ICatalogItem | undefined>>;
+  setOnOk?: (onOk: () => void) => void;
 }
 
 const ContentBanner: React.FC<IContentBannerProps> = ({
@@ -38,7 +41,11 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   setFirmModalParam,
   setEditOrAddLastCatalogParam,
   setParentChildrenList,
-  parentCatalog
+  parentCatalog,
+  setSyncSpeechVisible,
+  setSyncSpeechTitle,
+  setSyncSpeechCatalog,
+  setOnOk
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [childrenList, setChildrenList] = useState<ICatalogItem[]>([]);
@@ -229,6 +236,10 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   };
   // 同步话术
   const syncSpeechHandle = (e: MouseEvent) => {
+    setOnOk?.(() => getCurrentChildrenList);
+    setSyncSpeechTitle(catalog.lastLevel ? '同步话术' : '同步目录');
+    setSyncSpeechCatalog(catalog);
+    setSyncSpeechVisible(true);
     e.stopPropagation();
   };
   return (
@@ -270,6 +281,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
             </>
           )}
           <Button type="link" onClick={syncSpeechHandle}>
+            <Icon className={'svgIcon'} name="tongbu1" />
             同步话术
           </Button>
           <AuthBtn path="/edit">
@@ -324,6 +336,10 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
                   setFirmModalParam={setFirmModalParam}
                   setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
                   setParentChildrenList={setChildrenList}
+                  setSyncSpeechVisible={setSyncSpeechVisible}
+                  setSyncSpeechTitle={setSyncSpeechTitle}
+                  setSyncSpeechCatalog={setSyncSpeechCatalog}
+                  setOnOk={setOnOk}
                 />
               </div>
             ))}
