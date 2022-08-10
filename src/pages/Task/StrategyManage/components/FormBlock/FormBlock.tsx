@@ -64,12 +64,17 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
           options: []
         };
         item.date = moment(item.date, 'MMDD') || undefined;
+        // 利用es6 Map 过滤掉重复的数据
+        const optionsMap = new Map();
+
         item?.nodeRuleList.map((child: any) => {
-          nodeDetails[index].options.push({ nodeRuleId: child.nodeRuleId, nodeRuleName: child.nodeRuleName });
+          optionsMap.set(child.nodeRuleId, { nodeRuleId: child.nodeRuleId, nodeRuleName: child.nodeRuleName });
           child.pushTime = moment(child.pushTime, 'HH:mm') || undefined;
 
           return child;
         });
+
+        nodeDetails[index].options = Array.from(optionsMap.values());
         return item;
       });
       setNodeDetails(nodeDetails);
