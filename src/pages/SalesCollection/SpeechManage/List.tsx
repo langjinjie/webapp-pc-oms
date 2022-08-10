@@ -25,10 +25,11 @@ import { Context } from 'src/store';
 import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
 import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/SetUserRight';
+import { getQueryParam } from 'tenacity-tools';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   useDocumentTitle('销售宝典-话术管理');
-  const { currentCorpId } = useContext(Context);
+  const { currentCorpId, beforePath } = useContext(Context);
   const [formParams, setFormParams] = useState({
     catalogId: '',
     content: '',
@@ -66,7 +67,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     checking: 0,
     checkTime: ''
   });
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentItem, setCurrentItem] = useState<SpeechProps>();
   const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
   const [isBatchSetRight, setIsBatchSetRight] = useState(false);
@@ -74,6 +75,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   // 查询话术列表
   const getList = async (params?: any) => {
+    setLoading(true);
     // 清空选中的列表
     setSelectRowKeys([]);
     // 重置当前操作状态
@@ -89,6 +91,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     setDataSource(list || []);
     setIsNew(true);
     setPagination((pagination) => ({ ...pagination, total: total || 0 }));
+    setLoading(false);
   };
 
   const onValuesChange = (changeValues: any, values: any) => {
@@ -126,6 +129,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
   // 点击查询按钮
   const onSearch = async (values: any) => {
+    console.log('重新请求');
     // 将页面重置为第一页
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     const {
@@ -229,13 +233,40 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     } else {
       const res = await getCategory();
       setCategories(res);
-      getList();
+      getList({
+        catalogId: '',
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: '',
+        contentId: ''
+      });
+      setFormParams({
+        catalogId: '',
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: '',
+        contentId: ''
+      });
     }
   };
   useEffect(() => {
     initSetFormQuery();
     getSensitiveCheckedInfo();
   }, []);
+  useEffect(() => {
+    if (!beforePath.includes('speechManage') || getQueryParam().refresh === 'true') {
+      initSetFormQuery();
+      getSensitiveCheckedInfo();
+    }
+  }, [beforePath]);
 
   // 分页改变
   const paginationChange = (pageNum: number, pageSize?: number) => {
@@ -551,20 +582,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
           />
         </div>
       </AuthBtn>
-
-      <NgTable
-        dataSource={dataSource}
-        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight })}
-        setRowKey={(record: SpeechProps) => {
-          return record.contentId;
-        }}
-        loading={loading}
-        rowSelection={{ ...rowSelection, hideSelectAll }}
-        pagination={pagination}
-        paginationChange={paginationChange}
-      ></NgTable>
       {dataSource.length > 0 && (
-        <div className={'operationWrap'}>
+        <div className={'operationTopWrap'}>
           <Space size={20}>
             <AuthBtn path="/export">
               <Button type="primary" shape={'round'} ghost onClick={() => handleExport()}>
@@ -627,6 +646,18 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
           </Space>
         </div>
       )}
+      <NgTable
+        dataSource={dataSource}
+        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight, getList })}
+        setRowKey={(record: SpeechProps) => {
+          return record.contentId;
+        }}
+        loading={loading}
+        rowSelection={{ ...rowSelection, hideSelectAll }}
+        pagination={pagination}
+        paginationChange={paginationChange}
+      ></NgTable>
+
       {/* 列表数据 end */}
       {/* 批量新增 */}
       <ExportModal

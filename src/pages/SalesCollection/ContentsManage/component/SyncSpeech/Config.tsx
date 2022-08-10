@@ -1,14 +1,14 @@
-import React, { useContext } from 'react';
-// import classNames from 'classnames';
+import React /* , { useContext } */ from 'react';
+import classNames from 'classnames';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { Button, Space, Tooltip, Modal, message } from 'antd';
+import { /* Button, Space,  */ Tooltip /* , Modal, message */ } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
-import classNames from 'classnames';
+
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { AuthBtn } from 'src/components';
-import { Context } from 'src/store';
-import { operateSpeechStatus } from 'src/apis/salesCollection';
+// import { AuthBtn } from 'src/components';
+// import { Context } from 'src/store';
+// import { operateSpeechStatus } from 'src/apis/salesCollection';
 
 export const sensitiveOptions = [
   { id: 0, name: '未知' },
@@ -26,8 +26,8 @@ export const speechContentTypes = [
   { id: 9, name: '小程序' },
   { id: 10, name: 'PDF' }
 ];
-export const excelDemoUrl =
-  'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/%E5%90%8E%E7%AE%A1%E7%AB%AF%E8%AF%9D%E6%9C%AF%E6%A8%A1%E6%9D%BF.xlsx';
+// export const excelDemoUrl =
+//   'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/smart/%E5%90%8E%E7%AE%A1%E7%AB%AF%E8%AF%9D%E6%9C%AF%E6%A8%A1%E6%9D%BF.xlsx';
 
 export const statusOptions = [
   { id: 0, name: '待上架' },
@@ -41,7 +41,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       name: 'catalogIds',
       type: 'cascader',
       label: '选择目录',
-      width: '320px',
+      width: '260px',
       placeholder: '请输入',
       fieldNames: { label: 'name', value: 'catalogId', children: 'children' },
       cascaderOptions: options
@@ -50,63 +50,25 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       name: 'content',
       type: 'input',
       label: '话术内容',
-      width: '280px',
+      width: '260px',
       placeholder: '请输入'
     },
     {
       name: 'tip',
       type: 'input',
       label: '话术小贴士',
-      width: '280px',
+      width: '128px',
       placeholder: '请输入'
     },
     {
       name: 'contentType',
       type: 'select',
-      width: 140,
+      width: 128,
       label: '话术格式',
       options: speechContentTypes
-    },
-    {
-      name: 'status',
-      type: 'select',
-      width: 140,
-      label: '上架状态',
-      options: statusOptions
-    },
-    {
-      name: 'sensitive',
-      type: 'select',
-      width: 140,
-      label: '是否触发敏感词',
-      options: sensitiveOptions
-    },
-    {
-      name: 'times',
-      type: 'rangePicker',
-      width: 160,
-      label: '更新时间'
-    },
-    {
-      name: 'contentId',
-      type: 'input',
-      label: '话术ID',
-      width: '280px',
-      placeholder: '请输入'
     }
   ];
 };
-
-interface OperateProps {
-  handleEdit: (record: SpeechProps) => void;
-  setRight: (record: SpeechProps) => void;
-  handleSort: (record: SpeechProps, sortType: number) => void;
-  lastCategory: any;
-  pagination: any;
-  formParams: any;
-  isNew: boolean;
-  getList?: (pageNum?: number) => void;
-}
 export const genderTypeOptions = [
   { id: 1, name: '男性' },
   { id: 2, name: '女性' }
@@ -137,56 +99,15 @@ export interface SpeechProps {
   [propKey: string]: any;
   contentObj: SpeechProps;
 }
-export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
-  const { currentCorpId } = useContext(Context);
-
-  const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight, getList } = args;
-  const {
-    content = '',
-    contentType = '',
-    sensitive = '',
-    status = '',
-    updateBeginTime = '',
-    updateEndTime = '',
-    tip = ''
-  } = formParams;
-  // 上下架
-  const operateSpeechStatusHandle = async (operateType: 1 | 2, row: SpeechProps) => {
-    Modal.confirm({
-      title: operateType === 1 ? '上架提醒' : '下架提醒',
-      content: operateType === 1 ? '确定上架当前话术吗？' : '确定下架当前话术？',
-      cancelText: '取消',
-      okText: '确定',
-      onOk: async () => {
-        const res = await operateSpeechStatus({
-          corpId: currentCorpId,
-          type: operateType,
-          list: [{ sceneId: row.sceneId, contentId: row.contentId }]
-        });
-        if (res) {
-          const { successNum, failNum } = res;
-          message.success(
-            failNum > 0
-              ? `已完成！操作成功${successNum}条，操作失败${failNum}条，敏感词检测异常和未知会导致上架失败！`
-              : '已完成！操作成功'
-          );
-          // 重新更新列表
-          getList?.();
-        }
-      }
-    });
-  };
-
+export const columns = (/* args: OperateProps */): ColumnsType<SpeechProps> => {
   return [
     {
       title: '话术ID',
-      dataIndex: 'contentId',
-      width: 200
+      dataIndex: 'contentId'
     },
     {
       title: '目录',
       dataIndex: 'fullName',
-      width: 200,
       ellipsis: {
         showTitle: false
       },
@@ -199,7 +120,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '话术格式',
       dataIndex: 'contentType',
-      width: 120,
       render: (contentType) => (
         <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0]?.name || UNKNOWN}</span>
       )
@@ -207,7 +127,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '话术内容',
       dataIndex: 'content',
-      width: 200,
       ellipsis: {
         showTitle: false
       },
@@ -220,7 +139,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '客户分类',
       dataIndex: 'genderType',
-      width: 100,
       render: (value, record) => {
         return (
           <span>
@@ -233,7 +151,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '话术小贴士',
       dataIndex: 'tip',
-      width: 200,
       ellipsis: {
         showTitle: false
       },
@@ -244,7 +161,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '触发敏感词',
       dataIndex: 'sensitive',
-      width: 120,
       ellipsis: {
         showTitle: false
       },
@@ -264,7 +180,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '创建时间',
       dataIndex: 'dateCreated',
-      width: 180,
 
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
@@ -273,7 +188,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '更新时间',
       dataIndex: 'lastUpdated',
-      width: 180,
 
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
@@ -282,7 +196,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '创建人',
       dataIndex: 'createBy',
-      width: 130,
 
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
@@ -291,7 +204,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '更新人',
       dataIndex: 'updateBy',
-      width: 130,
 
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
@@ -300,7 +212,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '状态',
       dataIndex: 'status',
-      width: 100,
       align: 'left',
       fixed: 'right',
       render: (value) => {
@@ -319,79 +230,23 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
           </span>
         );
       }
-    },
-    {
-      title: '操作',
-      align: 'left',
-      fixed: 'right',
-      width: 220,
-      render: (value, record: SpeechProps, index: number) => {
-        return (
-          <Space className="spaceWrap">
-            <AuthBtn path="/edit">
-              <Button disabled={record.status === 1} type="link" onClick={() => handleEdit(record)}>
-                编辑
-              </Button>
-            </AuthBtn>
-            <></>
-            {[0, 2].includes(record.status) && (
-              <Button onClick={() => operateSpeechStatusHandle(1, record)} type="link">
-                上架
-              </Button>
-            )}
-            {record.status === 1 && (
-              <Button onClick={() => operateSpeechStatusHandle(2, record)} type="link">
-                下架
-              </Button>
-            )}
-            <AuthBtn path="/sort">
-              {(index !== 0 || (pagination.current === 1 && index !== 0) || pagination.current !== 1) && (
-                <Button
-                  disabled={
-                    !isNew ||
-                    lastCategory?.lastLevel !== 1 ||
-                    content !== '' ||
-                    contentType !== '' ||
-                    sensitive !== '' ||
-                    status !== '' ||
-                    updateBeginTime !== '' ||
-                    updateEndTime !== '' ||
-                    tip !== ''
-                  }
-                  type="link"
-                  onClick={() => handleSort(record, -1)}
-                >
-                  上移
-                </Button>
-              )}
-              {(pagination.current - 1) * pagination.pageSize + index + 1 !== pagination.total && (
-                <Button
-                  disabled={
-                    !isNew ||
-                    lastCategory?.lastLevel !== 1 ||
-                    content !== '' ||
-                    contentType !== '' ||
-                    sensitive !== '' ||
-                    status !== '' ||
-                    updateBeginTime !== '' ||
-                    updateEndTime !== '' ||
-                    tip !== ''
-                  }
-                  type="link"
-                  onClick={() => handleSort(record, 1)}
-                >
-                  下移
-                </Button>
-              )}
-            </AuthBtn>
-            <AuthBtn path="/set">
-              <Button type="link" onClick={() => setRight(record)}>
-                配置可见范围
-              </Button>
-            </AuthBtn>
-          </Space>
-        );
-      }
     }
   ];
+};
+
+// 组织架构将已被选中的节点的所有后代节点过滤掉
+export const filterChildren = (arr: any[]): any[] => {
+  const newArr = [...arr];
+  const newArr1: string[] = [];
+  newArr.forEach((item) => {
+    newArr.forEach((childrenItem) => {
+      if (item === childrenItem) return;
+      // 找出该选中节点的所有后代节点
+      if (childrenItem.fullCatalogId.split('-').includes(item.catalogId)) {
+        newArr1.push(childrenItem.catalogId);
+      }
+    });
+  });
+  // 过滤掉所有选中节点的后代节点
+  return newArr.filter((item) => !newArr1.includes(item.catalogId));
 };

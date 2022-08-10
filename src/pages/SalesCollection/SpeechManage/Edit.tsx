@@ -152,17 +152,19 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     initSetFormQuery();
   }, []);
 
-  const handleBack = () => {
+  const handleBack = (refresh?: boolean) => {
     const backRoutePath = sessionStorage.getItem('backRoute');
     if (backRoutePath) {
       sessionStorage.removeItem('backRoute');
-      history.replace(`${backRoutePath}?isCatch=1`);
+      history.replace(`${backRoutePath}?isCatch=1${refresh ? '&refresh=true' : ''}`);
     } else {
-      history.goBack();
+      // history.goBack(); 会触发缓存组件更新
+      console.log('返回/确认');
+      history.push(`/speechManage?${refresh ? 'refresh=true' : ''}`);
     }
   };
 
-  const onSubmit = async (params: any) => {
+  const onSubmit = async (params: any, refresh?: boolean) => {
     const res = await editSpeech({
       ...params
     });
@@ -170,7 +172,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       const { code, sensitiveWord } = res;
       if (code === 0) {
         message.success('保存成功');
-        handleBack();
+        handleBack(refresh);
       } else if (code === 1) {
         message.error('触发了敏感词,请修改后再提交');
         setSpeech((speech) => ({ ...speech!, sensitiveWord, sensitive: 1 }));
@@ -210,7 +212,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       summary: summary || originSpeech?.summary
     };
 
-    await onSubmit(submitData);
+    await onSubmit(submitData, true);
   };
 
   const onValuesChange = (values: any) => {

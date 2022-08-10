@@ -20,6 +20,7 @@ const StoreContext: React.FC = ({ children }) => {
   const [menuList, setMenuList] = useState<MenuItem[]>([]);
   const [btnList, setBtnList] = useState<string[]>([]);
   const [nodeOptions, setNodeOptions] = useState<NodeType[]>([]);
+  const [beforePath, setBeforePath] = useState(''); // 上一个页面的路由
 
   return (
     <Context.Provider
@@ -43,7 +44,9 @@ const StoreContext: React.FC = ({ children }) => {
         btnList,
         setBtnList,
         nodeOptions,
-        setNodeOptions
+        setNodeOptions,
+        beforePath,
+        setBeforePath
       }}
     >
       {children}
