@@ -116,3 +116,9 @@ export const requestGetSmartCatalogTree: HttpFunction = (param) => {
 export const requestSmartSyncCatalog: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/smart/sync/catalog', param);
 };
+/**
+ * @description 同步公有库话术接口
+ */
+export const requestSmartSyncContent: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/smart/sync/content', param);
+};

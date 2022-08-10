@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState, Key } from 'react';
 import { Modal, /* Icon,  */ NgFormSearch, NgTable } from 'src/components';
-import { Tag, Tree } from 'antd';
+import { message, Tag, Tree } from 'antd';
 import { SpeechModal } from '../index';
 import {
   requestGetSmartCatalogTree,
-  getCategoryList,
+  // getCategoryList,
   getSpeechList,
-  requestSmartSyncCatalog
+  requestSmartSyncCatalog,
+  requestSmartSyncContent
 } from 'src/apis/salesCollection';
 import { ICatalogItem } from 'src/utils/interface';
 import { columns, /* excelDemoUrl, */ setSearchCols, SpeechProps, filterChildren } from './Config';
@@ -28,12 +29,10 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   const [treeData, setTreeData] = useState<ICatalogItem[]>([]);
   const [checkedNodes, setCheckedNodes] = useState<ICatalogItem[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
-  // const [formDefaultValue, setFormDefaultValue] = useState<{ catalogIds: string[] }>({
-  //   catalogIds: []
-  // });
+  const [formDefaultValue, setFormDefaultValue] = useState<{ catalogIds: string[] }>({
+    catalogIds: []
+  });
   const [loading, setLoading] = useState(false);
-  const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
-  const [lastCategory, setLastCategory] = useState<any>();
   const [pagination, setPagination] = useState<any>({
     current: 1,
     pageSize: 5
@@ -48,7 +47,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   const onResetHandle = () => {
     setCatalogId('');
     setCheckedKeys([]);
-    setSelectRowKeys([]);
+    setSelectedRows([]);
     setCheckedNodes([]);
   };
 
@@ -59,21 +58,58 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   };
   // 同步话术
   const onOkHandle = async () => {
-    const res = await requestSmartSyncCatalog({
-      sceneId: value?.sceneId,
-      catalogId: value?.catalogId,
-      list: checkedNodes
-    });
+    let res: any;
+    if (value?.lastLevel) {
+      res = await requestSmartSyncContent({
+        sceneId: value?.sceneId,
+        catalogId: value?.catalogId,
+        list: selectedRows
+      });
+    } else {
+      res = await requestSmartSyncCatalog({
+        sceneId: value?.sceneId,
+        catalogId: value?.catalogId,
+        list: checkedNodes
+      });
+    }
     if (res) {
       onOk?.();
       onClose?.();
       onResetHandle();
+      message.success((value?.lastLevel ? '话术' : '目录') + '同步成功');
     }
+  };
+
+  // 点击Tree的复选框
+  const onCheckHandle = (checkedKeys: any, e: any) => {
+    setCheckedKeys(checkedKeys);
+    setCheckedNodes(filterChildren(e.checkedNodes));
+  };
+
+  // 查询话术列表
+  const getList = async (params?: any) => {
+    setLoading(true);
+    // 清空选中的列表
+    // setSelectRowKeys([]);
+    // 重置当前操作状态
+    // setCurrentType(null);
+    const { pageSize, current: pageNum } = pagination;
+    const { list, total } = await getSpeechList({
+      queryMain: 1,
+      pageNum,
+      pageSize,
+      sceneId: value?.sceneId || '',
+      ...params
+    });
+    setDataSource(list || []);
+    setPagination((pagination: any) => ({ ...pagination, total: total || 0 }));
+    setLoading(false);
   };
 
   // 获取树列表
   const getSmartCatalogTree = async () => {
     const res = await requestGetSmartCatalogTree({ sceneId: value?.sceneId, queryMain: 1 });
+
     if (res) {
       const flatList = tree2Arry([res]);
       const levelNode = [...flatList].find((findItem) => findItem.level === value?.level);
@@ -87,60 +123,23 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
         })
         .map((flatItem) => ({
           ...flatItem,
-          disabled: flatItem.level <= (value?.level || 0)
+          disabled: value?.lastLevel ? false : flatItem.level <= (value?.level || 0)
         }));
       const flatListTree: any = arry2Tree(filterFlatList, res.catalogId, 'catalogId');
-      setTreeData([flatListTree]);
+      if (value?.lastLevel) {
+        const catalogId = levelNode.fullCatalogId.split('-')[0];
+        setCategories([res]);
+        // 获取话术列表
+        getList({ catalogId: catalogId });
+        setFormDefaultValue({ catalogIds: [catalogId] });
+      } else {
+        setTreeData([flatListTree]);
+      }
     }
-  };
-
-  // 点击Tree的复选框
-  const onCheckHandle = (checkedKeys: any, e: any) => {
-    setCheckedKeys(checkedKeys);
-    setCheckedNodes(filterChildren(e.checkedNodes));
-  };
-
-  const loadData = async (selectedOptions: any) => {
-    const targetOption = selectedOptions[selectedOptions.length - 1];
-    targetOption.loading = true;
-
-    // 异步加载子类目
-    const res = await getCategoryList({ sceneId: targetOption.sceneId, catalogId: targetOption.catalogId });
-
-    targetOption.loading = false;
-    if (res) {
-      res.forEach((item: any) => {
-        if (item.lastLevel === 0) {
-          item.isLeaf = false;
-        }
-      });
-      targetOption.children = res;
-    }
-    setCategories([...categories]);
-  };
-
-  // 查询话术列表
-  const getList = async (params?: any) => {
-    setLoading(true);
-    // 清空选中的列表
-    setSelectRowKeys([]);
-    // 重置当前操作状态
-    // setCurrentType(null);
-    const { pageSize, current: pageNum } = pagination;
-    const { list, total } = await getSpeechList({
-      pageNum,
-      pageSize,
-      sceneId: lastCategory?.sceneId || '',
-      ...params
-    });
-    setDataSource(list || []);
-    setPagination((pagination: any) => ({ ...pagination, total: total || 0 }));
-    setLoading(false);
   };
 
   // 点击查询按钮
   const onSearch = async (values: any) => {
-    console.log('重新请求');
     // 将页面重置为第一页
     // setPagination((pagination) => ({ ...pagination, current: 1 }));
     const {
@@ -149,23 +148,12 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       contentType = '',
       sensitive = '',
       status = '',
-      times = undefined,
       tip = '',
       contentId = ''
     } = values;
-    let updateBeginTime = '';
-    let updateEndTime = '';
-    if (times) {
-      updateBeginTime = times[0].startOf('day').valueOf();
-      updateEndTime = times[1].endOf('day')?.valueOf();
-    }
     let catalogId = '';
-    let sceneId = '';
     if (catalogIds && catalogIds.length > 0) {
       catalogId = catalogIds[catalogIds.length - 1];
-      sceneId = lastCategory.sceneId;
-    } else {
-      // setLastCategory(null);
     }
     await getList({
       pageNum: 1,
@@ -175,30 +163,12 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       sensitive,
       status,
       tip,
-      updateBeginTime,
-      updateEndTime,
-      sceneId,
       contentId
     });
   };
 
-  const onCascaderChange = (value: any, selectedOptions: any) => {
-    const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
-    setLastCategory(lastSelectedOptions);
+  const onCascaderChange = () => {
     setPagination((pagination: any) => ({ ...pagination, current: 1 }));
-    let params = {};
-    if (lastSelectedOptions.lastLevel === 1) {
-      params = {
-        content: '',
-        contentType: '',
-        sensitive: '',
-        status: '',
-        tip: '',
-        updateBeginTime: '',
-        updateEndTime: ''
-      };
-    }
-    console.log('params', params);
   };
 
   const onValuesChange = (_: any, values: any) => {
@@ -214,34 +184,22 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     if (catalogIds) {
       catalogId = catalogIds[catalogIds.length - 1];
     }
-    console.log('catalogIds', catalogIds);
     console.log('catalogId', catalogId);
   };
 
-  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: SpeechProps[]) => {
-    setSelectRowKeys(selectedRowKeys);
-    console.log('selectedRows', selectedRows);
-    setSelectedRows(selectedRows);
-    const current = selectedRows[0];
-    console.log('current', current);
-    // if (current) {
-    //   setCurrentType(current.status);
-    // } else {
-    //   setCurrentType(null);
-    // }
+  const onSelectChange = (_: React.Key[], newSelectedRows: SpeechProps[]) => {
+    // 把不在本页的数据找出来
+    const otherPageRows = selectedRows.filter(
+      (row) => !dataSource.map((mapItem) => mapItem.contentId).includes(row.contentId)
+    );
+    setSelectedRows([...otherPageRows, ...newSelectedRows]);
   };
 
   const rowSelection = {
-    selectedRowKeys: selectedRowKeys,
+    selectedRowKeys: selectedRows.map((rowItem) => rowItem.contentId),
     onChange: (selectedRowKeys: React.Key[], selectedRows: SpeechProps[]) => {
       onSelectChange(selectedRowKeys, selectedRows);
     }
-    // getCheckboxProps: (record: SpeechProps) => {
-    //   return {
-    //     disabled: isDisabled(currentType, record.status),
-    //     name: record.content
-    //   };
-    // }
   };
 
   // 分页改变
@@ -267,8 +225,9 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   }, [checkedNodes]);
 
   useEffect(() => {
-    visible && console.log('onOk', onOk);
-    visible && getSmartCatalogTree();
+    if (visible) {
+      getSmartCatalogTree();
+    }
   }, [visible]);
   return (
     <Modal
@@ -344,9 +303,8 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
           <div className={style.title}>主机构话术</div>
           <div className={classNames(style.speechWrap, 'form-inline pt20')}>
             <NgFormSearch
-              // defaultValues={formDefaultValue}
+              defaultValues={formDefaultValue}
               searchCols={setSearchCols(categories)}
-              loadData={loadData}
               onSearch={onSearch}
               onChangeOfCascader={onCascaderChange}
               onValuesChange={onValuesChange}
@@ -363,7 +321,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
               rowSelection={{ ...rowSelection }}
               pagination={{ ...pagination, simple: true }}
               paginationChange={paginationChange}
-            ></NgTable>
+            />
           </div>
           <div className={style.title}>已选择</div>
           {!selectedRows.length || (

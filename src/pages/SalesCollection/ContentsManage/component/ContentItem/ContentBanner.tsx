@@ -238,8 +238,8 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   const syncSpeechHandle = (e: MouseEvent) => {
     setOnOk?.(() => getCurrentChildrenList);
     setSyncSpeechTitle(catalog.lastLevel ? '同步话术' : '同步目录');
-    setSyncSpeechCatalog(catalog);
     setSyncSpeechVisible(true);
+    setSyncSpeechCatalog(catalog);
     e.stopPropagation();
   };
   return (
