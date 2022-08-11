@@ -83,9 +83,8 @@ const StaffList: React.FC = () => {
   };
   // 点击单行操作
   const clickCurrentRowHandle = (row: IStaffList) => {
-    // 停用操作不可逆
-    if (row.accountStatus === '2') return;
-    setOpType(row.accountStatus === '4' ? 1 : 0);
+    // 激活或者启用
+    setOpType(row.accountStatus === '4' || row.accountStatus === '2' ? 1 : 0);
     setPopconfirmVisible(row.staffId);
   };
   // 定义单个激活/停用onfirem
@@ -147,16 +146,14 @@ const StaffList: React.FC = () => {
         return (
           <AuthBtn path="/operate">
             <Popconfirm
-              title={'确认' + (row.accountStatus === '1' ? '停用' : '激活') + '该账号吗'}
+              title={
+                '确认' + (row.accountStatus === '1' ? '停用' : row.accountStatus === '2' ? '启用' : '激活') + '该账号吗'
+              }
               visible={popconfirmVisible === row.staffId}
               onConfirm={async () => popOnconfirmHandle(row)}
               onCancel={() => setPopconfirmVisible('')}
             >
-              <span
-                key={row.staffId}
-                className={classNames(style.edit, { [style.disabled]: row.accountStatus === '2' })}
-                onClick={() => clickCurrentRowHandle(row)}
-              >
+              <span key={row.staffId} className={classNames(style.edit)} onClick={() => clickCurrentRowHandle(row)}>
                 {accountStatusEdit2Name[row.accountStatus]}
               </span>
             </Popconfirm>
