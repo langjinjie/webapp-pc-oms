@@ -11,9 +11,9 @@ import { getCategoryList } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
 import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import { useDidRecover } from 'react-router-cache-route';
-import { AuthBtn, Icon } from 'src/components';
+// import { AuthBtn, Icon } from 'src/components';
 import style from './style.module.less';
-import classNames from 'classnames';
+// import classNames from 'classnames';
 
 const ContentsManage: React.FC = () => {
   useDocumentTitle('销售宝典-目录管理');
@@ -39,10 +39,10 @@ const ContentsManage: React.FC = () => {
   };
 
   // 新增一级目录
-  const addClickHandle = () => {
-    // 该级目录是否是最后一级目录
-    console.log('新增一级目录');
-  };
+  // const addClickHandle = () => {
+  //   // 该级目录是否是最后一级目录
+  //   console.log('新增一级目录');
+  // };
 
   useEffect(() => {
     getCatalogList();
@@ -79,12 +79,12 @@ const ContentsManage: React.FC = () => {
             />
           </div>
         ))}
-        <AuthBtn path="/add">
+        {/* <AuthBtn path="/add">
           <span className={classNames(style.add)} onClick={() => addClickHandle()}>
             <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" />
             新增
           </span>
-        </AuthBtn>
+        </AuthBtn> */}
       </div>
       <EditOrAddCatalog
         editOrAddCatalogParam={editOrAddCatalogParam as IEditOrAddCatalogParam}

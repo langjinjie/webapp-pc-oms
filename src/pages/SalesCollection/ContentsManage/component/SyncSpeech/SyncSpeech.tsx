@@ -4,7 +4,6 @@ import { message, Tag, Tree } from 'antd';
 import { SpeechModal } from '../index';
 import {
   requestGetSmartCatalogTree,
-  // getCategoryList,
   getSpeechList,
   requestSmartSyncCatalog,
   requestSmartSyncContent
@@ -35,7 +34,8 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<any>({
     current: 1,
-    pageSize: 5
+    pageSize: 5,
+    total: 0
   });
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [selectedRows, setSelectedRows] = useState<SpeechProps[]>([]);
@@ -49,6 +49,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     setCheckedKeys([]);
     setSelectedRows([]);
     setCheckedNodes([]);
+    setPagination({ current: 1, pageSize: 5, total: 0 });
   };
 
   // 取消同步
@@ -108,31 +109,47 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
 
   // 获取树列表
   const getSmartCatalogTree = async () => {
-    const res = await requestGetSmartCatalogTree({ sceneId: value?.sceneId, queryMain: 1 });
-
-    if (res) {
-      const flatList = tree2Arry([res]);
-      const levelNode = [...flatList].find((findItem) => findItem.level === value?.level);
-      const filterFlatList = tree2Arry([res])
-        .filter((filterItem) => {
-          if (filterItem.level < levelNode.level) {
-            return levelNode?.fullCatalogId.split('-').includes(filterItem.catalogId);
-            // return
-          }
-          return true;
-        })
-        .map((flatItem) => ({
-          ...flatItem,
-          disabled: value?.lastLevel ? false : flatItem.level <= (value?.level || 0)
-        }));
-      const flatListTree: any = arry2Tree(filterFlatList, res.catalogId, 'catalogId');
-      if (value?.lastLevel) {
-        const catalogId = levelNode.fullCatalogId.split('-')[0];
-        setCategories([res]);
-        // 获取话术列表
+    // 判断是同步目录还是同步话术
+    if (value?.lastLevel) {
+      // 同步话术
+      const promiseList = [1, 2, 3, 4, 5].map((sceneId) => requestGetSmartCatalogTree({ sceneId, queryMain: 1 }));
+      const res = (await Promise.allSettled(promiseList)).filter((filterItem: any) => filterItem.value);
+      if (res) {
+        const categories = res.map((mapItem: any) => mapItem.value);
+        // 匹配主机构是否有相同名称的目录
+        const flatList = tree2Arry([categories[value.sceneId - 1]]);
+        const content = flatList.find((findItem) => findItem.fullName === value.fullName);
+        let catalogIds = [];
+        let catalogId = '';
+        if (content) {
+          catalogId = content.catalogId;
+          catalogIds = content.fullCatalogId.split('-');
+        }
+        // 首选
+        setCategories(categories);
+        // // 获取话术列表
         getList({ catalogId: catalogId });
-        setFormDefaultValue({ catalogIds: [catalogId] });
-      } else {
+        setCatalogId(catalogId);
+        setFormDefaultValue({ catalogIds: catalogIds });
+      }
+    } else {
+      // 同步目录
+      const res = await requestGetSmartCatalogTree({ sceneId: value?.sceneId, queryMain: 1 });
+      if (res) {
+        const flatList = tree2Arry([res]);
+        const levelNode = [...flatList].find((findItem) => findItem.level === value?.level);
+        const filterFlatList = tree2Arry([res])
+          .filter((filterItem) => {
+            if (filterItem.level < levelNode.level) {
+              return levelNode?.fullCatalogId.split('-').includes(filterItem.catalogId);
+            }
+            return true;
+          })
+          .map((flatItem) => ({
+            ...flatItem,
+            disabled: value?.lastLevel ? false : flatItem.level <= (value?.level || 0)
+          }));
+        const flatListTree: any = arry2Tree(filterFlatList, res.catalogId, 'catalogId');
         setTreeData([flatListTree]);
       }
     }
@@ -149,8 +166,15 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       sensitive = '',
       status = '',
       tip = '',
-      contentId = ''
+      contentId = '',
+      times = undefined
     } = values;
+    let updateBeginTime = '';
+    let updateEndTime = '';
+    if (times) {
+      updateBeginTime = times[0].startOf('day').valueOf();
+      updateEndTime = times[1].endOf('day')?.valueOf();
+    }
     let catalogId = '';
     if (catalogIds && catalogIds.length > 0) {
       catalogId = catalogIds[catalogIds.length - 1];
@@ -163,7 +187,9 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       sensitive,
       status,
       tip,
-      contentId
+      contentId,
+      updateBeginTime,
+      updateEndTime
     });
   };
 
@@ -209,7 +235,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       current: pageNum,
       pageSize: pageSize || pagination.pageSize
     }));
-    getList({ pageNum, pageSize });
+    getList({ catalogId, pageNum, pageSize });
   };
   // 查看目录下的话术
   const viewSpeechHandle = (catalogId: string) => {
@@ -223,6 +249,11 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       return prev;
     }, 0);
   }, [checkedNodes]);
+
+  // 删除已选择
+  const onTagClose = (item: SpeechProps) => {
+    setSelectedRows((selectedRows) => selectedRows.filter((rowItem) => rowItem.contentId !== item.contentId));
+  };
 
   useEffect(() => {
     if (visible) {
@@ -327,7 +358,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
           {!selectedRows.length || (
             <div className={style.list}>
               {selectedRows.map((mapItem) => (
-                <Tag key={mapItem.contentId} className={style.tag} closable>
+                <Tag key={mapItem.contentId} onClose={() => onTagClose(mapItem)} className={style.tag} closable>
                   {mapItem.content}
                 </Tag>
               ))}
