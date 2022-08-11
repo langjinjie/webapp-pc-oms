@@ -1,11 +1,10 @@
 import React /* , { useContext } */ from 'react';
-import classNames from 'classnames';
+// import classNames from 'classnames';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { /* Button, Space,  */ Tooltip /* , Modal, message */ } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
-
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+// import { ExclamationCircleOutlined } from '@ant-design/icons';
 // import { AuthBtn } from 'src/components';
 // import { Context } from 'src/store';
 // import { operateSpeechStatus } from 'src/apis/salesCollection';
@@ -61,11 +60,24 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       placeholder: '请输入'
     },
     {
+      name: 'times',
+      type: 'rangePicker',
+      width: 160,
+      label: '更新时间'
+    },
+    {
       name: 'contentType',
       type: 'select',
       width: 128,
       label: '话术格式',
       options: speechContentTypes
+    },
+    {
+      name: 'contentId',
+      type: 'input',
+      label: '话术ID',
+      width: '280px',
+      placeholder: '请输入'
     }
   ];
 };
@@ -105,23 +117,23 @@ export const columns = (/* args: OperateProps */): ColumnsType<SpeechProps> => {
       title: '话术ID',
       dataIndex: 'contentId'
     },
-    {
-      title: '目录',
-      dataIndex: 'fullName',
-      ellipsis: {
-        showTitle: false
-      },
-      render: (name) => (
-        <Tooltip placement="topLeft" title={name}>
-          {name || UNKNOWN}
-        </Tooltip>
-      )
-    },
+    // {
+    //   title: '目录',
+    //   dataIndex: 'fullName',
+    //   ellipsis: {
+    //     showTitle: false
+    //   },
+    //   render: (name) => (
+    //     <Tooltip placement="topLeft" title={name}>
+    //       {name || UNKNOWN}
+    //     </Tooltip>
+    //   )
+    // },
     {
       title: '话术格式',
       dataIndex: 'contentType',
       render: (contentType) => (
-        <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0]?.name || UNKNOWN}</span>
+        <span>{speechContentTypes.filter((item) => item.id === contentType)?.[0]?.name || '未知'}</span>
       )
     },
     {
@@ -158,33 +170,33 @@ export const columns = (/* args: OperateProps */): ColumnsType<SpeechProps> => {
         return <span>{name || UNKNOWN}</span>;
       }
     },
-    {
-      title: '触发敏感词',
-      dataIndex: 'sensitive',
-      ellipsis: {
-        showTitle: false
-      },
-      render: (value, record: SpeechProps) => {
-        return (
-          <span>
-            {sensitiveOptions.filter((sensitive) => sensitive.id === value)?.[0].name}
-            {value === 1 && (
-              <Tooltip title={record.sensitiveWord} className="ml10">
-                <ExclamationCircleOutlined />
-              </Tooltip>
-            )}
-          </span>
-        );
-      }
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'dateCreated',
+    // {
+    //   title: '触发敏感词',
+    //   dataIndex: 'sensitive',
+    //   ellipsis: {
+    //     showTitle: false
+    //   },
+    //   render: (value, record: SpeechProps) => {
+    //     return (
+    //       <span>
+    //         {sensitiveOptions.filter((sensitive) => sensitive.id === value)?.[0].name}
+    //         {value === 1 && (
+    //           <Tooltip title={record.sensitiveWord} className="ml10">
+    //             <ExclamationCircleOutlined />
+    //           </Tooltip>
+    //         )}
+    //       </span>
+    //     );
+    //   }
+    // },
+    // {
+    //   title: '创建时间',
+    //   dataIndex: 'dateCreated',
 
-      render: (name) => {
-        return <span>{name || UNKNOWN}</span>;
-      }
-    },
+    //   render: (name) => {
+    //     return <span>{name || UNKNOWN}</span>;
+    //   }
+    // },
     {
       title: '更新时间',
       dataIndex: 'lastUpdated',
@@ -192,45 +204,45 @@ export const columns = (/* args: OperateProps */): ColumnsType<SpeechProps> => {
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
       }
-    },
-    {
-      title: '创建人',
-      dataIndex: 'createBy',
-
-      render: (name) => {
-        return <span>{name || UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '更新人',
-      dataIndex: 'updateBy',
-
-      render: (name) => {
-        return <span>{name || UNKNOWN}</span>;
-      }
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      align: 'left',
-      fixed: 'right',
-      render: (value) => {
-        return (
-          <span>
-            <i
-              className={classNames('status-point', [
-                {
-                  'status-point-gray': value === 0,
-                  'status-point-green': value === 1,
-                  'status-point-red': value === 2
-                }
-              ])}
-            ></i>
-            {statusOptions.filter((status) => status.id === value)?.[0].name}
-          </span>
-        );
-      }
     }
+    // {
+    //   title: '创建人',
+    //   dataIndex: 'createBy',
+
+    //   render: (name) => {
+    //     return <span>{name || UNKNOWN}</span>;
+    //   }
+    // },
+    // {
+    //   title: '更新人',
+    //   dataIndex: 'updateBy',
+
+    //   render: (name) => {
+    //     return <span>{name || UNKNOWN}</span>;
+    //   }
+    // },
+    // {
+    //   title: '状态',
+    //   dataIndex: 'status',
+    //   align: 'left',
+    //   fixed: 'right',
+    //   render: (value) => {
+    //     return (
+    //       <span>
+    //         <i
+    //           className={classNames('status-point', [
+    //             {
+    //               'status-point-gray': value === 0,
+    //               'status-point-green': value === 1,
+    //               'status-point-red': value === 2
+    //             }
+    //           ])}
+    //         ></i>
+    //         {statusOptions.filter((status) => status.id === value)?.[0].name}
+    //       </span>
+    //     );
+    //   }
+    // }
   ];
 };
 
