@@ -26,7 +26,7 @@ interface IContentBannerProps {
   setSyncSpeechVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setSyncSpeechTitle: React.Dispatch<React.SetStateAction<string>>;
   setSyncSpeechCatalog: React.Dispatch<React.SetStateAction<ICatalogItem | undefined>>;
-  setOnOk?: (onOk: () => void) => void;
+  setOnOk?: any;
 }
 
 const ContentBanner: React.FC<IContentBannerProps> = ({
@@ -50,6 +50,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   const { currentCorpId: corpId } = useContext(Context);
   const [childrenList, setChildrenList] = useState<ICatalogItem[]>([]);
   const [currentContent, setCurrentContent] = useState('');
+  const [sync, setSync] = useState(false);
   const history = useHistory();
 
   // 获取当前目录的子目录
@@ -237,8 +238,12 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   // 同步话术
   const syncSpeechHandle = (e: MouseEvent) => {
     e.stopPropagation();
-    setOnOk?.(() => getCurrentChildrenList);
-    console.log(setSyncSpeechTitle);
+    console.log('setOnOk', setOnOk);
+    setOnOk?.(() => () => {
+      getParentChildrenList();
+      getCurrentChildrenList();
+      setSync(true);
+    });
     setSyncSpeechTitle(catalog.lastLevel ? '同步话术' : '同步目录');
     setSyncSpeechVisible(true);
     setSyncSpeechCatalog(catalog);
@@ -249,7 +254,8 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
         className={classNames(
           style.bannerWrap,
           { [style.isChildrenContents]: !!catalog.level },
-          { [style.isLastContents]: !!catalog.lastLevel }
+          { [style.isLastContents]: !!catalog.lastLevel },
+          { [style.sync]: sync }
         )}
         onClick={contentsClickHandle}
       >
@@ -262,7 +268,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
         )}
         <div className={classNames(style.name, { [style.empty]: !catalog.onlineContentNum })}>{catalog.name}</div>
         <div
-          className={classNames(style.info, { [style.empty]: !catalog.onlineContentNum })}
+          className={classNames(style.info, { [style.empty]: !catalog.onlineContentNum }, { [style.sync]: sync })}
         >{`（上架${catalog.onlineContentNum}/全部${catalog.contentNum}）`}</div>
         <div className={style.edit}>
           {catalog.lastLevel === 1 && (

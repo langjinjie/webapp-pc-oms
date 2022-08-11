@@ -48,6 +48,10 @@ const ContentsManage: React.FC = () => {
     getCatalogList();
   }, []);
 
+  useEffect(() => {
+    onOk && console.log('onOk有值了~~');
+  }, [onOk]);
+
   useDidRecover(() => {
     const { isCatch } = URLSearchParams(location.search);
     // 判断页面是否需要更新

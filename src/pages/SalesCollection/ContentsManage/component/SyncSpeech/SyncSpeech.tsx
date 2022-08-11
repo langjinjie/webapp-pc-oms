@@ -42,6 +42,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   const [speechVisible, setSpeechVisible] = useState(false);
   const [catalogId, setCatalogId] = useState('');
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
+  const [sceneId, setSceneId] = useState('');
 
   // 重置
   const onResetHandle = () => {
@@ -74,6 +75,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       });
     }
     if (res) {
+      console.log(onOk);
       onOk?.();
       onClose?.();
       onResetHandle();
@@ -99,7 +101,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       queryMain: 1,
       pageNum,
       pageSize,
-      sceneId: value?.sceneId || '',
+      sceneId: sceneId,
       ...params
     });
     setDataSource(list || []);
@@ -115,20 +117,22 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       const promiseList = [1, 2, 3, 4, 5].map((sceneId) => requestGetSmartCatalogTree({ sceneId, queryMain: 1 }));
       const res = (await Promise.allSettled(promiseList)).filter((filterItem: any) => filterItem.value);
       if (res) {
-        const categories = res.map((mapItem: any) => mapItem.value);
+        const categories = res.map((mapItem: any, index) => ({ ...mapItem.value, sceneId: index + 1 }));
         // 匹配主机构是否有相同名称的目录
         const flatList = tree2Arry([categories[value.sceneId - 1]]);
         const content = flatList.find((findItem) => findItem.fullName === value.fullName);
         let catalogIds = [];
         let catalogId = '';
+        let sceneId = '';
         if (content) {
           catalogId = content.catalogId;
           catalogIds = content.fullCatalogId.split('-');
+          sceneId = content.sceneId;
         }
         // 首选
         setCategories(categories);
         // // 获取话术列表
-        getList({ catalogId: catalogId });
+        getList({ catalogId: catalogId, sceneId });
         setCatalogId(catalogId);
         setFormDefaultValue({ catalogIds: catalogIds });
       }
@@ -193,7 +197,9 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     });
   };
 
-  const onCascaderChange = () => {
+  const onCascaderChange = (_: any, selectedOptions: any) => {
+    const sceneId = selectedOptions?.[0]?.sceneId || '';
+    setSceneId(sceneId);
     setPagination((pagination: any) => ({ ...pagination, current: 1 }));
   };
 

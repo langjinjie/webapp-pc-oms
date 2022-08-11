@@ -15,6 +15,7 @@ export const sensitiveOptions = [
   { id: 2, name: '否' }
 ];
 export const speechContentTypes = [
+  { id: 0, name: '未知' },
   { id: 1, name: '纯文字' },
   { id: 2, name: '图片' },
   { id: 3, name: '名片' },
