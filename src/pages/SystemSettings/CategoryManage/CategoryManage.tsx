@@ -25,7 +25,7 @@ import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
 import { useDocumentTitle } from 'src/utils/base';
 
 const CategoryManage: React.FC = () => {
-  const { isMainCorp, btnList } = useContext(Context);
+  const { btnList } = useContext(Context);
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [editType, setEditType] = useState('');
   const [typeList, setTypeList] = useState<IProductTypeItem[] | IPosterTypeItem[]>([]);
@@ -89,7 +89,7 @@ const CategoryManage: React.FC = () => {
     }
     setIsOnDrag('');
     if (source.index === destination?.index) return;
-    if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
+    // if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
     try {
       if (!destination || source.droppableId !== destination.droppableId) {
         return message.warning('不可以跨父类别进行拖拽');
@@ -308,7 +308,8 @@ const CategoryManage: React.FC = () => {
                       <div className={style.typeName}>{item.name}</div>
                       <div className={style.operation}>
                         <AuthBtn path="/edit">
-                          {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
+                          {/* {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && ( */}
+                          {tabIndex === 0 && item.name !== '其他' && item.name !== '产品海报' && (
                             <span
                               data-edit={'edit'}
                               className={style.edit}
@@ -319,7 +320,8 @@ const CategoryManage: React.FC = () => {
                           )}
                         </AuthBtn>
                         <AuthBtn path="/delete">
-                          {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && (
+                          {/* {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && ( */}
+                          {tabIndex === 0 && item.name !== '其他' && item.name !== '产品海报' && (
                             <Popconfirm
                               title={'删除分类后,素材将移至"其他"分类下'}
                               visible={
@@ -393,7 +395,8 @@ const CategoryManage: React.FC = () => {
                       />
                     )}
                     <AuthBtn path="/add">
-                      {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
+                      {/* {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && ( */}
+                      {item.name !== '产品海报' && tabIndex === 0 && (
                         <Button
                           className={classNames(style.addChilrenType, {
                             [style.active]: !item.categoryList?.length
@@ -414,7 +417,8 @@ const CategoryManage: React.FC = () => {
         </DragDropContext>
       </div>
       <AuthBtn path="/add">
-        {(isMainCorp || tabIndex === 0) && (
+        {/* {(isMainCorp || tabIndex === 0) && ( */}
+        {tabIndex === 0 && (
           <Button
             className={style.addType}
             icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
