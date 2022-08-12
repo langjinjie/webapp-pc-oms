@@ -354,6 +354,7 @@ const AddWeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
     const res = await searchRecommendGoodsList({
       title: value,
       specType: 0,
+      type: 1,
       recommendType: current.cateType === 3 ? 0 : current.cateType
     });
     if (current.cateType === 3) {

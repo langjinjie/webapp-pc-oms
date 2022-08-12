@@ -294,6 +294,7 @@ const MarketIndex: React.FC = () => {
     setFetching(true);
     const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
+      type: 1,
       recommendType: marketType
     });
     if (marketType === 0) {

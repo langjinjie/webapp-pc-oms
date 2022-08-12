@@ -236,6 +236,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
       specType: 0,
+      type: 0,
       recommendType: formData.recommendType
     });
     const resList = [...formData.recommendList.filter((item) => item !== undefined), ...res];

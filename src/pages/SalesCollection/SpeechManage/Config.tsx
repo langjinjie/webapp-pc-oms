@@ -133,6 +133,7 @@ export const ageTypeOptions = [
 export interface SpeechProps {
   sceneId: number; // 业务场景ID，1-车险流程，2-非车流程，3-异议处理，4-场景话术，5-问答知识，6-智能教练。
   contentId: string; // 话术id
+  contenSource: number; // 话术来源: 1-公有库 2-机构库
   fullName: string; // 来源
   contentType: number; // 话术类型：1-文本、2-长图、3-名片、4-小站、5-单图文、6-单语音、7-单视频、8-第三方链接、9-小程序链接、9-小程序
   content: string; // 话术内容
@@ -310,7 +311,11 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       }
     },
     {
-      title: '话术来源'
+      title: '话术来源',
+      dataIndex: 'contenSource',
+      render: (contenSource: number) => {
+        return <span>{contenSource === 1 ? '公有库' : '私有库'}</span>;
+      }
     },
     {
       title: '状态',
@@ -344,7 +349,11 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
         return (
           <Space className="spaceWrap">
             <AuthBtn path="/edit">
-              <Button disabled={record.status === 1} type="link" onClick={() => handleEdit(record)}>
+              <Button
+                disabled={record.status === 1 || record.contenSource === 1}
+                type="link"
+                onClick={() => handleEdit(record)}
+              >
                 编辑
               </Button>
             </AuthBtn>

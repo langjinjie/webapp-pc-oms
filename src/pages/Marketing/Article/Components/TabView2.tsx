@@ -136,6 +136,7 @@ const TabView2: React.FC = () => {
       const res = await searchRecommendGoodsList({
         title: '',
         specType: 0,
+        type: 0,
         recommendType: +e.target.value
       });
       setRecommendList(res || []);
