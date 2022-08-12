@@ -35,6 +35,11 @@ export const statusOptions = [
   { id: 2, name: '已下架' }
 ];
 
+export const contentSourceList = [
+  { id: 1, name: '公有库' },
+  { id: 2, name: '私有库' }
+];
+
 export const setSearchCols = (options: any[]): SearchCol[] => {
   return [
     {
@@ -93,6 +98,13 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       label: '话术ID',
       width: '280px',
       placeholder: '请输入'
+    },
+    {
+      name: 'contenSource',
+      type: 'select',
+      width: 140,
+      label: '话术来源',
+      options: contentSourceList
     }
   ];
 };
@@ -296,6 +308,9 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       render: (name) => {
         return <span>{name || UNKNOWN}</span>;
       }
+    },
+    {
+      title: '话术来源'
     },
     {
       title: '状态',

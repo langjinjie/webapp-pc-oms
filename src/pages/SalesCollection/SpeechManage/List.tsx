@@ -103,7 +103,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       sensitive = '',
       status = '',
       times = undefined,
-      tip = ''
+      tip = '',
+      contenSource
     } = values;
     let updateBeginTime = '';
     let updateEndTime = '';
@@ -124,7 +125,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       status,
       tip,
       updateBeginTime,
-      updateEndTime
+      updateEndTime,
+      contenSource
     }));
   };
   // 点击查询按钮
@@ -140,7 +142,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       status = '',
       times = undefined,
       tip = '',
-      contentId = ''
+      contentId = '',
+      contenSource
     } = values;
     let updateBeginTime = '';
     let updateEndTime = '';
@@ -166,7 +169,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       tip,
       updateBeginTime,
       updateEndTime,
-      contentId
+      contentId,
+      contenSource
     }));
     await getList({
       pageNum: 1,
@@ -179,7 +183,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       updateBeginTime,
       updateEndTime,
       sceneId,
-      contentId
+      contentId,
+      contenSource
     });
   };
 

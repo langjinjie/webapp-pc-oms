@@ -309,7 +309,8 @@ const CategoryManage: React.FC = () => {
                       <div className={style.operation}>
                         <AuthBtn path="/edit">
                           {/* {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && ( */}
-                          {tabIndex === 0 && item.name !== '其他' && item.name !== '产品海报' && (
+                          {/* {tabIndex === 0 && item.name !== '其他' && item.name !== '产品海报' && ( */}
+                          {item.name !== '其他' && item.name !== '产品海报' && (
                             <span
                               data-edit={'edit'}
                               className={style.edit}
@@ -321,7 +322,8 @@ const CategoryManage: React.FC = () => {
                         </AuthBtn>
                         <AuthBtn path="/delete">
                           {/* {(isMainCorp || tabIndex === 0) && item.name !== '其他' && item.name !== '产品海报' && ( */}
-                          {tabIndex === 0 && item.name !== '其他' && item.name !== '产品海报' && (
+                          {/* {tabIndex === 0 && item.name !== '其他' && item.name !== '产品海报' && ( */}
+                          {item.name !== '其他' && item.name !== '产品海报' && (
                             <Popconfirm
                               title={'删除分类后,素材将移至"其他"分类下'}
                               visible={
@@ -396,7 +398,8 @@ const CategoryManage: React.FC = () => {
                     )}
                     <AuthBtn path="/add">
                       {/* {item.name !== '产品海报' && (isMainCorp || tabIndex === 0) && ( */}
-                      {item.name !== '产品海报' && tabIndex === 0 && (
+                      {/* {item.name !== '产品海报' && tabIndex === 0 && ( */}
+                      {item.name !== '产品海报' && (
                         <Button
                           className={classNames(style.addChilrenType, {
                             [style.active]: !item.categoryList?.length
@@ -418,16 +421,16 @@ const CategoryManage: React.FC = () => {
       </div>
       <AuthBtn path="/add">
         {/* {(isMainCorp || tabIndex === 0) && ( */}
-        {tabIndex === 0 && (
-          <Button
-            className={style.addType}
-            icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
-            type={'primary'}
-            onClick={() => addTypeHandle()}
-          >
-            新增
-          </Button>
-        )}
+        {/* {tabIndex === 0 && ( */}
+        <Button
+          className={style.addType}
+          icon={<Icon className={style.icon} name="icon_daohang_28_jiahaoyou" />}
+          type={'primary'}
+          onClick={() => addTypeHandle()}
+        >
+          新增
+        </Button>
+        {/* )} */}
       </AuthBtn>
       <Modal
         wrapClassName={style.modalWrap}
