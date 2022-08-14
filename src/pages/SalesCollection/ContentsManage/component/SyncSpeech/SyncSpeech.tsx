@@ -28,25 +28,35 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   const [treeData, setTreeData] = useState<ICatalogItem[]>([]);
   const [checkedNodes, setCheckedNodes] = useState<ICatalogItem[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
+  const [selectedRows, setSelectedRows] = useState<SpeechProps[]>([]);
+  const [speechVisible, setSpeechVisible] = useState(false);
+  const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
+  const [sceneId, setSceneId] = useState('');
+  const [catalogId, setCatalogId] = useState('');
   const [formDefaultValue, setFormDefaultValue] = useState<{ catalogIds: string[] }>({
     catalogIds: []
   });
-  const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<any>({
     current: 1,
     pageSize: 5,
     total: 0
   });
-  const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
-  const [selectedRows, setSelectedRows] = useState<SpeechProps[]>([]);
-  const [speechVisible, setSpeechVisible] = useState(false);
-  const [catalogId, setCatalogId] = useState('');
-  const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
-  const [sceneId, setSceneId] = useState('');
+  const [formParams, setFormParams] = useState({
+    catalogId: '',
+    content: '',
+    contentType: '',
+    sensitive: '',
+    status: '',
+    tip: '',
+    updateBeginTime: '',
+    updateEndTime: '',
+    contentId: ''
+  });
 
   // 重置
   const onResetHandle = () => {
-    setCatalogId('');
     setCheckedKeys([]);
     setSelectedRows([]);
     setCheckedNodes([]);
@@ -99,6 +109,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     // setCurrentType(null);
     const { pageSize, current: pageNum } = pagination;
     const { list, total } = await getSpeechList({
+      ...formParams,
       queryMain: 1,
       pageNum,
       pageSize,
@@ -134,26 +145,16 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
         setCategories(categories);
         // // 获取话术列表
         getList({ catalogId: catalogId, sceneId });
-        setCatalogId(catalogId);
         setFormDefaultValue({ catalogIds: catalogIds });
       }
     } else {
       // 同步目录
       const res = await requestGetSmartCatalogTree({ sceneId: value?.sceneId, queryMain: 1 });
       if (res) {
-        // const flatList = tree2Arry([res]);
-        // const levelNode = [...flatList].find((findItem) => findItem.level === value?.level);
-        const filterFlatList = tree2Arry([res])
-          // .filter((filterItem) => {
-          //   if (filterItem.level < levelNode.level) {
-          //     return levelNode?.fullCatalogId.split('-').includes(filterItem.catalogId);
-          //   }
-          //   return true;
-          // })
-          .map((flatItem) => ({
-            ...flatItem,
-            disabled: value?.lastLevel ? false : flatItem.level <= (value?.level || 0)
-          }));
+        const filterFlatList = tree2Arry([res]).map((flatItem) => ({
+          ...flatItem,
+          disabled: value?.lastLevel ? false : flatItem.level <= (value?.level || 0)
+        }));
         const flatListTree: any = arry2Tree(filterFlatList, res.catalogId, 'catalogId');
         setTreeData([flatListTree]);
       }
@@ -163,7 +164,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   // 点击查询按钮
   const onSearch = async (values: any) => {
     // 将页面重置为第一页
-    // setPagination((pagination) => ({ ...pagination, current: 1 }));
+    setPagination((pagination: any) => ({ ...pagination, current: 1 }));
     const {
       catalogIds,
       content = '',
@@ -206,18 +207,35 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
 
   const onValuesChange = (_: any, values: any) => {
     const {
-      catalogIds
-      // content = '',
-      // contentType = '',
-      // sensitive = '',
-      // status = '',
-      // tip = ''
+      catalogIds,
+      content = '',
+      contentType = '',
+      sensitive = '',
+      status = '',
+      times = undefined,
+      tip = ''
     } = values;
     let catalogId = '';
     if (catalogIds) {
       catalogId = catalogIds[catalogIds.length - 1];
     }
-    console.log('catalogId', catalogId);
+    let updateBeginTime = '';
+    let updateEndTime = '';
+    if (times) {
+      updateBeginTime = times[0].startOf('day').valueOf();
+      updateEndTime = times[1].endOf('day')?.valueOf();
+    }
+    setFormParams((formParams) => ({
+      ...formParams,
+      catalogId,
+      content,
+      contentType,
+      sensitive,
+      status,
+      tip,
+      updateBeginTime,
+      updateEndTime
+    }));
   };
 
   const onSelectChange = (_: React.Key[], newSelectedRows: SpeechProps[]) => {
@@ -242,7 +260,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       current: pageNum,
       pageSize: pageSize || pagination.pageSize
     }));
-    getList({ catalogId, pageNum, pageSize });
+    getList({ pageNum, pageSize });
   };
   // 查看目录下的话术
   const viewSpeechHandle = (catalogId: string) => {
@@ -262,6 +280,11 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     setSelectedRows((selectedRows) => selectedRows.filter((rowItem) => rowItem.contentId !== item.contentId));
   };
 
+  const formVisible = useMemo(() => {
+    console.log('visible变了', visible);
+    return visible;
+  }, [visible]);
+
   useEffect(() => {
     if (visible) {
       getSmartCatalogTree();
@@ -275,6 +298,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       className={style.modalWrap}
       onClose={onCloseHandle}
       onOk={onOkHandle}
+      destroyOnClose
     >
       {/* 同步目录 */}
       {catalog?.lastLevel === 1 || (
@@ -338,7 +362,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
         </div>
       )}
       {/* 同步话术 */}
-      {catalog?.lastLevel === 1 && (
+      {formVisible && catalog?.lastLevel === 1 && (
         <>
           <div className={style.title}>主机构话术</div>
           <div className={classNames(style.speechWrap, 'form-inline pt20')}>
@@ -381,7 +405,9 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
           )}
         </>
       )}
-      <div className={style.tips}>温馨提醒：主机构已选择的话术目录向下的内容都会同步到机构选择目录下，请您知悉</div>
+      {true && (
+        <div className={style.tips}>温馨提醒：主机构已选择的话术目录向下的内容都会同步到机构选择目录下，请您知悉</div>
+      )}
       <SpeechModal visible={speechVisible} catalogId={catalogId} onClose={() => setSpeechVisible(false)} />
     </Modal>
   );
