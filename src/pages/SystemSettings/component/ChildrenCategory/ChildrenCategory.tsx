@@ -1,7 +1,7 @@
 import React /* , { useContext } */ from 'react';
 import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
-import { Popconfirm, message } from 'antd';
+import { Popconfirm /* , message */ } from 'antd';
 // import { Context } from 'src/store';
 import classNames from 'classnames';
 import style from './style.module.less';
@@ -36,7 +36,7 @@ const ChildrenCategory: React.FC<IChildrenCategoryProps> = ({
   typeName,
   isOnDrag,
   editType,
-  tabIndex,
+  // tabIndex,
   popconfirmVisible,
   setPopconfirmVisible,
   handleEdit,
