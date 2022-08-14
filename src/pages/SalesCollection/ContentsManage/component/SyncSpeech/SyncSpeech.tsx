@@ -50,6 +50,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     setCheckedKeys([]);
     setSelectedRows([]);
     setCheckedNodes([]);
+    setTreeData([]);
     setPagination({ current: 1, pageSize: 5, total: 0 });
   };
 
@@ -274,7 +275,6 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       className={style.modalWrap}
       onClose={onCloseHandle}
       onOk={onOkHandle}
-      destroyOnClose
     >
       {/* 同步目录 */}
       {catalog?.lastLevel === 1 || (
@@ -282,10 +282,11 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
           <div className={style.treeWrap}>
             <div className={style.title}>主机构目录</div>
             <div className={classNames(style.treeContent, 'scroll-strip')}>
-              {true && (
+              {!treeData.length || (
                 <Tree
                   // @ts-ignore
                   treeData={treeData}
+                  defaultExpandAll
                   blockNode
                   checkedKeys={checkedKeys}
                   onCheck={onCheckHandle}
@@ -310,26 +311,28 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
               {<span className={style.boldText}> [{value?.name}] </span>}目录下
             </div>
             <div className={classNames(style.treeContent, 'scroll-strip')}>
-              <Tree
-                // @ts-ignore
-                treeData={checkedNodes}
-                blockNode
-                fieldNames={{ title: 'name', key: 'sid' }}
-                // @ts-ignore
-                titleRender={(node: ICatalogItem) => (
-                  <div className={style.nodeItem}>
-                    {node.name}
-                    <span className={style.contentNum}>
-                      （{`上架${node.onlineContentNum}/全部${node.contentNum}`}）
-                    </span>
-                    {!node.lastLevel || (
-                      <span className={style.viewSpeech} onClick={() => viewSpeechHandle(node.catalogId)}>
-                        查看话术
+              {!checkedNodes.length || (
+                <Tree
+                  // @ts-ignore
+                  treeData={checkedNodes}
+                  blockNode
+                  fieldNames={{ title: 'name', key: 'sid' }}
+                  // @ts-ignore
+                  titleRender={(node: ICatalogItem) => (
+                    <div className={style.nodeItem}>
+                      {node.name}
+                      <span className={style.contentNum}>
+                        （{`上架${node.onlineContentNum}/全部${node.contentNum}`}）
                       </span>
-                    )}
-                  </div>
-                )}
-              />
+                      {!node.lastLevel || (
+                        <span className={style.viewSpeech} onClick={() => viewSpeechHandle(node.catalogId)}>
+                          查看话术
+                        </span>
+                      )}
+                    </div>
+                  )}
+                />
+              )}
             </div>
           </div>
         </div>
