@@ -9,7 +9,7 @@ import {
   requestSmartSyncContent
 } from 'src/apis/salesCollection';
 import { ICatalogItem } from 'src/utils/interface';
-import { columns, /* excelDemoUrl, */ setSearchCols, SpeechProps, filterChildren } from './Config';
+import { columns, /* excelDemoUrl, */ setSearchCols, SpeechProps } from './Config';
 import { tree2Arry, arry2Tree } from 'src/utils/base';
 import style from './style.module.less';
 import classNames from 'classnames';
@@ -35,6 +35,8 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
   const [sceneId, setSceneId] = useState('');
   const [catalogId, setCatalogId] = useState('');
+  const [flatList, setFlatList] = useState<ICatalogItem[]>([]);
+  const [allCheckedNodes, setAllCheckedNodes] = useState<ICatalogItem[]>([]);
   const [formDefaultValue, setFormDefaultValue] = useState<{ catalogIds: string[] }>({
     catalogIds: []
   });
@@ -95,8 +97,17 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
 
   // 点击Tree的复选框
   const onCheckHandle = (checkedKeys: any, e: any) => {
+    const allCheckedNodes = flatList.filter((filterItem) =>
+      [...checkedKeys, ...e.halfCheckedKeys].includes(filterItem.catalogId)
+    );
+    const curLevelNode = allCheckedNodes.filter((filterItem) => filterItem.level === (value?.level || 0) + 1);
+    setAllCheckedNodes(allCheckedNodes);
     setCheckedKeys(checkedKeys);
-    setCheckedNodes(filterChildren(e.checkedNodes));
+    setCheckedNodes(
+      curLevelNode.map((mapItem) => {
+        return arry2Tree(allCheckedNodes, mapItem.catalogId, 'catalogId');
+      })
+    );
   };
 
   // 查询话术列表
@@ -154,6 +165,11 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
           ...flatItem,
           disabled: value?.lastLevel ? false : flatItem.level <= (value?.level || 0)
         }));
+        setFlatList(
+          filterFlatList
+            .filter((filterItem) => filterItem.level > (value?.level || 0))
+            .map((mapItem) => ({ ...mapItem, children: [] }))
+        );
         const flatListTree: any = arry2Tree(filterFlatList, res.catalogId, 'catalogId');
         setTreeData([flatListTree]);
       }
@@ -268,11 +284,13 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   };
 
   const speechNum = useMemo(() => {
-    return checkedNodes.reduce((prev: number, now: ICatalogItem) => {
-      prev += now.contentNum;
+    return allCheckedNodes.reduce((prev: number, now: ICatalogItem) => {
+      if (now.lastLevel) {
+        prev += now.contentNum;
+      }
       return prev;
     }, 0);
-  }, [checkedNodes]);
+  }, [allCheckedNodes]);
 
   // 删除已选择
   const onTagClose = (item: SpeechProps) => {
