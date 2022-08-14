@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React /* , { useContext } */ from 'react';
 import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
 import { IProductTypeItem, IPosterTypeItem } from 'src/utils/interface';
 import { Popconfirm, message } from 'antd';
-import { Context } from 'src/store';
+// import { Context } from 'src/store';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { AuthBtn } from 'src/components';
@@ -46,10 +46,10 @@ const ChildrenCategory: React.FC<IChildrenCategoryProps> = ({
   inputOnBlurHandle,
   clearInputTextHandle
 }) => {
-  const { isMainCorp } = useContext(Context);
+  // const { isMainCorp } = useContext(Context);
   // 点击删除
   const clickDeleteHandle = (item: IProductTypeItem | IPosterTypeItem) => {
-    if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
+    // if (!isMainCorp && tabIndex !== 0) return message.error('非主机构不能操作');
     setPopconfirmVisible((item as IProductTypeItem).typeId || (item as IPosterTypeItem).id);
   };
   return (
@@ -85,7 +85,8 @@ const ChildrenCategory: React.FC<IChildrenCategoryProps> = ({
                   {childrenItem.name}
                   <div className={style.childrenOperation}>
                     <AuthBtn path="/edit">
-                      {parentCategory.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
+                      {/* {parentCategory.name !== '产品海报' && (isMainCorp || tabIndex === 0) && ( */}
+                      {parentCategory.name !== '产品海报' && (
                         <span data-edit={'edit'} onClick={() => handleEdit(parentCategory, childrenItem)}>
                           编辑
                         </span>
@@ -101,7 +102,8 @@ const ChildrenCategory: React.FC<IChildrenCategoryProps> = ({
                         onConfirm={async () => onConfirmHandle(childrenItem)}
                         onCancel={() => setPopconfirmVisible('')}
                       >
-                        {parentCategory.name !== '产品海报' && (isMainCorp || tabIndex === 0) && (
+                        {/* {parentCategory.name !== '产品海报' && (isMainCorp || tabIndex === 0) && ( */}
+                        {parentCategory.name !== '产品海报' && (
                           <span onClick={() => clickDeleteHandle(childrenItem)}>删除</span>
                         )}
                       </Popconfirm>
