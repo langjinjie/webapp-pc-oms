@@ -313,6 +313,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     {
       title: '话术来源',
       dataIndex: 'contenSource',
+      width: 130,
       render: (contenSource: number) => {
         return <span>{contenSource === 1 ? '公有库' : '私有库'}</span>;
       }
