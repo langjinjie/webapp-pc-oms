@@ -228,6 +228,14 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       const catalogId = catalogs[catalogs.length - 1];
       getList({
         sceneId: tree[0].sceneId,
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: '',
+        contentId: '',
         catalogId
       });
       setLastCategory({
@@ -235,7 +243,17 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
         catalogId,
         lastLevel: 1
       });
-      setFormParams((formParams) => ({ ...formParams, catalogId }));
+      setFormParams({
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: '',
+        contentId: '',
+        catalogId
+      });
     } else {
       const res = await getCategory();
       setCategories(res);
