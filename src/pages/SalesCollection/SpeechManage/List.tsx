@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
+import { useDidRecover } from 'react-router-cache-route';
 import { RouteComponentProps } from 'react-router';
 import {
   getSpeechList,
@@ -29,7 +30,7 @@ import { getQueryParam } from 'tenacity-tools';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   useDocumentTitle('销售宝典-话术管理');
-  const { currentCorpId, beforePath } = useContext(Context);
+  const { currentCorpId } = useContext(Context);
   const [formParams, setFormParams] = useState({
     catalogId: '',
     content: '',
@@ -81,6 +82,13 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     // 重置当前操作状态
     setCurrentType(null);
     const { pageSize, current: pageNum } = pagination;
+    console.log({
+      ...formParams,
+      pageNum,
+      pageSize,
+      sceneId: lastCategory?.sceneId || '',
+      ...params
+    });
     const { list, total } = await getSpeechList({
       ...formParams,
       pageNum,
@@ -266,12 +274,11 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     initSetFormQuery();
     getSensitiveCheckedInfo();
   }, []);
-  useEffect(() => {
-    if (!beforePath.includes('speechManage') || getQueryParam().refresh === 'true') {
-      initSetFormQuery();
-      getSensitiveCheckedInfo();
+  useDidRecover(() => {
+    if (getQueryParam().refresh === 'true') {
+      getList({ ...formParams });
     }
-  }, [beforePath]);
+  }, []);
 
   // 分页改变
   const paginationChange = (pageNum: number, pageSize?: number) => {
@@ -441,7 +448,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     setCategories([...categories]);
   };
   const onCascaderChange = (value: any, selectedOptions: any) => {
-    const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
+    const lastSelectedOptions = selectedOptions?.[selectedOptions.length - 1] || {};
     setLastCategory(lastSelectedOptions);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     let params = {};
