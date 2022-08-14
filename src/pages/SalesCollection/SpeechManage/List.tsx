@@ -82,13 +82,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     // 重置当前操作状态
     setCurrentType(null);
     const { pageSize, current: pageNum } = pagination;
-    console.log({
-      ...formParams,
-      pageNum,
-      pageSize,
-      sceneId: lastCategory?.sceneId || '',
-      ...params
-    });
     const { list, total } = await getSpeechList({
       ...formParams,
       pageNum,
@@ -277,6 +270,11 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   useDidRecover(() => {
     if (getQueryParam().refresh === 'true') {
       getList({ ...formParams });
+    }
+    // 从目录查看话术
+    if (location.search.includes('catalog=')) {
+      initSetFormQuery();
+      getSensitiveCheckedInfo();
     }
   }, []);
 
