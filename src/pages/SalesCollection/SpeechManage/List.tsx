@@ -284,10 +284,10 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     getList({ pageNum, pageSize });
   };
 
-  const isDisabled = (currentType: number | null, status: number) => {
+  const isDisabled = (currentType: number | null, status: number, contenSource?: number) => {
     let _isDisabled = false;
 
-    if (currentType !== null && currentType !== status) {
+    if (currentType !== null && (currentType !== status || contenSource === 1)) {
       _isDisabled = true;
     }
     return _isDisabled;
@@ -312,7 +312,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     },
     getCheckboxProps: (record: SpeechProps) => {
       return {
-        disabled: isDisabled(currentType, record.status),
+        disabled: isDisabled(currentType, record.status, record.contenSource),
         name: record.content
       };
     }

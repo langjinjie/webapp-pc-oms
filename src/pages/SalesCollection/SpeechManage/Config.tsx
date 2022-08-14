@@ -357,7 +357,6 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
                 编辑
               </Button>
             </AuthBtn>
-            <></>
             {[0, 2].includes(record.status) && (
               <Button onClick={() => operateSpeechStatusHandle(1, record)} type="link">
                 上架

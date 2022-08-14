@@ -86,7 +86,6 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       });
     }
     if (res) {
-      console.log(onOk);
       onOk?.();
       onClose?.();
       onResetHandle();
@@ -280,11 +279,6 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     setSelectedRows((selectedRows) => selectedRows.filter((rowItem) => rowItem.contentId !== item.contentId));
   };
 
-  const formVisible = useMemo(() => {
-    console.log('visible变了', visible);
-    return visible;
-  }, [visible]);
-
   useEffect(() => {
     if (visible) {
       getSmartCatalogTree();
@@ -362,7 +356,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
         </div>
       )}
       {/* 同步话术 */}
-      {formVisible && catalog?.lastLevel === 1 && (
+      {catalog?.lastLevel === 1 && (
         <>
           <div className={style.title}>主机构话术</div>
           <div className={classNames(style.speechWrap, 'form-inline pt20')}>
