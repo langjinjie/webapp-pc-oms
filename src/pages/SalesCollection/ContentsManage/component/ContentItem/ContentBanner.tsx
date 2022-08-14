@@ -289,7 +289,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
           )}
           <Button type="link" onClick={syncSpeechHandle}>
             <Icon className={'svgIcon'} name="tongbu1" />
-            同步话术
+            同步{catalog.lastLevel ? '话术' : '目录'}
           </Button>
           <AuthBtn path="/edit">
             <Button type="link" onClick={editClickHandle}>

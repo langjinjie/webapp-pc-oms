@@ -367,8 +367,14 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
           {!selectedRows.length || (
             <div className={style.list}>
               {selectedRows.map((mapItem) => (
-                <Tag key={mapItem.contentId} onClose={() => onTagClose(mapItem)} className={style.tag} closable>
-                  {mapItem.content}
+                <Tag
+                  title={mapItem.content}
+                  key={mapItem.contentId}
+                  onClose={() => onTagClose(mapItem)}
+                  className={style.tag}
+                  closable
+                >
+                  {mapItem.content.length > 25 ? mapItem.content.slice(0, 26) + '...' : mapItem.content}
                 </Tag>
               ))}
             </div>
