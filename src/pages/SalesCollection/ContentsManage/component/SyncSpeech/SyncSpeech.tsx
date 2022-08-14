@@ -140,15 +140,15 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       // 同步目录
       const res = await requestGetSmartCatalogTree({ sceneId: value?.sceneId, queryMain: 1 });
       if (res) {
-        const flatList = tree2Arry([res]);
-        const levelNode = [...flatList].find((findItem) => findItem.level === value?.level);
+        // const flatList = tree2Arry([res]);
+        // const levelNode = [...flatList].find((findItem) => findItem.level === value?.level);
         const filterFlatList = tree2Arry([res])
-          .filter((filterItem) => {
-            if (filterItem.level < levelNode.level) {
-              return levelNode?.fullCatalogId.split('-').includes(filterItem.catalogId);
-            }
-            return true;
-          })
+          // .filter((filterItem) => {
+          //   if (filterItem.level < levelNode.level) {
+          //     return levelNode?.fullCatalogId.split('-').includes(filterItem.catalogId);
+          //   }
+          //   return true;
+          // })
           .map((flatItem) => ({
             ...flatItem,
             disabled: value?.lastLevel ? false : flatItem.level <= (value?.level || 0)
