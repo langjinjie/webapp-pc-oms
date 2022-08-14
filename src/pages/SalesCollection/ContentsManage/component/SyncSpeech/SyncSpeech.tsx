@@ -124,11 +124,11 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
         const content = flatList.find((findItem) => findItem.fullName === value.fullName);
         let catalogIds = [];
         let catalogId = '';
-        let sceneId = '';
+        let sceneId;
         if (content) {
           catalogId = content.catalogId;
           catalogIds = content.fullCatalogId.split('-');
-          sceneId = content.sceneId;
+          sceneId = value?.sceneId;
         }
         // 首选
         setCategories(categories);
