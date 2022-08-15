@@ -38,19 +38,9 @@ const ContentsManage: React.FC = () => {
     res && setContentList(res);
   };
 
-  // 新增一级目录
-  // const addClickHandle = () => {
-  //   // 该级目录是否是最后一级目录
-  //   console.log('新增一级目录');
-  // };
-
   useEffect(() => {
     getCatalogList();
   }, []);
-
-  useEffect(() => {
-    onOk && console.log('onOk有值了~~');
-  }, [onOk]);
 
   useDidRecover(() => {
     const { isCatch } = URLSearchParams(location.search);

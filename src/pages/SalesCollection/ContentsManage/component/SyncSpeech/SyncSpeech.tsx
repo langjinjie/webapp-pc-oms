@@ -63,7 +63,21 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     setSelectedRows([]);
     setCheckedNodes([]);
     setTreeData([]);
+    setFormDefaultValue({ catalogIds: [] });
     setPagination({ current: 1, pageSize: 5, total: 0 });
+    setDataSource([]);
+    setFormParams({
+      catalogId: '',
+      content: '',
+      contentType: '',
+      sensitive: '',
+      status: '',
+      tip: '',
+      updateBeginTime: '',
+      updateEndTime: '',
+      contentId: '',
+      sceneId: ''
+    });
   };
 
   // 取消同步
@@ -189,7 +203,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     } = values;
     let catalogId = '';
     let sceneId = '';
-    if (catalogIds) {
+    if (catalogIds && catalogIds.length) {
       catalogId = catalogIds[catalogIds.length - 1];
       sceneId = categories.find((findItem) => findItem.catalogId === catalogIds[0]).sceneId;
     }
