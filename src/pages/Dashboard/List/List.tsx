@@ -59,7 +59,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   const getList = async (dataCode?: any) => {
     const pageNum = dataCode.pageNum || pagination.current;
     const res = await getDashboardItemData({
-      dayType: 2,
+      dayType: filterData.dayType,
       queryType: 1,
       dataCode: filterData.dataCode,
       businessModel: '',
@@ -126,6 +126,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
   };
 
   const onPaginationChange = (pageNum: number) => {
+    console.log('+aaa');
     setPagination((pagination) => ({ ...pagination, current: pageNum }));
     getList({ pageNum });
   };
