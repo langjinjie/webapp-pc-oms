@@ -144,20 +144,24 @@ const StaffList: React.FC = () => {
       align: 'center',
       render (row: IStaffList) {
         return (
-          <AuthBtn path="/operate">
-            <Popconfirm
-              title={
-                '确认' + (row.accountStatus === '1' ? '停用' : row.accountStatus === '2' ? '启用' : '激活') + '该账号吗'
-              }
-              visible={popconfirmVisible === row.staffId}
-              onConfirm={async () => popOnconfirmHandle(row)}
-              onCancel={() => setPopconfirmVisible('')}
-            >
-              <span key={row.staffId} className={classNames(style.edit)} onClick={() => clickCurrentRowHandle(row)}>
-                {accountStatusEdit2Name[row.accountStatus]}
-              </span>
-            </Popconfirm>
-          </AuthBtn>
+          row.staffStatus !== '1' && (
+            <AuthBtn path="/operate">
+              <Popconfirm
+                title={
+                  '确认' +
+                  (row.accountStatus === '1' ? '停用' : row.accountStatus === '2' ? '启用' : '激活') +
+                  '该账号吗'
+                }
+                visible={popconfirmVisible === row.staffId}
+                onConfirm={async () => popOnconfirmHandle(row)}
+                onCancel={() => setPopconfirmVisible('')}
+              >
+                <span key={row.staffId} className={classNames(style.edit)} onClick={() => clickCurrentRowHandle(row)}>
+                  {accountStatusEdit2Name[row.accountStatus]}
+                </span>
+              </Popconfirm>
+            </AuthBtn>
+          )
         );
       }
     }
