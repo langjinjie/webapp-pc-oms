@@ -117,6 +117,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     if (catalogIds) {
       catalogId = catalogIds[catalogIds.length - 1];
     }
+    setFormDefaultValue({ catalogIds });
+
     setFormParams((formParams) => ({
       ...formParams,
       catalogId,
