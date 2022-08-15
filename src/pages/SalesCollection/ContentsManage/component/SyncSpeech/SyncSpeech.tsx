@@ -33,7 +33,6 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
   const [selectedRows, setSelectedRows] = useState<SpeechProps[]>([]);
   const [speechVisible, setSpeechVisible] = useState(false);
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
-  const [sceneId, setSceneId] = useState('');
   const [catalogId, setCatalogId] = useState('');
   const [flatList, setFlatList] = useState<ICatalogItem[]>([]);
   const [allCheckedNodes, setAllCheckedNodes] = useState<ICatalogItem[]>([]);
@@ -54,7 +53,8 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     tip: '',
     updateBeginTime: '',
     updateEndTime: '',
-    contentId: ''
+    contentId: '',
+    sceneId: ''
   });
 
   // 重置
@@ -123,7 +123,6 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       queryMain: 1,
       pageNum,
       pageSize,
-      sceneId: sceneId,
       ...params
     });
     setDataSource(list || []);
@@ -178,61 +177,21 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
 
   // 点击查询按钮
   const onSearch = async (values: any) => {
-    // 将页面重置为第一页
-    setPagination((pagination: any) => ({ ...pagination, current: 1 }));
     const {
       catalogIds,
       content = '',
       contentType = '',
       sensitive = '',
       status = '',
-      tip = '',
       contentId = '',
-      times = undefined
-    } = values;
-    let updateBeginTime = '';
-    let updateEndTime = '';
-    if (times) {
-      updateBeginTime = times[0].startOf('day').valueOf();
-      updateEndTime = times[1].endOf('day')?.valueOf();
-    }
-    let catalogId = '';
-    if (catalogIds && catalogIds.length > 0) {
-      catalogId = catalogIds[catalogIds.length - 1];
-    }
-    await getList({
-      pageNum: 1,
-      catalogId,
-      content,
-      contentType,
-      sensitive,
-      status,
-      tip,
-      contentId,
-      updateBeginTime,
-      updateEndTime
-    });
-  };
-
-  const onCascaderChange = (_: any, selectedOptions: any) => {
-    const sceneId = selectedOptions?.[0]?.sceneId || '';
-    setSceneId(sceneId);
-    setPagination((pagination: any) => ({ ...pagination, current: 1 }));
-  };
-
-  const onValuesChange = (_: any, values: any) => {
-    const {
-      catalogIds,
-      content = '',
-      contentType = '',
-      sensitive = '',
-      status = '',
       times = undefined,
       tip = ''
     } = values;
     let catalogId = '';
+    let sceneId = '';
     if (catalogIds) {
       catalogId = catalogIds[catalogIds.length - 1];
+      sceneId = categories.find((findItem) => findItem.catalogId === catalogIds[0]).sceneId;
     }
     let updateBeginTime = '';
     let updateEndTime = '';
@@ -249,9 +208,62 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       status,
       tip,
       updateBeginTime,
-      updateEndTime
+      updateEndTime,
+      sceneId
     }));
+    // 将页面重置为第一页
+    setPagination((pagination: any) => ({ ...pagination, current: 1 }));
+    await getList({
+      pageNum: 1,
+      catalogId,
+      content,
+      contentType,
+      sensitive,
+      status,
+      tip,
+      contentId,
+      updateBeginTime,
+      updateEndTime,
+      sceneId
+    });
   };
+
+  // const onCascaderChange = (/* _: any, selectedOptions: any */) => {
+  //   setPagination((pagination: any) => ({ ...pagination, current: 1 }));
+  // };
+
+  // const onValuesChange = (_: any, values: any) => {
+  //   const {
+  //     catalogIds,
+  //     content = '',
+  //     contentType = '',
+  //     sensitive = '',
+  //     status = '',
+  //     times = undefined,
+  //     tip = ''
+  //   } = values;
+  //   let catalogId = '';
+  //   if (catalogIds) {
+  //     catalogId = catalogIds[catalogIds.length - 1];
+  //   }
+  //   let updateBeginTime = '';
+  //   let updateEndTime = '';
+  //   if (times) {
+  //     updateBeginTime = times[0].startOf('day').valueOf();
+  //     updateEndTime = times[1].endOf('day')?.valueOf();
+  //   }
+  //   setFormParams((formParams) => ({
+  //     ...formParams,
+  //     catalogId,
+  //     content,
+  //     contentType,
+  //     sensitive,
+  //     status,
+  //     tip,
+  //     updateBeginTime,
+  //     updateEndTime
+  //   }));
+  // };
 
   const onSelectChange = (_: React.Key[], newSelectedRows: SpeechProps[]) => {
     // 把不在本页的数据找出来
@@ -382,8 +394,8 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
               defaultValues={formDefaultValue}
               searchCols={setSearchCols(categories)}
               onSearch={onSearch}
-              onChangeOfCascader={onCascaderChange}
-              onValuesChange={onValuesChange}
+              // onChangeOfCascader={onCascaderChange}
+              // onValuesChange={onValuesChange}
             />
             <NgTable
               dataSource={dataSource}
