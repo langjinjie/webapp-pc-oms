@@ -161,6 +161,7 @@ const MarketIndex: React.FC = () => {
         activityList
       });
       setFormData({ newsList, posterList, productTypeList, activityList });
+      console.log(posterList);
     }
   };
 
@@ -212,7 +213,7 @@ const MarketIndex: React.FC = () => {
         });
         setFormData((formData) => ({
           ...formData,
-          productTypeList: oldSelectedList.filter((item: any) => item.productId)
+          productTypeList: oldSelectedList
         }));
       } else {
         const oldSelectedList = [...formData.productTypeList];
@@ -243,7 +244,7 @@ const MarketIndex: React.FC = () => {
         });
         setFormData((formData: any) => ({
           ...formData,
-          posterList: oldSelectedList.filter((item: any) => item.posterId)
+          posterList: oldSelectedList
         }));
       } else {
         const oldSelectedList = [...formData.posterList];
@@ -274,7 +275,7 @@ const MarketIndex: React.FC = () => {
         });
         setFormData((formData: any) => ({
           ...formData,
-          activityList: oldSelectedList.filter((item: any) => item.activityId)
+          activityList: oldSelectedList
         }));
       } else {
         const oldSelectedList = [...formData.activityList];
