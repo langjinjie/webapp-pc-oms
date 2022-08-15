@@ -144,7 +144,7 @@ const StaffList: React.FC = () => {
       align: 'center',
       render (row: IStaffList) {
         return (
-          row.staffStatus !== '1' && (
+          (row.staffStatus === '1' && row.accountStatus === '2') || (
             <AuthBtn path="/operate">
               <Popconfirm
                 title={
