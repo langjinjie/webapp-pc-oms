@@ -90,7 +90,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
   };
   useEffect(() => {
     if (props.defaultValues?.catalogIds) {
-      searchForm.setFieldsValue({ catalogIds: props.defaultValues.catalogIds });
+      searchForm.setFieldsValue({ catalogIds: props.defaultValues.catalogIds, ...props.defaultValues });
     }
   }, [props.defaultValues]);
   const handleFinish = (values: any) => {

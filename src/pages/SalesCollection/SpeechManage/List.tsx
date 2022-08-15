@@ -288,6 +288,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     getSensitiveCheckedInfo();
   }, []);
   useDidRecover(() => {
+    // 回写form
+    setFormDefaultValue(({ catalogIds }) => ({ catalogIds, ...formParams }));
     if (getQueryParam().refresh === 'true') {
       getList({ ...formParams });
     }
@@ -297,7 +299,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       getSensitiveCheckedInfo();
     }
   }, []);
-
   // 分页改变
   const paginationChange = (pageNum: number, pageSize?: number) => {
     setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize: pageSize || pagination.pageSize }));
@@ -600,7 +601,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
           </Button>
         </AuthBtn>
       </div>
-      <AuthBtn path="/query">
+      <AuthBtn path={'/query'}>
         <div className="form-inline pt20">
           <NgFormSearch
             defaultValues={formDefaultValue}
