@@ -565,7 +565,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                                   title: '',
                                   specType: 0,
                                   recommendType,
-                                  type: recommendType || undefined
+                                  type: +recommendType && undefined
                                 });
 
                                 setRecommendList([...res, ...recommendList] || []);

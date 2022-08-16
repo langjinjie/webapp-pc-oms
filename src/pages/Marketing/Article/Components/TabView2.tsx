@@ -138,7 +138,7 @@ const TabView2: React.FC = () => {
       const res = await searchRecommendGoodsList({
         title: '',
         specType: 0,
-        type: e.target.value && undefined,
+        type: +e.target.value && undefined,
         recommendType: +e.target.value
       });
       setRecommendList(res || []);
@@ -431,7 +431,7 @@ const TabView2: React.FC = () => {
                               title: '',
                               specType: 0,
                               recommendType,
-                              type: recommendType && undefined
+                              type: +recommendType && undefined
                             });
 
                             setRecommendList([...res, ...recommendList] || []);
