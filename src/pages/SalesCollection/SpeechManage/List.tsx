@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useRef, MutableRefObject } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
 import { useDidRecover } from 'react-router-cache-route';
@@ -75,9 +75,9 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
   const [delBtnDisabled, setDelBtnDisabled] = useState(false);
 
-  const operationAddDiv = useRef<any>(null);
-  const searchForm = useRef<any>(null);
-  const operationDiv = useRef<any>(null);
+  const operationAddDiv: MutableRefObject<any> = useRef();
+  const searchForm: MutableRefObject<any> = useRef();
+  const operationDiv: MutableRefObject<any> = useRef();
 
   // 查询话术列表
   const getList = async (params?: any) => {
@@ -221,7 +221,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     const { catalog } = URLSearchParams(location.search) as { [key: string]: string };
     if (catalog) {
       const catalogs = catalog.split(',');
-      setFormDefaultValue((formDefaultValue) => ({ ...formDefaultValue, catalogIds: catalogs }));
+      setFormDefaultValue(() => ({ catalogIds: catalogs }));
       const tree = JSON.parse(localStorage.getItem('catalogTree') || '[]') as any[];
       const res = await getCategory();
       const copyData = [...res];
@@ -290,20 +290,16 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   // 计算table高度
   const tableHeight: any = useMemo(() => {
-    if (operationAddDiv.current && searchForm.current && operationDiv.current) {
-      return (
-        window.innerHeight -
-        80 -
-        48 -
-        (operationAddDiv.current?.offsetHeight +
-          searchForm.current?.offsetHeight +
-          operationDiv.current?.offsetHeight +
-          20 +
-          68 +
-          55)
-      );
-    }
-    return 0;
+    return (
+      window.innerHeight -
+      80 -
+      48 -
+      ((operationAddDiv.current?.offsetHeight || 0) +
+        (searchForm.current?.offsetHeight || 0) +
+        (operationDiv.current?.offsetHeight || 0) +
+        88 +
+        55)
+    );
   }, [operationAddDiv.current, searchForm, operationDiv.current]);
 
   useEffect(() => {
