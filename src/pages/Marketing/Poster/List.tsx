@@ -159,7 +159,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     if (res) {
       const msg = type === 1 ? '上架成功！' : '下架成功！';
       message.success(msg);
-      handleSearch({});
+      getList({});
     }
   };
 
@@ -340,9 +340,9 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
             }}
           />
         </AuthBtn>
+        {/* 表单查询 end */}
       </div>
       <div className={style.main}>
-        {/* 表单查询 end */}
         <NgTable
           rowSelection={rowSelection}
           columns={columnList}
