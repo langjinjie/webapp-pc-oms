@@ -40,7 +40,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     tip: '',
     updateBeginTime: '',
     updateEndTime: '',
-    contentId: ''
+    contentId: '',
+    contenSource: ''
   });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -195,6 +196,37 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     });
   };
 
+  // 重置
+  const onResetHandle = () => {
+    setFormDefaultValue({ catalogIds: [] });
+    setFormParams({
+      catalogId: '',
+      content: '',
+      contentType: '',
+      sensitive: '',
+      status: '',
+      tip: '',
+      updateBeginTime: '',
+      updateEndTime: '',
+      contentId: '',
+      contenSource: ''
+    });
+    getList({
+      pageNum: 1,
+      catalogId: '',
+      content: '',
+      contentType: '',
+      sensitive: '',
+      status: '',
+      tip: '',
+      updateBeginTime: '',
+      updateEndTime: '',
+      sceneId: '',
+      contentId: '',
+      contenSource: ''
+    });
+  };
+
   const getCategory = async (params?: any) => {
     const res = await getCategoryList({ ...params });
     if (res) {
@@ -258,6 +290,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
         updateBeginTime: '',
         updateEndTime: '',
         contentId: '',
+        contenSource: '',
         catalogId
       });
     } else {
@@ -283,7 +316,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
         tip: '',
         updateBeginTime: '',
         updateEndTime: '',
-        contentId: ''
+        contentId: '',
+        contenSource: ''
       });
     }
   };
@@ -630,6 +664,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
             onSearch={onSearch}
             onChangeOfCascader={onCascaderChange}
             onValuesChange={onValuesChange}
+            onReset={onResetHandle}
           />
         </div>
       </AuthBtn>
