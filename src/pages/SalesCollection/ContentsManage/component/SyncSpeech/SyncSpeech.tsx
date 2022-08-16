@@ -158,7 +158,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
         const content = flatList.find((findItem) => findItem.fullName === value.fullName);
         let catalogIds = [];
         let catalogId = '';
-        let sceneId;
+        let sceneId: any;
         if (content) {
           catalogId = content.catalogId;
           catalogIds = content.fullCatalogId.split('-');
@@ -169,6 +169,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
         // // 获取话术列表
         getList({ catalogId: catalogId, sceneId });
         setFormDefaultValue({ catalogIds: catalogIds });
+        setFormParams((formParams) => ({ ...formParams, catalogId, sceneId }));
       }
     } else {
       // 同步目录
