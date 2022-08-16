@@ -43,7 +43,8 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
     activityName: '',
     corpactivityLink: '',
     shareCoverImgUrl: '',
-    shareTitle: ''
+    shareTitle: '',
+    isSet: 0
   });
   const [tags, setTags] = useState<Tag[]>([]);
   const [isReadOnly, setIsReadOnly] = useState(false);

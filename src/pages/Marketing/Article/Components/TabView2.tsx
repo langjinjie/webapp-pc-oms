@@ -32,6 +32,7 @@ const TabView2: React.FC = () => {
     editorHtml: '',
     editorHtmlChanged: '',
     recommendType: 0,
+    isSet: 0,
     recommendList: []
   });
   const { currentCorpId, articleCategoryList, setArticleCategoryList, articleTagList, setArticleTagList } =

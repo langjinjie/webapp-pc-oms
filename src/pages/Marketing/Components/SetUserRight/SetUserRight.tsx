@@ -25,10 +25,11 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   });
 
   const getGroupDetail = async () => {
+    console.log('aaaa', typeof value);
+
     if (!value) {
       return form.setFieldsValue({
         groupType: 1,
-        isSet: 0,
         group1: undefined,
         group2: undefined
       });
@@ -83,7 +84,8 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
       groupType: 1,
       group1: undefined,
       group12: undefined,
-      groupId: undefined
+      groupId: undefined,
+      isSet: isOpen
     });
     setFormValues((formValues) => ({
       ...formValues,

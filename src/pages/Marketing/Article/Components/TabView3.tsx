@@ -52,6 +52,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     editorHtmlChanged: '',
     recommendType: 0,
     recommendList: [],
+    isSet: 0,
     syncFromMain: 0
   });
   const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
