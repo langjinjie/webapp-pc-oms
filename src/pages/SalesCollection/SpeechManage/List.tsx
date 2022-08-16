@@ -73,6 +73,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
   const [isBatchSetRight, setIsBatchSetRight] = useState(false);
   const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
+  const [delBtnDisabled, setDelBtnDisabled] = useState(false);
 
   // 查询话术列表
   const getList = async (params?: any) => {
@@ -134,7 +135,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
   // 点击查询按钮
   const onSearch = async (values: any) => {
-    console.log('重新请求');
     // 将页面重置为第一页
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     const {
@@ -305,10 +305,10 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     getList({ pageNum, pageSize });
   };
 
-  const isDisabled = (currentType: number | null, status: number, contenSource?: number) => {
+  const isDisabled = (currentType: number | null, status: number) => {
     let _isDisabled = false;
-
-    if (currentType !== null && (currentType !== status || contenSource === 1)) {
+    // return;
+    if (currentType !== null && currentType !== status) {
       _isDisabled = true;
     }
     return _isDisabled;
@@ -318,6 +318,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     setSelectRowKeys(selectedRowKeys);
     setSelectedRows(selectedRows);
     const current = selectedRows[0];
+    setDelBtnDisabled(current?.contenSource === 1);
     if (current) {
       setCurrentType(current.status);
     } else {
@@ -333,7 +334,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     },
     getCheckboxProps: (record: SpeechProps) => {
       return {
-        disabled: isDisabled(currentType, record.status, record.contenSource),
+        disabled: isDisabled(currentType, record.status),
         name: record.content
       };
     }
@@ -657,7 +658,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
                 type="primary"
                 shape={'round'}
                 ghost
-                disabled={currentType === 1 || selectedRowKeys.length === 0}
+                disabled={delBtnDisabled || selectedRowKeys.length === 0}
                 onClick={() => operateStatus(3)}
               >
                 删除
