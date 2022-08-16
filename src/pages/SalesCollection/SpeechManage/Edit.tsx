@@ -276,6 +276,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
         onValuesChange={(changedValues: any, values: any) => {
           onValuesChange(values);
         }}
+        initialValues={{ isSet: 0 }}
       >
         {originSpeech?.['contentObj.contentId']
           ? (
