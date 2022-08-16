@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
 import { useDidRecover } from 'react-router-cache-route';
@@ -74,6 +74,10 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [isBatchSetRight, setIsBatchSetRight] = useState(false);
   const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
   const [delBtnDisabled, setDelBtnDisabled] = useState(false);
+
+  const operationAddDiv = useRef<any>(null);
+  const searchForm = useRef<any>(null);
+  const operationDiv = useRef<any>(null);
 
   // 查询话术列表
   const getList = async (params?: any) => {
@@ -283,6 +287,25 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       });
     }
   };
+
+  // 计算table高度
+  const tableHeight: any = useMemo(() => {
+    if (operationAddDiv.current && searchForm.current && operationDiv.current) {
+      return (
+        window.innerHeight -
+        80 -
+        48 -
+        (operationAddDiv.current?.offsetHeight +
+          searchForm.current?.offsetHeight +
+          operationDiv.current?.offsetHeight +
+          20 +
+          68 +
+          55)
+      );
+    }
+    return 0;
+  }, [operationAddDiv.current, searchForm, operationDiv.current]);
+
   useEffect(() => {
     initSetFormQuery();
     getSensitiveCheckedInfo();
@@ -544,7 +567,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
   return (
     <div className="container">
-      <div className="flex justify-between">
+      <div ref={operationAddDiv} className="flex justify-between">
         <Space size={20}>
           <AuthBtn path="/add">
             <Button
@@ -603,7 +626,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
         </AuthBtn>
       </div>
       <AuthBtn path={'/query'}>
-        <div className="form-inline pt20">
+        <div ref={searchForm} className="form-inline pt20">
           <NgFormSearch
             defaultValues={formDefaultValue}
             searchCols={setSearchCols(categories)}
@@ -615,7 +638,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
         </div>
       </AuthBtn>
       {dataSource.length > 0 && (
-        <div className={'operationTopWrap'}>
+        <div ref={operationDiv} className={'operationTopWrap'}>
           <Space size={20}>
             <AuthBtn path="/export">
               <Button type="primary" shape={'round'} ghost onClick={() => handleExport()}>
@@ -688,7 +711,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
         rowSelection={{ ...rowSelection, hideSelectAll }}
         pagination={pagination}
         paginationChange={paginationChange}
-      ></NgTable>
+        scroll={{ y: tableHeight }}
+      />
 
       {/* 列表数据 end */}
       {/* 批量新增 */}

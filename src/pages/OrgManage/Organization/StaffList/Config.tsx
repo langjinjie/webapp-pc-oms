@@ -179,18 +179,20 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
                 查看
               </span>
             </AuthBtn>
-            <AuthBtn path="/operateStaff">
-              <Popconfirm
-                title={'确认' + (row.status === 1 ? '停用' : row.status === 2 ? '启用' : '激活') + '该账号吗'}
-                visible={popconfirmVisible === row.staffId}
-                onConfirm={async () => popOnconfirmHandle(row)}
-                onCancel={() => setPopconfirmVisible('')}
-              >
-                <span key={row.staffId} className={classNames(style.edit)} onClick={() => clickCurrentRowHandle(row)}>
-                  {accountStatusEdit2Name[row.status]}
-                </span>
-              </Popconfirm>
-            </AuthBtn>
+            {(row.isDeleted === 1 && row.status === 2) || (
+              <AuthBtn path="/operateStaff">
+                <Popconfirm
+                  title={'确认' + (row.status === 1 ? '停用' : row.status === 2 ? '启用' : '激活') + '该账号吗'}
+                  visible={popconfirmVisible === row.staffId}
+                  onConfirm={async () => popOnconfirmHandle(row)}
+                  onCancel={() => setPopconfirmVisible('')}
+                >
+                  <span key={row.staffId} className={classNames(style.edit)} onClick={() => clickCurrentRowHandle(row)}>
+                    {accountStatusEdit2Name[row.status]}
+                  </span>
+                </Popconfirm>
+              </AuthBtn>
+            )}
           </span>
         );
       }
