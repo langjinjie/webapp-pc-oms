@@ -42,12 +42,8 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     setNodeTypeOptions(res || []);
   };
 
-  const onFieldsChange = (changedValues: any, values: any) => {
-    console.log(values);
-    setTimeout(() => {
-      const res = blockForm.getFieldsValue();
-      setFormValues(res);
-    }, 500);
+  const onFieldsChange = (values: any) => {
+    setFormValues(values);
   };
   // 预览内容
   const [previewValue, setPreviewVale] = useState<any>({});
@@ -72,12 +68,15 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
           options: []
         };
         item.date = moment(item.date, 'MMDD') || undefined;
+        // 利用es6 Map 过滤掉重复的数据
+        const optionsMap = new Map();
         item?.nodeRuleList.map((child: any) => {
-          nodeDetails[index].options.push({ nodeRuleId: child.nodeRuleId, nodeRuleName: child.nodeRuleName });
+          optionsMap.set(child.nodeRuleId, { nodeRuleId: child.nodeRuleId, nodeRuleName: child.nodeRuleName });
           child.pushTime = moment(child.pushTime, 'HH:mm') || undefined;
-
           return child;
         });
+
+        nodeDetails[index].options = Array.from(optionsMap.values());
         return item;
       });
       setNodeDetails(nodeDetails);
@@ -136,10 +135,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     },
     300
   );
-
-  // const onFocusNodeSelect = async (index: number) => {
-  //   await getNodeOptions({ nodeTypeCode: formValues?.sceneList[index].nodeTypeCode, nodeName: '' }, index);
-  // };
 
   // 节点类别改变
   const onNodeTypeChange = (typeCode: NodeCodeType, index: number) => {

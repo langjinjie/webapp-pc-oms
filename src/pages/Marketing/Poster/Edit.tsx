@@ -133,7 +133,13 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   };
   return (
     <div className={styles.pa20}>
-      <Form labelCol={{ span: 3 }} wrapperCol={{ span: 8 }} form={myForm} onFinish={onSubmit}>
+      <Form
+        labelCol={{ span: 3 }}
+        initialValues={{ isSet: 0 }}
+        wrapperCol={{ span: 8 }}
+        form={myForm}
+        onFinish={onSubmit}
+      >
         <Form.Item label="海报名称" name="name" rules={[{ required: true }, { max: 60, message: '最多60个字符' }]}>
           <Input type="text" placeholder="请输入" />
         </Form.Item>

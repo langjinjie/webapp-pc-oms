@@ -1,0 +1,103 @@
+.modalWrap {
+  width: 808px !important;
+  :global {
+    .ant-input-affix-wrapper,
+    .ant-picker {
+      border-radius: 18px !important;
+    }
+    .ant-pagination {
+      justify-content: center;
+    }
+  }
+}
+.wrap {
+  display: flex;
+  width: 760px;
+  height: 498px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e6e7eb;
+  .contentNum {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: #606366;
+  }
+}
+.treeWrap {
+  width: 380px;
+  padding: 20px;
+  border-right: 1px solid #e6e7eb;
+}
+.title {
+  height: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111111;
+  line-height: 20px;
+}
+.treeContent {
+  margin-top: 20px;
+  height: 418px;
+  overflow: auto;
+  :global {
+    // 兼容超长部门的情况
+    .ant-tree-node-content-wrapper {
+      .ant-tree-title {
+        display: inline-block;
+        white-space: nowrap;
+      }
+    }
+    .ant-tree-checkbox {
+      margin-left: 10px;
+      order: 1;
+    }
+  }
+}
+.seleectWrap {
+  width: 380px;
+  padding: 20px;
+}
+.seleectTitle {
+  height: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111111;
+  line-height: 20px;
+  .boldText {
+    color: #f25555;
+  }
+}
+.viewSpeech {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: #318cf5;
+  cursor: pointer;
+}
+.speechWrap {
+  margin-bottom: 30px;
+  width: 760px;
+  padding: 20px 20px 0;
+  background: #f7f8fc;
+  border-radius: 8px;
+}
+.list {
+  margin-top: 12px;
+  padding: 20px;
+  background: #f7f8fc;
+  .tag {
+    background: #eaf3fe;
+    border-radius: 8px;
+    color: #318cf5;
+    overflow: hidden;
+  }
+}
+.tips {
+  margin-top: 20px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #999aa1;
+  line-height: 20px;
+}

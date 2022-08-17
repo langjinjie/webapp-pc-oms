@@ -19,7 +19,8 @@ import './style.less';
 import { Layout, message } from 'antd';
 
 const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
-  const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList, setBtnList } = useContext(Context);
+  const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList, setBtnList, setBeforePath } =
+    useContext(Context);
   const [isCollapse, setIsCollapse] = useState<boolean>(false);
   const [subMenus, setSubMenus] = useState<MenuItem[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
@@ -105,6 +106,9 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   useEffect(() => {
     menuList.length > 0 && initMenu();
+    return () => {
+      setBeforePath(location.pathname);
+    };
   }, [location]);
   useEffect(() => {
     if (document?.documentElement || document?.body) {

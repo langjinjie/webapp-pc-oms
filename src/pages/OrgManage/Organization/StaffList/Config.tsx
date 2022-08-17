@@ -46,9 +46,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
   };
   // 点击单行操作
   const clickCurrentRowHandle = (row: any) => {
-    // 停用操作不可逆
-    if (row.status === 2) return;
-    setOpType(row.status === 4 ? 1 : 0);
+    setOpType(row.status === 4 || row.status === 2 ? 1 : 0);
     setPopconfirmVisible(row.staffId);
   };
   // 查看
@@ -181,22 +179,20 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
                 查看
               </span>
             </AuthBtn>
-            <AuthBtn path="/operateStaff">
-              <Popconfirm
-                title={'确认' + (row.status === 1 ? '停用' : '激活') + '该账号吗'}
-                visible={popconfirmVisible === row.staffId}
-                onConfirm={async () => popOnconfirmHandle(row)}
-                onCancel={() => setPopconfirmVisible('')}
-              >
-                <span
-                  key={row.staffId}
-                  className={classNames(style.edit, { [style.disabled]: row.status === 2 })}
-                  onClick={() => clickCurrentRowHandle(row)}
+            {(row.isDeleted === 1 && row.status === 2) || (
+              <AuthBtn path="/operateStaff">
+                <Popconfirm
+                  title={'确认' + (row.status === 1 ? '停用' : row.status === 2 ? '启用' : '激活') + '该账号吗'}
+                  visible={popconfirmVisible === row.staffId}
+                  onConfirm={async () => popOnconfirmHandle(row)}
+                  onCancel={() => setPopconfirmVisible('')}
                 >
-                  {accountStatusEdit2Name[row.status]}
-                </span>
-              </Popconfirm>
-            </AuthBtn>
+                  <span key={row.staffId} className={classNames(style.edit)} onClick={() => clickCurrentRowHandle(row)}>
+                    {accountStatusEdit2Name[row.status]}
+                  </span>
+                </Popconfirm>
+              </AuthBtn>
+            )}
           </span>
         );
       }

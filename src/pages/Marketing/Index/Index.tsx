@@ -92,7 +92,7 @@ const MarketIndex: React.FC = () => {
             return news;
           })
         );
-        setArticleList(newsList);
+        setArticleList(() => newsList.filter((item: any) => item.articleId));
         // 数组自动补全
         const spliceIndex: number = newsList.length;
         newsList = newsList.concat(defaultArticleList.splice(spliceIndex, 3));
@@ -111,7 +111,7 @@ const MarketIndex: React.FC = () => {
           })
         );
         // 数组自动补全
-        setProductList(() => productTypeList);
+        setProductList(() => productTypeList.filter((item: any) => item.productId));
         const spliceIndex: number = productTypeList.length;
         productTypeList = productTypeList.concat(defaultProductList.splice(spliceIndex, 3));
       } else {
@@ -129,7 +129,7 @@ const MarketIndex: React.FC = () => {
           })
         );
         // 数组自动补全
-        setPosterList(() => posterList);
+        setPosterList(() => posterList.filter((item: any) => item.posterId));
         const spliceIndex: number = posterList.length;
         posterList = posterList.concat(defaultPosterList.splice(spliceIndex, 3));
       } else {
@@ -148,7 +148,7 @@ const MarketIndex: React.FC = () => {
           })
         );
         // 数组自动补全
-        setActivityList(() => activityList);
+        setActivityList(() => activityList.filter((item: any) => item.activityId));
         const spliceIndex: number = activityList.length;
         activityList = activityList.concat(defaultActivityList.splice(spliceIndex, 3));
       } else {
@@ -212,7 +212,7 @@ const MarketIndex: React.FC = () => {
         });
         setFormData((formData) => ({
           ...formData,
-          productTypeList: oldSelectedList.filter((item: any) => item.productId)
+          productTypeList: oldSelectedList
         }));
       } else {
         const oldSelectedList = [...formData.productTypeList];
@@ -243,7 +243,7 @@ const MarketIndex: React.FC = () => {
         });
         setFormData((formData: any) => ({
           ...formData,
-          posterList: oldSelectedList.filter((item: any) => item.posterId)
+          posterList: oldSelectedList
         }));
       } else {
         const oldSelectedList = [...formData.posterList];
@@ -274,7 +274,7 @@ const MarketIndex: React.FC = () => {
         });
         setFormData((formData: any) => ({
           ...formData,
-          activityList: oldSelectedList.filter((item: any) => item.activityId)
+          activityList: oldSelectedList
         }));
       } else {
         const oldSelectedList = [...formData.activityList];
@@ -294,6 +294,7 @@ const MarketIndex: React.FC = () => {
     setFetching(true);
     const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
+      type: 1,
       recommendType: marketType
     });
     if (marketType === 0) {

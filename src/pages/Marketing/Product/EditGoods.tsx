@@ -366,6 +366,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         className={style.productFrom}
         name="validate_other"
         onFinish={onFinish}
+        initialValues={{ isSet: 0 }}
         scrollToFirstError
         onValuesChange={(_, values) => {
           onFormValuesChange(values);

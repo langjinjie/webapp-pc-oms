@@ -129,6 +129,8 @@ export interface ICatalogItem {
   onlineContentNum: number;
   contentNum: number;
   groupId?: string;
+  fullCatalogId: string;
+  fullName: string;
 }
 
 // 添加/编辑目录参数

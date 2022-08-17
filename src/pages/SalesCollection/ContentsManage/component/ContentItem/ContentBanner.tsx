@@ -1,11 +1,10 @@
 import React, { MouseEvent, useContext, useEffect, useState } from 'react';
-import { AuthBtn, Icon } from 'src/components/index';
+import { AuthBtn, Icon } from 'src/components';
 import { ICatalogItem, IEditOrAddCatalogParam, IFirmModalParam } from 'src/utils/interface';
 import { getCategoryList, requestSaveSortCatalog, requestDeleteCatalog } from 'src/apis/salesCollection';
 import { useHistory } from 'react-router';
 import { catalogLastLeve } from 'src/utils/commonData';
 import { Context } from 'src/store';
-
 import classNames from 'classnames';
 import style from './style.module.less';
 import { Button, message } from 'antd';
@@ -24,6 +23,10 @@ interface IContentBannerProps {
   setEditOrAddLastCatalogParam: (param: IEditOrAddCatalogParam) => void;
   setParentChildrenList: (param: ICatalogItem[]) => void;
   parentCatalog?: any;
+  setSyncSpeechVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setSyncSpeechTitle: React.Dispatch<React.SetStateAction<string>>;
+  setSyncSpeechCatalog: React.Dispatch<React.SetStateAction<ICatalogItem | undefined>>;
+  setOnOk?: any;
 }
 
 const ContentBanner: React.FC<IContentBannerProps> = ({
@@ -38,11 +41,16 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
   setFirmModalParam,
   setEditOrAddLastCatalogParam,
   setParentChildrenList,
-  parentCatalog
+  parentCatalog,
+  setSyncSpeechVisible,
+  setSyncSpeechTitle,
+  setSyncSpeechCatalog,
+  setOnOk
 }) => {
   const { currentCorpId: corpId } = useContext(Context);
   const [childrenList, setChildrenList] = useState<ICatalogItem[]>([]);
   const [currentContent, setCurrentContent] = useState('');
+  const [sync, setSync] = useState(false);
   const history = useHistory();
 
   // 获取当前目录的子目录
@@ -227,13 +235,26 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       history.push(`/speechManage/edit?catalog=${res.join(',')}`);
     }
   };
+  // 同步话术
+  const syncSpeechHandle = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOnOk?.(() => () => {
+      getParentChildrenList();
+      getCurrentChildrenList();
+      setSync(true);
+    });
+    setSyncSpeechTitle(catalog.lastLevel ? '同步话术' : '同步目录');
+    setSyncSpeechVisible(true);
+    setSyncSpeechCatalog(catalog);
+  };
   return (
     <>
       <div
         className={classNames(
           style.bannerWrap,
           { [style.isChildrenContents]: !!catalog.level },
-          { [style.isLastContents]: !!catalog.lastLevel }
+          { [style.isLastContents]: !!catalog.lastLevel },
+          { [style.sync]: sync }
         )}
         onClick={contentsClickHandle}
       >
@@ -246,7 +267,7 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
         )}
         <div className={classNames(style.name, { [style.empty]: !catalog.onlineContentNum })}>{catalog.name}</div>
         <div
-          className={classNames(style.info, { [style.empty]: !catalog.onlineContentNum })}
+          className={classNames(style.info, { [style.empty]: !catalog.onlineContentNum }, { [style.sync]: sync })}
         >{`（上架${catalog.onlineContentNum}/全部${catalog.contentNum}）`}</div>
         <div className={style.edit}>
           {catalog.lastLevel === 1 && (
@@ -265,6 +286,10 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
               </AuthBtn>
             </>
           )}
+          <Button type="link" onClick={syncSpeechHandle}>
+            <Icon className={'svgIcon'} name="tongbu1" />
+            同步{catalog.lastLevel ? '话术' : '目录'}
+          </Button>
           <AuthBtn path="/edit">
             <Button type="link" onClick={editClickHandle}>
               <Icon className={'svgIcon'} name="bianji" />
@@ -317,6 +342,10 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
                   setFirmModalParam={setFirmModalParam}
                   setEditOrAddLastCatalogParam={setEditOrAddLastCatalogParam}
                   setParentChildrenList={setChildrenList}
+                  setSyncSpeechVisible={setSyncSpeechVisible}
+                  setSyncSpeechTitle={setSyncSpeechTitle}
+                  setSyncSpeechCatalog={setSyncSpeechCatalog}
+                  setOnOk={setOnOk}
                 />
               </div>
             ))}

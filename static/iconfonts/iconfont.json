@@ -6,6 +6,13 @@
   "description": "tenacity-pc A B端",
   "glyphs": [
     {
+      "icon_id": "31101479",
+      "name": "同步",
+      "font_class": "tongbu1",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
       "icon_id": "30518435",
       "name": "icon_导航_28_机器人(1)",
       "font_class": "a-icon_daohang_28_jiqiren1",

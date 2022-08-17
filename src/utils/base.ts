@@ -207,7 +207,7 @@ export const tree2Arry = (arr: any[]): any[] => {
  * @param {arr: array, parentId: number}
  * @return {obj: object}
  */
-export const arry2Tree = (arr: any[], parentId: string, idName = 'id'): any[] => {
+export const arry2Tree = (arr: any[], parentId: string, idName = 'id'): any => {
   const map = new Map(); // 生成map存储元素
   for (const item of arr) {
     if (!map.has(item[idName])) {

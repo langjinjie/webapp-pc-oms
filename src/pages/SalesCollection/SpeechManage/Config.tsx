@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 // import classNames from 'classnames';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { Button, Space, Tooltip } from 'antd';
+import { Button, Space, Tooltip, Modal, message } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { AuthBtn } from 'src/components';
+import { Context } from 'src/store';
+import { operateSpeechStatus } from 'src/apis/salesCollection';
+
 export const sensitiveOptions = [
   { id: 0, name: '未知' },
   { id: 1, name: '是' },
@@ -30,6 +33,11 @@ export const statusOptions = [
   { id: 0, name: '待上架' },
   { id: 1, name: '已上架' },
   { id: 2, name: '已下架' }
+];
+
+export const contentSourceList = [
+  { id: 1, name: '公有库' },
+  { id: 2, name: '私有库' }
 ];
 
 export const setSearchCols = (options: any[]): SearchCol[] => {
@@ -90,6 +98,13 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       label: '话术ID',
       width: '280px',
       placeholder: '请输入'
+    },
+    {
+      name: 'contenSource',
+      type: 'select',
+      width: 140,
+      label: '话术来源',
+      options: contentSourceList
     }
   ];
 };
@@ -102,6 +117,7 @@ interface OperateProps {
   pagination: any;
   formParams: any;
   isNew: boolean;
+  getList?: (pageNum?: number) => void;
 }
 export const genderTypeOptions = [
   { id: 1, name: '男性' },
@@ -117,6 +133,7 @@ export const ageTypeOptions = [
 export interface SpeechProps {
   sceneId: number; // 业务场景ID，1-车险流程，2-非车流程，3-异议处理，4-场景话术，5-问答知识，6-智能教练。
   contentId: string; // 话术id
+  contenSource: number; // 话术来源: 1-公有库 2-机构库
   fullName: string; // 来源
   contentType: number; // 话术类型：1-文本、2-长图、3-名片、4-小站、5-单图文、6-单语音、7-单视频、8-第三方链接、9-小程序链接、9-小程序
   content: string; // 话术内容
@@ -134,7 +151,9 @@ export interface SpeechProps {
   contentObj: SpeechProps;
 }
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
-  const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight } = args;
+  const { currentCorpId } = useContext(Context);
+
+  const { handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight, getList } = args;
   const {
     content = '',
     contentType = '',
@@ -144,6 +163,33 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
     updateEndTime = '',
     tip = ''
   } = formParams;
+  // 上下架
+  const operateSpeechStatusHandle = async (operateType: 1 | 2, row: SpeechProps) => {
+    Modal.confirm({
+      title: operateType === 1 ? '上架提醒' : '下架提醒',
+      content: operateType === 1 ? '确定上架当前话术吗？' : '确定下架当前话术？',
+      cancelText: '取消',
+      okText: '确定',
+      onOk: async () => {
+        const res = await operateSpeechStatus({
+          corpId: currentCorpId,
+          type: operateType,
+          list: [{ sceneId: row.sceneId, contentId: row.contentId }]
+        });
+        if (res) {
+          const { successNum, failNum } = res;
+          message.success(
+            failNum > 0
+              ? `已完成！操作成功${successNum}条，操作失败${failNum}条，敏感词检测异常和未知会导致上架失败！`
+              : '已完成！操作成功'
+          );
+          // 重新更新列表
+          getList?.();
+        }
+      }
+    });
+  };
+
   return [
     {
       title: '话术ID',
@@ -265,6 +311,14 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
       }
     },
     {
+      title: '话术来源',
+      dataIndex: 'contenSource',
+      width: 130,
+      render: (contenSource: number) => {
+        return <span>{contenSource === 1 ? '公有库' : '私有库'}</span>;
+      }
+    },
+    {
       title: '状态',
       dataIndex: 'status',
       width: 100,
@@ -296,10 +350,24 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
         return (
           <Space className="spaceWrap">
             <AuthBtn path="/edit">
-              <Button disabled={record.status === 1} type="link" onClick={() => handleEdit(record)}>
+              <Button
+                disabled={record.status === 1 || record.contenSource === 1}
+                type="link"
+                onClick={() => handleEdit(record)}
+              >
                 编辑
               </Button>
             </AuthBtn>
+            {[0, 2].includes(record.status) && (
+              <Button onClick={() => operateSpeechStatusHandle(1, record)} type="link">
+                上架
+              </Button>
+            )}
+            {record.status === 1 && (
+              <Button onClick={() => operateSpeechStatusHandle(2, record)} type="link">
+                下架
+              </Button>
+            )}
             <AuthBtn path="/sort">
               {(index !== 0 || (pagination.current === 1 && index !== 0) || pagination.current !== 1) && (
                 <Button

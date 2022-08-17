@@ -51,7 +51,9 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     editorHtml: '',
     editorHtmlChanged: '',
     recommendType: 0,
-    recommendList: []
+    recommendList: [],
+    isSet: 0,
+    syncFromMain: 0
   });
   const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
   const [fetching, setFetching] = useState(false);
@@ -219,7 +221,8 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       const res = await searchRecommendGoodsList({
         title: '',
         specType: 0,
-        recommendType: +e.target.value
+        recommendType: +e.target.value,
+        type: +e.target.value && undefined
       });
 
       setRecommendList(res || []);
@@ -236,6 +239,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
       specType: 0,
+      type: formData.recommendType || undefined,
       recommendType: formData.recommendType
     });
     const resList = [...formData.recommendList.filter((item) => item !== undefined), ...res];
@@ -443,134 +447,143 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         <Form.Item label="可见范围设置" name={'groupId'}>
           <SetUserRightFormItem form={form} />
         </Form.Item>
-        <Form.Item name={'recommendType'} label="推荐类型">
-          <Radio.Group onChange={onRecommendTypeChange}>
-            {recommendTypeList.map((item) => (
-              <Radio key={item.id} value={+item.id}>
-                {item.name}
-              </Radio>
-            ))}
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item
-          className={style.customerAddWrap}
-          required={recommendType !== 3}
-          labelCol={{ span: 3 }}
-          wrapperCol={{ span: 12 }}
-          label="推荐内容"
-        >
-          <Button className={style.btnDemo} type="link" onClick={() => setVisibleImage(true)}>
-            示例图
-          </Button>
-          <Form.Item
-            name={'recommendList'}
-            rules={[{ required: recommendType !== 3, message: '请选择推荐内容，或者将推荐类型设置为无' }]}
-          >
-            <Form.List name="recommendList">
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(({ key, name, ...restFiled }, index) => {
-                    return (
-                      <Form.Item key={key} required className={style.formListWrap} label={'素材' + (index + 1)}>
-                        {/* 缓存是否上下上下架数据 */}
-                        <Form.Item hidden name={[name, 'whetherDelete']}>
-                          <Input type="text" />
-                        </Form.Item>
-                        <Form.Item
-                          style={{ width: '400px' }}
-                          {...restFiled}
-                          name={[name, 'marketId']}
-                          rules={[
-                            { required: true, message: '请选择' },
-                            ({ getFieldValue }) => ({
-                              validator (_, value) {
-                                const itemValue = getFieldValue('recommendList')[index];
-                                if (!value || itemValue.whetherDelete !== 1) {
-                                  return Promise.resolve();
+        {formData.syncFromMain === 0 && (
+          <>
+            <Form.Item name={'recommendType'} label="推荐类型">
+              <Radio.Group onChange={onRecommendTypeChange}>
+                {recommendTypeList.map((item) => (
+                  <Radio key={item.id} value={+item.id}>
+                    {item.name}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item
+              className={style.customerAddWrap}
+              required={recommendType !== 3}
+              labelCol={{ span: 3 }}
+              wrapperCol={{ span: 12 }}
+              label="推荐内容"
+            >
+              <Button className={style.btnDemo} type="link" onClick={() => setVisibleImage(true)}>
+                示例图
+              </Button>
+              <Form.Item
+                name={'recommendList'}
+                rules={[{ required: recommendType !== 3, message: '请选择推荐内容，或者将推荐类型设置为无' }]}
+              >
+                <Form.List name="recommendList">
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map(({ key, name, ...restFiled }, index) => {
+                        return (
+                          <Form.Item key={key} required className={style.formListWrap} label={'素材' + (index + 1)}>
+                            {/* 缓存是否上下上下架数据 */}
+                            <Form.Item hidden name={[name, 'whetherDelete']}>
+                              <Input type="text" />
+                            </Form.Item>
+                            <Form.Item
+                              style={{ width: '400px' }}
+                              {...restFiled}
+                              name={[name, 'marketId']}
+                              rules={[
+                                { required: true, message: '请选择' },
+                                ({ getFieldValue }) => ({
+                                  validator (_, value) {
+                                    const itemValue = getFieldValue('recommendList')[index];
+                                    if (!value || itemValue.whetherDelete !== 1) {
+                                      return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('相关内容存在已下架/删除，请检查'));
+                                  }
+                                })
+                              ]}
+                            >
+                              <Select
+                                placeholder="搜索对应素材标题在下拉框进行选择"
+                                allowClear
+                                showSearch={true}
+                                defaultActiveFirstOption={false}
+                                showArrow={false}
+                                filterOption={false}
+                                notFoundContent={
+                                  fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>
                                 }
-                                return Promise.reject(new Error('相关内容存在已下架/删除，请检查'));
-                              }
-                            })
-                          ]}
-                        >
-                          <Select
-                            placeholder="搜索对应素材标题在下拉框进行选择"
-                            allowClear
-                            showSearch={true}
-                            defaultActiveFirstOption={false}
-                            showArrow={false}
-                            filterOption={false}
-                            notFoundContent={
-                              fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>
-                            }
-                            onChange={(value) => onRecommendSelected(value, index)}
-                            onSearch={debounceFetcher}
-                          >
-                            {recommendList.map((option) => (
-                              <Select.Option
-                                key={option.marketId}
-                                value={option.marketId}
-                                disabled={
-                                  formData?.recommendList?.filter((item: any) => item?.marketId === option.marketId)
-                                    .length > 0
-                                }
+                                onChange={(value) => onRecommendSelected(value, index)}
+                                onSearch={debounceFetcher}
                               >
-                                {option.title}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                        <Form.Item name={[name, 'otherData']} className={style.otherData}>
-                          <AreaTips />
-                        </Form.Item>
-                        {/* 当是商品时展示图片模块 */}
-                        {recommendType === 2 && (
-                          <Form.Item
-                            {...restFiled}
-                            rules={[{ required: true, message: '请上传推荐图片' }]}
-                            extra="为确保最佳展示效果，请上传 690*200像素高清图片，仅支持.jpg格式"
-                            name={[name, 'recommendImgUrl']}
-                          >
-                            <NgUpload
-                              disabled={isUploadDisabled(index)}
-                              onChange={(url) => customerUploadChange(url, index)}
-                              beforeUpload={recommendPicBeforeUpload}
+                                {recommendList.map((option) => (
+                                  <Select.Option
+                                    key={option.marketId}
+                                    value={option.marketId}
+                                    disabled={
+                                      formData?.recommendList?.filter((item: any) => item?.marketId === option.marketId)
+                                        .length > 0
+                                    }
+                                  >
+                                    {option.title}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                            <Form.Item name={[name, 'otherData']} className={style.otherData}>
+                              <AreaTips />
+                            </Form.Item>
+                            {/* 当是商品时展示图片模块 */}
+                            {recommendType === 2 && (
+                              <Form.Item
+                                {...restFiled}
+                                rules={[{ required: true, message: '请上传推荐图片' }]}
+                                extra="为确保最佳展示效果，请上传 690*200像素高清图片，仅支持.jpg格式"
+                                name={[name, 'recommendImgUrl']}
+                              >
+                                <NgUpload
+                                  disabled={isUploadDisabled(index)}
+                                  onChange={(url) => customerUploadChange(url, index)}
+                                  beforeUpload={recommendPicBeforeUpload}
+                                />
+                              </Form.Item>
+                            )}
+                            <Icon
+                              className={style.removeBtn}
+                              name="cangpeitubiao_shanchu"
+                              onClick={() => remove(name)}
                             />
                           </Form.Item>
-                        )}
-                        <Icon className={style.removeBtn} name="cangpeitubiao_shanchu" onClick={() => remove(name)} />
-                      </Form.Item>
-                    );
-                  })}
-                  <Form.Item>
-                    {fields.length < 5 && (
-                      <Button
-                        className={style.addBtn}
-                        onClick={async () => {
-                          if (recommendType === 3) {
-                            return message.warning('请选择推荐类型后再进行添加');
-                          }
-                          if (recommendList.length < 5) {
-                            const res = await searchRecommendGoodsList({
-                              title: '',
-                              specType: 0,
-                              recommendType
-                            });
+                        );
+                      })}
+                      <Form.Item>
+                        {fields.length < 5 && (
+                          <Button
+                            className={style.addBtn}
+                            onClick={async () => {
+                              if (recommendType === 3) {
+                                return message.warning('请选择推荐类型后再进行添加');
+                              }
+                              if (recommendList.length < 5) {
+                                const res = await searchRecommendGoodsList({
+                                  title: '',
+                                  specType: 0,
+                                  recommendType,
+                                  type: +recommendType && undefined
+                                });
 
-                            setRecommendList([...res, ...recommendList] || []);
-                          }
-                          add();
-                        }}
-                      >
-                        <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" /> 添加
-                      </Button>
-                    )}
-                  </Form.Item>
-                </>
-              )}
-            </Form.List>
-          </Form.Item>
-        </Form.Item>
+                                setRecommendList([...res, ...recommendList] || []);
+                              }
+                              add();
+                            }}
+                          >
+                            <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" /> 添加
+                          </Button>
+                        )}
+                      </Form.Item>
+                    </>
+                  )}
+                </Form.List>
+              </Form.Item>
+            </Form.Item>
+          </>
+        )}
 
         <Form.Item wrapperCol={{ offset: 6 }}>
           <Button type="primary" shape="round" className={style.submitBtn} htmlType="submit" loading={isSubmitting}>

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useRef, MutableRefObject } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Space } from 'antd';
+import { useDidRecover } from 'react-router-cache-route';
 import { RouteComponentProps } from 'react-router';
 import {
   getSpeechList,
@@ -25,6 +26,7 @@ import { Context } from 'src/store';
 import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
 import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/SetUserRight';
+import { getQueryParam } from 'tenacity-tools';
 
 const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   useDocumentTitle('销售宝典-话术管理');
@@ -38,7 +40,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     tip: '',
     updateBeginTime: '',
     updateEndTime: '',
-    contentId: ''
+    contentId: '',
+    contenSource: ''
   });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -66,14 +69,20 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     checking: 0,
     checkTime: ''
   });
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentItem, setCurrentItem] = useState<SpeechProps>();
   const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
   const [isBatchSetRight, setIsBatchSetRight] = useState(false);
   const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
+  const [delBtnDisabled, setDelBtnDisabled] = useState(false);
+
+  const operationAddDiv: MutableRefObject<any> = useRef();
+  const searchForm: MutableRefObject<any> = useRef();
+  const operationDiv: MutableRefObject<any> = useRef();
 
   // 查询话术列表
   const getList = async (params?: any) => {
+    setLoading(true);
     // 清空选中的列表
     setSelectRowKeys([]);
     // 重置当前操作状态
@@ -89,6 +98,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     setDataSource(list || []);
     setIsNew(true);
     setPagination((pagination) => ({ ...pagination, total: total || 0 }));
+    setLoading(false);
   };
 
   const onValuesChange = (changeValues: any, values: any) => {
@@ -100,7 +110,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       sensitive = '',
       status = '',
       times = undefined,
-      tip = ''
+      tip = '',
+      contenSource
     } = values;
     let updateBeginTime = '';
     let updateEndTime = '';
@@ -112,6 +123,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     if (catalogIds) {
       catalogId = catalogIds[catalogIds.length - 1];
     }
+    setFormDefaultValue({ catalogIds });
+
     setFormParams((formParams) => ({
       ...formParams,
       catalogId,
@@ -121,7 +134,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       status,
       tip,
       updateBeginTime,
-      updateEndTime
+      updateEndTime,
+      contenSource
     }));
   };
   // 点击查询按钮
@@ -136,7 +150,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       status = '',
       times = undefined,
       tip = '',
-      contentId = ''
+      contentId = '',
+      contenSource
     } = values;
     let updateBeginTime = '';
     let updateEndTime = '';
@@ -162,7 +177,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       tip,
       updateBeginTime,
       updateEndTime,
-      contentId
+      contentId,
+      contenSource
     }));
     await getList({
       pageNum: 1,
@@ -175,7 +191,39 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       updateBeginTime,
       updateEndTime,
       sceneId,
-      contentId
+      contentId,
+      contenSource
+    });
+  };
+
+  // 重置
+  const onResetHandle = () => {
+    setFormDefaultValue({ catalogIds: [] });
+    setFormParams({
+      catalogId: '',
+      content: '',
+      contentType: '',
+      sensitive: '',
+      status: '',
+      tip: '',
+      updateBeginTime: '',
+      updateEndTime: '',
+      contentId: '',
+      contenSource: ''
+    });
+    getList({
+      pageNum: 1,
+      catalogId: '',
+      content: '',
+      contentType: '',
+      sensitive: '',
+      status: '',
+      tip: '',
+      updateBeginTime: '',
+      updateEndTime: '',
+      sceneId: '',
+      contentId: '',
+      contenSource: ''
     });
   };
 
@@ -205,7 +253,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     const { catalog } = URLSearchParams(location.search) as { [key: string]: string };
     if (catalog) {
       const catalogs = catalog.split(',');
-      setFormDefaultValue((formDefaultValue) => ({ ...formDefaultValue, catalogIds: catalogs }));
+      setFormDefaultValue(() => ({ catalogIds: catalogs }));
       const tree = JSON.parse(localStorage.getItem('catalogTree') || '[]') as any[];
       const res = await getCategory();
       const copyData = [...res];
@@ -218,6 +266,14 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       const catalogId = catalogs[catalogs.length - 1];
       getList({
         sceneId: tree[0].sceneId,
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: '',
+        contentId: '',
         catalogId
       });
       setLastCategory({
@@ -225,18 +281,77 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
         catalogId,
         lastLevel: 1
       });
-      setFormParams((formParams) => ({ ...formParams, catalogId }));
+      setFormParams({
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: '',
+        contentId: '',
+        contenSource: '',
+        catalogId
+      });
     } else {
       const res = await getCategory();
       setCategories(res);
-      getList();
+      getList({
+        catalogId: '',
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: '',
+        contentId: ''
+      });
+      setFormParams({
+        catalogId: '',
+        content: '',
+        contentType: '',
+        sensitive: '',
+        status: '',
+        tip: '',
+        updateBeginTime: '',
+        updateEndTime: '',
+        contentId: '',
+        contenSource: ''
+      });
     }
   };
+
+  // 计算table高度
+  const tableHeight: any = useMemo(() => {
+    return (
+      window.innerHeight -
+      80 -
+      48 -
+      ((operationAddDiv.current?.offsetHeight || 0) +
+        (searchForm.current?.offsetHeight || 0) +
+        (operationDiv.current?.offsetHeight || 0) +
+        88 +
+        55)
+    );
+  }, [operationAddDiv.current, searchForm, operationDiv.current]);
+
   useEffect(() => {
     initSetFormQuery();
     getSensitiveCheckedInfo();
   }, []);
-
+  useDidRecover(() => {
+    // 回写form
+    setFormDefaultValue(({ catalogIds }) => ({ catalogIds, ...formParams }));
+    if (getQueryParam().refresh === 'true') {
+      getList({ ...formParams });
+    }
+    // 从目录查看话术
+    if (location.search.includes('catalog=')) {
+      initSetFormQuery();
+      getSensitiveCheckedInfo();
+    }
+  }, []);
   // 分页改变
   const paginationChange = (pageNum: number, pageSize?: number) => {
     setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize: pageSize || pagination.pageSize }));
@@ -245,7 +360,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   const isDisabled = (currentType: number | null, status: number) => {
     let _isDisabled = false;
-
+    // return;
     if (currentType !== null && currentType !== status) {
       _isDisabled = true;
     }
@@ -256,6 +371,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     setSelectRowKeys(selectedRowKeys);
     setSelectedRows(selectedRows);
     const current = selectedRows[0];
+    setDelBtnDisabled(current?.contenSource === 1);
     if (current) {
       setCurrentType(current.status);
     } else {
@@ -405,7 +521,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     setCategories([...categories]);
   };
   const onCascaderChange = (value: any, selectedOptions: any) => {
-    const lastSelectedOptions = selectedOptions[selectedOptions.length - 1] || {};
+    const lastSelectedOptions = selectedOptions?.[selectedOptions.length - 1] || {};
     setLastCategory(lastSelectedOptions);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     let params = {};
@@ -481,7 +597,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
   return (
     <div className="container">
-      <div className="flex justify-between">
+      <div ref={operationAddDiv} className="flex justify-between">
         <Space size={20}>
           <AuthBtn path="/add">
             <Button
@@ -539,8 +655,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
           </Button>
         </AuthBtn>
       </div>
-      <AuthBtn path="/query">
-        <div className="form-inline pt20">
+      <AuthBtn path={'/query'}>
+        <div ref={searchForm} className="form-inline pt20">
           <NgFormSearch
             defaultValues={formDefaultValue}
             searchCols={setSearchCols(categories)}
@@ -548,23 +664,12 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
             onSearch={onSearch}
             onChangeOfCascader={onCascaderChange}
             onValuesChange={onValuesChange}
+            onReset={onResetHandle}
           />
         </div>
       </AuthBtn>
-
-      <NgTable
-        dataSource={dataSource}
-        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight })}
-        setRowKey={(record: SpeechProps) => {
-          return record.contentId;
-        }}
-        loading={loading}
-        rowSelection={{ ...rowSelection, hideSelectAll }}
-        pagination={pagination}
-        paginationChange={paginationChange}
-      ></NgTable>
       {dataSource.length > 0 && (
-        <div className={'operationWrap'}>
+        <div ref={operationDiv} className={'operationTopWrap'}>
           <Space size={20}>
             <AuthBtn path="/export">
               <Button type="primary" shape={'round'} ghost onClick={() => handleExport()}>
@@ -607,7 +712,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
                 type="primary"
                 shape={'round'}
                 ghost
-                disabled={currentType === 1 || selectedRowKeys.length === 0}
+                disabled={delBtnDisabled || selectedRowKeys.length === 0}
                 onClick={() => operateStatus(3)}
               >
                 删除
@@ -627,6 +732,19 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
           </Space>
         </div>
       )}
+      <NgTable
+        dataSource={dataSource}
+        columns={columns({ handleEdit, handleSort, lastCategory, pagination, formParams, isNew, setRight, getList })}
+        setRowKey={(record: SpeechProps) => {
+          return record.contentId;
+        }}
+        loading={loading}
+        rowSelection={{ ...rowSelection, hideSelectAll }}
+        pagination={pagination}
+        paginationChange={paginationChange}
+        scroll={{ y: tableHeight }}
+      />
+
       {/* 列表数据 end */}
       {/* 批量新增 */}
       <ExportModal
