@@ -153,7 +153,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       const promiseList = [1, 2, 3, 4, 5].map((sceneId) => requestGetSmartCatalogTree({ sceneId, queryMain: 1 }));
       const res = await Promise.all(promiseList);
       if (res) {
-        const categories = res.map((mapItem: any, index) => ({ ...mapItem.value, sceneId: index + 1 }));
+        const categories = res.map((mapItem: any, index) => ({ ...mapItem, sceneId: index + 1 }));
         // 匹配主机构是否有相同名称的目录
         const flatList = tree2Arry([categories[value.sceneId - 1]]);
         const content = flatList.find((findItem) => findItem.fullName === value.fullName);
