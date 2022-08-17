@@ -66,6 +66,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     setFormDefaultValue({ catalogIds: [] });
     setPagination({ current: 1, pageSize: 5, total: 0 });
     setDataSource([]);
+    setAllCheckedNodes([]);
     setFormParams({
       catalogId: '',
       content: '',
