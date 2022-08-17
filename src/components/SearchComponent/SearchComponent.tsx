@@ -13,7 +13,7 @@ export interface OptionProps {
   [prop: string]: any;
 }
 export interface SearchCol {
-  type: 'input' | 'select' | 'date' | 'rangePicker' | 'cascader';
+  type: 'input' | 'select' | 'date' | 'rangePicker' | 'cascader' | 'custom';
   name: string;
   label: string;
   width?: number | string;
@@ -23,7 +23,7 @@ export interface SearchCol {
   cascaderOptions?: any[];
   selectNameKey?: string;
   selectValueKey?: string;
-
+  customNode?: React.ReactNode;
   fieldNames?: {
     label: string;
     value: string;
@@ -169,6 +169,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     onChange={onChange}
                   />
                 </Form.Item>
+              )) ||
+              (col.type === 'custom' && (
+                <Form.Item key={col.name} label={col.label} name={col.name}>
+                  {col.customNode}
+                </Form.Item>
               ))
             );
           })}
@@ -223,6 +228,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <RangePicker format="YYYY-MM-DD" />
                   </Form.Item>
+                )) ||
+                (col.type === 'custom' && (
+                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                    {col.customNode}
+                  </Form.Item>
                 ))
               );
             })}
@@ -253,6 +263,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 (col.type === 'rangePicker' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <RangePicker format="YYYY-MM-DD" />
+                  </Form.Item>
+                )) ||
+                (col.type === 'custom' && (
+                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                    {col.customNode}
                   </Form.Item>
                 ))
               );
