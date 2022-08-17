@@ -25,8 +25,6 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
   });
 
   const getGroupDetail = async () => {
-    console.log('aaaa', typeof value);
-
     if (!value) {
       return form.setFieldsValue({
         groupType: 1,
