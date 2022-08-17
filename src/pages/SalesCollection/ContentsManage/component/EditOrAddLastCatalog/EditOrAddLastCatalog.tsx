@@ -221,7 +221,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
         loading: btnIsLoading
       }}
     >
-      <Form form={form} onValuesChange={() => setSubmitDisabled(false)}>
+      <Form form={form} onValuesChange={() => setSubmitDisabled(false)} initialValues={{ isSet: 0 }}>
         <Form.Item
           className={style.modalContentFormItem}
           label="目录名称:"
