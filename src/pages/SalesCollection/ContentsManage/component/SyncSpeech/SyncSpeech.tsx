@@ -223,6 +223,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       sensitive,
       status,
       tip,
+      contentId,
       updateBeginTime,
       updateEndTime,
       sceneId
