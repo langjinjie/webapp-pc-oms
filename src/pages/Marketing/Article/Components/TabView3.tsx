@@ -406,7 +406,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
           validateStatus="error"
           help={!formData.editorHtmlChanged && !formData.editorHtml ? '请输入文章内容' : ''}
         >
-          <NgEditor initialValue={formData.editorHtml} handleEditorChange={changeEditorHtml} />
+          <NgEditor value={formData.editorHtml} onChange={changeEditorHtml} />
         </Form.Item>
         <Form.Item
           label="选择分类"

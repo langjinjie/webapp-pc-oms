@@ -4,8 +4,10 @@ import { message } from 'antd';
 
 import { uploadImage2 } from 'src/apis/marketing';
 interface EditorProps {
-  initialValue: string;
-  handleEditorChange: (editor: any) => void;
+  // initialValue?: string;
+  // handleEditorChange?: (editor: any) => void;
+  value?: string;
+  onChange?: (content: string) => void;
 }
 // @ts-ignore
 function imageUploadHandler (blobInfo, success, failure, progress) {
@@ -86,12 +88,10 @@ function filePickerCallback (callback, value, meta) {
 
 const TinyEidtor: React.FC<EditorProps> = (props) => {
   const editorRef = useRef(null);
+  const { onChange, value } = props;
 
   const handleEditorChange = (editor: any): void => {
-    // @ts-ignore
-
-    // @ts-ignore
-    props.handleEditorChange(editor.getContent());
+    onChange?.(editor.getContent());
   };
   return (
     <>
@@ -103,7 +103,7 @@ const TinyEidtor: React.FC<EditorProps> = (props) => {
         }
         // @ts-ignore
         onInit={(evt, editor) => (editorRef.current = editor)}
-        initialValue={props.initialValue}
+        initialValue={value}
         init={{
           height: 600,
           min_height: 400,

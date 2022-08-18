@@ -35,6 +35,11 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/taskScene/detail',
     component: lazy(() => import('src/pages/Task/SceneTask/Detail/Detail'))
+  },
+  // 热门专题配置
+  {
+    path: '/marketingHot/edit',
+    component: lazy(() => import('src/pages/Marketing/HotSpecial/Edit/Edit'))
   }
 ];
 
@@ -80,6 +85,15 @@ export const routes: RouteProps[] = [
     path: '/marketingPoster/edit',
     component: lazy(() => import('src/pages/Marketing/Poster/Edit'))
   },
+  {
+    path: '/marketingHot',
+    component: lazy(() => import('src/pages/Marketing/HotSpecial/List'))
+  },
+  {
+    path: '/marketingMoment',
+    component: lazy(() => import('src/pages/Marketing/Moment/List'))
+  },
+
   // 首页配置
   {
     path: '/marketingIndex',

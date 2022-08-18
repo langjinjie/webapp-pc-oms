@@ -42,7 +42,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     setNodeTypeOptions(res || []);
   };
 
-  const onFieldsChange = (values: any) => {
+  const onFieldsChange = (changeValue: any, values: any) => {
     setFormValues(values);
   };
   // 预览内容
@@ -116,7 +116,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     if (params.nodeTypeCode !== 'node_calendar') {
       res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
     } else {
-      const date = formValues?.sceneList?.[index]?.date.format('MMDD');
+      const date = formValues?.sceneList?.[index]?.date?.format('MMDD');
       res = await getDateNodeList({ type: 2, date, nodeDesc: params.nodeName });
     }
     if (res) {
@@ -212,8 +212,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
         type: 2,
         date: value.format('MMDD')
       });
+
       const { list } = res;
-      nodeOptions[index] = list;
+      const copyNodeOptions = [...nodeOptions];
+      copyNodeOptions[index] = list;
+      setNodeOptions(copyNodeOptions);
     }
   };
 
@@ -305,7 +308,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                           ))}
                         </Select>
                       </Form.Item>
-
                       {formValues?.sceneList?.[index]?.nodeTypeCode === 'node_calendar'
                         ? (
                         <>

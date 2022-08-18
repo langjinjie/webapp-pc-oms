@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { createNodeRule, getNodeList, searchTagList } from 'src/apis/task';
 import { NgModal } from 'src/components';
+import { debounce } from 'src/utils/base';
 import { NodeCodeType, NodeType, TagInterface } from 'src/utils/interface';
 import { useResetFormOnCloseModal } from 'src/utils/use-ResetFormOnCloseModal';
 import styles from './style.module.less';
@@ -145,6 +146,10 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
         console.error(err);
       });
   };
+
+  const debounceFetchNodeOptions = debounce<{ value: string }>(({ value }: { value: string }) => {
+    getNodeOptions({ nodeTypeCode: currentNodeType, nodeName: value });
+  }, 300);
   return (
     <NgModal {...props} width={780} title="新建节点规则" onOk={onConfirm}>
       <Form
@@ -182,7 +187,15 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
               name={'nodeId'}
               rules={[{ required: true, message: '请选择触发节点' }]}
             >
-              <Select className="width320" placeholder="请选择触发节点" onChange={nodeChange}>
+              <Select
+                className="width320"
+                placeholder="请选择触发节点"
+                onSearch={(value) => debounceFetchNodeOptions({ value })}
+                showSearch
+                allowClear
+                filterOption={false}
+                onChange={nodeChange}
+              >
                 {nodeOptions.map((option: any) => (
                   <Select.Option value={option.nodeId} key={option.nodeId}>
                     {option.nodeName}
@@ -237,7 +250,15 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
               name={'nodeId'}
               rules={[{ required: true, message: '请选择' }]}
             >
-              <Select className="width320" placeholder="请选择触发节点" onChange={nodeChange}>
+              <Select
+                className="width320"
+                onSearch={(value) => debounceFetchNodeOptions({ value })}
+                showSearch
+                allowClear
+                filterOption={false}
+                placeholder="请选择触发节点"
+                onChange={nodeChange}
+              >
                 {nodeOptions.map((option: any) => (
                   <Select.Option value={option.nodeId} key={option.nodeId}>
                     {option.nodeName}
@@ -362,7 +383,15 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
               name={'nodeId'}
               rules={[{ required: true, message: '请选择触发节点' }]}
             >
-              <Select className="width320" placeholder="请选择触发节点" onChange={nodeChange}>
+              <Select
+                className="width320"
+                placeholder="请选择触发节点"
+                onSearch={(value) => debounceFetchNodeOptions({ value })}
+                showSearch
+                allowClear
+                filterOption={false}
+                onChange={nodeChange}
+              >
                 {nodeOptions.map((option: any) => (
                   <Select.Option value={option.nodeId} key={option.nodeId}>
                     {option.nodeName}
