@@ -110,6 +110,14 @@ ul {
 }
 .font(12);
 
+.pa(@i) when(@i<=40) {
+  .pa@{i} {
+    padding: @i + 0px;
+  }
+  .pa((@i + 5));
+}
+.pa(5);
+
 .ph(@i) when(@i<=40) {
   .ph@{i} {
     padding-left: @i + 0px;

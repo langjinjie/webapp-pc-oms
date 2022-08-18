@@ -4,6 +4,7 @@ import { Breadcrumb, Button, Divider, Form, Input, Radio, Select } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './style.module.less';
+import { MeatComponent } from '../components/MateComponent';
 
 const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history }) => {
   const [listForm] = Form.useForm();
@@ -47,7 +48,7 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history }) => {
                         <span>序号{index + 1}</span>
                         <span className="ml20">展示模版：</span>
                         <Form.Item>
-                          <Select placeholder="请选择">
+                          <Select placeholder="请选择" className={styles.tmpSelect}>
                             <Select.Option value={1}>海报</Select.Option>
                             <Select.Option value={2}>文章</Select.Option>
                           </Select>
@@ -58,16 +59,22 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history }) => {
                       </Button>
                     </div>
 
+                    <Form.Item>
+                      <MeatComponent type=""></MeatComponent>
+                    </Form.Item>
+
                     <Form.Item label="小贴士">
-                      <Form.Item>
-                        <Radio.Group>
-                          <Radio value={0}>无</Radio>
-                          <Radio value={1}>有</Radio>
-                        </Radio.Group>
-                      </Form.Item>
-                      <Form.Item>
-                        <Input></Input>
-                      </Form.Item>
+                      <div className={classNames(styles.lineWrap, 'flex')}>
+                        <Form.Item>
+                          <Radio.Group>
+                            <Radio value={0}>无</Radio>
+                            <Radio value={1}>有</Radio>
+                          </Radio.Group>
+                        </Form.Item>
+                        <Form.Item>
+                          <Input></Input>
+                        </Form.Item>
+                      </div>
                     </Form.Item>
                   </Form.Item>
                 ))}
