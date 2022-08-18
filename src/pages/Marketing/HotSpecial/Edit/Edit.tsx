@@ -1,14 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
-import { Breadcrumb, Button, Divider, Form, Input, Radio, Select, Space } from 'antd';
+import { Breadcrumb, Button, Divider, Form, Input, Radio, Select } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './style.module.less';
 
 const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history }) => {
+  const [listForm] = Form.useForm();
   const navigatorToList = () => {
     history.goBack();
   };
+  useEffect(() => {
+    listForm.setFieldsValue({
+      list: [{}]
+    });
+  }, []);
+
   return (
     <div className="edit container">
       <div className={'breadcrumbWrap'}>
@@ -27,22 +34,25 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history }) => {
         </h3>
         <Divider className={styles.divider} />
 
-        <Form>
+        <Form form={listForm}>
           <Form.List name={'list'}>
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ name, key, ...restFiled }, index) => (
                   <Form.Item key={key + name} className={styles.formBlock} {...restFiled}>
-                    <div className={classNames('flex justify-between', styles.lineWrap)}>
-                      <Space size={10}>
+                    <div
+                      className={classNames('flex justify-between align-center', styles.blockHeader, styles.lineWrap)}
+                    >
+                      <div className="flex align-center">
                         <span>序号{index + 1}</span>
-                        <Form.Item label="展示模板">
+                        <span className="ml20">展示模版：</span>
+                        <Form.Item>
                           <Select placeholder="请选择">
                             <Select.Option value={1}>海报</Select.Option>
                             <Select.Option value={2}>文章</Select.Option>
                           </Select>
                         </Form.Item>
-                      </Space>
+                      </div>
                       <Button type="primary" shape="round" ghost onClick={() => remove(index)}>
                         删除
                       </Button>
