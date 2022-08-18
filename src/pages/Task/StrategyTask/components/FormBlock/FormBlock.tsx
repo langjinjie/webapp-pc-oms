@@ -214,7 +214,9 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
       });
 
       const { list } = res;
-      nodeOptions[index] = list;
+      const copyNodeOptions = [...nodeOptions];
+      copyNodeOptions[index] = list;
+      setNodeOptions(copyNodeOptions);
     }
   };
 
@@ -306,8 +308,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                           ))}
                         </Select>
                       </Form.Item>
-                      <span> {console.log(formValues?.sceneList?.[index])}</span>
-
                       {formValues?.sceneList?.[index]?.nodeTypeCode === 'node_calendar'
                         ? (
                         <>
