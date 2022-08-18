@@ -153,7 +153,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
         loading: btnIsLoading
       }}
     >
-      <Form form={editForm} labelCol={{ span: 5 }}>
+      <Form form={editForm} labelCol={{ span: 5 }} initialValues={{ isSet: 0 }}>
         <Form.Item
           label="目录名称"
           name={'name'}
@@ -175,12 +175,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
         </Form.Item>
         {editOrAddCatalogParam?.catalog.level !== 0 && (
           <Form.Item label="可见范围设置" name={'groupId'}>
-            <SetUserRightFormItem
-              form={editForm}
-              onChange={(value: any) => {
-                console.log(value);
-              }}
-            />
+            <SetUserRightFormItem form={editForm} />
           </Form.Item>
         )}
         {((editOrAddCatalogParam?.catalog.sceneId === 4 && editOrAddCatalogParam?.catalog.level === 2) ||

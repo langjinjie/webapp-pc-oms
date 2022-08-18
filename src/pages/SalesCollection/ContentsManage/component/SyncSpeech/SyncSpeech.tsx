@@ -66,6 +66,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     setFormDefaultValue({ catalogIds: [] });
     setPagination({ current: 1, pageSize: 5, total: 0 });
     setDataSource([]);
+    setAllCheckedNodes([]);
     setFormParams({
       catalogId: '',
       content: '',
@@ -150,9 +151,9 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
     if (value?.lastLevel) {
       // 同步话术
       const promiseList = [1, 2, 3, 4, 5].map((sceneId) => requestGetSmartCatalogTree({ sceneId, queryMain: 1 }));
-      const res = (await Promise.allSettled(promiseList)).filter((filterItem: any) => filterItem.value);
+      const res = await Promise.all(promiseList);
       if (res) {
-        const categories = res.map((mapItem: any, index) => ({ ...mapItem.value, sceneId: index + 1 }));
+        const categories = res.map((mapItem: any, index) => ({ ...mapItem, sceneId: index + 1 }));
         // 匹配主机构是否有相同名称的目录
         const flatList = tree2Arry([categories[value.sceneId - 1]]);
         const content = flatList.find((findItem) => findItem.fullName === value.fullName);
@@ -222,6 +223,7 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       sensitive,
       status,
       tip,
+      contentId,
       updateBeginTime,
       updateEndTime,
       sceneId
