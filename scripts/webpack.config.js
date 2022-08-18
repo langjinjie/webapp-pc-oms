@@ -191,14 +191,14 @@ module.exports = function () {
           // Copy glob results (with dot files) to /absolute/path/
           {
             from: path.resolve(ROOT_PATH, './static/'),
-            to: path.resolve(ROOT_PATH, './dist/static')
+            to: path.resolve(ROOT_PATH, './dist/' + time + '/static')
           }
         ]
       }),
       new HtmlPlugin({
         template: path.resolve(ROOT_PATH, './public/index.html'),
         favicon: path.resolve(ROOT_PATH, './public/favicon.ico'),
-        projectPath: process.env.NODE_ENV === 'production' ? '/tenacity-oms' : '',
+        projectPath: process.env.NODE_ENV === 'production' ? '/tenacity-oms/' + time : '',
         // html压缩
         minify: {
           collapseWhitespace: true,
