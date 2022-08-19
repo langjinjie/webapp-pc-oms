@@ -5,6 +5,7 @@ import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './style.module.less';
 import { MeatComponent } from '../components/MateComponent';
+import { PlusOutlined } from '@ant-design/icons';
 
 const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history }) => {
   const [listForm] = Form.useForm();
@@ -59,15 +60,13 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history }) => {
                       </Button>
                     </div>
 
-                    <Form.Item>
-                      <MeatComponent
-                        type=""
-                        value={[
-                          '测试泽松等奥森奥森奥森发送撒扥发赛后撒扥as扥as扥沙大夫阿红待会啥奥赛大赛红安等奥赛',
-                          '测试2as扥奥森东澳岛奥森等暗示奥森是奥赛啥事奥赛奥赛啥奥赛奥赛啥as扥奥赛红安等奥赛奥赛啥'
-                        ]}
-                      ></MeatComponent>
-                    </Form.Item>
+                    <MeatComponent
+                      type=""
+                      value={[
+                        '测试泽松等奥森奥森奥森发送撒扥发赛后撒扥as扥as扥沙大夫阿红待会啥奥赛大赛红安等奥赛',
+                        '测试2as扥奥森东澳岛奥森等暗示奥森是奥赛啥事奥赛奥赛啥奥赛奥赛啥as扥奥赛红安等奥赛奥赛啥'
+                      ]}
+                    ></MeatComponent>
 
                     <Form.Item label="小贴士">
                       <div className={classNames(styles.lineWrap, 'flex')}>
@@ -85,7 +84,9 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history }) => {
                   </Form.Item>
                 ))}
 
-                <Button onClick={() => add()}>添加</Button>
+                <Button type="primary" shape="round" icon={<PlusOutlined />} ghost onClick={() => add()}>
+                  添加
+                </Button>
               </>
             )}
           </Form.List>

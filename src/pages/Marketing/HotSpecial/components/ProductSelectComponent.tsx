@@ -3,9 +3,10 @@ import { PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { getProductList, productConfig } from 'src/apis/marketing';
 import { ProductProps } from 'src/pages/Marketing/Product/Config';
-
+import styles from './style.module.less';
 interface ProductSelectComponentProps {
   onChange: (keys: React.Key[], rows: any[]) => void;
+  selectedRowKeys: React.Key[];
 }
 
 export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ onChange }) => {
@@ -61,59 +62,61 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
     onChange(selectedRowKeys, selectedRows);
   };
   return (
-    <>
-      <NgFormSearch
-        onSearch={onSearch}
-        onValuesChange={(changeValue, values) => setFormValues(values)}
-        searchCols={[
-          {
-            name: 'title',
-            type: 'input',
-            label: '文章名称',
-            width: '200px',
-            placeholder: '待输入'
-          },
-          {
-            name: 'categoryId',
-            type: 'select',
-            label: '文章分类',
-            options: options,
-            width: '200px',
-            placeholder: '待输入'
-          }
-        ]}
-        hideReset
-      />
-      <NgTable
-        className="mt20"
-        size="small"
-        scroll={{ x: 600 }}
-        dataSource={dataSource}
-        bordered
-        pagination={pagination}
-        rowSelection={{
-          type: 'radio',
-          onChange: (selectedRowKeys: React.Key[], selectedRows: ProductProps[]) => {
-            const rows = selectedRows.map((item) => ({
-              ...item,
-              itemId: item.productId,
-              itemName: item.productName
-            }));
-            onSelectChange(selectedRowKeys, rows);
-          }
-        }}
-        rowKey="productId"
-        paginationChange={paginationChange}
-        columns={[
-          { title: '产品名称', dataIndex: 'productName', key: 'productName', width: 300 },
-          {
-            title: '分类',
-            dataIndex: 'categoryName',
-            key: 'categoryName',
-            width: 160
-          }
-        ]}
-      ></NgTable>
-    </>
+    <div className="pa20">
+      <div className={styles.panelWrap}>
+        <NgFormSearch
+          onSearch={onSearch}
+          onValuesChange={(changeValue, values) => setFormValues(values)}
+          searchCols={[
+            {
+              name: 'title',
+              type: 'input',
+              label: '文章名称',
+              width: '200px',
+              placeholder: '待输入'
+            },
+            {
+              name: 'categoryId',
+              type: 'select',
+              label: '文章分类',
+              options: options,
+              width: '200px',
+              placeholder: '待输入'
+            }
+          ]}
+          hideReset
+        />
+        <NgTable
+          className="mt20"
+          size="small"
+          scroll={{ x: 600 }}
+          dataSource={dataSource}
+          bordered
+          pagination={pagination}
+          rowSelection={{
+            type: 'checkbox',
+            onChange: (selectedRowKeys: React.Key[], selectedRows: ProductProps[]) => {
+              const rows = selectedRows.map((item) => ({
+                ...item,
+                itemId: item.productId,
+                itemName: item.productName
+              }));
+              onSelectChange(selectedRowKeys, rows);
+            }
+          }}
+          rowKey="productId"
+          paginationChange={paginationChange}
+          columns={[
+            { title: '产品名称', dataIndex: 'productName', key: 'productName', width: 300 },
+            {
+              title: '分类',
+              dataIndex: 'categoryName',
+              key: 'categoryName',
+              width: 160
+            }
+          ]}
+        ></NgTable>
+      </div>
+    </div>
   );
 };

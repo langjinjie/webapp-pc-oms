@@ -1,8 +1,10 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useState } from 'react';
 import { isArray } from 'src/utils/tools';
 import { Icon } from 'tenacity-ui';
 import { ArticleSelectComponent } from './ArticleSelectComponent';
+import { PosterSelectComponent } from './PosterSelectComponent';
+import { ProductSelectComponent } from './ProductSelectComponent';
 
 import style from './style.module.less';
 
@@ -14,8 +16,10 @@ interface MeatComponentProps {
 }
 export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onChange }) => {
   console.log(type, value, onChange);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
   const handleChange = (keys: React.Key[], rows: any[]) => {
     onChange?.(keys, rows);
+    setSelectedRowKeys(keys);
   };
 
   const removeItem = (index: number) => {
@@ -23,8 +27,10 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
   };
   return (
     <div>
-      <ArticleSelectComponent onChange={handleChange} />
-      <div className="ph20">
+      {false && <ArticleSelectComponent onChange={handleChange} />}
+      {false && <PosterSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
+      <ProductSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />
+      <div className="ph20 mb20">
         <h3 className="pb20">已选择</h3>
         <div className={classNames(style.panelWrap, style.tagWrap)}>
           <div className={classNames(style.marketingWarp)}>

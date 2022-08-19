@@ -69,14 +69,14 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
           {
             name: 'title',
             type: 'input',
-            label: '文章名称',
+            label: '产品名称',
             width: '200px',
             placeholder: '待输入'
           },
           {
             name: 'categoryId',
             type: 'select',
-            label: '文章分类',
+            label: '产品分类',
             options: options,
             width: '200px',
             placeholder: '待输入'

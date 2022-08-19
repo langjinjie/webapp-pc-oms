@@ -77,93 +77,95 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
 
   return (
     <div className="pa20">
-      <NgFormSearch
-        hideReset
-        className={style.customerInput}
-        searchCols={setSearchCols(categoryList)}
-        onSearch={handleSearch}
-        onValuesChange={(changesValue, values) => {
-          handleSearchValueChange(changesValue, values);
-        }}
-      />
+      <div className={style.panelWrap}>
+        <NgFormSearch
+          hideReset
+          className={style.customerInput}
+          searchCols={setSearchCols(categoryList)}
+          onSearch={handleSearch}
+          onValuesChange={(changesValue, values) => {
+            handleSearchValueChange(changesValue, values);
+          }}
+        />
 
-      <NgTable
-        className="mt20"
-        size="small"
-        scroll={{ x: 600 }}
-        rowSelection={{
-          hideSelectAll: true,
-          type: 'checkbox',
-          preserveSelectedRowKeys: true,
-          selectedRowKeys: selectedRowKeys,
-          onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-            onSelectChange(selectedRowKeys, selectedRows);
-          },
-          getCheckboxProps: (record: Poster) => {
-            return {
-              disabled: selectedRowKeys.length >= 9 && !selectedRowKeys.includes(record.posterId),
-              name: record.name
-            };
-          }
-        }}
-        columns={[
-          {
-            title: '名称',
-            dataIndex: 'name',
-            align: 'left',
-            width: 100,
-            ellipsis: {
-              showTitle: false
+        <NgTable
+          className="mt20"
+          size="small"
+          scroll={{ x: 600 }}
+          rowSelection={{
+            hideSelectAll: true,
+            type: 'checkbox',
+            preserveSelectedRowKeys: true,
+            selectedRowKeys: selectedRowKeys,
+            onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+              onSelectChange(selectedRowKeys, selectedRows);
             },
-            render: (name: string) => (
-              <Tooltip placement="topLeft" title={name}>
-                {name || UNKNOWN}
-              </Tooltip>
-            )
-          },
-          {
-            title: '分类',
-            dataIndex: 'typeName',
-            align: 'left',
-            width: 180,
-            render: (text: String, record: Poster) => {
-              return record.fatherTypeName ? record.fatherTypeName + '-' + text : text || UNKNOWN;
+            getCheckboxProps: (record: Poster) => {
+              return {
+                disabled: selectedRowKeys.length >= 9 && !selectedRowKeys.includes(record.posterId),
+                name: record.name
+              };
             }
-          },
-          {
-            title: '操作',
-            dataIndex: 'typeName',
-            align: 'left',
-            width: 80,
-            render: (_: any, record: Poster) => {
-              return (
-                <Button type="link" onClick={() => preViewPoster(record)}>
-                  查看
-                </Button>
-              );
+          }}
+          columns={[
+            {
+              title: '名称',
+              dataIndex: 'name',
+              align: 'left',
+              width: 100,
+              ellipsis: {
+                showTitle: false
+              },
+              render: (name: string) => (
+                <Tooltip placement="topLeft" title={name}>
+                  {name || UNKNOWN}
+                </Tooltip>
+              )
+            },
+            {
+              title: '分类',
+              dataIndex: 'typeName',
+              align: 'left',
+              width: 180,
+              render: (text: String, record: Poster) => {
+                return record.fatherTypeName ? record.fatherTypeName + '-' + text : text || UNKNOWN;
+              }
+            },
+            {
+              title: '操作',
+              dataIndex: 'typeName',
+              align: 'left',
+              width: 80,
+              render: (_: any, record: Poster) => {
+                return (
+                  <Button type="link" onClick={() => preViewPoster(record)}>
+                    查看
+                  </Button>
+                );
+              }
             }
-          }
-        ]}
-        dataSource={dataSource}
-        pagination={pagination}
-        paginationChange={paginationChange}
-        setRowKey={(record: any) => {
-          return record.posterId;
-        }}
-      />
-      <Image
-        width={200}
-        style={{ display: 'none' }}
-        src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
-        preview={{
-          visible,
-          src: currentItem?.imgUrl,
-          onVisibleChange: (value) => {
-            setVisible(value);
-            if (!value) setCurrentItem(undefined);
-          }
-        }}
-      />
+          ]}
+          dataSource={dataSource}
+          pagination={pagination}
+          paginationChange={paginationChange}
+          setRowKey={(record: any) => {
+            return record.posterId;
+          }}
+        />
+        <Image
+          width={200}
+          style={{ display: 'none' }}
+          src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png?x-oss-process=image/blur,r_50,s_50/quality,q_1/resize,m_mfit,h_200,w_200"
+          preview={{
+            visible,
+            src: currentItem?.imgUrl,
+            onVisibleChange: (value) => {
+              setVisible(value);
+              if (!value) setCurrentItem(undefined);
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

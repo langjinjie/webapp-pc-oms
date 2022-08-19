@@ -40,6 +40,10 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/marketingHot/edit',
     component: lazy(() => import('src/pages/Marketing/HotSpecial/Edit/Edit'))
+  },
+  {
+    path: '/marketingMoment/edit',
+    component: lazy(() => import('src/pages/Marketing/Moment/Edit'))
   }
 ];
 

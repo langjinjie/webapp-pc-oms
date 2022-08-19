@@ -2,6 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import React, { useState } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
 import { NodeColumns, searchColsFun, tableColumnsFun } from './ListConfig';
 
@@ -11,7 +12,7 @@ type QueryParamsType = Partial<{
   nodeName1?: string;
   nodeTypeCode: string;
 }>;
-const MomentList: React.FC = () => {
+const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
   const [queryParams, setQueryParams] = useState<QueryParamsType>({});
   const [tableSource, setTableSource] = useState<Partial<NodeColumns>[]>([{}, {}]);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
@@ -63,6 +64,10 @@ const MomentList: React.FC = () => {
     }
   };
 
+  const navigatorToEdit = () => {
+    history.push('/marketingMoment/edit');
+  };
+
   return (
     <div className="container">
       <Button
@@ -70,11 +75,11 @@ const MomentList: React.FC = () => {
         shape="round"
         icon={<PlusOutlined />}
         onClick={() => {
-          console.log('add');
+          navigatorToEdit();
         }}
         size="large"
       >
-        新建节点
+        创建
       </Button>
       <NgFormSearch
         className="mt20"
