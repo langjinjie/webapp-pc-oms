@@ -60,7 +60,13 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history }) => {
                     </div>
 
                     <Form.Item>
-                      <MeatComponent type=""></MeatComponent>
+                      <MeatComponent
+                        type=""
+                        value={[
+                          '测试泽松等奥森奥森奥森发送撒扥发赛后撒扥as扥as扥沙大夫阿红待会啥奥赛大赛红安等奥赛',
+                          '测试2as扥奥森东澳岛奥森等暗示奥森是奥赛啥事奥赛奥赛啥奥赛奥赛啥as扥奥赛红安等奥赛奥赛啥'
+                        ]}
+                      ></MeatComponent>
                     </Form.Item>
 
                     <Form.Item label="小贴士">
