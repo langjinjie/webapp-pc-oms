@@ -321,21 +321,20 @@ export const routes: RouteProps[] = [
   // 在职分配
   {
     path: '/onjob',
-    component: lazy(() => import('src/pages/StaffManage/OnJob/OnJob'))
+    component: lazy(() => import('src/pages/StaffManage/OnJob/List'))
   },
   {
-    path: '/onjob/client',
-    component: lazy(() => import('src/pages/StaffManage/OnJob/ClientList'))
+    path: '/onjob/record',
+    component: lazy(() => import('src/pages/StaffManage/OnJob/record'))
   },
   // 离职继承
   {
     path: '/resign',
-    component: lazy(() => import('src/pages/StaffManage/Resign/ResignList'))
+    component: lazy(() => import('src/pages/StaffManage/Resign/List'))
   },
-  // 分配记录
   {
-    path: '/distributelog',
-    component: lazy(() => import('src/pages/StaffManage/DistributeLog/DistributeLog'))
+    path: '/resign/record',
+    component: lazy(() => import('src/pages/StaffManage/Resign/record'))
   }
 ];
 

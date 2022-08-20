@@ -6,13 +6,19 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Card, PaginationProps, Popover, Button } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, StaffColumns, tableColumnsFun } from './Config';
-import { RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { DistributionClient } from 'src/pages/StaffManage/components';
 import style from './style.module.less';
 import classNames from 'classnames';
 
-const OnJob: React.FC<RouteComponentProps> = ({ history }) => {
-  const [tableSource, setTableSource] = useState<Partial<StaffColumns>[]>([]);
+interface IDistributeListProps {
+  distributeLisType: 0 | 1; // 0: 在职继承 1: 离职继承
+}
 
+const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) => {
+  const [tableSource, setTableSource] = useState<Partial<StaffColumns>[]>([]);
+  const [reasonCodeList, setReasonCodeList] = useState<{ id: string; name: string }[]>([]);
+  const [distributionVisible, setDistribution] = useState(false);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -21,8 +27,11 @@ const OnJob: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
-  const onSearch = () => {
-    console.log('onSearch');
+
+  const history = useHistory();
+
+  const onSearch = (value?: any) => {
+    console.log('value', value);
   };
 
   const jumpToDetail = () => {
@@ -34,11 +43,41 @@ const OnJob: React.FC<RouteComponentProps> = ({ history }) => {
     setPagination((pagination) => ({ ...pagination, pageSize }));
   };
 
+  // 获取分配原因配置值
+  const getReasonCodeListHandle = () => {
+    setTimeout(() => {
+      const reasonCodeList = [
+        { reasonCode: 'reason_list_adjust', reasonName: '名单调整' },
+        { reasonCode: 'reason_long_sick', reasonName: '长病假' },
+        { reasonCode: 'reason_dimission', reasonName: '离职' },
+        { reasonCode: 'reason_team_adjust', reasonName: '团队调整' },
+        { reasonCode: 'reason_unsettled', reasonName: '临到期未成交' },
+        { reasonCode: 'reason_cross_dialing', reasonName: '交叉拨打' },
+        { reasonCode: 'reason_other', reasonName: '其他' }
+      ].map((mapItem) => ({ id: mapItem.reasonCode, name: mapItem.reasonName }));
+      setReasonCodeList(reasonCodeList);
+    }, 500);
+  };
+
   // 选择框配置对象
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: Partial<StaffColumns>[]) => {
       console.log('selectedRowKeys', selectedRowKeys);
       console.log('selectedRows', selectedRows);
+    }
+  };
+
+  // 分配客户
+  const distributionHandle = () => {
+    setDistribution(true);
+  };
+
+  // 分配记录
+  const recordListHandle = () => {
+    if (distributeLisType) {
+      history.push('/resign/record');
+    } else {
+      history.push('/onjob/record');
     }
   };
 
@@ -51,7 +90,7 @@ const OnJob: React.FC<RouteComponentProps> = ({ history }) => {
     );
     return (
       <div>
-        在职继承
+        {distributeLisType ? '离职继承' : '在职继承'}
         <Popover content={content}>
           <QuestionCircleOutlined className="color-text-secondary f16 pointer" />
         </Popover>
@@ -59,6 +98,7 @@ const OnJob: React.FC<RouteComponentProps> = ({ history }) => {
     );
   };
   useEffect(() => {
+    getReasonCodeListHandle();
     setTableSource([
       {
         key1: '李思思',
@@ -82,12 +122,21 @@ const OnJob: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
   return (
     <Card className="container" title={<CardTitle />} bordered={false}>
-      <NgFormSearch searchCols={searchCols} isInline={false} firstRowChildCount={4} onSearch={onSearch}></NgFormSearch>
+      {/* {reasonCodeList && ( */}
+      <NgFormSearch
+        searchCols={searchCols(reasonCodeList, distributeLisType)}
+        isInline={false}
+        firstRowChildCount={4}
+        onSearch={onSearch}
+      />
+      {/* )} */}
       <div className={'mt20'}>
-        <Button className={style.distribution} type="primary">
+        <Button className={style.distribution} type="primary" onClick={distributionHandle}>
           分配客户
         </Button>
-        <Button className={classNames(style.distributeLog, 'ml20')}>分配记录</Button>
+        <Button className={classNames(style.distributeLog, 'ml20')} onClick={recordListHandle}>
+          分配记录
+        </Button>
         <span className={classNames(style.selectNum, 'inline-block')}>
           *共计5000位待分配客户，<span className={style.selected}>已选择54位</span>
         </span>
@@ -95,7 +144,8 @@ const OnJob: React.FC<RouteComponentProps> = ({ history }) => {
       <div className="mt20">
         <NgTable
           columns={tableColumnsFun({
-            onOperate: () => jumpToDetail()
+            onOperate: () => jumpToDetail(),
+            distributeLisType
           })}
           dataSource={tableSource}
           pagination={pagination}
@@ -106,8 +156,13 @@ const OnJob: React.FC<RouteComponentProps> = ({ history }) => {
           }}
         />
       </div>
+      <DistributionClient
+        reasonNameList={reasonCodeList}
+        visible={distributionVisible}
+        onClose={() => setDistribution(false)}
+      />
     </Card>
   );
 };
 
-export default OnJob;
+export default DistributeList;

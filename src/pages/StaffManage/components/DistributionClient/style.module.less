@@ -1,0 +1,139 @@
+.modalWrap {
+  .reasonOther {
+    :global {
+      textarea.ant-input {
+        min-height: 136px;
+      }
+    }
+  }
+  :global {
+    .ant-modal-body {
+      max-height: 70vh !important;
+      overflow: auto !important;
+    }
+    .ant-btn-primary {
+      &:disabled {
+        border-color: #d9d9d9 !important;
+        background-color: #f5f5f5 !important;
+        color: rgba(0, 0, 0, 0.25) !important;
+      }
+    }
+  }
+}
+
+// 继承规则
+.distributionRule {
+  display: flex;
+  flex-wrap: wrap;
+  .ruleRadioItem {
+    margin: 0 0 8px 0;
+    flex: 0 0 50%;
+  }
+}
+
+// 分配客户选择坐席
+.chooseStaffTips {
+  font-size: 14px;
+  font-weight: 400;
+  color: #111111;
+}
+.staffChooseTree {
+  margin-top: 24px;
+}
+.treeWrap {
+  border-radius: 8px;
+  border: 1px solid #e5e5e7;
+  overflow: hidden;
+}
+.inputWrap {
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.searchListWrap {
+  padding: 10px;
+  height: 370px;
+  padding-right: 10px;
+  overflow: auto;
+  .searchItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1px;
+    // width: 389px;
+    height: 36px;
+    padding: 0 15px;
+    border-radius: 8px;
+    transition: all 0.3s, border 0s, line-height 0s, box-shadow 0s;
+    &:hover {
+      background-color: #f5f5f5;
+      cursor: pointer;
+    }
+    &.active {
+      background-color: rgba(48, 120, 219, 0.2);
+    }
+  }
+  .empty {
+    text-align: center;
+    img {
+      width: 100px;
+    }
+  }
+}
+.tree {
+  height: 370px;
+  padding: 10px;
+  overflow: auto;
+  &.hiden {
+    display: none;
+  }
+  :global {
+    // 兼容超长部门的情况
+    .ant-tree-node-content-wrapper {
+      .ant-tree-title {
+        display: inline-block;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+// 分配提示
+.distriSpeechTitle {
+  height: 22px;
+  font-size: 16px;
+  font-weight: 400;
+  color: #111111;
+  line-height: 22px;
+}
+.distriTips {
+  margin-top: 8px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #7e8185;
+  line-height: 20px;
+}
+.distriSpeechContent {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  margin-top: 20px;
+  padding: 30px 42px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  .icon {
+    margin-right: 10px;
+    width: 24px;
+    height: 24px;
+  }
+  .distriSpeechTextArea {
+    width: 354px;
+    padding-right: 44px;
+  }
+  .editIcon {
+    position: absolute;
+    right: 52px;
+    top: 40px;
+  }
+}

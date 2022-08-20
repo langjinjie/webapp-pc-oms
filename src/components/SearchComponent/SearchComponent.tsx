@@ -170,11 +170,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   />
                 </Form.Item>
               )) ||
-              (col.type === 'custom' && (
-                <Form.Item key={col.name} label={col.label} name={col.name}>
-                  {col.customNode}
-                </Form.Item>
-              ))
+              (col.type === 'custom' && col.customNode)
             );
           })}
           {props.children}
@@ -229,11 +225,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <RangePicker format="YYYY-MM-DD" />
                   </Form.Item>
                 )) ||
-                (col.type === 'custom' && (
-                  <Form.Item key={col.name} label={col.label} name={col.name}>
-                    {col.customNode}
-                  </Form.Item>
-                ))
+                (col.type === 'custom' && col.customNode)
               );
             })}
           </Row>
@@ -246,7 +238,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (
-                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                  <Form.Item key={col.name} label={col.label}>
                     <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                       {col.options &&
                         col.options.map((option) => (
@@ -265,11 +257,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <RangePicker format="YYYY-MM-DD" />
                   </Form.Item>
                 )) ||
-                (col.type === 'custom' && (
-                  <Form.Item key={col.name} label={col.label} name={col.name}>
-                    {col.customNode}
-                  </Form.Item>
-                ))
+                (col.type === 'custom' && col.customNode)
               );
             })}
             {props.children}
