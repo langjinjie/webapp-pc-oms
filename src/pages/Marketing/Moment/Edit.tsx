@@ -43,7 +43,19 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history }) => {
               </div>
             </Form.Item>
             <Form.Item label="上传内容">
-              <PictureCard />
+              <PictureCard
+                value={[
+                  'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454',
+                  'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220107/5fff8599f86145618dedd9069fa5b156.jpg?timestamp=1641538806196',
+                  'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/img/wwcb58cb32fb9b697a/20210720/6f7db5c0-a57b-482e-b095-58697e1e4308_1626760751798.png',
+                  'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220816/61bc82e5e78842cdac5236d1a420f1e7.jpg?timestamp=1660647714632',
+                  'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454',
+                  'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454',
+                  'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454',
+                  'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454',
+                  'https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454'
+                ]}
+              />
             </Form.Item>
             <Form.Item label="营销话术">
               <Input.TextArea className={styles.textAreaWrap} placeholder="请输入" />
