@@ -16,15 +16,34 @@ import { getCookie } from 'src/utils/base';
 import { MenuItem } from 'src/utils/interface';
 import Header from './Header';
 import './style.less';
-import { Layout, message } from 'antd';
+import { Layout, message, Menu, MenuProps } from 'antd';
 
+type SiderMenuItem = Required<MenuProps>['items'][number];
+function getItem (
+  label: React.ReactNode,
+  key: React.Key,
+  icon?: React.ReactNode,
+  children?: SiderMenuItem[],
+  type?: 'group'
+): SiderMenuItem {
+  return {
+    key,
+    icon,
+    children,
+    label,
+    type
+  } as SiderMenuItem;
+}
 const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList, setBtnList, setBeforePath } =
     useContext(Context);
-  const [isCollapse, setIsCollapse] = useState<boolean>(false);
+  const [isCollapse] = useState<boolean>(false);
   const [subMenus, setSubMenus] = useState<MenuItem[]>([]);
   const [menuIndex, setMenuIndex] = useState<number | null>(null);
   const [loaded, setLoaded] = useState<boolean>(false);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const [siderMenuList, setSiderMenuList] = useState<SiderMenuItem[]>([]);
+  const [selectedKeys, setSelectKeys] = useState<string[]>([]);
 
   /**
    * 刷新时获取激活菜单
@@ -53,6 +72,15 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const getMenuList = async () => {
     const res: any = await queryMenuList();
     if (res && res.length > 0) {
+      const items = res.map((item: any) =>
+        getItem(
+          item.menuName,
+          item.menuId,
+          <Icon className="menu-icon" name={item.menuIcon!} />,
+          item.children.map((child: any) => getItem(child.menuName, child.path))
+        )
+      );
+      setSiderMenuList(items);
       initMenu(res);
       setMenuList(res);
     } else {
@@ -124,7 +152,32 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
     } else if (window.location.pathname !== '/tenacity-oms/login') {
       history.push('/login');
     }
+
+    const keyPath = JSON.parse(sessionStorage.getItem('keyPath') || '[]');
+    if (keyPath.length === 2) {
+      setOpenKeys([keyPath[1]]);
+      setSelectKeys([keyPath[0]]);
+    }
   }, []);
+
+  // submenu keys of first level
+  const onOpenChange = (keys: string[]) => {
+    console.log(keys);
+
+    const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
+
+    setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+  };
+
+  const onMenuClick = ({ key, keyPath }: any) => {
+    sessionStorage.setItem('keyPath', JSON.stringify(keyPath));
+    setSelectKeys([key]);
+    if (key.indexOf('http') > -1) {
+      window.open(key);
+    } else {
+      history.push(key);
+    }
+  };
 
   return (
     <Layout className="layout">
@@ -134,59 +187,73 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
       <Layout.Sider
         trigger={null}
         collapsible
-        width={260}
+        width={252}
         collapsedWidth={88}
         className={'navWrap'}
         collapsed={isCollapse}
       >
-        <ul className="menu-list">
-          {menuList.map((menu: MenuItem, index: number) => (
-            <li
-              className={classNames('menu-item', {
-                'menu-active': menuIndex === index
-              })}
-              key={menu.menuId}
-              onClick={() => {
-                if (menu.children && menu.children.length > 0) {
-                  const path = ((menu.children || [])[0] || {}).path;
-                  if (path.indexOf('http') > -1) {
-                    window.open(path, '_blank');
-                    return false;
+        <Menu
+          className="menuWrap"
+          mode="inline"
+          items={siderMenuList}
+          openKeys={openKeys}
+          selectedKeys={selectedKeys}
+          onClick={onMenuClick}
+          onOpenChange={onOpenChange}
+        ></Menu>
+        {false && (
+          <ul className="menu-list">
+            {menuList.map((menu: MenuItem, index: number) => (
+              <li
+                className={classNames('menu-item', {
+                  'menu-active': menuIndex === index
+                })}
+                key={menu.menuId}
+                onClick={() => {
+                  if (menu.children && menu.children.length > 0) {
+                    const path = ((menu.children || [])[0] || {}).path;
+                    if (path.indexOf('http') > -1) {
+                      window.open(path, '_blank');
+                      return false;
+                    }
+                    setMenuIndex(index);
+                    history.push(((menu.children || [])[0] || {}).path);
+                  } else {
+                    message.warn('无子级菜单，请联系管理员');
                   }
-                  setMenuIndex(index);
-                  history.push(((menu.children || [])[0] || {}).path);
-                } else {
-                  message.warn('无子级菜单，请联系管理员');
-                }
-              }}
-            >
-              <Icon className="menu-icon" name={menu.menuIcon!} />
-              <span className="menu-name">{menu.menuName}</span>
-            </li>
-          ))}
-        </ul>
+                }}
+              >
+                <Icon className="menu-icon" name={menu.menuIcon!} />
+                <span className="menu-name">{menu.menuName}</span>
+              </li>
+            ))}
+          </ul>
+        )}
 
-        <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
-          {subMenus.map((subMenu: MenuItem) => {
-            return (
-              subMenu?.path && (
-                <li key={subMenu.menuId}>
-                  {subMenu?.path.indexOf('http') > -1
-                    ? (
-                    <a target={'_blank'} className="sub-menu-item" href={subMenu?.path as string} rel="noreferrer">
-                      {subMenu.menuName}
-                    </a>
-                      )
-                    : (
-                    <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
-                      {subMenu.menuName}
-                    </NavLink>
-                      )}
-                </li>
-              )
-            );
-          })}
-        </ul>
+        {false && (
+          <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
+            {subMenus.map((subMenu: MenuItem) => {
+              return (
+                subMenu?.path && (
+                  <li key={subMenu.menuId}>
+                    {subMenu?.path.indexOf('http') > -1
+                      ? (
+                      <a target={'_blank'} className="sub-menu-item" href={subMenu?.path as string} rel="noreferrer">
+                        {subMenu.menuName}
+                      </a>
+                        )
+                      : (
+                      <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
+                        {subMenu.menuName}
+                      </NavLink>
+                        )}
+                    ||{' '}
+                  </li>
+                )
+              );
+            })}
+          </ul>
+        )}
       </Layout.Sider>
       <Layout style={{ marginTop: 80, background: '#fff' }}>
         <Layout.Content>
@@ -195,12 +262,12 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
       </Layout>
 
       <ConfirmModal />
-      <div
+      {/* <div
         className={classNames('collapse-wrap', isCollapse ? 'is-collapse' : 'is-expand')}
         onClick={() => setIsCollapse((state) => !state)}
       >
         <Icon className="arrow-icon" name={isCollapse ? 'iconfontjiantou2' : 'zuojiantou-copy'} />
-      </div>
+      </div> */}
     </Layout>
   );
 };
