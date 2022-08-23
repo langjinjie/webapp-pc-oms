@@ -37,6 +37,8 @@ const DetailModal: React.FC<DetailModalProps> = ({ taskId, visible, onClose }) =
   useEffect(() => {
     if (visible) {
       getStaffList();
+    } else {
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
     }
   }, [pagination.current, visible]);
   return (

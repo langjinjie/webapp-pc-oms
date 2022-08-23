@@ -1,16 +1,9 @@
-import React, {
-  useState,
-  useEffect,
-  Key,
-  // Dispatch, SetStateAction,
-  useContext
-} from 'react';
+import React, { useState, useEffect, Key, useContext, useMemo } from 'react';
 import { Context } from 'src/store';
 import { Modal, Tree, Input } from 'antd';
 import { Icon, Empty } from 'src/components';
 import { requestGetDeptList, requestGetDepStaffList, searchStaffList } from 'src/apis/orgManage';
 import { debounce, filterChildren, updateTreeData } from 'src/utils/base';
-
 import classNames from 'classnames';
 import style from './style.module.less';
 
@@ -56,7 +49,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const [treeSearchValue, setTreeSearchValue] = useState('');
   const [selectSearchValue, setSelectSearchValue] = useState('');
   const [treeSearchList, setTreeSearchList] = useState<any[]>([]);
-  const [selectedCount, setSeletedCount] = useState(0);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -117,6 +109,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     setParams?.({ visible: false, added: true, roleId: '' });
     onChange?.(selectedList);
     onOk?.(selectedList);
+    onClose?.();
   };
   const onCancel = () => {
     onClose?.();
@@ -148,12 +141,12 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   ) => {
     setAutoExpand(false);
     setCheckedKeys(checked as Key[]);
-    let selectedList = [];
+    let newSelectedList = [];
     if (showStaff) {
-      selectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.staffId));
+      newSelectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.staffId));
       if (selectedDept) {
         // 判断已选列表是否需要显示部门
-        selectedList = filterChildren([
+        newSelectedList = filterChildren([
           ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
         ]);
       } else {
@@ -168,14 +161,25 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
           });
           // 判断是选中还是取消
           if (info.checked) {
-            selectedList = [...res.list];
+            newSelectedList = [...res.list];
+          }
+        } else {
+          if (info.checked) {
+            // 选择单个员工
+            newSelectedList = [
+              ...selectedList.filter((filterItem) => !(checked as Key[]).includes(filterItem.staffId)),
+              ...newSelectedList
+            ];
+          } else {
+            // 取消选择按个员工
+            newSelectedList = [...selectedList.filter((filterItem) => filterItem.staffId !== info.node.staffId)];
           }
         }
       }
     } else {
-      selectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id));
+      newSelectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id));
     }
-    setSelectedList(selectedList);
+    setSelectedList(newSelectedList);
   };
   // 树列表搜索
   const treeSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,7 +274,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       setSelectedList(() => [...selectedList]);
     }
   }, [flatTreeData, value]);
-  useEffect(() => {
+  const seletedCount = useMemo(() => {
     const seletedCount = selectedList.reduce((prev: number, now: any) => {
       if (!now.staffId) {
         prev += now.effCount || now.staffCount || 0;
@@ -279,7 +283,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       }
       return prev;
     }, 0);
-    setSeletedCount(seletedCount);
+    return seletedCount;
   }, [selectedList]);
   return (
     <Modal
@@ -299,6 +303,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
           <Input
             className={style.searchTree}
             placeholder={showStaff ? (selectedDept ? '搜索成员、部门' : '搜索员工') : '搜索部门'}
+            // @ts-ignore
             onChange={debounce(treeSearchOnChange, 500)}
             addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
           />
@@ -346,10 +351,11 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         <div className={style.selectedWrap}>
           <Input
             placeholder={showStaff ? (selectedDept ? '搜索成员、部门' : '搜索员工') : '搜索部门'}
+            // @ts-ignore
             onChange={debounce(selectedOnchange, 500)}
             addonBefore={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
           />
-          <div className={style.seletedTitle}>已选择成员 {selectedCount} 人</div>
+          <div className={style.seletedTitle}>已选择成员 {seletedCount} 人</div>
           <div className={classNames(style.selectList, 'scroll-strip')}>
             {selectedList
               .filter((filterItem) => filterItem.name.includes(selectSearchValue))

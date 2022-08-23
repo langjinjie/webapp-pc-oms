@@ -331,6 +331,24 @@ export const routes: RouteProps[] = [
   {
     path: '/strategyManage/tmpList',
     component: lazy(() => import('src/pages/Task/StrategyManage/TmlManage/Manage'))
+  },
+  // 在职分配
+  {
+    path: '/onjob',
+    component: lazy(() => import('src/pages/StaffManage/OnJob/List'))
+  },
+  {
+    path: '/onjob/record',
+    component: lazy(() => import('src/pages/StaffManage/OnJob/record'))
+  },
+  // 离职继承
+  {
+    path: '/resign',
+    component: lazy(() => import('src/pages/StaffManage/Resign/List'))
+  },
+  {
+    path: '/resign/record',
+    component: lazy(() => import('src/pages/StaffManage/Resign/record'))
   }
 ];
 
