@@ -7,6 +7,7 @@ import md5 from 'js-md5';
 import { Context } from 'src/store';
 import { login, queryUserInfo } from 'src/apis';
 import style from './style.module.less';
+import { TOKEN_KEY } from 'src/utils/config';
 
 const { Password } = Input;
 const { Item } = Form;
@@ -18,22 +19,15 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
     // @ts-ignore
     const res = await login({ userName, password: md5(password).slice(8, 24) });
     if (res) {
+      const { token } = res;
+      window.localStorage.setItem(TOKEN_KEY, token);
       window.localStorage.setItem('envName', res.env);
+
       history.push('/chooseInst');
       const resInfo: any = (await queryUserInfo()) || {};
       setUserInfo(resInfo);
       setIsMainCorp(resInfo.isMainCorp === 1);
       setCurrentCorpId(resInfo.corpId);
-      /* const redirectUrl: string = getQueryParam('redirectUrl');
-      if (redirectUrl) {
-        window.location.replace(redirectUrl);
-      } else {
-        history.push('/chooseInst');
-        const resInfo: any = (await queryUserInfo()) || {};
-        setUserInfo(resInfo);
-        setIsMainCorp(resInfo.isMainCorp === 1);
-        setCurrentCorpId(resInfo.corpId);
-      } */
     }
   };
 

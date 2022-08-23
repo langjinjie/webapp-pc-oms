@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PaginationProps } from 'antd';
+import { Button, Input, PaginationProps, Select, Space } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { getProductList, productConfig } from 'src/apis/marketing';
 import { ProductProps } from 'src/pages/Marketing/Product/Config';
@@ -64,6 +64,61 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
   return (
     <div className="pa20">
       <div className={styles.panelWrap}>
+        <div className={styles.searchWrap}>
+          <div className={styles.searchItem}>
+            <label htmlFor="">
+              <span>文章名称：</span>
+              <Input
+                name="title"
+                placeholder="请输入"
+                allowClear
+                value={formValues.title}
+                onChange={(e) => onFormValueChange({ title: e.target.value })}
+                className={styles.nameInput}
+              ></Input>
+            </label>
+          </div>
+          <div className={styles.searchItem}>
+            <label>
+              <span>文章分类：</span>
+              <Select
+                placeholder="请选择"
+                allowClear
+                className={styles.selectWrap}
+                value={formValues.categoryId}
+                onChange={(value) => onFormValueChange({ categoryId: value })}
+              >
+                {articleCategoryList.map((item: any) => (
+                  <Select.Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </label>
+          </div>
+          <div className={styles.searchItem}>
+            <Space size={10}>
+              <Button
+                type="primary"
+                shape="round"
+                style={{ width: '70px' }}
+                onClick={() => onSearch(formValues)}
+                className={styles.searchBtn}
+              >
+                查询
+              </Button>
+              <Button
+                type="default"
+                shape="round"
+                onClick={() => onResetSearch()}
+                style={{ width: '70px' }}
+                className={styles.searchBtn}
+              >
+                重置
+              </Button>
+            </Space>
+          </div>
+        </div>
         <NgFormSearch
           onSearch={onSearch}
           onValuesChange={(changeValue, values) => setFormValues(values)}

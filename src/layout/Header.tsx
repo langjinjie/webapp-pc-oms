@@ -10,6 +10,7 @@ import { Context } from 'src/store';
 import { chooseInst, logout, queryInstList } from 'src/apis';
 import { InstItem } from 'src/utils/interface';
 import './style.less';
+import { TOKEN_KEY } from 'src/utils/config';
 
 interface IIndexProps {
   setMenuIndex: (param: any) => void;
@@ -25,6 +26,7 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
 
   const logoutHandle = async () => {
     await logout();
+    localStorage.removeItem(TOKEN_KEY);
     history.push('/login');
     // setCookie('b2632ff42e4a58b67f37c8c1f322b213', '', -1);
   };
@@ -38,17 +40,12 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
 
   const handleChooseInst = async (corpId: string) => {
     const res: any = await chooseInst({ corpId });
-    sessionStorage.removeItem('tagOptions');
     if (res) {
+      localStorage.setItem(TOKEN_KEY, res);
       window.location.reload();
-      // window.location.href = window.location.origin + '/tenacity-oms/orgManage'; // 切换机构强行跳转到机构列表
+      sessionStorage.removeItem('tagOptions');
     }
   };
-
-  /* const getEnvName = () => {
-    const env: string = (window.location.origin.match(/(?<=\/\/)[a-zA-Z]+(?=\.)/) || ['local'])[0];
-    return envNames[env] || '本地';
-  }; */
 
   useEffect(() => {
     if (instList.length === 0) {

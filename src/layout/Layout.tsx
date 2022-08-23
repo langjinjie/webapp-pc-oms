@@ -12,11 +12,11 @@ import { Icon, ConfirmModal } from 'src/components';
 import { Context } from 'src/store';
 import { routes, cacheRoutes, noVerRoutes } from 'src/pages/routes';
 import { queryUserInfo, queryMenuList } from 'src/apis';
-import { getCookie } from 'src/utils/base';
 import { MenuItem } from 'src/utils/interface';
 import Header from './Header';
 import './style.less';
 import { Layout, message, Menu, MenuProps } from 'antd';
+import { TOKEN_KEY } from 'src/utils/config';
 
 type SiderMenuItem = Required<MenuProps>['items'][number];
 function getItem (
@@ -145,7 +145,7 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
   }, [history.location.pathname]);
 
   useEffect(() => {
-    const token = getCookie('b2632ff42e4a58b67f37c8c1f322b213');
+    const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
       getUserInfo();
       getMenuList();
