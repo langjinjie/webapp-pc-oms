@@ -2,7 +2,7 @@ import React from 'react';
 import { Drawer } from 'antd';
 
 import styles from './style.module.less';
-import { getCookie } from 'src/utils/base';
+import { TOKEN_KEY } from 'src/utils/config';
 
 interface PreviewProps {
   visible: boolean;
@@ -10,7 +10,7 @@ interface PreviewProps {
 }
 
 const PreviewSpeech: React.FC<PreviewProps> = ({ visible, onClose }) => {
-  const token = getCookie('b2632ff42e4a58b67f37c8c1f322b213');
+  const token = localStorage.getItem(TOKEN_KEY);
   const locationOrigin =
     window.location.origin.indexOf('localhost') > 0 ? 'http://localhost:8088' : window.location.origin;
   return (

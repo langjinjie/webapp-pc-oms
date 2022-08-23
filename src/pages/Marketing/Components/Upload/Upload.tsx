@@ -119,7 +119,13 @@ const NgUpload: React.FC<NgUploadProps> = ({
           className={classNames({ 'avatar-uploader': !type }, styles.uploadWrap)}
           customRequest={posterUploadFile}
         >
-          {states.imageUrl ? <img src={states.imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+          {states.imageUrl
+            ? (
+            <img src={states.imageUrl} alt="avatar" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+              )
+            : (
+                uploadButton
+              )}
           {states.imageUrl && showDeleteBtn
             ? (
             <Icon className={styles.delete} onClick={deletePic} name="guanbi" />

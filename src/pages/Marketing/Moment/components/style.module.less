@@ -1,0 +1,38 @@
+.pictureList {
+  width: 400px;
+  :global {
+    .ant-upload-picture-card-wrapper {
+      width: 104px;
+      min-height: 104px;
+      margin-right: 20px;
+      margin-bottom: 20px;
+
+      img {
+        border-radius: 8px;
+        max-height: 104px;
+      }
+    }
+  }
+}
+.pictureItem {
+  position: relative;
+  display: inline-block;
+  width: 104px;
+  height: 105px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e6e7eb;
+
+  &:hover .removeIcon {
+    display: block;
+  }
+  .removeIcon {
+    display: none;
+    font-size: 20px;
+    position: absolute;
+    right: -8px;
+    top: -8px;
+  }
+}
