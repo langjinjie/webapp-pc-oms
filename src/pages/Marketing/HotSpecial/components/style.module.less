@@ -31,3 +31,31 @@
     }
   }
 }
+
+.searchItem {
+  display: inline-block;
+  & + .searchItem {
+    margin-left: 20px;
+  }
+  .nameInput {
+    width: 200px;
+  }
+  .selectWrap {
+    width: 180px;
+  }
+  .closeIcon {
+    width: 70px;
+  }
+}
+
+.speechWrap {
+  padding: 20px 0;
+  .speechContent {
+    width: 600px;
+  }
+  .label {
+    width: 120px;
+    text-align: right;
+    margin-right: 20px;
+  }
+}

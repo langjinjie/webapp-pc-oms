@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { PaginationProps } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { Button, Input, PaginationProps, Select, Space } from 'antd';
+import { NgTable } from 'src/components';
 import { getNewsList, getTagsOrCategorys } from 'src/apis/marketing';
 import { Context } from 'src/store';
 import { Article } from 'src/pages/Marketing/Article/Config';
@@ -17,7 +17,10 @@ interface ArticleSelectComponentProps {
 export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ onChange }) => {
   const { articleCategoryList, setArticleCategoryList } = useContext(Context);
   const [dataSource, setDataSource] = useState<any[]>([]);
-  const [formValues, setFormValues] = useState<any>();
+  const [formValues, setFormValues] = useState({
+    title: '',
+    categoryId: undefined
+  });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 9,
@@ -67,33 +70,72 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
     onChange(selectedRowKeys, selectedRows);
   };
+  const onFormValueChange = (values: any) => {
+    setFormValues((formValues) => ({ ...formValues, ...values }));
+  };
+  const onResetSearch = () => {
+    onSearch({ title: '', categoryId: undefined });
+  };
   return (
     <div className="pa20">
       <div className={style.panelWrap}>
-        <NgFormSearch
-          className={style.customerInput}
-          onSearch={onSearch}
-          onValuesChange={(changeValue, values) => setFormValues(values)}
-          searchCols={[
-            {
-              name: 'title',
-              type: 'input',
-              label: '文章名称',
-              placeholder: '待输入'
-            },
-            {
-              name: 'categoryId',
-              type: 'select',
-              label: '文章分类',
-              options: articleCategoryList,
-              width: '200px',
-              placeholder: '待输入'
-            }
-          ]}
-          hideReset
-        />
+        <div className={style.searchWrap}>
+          <div className={style.searchItem}>
+            <label htmlFor="">
+              <span>文章名称：</span>
+              <Input
+                name="title"
+                placeholder="请输入"
+                allowClear
+                value={formValues.title}
+                onChange={(e) => onFormValueChange({ title: e.target.value })}
+                className={style.nameInput}
+              ></Input>
+            </label>
+          </div>
+          <div className={style.searchItem}>
+            <label>
+              <span>文章分类：</span>
+              <Select
+                placeholder="请选择"
+                allowClear
+                className={style.selectWrap}
+                value={formValues.categoryId}
+                onChange={(value) => onFormValueChange({ categoryId: value })}
+              >
+                {articleCategoryList.map((item: any) => (
+                  <Select.Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </label>
+          </div>
+          <div className={style.searchItem}>
+            <Space size={10}>
+              <Button
+                type="primary"
+                shape="round"
+                style={{ width: '70px' }}
+                onClick={() => onSearch(formValues)}
+                className={style.searchBtn}
+              >
+                查询
+              </Button>
+              <Button
+                type="default"
+                shape="round"
+                onClick={() => onResetSearch()}
+                style={{ width: '70px' }}
+                className={style.searchBtn}
+              >
+                重置
+              </Button>
+            </Space>
+          </div>
+        </div>
         <NgTable
-          className="mt10"
+          className="mt20"
           size="small"
           scroll={{ x: 600 }}
           dataSource={dataSource}

@@ -1,65 +1,71 @@
 import React from 'react';
-import { Button, Image, Space } from 'antd';
+import { Button, Image, Popconfirm, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import classNames from 'classnames';
+import { OperateType } from 'src/utils/interface';
 
-export const searchColsFun = (options: any[]): SearchCol[] => {
+export const searchColsFun = (): SearchCol[] => {
   return [
     {
-      name: 'nodeCode',
+      name: 'name',
       type: 'input',
       label: '专题名称',
       width: '180px',
       placeholder: '请输入'
     },
     {
-      name: 'nodeTypeCode',
+      name: 'status',
       type: 'select',
       label: '状态',
       placeholder: '请输入',
       width: 180,
-      selectNameKey: 'typeName',
-      selectValueKey: 'typeCode',
-      options: options
+
+      options: [
+        {
+          id: 0,
+          name: '已下架'
+        },
+        {
+          id: 1,
+          name: '已上架'
+        }
+      ]
     }
   ];
 };
 
-export interface NodeColumns {
-  nodeId: string;
-  nodeCode: string;
-  typeName: string;
-  nodeName: string;
+export interface HotColumns {
+  topicId: string;
+  topicImg: string;
+  topicName: string;
+  desc: string;
   createBy: string;
+  contentNum: number;
   createTime: string;
+  [prop: string]: any;
 }
 
 interface OperateProps {
-  onOperate: (nodeId: string, index: number) => void;
+  onOperate: (operateType: OperateType, record: HotColumns, index: number) => void;
 }
-export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> => {
+export const tableColumnsFun = (args: OperateProps): ColumnsType<HotColumns> => {
   return [
-    { title: '专题名称', dataIndex: 'nodeCode', key: 'nodeCode', width: 200 },
-    {
-      title: '展示模版',
-      dataIndex: 'typeName',
-      key: 'typeName',
-      width: 200
-    },
+    { title: '专题名称', dataIndex: 'topicName', key: 'topicName', width: 200 },
+
     {
       title: '专题图片',
-      dataIndex: 'nodeName',
+      dataIndex: 'topicImg',
       width: 180,
-      key: 'nodeName',
+      key: 'topicImg',
       ellipsis: true,
-      render: (categoryName: string) => <Image src={categoryName} />
+      render: (topicImg: string) => <Image src={topicImg} />
     },
     {
       title: '内容数量',
-      dataIndex: 'nodeDesc',
+      dataIndex: 'contentNum',
       width: 180,
-      key: 'nodeDesc',
+      key: 'contentNum',
       ellipsis: true
     },
     {
@@ -75,7 +81,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> =>
     },
     {
       title: '状态',
-      dataIndex: 'createTime',
+      dataIndex: 'status',
       width: 260,
       render: (status) => {
         return (
@@ -97,16 +103,32 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> =>
       title: '操作',
       width: 260,
       align: 'center',
+      dataIndex: 'status',
       fixed: 'right',
-      render: (value, record, index) => {
+      render: (status, record, index) => {
         return (
           <Space>
-            <Button type="link" onClick={() => args.onOperate(record.nodeId, index)}>
-              上架
+            {status === 0
+              ? (
+              <Popconfirm title="确认上架?" onConfirm={() => args.onOperate('putAway', record, index)}>
+                <Button type="link">上架</Button>
+              </Popconfirm>
+                )
+              : (
+              <Popconfirm title="确定下架?" onConfirm={() => args.onOperate('outline', record, index)}>
+                <Button type="link">下架</Button>
+              </Popconfirm>
+                )}
+
+            <Button type="link" onClick={() => args.onOperate('edit', record, index)}>
+              编辑
             </Button>
-            <Button type="link">编辑</Button>
-            <Button type="link">配置内容</Button>
-            <Button type="link">置顶</Button>
+            <Button type="link" onClick={() => args.onOperate('add', record, index)}>
+              配置内容
+            </Button>
+            <Button type="link" onClick={() => args.onOperate('other', record, index)}>
+              置顶
+            </Button>
           </Space>
         );
       }

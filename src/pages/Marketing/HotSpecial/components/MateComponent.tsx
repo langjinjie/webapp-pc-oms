@@ -1,5 +1,6 @@
+import React, { useEffect, useState } from 'react';
+import { Input } from 'antd';
 import classNames from 'classnames';
-import React, { useState } from 'react';
 import { isArray } from 'src/utils/tools';
 import { Icon } from 'tenacity-ui';
 import { ArticleSelectComponent } from './ArticleSelectComponent';
@@ -8,42 +9,83 @@ import { ProductSelectComponent } from './ProductSelectComponent';
 
 import style from './style.module.less';
 
-type ValueType = string[] | string;
+type ValueType = any[] | string;
+
 interface MeatComponentProps {
-  type: string;
+  type: number;
   value?: ValueType;
-  onChange?: (keys: React.Key[], rows: any[]) => void;
+  onChange?: (value: any) => void;
 }
 export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onChange }) => {
-  console.log(type, value, onChange);
+  console.log(type, value);
   const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
+  const [selectRows, setSelectRows] = useState<any[]>([]);
   const handleChange = (keys: React.Key[], rows: any[]) => {
-    onChange?.(keys, rows);
+    // 针对海报选中未加载的数据进行过滤重组处理
+    const res = rows.filter((row) => row !== undefined);
+    const filterKeys = keys.filter((key) => !res.map((item) => item.newsId || item.posterId).includes(key));
+
+    const filterRows = selectRows.filter((row) => filterKeys.includes(row.itemId!));
+    setSelectRows([...res, ...filterRows]);
+
+    onChange?.([...res, ...filterRows]);
     setSelectedRowKeys(keys);
   };
 
+  useEffect(() => {
+    if (value) {
+      const keys = (value as any[]).map((item: any) => item.newsId || item.itemId || item.posterId);
+      setSelectedRowKeys(keys);
+      if (isArray(value)) {
+        setSelectRows(value as any[]);
+      }
+    }
+  }, []);
+
+  /**
+   * 删除选中的内容
+   */
   const removeItem = (index: number) => {
-    console.log(index);
+    if (value) {
+      const copyData = [...(value as any[])];
+      copyData.splice(index, 1);
+      onChange?.(copyData);
+    }
   };
+  const speechChange = (speech: string) => {
+    onChange?.(speech);
+  };
+
   return (
     <div>
-      {false && <ArticleSelectComponent onChange={handleChange} />}
-      {false && <PosterSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
-      <ProductSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />
-      <div className="ph20 mb20">
-        <h3 className="pb20">已选择</h3>
-        <div className={classNames(style.panelWrap, style.tagWrap)}>
-          <div className={classNames(style.marketingWarp)}>
-            {isArray(value) &&
-              (value as any[]).map((row, index) => (
-                <div className={classNames(style.customTag)} key={(row.newsId || row.itemId || row.posterId) + index}>
-                  <span>{row}</span>
-                  <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(index)}></Icon>
-                </div>
-              ))}
+      {/* 话术类型 */}
+      {type === 0 && (
+        <Input.TextArea
+          style={{ width: '600px' }}
+          onChange={(e) => speechChange(e.target.value)}
+          className={style.speechContent}
+          value={value}
+        ></Input.TextArea>
+      )}
+      {type === 1 && <ArticleSelectComponent onChange={handleChange} />}
+      {type === 2 && <PosterSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
+      {type === 3 && <ProductSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
+      {type !== 0 && (
+        <div className="ph20 mb20">
+          <h3 className="pb20">已选择</h3>
+          <div className={classNames(style.panelWrap, style.tagWrap)}>
+            <div className={classNames(style.marketingWarp)}>
+              {isArray(value) &&
+                (value as any[])?.map((row: any, index) => (
+                  <div className={classNames(style.customTag)} key={(row.newsId || row.itemId || row.posterId) + index}>
+                    <span>{row.itemName || row.title || row.name}</span>
+                    <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(index)}></Icon>
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

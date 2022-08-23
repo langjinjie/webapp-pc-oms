@@ -1,10 +1,9 @@
-import { Button, Image, PaginationProps, Tooltip } from 'antd';
+import { Button, Cascader, Image, Input, PaginationProps, Space, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getPosterCategoryList, getPosterList } from 'src/apis/marketing';
-import { NgFormSearch, NgTable } from 'src/components';
+import { NgTable } from 'src/components';
 import { Poster } from 'src/pages/Marketing/Poster/Config';
 import { UNKNOWN } from 'src/utils/base';
-import { setSearchCols } from './config';
 import style from './style.module.less';
 
 interface PosterSelectComponentProps {
@@ -14,7 +13,11 @@ interface PosterSelectComponentProps {
 export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [dataSource, setDataSource] = useState<any[]>([]);
-  const [formValues, setFormValues] = useState<any>({});
+  const [formValues, setFormValues] = useState<{
+    fatherTypeId: string;
+    typeId: string;
+    name: string;
+  }>();
   const [visible, setVisible] = useState(false);
 
   const [currentItem, setCurrentItem] = useState<Poster>();
@@ -50,15 +53,14 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
     getCategoryList();
     getList();
   }, []);
-  const handleSearch = (values: any) => {
+  const onSearch = (values: any) => {
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    const { typeIds: [fatherTypeId, typeId] = [undefined, undefined], name } = values;
-    getList({ name: name?.trim(), fatherTypeId, typeId, pageNum: 1 });
+
+    getList({ ...values, pageNum: 1 });
   };
 
-  const handleSearchValueChange = (changesValue: any, values: any) => {
-    const { name, typeIds: [fatherTypeId, typeId] = [undefined, undefined] } = values;
-    setFormValues({ name, fatherTypeId, typeId });
+  const handleSearchValueChange = (values: any) => {
+    setFormValues((formValues) => ({ ...formValues, ...values }));
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
@@ -75,18 +77,71 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
     setVisible(true);
   };
 
+  const onResetSearch = () => {
+    onSearch({ fatherTypeId: undefined, typeId: undefined, name: '' });
+  };
+
   return (
     <div className="pa20">
       <div className={style.panelWrap}>
-        <NgFormSearch
-          hideReset
-          className={style.customerInput}
-          searchCols={setSearchCols(categoryList)}
-          onSearch={handleSearch}
-          onValuesChange={(changesValue, values) => {
-            handleSearchValueChange(changesValue, values);
-          }}
-        />
+        <div className={style.searchWrap}>
+          <div className={style.searchItem}>
+            <label htmlFor="">
+              <span>海报名称：</span>
+              <Input
+                name="title"
+                placeholder="请输入"
+                allowClear
+                value={formValues?.name}
+                onChange={(e) => handleSearchValueChange({ name: e.target.value })}
+                className={style.nameInput}
+              ></Input>
+            </label>
+          </div>
+          <div className={style.searchItem}>
+            <label>
+              <span>内容标签：</span>
+              <Cascader
+                options={categoryList}
+                placeholder="请选择"
+                allowClear
+                changeOnSelect
+                fieldNames={{ label: 'name', value: 'typeId', children: 'childs' }}
+                className={style.selectWrap}
+                value={
+                  formValues?.fatherTypeId && formValues?.typeId
+                    ? [formValues?.fatherTypeId as string, formValues?.typeId as string]
+                    : undefined
+                }
+                onChange={(value) =>
+                  handleSearchValueChange({ fatherTypeId: value?.[0] || undefined, typeId: value?.[1] || undefined })
+                }
+              ></Cascader>
+            </label>
+          </div>
+          <div className={style.searchItem}>
+            <Space size={10}>
+              <Button
+                type="primary"
+                shape="round"
+                style={{ width: '70px' }}
+                onClick={() => onSearch(formValues)}
+                className={style.searchBtn}
+              >
+                查询
+              </Button>
+              <Button
+                type="default"
+                shape="round"
+                onClick={() => onResetSearch()}
+                style={{ width: '70px' }}
+                className={style.searchBtn}
+              >
+                重置
+              </Button>
+            </Space>
+          </div>
+        </div>
 
         <NgTable
           className="mt20"
