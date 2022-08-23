@@ -3,67 +3,159 @@
  */
 import React, { useEffect, useState } from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Card, PaginationProps, Popover, Button } from 'antd';
+import { Card, PaginationProps, Popover, Button, message } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
-import { searchCols, StaffColumns, tableColumnsFun } from './Config';
+import { searchCols, IClientColumns, tableColumnsFun } from './Config';
 import { useHistory } from 'react-router-dom';
-import { DistributionClient } from 'src/pages/StaffManage/components';
+import { DistributionModal } from 'src/pages/StaffManage/components';
+import {
+  requestGetAssignReasonList,
+  requestGetTransferClientList,
+  requestGetDimissionTransferList,
+  requestSyncTransferClientList
+} from 'src/apis/roleMange';
 import style from './style.module.less';
 import classNames from 'classnames';
 
 interface IDistributeListProps {
-  distributeLisType: 0 | 1; // 0: 在职继承 1: 离职继承
+  distributeLisType: 1 | 2; // 1: 在职继承 2: 离职继承
 }
 
 const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) => {
-  const [tableSource, setTableSource] = useState<Partial<StaffColumns>[]>([]);
   const [reasonCodeList, setReasonCodeList] = useState<{ id: string; name: string }[]>([]);
   const [distributionVisible, setDistribution] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedRowList, setselectedRowList] = useState<IClientColumns[]>([]);
+  const [formValue, setFormValue] = useState<{ [key: string]: any }>();
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [tableSource, setTableSource] = useState<{ total: number; list: IClientColumns[] }>({
+    total: 0,
+    list: []
+  });
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
-    pageSize: 10,
-    total: 0,
-    showTotal: (total) => {
-      return `共 ${total} 条记录`;
-    }
+    pageSize: 10
   });
 
   const history = useHistory();
 
-  const onSearch = (value?: any) => {
-    console.log('value', value);
+  // 获取待分配客户列表
+  const getList = async (param?: { [key: string]: any }) => {
+    setLoading(true);
+    let res;
+    if (distributeLisType === 1) {
+      res = await requestGetTransferClientList({ ...param });
+    } else {
+      res = await requestGetDimissionTransferList({ ...param });
+    }
+    if (res) {
+      setTableSource({ total: res.total, list: res.list });
+    }
+    setLoading(false);
+  };
+
+  const onSearch = (values?: { [key: string]: any }) => {
+    console.log('values', values);
+    delete values?.beginTime;
+    delete values?.endTime;
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
+    const { staffList, filterTag, addTime, takeoverTime } = values || {};
+    let addBeginTime = '';
+    let addEndTime = '';
+    if (addTime) {
+      addBeginTime = addTime[0].stafOf('days').format('YYYY-MM-DD HH:mm:ss');
+      addEndTime = addTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
+    }
+    let takeoverBeginTime = '';
+    let takeoverEndTime = '';
+    if (takeoverTime) {
+      takeoverBeginTime = takeoverTime[0].stafOf('days').format('YYYY-MM-DD HH:mm:ss');
+      takeoverEndTime = takeoverTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
+    }
+    setFormValue({
+      ...values,
+      staffList: staffList?.map(({ staffId }: { staffId: string }) => ({ staffId })),
+      filterTag:
+        filterTag && filterTag.tagList.length
+          ? {
+              logicType: filterTag.logicType,
+              tagList: filterTag.tagList?.map(({ tagId, groupId }: { tagId: string; groupId: string }) => ({
+                tagId,
+                groupId
+              }))
+            }
+          : undefined,
+      addBeginTime,
+      addEndTime,
+      takeoverBeginTime,
+      takeoverEndTime
+    });
+    getList({
+      pageNum: 1,
+      ...values,
+      staffList: staffList?.map(({ staffId }: { staffId: string }) => ({ staffId })),
+      filterTag:
+        filterTag && filterTag.tagList.length
+          ? {
+              logicType: filterTag.logicType,
+              tagList: filterTag.tagList?.map(({ tagId, groupId }: { tagId: string; groupId: string }) => ({
+                tagId,
+                groupId
+              }))
+            }
+          : undefined,
+      addBeginTime,
+      addEndTime,
+      takeoverBeginTime,
+      takeoverEndTime
+    });
+  };
+
+  // 重置
+  const onReset = () => {
+    setFormValue({});
+    onSearch({});
+    setPagination(() => ({ current: 1, pageSize: 10 }));
   };
 
   const jumpToDetail = () => {
     history.push('/onjob/client');
   };
 
-  const paginationChange = (pageSize: number) => {
-    console.log();
-    setPagination((pagination) => ({ ...pagination, pageSize }));
+  const paginationChange = (pageNum: number, pageSize?: number) => {
+    setPagination((pagination) => ({
+      ...pagination,
+      current: pageSize !== pagination.pageSize ? 1 : pageNum,
+      pageSize: pageSize as number
+    }));
+    getList({ ...formValue, pageNum: pageSize !== pagination.pageSize ? 1 : pageNum, pageSize: pageSize as number });
   };
 
   // 获取分配原因配置值
-  const getReasonCodeListHandle = () => {
-    setTimeout(() => {
-      const reasonCodeList = [
-        { reasonCode: 'reason_list_adjust', reasonName: '名单调整' },
-        { reasonCode: 'reason_long_sick', reasonName: '长病假' },
-        { reasonCode: 'reason_dimission', reasonName: '离职' },
-        { reasonCode: 'reason_team_adjust', reasonName: '团队调整' },
-        { reasonCode: 'reason_unsettled', reasonName: '临到期未成交' },
-        { reasonCode: 'reason_cross_dialing', reasonName: '交叉拨打' },
-        { reasonCode: 'reason_other', reasonName: '其他' }
-      ].map((mapItem) => ({ id: mapItem.reasonCode, name: mapItem.reasonName }));
+  const getReasonCodeListHandle = async () => {
+    const res = await requestGetAssignReasonList({ queryType: distributeLisType });
+    console.log('res', res);
+    if (res) {
+      const reasonCodeList = res.list.map((mapItem: { reasonCode: string; reasonName: string }) => ({
+        id: mapItem.reasonCode,
+        name: mapItem.reasonName
+      }));
       setReasonCodeList(reasonCodeList);
-    }, 500);
+    }
   };
 
   // 选择框配置对象
   const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: Partial<StaffColumns>[]) => {
-      console.log('selectedRowKeys', selectedRowKeys);
-      console.log('selectedRows', selectedRows);
+    selectedRowKeys: selectedRowList.map(
+      ({ externalUserid, staffId }: IClientColumns) => externalUserid + '-' + staffId
+    ),
+    onChange: (_: React.Key[], selectedRows: IClientColumns[]) => {
+      const currentPageKeys = tableSource.list.map(({ externalUserid, staffId }) => externalUserid + '-' + staffId);
+      // 非本页的数据
+      const noCurrentRowList = selectedRowList.filter(
+        ({ externalUserid, staffId }) => !currentPageKeys.includes(externalUserid + '-' + staffId)
+      );
+      setselectedRowList([...noCurrentRowList, ...selectedRows]);
     }
   };
 
@@ -74,11 +166,22 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
 
   // 分配记录
   const recordListHandle = () => {
-    if (distributeLisType) {
+    if (distributeLisType === 2) {
       history.push('/resign/record');
     } else {
       history.push('/onjob/record');
     }
+  };
+
+  // 同步离职客户列表
+  const syncList = async () => {
+    setSyncLoading(true);
+    const res = await requestSyncTransferClientList();
+    if (res) {
+      await getList({ ...formValue, pageNum: pagination.current, pageSize: pagination.pageSize });
+      message.success('同步成功');
+    }
+    setSyncLoading(false);
   };
 
   const CardTitle = () => {
@@ -99,37 +202,19 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   };
   useEffect(() => {
     getReasonCodeListHandle();
-    setTableSource([
-      {
-        key1: '李思思',
-        key2: '非车险拓客组',
-        key3: '12',
-        key4: '是'
-      },
-      {
-        key1: '颜武晨',
-        key2: '非车险拓客组',
-        key3: '10',
-        key4: '是'
-      },
-      {
-        key1: '陶黛晓',
-        key2: '非车险拓客组',
-        key3: '3',
-        key4: '是'
-      }
-    ]);
+    getList();
   }, []);
   return (
     <Card className="container" title={<CardTitle />} bordered={false}>
-      {/* {reasonCodeList && ( */}
-      <NgFormSearch
-        searchCols={searchCols(reasonCodeList, distributeLisType)}
-        isInline={false}
-        firstRowChildCount={4}
-        onSearch={onSearch}
-      />
-      {/* )} */}
+      {reasonCodeList && (
+        <NgFormSearch
+          searchCols={searchCols(reasonCodeList, distributeLisType)}
+          isInline={false}
+          firstRowChildCount={4}
+          onSearch={onSearch}
+          onReset={onReset}
+        />
+      )}
       <div className={'mt20'}>
         <Button className={style.distribution} type="primary" onClick={distributionHandle}>
           分配客户
@@ -137,26 +222,37 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
         <Button className={classNames(style.distributeLog, 'ml20')} onClick={recordListHandle}>
           分配记录
         </Button>
+        {distributeLisType === 2 && (
+          <Button className={classNames(style.sync, 'ml20')} onClick={syncList} loading={syncLoading}>
+            同步
+          </Button>
+        )}
         <span className={classNames(style.selectNum, 'inline-block')}>
-          *共计5000位待分配客户，<span className={style.selected}>已选择54位</span>
+          *共计{tableSource.total}位待分配客户，<span className={style.selected}>已选择{selectedRowList.length}位</span>
         </span>
       </div>
       <div className="mt20">
         <NgTable
+          dataSource={tableSource.list || []}
+          scroll={{ x: 'max-content' }}
+          paginationChange={paginationChange}
+          rowSelection={rowSelection}
+          loading={loading}
           columns={tableColumnsFun({
             onOperate: () => jumpToDetail(),
             distributeLisType
           })}
-          dataSource={tableSource}
-          pagination={pagination}
-          paginationChange={paginationChange}
-          rowSelection={rowSelection}
-          setRowKey={(record: StaffColumns) => {
-            return record.key1;
+          pagination={{
+            total: tableSource.total,
+            current: pagination.current,
+            pageSize: pagination.pageSize
+          }}
+          setRowKey={(record: IClientColumns) => {
+            return record.externalUserid + '-' + record.staffId;
           }}
         />
       </div>
-      <DistributionClient
+      <DistributionModal
         reasonNameList={reasonCodeList}
         visible={distributionVisible}
         onClose={() => setDistribution(false)}

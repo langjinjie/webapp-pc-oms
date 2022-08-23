@@ -1,11 +1,27 @@
 import React from 'react';
-import { Button, Form } from 'antd';
+import { /* Button, */ Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { SelectStaff, TagModal } from 'src/pages/StaffManage/components';
+import { TagItem } from 'src/utils/interface';
+import style from './style.module.less';
+import classNames from 'classnames';
 
-export const searchCols: (reasonCodeList: any[], distributeLisType: 0 | 1) => SearchCol[] = (
+export const transferStatusList = [
+  { id: 1, name: '转接中（发起在职转接，但是客户还未接受）' },
+  { id: 2, name: '已转接（客户已经接受转接或者自动转接成功）' },
+  { id: 3, name: '已拒绝（客户手工点击拒绝接受转接）' },
+  { id: 4, name: '已转接（90天无法转接）' },
+  { id: 5, name: '已拒绝（成员已超过最大客户数）' }
+];
+
+export const contentSourceList = [
+  { id: 1, name: '公有库' },
+  { id: 2, name: '私有库' }
+];
+
+export const searchCols: (reasonCodeList: any[], distributeLisType: 1 | 2) => SearchCol[] = (
   reasonCodeList,
   distributeLisType
 ) => {
@@ -54,7 +70,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 0 | 1) => Se
       options: [
         { id: 1, name: '已激活' },
         { id: 2, name: '已禁用' },
-        { id: 3, name: '未激活' }
+        { id: 4, name: '未激活' }
       ]
     },
     {
@@ -62,13 +78,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 0 | 1) => Se
       type: 'select',
       width: '140px',
       label: '转接状态',
-      options: [
-        { id: 1, name: '转接中（发起在职转接，但是客户还未接受）' },
-        { id: 2, name: '已转接（客户已经接受转接或者自动转接成功）' },
-        { id: 3, name: '已拒绝（客户手工点击拒绝接受转接）' },
-        { id: 4, name: '已转接（90天无法转接）' },
-        { id: 5, name: '已拒绝（成员已超过最大客户数）' }
-      ]
+      options: transferStatusList
     },
     {
       name: 'takeoverTime',
@@ -84,7 +94,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 0 | 1) => Se
       options: reasonCodeList
     }
   ];
-  if (distributeLisType) {
+  if (distributeLisType === 2) {
     searchColsList.pop();
   }
   return searchColsList;
@@ -111,69 +121,92 @@ export const searchCols1: SearchCol[] = [
   }
 ];
 
-export interface StaffColumns {
-  key1: string;
-  key2: string;
-  key3: string;
-  key4: string;
-  key5: string;
-  key6: string;
-  key7: string;
+export interface IClientColumns {
+  externalUserid: string;
+  avatar: string;
+  nickName: string;
+  staffId: string;
+  staffName: string;
+  staffStatus: number;
+  tagList: TagItem[];
+  transferStatus: number;
+  takeoverTime: string;
+  addTime: string;
+  reasonName: string;
 }
 
 interface OperateProps {
   onOperate: () => void;
-  distributeLisType: 0 | 1;
+  distributeLisType: 1 | 2;
 }
-export const tableColumnsFun = (args: OperateProps): ColumnsType<StaffColumns> => {
-  const columnList: ColumnsType<StaffColumns> = [
-    { title: '员工昵称', dataIndex: 'key1', key: 'key1', width: 100 },
+
+const assginStaffStatus = {
+  1: '已激活',
+  2: '已禁用',
+  4: '未激活'
+};
+
+export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns> => {
+  const columnList: ColumnsType<IClientColumns> = [
+    { title: '员工昵称', dataIndex: 'nickName' },
     {
       title: '所属客户经理',
-      dataIndex: 'key2',
-      key: 'key2',
-      width: 200
+      dataIndex: 'staffName'
     },
     {
       title: '账号状态',
-      dataIndex: 'key3',
-      width: 160,
-      key: 'key3',
-      align: 'center',
-      render: (nodeName: string) => nodeName || UNKNOWN
+      dataIndex: 'staffStatus',
+      render: (staffStatus: string) =>
+        assginStaffStatus[staffStatus as keyof { '1': string; '2': string; '4': string }] || UNKNOWN
     },
     {
       title: '客户标签',
-      dataIndex: 'key4',
-      width: 260,
-      align: 'center'
-    },
-    {
-      title: '转接状态'
-    },
-    {
-      title: '转接时间'
-    },
-    {
-      title: '添加时间'
-    },
-    {
-      title: '转接原因'
-    },
-    {
-      title: '操作',
-      width: 260,
-      align: 'center',
-      render: (value, record) => {
+      dataIndex: 'tagList',
+      render: (tagList: TagItem[]) => {
         return (
-          <Button type="link" key={record.key1} onClick={() => args.onOperate()}>
-            客户列表
-          </Button>
+          <span
+            className={classNames(style.clientTagList, 'ellipsis')}
+            title={tagList
+              ?.map((tagItem) => (tagItem.displayType ? tagItem.groupName + ' ' + tagItem.tagName : tagItem.tagName))
+              .toString()}
+          >
+            {tagList
+              ?.map((tagItem) => (tagItem.displayType ? tagItem.groupName + ' ' + tagItem.tagName : tagItem.tagName))
+              .toString()}
+          </span>
         );
+      }
+    },
+    {
+      title: '转接状态',
+      dataIndex: 'transferStatus',
+      render (transferStatus: number) {
+        return <>{transferStatusList.find((statusItem) => statusItem.id === transferStatus)?.name || UNKNOWN}</>;
+      }
+    },
+    {
+      title: '转接时间',
+      dataIndex: 'takeoverTime',
+      render (takeoverTime: string) {
+        return <>{takeoverTime || UNKNOWN}</>;
+      }
+    },
+    {
+      title: '添加时间',
+      dataIndex: 'addTime',
+      render (addTime: string) {
+        return <>{addTime || UNKNOWN}</>;
+      }
+    },
+    {
+      title: '转接原因',
+      dataIndex: 'reasonName',
+      render (reasonName: string) {
+        return <>{reasonName || UNKNOWN}</>;
       }
     }
   ];
-  if (args.distributeLisType) {
+  if (args.distributeLisType === 2) {
     columnList.filter((filterItem) => filterItem.title !== '转接原因');
   }
   return columnList;

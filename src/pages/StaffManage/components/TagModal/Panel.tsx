@@ -16,7 +16,7 @@ interface PanelProps {
   categoryName?: string;
   tagType?: number;
   groupList: TagGroup[];
-  chooseTags: TagGroup[];
+  chooseTags: TagItem[];
   onTagClick: (TagItem: TagItem) => void;
   expandChange: () => void;
   isHalf?: boolean;
@@ -64,11 +64,7 @@ const Panel: React.FC<PanelProps> = (props) => {
                     <li
                       key={tag.tagId}
                       className={classNames(style.tagItem, {
-                        [style.active]: chooseTags.some(
-                          (groupItem) =>
-                            groupItem.groupId === item.groupId &&
-                            (groupItem.tagList || []).some((tagIem) => tagIem.tagId === tag.tagId)
-                        )
+                        [style.active]: chooseTags?.some((tagItem) => tagItem.tagId === tag.tagId)
                       })}
                       onClick={() => handleTagClick(item, tag)}
                     >

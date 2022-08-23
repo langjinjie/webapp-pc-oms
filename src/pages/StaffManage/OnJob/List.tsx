@@ -5,7 +5,7 @@ import { DistributionList } from 'src/pages/StaffManage/components';
 const OnJob: React.FC = () => {
   return (
     <>
-      <DistributionList distributeLisType={0} />
+      <DistributionList distributeLisType={1} />
     </>
   );
 };

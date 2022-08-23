@@ -30,7 +30,7 @@ const submitVaKeys = ['reason', 'takeoverStaffId', 'transferSuccessMsg'];
  * @param distributionList 分配的列表
  * @returns
  */
-const DistributionClient: React.FC<IDistributionClientProos> = ({ visible, onClose, reasonNameList }) => {
+const DistributionModal: React.FC<IDistributionClientProos> = ({ visible, onClose, reasonNameList }) => {
   const [stepIndex, setStepIndex] = useState(0);
   const [distributionParam, setDistributionParam] = useState<IdistributionParam>({});
   const [treeData, setTreeData] = useState<any[]>([]);
@@ -304,4 +304,4 @@ const DistributionClient: React.FC<IDistributionClientProos> = ({ visible, onClo
     </NgModal>
   );
 };
-export default DistributionClient;
+export default DistributionModal;

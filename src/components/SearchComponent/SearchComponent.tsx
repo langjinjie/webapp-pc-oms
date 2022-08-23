@@ -238,7 +238,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (
-                  <Form.Item key={col.name} label={col.label}>
+                  <Form.Item key={col.name} name={col.name} label={col.label}>
                     <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                       {col.options &&
                         col.options.map((option) => (

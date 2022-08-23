@@ -6,9 +6,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Input, Button, Space, Tabs } from 'antd';
-import { NgModal } from 'src/components';
+import { NgModal, Icon } from 'src/components';
 import { queryTagList, searchTagByTagName as searchTagList } from 'src/apis/task';
-import { TagCategory, TagItem, TagGroup } from 'src/utils/interface';
+import { TagCategory, TagItem } from 'src/utils/interface';
 import EmptyTag from './EmptyTag';
 import PanelList from './PanelList';
 import style from './style.module.less';
@@ -16,8 +16,8 @@ import style from './style.module.less';
 const { Search } = Input;
 
 interface TagFilterProps {
-  value?: { logicType: 1 | 2; tagList: TagGroup[] };
-  onChange?: (value?: { logicType: 1 | 2; tagList: TagGroup[] }) => void;
+  value?: { logicType: 1 | 2; tagList: TagItem[] };
+  onChange?: (value?: { logicType: 1 | 2; tagList: TagItem[] }) => void;
   visible: boolean;
   className?: string;
   onClose: () => void;
@@ -33,7 +33,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
   const [carTagList, setCarTagList] = useState<TagCategory[]>([]);
   const [allCarList, setAllCarTagList] = useState<TagCategory[]>([]);
   // const [tag, setTag] = useState<{ logicType: 1 | 2; tagList: TagGroup[] }>({ logicType: 2, tagList: [] });
-  const [chooseTags, setChooseTags] = useState<TagGroup[]>([]);
+  const [chooseTags, setChooseTags] = useState<TagItem[]>([]);
   const [interestTagList, setinterestTagList] = useState<TagCategory[]>([]);
   const [allInterestList, setAllinterestTagList] = useState<TagCategory[]>([]);
 
@@ -121,34 +121,39 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
   };
 
   // 选择标签
-  const onTagClick = (tagItem: TagItem & { type?: number }) => {
+  const onTagClick = (tagItem: TagItem) => {
     console.log('tagItem', tagItem);
     let newChooseTags = [...chooseTags];
     // 判断该标签组是否有标签被选中
-    const curGroupItem = newChooseTags.find((findItem) => findItem.groupId === tagItem.groupId);
+    const curGroupItem = newChooseTags.find((findItem) => findItem.tagId === tagItem.tagId);
     if (curGroupItem) {
-      // 判断该标签组中的标签是否被选中
-      if (curGroupItem.tagList.some((tag) => tag.tagId === tagItem.tagId)) {
-        curGroupItem.tagList = curGroupItem.tagList.filter((filterItem) => filterItem.tagId !== tagItem.tagId);
-      } else {
-        curGroupItem.tagList = [...curGroupItem.tagList, { tagId: tagItem.tagId, tagName: tagItem.tagName }];
-      }
+      newChooseTags = newChooseTags.filter((filterItem) => filterItem.tagId !== tagItem.tagId);
     } else {
-      const newGroupItem: TagGroup = {
-        displayType: tagItem.displayType || 0,
-        groupId: tagItem.groupId || '',
-        groupName: tagItem.groupName || '',
-        tagList: [
-          {
-            tagId: tagItem.tagId,
-            tagName: tagItem.tagName
-          }
-        ]
-      };
-      newChooseTags = [...newChooseTags, newGroupItem];
+      newChooseTags = [...newChooseTags, tagItem];
     }
+    // if (curGroupItem) {
+    //   // 判断该标签组中的标签是否被选中
+    //   if (curGroupItem.tagList.some((tag) => tag.tagId === tagItem.tagId)) {
+    //     curGroupItem.tagList = curGroupItem.tagList.filter((filterItem) => filterItem.tagId !== tagItem.tagId);
+    //   } else {
+    //     curGroupItem.tagList = [...curGroupItem.tagList, { tagId: tagItem.tagId, tagName: tagItem.tagName }];
+    //   }
+    // } else {
+    //   const newGroupItem: TagGroup = {
+    //     displayType: tagItem.displayType || 0,
+    //     groupId: tagItem.groupId || '',
+    //     groupName: tagItem.groupName || '',
+    //     tagList: [
+    //       {
+    //         tagId: tagItem.tagId,
+    //         tagName: tagItem.tagName
+    //       }
+    //     ]
+    //   };
+    //   newChooseTags = [...newChooseTags, newGroupItem];
+    // }
     // 过滤掉tagList为空数组的
-    newChooseTags = newChooseTags.filter((newItem) => newItem.tagList && newItem.tagList.length);
+    // newChooseTags = newChooseTags.filter((newItem) => newItem.tagList && newItem.tagList.length);
     setChooseTags(newChooseTags);
   };
 
@@ -157,10 +162,21 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
     onChange?.({ logicType, tagList: chooseTags });
   };
 
+  // 取消选择
+  const cancelChooseHandle = (tagItem: TagItem) => {
+    const newChooseTags = chooseTags.filter((tag) => tag.tagId !== tagItem.tagId);
+    setChooseTags(newChooseTags);
+  };
+
+  // 取消所有选择的标签
+  const deleteAll = () => {
+    setChooseTags([]);
+  };
+
   useEffect(() => {
     if (visible) {
       setChooseTags(value?.tagList || []);
-      setLogicType(value?.logicType as 1 | 2);
+      setLogicType((value?.logicType as 1 | 2) || logicType);
       getTagList();
     }
   }, [visible]);
@@ -193,9 +209,27 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
         </div>
       }
     >
+      <div className={style.chooseTagWrap}>
+        <span className={style.tagDesc}>已筛选的标签:</span>
+        <div className={style.chooseTagList}>
+          {chooseTags.map((tagItem) => (
+            <span key={tagItem.tagId} className={style.chooseTagItem}>
+              {`${tagItem.displayType ? tagItem.groupName + ': ' + tagItem.tagName : tagItem.tagName}`}
+              <span className={style.close} onClick={() => cancelChooseHandle(tagItem)}>
+                <Icon className={style.closeIcon} name="icon_common_Line_Close" />
+              </span>
+            </span>
+          ))}
+          {chooseTags.length > 0 && (
+            <li className={style.delItem} onClick={() => deleteAll()}>
+              <Icon className={style.delIcon} name="cangpeitubiao_shanchu" />
+            </li>
+          )}
+        </div>
+      </div>
       <Tabs
         className={style.filterRule}
-        defaultActiveKey={'2'}
+        defaultActiveKey={logicType + ''}
         onChange={(activeKey) => setLogicType(+activeKey as 1 | 2)}
       >
         <Tabs.TabPane tab={'以下标签满足其一'} key={1} />

@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { TagCategory, TagItem, TagGroup } from 'src/utils/interface';
+import { TagCategory, TagItem } from 'src/utils/interface';
 import Panel from './Panel';
 
 export const predictTagCategory: { key: number; label: string }[] = [
@@ -55,7 +55,7 @@ const CategoryList: any[] = [
 interface PanelListProps {
   dataSource: TagCategory[];
   onTagClick: (tagItem: TagItem) => void;
-  chooseTags: TagGroup[];
+  chooseTags: TagItem[];
   tagType: number;
   defaultActiveIndex: number;
   type?: number; // 标签类型，1-属性标签；2-预测标签；3-车标签；4-二级兴趣标签
