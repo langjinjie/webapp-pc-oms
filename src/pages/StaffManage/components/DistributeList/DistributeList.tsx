@@ -8,11 +8,14 @@ import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IClientColumns, tableColumnsFun } from './Config';
 import { useHistory } from 'react-router-dom';
 import { DistributionModal } from 'src/pages/StaffManage/components';
+import { IdistributionParam } from 'src/pages/StaffManage/components/DistributionModal/DistributionModal';
 import {
   requestGetAssignReasonList,
   requestGetTransferClientList,
   requestGetDimissionTransferList,
-  requestSyncTransferClientList
+  requestSyncTransferClientList,
+  requestAssignClientTransfer,
+  requestDimissionClientTransfer
 } from 'src/apis/roleMange';
 import style from './style.module.less';
 import classNames from 'classnames';
@@ -55,7 +58,6 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   };
 
   const onSearch = (values?: { [key: string]: any }) => {
-    console.log('values', values);
     delete values?.beginTime;
     delete values?.endTime;
     setPagination((pagination) => ({ ...pagination, current: 1 }));
@@ -116,10 +118,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
     setFormValue({});
     onSearch({});
     setPagination(() => ({ current: 1, pageSize: 10 }));
-  };
-
-  const jumpToDetail = () => {
-    history.push('/onjob/client');
+    setselectedRowList([]);
   };
 
   const paginationChange = (pageNum: number, pageSize?: number) => {
@@ -134,7 +133,6 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   // 获取分配原因配置值
   const getReasonCodeListHandle = async () => {
     const res = await requestGetAssignReasonList({ queryType: distributeLisType });
-    console.log('res', res);
     if (res) {
       const reasonCodeList = res.list.map((mapItem: { reasonCode: string; reasonName: string }) => ({
         id: mapItem.reasonCode,
@@ -184,6 +182,27 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
     setSyncLoading(false);
   };
 
+  // 确认分配转接
+  const onDistriOk = async (param?: IdistributionParam) => {
+    let res = '';
+    if (distributeLisType === 1) {
+      res = await requestAssignClientTransfer({
+        ...param,
+        list: selectedRowList.map(({ externalUserid, staffId }) => ({ externalUserid, staffId }))
+      });
+    } else {
+      res = await requestDimissionClientTransfer({
+        ...param,
+        list: selectedRowList.map(({ externalUserid, staffId }) => ({ externalUserid, staffId }))
+      });
+    }
+    if (res) {
+      message.success('客户转接成功，如客户无拒绝则24小时后客户自动转接生效');
+      await getList({ ...formValue, pageNum: pagination.current, pageSize: pagination.pageSize });
+      setselectedRowList([]);
+    }
+  };
+
   const CardTitle = () => {
     const content = (
       <>
@@ -193,7 +212,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
     );
     return (
       <div>
-        {distributeLisType ? '离职继承' : '在职继承'}
+        {distributeLisType === 2 ? '离职继承' : '在职继承'}
         <Popover content={content}>
           <QuestionCircleOutlined className="color-text-secondary f16 pointer" />
         </Popover>
@@ -216,7 +235,12 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
         />
       )}
       <div className={'mt20'}>
-        <Button className={style.distribution} type="primary" onClick={distributionHandle}>
+        <Button
+          className={style.distribution}
+          disabled={!selectedRowList.length}
+          type="primary"
+          onClick={distributionHandle}
+        >
           分配客户
         </Button>
         <Button className={classNames(style.distributeLog, 'ml20')} onClick={recordListHandle}>
@@ -239,7 +263,6 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
           rowSelection={rowSelection}
           loading={loading}
           columns={tableColumnsFun({
-            onOperate: () => jumpToDetail(),
             distributeLisType
           })}
           pagination={{
@@ -253,9 +276,12 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
         />
       </div>
       <DistributionModal
+        value={selectedRowList}
+        distributeLisType={distributeLisType}
         reasonNameList={reasonCodeList}
         visible={distributionVisible}
         onClose={() => setDistribution(false)}
+        onOk={onDistriOk}
       />
     </Card>
   );

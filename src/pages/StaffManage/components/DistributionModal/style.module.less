@@ -129,11 +129,23 @@
   }
   .distriSpeechTextArea {
     width: 354px;
-    padding-right: 44px;
+    padding-right: 40px;
+    &.textAreaReadOnly {
+      border-color: transparent;
+      border-radius: 4px;
+    }
   }
   .editIcon {
     position: absolute;
     right: 52px;
     top: 40px;
   }
+}
+.textAreaLength {
+  margin-top: 4px;
+  height: 20px;
+  font-size: 14px;
+  color: #f25555;
+  line-height: 20px;
+  text-align: end;
 }

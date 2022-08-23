@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, MutableRefObject, useImperativeHandle } from 'react';
 
 import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'antd';
 import style from './style.module.less';
@@ -47,6 +47,7 @@ interface SearchComponentProps {
   className?: string;
   hideReset?: boolean;
   children?: React.ReactNode;
+  searchRef?: MutableRefObject<any>;
 }
 const { RangePicker } = DatePicker;
 
@@ -60,7 +61,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     onChangeOfCascader,
     onReset,
     firstRowChildCount,
-    hideReset
+    hideReset,
+    searchRef
   } = props;
   const [searchForm] = Form.useForm();
   const handleReset = () => {
@@ -88,6 +90,12 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     }
     onChangeOfCascader?.(value, selectedOptions);
   };
+
+  useImperativeHandle(searchRef, () => ({
+    handleReset: () => {
+      searchForm.resetFields();
+    }
+  }));
   useEffect(() => {
     if (props.defaultValues?.catalogIds) {
       searchForm.setFieldsValue({ catalogIds: props.defaultValues.catalogIds, ...props.defaultValues });

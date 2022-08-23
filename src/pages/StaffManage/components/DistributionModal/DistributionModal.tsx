@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, Key } from 'react';
+import React, { useEffect, useMemo, useState, Key, MutableRefObject, useRef } from 'react';
 import { NgModal, Empty, Icon } from 'src/components';
 import { Radio, Input, Tree, message } from 'antd';
 import { debounce, updateTreeData } from 'src/utils/base';
@@ -7,56 +7,71 @@ import { requestGetDeptList, requestGetDepStaffList, searchStaffList } from 'src
 import classNames from 'classnames';
 import style from './style.module.less';
 
-interface IDistributionClientProos {
-  visible: boolean;
-  value?: any;
-  onClose?: (value?: any) => void;
-  onOk?: (value?: any) => void;
-  reasonNameList?: { id: string; name: string }[];
-  distributionList?: { externalUserid: string; staffId: string };
-}
-
-interface IdistributionParam {
+export interface IdistributionParam {
   takeoverStaffId?: string;
-  reason?: string;
+  reasonCode?: string;
+  reasonName?: string;
   transferSuccessMsg?: string;
 }
 
+interface IDistributionClientProos {
+  visible: boolean;
+  value?: { externalUserid: string; staffId: string }[];
+  onClose?: (value?: any) => void;
+  onOk?: (value?: IdistributionParam) => any;
+  reasonNameList?: { id: string; name: string }[];
+  distributeLisType: 1 | 2;
+}
+
 const titleNameList = ['客户分配原因', '分配客户', '转接提示'];
-const submitVaKeys = ['reason', 'takeoverStaffId', 'transferSuccessMsg'];
+const submitVaKeys = ['reasonCode', 'takeoverStaffId', 'transferSuccessMsg'];
 
 /**
  *
  * @param distributionList 分配的列表
  * @returns
  */
-const DistributionModal: React.FC<IDistributionClientProos> = ({ visible, onClose, reasonNameList }) => {
-  const [stepIndex, setStepIndex] = useState(0);
+const DistributionModal: React.FC<IDistributionClientProos> = ({
+  visible,
+  onClose,
+  onOk,
+  value,
+  reasonNameList,
+  distributeLisType
+}) => {
+  const [stepIndex, setStepIndex] = useState(distributeLisType === 2 ? 1 : 0);
   const [distributionParam, setDistributionParam] = useState<IdistributionParam>({});
   const [treeData, setTreeData] = useState<any[]>([]);
   const [treeSearchList, setTreeSearchList] = useState<any[]>();
   const [selectedList, setSelectedList] = useState<any[]>([]);
   const [textAreaReadOnly, setTextReadOnly] = useState(true);
-  const [reasonText, setReasonText] = useState('');
+  const textAreaRef: MutableRefObject<any> = useRef(null);
 
   const { TextArea } = Input;
 
   // 重置
   const onResetHandle = () => {
     setDistributionParam({});
+    setSelectedList([]);
+    setStepIndex(distributeLisType === 2 ? 1 : 0);
+    setTreeSearchList(undefined);
   };
 
   // 取消
   const onCancelHandle = () => {
     onClose?.();
-    onResetHandle();
   };
 
   // 下一步/确认
-  const onOkHandle = () => {
+  const onOkHandle = async () => {
+    console.log('distributionParam', distributionParam);
     // 判断是否满足提交
     if (stepIndex < titleNameList.length - 1) {
       setStepIndex((stepIndex) => stepIndex + 1);
+    } else {
+      // 提交
+      await onOk?.(distributionParam);
+      onCancelHandle();
     }
   };
 
@@ -131,14 +146,22 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({ visible, onClos
   };
 
   // 点击搜索出来的列表
-  const clickSearchList = (item: any, checked: boolean) => {
-    let selected: any[] = [];
-    if (!checked) {
-      selected = [item];
+  const clickSearchList = (item: any) => {
+    if (selectedList.length && selectedList[0].staffId === item.staffId) {
+      setSelectedList([]);
+      setDistributionParam((param) => ({
+        ...param,
+        takeoverStaffId: '',
+        transferSuccessMsg: ''
+      }));
     } else {
-      selected = [];
+      setSelectedList([item]);
+      setDistributionParam((param) => ({
+        ...param,
+        takeoverStaffId: item.staffId,
+        transferSuccessMsg: `您好，您的服务已升级，后续将由我的同事${item.staffName}@${treeData[0].deptName}接替我的工作，继续为您服务。`
+      }));
     }
-    setSelectedList(selected);
   };
 
   // 选择成员
@@ -157,24 +180,40 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({ visible, onClos
     }
     if (info.selected) {
       setSelectedList([info.node]);
-      setDistributionParam((param) => ({ ...param, takeoverStaffId: info.node.staffId }));
+      setDistributionParam((param) => ({
+        ...param,
+        takeoverStaffId: info.node.staffId,
+        transferSuccessMsg: `您好，您的服务已升级，后续将由我的同事${info.node.staffName}@${treeData[0].deptName}接替我的工作，继续为您服务。`
+      }));
     } else {
       setSelectedList([]);
-      setDistributionParam((param) => ({ ...param, takeoverStaffId: '' }));
+      setDistributionParam((param) => ({ ...param, takeoverStaffId: '', transferSuccessMsg: '' }));
     }
   };
 
+  // 编辑迁移默认话术
+  const editAssignSpeech = () => {
+    console.log('textAreaRef', textAreaRef);
+    setTextReadOnly((param) => !param);
+    textAreaRef.current.focus();
+  };
+
+  const textAreaOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDistributionParam((param) => ({ ...param, transferSuccessMsg: e.currentTarget.value }));
+  };
+
   const onOkBtnDisabled = useMemo(() => {
-    if (distributionParam.reason === 'reason_other') {
-      return !reasonText;
+    const { reasonCode, reasonName } = distributionParam;
+    if (reasonCode === 'reason_other') {
+      return !reasonName;
     } else {
       return !distributionParam[submitVaKeys[stepIndex] as keyof IdistributionParam];
     }
-  }, [distributionParam, stepIndex, reasonText]);
+  }, [distributionParam, stepIndex]);
 
   useEffect(() => {
     if (visible) {
-      setStepIndex(0);
+      onResetHandle();
     }
   }, [visible]);
 
@@ -201,9 +240,9 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({ visible, onClos
       {stepIndex === 0 && (
         <>
           <Radio.Group
-            value={distributionParam.reason}
+            value={distributionParam.reasonCode}
             className={style.distributionRule}
-            onChange={(e) => setDistributionParam({ reason: e.target.value })}
+            onChange={(e) => setDistributionParam((param) => ({ ...param, reasonCode: e.target.value }))}
           >
             {reasonNameList?.map((reasonItem) => (
               <Radio key={reasonItem.id} value={reasonItem.id} className={style.ruleRadioItem}>
@@ -211,12 +250,11 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({ visible, onClos
               </Radio>
             ))}
           </Radio.Group>
-          {distributionParam.reason === 'reason_other' && (
+          {distributionParam.reasonCode === 'reason_other' && (
             <TextArea
-              value={reasonText}
-              onChange={(e) => setReasonText(e.target.value)}
+              onChange={(e) => setDistributionParam((param) => ({ ...param, reasonName: e.target.value }))}
               showCount
-              maxLength={300}
+              maxLength={50}
               className={style.reasonOther}
             />
           )}
@@ -253,12 +291,7 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({ visible, onClos
                         className={classNames(style.searchItem, {
                           [style.active]: selectedList?.some((selectItem) => item.id === selectItem.id)
                         })}
-                        onClick={() =>
-                          clickSearchList(
-                            item,
-                            selectedList.some((selectItem) => item.id === selectItem.id)
-                          )
-                        }
+                        onClick={() => clickSearchList(item)}
                       >
                         <div className={style.name}>{item.name}</div>
                       </div>
@@ -286,19 +319,25 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({ visible, onClos
       )}
       {stepIndex === 2 && (
         <>
-          <div className={style.distriSpeechTitle}>将转接1位客户给李斯</div>
+          <div className={style.distriSpeechTitle}>
+            将转接{value?.length}位客户给{selectedList[0]?.staffName}
+          </div>
           <div className={style.distriTips}>客户将收到以下提示</div>
           <div className={style.distriSpeechContent}>
             <Icon name="a-bianzu101" className={style.icon} />
             <TextArea
-              defaultValue={'您好，您的服务已升级，后续将由我的同事李斯@XX保险接替我的工作，继续为您服务。'}
-              autoSize
+              ref={textAreaRef}
+              autoSize={true}
+              value={distributionParam.transferSuccessMsg || ''}
+              maxLength={200}
               readOnly={textAreaReadOnly}
-              className={style.distriSpeechTextArea}
-            ></TextArea>
-            <Icon className={style.editIcon} onClick={() => setTextReadOnly((param) => !param)} name="bianji" />
-            <div></div>
+              className={classNames(style.distriSpeechTextArea, { [style.textAreaReadOnly]: textAreaReadOnly })}
+              onChange={textAreaOnChange}
+              onBlur={() => setTextReadOnly(true)}
+            />
+            <Icon className={style.editIcon} onClick={editAssignSpeech} name="bianji" />
           </div>
+          <div className={style.textAreaLength}>{distributionParam.transferSuccessMsg?.length || 0}/200</div>
         </>
       )}
     </NgModal>

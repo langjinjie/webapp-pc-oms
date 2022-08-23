@@ -1,158 +1,82 @@
 /**
  * @desc 在职分配
  */
-import React, { useEffect, useState } from 'react';
-import { PaginationProps, Tabs } from 'antd';
+import React, { MutableRefObject, useEffect, useState, useRef } from 'react';
+import { Tabs } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
-import { clientTypeList, searchCols, StaffColumns, tableColumns, tableColumns2 } from './Config';
-// import { RouteComponentProps } from 'react-router-dom';
+import { clientTypeList, searchCols, IClientAssignRecord, tableColumns } from './Config';
+import { requestGetTransferClientRecord } from 'src/apis/roleMange';
 
 interface IDistributeLogProps {
-  distributeLisType: 0 | 1; // 0: 在职继承 1: 离职继承
+  distributeLisType: 1 | 2; // 1: 在职继承 2: 离职继承
 }
 
 const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => {
-  const [tableSource, setTableSource] = useState<Partial<StaffColumns>[]>([
-    {
-      key1: '李思思',
-      key2: '非车险拓客组',
-      key3: '齐加成',
-      key4: '是',
-      key5: '李志辉',
-      key6: '2022-05-10 10:03',
-      key7: '休假需跟进，客户继承成功后原员工无法再与客户间发起会话。客户继承成功后90天保护期内无法再次继承。'
-    },
-    {
-      key1: '颜武晨',
-      key2: '非车险拓客组',
-      key3: '齐加成',
-      key4: '是',
-      key5: '李志辉',
-      key6: '2022-05-10 10:03',
-      key7: '人员异动'
-    },
-    {
-      key1: '陶黛晓',
-      key2: '非车险拓客组',
-      key3: '汪福',
-      key4: '是',
-      key5: '李志辉',
-      key6: '2022-05-10 10:03',
-      key7: '长病假'
+  const [activeKey, setActiveKey] = useState(distributeLisType.toString());
+  const [formValue, setFormValue] = useState<{ [key: string]: any }>({});
+  const [loading, setLoading] = useState(false);
+  const [tableSource, setTableSource] = useState<{ total: number; list: IClientAssignRecord[] }>({
+    total: 0,
+    list: []
+  });
+  const [pagination, setPagination] = useState<{ pageNum: number; pageSize: number }>({
+    pageNum: 1,
+    pageSize: 10
+  });
+
+  const searchRef: MutableRefObject<any> = useRef(null);
+
+  // 获取记录
+  const getRecordList = async (param?: { [key: string]: any }) => {
+    setLoading(true);
+    const res = await requestGetTransferClientRecord({ queryType: activeKey, ...param });
+    if (res) {
+      const { total, list } = res;
+      setTableSource({ total, list: list });
     }
-  ]);
-  const [activeKey, setActiveKey] = useState(distributeLisType ? 'key2' : 'key1');
+    setLoading(false);
+  };
+
+  // 搜索
+  const onSearch = (values: { [key: string]: any }) => {
+    const { clientName, staffList, transferStatus } = values || {};
+    setFormValue({
+      clientName,
+      staffList: staffList?.map(({ staffId }: { staffId: string }) => staffId),
+      transferStatus
+    });
+    getRecordList({
+      clientName,
+      staffList: staffList?.map(({ staffId }: { staffId: string }) => staffId),
+      transferStatus
+    });
+  };
+
+  // 重置
+  const onResetHandle = () => {
+    setPagination({ pageNum: 1, pageSize: 10 });
+    setFormValue({});
+    getRecordList({});
+  };
+
+  // 分页
+  const paginationChange = (pageNum: number, pageSize?: number) => {
+    setPagination((pagination) => ({ ...pagination, pageNum, pageSize: pageSize as number }));
+    getRecordList(formValue);
+  };
+
+  // 切换记录类型 : 离职/在职
+  const onTabsChange = (activeKey: string) => {
+    searchRef.current.handleReset();
+    setActiveKey(activeKey);
+    setPagination({ pageNum: 1, pageSize: 10 });
+    setFormValue({});
+    getRecordList({ queryType: activeKey });
+  };
 
   useEffect(() => {
-    setTableSource([
-      {
-        key1: '李思思',
-        key2: '非车险拓客组',
-        key3: '齐加成',
-        key4: '是',
-        key5: '李志辉',
-        key6: '2022-05-10 10:03',
-        key7: '休假需跟进，客户继承成功后原员工无法再与客户间发起会话。客户继承成功后90天保护期内无法再次继承。'
-      },
-      {
-        key1: '颜武晨',
-        key2: '非车险拓客组',
-        key3: '齐加成',
-        key4: '是',
-        key5: '李志辉',
-        key6: '2022-05-10 10:03',
-        key7: '人员异动'
-      },
-      {
-        key1: '陶黛晓',
-        key2: '非车险拓客组',
-        key3: '汪福',
-        key4: '是',
-        key5: '李志辉',
-        key6: '2022-05-10 10:03',
-        key7: '长病假'
-      }
-    ]);
+    getRecordList();
   }, []);
-  const [pagination, setPagination] = useState<PaginationProps>({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-    showTotal: (total) => {
-      return `共 ${total} 条记录`;
-    }
-  });
-  const onSearch = () => {
-    console.log('onSearch');
-  };
-
-  const paginationChange = (pageSize: number) => {
-    console.log();
-    setPagination((pagination) => ({ ...pagination, pageSize }));
-  };
-
-  const onTabsChange = (activeKey: string) => {
-    console.log(activeKey);
-    setActiveKey(activeKey);
-    if (activeKey === 'key2') {
-      setTableSource([
-        {
-          key1: '李心洁',
-          key2: '林丹均',
-          key3: '张政',
-          key4: '2',
-          key5: '林经理',
-          key6: '2022-05-10 10:03'
-        },
-        {
-          key1: '颜武晨',
-          key2: '非车险拓客组',
-          key3: '齐加成',
-          key4: '1',
-          key5: '李志辉',
-          key6: '2022-05-10 10:03'
-        },
-        {
-          key1: '陶黛晓',
-          key2: '非车险拓客组',
-          key3: '汪福',
-          key4: '0',
-          key5: '李志辉',
-          key6: '2022-05-10 10:03'
-        }
-      ]);
-    } else {
-      setTableSource([
-        {
-          key1: '李思思',
-          key2: '非车险拓客组',
-          key3: '齐加成',
-          key4: '2',
-          key5: '李志辉',
-          key6: '2022-05-10 10:03',
-          key7: '休假需跟进，客户继承成功后原员工无法再与客户间发起会话。客户继承成功后90天保护期内无法再次继承。'
-        },
-        {
-          key1: '颜武晨',
-          key2: '非车险拓客组',
-          key3: '齐加成',
-          key4: '2',
-          key5: '李志辉',
-          key6: '2022-05-10 10:03',
-          key7: '人员异动'
-        },
-        {
-          key1: '陶黛晓',
-          key2: '非车险拓客组',
-          key3: '汪福',
-          key4: '0',
-          key5: '李志辉',
-          key6: '2022-05-10 10:03',
-          key7: '长病假'
-        }
-      ]);
-    }
-  };
   return (
     <div>
       <div className="pageTitle">
@@ -163,16 +87,28 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
         </Tabs>
       </div>
       <div className="container">
-        <NgFormSearch searchCols={searchCols} isInline onSearch={onSearch}></NgFormSearch>
+        <NgFormSearch
+          searchRef={searchRef}
+          defaultValues={formValue}
+          searchCols={searchCols}
+          isInline
+          onSearch={onSearch}
+          onReset={onResetHandle}
+        />
 
         <div className="mt20">
           <NgTable
-            columns={activeKey === 'key1' ? tableColumns : tableColumns2}
-            dataSource={tableSource}
-            pagination={pagination}
+            columns={tableColumns}
+            loading={loading}
+            dataSource={tableSource.list}
+            pagination={{
+              current: pagination.pageNum,
+              pageSize: pagination.pageSize,
+              total: tableSource.total
+            }}
             paginationChange={paginationChange}
-            setRowKey={(record: StaffColumns) => {
-              return record.key1;
+            setRowKey={(record: IClientAssignRecord) => {
+              return record.externalUserid + '-' + record.handoverStaffId + '-' + record.takeoverStaffId;
             }}
           />
         </div>

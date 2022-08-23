@@ -136,7 +136,6 @@ export interface IClientColumns {
 }
 
 interface OperateProps {
-  onOperate: () => void;
   distributeLisType: 1 | 2;
 }
 
