@@ -18,7 +18,7 @@ export const tplTypeOptions = [
     name: '活动'
   },
   {
-    id: 6,
+    id: 4,
     name: '单张海报'
   },
   {

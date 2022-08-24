@@ -95,7 +95,6 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
 
   const onSubmit = async (values: any) => {
-    console.log(values);
     const { speechcraft, tplType, name, itemId, itemList } = values;
     const res = await updateMoment({
       feedId: formValues.feedId,
