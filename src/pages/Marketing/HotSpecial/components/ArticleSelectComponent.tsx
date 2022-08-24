@@ -143,6 +143,7 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
           pagination={pagination}
           rowSelection={{
             type: 'checkbox',
+            preserveSelectedRowKeys: true,
             onChange: (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
               onSelectChange(selectedRowKeys, selectedRows);
             }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Input, PaginationProps, Select, Space } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { NgTable } from 'src/components';
 import { getProductList, productConfig } from 'src/apis/marketing';
 import { ProductProps } from 'src/pages/Marketing/Product/Config';
 import styles from './style.module.less';
@@ -12,7 +12,7 @@ interface ProductSelectComponentProps {
 export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ onChange }) => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [options, setOptions] = useState<any[]>([]);
-  const [formValues, setFormValues] = useState<any>();
+  const [formValues, setFormValues] = useState<{ productName: string; category: string | undefined }>();
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 9,
@@ -61,34 +61,40 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
     onChange(selectedRowKeys, selectedRows);
   };
+  const onFormValueChange = (values: any) => {
+    setFormValues((formValues) => ({ ...formValues, ...values }));
+  };
+  const onResetSearch = () => {
+    setFormValues({ productName: '', category: undefined });
+  };
   return (
     <div className="pa20">
       <div className={styles.panelWrap}>
         <div className={styles.searchWrap}>
           <div className={styles.searchItem}>
             <label htmlFor="">
-              <span>文章名称：</span>
+              <span>产品名称：</span>
               <Input
                 name="title"
                 placeholder="请输入"
                 allowClear
-                value={formValues.title}
-                onChange={(e) => onFormValueChange({ title: e.target.value })}
+                value={formValues?.productName}
+                onChange={(e) => onFormValueChange({ productName: e.target.value })}
                 className={styles.nameInput}
               ></Input>
             </label>
           </div>
           <div className={styles.searchItem}>
             <label>
-              <span>文章分类：</span>
+              <span>产品分类：</span>
               <Select
                 placeholder="请选择"
                 allowClear
                 className={styles.selectWrap}
-                value={formValues.categoryId}
-                onChange={(value) => onFormValueChange({ categoryId: value })}
+                value={formValues?.category}
+                onChange={(value) => onFormValueChange({ category: value })}
               >
-                {articleCategoryList.map((item: any) => (
+                {options.map((item: any) => (
                   <Select.Option value={item.id} key={item.id}>
                     {item.name}
                   </Select.Option>
@@ -119,28 +125,7 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
             </Space>
           </div>
         </div>
-        <NgFormSearch
-          onSearch={onSearch}
-          onValuesChange={(changeValue, values) => setFormValues(values)}
-          searchCols={[
-            {
-              name: 'title',
-              type: 'input',
-              label: '文章名称',
-              width: '200px',
-              placeholder: '待输入'
-            },
-            {
-              name: 'categoryId',
-              type: 'select',
-              label: '文章分类',
-              options: options,
-              width: '200px',
-              placeholder: '待输入'
-            }
-          ]}
-          hideReset
-        />
+
         <NgTable
           className="mt20"
           size="small"
@@ -150,6 +135,7 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
           pagination={pagination}
           rowSelection={{
             type: 'checkbox',
+            preserveSelectedRowKeys: true,
             onChange: (selectedRowKeys: React.Key[], selectedRows: ProductProps[]) => {
               const rows = selectedRows.map((item) => ({
                 ...item,

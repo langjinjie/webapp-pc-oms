@@ -8,6 +8,7 @@ import { PosterSelectComponent } from './PosterSelectComponent';
 import { ProductSelectComponent } from './ProductSelectComponent';
 
 import style from './style.module.less';
+import { ActivitySelectComponent } from './ActivitySelectComponent';
 
 type ValueType = any[] | string;
 
@@ -23,7 +24,9 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
   const handleChange = (keys: React.Key[], rows: any[]) => {
     // 针对海报选中未加载的数据进行过滤重组处理
     const res = rows.filter((row) => row !== undefined);
-    const filterKeys = keys.filter((key) => !res.map((item) => item.newsId || item.posterId).includes(key));
+    const filterKeys = keys.filter(
+      (key) => !res.map((item) => item.newsId || item.posterId || item.itemId).includes(key)
+    );
 
     const filterRows = selectRows.filter((row) => filterKeys.includes(row.itemId!));
     setSelectRows([...res, ...filterRows]);
@@ -34,7 +37,8 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
 
   useEffect(() => {
     if (value) {
-      const keys = (value as any[]).map((item: any) => item.newsId || item.itemId || item.posterId);
+      const keys =
+        (isArray(value) && (value as any[])?.map((item: any) => item.newsId || item.itemId || item.posterId)) || [];
       setSelectedRowKeys(keys);
       if (isArray(value)) {
         setSelectRows(value as any[]);
@@ -70,6 +74,7 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
       {type === 1 && <ArticleSelectComponent onChange={handleChange} />}
       {type === 2 && <PosterSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
       {type === 3 && <ProductSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
+      {type === 4 && <ActivitySelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
       {type !== 0 && (
         <div className="ph20 mb20">
           <h3 className="pb20">已选择</h3>
