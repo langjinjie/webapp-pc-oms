@@ -9,8 +9,9 @@ interface PictureCardProps {
 }
 export const PictureCard: React.FC<PictureCardProps> = ({ value, onChange }) => {
   const handleChange = (str: string, index: number) => {
-    console.log(str, index);
-    onChange?.(value!);
+    const copyValue = [...value!];
+    copyValue.splice(index, 1, str);
+    onChange?.(copyValue);
   };
   return (
     <div className={classNames(styles.pictureList, 'flex')}>

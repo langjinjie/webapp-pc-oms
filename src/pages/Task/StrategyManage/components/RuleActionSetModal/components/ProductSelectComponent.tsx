@@ -67,14 +67,14 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
         onValuesChange={(changeValue, values) => setFormValues(values)}
         searchCols={[
           {
-            name: 'title',
+            name: 'productName',
             type: 'input',
             label: '产品名称',
             width: '200px',
             placeholder: '待输入'
           },
           {
-            name: 'categoryId',
+            name: 'category',
             type: 'select',
             label: '产品分类',
             options: options,

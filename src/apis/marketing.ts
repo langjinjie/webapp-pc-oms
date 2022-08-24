@@ -440,3 +440,19 @@ export const changeHotStatus: HttpFunction = (param: object) => {
 export const sortTopHot: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/market/topic/sort/top', param);
 };
+
+// 朋友圈模块接口
+// 1.11、朋友圈内容库列表接口
+export const getMomentList: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/moment/feed/list', param);
+};
+
+// 1.13、新增/编辑朋友圈内容接口
+export const updateMoment: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/moment/feed/addoredit', param);
+};
+
+// 1.12、朋友圈内容详情接口
+export const getMomentDetail: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin//api/market/moment/feed/detail', param);
+};
