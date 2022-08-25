@@ -11,10 +11,11 @@ interface RowProps extends Article {
 }
 
 interface ArticleSelectComponentProps {
+  selectedRowKeys: React.Key[];
   onChange: (keys: React.Key[], rows: RowProps[]) => void;
 }
 
-export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ onChange }) => {
+export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
   const { articleCategoryList, setArticleCategoryList } = useContext(Context);
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [formValues, setFormValues] = useState({
@@ -143,9 +144,15 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
           pagination={pagination}
           rowSelection={{
             type: 'checkbox',
+            selectedRowKeys: selectedRowKeys,
             preserveSelectedRowKeys: true,
             onChange: (selectedRowKeys: React.Key[], selectedRows: Article[]) => {
-              onSelectChange(selectedRowKeys, selectedRows);
+              const rows = selectedRows.map((item) => ({
+                ...item,
+                itemId: item?.newsId,
+                itemName: item?.title
+              }));
+              onSelectChange(selectedRowKeys, rows);
             }
           }}
           rowKey="newsId"

@@ -108,8 +108,8 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
             onChange: (selectedRowKeys: React.Key[], selectedRows: ActivityProps[]) => {
               const rows = selectedRows.map((item) => ({
                 ...item,
-                itemId: item.activityId,
-                itemName: item.activityName
+                itemId: item?.activityId,
+                itemName: item?.activityName
               }));
               onSelectChange(selectedRowKeys, rows);
             }

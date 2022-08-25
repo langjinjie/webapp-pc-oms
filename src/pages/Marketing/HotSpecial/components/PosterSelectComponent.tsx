@@ -153,7 +153,14 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
             preserveSelectedRowKeys: true,
             selectedRowKeys: selectedRowKeys,
             onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-              onSelectChange(selectedRowKeys, selectedRows);
+              console.log(selectedRows);
+
+              const rows = selectedRows.map((item) => ({
+                ...item,
+                itemId: item?.posterId,
+                itemName: item?.posterName
+              }));
+              onSelectChange(selectedRowKeys, rows);
             },
             getCheckboxProps: (record: Poster) => {
               return {
