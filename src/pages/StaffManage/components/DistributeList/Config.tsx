@@ -174,13 +174,13 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns>
       render: (tagList: TagItem[]) => {
         return (
           <span
-            className={classNames(style.clientTagList, 'ellipsis')}
+            className={'ellipsis'}
             title={tagList
               ?.map((tagItem) =>
                 tagItem.displayType ? tagItem.groupName?.replace(/兴趣|意愿/g, '') + tagItem.tagName : tagItem.tagName
               )
               .toString()
-              .replace(/,/, '，')}
+              .replace(/,/g, '，')}
           >
             {tagList?.slice(0, 2).map((mapItem) => (
               <span
