@@ -296,6 +296,9 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       okText={'确认添加'}
       onOk={onOkHandle}
       onCancel={onCancel}
+      okButtonProps={{
+        disabled: !selectedList.length
+      }}
       destroyOnClose
     >
       <div className={style.contentWrap}>

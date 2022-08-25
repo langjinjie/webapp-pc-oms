@@ -1,11 +1,12 @@
 /**
  * @desc 在职分配
  */
-import React, { MutableRefObject, useEffect, useState, useRef } from 'react';
+import React, { MutableRefObject, useEffect, useState, useRef, useMemo } from 'react';
 import { Tabs } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { NgFormSearch, NgTable, BreadCrumbs } from 'src/components';
 import { clientTypeList, searchCols, IClientAssignRecord, tableColumns } from './Config';
 import { requestGetTransferClientRecord } from 'src/apis/roleMange';
+import classNames from 'classnames';
 
 interface IDistributeLogProps {
   distributeLisType: 1 | 2; // 1: 在职继承 2: 离职继承
@@ -74,12 +75,17 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
     getRecordList({ queryType: activeKey });
   };
 
+  const navList = useMemo(() => {
+    return [{ name: distributeLisType === 1 ? '在职分配' : '离职分配' }, { name: '分配记录' }];
+  }, []);
+
   useEffect(() => {
     getRecordList();
   }, []);
   return (
     <div>
-      <div className="pageTitle">
+      <div className={classNames('ml10', 'pt10', 'pageTitle')}>
+        <BreadCrumbs navList={navList} />
         <Tabs defaultActiveKey={activeKey} onChange={onTabsChange}>
           {clientTypeList.map((item) => {
             return <Tabs.TabPane tab={item.title} key={item.key}></Tabs.TabPane>;

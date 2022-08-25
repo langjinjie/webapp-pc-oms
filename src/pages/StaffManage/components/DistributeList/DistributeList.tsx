@@ -31,6 +31,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   const [selectedRowList, setselectedRowList] = useState<IClientColumns[]>([]);
   const [formValue, setFormValue] = useState<{ [key: string]: any }>();
   const [syncLoading, setSyncLoading] = useState(false);
+  const [resultId, setResultId] = useState('');
   const [tableSource, setTableSource] = useState<{ total: number; list: IClientColumns[] }>({
     total: 0,
     list: []
@@ -52,6 +53,10 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
       res = await requestGetDimissionTransferList({ ...param });
     }
     if (res) {
+      const { pageNum } = res;
+      if (pageNum || (pageNum === 1 && res.resultId)) {
+        setResultId(res.resultId);
+      }
       setTableSource({ total: res.total, list: res.list });
     }
     setLoading(false);
@@ -115,7 +120,6 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
 
   // 重置
   const onReset = () => {
-    setFormValue({});
     onSearch({});
     setPagination(() => ({ current: 1, pageSize: 10 }));
     setselectedRowList([]);
@@ -127,7 +131,9 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
       current: pageSize !== pagination.pageSize ? 1 : pageNum,
       pageSize: pageSize as number
     }));
-    getList({ ...formValue, pageNum: pageSize !== pagination.pageSize ? 1 : pageNum, pageSize: pageSize as number });
+    const newPageNum = pageSize !== pagination.pageSize ? 1 : pageNum;
+    const newResultId = newPageNum === 1 ? undefined : resultId;
+    getList({ ...formValue, pageNum: newPageNum, pageSize: pageSize as number, resultId: newResultId });
   };
 
   // 获取分配原因配置值
