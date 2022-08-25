@@ -87,12 +87,13 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const batchDelete = async () => {
     console.log('delete');
-    const res = await batchDeleteMoment({ list: selectedRowKeys.map((item) => ({ feedId: item })) });
+    const res = await batchDeleteMoment({ list: selectedRowKeys });
     if (res) {
       message.success('删除成功！');
       const filterData = tableSource.filter((item) => !selectedRowKeys.includes(item.feedId));
       setTableSource(filterData);
       setSelectRowKeys([]);
+      setVisibleOfflineModal(false);
     }
   };
 

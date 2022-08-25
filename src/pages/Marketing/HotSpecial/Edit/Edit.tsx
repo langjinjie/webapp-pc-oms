@@ -50,7 +50,8 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
           if (item.tplType === 0) {
             item.itemlist = [];
           } else {
-            item.itemlist = item.itemlist.map((market: any) => ({ itemId: market.itemId }));
+            delete item.speechcraft;
+            item.itemlist = item.itemlist.map((market: any) => ({ itemId: market.itemId || market.newsId }));
           }
           return item;
         });
