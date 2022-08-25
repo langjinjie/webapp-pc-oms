@@ -260,18 +260,20 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
             分配客户
           </Button>
         </AuthBtn>
-        <AuthBtn path="/record">
+        <AuthBtn path={distributeLisType === 1 ? '/assignRecord' : '/dimissionRecord'}>
           <Button className={classNames(style.distributeLog, 'ml20')} onClick={recordListHandle}>
             分配记录
           </Button>
         </AuthBtn>
 
         {distributeLisType === 2 && (
-          <Button className={classNames(style.sync, 'ml20')} onClick={syncList} loading={syncLoading}>
-            同步
-          </Button>
+          <AuthBtn path="/query">
+            <Button className={classNames(style.sync, 'ml20')} onClick={syncList} loading={syncLoading}>
+              同步
+            </Button>
+          </AuthBtn>
         )}
-        <AuthBtn path="assign">
+        <AuthBtn path={distributeLisType === 1 ? '/assignRecord' : '/dimissionRecord'}>
           <span className={classNames(style.selectNum, 'inline-block')}>
             *共计{tableSource.total}位待分配客户，
             <span className={style.selected}>已选择{selectedRowList.length}位</span>

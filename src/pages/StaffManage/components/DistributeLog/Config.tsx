@@ -98,10 +98,12 @@ export const tableColumns: ColumnsType<IClientAssignRecord> = [
 export const clientTypeList = [
   {
     key: '1',
-    title: '在职分配记录'
+    title: '在职分配记录',
+    authorKey: '/assignRecord' // 此处要与在职分配的分配记录的按钮path对应
   },
   {
     key: '2',
-    title: '离职分配记录'
+    title: '离职分配记录',
+    authorKey: '/dimissionRecord' // 此处要与离职分配的分配记录的按钮path对应
   }
 ];
