@@ -163,6 +163,12 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
         ({ externalUserid, staffId }) => !currentPageKeys.includes(externalUserid + '-' + staffId)
       );
       setselectedRowList([...noCurrentRowList, ...selectedRows]);
+    },
+    getCheckboxProps: (record: IClientColumns) => {
+      return {
+        disabled: [1, 4].includes(record.transferStatus),
+        name: ''
+      };
     }
   };
 
@@ -265,9 +271,12 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
             同步
           </Button>
         )}
-        <span className={classNames(style.selectNum, 'inline-block')}>
-          *共计{tableSource.total}位待分配客户，<span className={style.selected}>已选择{selectedRowList.length}位</span>
-        </span>
+        <AuthBtn path="assign">
+          <span className={classNames(style.selectNum, 'inline-block')}>
+            *共计{tableSource.total}位待分配客户，
+            <span className={style.selected}>已选择{selectedRowList.length}位</span>
+          </span>
+        </AuthBtn>
       </div>
       <div className="mt20">
         <NgTable
