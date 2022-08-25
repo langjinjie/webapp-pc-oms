@@ -43,7 +43,6 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
    */
   const getTagList = async () => {
     const res: any = await queryTagList();
-    console.log(res);
     if (res) {
       const { list } = res;
       list.forEach((item: any) => {
@@ -122,7 +121,6 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
 
   // 选择标签
   const onTagClick = (tagItem: TagItem) => {
-    console.log('tagItem', tagItem);
     let newChooseTags = [...chooseTags];
     // 判断该标签组是否有标签被选中
     const curGroupItem = newChooseTags.find((findItem) => findItem.tagId === tagItem.tagId);

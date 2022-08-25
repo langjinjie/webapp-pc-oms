@@ -147,7 +147,17 @@ const assginStaffStatus = {
 
 export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns> => {
   const columnList: ColumnsType<IClientColumns> = [
-    { title: '员工昵称', dataIndex: 'nickName' },
+    {
+      title: '客户昵称',
+      render (row: IClientColumns) {
+        return (
+          <>
+            <img className={style.avatar} src={row.avatar} alt="头像" />
+            <span className={style.nickName}>{row.nickName}</span>
+          </>
+        );
+      }
+    },
     {
       title: '所属客户经理',
       dataIndex: 'staffName'
@@ -166,12 +176,26 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns>
           <span
             className={classNames(style.clientTagList, 'ellipsis')}
             title={tagList
-              ?.map((tagItem) => (tagItem.displayType ? tagItem.groupName + ' ' + tagItem.tagName : tagItem.tagName))
-              .toString()}
+              ?.map((tagItem) =>
+                tagItem.displayType ? tagItem.groupName?.replace(/兴趣|意愿/g, '') + tagItem.tagName : tagItem.tagName
+              )
+              .toString()
+              .replace(/,/, '，')}
           >
-            {tagList
-              ?.map((tagItem) => (tagItem.displayType ? tagItem.groupName + ' ' + tagItem.tagName : tagItem.tagName))
-              .toString()}
+            {tagList?.slice(0, 2).map((mapItem) => (
+              <span
+                key={mapItem.tagId}
+                className={classNames(style.tagItem, {
+                  [style.yellow]: mapItem.modified === 1,
+                  [style.blue]: mapItem.modified === 0
+                })}
+              >
+                {mapItem.displayType === 1 ? mapItem.groupName!.replace(/兴趣|意愿/g, '') : ''}
+                {mapItem.tagName}
+              </span>
+            ))}
+            {tagList?.length > 2 && '...'}
+            {!tagList && UNKNOWN}
           </span>
         );
       }
