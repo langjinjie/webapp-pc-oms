@@ -166,7 +166,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
     },
     getCheckboxProps: (record: IClientColumns) => {
       return {
-        disabled: [1, 4].includes(record.transferStatus),
+        disabled: distributeLisType === 1 && [1, 4].includes(record.transferStatus),
         name: ''
       };
     }
