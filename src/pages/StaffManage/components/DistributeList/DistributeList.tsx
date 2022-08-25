@@ -71,13 +71,13 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
     let addBeginTime = '';
     let addEndTime = '';
     if (addTime) {
-      addBeginTime = addTime[0].stafOf('days').format('YYYY-MM-DD HH:mm:ss');
+      addBeginTime = addTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
       addEndTime = addTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
     }
     let takeoverBeginTime = '';
     let takeoverEndTime = '';
     if (takeoverTime) {
-      takeoverBeginTime = takeoverTime[0].stafOf('days').format('YYYY-MM-DD HH:mm:ss');
+      takeoverBeginTime = takeoverTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
       takeoverEndTime = takeoverTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
     }
     setFormValue({
