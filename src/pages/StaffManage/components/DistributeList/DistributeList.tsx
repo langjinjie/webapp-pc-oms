@@ -53,8 +53,9 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
       res = await requestGetDimissionTransferList({ ...param });
     }
     if (res) {
-      const { pageNum } = res;
-      if (pageNum || (pageNum === 1 && res.resultId)) {
+      const { pageNum } = param || {};
+      console.log('pageNum', pageNum);
+      if (!pageNum || pageNum === 1) {
         setResultId(res.resultId);
       }
       setTableSource({ total: res.total, list: res.list });
