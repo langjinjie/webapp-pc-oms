@@ -230,8 +230,8 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
         defaultActiveKey={logicType + ''}
         onChange={(activeKey) => setLogicType(+activeKey as 1 | 2)}
       >
-        <Tabs.TabPane tab={'以下标签满足其一'} key={1} />
-        <Tabs.TabPane tab={'以下标签同时满足'} key={2} />
+        <Tabs.TabPane tab={'以下标签同时满足'} key={1} />
+        <Tabs.TabPane tab={'以下标签满足其一'} key={2} />
       </Tabs>
       <Tabs className={style.tabContent} onChange={(activeKey) => setTabIndex(+activeKey)}>
         <Tabs.TabPane tab={'属性标签'} key={0}>
