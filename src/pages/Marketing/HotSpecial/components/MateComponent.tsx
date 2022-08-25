@@ -18,19 +18,18 @@ interface MeatComponentProps {
   onChange?: (value: any) => void;
 }
 export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onChange }) => {
-  console.log(type, value);
   const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
   const [selectRows, setSelectRows] = useState<any[]>([]);
   const handleChange = (keys: React.Key[], rows: any[]) => {
     // 针对海报选中未加载的数据进行过滤重组处理
     const res = rows.filter((row) => row !== undefined);
     const filterKeys = keys.filter(
-      (key) => !res.map((item) => item.newsId || item.posterId || item.itemId).includes(key)
+      (key) => !res.map((item) => item.newsId || item.posterId || item.itemId || item.activityId).includes(key)
     );
 
-    const filterRows = selectRows.filter((row) => filterKeys.includes(row.itemId!));
+    const filterRows = selectRows.filter((item) => filterKeys.includes(item.itemId!));
     setSelectRows([...res, ...filterRows]);
-
+    console.log('++++++++++++++++++', [...res, ...filterRows]);
     onChange?.([...res, ...filterRows]);
     setSelectedRowKeys(keys);
   };
@@ -71,7 +70,7 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
           value={value}
         ></Input.TextArea>
       )}
-      {type === 1 && <ArticleSelectComponent onChange={handleChange} />}
+      {type === 1 && <ArticleSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
       {type === 2 && <PosterSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
       {type === 3 && <ProductSelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
       {type === 4 && <ActivitySelectComponent selectedRowKeys={selectedRowKeys} onChange={handleChange} />}
@@ -82,8 +81,11 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
             <div className={classNames(style.marketingWarp)}>
               {isArray(value) &&
                 (value as any[])?.map((row: any, index) => (
-                  <div className={classNames(style.customTag)} key={(row.newsId || row.itemId || row.posterId) + index}>
-                    <span>{row.itemName || row.title || row.name}</span>
+                  <div
+                    className={classNames(style.customTag)}
+                    key={(row.newsId || row.itemId || row.posterId || row.activityId) + index}
+                  >
+                    <span>{row.itemName || row.title || row.name || row.activityName}</span>
                     <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(index)}></Icon>
                   </div>
                 ))}

@@ -51,11 +51,13 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
             item.itemlist = [];
           } else {
             delete item.speechcraft;
-            item.itemlist = item.itemlist.map((market: any) => ({ itemId: market.itemId || market.newsId }));
+            console.log(item);
+            item.itemlist = item.itemlist.map((market: any) => ({
+              itemId: market.itemId || market.newsId || item.posterId
+            }));
           }
           return item;
         });
-
         const res = await setHotContent({
           topicId: formValues.topicId,
           contentList: list
@@ -91,6 +93,8 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
           form={listForm}
           scrollToFirstError
           onValuesChange={(changedValue, values) => {
+            console.log(changedValue);
+
             setFormValues((formValues) => ({ ...formValues, ...values }));
           }}
         >

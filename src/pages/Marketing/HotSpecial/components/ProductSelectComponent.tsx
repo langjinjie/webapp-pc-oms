@@ -139,8 +139,8 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
             onChange: (selectedRowKeys: React.Key[], selectedRows: ProductProps[]) => {
               const rows = selectedRows.map((item) => ({
                 ...item,
-                itemId: item.productId,
-                itemName: item.productName
+                itemId: item?.productId,
+                itemName: item?.productName
               }));
               onSelectChange(selectedRowKeys, rows);
             }
