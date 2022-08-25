@@ -43,7 +43,6 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
    */
   const getTagList = async () => {
     const res: any = await queryTagList();
-    console.log(res);
     if (res) {
       const { list } = res;
       list.forEach((item: any) => {
@@ -122,7 +121,6 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
 
   // 选择标签
   const onTagClick = (tagItem: TagItem) => {
-    console.log('tagItem', tagItem);
     let newChooseTags = [...chooseTags];
     // 判断该标签组是否有标签被选中
     const curGroupItem = newChooseTags.find((findItem) => findItem.tagId === tagItem.tagId);
@@ -232,8 +230,8 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
         defaultActiveKey={logicType + ''}
         onChange={(activeKey) => setLogicType(+activeKey as 1 | 2)}
       >
-        <Tabs.TabPane tab={'以下标签满足其一'} key={1} />
-        <Tabs.TabPane tab={'以下标签同时满足'} key={2} />
+        <Tabs.TabPane tab={'以下标签同时满足'} key={1} />
+        <Tabs.TabPane tab={'以下标签满足其一'} key={2} />
       </Tabs>
       <Tabs className={style.tabContent} onChange={(activeKey) => setTabIndex(+activeKey)}>
         <Tabs.TabPane tab={'属性标签'} key={0}>

@@ -17,6 +17,7 @@ interface IAddLotteryListProps {
   setParams?: any;
   onCancel?: () => void;
   onOk?: (value: any) => void;
+  isDeleted?: 0 | 1; // 0：在职 1：离职
 }
 
 interface ItreeProps {
@@ -38,7 +39,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   params,
   setParams,
   onOk,
-  onCancel: onClose
+  onCancel: onClose,
+  isDeleted
 }) => {
   const { currentCorpId: corpId } = useContext<{ currentCorpId: string }>(Context);
   const [treeData, setTreeData] = useState<any[]>([]);
@@ -74,7 +76,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     let res1 = await requestGetDeptList({ parentId });
     let res2: any = [];
     if (showStaff && parentId) {
-      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId });
+      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId, isDeleted });
       res2 = res.list.map((item: any) => ({
         ...item,
         name: item.staffName,
@@ -92,7 +94,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
           if (
             showStaff &&
             item.isLeaf &&
-            (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId })).list.length
+            (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId, isDeleted })).list.length
           ) {
             return { ...item, parentId, name: item.deptName, id: item.deptId, isLeaf: false };
           } else {
@@ -153,7 +155,13 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         // 判断点击的是部门还是员工
         if (!info.node.staffId) {
           // 获取该部门下的所有员工
-          const res = await requestGetDepStaffList({ queryType: 1, deptType: 0, deptId: info.node.id, pageSize: 9999 });
+          const res = await requestGetDepStaffList({
+            queryType: 1,
+            deptType: 0,
+            deptId: info.node.id,
+            pageSize: 9999,
+            isDeleted
+          });
           res.list.forEach((item: any) => {
             item.id = item.staffId;
             item.name = item.staffName;

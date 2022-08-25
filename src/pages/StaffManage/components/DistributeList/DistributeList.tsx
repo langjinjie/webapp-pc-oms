@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Card, PaginationProps, Popover, Button, message } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IClientColumns, tableColumnsFun } from './Config';
 import { useHistory } from 'react-router-dom';
 import { DistributionModal } from 'src/pages/StaffManage/components';
@@ -71,14 +71,16 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
     let addBeginTime = '';
     let addEndTime = '';
     if (addTime) {
-      addBeginTime = addTime[0].stafOf('days').format('YYYY-MM-DD HH:mm:ss');
+      addBeginTime = addTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
       addEndTime = addTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
+      delete values?.addTime;
     }
     let takeoverBeginTime = '';
     let takeoverEndTime = '';
     if (takeoverTime) {
-      takeoverBeginTime = takeoverTime[0].stafOf('days').format('YYYY-MM-DD HH:mm:ss');
+      takeoverBeginTime = takeoverTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
       takeoverEndTime = takeoverTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
+      delete values?.takeoverTime;
     }
     setFormValue({
       ...values,
@@ -161,6 +163,12 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
         ({ externalUserid, staffId }) => !currentPageKeys.includes(externalUserid + '-' + staffId)
       );
       setselectedRowList([...noCurrentRowList, ...selectedRows]);
+    },
+    getCheckboxProps: (record: IClientColumns) => {
+      return {
+        disabled: distributeLisType === 1 && [1, 4].includes(record.transferStatus),
+        name: ''
+      };
     }
   };
 
@@ -213,7 +221,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   const CardTitle = () => {
     const content = (
       <>
-        <p>1.客户继承成功后原员工无法再与客户间发起会话</p>
+        <p>1.客户继承成功后原员工无法再与客户发起会话</p>
         <p>2.客户继承成功后90天内最多可支持二次继承</p>
       </>
     );
@@ -232,7 +240,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   }, []);
   return (
     <Card className="container" title={<CardTitle />} bordered={false}>
-      {reasonCodeList && (
+      <AuthBtn path="/query">
         <NgFormSearch
           searchCols={searchCols(reasonCodeList, distributeLisType)}
           isInline={false}
@@ -240,27 +248,35 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
           onSearch={onSearch}
           onReset={onReset}
         />
-      )}
+      </AuthBtn>
       <div className={'mt20'}>
-        <Button
-          className={style.distribution}
-          disabled={!selectedRowList.length}
-          type="primary"
-          onClick={distributionHandle}
-        >
-          分配客户
-        </Button>
-        <Button className={classNames(style.distributeLog, 'ml20')} onClick={recordListHandle}>
-          分配记录
-        </Button>
+        <AuthBtn path="/assign">
+          <Button
+            className={style.distribution}
+            disabled={!selectedRowList.length}
+            type="primary"
+            onClick={distributionHandle}
+          >
+            分配客户
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/record">
+          <Button className={classNames(style.distributeLog, 'ml20')} onClick={recordListHandle}>
+            分配记录
+          </Button>
+        </AuthBtn>
+
         {distributeLisType === 2 && (
           <Button className={classNames(style.sync, 'ml20')} onClick={syncList} loading={syncLoading}>
             同步
           </Button>
         )}
-        <span className={classNames(style.selectNum, 'inline-block')}>
-          *共计{tableSource.total}位待分配客户，<span className={style.selected}>已选择{selectedRowList.length}位</span>
-        </span>
+        <AuthBtn path="assign">
+          <span className={classNames(style.selectNum, 'inline-block')}>
+            *共计{tableSource.total}位待分配客户，
+            <span className={style.selected}>已选择{selectedRowList.length}位</span>
+          </span>
+        </AuthBtn>
       </div>
       <div className="mt20">
         <NgTable

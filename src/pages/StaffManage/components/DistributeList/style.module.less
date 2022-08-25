@@ -50,7 +50,35 @@
 }
 
 // config
-.clientTagList {
-  display: inline-block;
-  max-width: 450px;
+.avatar {
+  margin-right: 4px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+.nickName {
+  vertical-align: middle;
+}
+.tagItem {
+  margin-right: 10px;
+  padding: 8px 12px;
+  line-height: 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  margin-bottom: 10px;
+  cursor: pointer;
+
+  &.cursor {
+    cursor: pointer;
+  }
+
+  &.yellow {
+    background-color: #fff0d8;
+    color: #fb851c;
+  }
+
+  &.blue {
+    background-color: #eaf3fe;
+    color: #318cf5;
+  }
 }
