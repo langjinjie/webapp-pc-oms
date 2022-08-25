@@ -18,7 +18,6 @@ type QueryParamsType = Partial<{
 const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
   const [queryParams, setQueryParams] = useState<QueryParamsType>({});
   const [tableSource, setTableSource] = useState<HotColumns[]>([]);
-  const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -32,8 +31,6 @@ const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
   const [currentItem, setCurrentItem] = useState<HotColumns>();
 
   const getList = async (params?: any) => {
-    setSelectRowKeys([]);
-    console.log(params, queryParams);
     const pageNum = params?.pageNum || pagination.current;
     const pageSize = params?.pageSize || pagination.pageSize;
     const res = await getHotList({
@@ -95,21 +92,6 @@ const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  // 表格RowSelection配置项
-  const rowSelection = {
-    selectedRowKeys: selectedRowKeys,
-    onChange: (selectedRowKeys: React.Key[], selectedRows: HotColumns[]) => {
-      setSelectRowKeys(selectedRowKeys);
-      console.log(selectedRows);
-    },
-    getCheckboxProps: (record: HotColumns) => {
-      return {
-        name: record.nodeName,
-        disabled: false
-      };
-    }
-  };
-
   return (
     <div className="container">
       <Button
@@ -127,7 +109,6 @@ const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
 
       <div className="mt20">
         <NgTable
-          rowSelection={rowSelection}
           columns={tableColumnsFun({
             onOperate: deleteNodeItem
           })}

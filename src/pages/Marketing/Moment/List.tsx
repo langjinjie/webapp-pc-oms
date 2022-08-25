@@ -1,10 +1,11 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { getMomentList } from 'src/apis/marketing';
+import { batchDeleteMoment, getMomentList } from 'src/apis/marketing';
 import { NgFormSearch, NgTable } from 'src/components';
+import OffLineModal from 'src/pages/Task/StrategyTask/components/OffLineModal/OffLineModal';
 import { MomentColumns, searchColsFun, tableColumnsFun } from './ListConfig';
 
 type QueryParamsType = Partial<{
@@ -13,6 +14,7 @@ type QueryParamsType = Partial<{
 }>;
 const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
   const [queryParams, setQueryParams] = useState<QueryParamsType>({});
+  const [visibleOfflineModal, setVisibleOfflineModal] = useState(false);
   const [tableSource, setTableSource] = useState<MomentColumns[]>([]);
   const [selectedRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -58,7 +60,7 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
     getList({ pageNum, pageSize });
   };
 
-  const navigatorToEdit = (query: string) => {
+  const navigatorToEdit = (query?: string) => {
     history.push('/marketingMoment/edit' + (query ? '?feedId=' + query : ''));
   };
 
@@ -80,6 +82,17 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
         disabled: false,
         name: record.nodeName
       };
+    }
+  };
+
+  const batchDelete = async () => {
+    console.log('delete');
+    const res = await batchDeleteMoment({ list: selectedRowKeys.map((item) => ({ feedId: item })) });
+    if (res) {
+      message.success('删除成功！');
+      const filterData = tableSource.filter((item) => !selectedRowKeys.includes(item.feedId));
+      setTableSource(filterData);
+      setSelectRowKeys([]);
     }
   };
 
@@ -113,10 +126,26 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
         />
       </div>
       <div className={'operationWrap'}>
-        <Button type="primary" shape={'round'} ghost onClick={() => console.log('ssa')}>
+        <Button
+          type="primary"
+          shape={'round'}
+          ghost
+          onClick={() => {
+            if (selectedRowKeys.length > 0) {
+              setVisibleOfflineModal(true);
+            }
+          }}
+        >
           批量删除
         </Button>
       </div>
+
+      <OffLineModal
+        content="确定删除选中的内容？"
+        visible={visibleOfflineModal}
+        onCancel={() => setVisibleOfflineModal(false)}
+        onOK={batchDelete}
+      />
     </div>
   );
 };

@@ -454,5 +454,9 @@ export const updateMoment: HttpFunction = (param: object) => {
 
 // 1.12、朋友圈内容详情接口
 export const getMomentDetail: HttpFunction = (param: object) => {
-  return http.post('/tenacity-admin//api/market/moment/feed/detail', param);
+  return http.post('/tenacity-admin/api/market/moment/feed/detail', param);
+};
+// 1.12、朋友圈内容详情接口
+export const batchDeleteMoment: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/moment/feed/del', param);
 };
