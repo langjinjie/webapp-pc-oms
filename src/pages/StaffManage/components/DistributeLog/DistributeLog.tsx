@@ -1,18 +1,20 @@
 /**
  * @desc 在职分配
  */
-import React, { MutableRefObject, useEffect, useState, useRef, useMemo } from 'react';
+import React, { MutableRefObject, useEffect, useState, useRef, useMemo, useContext } from 'react';
 import { Tabs } from 'antd';
 import { NgFormSearch, NgTable, BreadCrumbs } from 'src/components';
 import { clientTypeList, searchCols, IClientAssignRecord, tableColumns } from './Config';
 import { requestGetTransferClientRecord } from 'src/apis/roleMange';
 import classNames from 'classnames';
+import { Context } from 'src/store';
 
 interface IDistributeLogProps {
   distributeLisType: 1 | 2; // 1: 在职继承 2: 离职继承
 }
 
 const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => {
+  const { btnList } = useContext(Context);
   const [activeKey, setActiveKey] = useState(distributeLisType.toString());
   const [formValue, setFormValue] = useState<{ [key: string]: any }>({});
   const [loading, setLoading] = useState(false);
@@ -26,6 +28,11 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
   });
 
   const searchRef: MutableRefObject<any> = useRef(null);
+
+  // 处理tab的权限
+  const authorClientTypeList = useMemo(() => {
+    return clientTypeList.filter((filterIitem) => btnList.includes(filterIitem.authorKey));
+  }, [btnList]);
 
   // 获取记录
   const getRecordList = async (param?: { [key: string]: any }) => {
@@ -87,7 +94,7 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
       <div className={classNames('ml10', 'pt10', 'pageTitle')}>
         <BreadCrumbs navList={navList} />
         <Tabs defaultActiveKey={activeKey} onChange={onTabsChange}>
-          {clientTypeList.map((item) => {
+          {authorClientTypeList.map((item) => {
             return <Tabs.TabPane tab={item.title} key={item.key}></Tabs.TabPane>;
           })}
         </Tabs>
