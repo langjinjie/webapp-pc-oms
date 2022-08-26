@@ -69,8 +69,9 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
 
   // 分页
   const paginationChange = (pageNum: number, pageSize?: number) => {
-    setPagination((pagination) => ({ ...pagination, pageNum, pageSize: pageSize as number }));
-    getRecordList({ ...formValue, pageNum, pageSize: pageSize as number });
+    const newPageNum = pageSize !== pagination.pageSize ? 1 : pageNum;
+    setPagination((pagination) => ({ ...pagination, pageNum: newPageNum, pageSize: pageSize as number }));
+    getRecordList({ ...formValue, pageNum: newPageNum, pageSize: pageSize as number });
   };
 
   // 切换记录类型 : 离职/在职

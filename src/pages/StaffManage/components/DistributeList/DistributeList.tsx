@@ -129,13 +129,13 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   };
 
   const paginationChange = (pageNum: number, pageSize?: number) => {
-    setPagination((pagination) => ({
-      ...pagination,
-      current: pageSize !== pagination.pageSize ? 1 : pageNum,
-      pageSize: pageSize as number
-    }));
     const newPageNum = pageSize !== pagination.pageSize ? 1 : pageNum;
     const newResultId = newPageNum === 1 ? undefined : resultId;
+    setPagination((pagination) => ({
+      ...pagination,
+      current: newPageNum,
+      pageSize: pageSize as number
+    }));
     getList({ ...formValue, pageNum: newPageNum, pageSize: pageSize as number, resultId: newResultId });
   };
 
