@@ -146,7 +146,7 @@ const assginStaffStatus = {
 };
 
 export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns> => {
-  const columnList: ColumnsType<IClientColumns> = [
+  let columnList: ColumnsType<IClientColumns> = [
     {
       title: '客户昵称',
       render (row: IClientColumns) {
@@ -230,7 +230,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns>
     }
   ];
   if (args.distributeLisType === 2) {
-    columnList.filter((filterItem) => filterItem.title !== '转接原因');
+    columnList = columnList.filter((filterItem) => filterItem.title !== '转接原因');
   }
   return columnList;
 };

@@ -80,7 +80,7 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
     let res1 = await requestGetDeptList({ parentId });
     let res2: any = [];
     if (parentId) {
-      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId });
+      const res = await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: parentId, isDeleted: 0 });
       res2 = res.list.map((item: any) => ({
         ...item,
         name: item.staffName,
@@ -97,7 +97,7 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
           // 判断叶子部门节点下是否还有员工，有员工则不能作为叶子节点
           if (
             item.isLeaf &&
-            (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId })).list.length
+            (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId, isDeleted: 0 })).list.length
           ) {
             return { ...item, parentId, name: item.deptName, id: item.deptId, isLeaf: false };
           } else {
@@ -124,7 +124,8 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
     const res = await searchStaffList({
       keyWords: treeSearchValue as string,
       searchType: 2,
-      isFull: true
+      isDeleted: 0,
+      isFull: true // 信息是否完善
     });
     if (res) {
       const list = [...res.staffList, ...(res.deptList || [])];

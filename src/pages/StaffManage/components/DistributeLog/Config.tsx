@@ -30,7 +30,7 @@ export const searchCols: SearchCol[] = [
     name: 'transferStatus',
     type: 'select',
     width: 160,
-    label: '接替状态',
+    label: '转接状态',
     placeholder: '请选择',
     options: transferStatusList
   }

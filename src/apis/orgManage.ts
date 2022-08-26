@@ -106,9 +106,9 @@ export const requestDelStaffList: HttpFC = (param) => {
  */
 export const searchStaffList: HttpFC<{
   keyWords: string;
-  searchType?: 1 | 2;
-  isDeleted?: boolean;
-  isFull?: boolean;
+  searchType?: 1 | 2; // 1-部门 2-员工
+  isDeleted?: 0 | 1; // 0-在职 1-离职
+  isFull?: boolean; // 信息是否完善
 }> = (param) => {
   return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
 };
