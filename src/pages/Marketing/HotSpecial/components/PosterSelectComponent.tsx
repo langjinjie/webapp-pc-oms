@@ -100,7 +100,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
           </div>
           <div className={style.searchItem}>
             <label>
-              <span>内容标签：</span>
+              <span>海报分类：</span>
               <Cascader
                 options={categoryList}
                 placeholder="请选择"

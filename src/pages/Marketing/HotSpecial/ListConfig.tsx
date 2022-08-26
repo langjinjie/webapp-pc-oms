@@ -51,6 +51,12 @@ interface OperateProps {
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<HotColumns> => {
   return [
+    {
+      title: '排序',
+      render (_, __, index) {
+        return <>{index + 1}</>;
+      }
+    },
     { title: '专题名称', dataIndex: 'topicName', key: 'topicName', width: 200 },
 
     {
