@@ -262,12 +262,6 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
       </Layout>
 
       <ConfirmModal />
-      {/* <div
-        className={classNames('collapse-wrap', isCollapse ? 'is-collapse' : 'is-expand')}
-        onClick={() => setIsCollapse((state) => !state)}
-      >
-        <Icon className="arrow-icon" name={isCollapse ? 'iconfontjiantou2' : 'zuojiantou-copy'} />
-      </div> */}
     </Layout>
   );
 };

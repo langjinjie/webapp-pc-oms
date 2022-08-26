@@ -24,7 +24,7 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
   const getList = async (params?: any) => {
     const pageNum = params?.pageNum || pagination.current;
     const res = await activityList({
-      status: 1,
+      status: 2,
       pageSize: pagination.pageSize,
       ...formValues,
       ...params,
