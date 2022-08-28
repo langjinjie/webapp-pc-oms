@@ -14,7 +14,15 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
   const [formValues, setFormValues] = useState<{
     contentList: any[];
     topicId: string;
-  }>({ contentList: [], topicId: '' });
+    isTip?: number;
+  }>({
+    contentList: [
+      { isTip: 0, tplType: 0 },
+      { isTip: 0, tplType: 0 },
+      { isTip: 0, tplType: 0 }
+    ],
+    topicId: ''
+  });
   const getDetail = async () => {
     const { topicId } = URLSearchParams(location.search) as { topicId: string };
     const res = await getHotContentDetail({ topicId });
@@ -24,10 +32,14 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
         item.isTip = item.tip ? 1 : 0;
         return item;
       });
+
+      console.log(resList);
+      if (resList.length > 0) {
+        setFormValues({ contentList: resList, topicId });
+      }
       listForm.setFieldsValue({
-        contentList: resList.length > 0 ? resList : [{ tplType: 0 }]
+        contentList: resList.length > 0 ? resList : formValues.contentList
       });
-      setFormValues({ contentList: resList.length > 0 ? resList : [{ tplType: 0 }], topicId });
     }
   };
   const navigatorToList = () => {
@@ -130,7 +142,18 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
                         </Form.Item>
                       </div>
                       {listForm.getFieldValue('contentList').length > 1 && (
-                        <Button type="primary" shape="round" ghost onClick={() => remove(index)}>
+                        <Button
+                          type="primary"
+                          shape="round"
+                          ghost
+                          onClick={() => {
+                            if (formValues.contentList.length <= 3) {
+                              message.warning('删除失败，最少需要展示三个模板');
+                              return false;
+                            }
+                            remove(index);
+                          }}
+                        >
                           删除
                         </Button>
                       )}
@@ -183,10 +206,17 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
                     </Form.Item>
                   </Form.Item>
                 ))}
-
-                <Button type="primary" shape="round" icon={<PlusOutlined />} ghost onClick={() => add({ tplType: 0 })}>
-                  添加
-                </Button>
+                {formValues.contentList.length < 10 && (
+                  <Button
+                    type="primary"
+                    shape="round"
+                    icon={<PlusOutlined />}
+                    ghost
+                    onClick={() => add({ tplType: 0, isTip: 0 })}
+                  >
+                    添加
+                  </Button>
+                )}
               </>
             )}
           </Form.List>

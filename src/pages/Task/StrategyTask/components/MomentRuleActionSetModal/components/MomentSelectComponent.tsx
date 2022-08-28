@@ -103,7 +103,7 @@ export const MomentSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
             title: '名称',
             dataIndex: 'name',
             align: 'left',
-            width: 100,
+            width: 500,
             ellipsis: {
               showTitle: false
             },
@@ -112,15 +112,6 @@ export const MomentSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
                 {name || UNKNOWN}
               </Tooltip>
             )
-          },
-          {
-            title: '分类',
-            dataIndex: 'typeName',
-            align: 'left',
-            width: 180,
-            render: (text: String, record: Poster) => {
-              return record.fatherTypeName ? record.fatherTypeName + '-' + text : text || UNKNOWN;
-            }
           }
         ]}
         dataSource={dataSource}
