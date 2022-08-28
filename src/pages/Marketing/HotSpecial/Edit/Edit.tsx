@@ -72,6 +72,15 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
       });
   };
 
+  const tplTypeChange = (value: number, index: number) => {
+    console.log(value, index);
+    const contentList = listForm.getFieldValue('contentList');
+    contentList[index].itemlist = [];
+    listForm.setFieldsValue({
+      contentList
+    });
+  };
+
   return (
     <div className="edit container">
       <div className={'breadcrumbWrap'}>
@@ -93,8 +102,6 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
           form={listForm}
           scrollToFirstError
           onValuesChange={(changedValue, values) => {
-            console.log(changedValue);
-
             setFormValues((formValues) => ({ ...formValues, ...values }));
           }}
         >
@@ -110,7 +117,11 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
                         <span>序号{index + 1}</span>
                         <span className="ml20">展示模版：</span>
                         <Form.Item name={[name, 'tplType']}>
-                          <Select placeholder="请选择" className={styles.tmpSelect}>
+                          <Select
+                            placeholder="请选择"
+                            className={styles.tmpSelect}
+                            onChange={(value) => tplTypeChange(value, index)}
+                          >
                             <Select.Option value={0}>纯话术</Select.Option>
                             <Select.Option value={1}>文章</Select.Option>
                             <Select.Option value={2}>海报</Select.Option>

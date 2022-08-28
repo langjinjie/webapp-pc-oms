@@ -23,7 +23,6 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
     const { feedId } = URLSearchParams(location.search) as { feedId: string };
     if (feedId) {
       const res = await getMomentDetail({ feedId });
-      console.log(res);
       if (res) {
         setFormValues(res);
         const { name, tplType, itemList, speechcraft } = res;
@@ -32,7 +31,6 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
           const newList = new Array(9).fill('');
           newList.splice(0, oldList.length, ...oldList);
 
-          console.log(oldList, newList);
           momentForm.setFieldsValue({
             name,
             tplType,
@@ -82,11 +80,19 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
   const debounceFetcher = debounce<string>(async (value: string) => {
     await onRecommendSearch(value);
   }, 300);
+
+  /**
+   * 模板类型切换
+   */
   const tplTypeChange = (value: number) => {
     setTplType(value);
     // 多图朋友圈不需要查询
     if (value < 5) {
       onRecommendSearch('', value);
+      momentForm.setFieldsValue({
+        itemId: undefined,
+        speechcraft: ''
+      });
     } else {
       momentForm.setFieldsValue({
         itemList: new Array(9).fill('')
@@ -214,29 +220,32 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
                 <Avatar shape="square" size={40} icon={<span className="f16">头像</span>} />
                 <div className={classNames(styles.marketBox, 'cell ml10')}>
                   <h4>客户经理姓名</h4>
-                  <p className="f12">有了健康时的未雨绸缪，才有患病时的踏实安心，把其他担忧交给保险吧。</p>
-                  {/* <div className={styles.picIsOnly}>
-                    <Image src="https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454"></Image>
-                  </div> */}
-                  <div className={styles.picSmallWrap}>
-                    <Image src="https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454"></Image>
-                    <Image src="https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454"></Image>
-                    <Image src="https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454"></Image>
-                    <Image src="https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454"></Image>
-                  </div>
-                  <div className={classNames(styles.shearLinkWrap, 'flex')}>
-                    <img
-                      className={styles.pic}
-                      src="https://insure-dev-server-1305111576.cos.ap-guangzhou.myqcloud.com/news/20220531/b6dfadf9398d44d69e2f27730af9f904.jpg?timestamp=1653990077454"
-                      alt=""
-                    />
-                    <div className="cell ml5">
-                      <div className={classNames(styles.shearTitle, 'ellipsis')}>文章标题</div>
-                      <div className={classNames(styles.shearDesc, 'ellipsis')}>
-                        这里是描述，快来safdasnihcadfasdasfdfasfdas体验吧
+                  <p className="f12">{formValues.speechcraft}</p>
+                  {formValues.tplType === 4 && (
+                    <div className={styles.picIsOnly}>
+                      <Image src={''}></Image>
+                    </div>
+                  )}
+                  {formValues.tplType === 5 && (
+                    <div className={styles.picSmallWrap}>
+                      {formValues?.itemList?.map((item: any) => (
+                        <Image src={item.itemUrl} key={item.itemUrl}></Image>
+                      ))}
+                    </div>
+                  )}
+                  {formValues.tplType < 4 && (
+                    <div className={classNames(styles.shearLinkWrap, 'flex')}>
+                      <img className={styles.pic} src={formValues?.itemList?.[0]?.itemShareImgUrl} alt="" />
+                      <div className="cell ml5">
+                        <div className={classNames(styles.shearTitle, 'ellipsis')}>
+                          {formValues?.itemList?.[0]?.itemName}
+                        </div>
+                        <div className={classNames(styles.shearDesc, 'ellipsis')}>
+                          {formValues?.itemList?.[0]?.itemShareTitle}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </Form.Item>

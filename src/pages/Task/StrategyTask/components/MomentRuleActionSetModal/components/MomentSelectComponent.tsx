@@ -41,7 +41,7 @@ export const MomentSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
   };
   useEffect(() => {
     getList();
-  }, []);
+  }, [tplType]);
   const handleSearch = (values: any) => {
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     const { typeIds: [fatherTypeId, typeId] = [undefined, undefined], name } = values;

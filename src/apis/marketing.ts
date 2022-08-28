@@ -30,14 +30,8 @@ export const getPhoneIdentifier: HttpFunction<Object> = (param: Object) => {
  * 获取文章列表
  * @params getNewsListParamsProps
  */
-interface getNewsListParamsProps {
-  minTime?: string;
-  maxTime?: string;
-  title?: string;
-  pageNum: number | '';
-  pageSize: number | '';
-}
-export const getNewsList: HttpFunction<getNewsListParamsProps> = (params) => {
+
+export const getNewsList: HttpFunction = (params) => {
   return http.post('/tenacity-admin/api/news/list', params);
 };
 

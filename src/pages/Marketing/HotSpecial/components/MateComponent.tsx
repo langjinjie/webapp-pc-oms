@@ -23,9 +23,7 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
   const handleChange = (keys: React.Key[], rows: any[]) => {
     // 针对海报选中未加载的数据进行过滤重组处理
     const res = rows.filter((row) => row !== undefined);
-    const filterKeys = keys.filter(
-      (key) => !res.map((item) => item.newsId || item.posterId || item.itemId || item.activityId).includes(key)
-    );
+    const filterKeys = keys.filter((key) => !res.map((item) => item.itemId).includes(key));
 
     const filterRows = selectRows.filter((item) => filterKeys.includes(item.itemId!));
     setSelectRows([...res, ...filterRows]);
@@ -36,8 +34,7 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
 
   useEffect(() => {
     if (value) {
-      const keys =
-        (isArray(value) && (value as any[])?.map((item: any) => item.newsId || item.itemId || item.posterId)) || [];
+      const keys = (isArray(value) && (value as any[])?.map((item: any) => item.itemId)) || [];
       setSelectedRowKeys(keys);
       if (isArray(value)) {
         setSelectRows(value as any[]);
