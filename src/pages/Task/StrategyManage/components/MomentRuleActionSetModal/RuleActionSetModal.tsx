@@ -140,7 +140,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
           {value?.contentType
             ? (
             <Button type="link" disabled={isReadonly} onClick={() => setVisible(true)}>
-              {'发' + contentTypeList.filter((type) => type.value === value.contentType)[0].label}
+              {'发' + contentTypeList?.filter((type) => type.value === value.contentType)?.[0]?.label}
             </Button>
               )
             : (

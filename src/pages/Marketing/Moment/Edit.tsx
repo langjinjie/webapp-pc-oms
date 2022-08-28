@@ -223,7 +223,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
                   <p className="f12">{formValues.speechcraft}</p>
                   {formValues.tplType === 4 && (
                     <div className={styles.picIsOnly}>
-                      <Image src={''}></Image>
+                      <Image src={formValues?.itemList?.[0]?.itemUrl}></Image>
                     </div>
                   )}
                   {formValues.tplType === 5 && (

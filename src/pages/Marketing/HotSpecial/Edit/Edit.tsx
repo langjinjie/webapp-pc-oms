@@ -51,7 +51,6 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
             item.itemlist = [];
           } else {
             delete item.speechcraft;
-            console.log(item);
             item.itemlist = item.itemlist.map((market: any) => ({
               itemId: market.itemId || market.newsId || item.posterId
             }));
@@ -151,7 +150,14 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
                         className="mt20"
                         label="话术"
                         name={[name, 'speechcraft']}
-                        rules={[{ required: true, message: '话术不可以为空' }]}
+                        rules={[
+                          { required: true, message: '话术不可以为空' },
+                          {
+                            type: 'string',
+                            max: 100,
+                            message: '最多支持输入100个字符'
+                          }
+                        ]}
                       >
                         <MeatComponent type={formValues.contentList?.[index]?.tplType || 0}></MeatComponent>
                       </Form.Item>
@@ -166,7 +172,10 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
                           </Radio.Group>
                         </Form.Item>
                         {formValues.contentList?.[index]?.isTip === 1 && (
-                          <Form.Item name={[name, 'tip']}>
+                          <Form.Item
+                            name={[name, 'tip']}
+                            rules={[{ type: 'string', max: 30, message: '最多支持输入30个字符' }]}
+                          >
                             <Input></Input>
                           </Form.Item>
                         )}

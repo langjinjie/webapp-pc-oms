@@ -10,10 +10,8 @@ import CreateSpecial from './components/CreateSpecial';
 import { HotColumns, searchColsFun, tableColumnsFun } from './ListConfig';
 
 type QueryParamsType = Partial<{
-  nodeCode: string;
-  nodeName: string;
-  nodeName1?: string;
-  nodeTypeCode: string;
+  name: string;
+  status: string;
 }>;
 const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
   const [queryParams, setQueryParams] = useState<QueryParamsType>({});
@@ -50,9 +48,9 @@ const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
     getList();
   }, []);
 
-  const onSearch = ({ nodeName1: nodeName, ...values }: QueryParamsType) => {
-    setQueryParams({ ...values, nodeName });
-    getList({ ...values, nodeName, pageNum: 1 });
+  const onSearch = (values: any) => {
+    setQueryParams(values);
+    getList({ ...values, pageNum: 1 });
   };
   const onValuesChange = (changeValue: any, values: any) => {
     setQueryParams(values);
@@ -74,7 +72,7 @@ const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const deleteNodeItem = async (operateType: OperateType, record: HotColumns, index: number) => {
+  const operateItem = async (operateType: OperateType, record: HotColumns, index: number) => {
     if (operateType === 'add') {
       history.push('/marketingHot/edit?topicId=' + record.topicId);
     } else if (operateType === 'edit') {
@@ -100,6 +98,7 @@ const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
         icon={<PlusOutlined />}
         onClick={() => {
           setVisible(true);
+          setCurrentItem(undefined);
         }}
         size="large"
       >
@@ -110,7 +109,7 @@ const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
       <div className="mt20">
         <NgTable
           columns={tableColumnsFun({
-            onOperate: deleteNodeItem
+            onOperate: operateItem
           })}
           dataSource={tableSource}
           pagination={pagination}
@@ -120,12 +119,14 @@ const HotSpecialList: React.FC<RouteComponentProps> = ({ history }) => {
           }}
         />
       </div>
-      {/* <div className={'operationWrap'}>
-        <Button type="primary" shape={'round'} ghost onClick={() => console.log('ssa')}>
-          批量删除
-        </Button>
-      </div> */}
+
       <CreateSpecial
+        onSuccess={() =>
+          onSearch({
+            name: '',
+            status: undefined
+          })
+        }
         visible={visible}
         value={currentItem}
         onClose={() => {

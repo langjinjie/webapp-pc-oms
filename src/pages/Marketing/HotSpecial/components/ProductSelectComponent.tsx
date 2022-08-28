@@ -9,7 +9,7 @@ interface ProductSelectComponentProps {
   selectedRowKeys: React.Key[];
 }
 
-export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ onChange }) => {
+export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [options, setOptions] = useState<any[]>([]);
   const [formValues, setFormValues] = useState<{ productName: string; category: string | undefined }>();
@@ -136,6 +136,7 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
           rowSelection={{
             type: 'checkbox',
             preserveSelectedRowKeys: true,
+            selectedRowKeys: selectedRowKeys,
             onChange: (selectedRowKeys: React.Key[], selectedRows: ProductProps[]) => {
               const rows = selectedRows.map((item) => ({
                 ...item,
