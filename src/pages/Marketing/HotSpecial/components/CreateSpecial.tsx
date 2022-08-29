@@ -58,6 +58,7 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
       width={800}
       onClose={onClose}
       visible={visible}
+      destroyOnClose
       forceRender
       footer={
         <div className="flex justify-end">

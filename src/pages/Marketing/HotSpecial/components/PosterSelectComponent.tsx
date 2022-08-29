@@ -159,7 +159,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
               const rows = selectedRows.map((item) => ({
                 ...item,
                 itemId: item?.posterId,
-                itemName: item?.posterName
+                itemName: item?.name
               }));
               onSelectChange(selectedRowKeys, rows);
             },

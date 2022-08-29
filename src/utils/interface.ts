@@ -413,6 +413,7 @@ export interface IPreviewValue {
   speechcraft: string;
   pushTime: string | Moment;
   actionRule: IActionRule;
+  wayName?: string;
 }
 
 export interface IActionRule {

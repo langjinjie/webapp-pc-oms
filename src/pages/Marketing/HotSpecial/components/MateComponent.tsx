@@ -32,7 +32,6 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
     const filterRows = selectRows.filter((item) => filterKeys.includes(item.itemId!));
     console.log({ filterRows });
     setSelectRows([...res, ...filterRows]);
-    console.log('++++++++++++++++++', [...res, ...filterRows]);
     onChange?.([...res, ...filterRows]);
     setSelectedRowKeys(keys);
   };
