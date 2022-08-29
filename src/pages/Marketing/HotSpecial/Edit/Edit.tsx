@@ -33,10 +33,7 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
         return item;
       });
 
-      console.log(resList);
-      if (resList.length > 0) {
-        setFormValues({ contentList: resList, topicId });
-      }
+      setFormValues({ contentList: resList.length > 0 ? resList : formValues.contentList, topicId });
       listForm.setFieldsValue({
         contentList: resList.length > 0 ? resList : formValues.contentList
       });
