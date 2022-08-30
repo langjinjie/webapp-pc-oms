@@ -32,7 +32,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   const [formValue, setFormValue] = useState<{ [key: string]: any }>();
   const [syncLoading, setSyncLoading] = useState(false);
   const [resultId, setResultId] = useState('');
-  const [tableSource, setTableSource] = useState<{ total: number; list: IClientColumns[] }>({
+  const [tableSource, setTableSource] = useState<{ total: number; list: IClientColumns[]; syncTime?: string }>({
     total: 0,
     list: []
   });
@@ -58,7 +58,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
       if (!pageNum || pageNum === 1) {
         setResultId(res.resultId);
       }
-      setTableSource({ total: res.total, list: res.list });
+      setTableSource({ ...res });
     }
     setLoading(false);
   };
@@ -277,6 +277,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
           <span className={classNames(style.selectNum, 'inline-block')}>
             *共计{tableSource.total}位待分配客户，
             <span className={style.selected}>已选择{selectedRowList.length}位</span>
+            <span className={style.syncTime}>上次同步时间: {tableSource?.syncTime}</span>
           </span>
         </AuthBtn>
       </div>
