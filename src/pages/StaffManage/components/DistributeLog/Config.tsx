@@ -52,51 +52,60 @@ export interface IClientAssignRecord {
   assignTime: string;
 }
 
-export const tableColumns: ColumnsType<IClientAssignRecord> = [
-  { title: '客户昵称', dataIndex: 'nickName' },
-  {
-    title: '所属客户经理',
-    dataIndex: 'handoverStaffName'
-  },
-  {
-    title: '接替客户经理',
-    dataIndex: 'takeoverStaffName',
-    width: 160,
-    key: 'key3',
-    align: 'center',
-    render: (nodeName: string) => nodeName || UNKNOWN
-  },
-  {
-    title: '转接状态',
-    dataIndex: 'transferStatus',
-    render: (status) => (
-      <span>
+export const tableColumns: (queryType: '1' | '2') => ColumnsType<IClientAssignRecord> = (queryType) => {
+  const columns: ColumnsType<IClientAssignRecord> = [
+    { title: '客户昵称', dataIndex: 'nickName' },
+    {
+      title: '所属客户经理',
+      dataIndex: 'handoverStaffName'
+    },
+    {
+      title: '接替客户经理',
+      dataIndex: 'takeoverStaffName',
+      width: 160,
+      key: 'key3',
+      align: 'center',
+      render: (nodeName: string) => nodeName || UNKNOWN
+    },
+    {
+      title: '转接状态',
+      dataIndex: 'transferStatus',
+      render: (status: number) => (
         <span>
-          <i
-            className={classNames(
-              'status-point',
-              { 'status-point-gray': status === 1 },
-              { 'status-point-red': [3, 5].includes(status) }
-            )}
-          />
-          {onJobTransferStatusList.find((findItem) => findItem.id === status)?.name}
+          <span>
+            <i
+              className={classNames(
+                'status-point',
+                { 'status-point-gray': status === 1 },
+                { 'status-point-red': [3, 5].includes(status) }
+              )}
+            />
+            {onJobTransferStatusList.find((findItem) => findItem.id === status)?.name}
+          </span>
         </span>
-      </span>
-    )
-  },
-  {
-    title: '转接时间',
-    dataIndex: 'takeoverTime'
-  },
-  {
-    title: '分配时间',
-    dataIndex: 'assignTime'
-  },
-  {
-    title: '操作人',
-    dataIndex: 'opName'
+      )
+    },
+    {
+      title: '转接时间',
+      dataIndex: 'takeoverTime'
+    },
+    {
+      title: '分配时间',
+      dataIndex: 'assignTime'
+    },
+    {
+      title: '操作人',
+      dataIndex: 'opName'
+    }
+  ];
+  if (queryType === '1') {
+    columns.splice(columns.length - 1, 0, {
+      title: '转接原因',
+      dataIndex: 'reasonName'
+    });
   }
-];
+  return columns;
+};
 
 export const clientTypeList = [
   {

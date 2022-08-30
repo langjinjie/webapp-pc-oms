@@ -123,6 +123,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
       data={{ bizKey: 'news' }}
       beforeUpload={beforeUploadHandle}
       onChange={fileChange}
+      className={style.imageUpload}
     >
       {value ? uploadImg : uploadButton}
     </Upload>
