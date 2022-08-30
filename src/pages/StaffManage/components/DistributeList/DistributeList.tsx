@@ -54,7 +54,6 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
     }
     if (res) {
       const { pageNum } = param || {};
-      console.log('pageNum', pageNum);
       if (!pageNum || pageNum === 1) {
         setResultId(res.resultId);
       }

@@ -32,7 +32,7 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
   // 处理tab的权限
   const authorClientTypeList = useMemo(() => {
     return clientTypeList.filter((filterIitem) => btnList.includes(filterIitem.authorKey));
-  }, [btnList]);
+  }, []);
 
   // 获取记录
   const getRecordList = async (param?: { [key: string]: any }) => {
@@ -104,7 +104,7 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
         <NgFormSearch
           searchRef={searchRef}
           defaultValues={formValue}
-          searchCols={searchCols}
+          searchCols={searchCols(activeKey as '1' | '2')}
           isInline
           onSearch={onSearch}
           onReset={onResetHandle}

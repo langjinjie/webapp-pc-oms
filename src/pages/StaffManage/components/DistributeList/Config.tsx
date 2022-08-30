@@ -8,8 +8,15 @@ import { TagItem } from 'src/utils/interface';
 import style from './style.module.less';
 import classNames from 'classnames';
 
-export const transferStatusList = [
+export const onJobTransferStatusList = [
   { id: 1, name: '转接中（发起在职转接，但是客户还未接受）' },
+  { id: 2, name: '已转接（客户已经接受转接或者自动转接成功）' },
+  { id: 3, name: '已拒绝（客户手工点击拒绝接受转接）' },
+  { id: 4, name: '已转接（90天无法转接）' },
+  { id: 5, name: '已拒绝（成员已超过最大客户数）' }
+];
+export const resignTransferStatusList = [
+  { id: 1, name: '转接中（发起离职继承，但是客户还未接受）' },
   { id: 2, name: '已转接（客户已经接受转接或者自动转接成功）' },
   { id: 3, name: '已拒绝（客户手工点击拒绝接受转接）' },
   { id: 4, name: '已转接（90天无法转接）' },
@@ -78,7 +85,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 1 | 2) => Se
       type: 'select',
       width: '140px',
       label: '转接状态',
-      options: transferStatusList
+      options: distributeLisType === 1 ? onJobTransferStatusList : resignTransferStatusList
     },
     {
       name: 'takeoverTime',
@@ -204,7 +211,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns>
       title: '转接状态',
       dataIndex: 'transferStatus',
       render (transferStatus: number) {
-        return <>{transferStatusList.find((statusItem) => statusItem.id === transferStatus)?.name || UNKNOWN}</>;
+        return <>{onJobTransferStatusList.find((statusItem) => statusItem.id === transferStatus)?.name || UNKNOWN}</>;
       }
     },
     {
