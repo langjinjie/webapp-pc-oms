@@ -11,8 +11,9 @@ import { getQueryParam } from 'tenacity-tools';
 import { Icon } from 'src/components';
 import { saveStation, queryCorpOrg, queryStationDetail } from 'src/apis/stationConfig';
 import { queryMarketArea, searchRecommendGoodsList } from 'src/apis/marketing';
-import style from './style.module.less';
 import { debounce } from 'src/utils/base';
+import { TOKEN_KEY } from 'src/utils/config';
+import style from './style.module.less';
 
 interface Activity {
   status: string;
@@ -43,6 +44,8 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
   const [form] = useForm();
   const { SHOW_ALL } = TreeSelect;
   const type: string = getQueryParam('type');
+
+  const myToken = window.localStorage.getItem(TOKEN_KEY);
 
   const renderAreaTips = (type: string, index: number) => {
     const itemId = (form.getFieldValue(`${type}List`)[index] || {})[`${type}Id`];
@@ -368,7 +371,7 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                           accept="image/*"
                           disabled={+type === 1}
                           listType="picture-card"
-                          action="/tenacity-admin/api/file/upload"
+                          action={'/tenacity-admin/api/file/upload?myToken=' + myToken}
                           data={{ bizKey: 'news' }}
                           beforeUpload={beforeUpload}
                         >

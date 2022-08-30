@@ -276,7 +276,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
           <span className={classNames(style.selectNum, 'inline-block')}>
             *共计{tableSource.total}位待分配客户，
             <span className={style.selected}>已选择{selectedRowList.length}位</span>
-            <span className={style.syncTime}>上次同步时间: {tableSource?.syncTime}</span>
+            {distributeLisType === 2 && <span className={style.syncTime}>上次同步时间: {tableSource?.syncTime}</span>}
           </span>
         </AuthBtn>
       </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Upload, message, Button } from 'antd';
 import { Icon } from 'src/components';
+import { TOKEN_KEY } from 'src/utils/config';
 import style from './style.module.less';
 
 interface IUploadFileProps {
@@ -20,6 +21,9 @@ interface IFileTypeContrast {
 
 const UploadFile: React.FC<IUploadFileProps> = ({ type, fileList, imgLimitParam, rules, extra }) => {
   const [isShowFileLsit, setIsShowFileList] = useState(false);
+
+  const myToken = window.localStorage.getItem(TOKEN_KEY);
+
   // 定义一个类型对照
   const fileTypeContrast: IFileTypeContrast = {
     'audio/mpeg': 'mp3',
@@ -89,7 +93,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ type, fileList, imgLimitParam,
           className={style.uploadFile}
           name="file"
           maxCount={1}
-          action="/tenacity-admin/api/file/upload"
+          action={'/tenacity-admin/api/file/upload?myToken=' + myToken}
           data={{ bizKey: type === 'PDF' ? 'pdf' : 'media' }}
           defaultFileList={fileList}
           onChange={upLoadOnChangeHandle}

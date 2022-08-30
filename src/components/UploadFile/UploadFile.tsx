@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Upload, Button, message } from 'antd';
 import { Icon } from 'src/components';
-import style from './style.module.less';
 import { RcFile } from 'antd/es/upload/interface';
+import { TOKEN_KEY } from 'src/utils/config';
+import style from './style.module.less';
 
 interface IUploadFileProps {
   onChange?: (imgUrl: string) => void;
@@ -13,6 +14,9 @@ interface IUploadFileProps {
 
 const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload, bizKey = 'media' }) => {
   const [props, setProps] = useState<any>();
+
+  const myToken = window.localStorage.getItem(TOKEN_KEY);
+
   const beforeUploadFileHandle = (file: RcFile) => {
     return beforeUpload?.(file);
   };
@@ -52,7 +56,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload,
         {...props}
         name={'file'}
         maxCount={1}
-        action={'/tenacity-admin/api/file/upload'}
+        action={'/tenacity-admin/api/file/upload?myToken=' + myToken}
         data={{ bizKey }}
         className={style.uploadFile}
         onChange={onChangeHandle}
