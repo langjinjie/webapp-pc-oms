@@ -10,6 +10,7 @@ import { UploadChangeParam } from 'antd/lib/upload/interface';
 import { Icon } from 'src/components';
 import style from './style.module.less';
 import classNames from 'classnames';
+import { uploadImage } from 'src/apis/marketing';
 
 interface ImageUploadProps {
   value?: string;
@@ -37,16 +38,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
     }
     return isJpgOrPng && isLt2M;
   };
-
+  const getBase64 = (img: any, callback: (str: any) => void) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+  };
   const fileChange = (info: UploadChangeParam) => {
     if (info.file.status === 'uploading') {
       return setLoading(true);
     }
     if (info.file.status === 'done') {
-      if (info.file.response.ret === 0) {
-        onChange && onChange(info.file.response.retdata.filePath);
-      }
-      return setLoading(false);
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, (imageUrl: string) => {
+        return setLoading(false);
+
+        console.log(imageUrl);
+      });
     }
   };
 
@@ -90,13 +97,29 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
     </div>
   );
 
+  const uploadFile = async (options: any) => {
+    // 创建一个空对象实例
+    const uploadData = new FormData();
+    // 调用append()方法来添加数据
+    uploadData.append('file', options.file);
+    uploadData.append('bizKey', 'news');
+    const res: any = await uploadImage(uploadData);
+    setLoading(false);
+    if (res) {
+      onChange?.(res.filePath);
+    } else {
+      message.error('长传失败');
+    }
+  };
+
   return (
     <Upload
       accept="image/*"
       disabled={disabled}
       listType="picture-card"
       showUploadList={false}
-      action="/tenacity-admin/api/file/upload"
+      // action="/tenacity-admin/api/file/upload"
+      customRequest={uploadFile}
       data={{ bizKey: 'news' }}
       beforeUpload={beforeUploadHandle}
       onChange={fileChange}
