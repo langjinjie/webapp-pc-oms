@@ -112,7 +112,7 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
 
         <div className="mt20">
           <NgTable
-            columns={tableColumns}
+            columns={tableColumns(activeKey as '1' | '2')}
             loading={loading}
             dataSource={tableSource.list}
             pagination={{
