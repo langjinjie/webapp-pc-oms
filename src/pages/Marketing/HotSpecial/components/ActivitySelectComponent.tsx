@@ -102,6 +102,7 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
           bordered
           pagination={pagination}
           rowSelection={{
+            hideSelectAll: true,
             type: 'checkbox',
             selectedRowKeys: selectedRowKeys,
             preserveSelectedRowKeys: true,
@@ -112,6 +113,12 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
                 itemName: item?.activityName
               }));
               onSelectChange(selectedRowKeys, rows);
+            },
+            getCheckboxProps: (record: any) => {
+              return {
+                disabled: selectedRowKeys.length >= 5 && !selectedRowKeys.includes(record.activityId),
+                name: record.activityName
+              };
             }
           }}
           rowKey="activityId"

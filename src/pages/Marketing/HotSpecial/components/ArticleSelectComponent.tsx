@@ -143,6 +143,7 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
           bordered
           pagination={pagination}
           rowSelection={{
+            hideSelectAll: true,
             type: 'checkbox',
             selectedRowKeys: selectedRowKeys,
             preserveSelectedRowKeys: true,
@@ -153,6 +154,12 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
                 itemName: item?.title
               }));
               onSelectChange(selectedRowKeys, rows);
+            },
+            getCheckboxProps: (record: any) => {
+              return {
+                disabled: selectedRowKeys.length >= 5 && !selectedRowKeys.includes(record.newsId),
+                name: record.title
+              };
             }
           }}
           rowKey="newsId"
@@ -161,8 +168,8 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
             { title: '文章名称', dataIndex: 'title', key: 'title', width: 300 },
             {
               title: '文章分类',
-              dataIndex: 'tagNameList',
-              key: 'tagNameList',
+              dataIndex: 'categoryName',
+              key: 'categoryName',
               width: 180
             }
           ]}

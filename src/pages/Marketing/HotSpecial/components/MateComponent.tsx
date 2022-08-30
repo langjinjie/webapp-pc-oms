@@ -20,30 +20,31 @@ interface MeatComponentProps {
 export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onChange }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([]);
   const [selectRows, setSelectRows] = useState<any[]>([]);
+
+  // 列表选择时数据处理
   const handleChange = (keys: React.Key[], rows: any[]) => {
     // 针对海报选中未加载的数据进行过滤重组处理
-    const res = rows.filter((row) => row !== undefined);
-    const filterKeys = keys.filter(
-      (key) => !res.map((item) => item.newsId || item.posterId || item.itemId || item.activityId).includes(key)
-    );
+    console.log(rows);
+
+    const res = rows.filter((row) => row.itemId !== undefined);
+    const filterKeys = keys.filter((key) => !res.map((item) => item.itemId).includes(key));
 
     const filterRows = selectRows.filter((item) => filterKeys.includes(item.itemId!));
+    console.log({ filterRows });
     setSelectRows([...res, ...filterRows]);
-    console.log('++++++++++++++++++', [...res, ...filterRows]);
     onChange?.([...res, ...filterRows]);
     setSelectedRowKeys(keys);
   };
 
   useEffect(() => {
     if (value) {
-      const keys =
-        (isArray(value) && (value as any[])?.map((item: any) => item.newsId || item.itemId || item.posterId)) || [];
+      const keys = (isArray(value) && (value as any[])?.map((item: any) => item.itemId)) || [];
       setSelectedRowKeys(keys);
       if (isArray(value)) {
         setSelectRows(value as any[]);
       }
     }
-  }, []);
+  }, [value]);
 
   /**
    * 删除选中的内容
@@ -81,11 +82,8 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
             <div className={classNames(style.marketingWarp)}>
               {isArray(value) &&
                 (value as any[])?.map((row: any, index) => (
-                  <div
-                    className={classNames(style.customTag)}
-                    key={(row.newsId || row.itemId || row.posterId || row.activityId) + index}
-                  >
-                    <span>{row.itemName || row.title || row.name || row.activityName}</span>
+                  <div className={classNames(style.customTag)} key={row.itemId + index}>
+                    <span>{row.itemName}</span>
                     <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(index)}></Icon>
                   </div>
                 ))}

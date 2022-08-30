@@ -149,6 +149,7 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
           scroll={{ x: 600 }}
           rowSelection={{
             hideSelectAll: true,
+
             type: 'checkbox',
             preserveSelectedRowKeys: true,
             selectedRowKeys: selectedRowKeys,
@@ -158,13 +159,13 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
               const rows = selectedRows.map((item) => ({
                 ...item,
                 itemId: item?.posterId,
-                itemName: item?.posterName
+                itemName: item?.name
               }));
               onSelectChange(selectedRowKeys, rows);
             },
             getCheckboxProps: (record: Poster) => {
               return {
-                disabled: selectedRowKeys.length >= 9 && !selectedRowKeys.includes(record.posterId),
+                disabled: selectedRowKeys.length >= 5 && !selectedRowKeys.includes(record.posterId),
                 name: record.name
               };
             }

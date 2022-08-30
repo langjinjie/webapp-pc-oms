@@ -105,6 +105,7 @@ const TinyEidtor: React.FC<EditorProps> = (props) => {
         onInit={(evt, editor) => (editorRef.current = editor)}
         initialValue={value}
         init={{
+          branding: false,
           height: 600,
           min_height: 400,
           menubar: false,

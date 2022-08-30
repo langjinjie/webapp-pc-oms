@@ -82,6 +82,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
   };
 
   const removeItem = (index: number) => {
+    if (values.contentSource === 1) return;
     const copyRow = [...selectRows];
     const copyKeys = [...selectRowKeys];
     copyRow.splice(index, 1);
@@ -101,16 +102,8 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
     if (value && (!!visible || !!props.visible)) {
       setValues(value);
 
-      if (value.contentSource === 1) {
-        setSelectRows(value?.itemIds || []);
-        setSelectRowKeys(value?.feedId ? [value?.feedId] : []);
-      }
-      if (value.contentSource === 2 && value.contentCategory === 2) {
-        value.categoryId =
-          typeof value?.categoryId === 'string' && value?.categoryId?.indexOf(';') > -1
-            ? value.categoryId?.split(';')
-            : value.categoryId;
-      }
+      setSelectRows(value?.itemIds || []);
+      setSelectRowKeys(value?.feedId ? [value?.feedId] : []);
 
       actionForm.setFieldsValue({
         ...value
@@ -140,7 +133,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
           {value?.contentType
             ? (
             <Button type="link" disabled={isReadonly} onClick={() => setVisible(true)}>
-              {'发' + contentTypeList.filter((type) => type.value === value.contentType)[0].label}
+              {'发' + contentTypeList?.filter((type) => type.value === value.contentType)?.[0]?.label}
             </Button>
               )
             : (
@@ -176,7 +169,10 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
             </Select>
           </Form.Item>
           <Form.Item label="动作类型" name={'contentType'} rules={[{ required: true }]}>
-            <Radio.Group onChange={(e) => onContentChange(e.target.value)} disabled={props.footer === null}>
+            <Radio.Group
+              onChange={(e) => onContentChange(e.target.value)}
+              disabled={props.footer === null || value?.contentSource === 1}
+            >
               <Radio value={11}>朋友圈Feed-文章</Radio>
               {values.contentSource === 2 && (
                 <>
@@ -199,7 +195,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
             </Form.Item>
           )}
         </Form>
-        {values.contentType && props.footer !== null && (
+        {values.contentType && props.footer !== null && values.contentSource === 2 && (
           <div>
             <div className={classNames(styles.marketingWarp, 'container')}>
               {

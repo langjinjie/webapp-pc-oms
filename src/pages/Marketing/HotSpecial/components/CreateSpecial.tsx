@@ -8,8 +8,9 @@ interface CreateSpecialProps {
   visible: boolean;
   onClose: () => void;
   value?: HotColumns;
+  onSuccess: () => void;
 }
-const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value }) => {
+const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, onSuccess }) => {
   const [topForm] = Form.useForm();
   const [formValues, setFormValues] = useState<Partial<HotColumns>>({
     topicName: '',
@@ -19,7 +20,18 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value }
   });
   useEffect(() => {
     if (visible && value) {
+      topForm.setFieldsValue({
+        ...value
+      });
       setFormValues(value);
+    } else {
+      setFormValues({
+        topicName: '',
+        topicImg: '',
+        topicDesc: '',
+        descChanged: ''
+      });
+      topForm.resetFields();
     }
   }, [visible]);
 
@@ -30,6 +42,7 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value }
       const res = await setHotConfig({ ...values, desc: desc, topicId: formValues.topicId });
       if (res) {
         message.success(value ? '编辑成功' : '新增成功');
+        onSuccess();
         onClose();
       }
     });
@@ -45,6 +58,8 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value }
       width={800}
       onClose={onClose}
       visible={visible}
+      destroyOnClose
+      forceRender
       footer={
         <div className="flex justify-end">
           <Space size={20}>

@@ -1,18 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Icon } from 'src/components';
 import { IPreviewValue } from 'src/utils/interface';
 import style from './style.module.less';
 import classNames from 'classnames';
 import moment from 'moment';
+import { getMomentDetail } from 'src/apis/marketing';
 
 interface IPreviewProps {
   value?: IPreviewValue;
   className?: string;
+
   isMoment?: boolean; // 是否是朋友圈（默认为聊天框）
 }
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
-  const itemIds = value?.actionRule?.itemIds || [];
+  const [itemIds, setItemIds] = useState<any[]>([]);
+  console.log(value);
+  const getMomentDetailByFeedId = async () => {
+    // 如果是今日朋友圈
+    if (value?.wayName === '今日朋友圈' && value?.actionRule.feedId) {
+      const res = await getMomentDetail({ feedId: value?.actionRule.feedId });
+      console.log(res);
+      if (res) {
+        setItemIds(res.itemList);
+      }
+    } else {
+      setItemIds(value?.actionRule?.itemIds || []);
+    }
+  };
+
+  useEffect(() => {
+    getMomentDetailByFeedId();
+  }, [value]);
+
   return (
     <div className={classNames(style.phoneWrap, className)}>
       <div className={style.inner}>
@@ -81,30 +101,31 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                   <div className={style.momentContent}>
                     <div className={classNames(style.momentText, 'two-line-ellipsis')}>
                       {value?.speechcraft || '' + ' '}
-                      {value?.actionRule?.contentType === 5 && value?.actionRule?.itemIds[0]?.itemName}
+                      {value?.actionRule?.contentType === 5 && itemIds[0]?.itemName}
                     </div>
-                    {value?.actionRule.contentType === 2 && (
+                    {(value?.actionRule.contentType === 2 ||
+                      value?.actionRule.contentType === 14 ||
+                      value?.actionRule.contentType === 15) && (
                       <div className={style.momentImg}>
-                        {value?.actionRule?.itemIds?.map((mapItem) => (
+                        {itemIds?.map((mapItem) => (
                           <img
                             key={mapItem.itemId}
                             className={classNames(
                               style.img,
-                              { [style.twoImg]: value?.actionRule?.itemIds?.length === 2 },
-                              { [style.multiImg]: value?.actionRule?.itemIds?.length > 2 }
+                              { [style.twoImg]: itemIds?.length === 2 },
+                              { [style.multiImg]: itemIds?.length > 2 }
                             )}
                             src={mapItem.itemShareTitle || mapItem.itemUrl || mapItem.imgUrl}
                           />
                         ))}
                       </div>
                     )}
-
-                    {[1, 3, 4].includes(value?.actionRule.contentType) &&
-                      value?.actionRule?.itemIds?.map((mapItem) => (
+                    {[1, 3, 4, 11, 12, 13].includes(value?.actionRule.contentType) &&
+                      itemIds?.map((mapItem) => (
                         <div className={style.card} key={mapItem.itemId}>
                           <img className={style.shareImg} src={mapItem.itemShareImgUrl} />
                           <div className={style.shareTitle}>
-                            <span className="two-line-ellipsis">{mapItem.itemName}</span>
+                            <span className="two-line-ellipsis">{mapItem.itemName || mapItem.feedName}</span>
                           </div>
                         </div>
                       ))}
