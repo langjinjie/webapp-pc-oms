@@ -422,6 +422,10 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/speechManage',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/List'))
+  },
+  {
+    path: '/tabledownload',
+    component: lazy(() => import('src/pages/Dashboard/TableDownload/TableDownLoad'))
   }
 ];
 
