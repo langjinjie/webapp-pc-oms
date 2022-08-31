@@ -54,7 +54,6 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
     }
     if (res) {
       const { pageNum } = param || {};
-      console.log('pageNum', pageNum);
       if (!pageNum || pageNum === 1) {
         setResultId(res.resultId);
       }
@@ -225,14 +224,17 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
         <p>2.客户继承成功后90天内最多可支持二次继承</p>
       </>
     );
-    return (
-      <div>
-        {distributeLisType === 2 ? '离职继承' : '在职继承'}
-        <Popover content={content}>
-          <QuestionCircleOutlined className="color-text-secondary f16 pointer" />
-        </Popover>
-      </div>
-    );
+    if (distributeLisType === 1) {
+      return (
+        <div>
+          在职继承
+          <Popover content={content}>
+            <QuestionCircleOutlined className="color-text-secondary f16 pointer" />
+          </Popover>
+        </div>
+      );
+    }
+    return null;
   };
   useEffect(() => {
     getReasonCodeListHandle();
@@ -277,7 +279,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
           <span className={classNames(style.selectNum, 'inline-block')}>
             *共计{tableSource.total}位待分配客户，
             <span className={style.selected}>已选择{selectedRowList.length}位</span>
-            <span className={style.syncTime}>上次同步时间: {tableSource?.syncTime}</span>
+            {distributeLisType === 2 && <span className={style.syncTime}>上次同步时间: {tableSource?.syncTime}</span>}
           </span>
         </AuthBtn>
       </div>
