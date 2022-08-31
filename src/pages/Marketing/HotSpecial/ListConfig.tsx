@@ -55,7 +55,8 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<HotColumns> => 
       title: '排序',
       render (_, __, index) {
         return <>{index + 1}</>;
-      }
+      },
+      width: 60
     },
     { title: '专题名称', dataIndex: 'topicName', key: 'topicName', width: 200 },
 
