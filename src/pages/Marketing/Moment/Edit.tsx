@@ -2,7 +2,15 @@ import { Breadcrumb, Button, Divider, Form, Select, Input, Avatar, Image, Spin, 
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { getMomentDetail, searchRecommendGoodsList, updateMoment } from 'src/apis/marketing';
+import {
+  activityDetail,
+  getMomentDetail,
+  getNewsDetail,
+  getPosterDetail,
+  productDetail,
+  searchRecommendGoodsList,
+  updateMoment
+} from 'src/apis/marketing';
 import { debounce, URLSearchParams } from 'src/utils/base';
 import { RecommendMarketProps } from '../Article/Components/TabView3';
 import { PictureCard } from './components/PictureCard';
@@ -15,6 +23,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [momentForm] = Form.useForm();
   const [formValues, setFormValues] = useState<any>({});
   const [recommendList, setRecommendList] = useState<RecommendMarketProps[]>([]);
+  const [shareInfo, setShareInfo] = useState<any[]>([]);
   const navigatorToList = () => {
     history.goBack();
   };
@@ -26,6 +35,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
       if (res) {
         setFormValues(res);
         const { name, tplType, itemList, speechcraft } = res;
+        setShareInfo(itemList);
         if (tplType === 5) {
           const oldList = itemList.map((item: any) => item.itemUrl);
           const newList = new Array(9).fill('');
@@ -85,7 +95,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
    * 模板类型切换
    */
   const tplTypeChange = (value: number) => {
-    setTplType(value);
+    setTplType(+value);
     // 多图朋友圈不需要查询
     if (value < 5) {
       onRecommendSearch('', value);
@@ -95,7 +105,8 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
       });
     } else {
       momentForm.setFieldsValue({
-        itemList: new Array(9).fill('')
+        itemList: new Array(9).fill(''),
+        name: ''
       });
     }
   };
@@ -117,6 +128,70 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
       history.goBack();
     }
   };
+
+  // 选择的内容切换
+  const onItemChange = async (itemId: string) => {
+    if (tplType === 1) {
+      // 文章
+      const res = await getNewsDetail({ newsId: itemId });
+      setShareInfo([
+        {
+          itemName: res.title,
+          itemShareTitle: res.summary,
+          itemShareImgUrl: res.defaultImg
+        }
+      ]);
+      momentForm.setFieldsValue({
+        speechcraft: res.summary
+      });
+    } else if (tplType === 2) {
+      // 产品
+      const res = await productDetail({ productId: itemId });
+      setShareInfo([
+        {
+          itemName: res.productName,
+          itemShareTitle: res.shareTitle,
+          itemShareImgUrl: res.shareCoverImgUrl
+        }
+      ]);
+      momentForm.setFieldsValue({
+        speechcraft: res.speechcraft
+      });
+    } else if (tplType === 3) {
+      // 活动
+      const res = await activityDetail({ activityId: itemId });
+      setShareInfo([
+        {
+          itemShareTitle: res.shareTitle,
+          itemName: res.activityName,
+          itemShareImgUrl: res.shareCoverImgUrl
+        }
+      ]);
+      momentForm.setFieldsValue({
+        speechcraft: res.speechcraft
+      });
+    } else if (tplType === 4) {
+      // 单张海报
+      const res = await getPosterDetail({ posterId: itemId });
+      setShareInfo([
+        {
+          itemUrl: res.imgUrl
+        }
+      ]);
+      momentForm.setFieldsValue({
+        speechcraft: res.speechcraft
+      });
+    }
+  };
+
+  const formValuesChange = (changeValues: any) => {
+    const { itemList } = changeValues;
+    if (itemList) {
+      const res = itemList.filter((item: string) => !!item).map((item: string) => ({ itemUrl: item }));
+      setShareInfo(res);
+    }
+  };
+
   return (
     <div className={styles.momentEdit}>
       <div className="edit container">
@@ -131,7 +206,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
           <h3 className="f18">创建朋友圈内容</h3>
           <Divider></Divider>
 
-          <Form onFinish={onSubmit} form={momentForm}>
+          <Form onFinish={onSubmit} form={momentForm} onValuesChange={(changeValues) => formValuesChange(changeValues)}>
             <Form.Item label="展示模版" rules={[{ required: true }]} name="tplType">
               <Select placeholder="请选择" className={styles.smallSelect} onChange={tplTypeChange}>
                 {tplTypeOptions.map((option) => (
@@ -160,6 +235,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
                       defaultActiveFirstOption={false}
                       showArrow={false}
                       filterOption={false}
+                      onChange={onItemChange}
                       className={styles.bigSelect}
                       onSearch={(value) => debounceFetcher(value)}
                       notFoundContent={fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>}
@@ -188,7 +264,6 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
                     {
                       validator: (_, value) => {
                         const res = value.filter((item: string) => item !== '');
-                        console.log(res, value);
 
                         if (res.length >= 2) {
                           return Promise.resolve();
@@ -221,28 +296,25 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
                 <div className={classNames(styles.marketBox, 'cell ml10')}>
                   <h4>客户经理姓名</h4>
                   <p className="f12">{formValues.speechcraft}</p>
-                  {formValues.tplType === 4 && (
+                  {tplType === 4 && (
                     <div className={styles.picIsOnly}>
-                      <Image src={formValues?.itemList?.[0]?.itemUrl}></Image>
+                      {shareInfo[0]?.itemUrl}
+                      <Image src={shareInfo[0]?.itemUrl}></Image>
                     </div>
                   )}
-                  {formValues.tplType === 5 && (
+                  {tplType === 5 && (
                     <div className={styles.picSmallWrap}>
-                      {formValues?.itemList?.map((item: any) => (
+                      {shareInfo?.map((item: any) => (
                         <Image src={item.itemUrl} key={item.itemUrl}></Image>
                       ))}
                     </div>
                   )}
-                  {formValues.tplType < 4 && (
+                  {tplType < 4 && (
                     <div className={classNames(styles.shearLinkWrap, 'flex')}>
-                      <img className={styles.pic} src={formValues?.itemList?.[0]?.itemShareImgUrl} alt="" />
+                      <img className={styles.pic} src={shareInfo[0]?.itemShareImgUrl} alt="" />
                       <div className="cell ml5">
-                        <div className={classNames(styles.shearTitle, 'ellipsis')}>
-                          {formValues?.itemList?.[0]?.itemName}
-                        </div>
-                        <div className={classNames(styles.shearDesc, 'ellipsis')}>
-                          {formValues?.itemList?.[0]?.itemShareTitle}
-                        </div>
+                        <div className={classNames(styles.shearTitle, 'ellipsis')}>{shareInfo[0]?.itemName}</div>
+                        <div className={classNames(styles.shearDesc, 'ellipsis')}>{shareInfo[0]?.itemShareTitle}</div>
                       </div>
                     </div>
                   )}
