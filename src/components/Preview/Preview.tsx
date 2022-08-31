@@ -15,12 +15,10 @@ interface IPreviewProps {
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
   const [itemIds, setItemIds] = useState<any[]>([]);
-  console.log(value);
   const getMomentDetailByFeedId = async () => {
     // 如果是今日朋友圈
-    if (value?.wayName === '今日朋友圈' && value?.actionRule.feedId) {
+    if (value?.wayName === '今日朋友圈' && value?.actionRule.feedId && value?.actionRule?.itemIds?.length === 0) {
       const res = await getMomentDetail({ feedId: value?.actionRule.feedId });
-      console.log(res);
       if (res) {
         setItemIds(res.itemList);
       }

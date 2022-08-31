@@ -2,7 +2,6 @@ import { Button, Form, message, Radio, Select } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { Icon, NgModal } from 'src/components';
-import { Article } from 'src/pages/Marketing/Article/Config';
 import { MomentSelectComponent } from './components/MomentSelectComponent';
 import { contentTypeList } from './config';
 
@@ -21,11 +20,6 @@ type RuleActionSetModalProps = React.ComponentProps<typeof NgModal> & {
   hideBtn?: boolean;
 };
 
-interface RowProps extends Article {
-  itemId?: string;
-  itemName?: string;
-  [prop: string]: any;
-}
 const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
   value,
   onCancel,
@@ -40,7 +34,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
   const [actionForm] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
-  const [selectRows, setSelectRows] = useState<RowProps[]>([]);
+  const [selectRows, setSelectRows] = useState<any[]>([]);
 
   const handleOk = () => {
     actionForm.validateFields().then((values) => {
@@ -101,8 +95,14 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
   useEffect(() => {
     if (value && (!!visible || !!props.visible)) {
       setValues(value);
+      console.log(value);
 
-      setSelectRows(value?.itemIds || []);
+      setSelectRows([
+        {
+          itemId: value?.feedId,
+          itemName: value?.feedName
+        }
+      ]);
       setSelectRowKeys(value?.feedId ? [value?.feedId] : []);
 
       actionForm.setFieldsValue({
@@ -132,9 +132,14 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
         <>
           {value?.contentType
             ? (
-            <Button type="link" disabled={isReadonly} onClick={() => setVisible(true)}>
-              {'发' + contentTypeList?.filter((type) => type.value === value.contentType)?.[0]?.label}
-            </Button>
+            <div
+              className={classNames('text-primary ellipsis', { disabled: isReadonly })}
+              title={'发' + contentTypeList.filter((type) => type.value === value.contentType)?.[0]?.label}
+              onClick={() => {
+                if (isReadonly) return false;
+                setVisible(true);
+              }}
+            ></div>
               )
             : (
             <Button type="link" onClick={() => setVisible(true)}>
