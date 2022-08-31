@@ -139,7 +139,9 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
                 if (isReadonly) return false;
                 setVisible(true);
               }}
-            ></div>
+            >
+              {'发' + contentTypeList.filter((type) => type.value === value.contentType)?.[0]?.label}
+            </div>
               )
             : (
             <Button type="link" onClick={() => setVisible(true)}>
