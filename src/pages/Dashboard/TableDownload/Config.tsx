@@ -2,6 +2,7 @@ import { Button, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import React from 'react';
+import { AuthBtn } from 'src/components';
 // import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
@@ -13,9 +14,8 @@ export const SearchCols: SearchCol[] = [
     label: '报表类别',
     width: '268px',
     options: [
-      { id: 1, name: '未上架' },
-      { id: 2, name: '已上架' },
-      { id: 3, name: '已下架' }
+      { id: 1, name: '每日战报数据' },
+      { id: 2, name: '战报黑名单数据' }
     ]
   },
   {
@@ -46,7 +46,7 @@ export const columns = (args: OperateProps): ColumnsType<fileProps> => {
     {
       title: '下载ID',
       dataIndex: 'fileId',
-      width: 200,
+      width: 130,
       ellipsis: {
         showTitle: false
       }
@@ -54,7 +54,8 @@ export const columns = (args: OperateProps): ColumnsType<fileProps> => {
     {
       title: '报表名称',
       dataIndex: 'fileName',
-      width: 120,
+      ellipsis: true,
+      width: 180,
       render: (text: String) => {
         return text || UNKNOWN;
       }
@@ -62,18 +63,16 @@ export const columns = (args: OperateProps): ColumnsType<fileProps> => {
     {
       title: '筛选条件',
       dataIndex: 'filter',
-      width: 120,
-      render: (text: String) => {
-        return text || UNKNOWN;
-      }
+      ellipsis: true,
+      width: 160
     },
     {
       title: '生成状态',
       dataIndex: 'status',
       align: 'center',
       width: 120,
-      render: (text: String) => {
-        return text || UNKNOWN;
+      render: (status: number) => {
+        return status === 1 ? '成功' : status === 2 ? '处理中' : '失败';
       }
     },
     {
@@ -88,7 +87,7 @@ export const columns = (args: OperateProps): ColumnsType<fileProps> => {
     {
       title: '处理人',
       dataIndex: 'creater',
-      width: 120,
+      width: 100,
       render: (text: String) => {
         return text || UNKNOWN;
       }
@@ -97,16 +96,22 @@ export const columns = (args: OperateProps): ColumnsType<fileProps> => {
     {
       title: '操作',
       dataIndex: 'status',
-      width: 120,
+      width: 80,
       align: 'left',
       fixed: 'right',
       render: (status: number, record: any) => (
         <Space size={10} className="spaceWrap">
-          {/* <AuthBtn path="/top">
-          </AuthBtn> */}
-          <Button type="link" onClick={() => handleOperate(record)}>
-            下载文件
-          </Button>
+          <AuthBtn path="/export">
+            {status === 1
+              ? (
+              <Button type="link" onClick={() => handleOperate(record)}>
+                下载文件
+              </Button>
+                )
+              : (
+                  '/'
+                )}
+          </AuthBtn>
         </Space>
       )
     }
