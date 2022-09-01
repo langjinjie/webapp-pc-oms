@@ -224,16 +224,18 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
         <p>2.客户继承成功后90天内最多可支持二次继承</p>
       </>
     );
-    if (distributeLisType === 1) {
-      return (
-        <div>
-          在职继承
+
+    return (
+      <div>
+        {distributeLisType === 1 ? '在职转接' : '离职继承'}
+        {distributeLisType === 1 && (
           <Popover content={content}>
             <QuestionCircleOutlined className="color-text-secondary f16 pointer" />
           </Popover>
-        </div>
-      );
-    }
+        )}
+      </div>
+    );
+
     return null;
   };
   useEffect(() => {
