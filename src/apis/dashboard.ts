@@ -38,3 +38,19 @@ export const getModelList: HttpFC = (param) => {
 export const getListTotal: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/data/bi/whole/total', param);
 };
+
+// 报表下载列表
+export const dataDownloadList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/download/filelist', param);
+};
+// 1.3、异步生成数据接口
+export const asyncCreateDownloadFile: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/download/asyndownload', param);
+};
+// 下载数据文件接口
+export const exportFileWithTable: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/download/downloadfile', param, {
+    responseType: 'blob',
+    timeout: 120000
+  });
+};
