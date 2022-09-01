@@ -15,6 +15,8 @@ interface IPreviewProps {
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
   const [itemIds, setItemIds] = useState<any[]>([]);
+  console.log(value?.actionRule, isMoment);
+
   const getMomentDetailByFeedId = async () => {
     // 如果是今日朋友圈
     if (value?.wayName === '今日朋友圈' && value?.actionRule.feedId && value?.actionRule?.itemIds?.length === 0) {
@@ -101,13 +103,13 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                       {value?.speechcraft || '' + ' '}
                       {value?.actionRule?.contentType === 5 && itemIds[0]?.itemName}
                     </div>
-                    {(value?.actionRule.contentType === 2 ||
-                      value?.actionRule.contentType === 14 ||
-                      value?.actionRule.contentType === 15) && (
+                    {(value?.actionRule?.contentType === 2 ||
+                      value?.actionRule?.contentType === 14 ||
+                      value?.actionRule?.contentType === 15) && (
                       <div className={style.momentImg}>
-                        {itemIds?.map((mapItem) => (
+                        {itemIds?.map((mapItem, index: number) => (
                           <img
-                            key={mapItem.itemId}
+                            key={index + 'img'}
                             className={classNames(
                               style.img,
                               { [style.twoImg]: itemIds?.length === 2 },
@@ -119,8 +121,8 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                       </div>
                     )}
                     {[1, 3, 4, 11, 12, 13].includes(value?.actionRule.contentType) &&
-                      itemIds?.map((mapItem) => (
-                        <div className={style.card} key={mapItem.itemId}>
+                      itemIds?.map((mapItem, index: number) => (
+                        <div className={style.card} key={mapItem.itemId + index}>
                           <img className={style.shareImg} src={mapItem.itemShareImgUrl} />
                           <div className={style.shareTitle}>
                             <span className="two-line-ellipsis">{mapItem.itemName || mapItem.feedName}</span>
