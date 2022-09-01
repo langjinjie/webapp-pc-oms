@@ -41,6 +41,8 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange }) => {
         selectedDept={false}
         value={value}
         params={orgParam}
+        title="选择客户经理"
+        okText={'确认'}
         onChange={onChange}
       />
     </>

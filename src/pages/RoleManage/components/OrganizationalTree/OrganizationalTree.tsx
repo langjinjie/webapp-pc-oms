@@ -1,13 +1,13 @@
 import React, { useState, useEffect, Key, useContext, useMemo } from 'react';
 import { Context } from 'src/store';
-import { Modal, Tree, Input } from 'antd';
+import { Modal, Tree, Input, ModalProps } from 'antd';
 import { Icon, Empty } from 'src/components';
 import { requestGetDeptList, requestGetDepStaffList, searchStaffList } from 'src/apis/orgManage';
 import { debounce, filterChildren, updateTreeData } from 'src/utils/base';
 import classNames from 'classnames';
 import style from './style.module.less';
 
-interface IAddLotteryListProps {
+interface IAddLotteryListProps extends ModalProps {
   value?: any[];
   onChange?: (value: any[]) => void;
   showStaff?: boolean;
@@ -40,7 +40,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   setParams,
   onOk,
   onCancel: onClose,
-  isDeleted
+  isDeleted,
+  ...props
 }) => {
   const { currentCorpId: corpId } = useContext<{ currentCorpId: string }>(Context);
   const [treeData, setTreeData] = useState<any[]>([]);
@@ -308,6 +309,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         disabled: !selectedList.length
       }}
       destroyOnClose
+      {...props}
     >
       <div className={style.contentWrap}>
         <div className={style.treeWrap}>
