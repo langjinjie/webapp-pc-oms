@@ -15,7 +15,7 @@ process.on('unhandledRejection', (err) => {
 const { merge } = require('webpack-merge');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin'); // 简单打包进度百分比
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin'); // css压缩
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin'); // css压缩
 const TerserWebpackPlugin = require('terser-webpack-plugin'); // js压缩
 const webpackConfig = require('./webpack.config');
 
@@ -72,7 +72,7 @@ const buildConfig = {
           safari10: true
         }
       }),
-      new OptimizeCSSAssetsPlugin({})
+      new CssMinimizerPlugin()
     ]
   }
 };

@@ -5,17 +5,10 @@
  */
 
 const path = require('path');
-const os = require('os');
 const HtmlPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HappyPack = require('happypack');
 const DotEnvWebpack = require('dotenv-webpack');
 const CopyPlugin = require('copy-webpack-plugin');
-
-// 获取系统CPU最大核数 以开启多线程满负荷打包
-const happyThreadPool = HappyPack.ThreadPool({
-  size: os.cpus().length
-});
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -59,8 +52,11 @@ const getStyleLoader = (isModule = false, isLess = false) => {
     loaders.push({
       loader: 'less-loader',
       options: {
-        modifyVars: {
-          '@primary-color': '#318CF5'
+        lessOptions: {
+          javascriptEnabled: true,
+          modifyVars: {
+            '@primary-color': '#318cf5'
+          }
         }
       }
     });
@@ -149,12 +145,12 @@ module.exports = function () {
         {
           test: /\.(ts|tsx)$/,
           exclude: /node_modules/,
-          use: 'happypack/loader?id=ts'
+          use: ['thread-loader', getBabelLoader]
         },
         {
           test: /\.(js|jsx)$/,
           exclude: /node_modules/,
-          use: 'happypack/loader?id=js'
+          use: ['thread-loader', getBabelLoader]
         },
         {
           test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ico$/],
@@ -209,26 +205,6 @@ module.exports = function () {
         filename: isDev ? time + '/css/[name][hash:8].css' : time + '/css/[name].[chunkhash:8].css',
         chunkFilename: isDev ? time + '/css/[id][hash:8].css' : time + '/css/[id].[chunkhash:8].css',
         ignoreOrder: true
-      }),
-      new HappyPack({
-        id: 'less',
-        threadPool: happyThreadPool,
-        use: getStyleLoader(false, true)
-      }),
-      new HappyPack({
-        id: 'lessModule',
-        threadPool: happyThreadPool,
-        use: getStyleLoader(true, true)
-      }),
-      new HappyPack({
-        id: 'js',
-        threadPool: happyThreadPool,
-        use: ['cache-loader', getBabelLoader(false)]
-      }),
-      new HappyPack({
-        id: 'ts',
-        threadPool: happyThreadPool,
-        use: ['cache-loader', getBabelLoader(true)]
       })
     ]
   };

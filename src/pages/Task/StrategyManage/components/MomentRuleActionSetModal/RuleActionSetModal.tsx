@@ -95,7 +95,6 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
   useEffect(() => {
     if (value && (!!visible || !!props.visible)) {
       setValues(value);
-      console.log(value);
 
       setSelectRows([
         {
@@ -111,8 +110,21 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
     }
   }, [visible, value, props.visible]);
 
-  const contentSourceChange = (value: number) => {
-    console.log(value);
+  const contentSourceChange = (contentSource: number) => {
+    if (contentSource === value?.contentSource) {
+      setValues(value);
+      setSelectRows([
+        {
+          itemId: value?.feedId,
+          itemName: value?.feedName
+        }
+      ]);
+      setSelectRowKeys(value?.feedId ? [value?.feedId] : []);
+
+      actionForm.setFieldsValue({
+        ...value
+      });
+    }
   };
 
   // 海报选中
@@ -178,7 +190,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
           <Form.Item label="动作类型" name={'contentType'} rules={[{ required: true }]}>
             <Radio.Group
               onChange={(e) => onContentChange(e.target.value)}
-              disabled={props.footer === null || value?.contentSource === 1}
+              disabled={props.footer === null || values?.contentSource === 1}
             >
               <Radio value={11}>朋友圈Feed-文章</Radio>
               {values.contentSource === 2 && (

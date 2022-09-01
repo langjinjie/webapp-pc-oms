@@ -20,6 +20,8 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
   });
   useEffect(() => {
     if (visible && value) {
+      console.log(value);
+
       topForm.setFieldsValue({
         ...value
       });
@@ -49,7 +51,7 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
   };
 
   const editorChange = (content: string) => {
-    setFormValues((formValues) => ({ ...formValues, descChanged: content }));
+    setFormValues((formValues: any) => ({ ...formValues, descChanged: content, topicDesc: content }));
   };
   return (
     <Drawer
@@ -85,9 +87,11 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
         >
           <NgUpload />
         </Form.Item>
-        <Form.Item label="专题描述" required>
-          <NgEditor value={formValues.topicDesc} onChange={editorChange} />
-        </Form.Item>
+        {visible && (
+          <Form.Item label="专题描述" required>
+            <NgEditor value={formValues.topicDesc} onChange={editorChange} />
+          </Form.Item>
+        )}
       </Form>
     </Drawer>
   );

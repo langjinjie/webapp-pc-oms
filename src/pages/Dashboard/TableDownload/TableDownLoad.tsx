@@ -11,7 +11,7 @@ const TableDownLoad: React.FC = () => {
     current: 1,
     pageSize: 10,
     total: 0,
-    showTotal: (total) => {
+    showTotal: (total: number) => {
       return `共 ${total} 条记录`;
     }
   });
@@ -27,7 +27,7 @@ const TableDownLoad: React.FC = () => {
     if (res) {
       const { list, total } = res;
       setDataSource(list);
-      setPagination((pagination) => ({ ...pagination, total, pageNum, pageSize }));
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
     }
   };
 

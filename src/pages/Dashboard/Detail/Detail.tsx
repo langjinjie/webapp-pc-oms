@@ -26,7 +26,7 @@ const DashboardDetail: React.FC<RouteComponentProps<{ id: string }, any, StatePr
       queryType: 1,
       dataCode: location.state.dataCode,
       leaderId: location.state.leaderId || '',
-      businessModel: location.state.businessModel
+      businessModel: location.state?.businessModel
     });
     if (res) {
       setDataSource(res);

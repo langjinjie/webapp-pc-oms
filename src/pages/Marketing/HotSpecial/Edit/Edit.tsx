@@ -144,7 +144,7 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
                           shape="round"
                           ghost
                           onClick={() => {
-                            if (formValues.contentList.length <= 3) {
+                            if (listForm.getFieldValue('contentList').length <= 3) {
                               message.warning('删除失败，最少需要展示三个模板');
                               return false;
                             }

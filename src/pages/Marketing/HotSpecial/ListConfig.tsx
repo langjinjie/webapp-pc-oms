@@ -66,7 +66,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<HotColumns> => 
       width: 180,
       key: 'topicImg',
       ellipsis: true,
-      render: (topicImg: string) => <Image src={topicImg} />
+      render: (topicImg: string) => <Image src={topicImg} style={{ maxHeight: '70px' }} />
     },
     {
       title: '内容数量',

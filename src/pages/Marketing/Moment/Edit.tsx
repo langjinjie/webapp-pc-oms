@@ -141,6 +141,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
           itemShareImgUrl: res.defaultImg
         }
       ]);
+      setFormValues((formValues: any) => ({ ...formValues, speechcraft: res.summary }));
       momentForm.setFieldsValue({
         speechcraft: res.summary
       });
@@ -157,6 +158,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
       momentForm.setFieldsValue({
         speechcraft: res.speechcraft
       });
+      setFormValues((formValues: any) => ({ ...formValues, speechcraft: res.speechcraft }));
     } else if (tplType === 3) {
       // 活动
       const res = await activityDetail({ activityId: itemId });
@@ -170,6 +172,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
       momentForm.setFieldsValue({
         speechcraft: res.speechcraft
       });
+      setFormValues((formValues: any) => ({ ...formValues, speechcraft: res.speechcraft }));
     } else if (tplType === 4) {
       // 单张海报
       const res = await getPosterDetail({ posterId: itemId });
@@ -181,11 +184,15 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
       momentForm.setFieldsValue({
         speechcraft: res.speechcraft
       });
+      setFormValues((formValues: any) => ({ ...formValues, speechcraft: res.speechcraft }));
     }
   };
 
   const formValuesChange = (changeValues: any) => {
-    const { itemList } = changeValues;
+    const { itemList, speechcraft } = changeValues;
+    if (speechcraft) {
+      setFormValues((formValues: any) => ({ ...formValues, speechcraft }));
+    }
     if (itemList) {
       const res = itemList.filter((item: string) => !!item).map((item: string) => ({ itemUrl: item }));
       setShareInfo(res);
@@ -298,7 +305,6 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
                   <p className="f12">{formValues.speechcraft}</p>
                   {tplType === 4 && (
                     <div className={styles.picIsOnly}>
-                      {shareInfo[0]?.itemUrl}
                       <Image src={shareInfo[0]?.itemUrl}></Image>
                     </div>
                   )}
