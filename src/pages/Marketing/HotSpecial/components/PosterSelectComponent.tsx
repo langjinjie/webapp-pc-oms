@@ -79,6 +79,11 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
 
   const onResetSearch = () => {
     onSearch({ fatherTypeId: undefined, typeId: undefined, name: '' });
+    setFormValues({
+      fatherTypeId: '',
+      typeId: '',
+      name: ''
+    });
   };
 
   return (
