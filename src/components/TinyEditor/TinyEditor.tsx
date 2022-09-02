@@ -42,7 +42,6 @@ function filePickerCallback (callback, value, meta) {
 
     input.onchange = function (e: any) {
       const fileInput = e.target;
-      console.log(fileInput.files);
       Array.from(fileInput.files).forEach((item: any) => {
         if (item.size > 1024 * 1024 * 100) {
           message.error('上传视频不大于100M');
@@ -105,6 +104,7 @@ const TinyEidtor: React.FC<EditorProps> = (props) => {
         onInit={(evt, editor) => (editorRef.current = editor)}
         initialValue={value}
         init={{
+          branding: false,
           height: 600,
           min_height: 400,
           menubar: false,

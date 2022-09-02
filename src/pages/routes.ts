@@ -40,6 +40,10 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/marketingHot/edit',
     component: lazy(() => import('src/pages/Marketing/HotSpecial/Edit/Edit'))
+  },
+  {
+    path: '/marketingMoment/edit',
+    component: lazy(() => import('src/pages/Marketing/Moment/Edit'))
   }
 ];
 
@@ -331,6 +335,24 @@ export const routes: RouteProps[] = [
   {
     path: '/strategyManage/tmpList',
     component: lazy(() => import('src/pages/Task/StrategyManage/TmlManage/Manage'))
+  },
+  // 在职分配
+  {
+    path: '/onjob',
+    component: lazy(() => import('src/pages/StaffManage/OnJob/List'))
+  },
+  {
+    path: '/onjob/record',
+    component: lazy(() => import('src/pages/StaffManage/OnJob/record'))
+  },
+  // 离职继承
+  {
+    path: '/resign',
+    component: lazy(() => import('src/pages/StaffManage/Resign/List'))
+  },
+  {
+    path: '/resign/record',
+    component: lazy(() => import('src/pages/StaffManage/Resign/record'))
   }
 ];
 
@@ -400,6 +422,10 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/speechManage',
     component: lazy(() => import('src/pages/SalesCollection/SpeechManage/List'))
+  },
+  {
+    path: '/tabledownload',
+    component: lazy(() => import('src/pages/Dashboard/TableDownload/TableDownLoad'))
   }
 ];
 

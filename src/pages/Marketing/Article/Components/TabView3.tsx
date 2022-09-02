@@ -35,7 +35,7 @@ export interface RecommendMarketProps {
   title: string;
   recommendImgUrl?: string;
   whetherDelete?: number;
-  otherData: any;
+  otherData?: any;
 }
 
 const TabView3: React.FC<TabView3Props> = (props) => {

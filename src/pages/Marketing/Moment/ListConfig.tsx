@@ -1,33 +1,54 @@
 import React from 'react';
-import { Button, Popconfirm } from 'antd';
+import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 
-export const searchColsFun = (options: any[]): SearchCol[] => {
+export const tplTypeOptions = [
+  {
+    id: 1,
+    name: '文章'
+  },
+  {
+    id: 2,
+    name: '产品'
+  },
+  {
+    id: 3,
+    name: '活动'
+  },
+  {
+    id: 4,
+    name: '单张海报'
+  },
+  {
+    id: 5,
+    name: '9宫格海报'
+  }
+];
+export const searchColsFun = (): SearchCol[] => {
   return [
     {
-      name: 'nodeCode',
+      name: 'name',
       type: 'input',
       label: '内容名称',
       width: '180px',
       placeholder: '请输入'
     },
     {
-      name: 'nodeTypeCode',
+      name: 'tplType',
       type: 'select',
       label: '展示模板',
       placeholder: '请输入',
       width: 180,
-      selectNameKey: 'typeName',
-      selectValueKey: 'typeCode',
-      options: options
+
+      options: tplTypeOptions
     }
   ];
 };
 
-export interface NodeColumns {
-  nodeId: string;
+export interface MomentColumns {
+  feedId: string;
   nodeCode: string;
   typeName: string;
   nodeName: string;
@@ -36,30 +57,33 @@ export interface NodeColumns {
 }
 
 interface OperateProps {
-  onOperate: (nodeId: string, index: number) => void;
+  onOperate: (feedId: string, index: number) => void;
 }
-export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> => {
+export const tableColumnsFun = (args: OperateProps): ColumnsType<MomentColumns> => {
   return [
-    { title: '内容Id', dataIndex: 'nodeCode', key: 'nodeCode', width: 200 },
+    { title: '内容Id', dataIndex: 'feedId', key: 'feedId', width: 200 },
     {
       title: '展示模版',
-      dataIndex: 'typeName',
-      key: 'typeName',
-      width: 200
+      dataIndex: 'tplType',
+      key: 'tplType',
+      width: 200,
+      render: (tplType) => {
+        return tplTypeOptions.filter((option) => option.id === tplType)[0]?.name;
+      }
     },
     {
       title: '内容名称',
-      dataIndex: 'nodeName',
+      dataIndex: 'name',
       width: 180,
-      key: 'nodeName',
+      key: 'name',
       ellipsis: true,
       render: (categoryName: string) => categoryName || UNKNOWN
     },
     {
       title: '营销话术',
-      dataIndex: 'nodeDesc',
+      dataIndex: 'speechcraft',
       width: 180,
-      key: 'nodeDesc',
+      key: 'speechcraft',
       ellipsis: true
     },
     {
@@ -80,9 +104,9 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<NodeColumns> =>
       fixed: 'right',
       render: (value, record, index) => {
         return (
-          <Popconfirm title="删除后会影响所有机构，确定要删除?" onConfirm={() => args.onOperate(record.nodeId, index)}>
-            <Button type="link">编辑</Button>
-          </Popconfirm>
+          <Button type="link" onClick={() => args.onOperate(record.feedId, index)}>
+            编辑
+          </Button>
         );
       }
     }

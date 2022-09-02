@@ -1,7 +1,7 @@
 import React from 'react';
 import { Upload, message, Form, FormInstance } from 'antd';
 import { Icon } from 'src/components/index';
-
+import { TOKEN_KEY } from 'src/utils/config';
 import style from './style.module.less';
 
 interface IUploadImgProps {
@@ -23,6 +23,8 @@ const UploadImg: React.FC<IUploadImgProps> = ({
   rules,
   extra
 }) => {
+  const myToken = window.localStorage.getItem(TOKEN_KEY);
+
   const normFile = (e: any) => {
     if (e.file.status === 'uploading') {
       return;
@@ -103,7 +105,7 @@ const UploadImg: React.FC<IUploadImgProps> = ({
         <Upload
           accept="image/*"
           listType="picture-card"
-          action="/tenacity-admin/api/file/upload"
+          action={'/tenacity-admin/api/file/upload?myToken=' + myToken}
           data={{ bizKey: 'news' }}
           className={style.uploadWrap}
           showUploadList={false}

@@ -8,6 +8,7 @@ import { Upload, message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { UploadChangeParam } from 'antd/lib/upload/interface';
 import { Icon } from 'src/components';
+import { TOKEN_KEY } from 'src/utils/config';
 import style from './style.module.less';
 
 interface KeyMapVal {
@@ -22,6 +23,8 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({ value, onChange, extraData }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>('');
+
+  const myToken = window.localStorage.getItem(TOKEN_KEY);
 
   const fileChange = (info: UploadChangeParam) => {
     if (info.file.status === 'uploading') {
@@ -43,7 +46,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ value, onChange, extraData }) =
     <Upload
       accept=".txt"
       showUploadList={false}
-      action="/tenacity-admin/api/corp/open/uploaddomain"
+      action={'/tenacity-admin/api/corp/open/uploaddomain?myToken=' + myToken}
       data={extraData}
       onChange={fileChange}
     >

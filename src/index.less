@@ -110,6 +110,14 @@ ul {
 }
 .font(12);
 
+.pa(@i) when(@i<=40) {
+  .pa@{i} {
+    padding: @i + 0px;
+  }
+  .pa((@i + 5));
+}
+.pa(5);
+
 .ph(@i) when(@i<=40) {
   .ph@{i} {
     padding-left: @i + 0px;
@@ -612,7 +620,10 @@ ul {
 .text-primary {
   color: #318cf5;
 }
-
+.disabled {
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
 // input 宽带
 .width100 {
   width: 100px !important;

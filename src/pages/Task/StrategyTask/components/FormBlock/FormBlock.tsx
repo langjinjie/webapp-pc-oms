@@ -12,6 +12,7 @@ import { getDateNodeList, getNodeList, getNodeRuleList, getNodeTypeList, getTouc
 import RuleActionSetModal from '../RuleActionSetModal/RuleActionSetModal';
 import { NodeCodeType } from 'src/utils/interface';
 import { debounce } from 'src/utils/base';
+import MomentRuleActionSetModal from '../MomentRuleActionSetModal/RuleActionSetModal';
 interface FormBlockProps {
   value?: any[];
   isCorp?: boolean;
@@ -263,6 +264,15 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     setNodeOptions(copyNodeOptions);
     setNodeDetails(copyNodeDetails);
   };
+
+  const wapCodeChange = (index: number, nodeIndex: number) => {
+    console.log(index, nodeIndex);
+    const sceneList = blockForm.getFieldValue('sceneList');
+    sceneList[index].nodeRuleList[nodeIndex].actionRule = [];
+    blockForm.setFieldsValue({
+      sceneList
+    });
+  };
   return (
     <>
       <Form form={blockForm} name="blockForm" className={styles.blockWrap} onValuesChange={onFieldsChange}>
@@ -463,7 +473,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                                       name={[nodeName, 'wayCode']}
                                       rules={[{ required: true, message: '请选择触达方式' }]}
                                     >
-                                      <Select placeholder="请选择" disabled={isReadonly}>
+                                      <Select
+                                        placeholder="请选择"
+                                        disabled={isReadonly}
+                                        onChange={() => wapCodeChange(index, nodeIndex)}
+                                      >
                                         {touchWayOptions.map((touchWay) => (
                                           <Select.Option key={touchWay.wayId} value={touchWay.wayCode}>
                                             {touchWay.wayName}
@@ -471,13 +485,27 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                                         ))}
                                       </Select>
                                     </Form.Item>
-                                    <Form.Item
-                                      rules={[{ required: true, message: '请配置动作规则' }]}
-                                      className={styles.ruleCol}
-                                      name={[nodeName, 'actionRule']}
-                                    >
-                                      <RuleActionSetModal isReadonly={isReadonly} />
-                                    </Form.Item>
+                                    {blockForm.getFieldValue('sceneList')?.[index]?.nodeRuleList[nodeIndex].wayCode ===
+                                    'today_moment'
+                                      ? (
+                                      <Form.Item
+                                        rules={[{ required: true, message: '请配置动作规则' }]}
+                                        className={styles.ruleCol}
+                                        name={[nodeName, 'actionRule']}
+                                      >
+                                        <MomentRuleActionSetModal isReadonly={isReadonly} />
+                                      </Form.Item>
+                                        )
+                                      : (
+                                      <Form.Item
+                                        rules={[{ required: true, message: '请配置动作规则' }]}
+                                        className={styles.ruleCol}
+                                        name={[nodeName, 'actionRule']}
+                                      >
+                                        <RuleActionSetModal isReadonly={isReadonly} />
+                                      </Form.Item>
+                                        )}
+
                                     <Form.Item
                                       name={[nodeName, 'speechcraft']}
                                       rules={[{ required: true, message: '请输入自定义话术' }]}

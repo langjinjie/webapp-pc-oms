@@ -398,9 +398,10 @@ export interface TagInterface {
   tagList?: TagItem[];
 }
 export interface TagGroup {
+  displayType?: number;
   groupId: string;
   groupName: string;
-  tagList: TagInterface[];
+  tagList: (TagInterface | TagItem)[];
 }
 
 export interface TagCategory {
@@ -412,6 +413,7 @@ export interface IPreviewValue {
   speechcraft: string;
   pushTime: string | Moment;
   actionRule: IActionRule;
+  wayName?: string;
 }
 
 export interface IActionRule {

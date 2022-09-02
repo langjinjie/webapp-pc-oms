@@ -5,6 +5,7 @@
 
 import Axios, { AxiosInstance, Method, AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios';
 import { message } from 'antd';
+import { TOKEN_KEY } from './config';
 
 type HttpMethod = (...args: any) => Promise<any>;
 
@@ -17,6 +18,10 @@ const instance: AxiosInstance = Axios.create({
  */
 instance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
+    // 在请求头部添加token
+    if (config.url !== '/tenacity-admin/api/user/login') {
+      config.headers.myToken = localStorage.getItem(TOKEN_KEY);
+    }
     return config;
   },
   (err: AxiosError) => {

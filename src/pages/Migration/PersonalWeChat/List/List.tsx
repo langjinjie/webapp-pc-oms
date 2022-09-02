@@ -100,7 +100,9 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   // 导出任务详情数据
   const exportData = async (task: TaskProps) => {
+    setLoading(true);
     const { data } = await requestExportTransferWechatTask({ taskId: task.taskId });
+    setLoading(false);
     const fileName = task.taskName + moment().format('YYYY-MM-DD');
     exportFile(data, fileName);
   };

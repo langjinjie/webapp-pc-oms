@@ -283,6 +283,111 @@
   }
 }
 
+.menuWrap {
+  position: fixed;
+  top: 80px;
+  width: 252px;
+  height: calc(100vh - 80px);
+  padding-top: 20px;
+  background-color: #f8f9fd;
+  padding: 0 16px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  // 导航条样式自定义
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    max-height: 400px !important;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0);
+    border-radius: 0;
+    background: rgba(0, 0, 0, 0);
+    height: 260px;
+  }
+
+  .ant-menu-submenu {
+    .ant-menu-sub {
+      position: relative;
+      &::after {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 15px;
+        display: block;
+        height: calc(100% - 30px);
+        border-left: 2px solid #e1e2e6;
+      }
+      padding-left: 30px !important;
+
+      .ant-menu-item-only-child {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+    }
+    > .ant-menu-submenu-title {
+      padding-left: 10px !important;
+    }
+    &.ant-menu-submenu-selected > .ant-menu-submenu-title {
+      background: #eff0f5;
+      border-radius: 8px;
+    }
+    .ant-menu-submenu-arrow {
+      color: #7e8185 !important;
+      font-size: 16px;
+    }
+    .ant-menu-title-content {
+      font-weight: 500;
+      font-size: 16px;
+      color: #7e8185;
+      &:hover {
+        color: #111;
+      }
+    }
+    .menu-icon {
+      font-size: 20px;
+      color: #7e8185;
+    }
+    &.ant-menu-submenu-selected {
+      .menu-icon {
+        color: #111;
+      }
+      .ant-menu-submenu-title {
+        .ant-menu-title-content {
+          font-weight: 500;
+          font-size: 16px;
+          color: #111;
+        }
+      }
+    }
+  }
+  .ant-menu-sub {
+    .ant-menu-title-content {
+      font-size: 14px;
+      color: #7e8185;
+      padding-left: 8px;
+    }
+    .ant-menu-item-selected {
+      font-size: 14px;
+      font-weight: 500;
+      background: #f8f9fd;
+      .ant-menu-title-content {
+        background: #eff0f5 !important;
+        border-radius: 8px;
+        color: #111111;
+      }
+      &::after {
+        display: none !important;
+      }
+    }
+  }
+}
+
 .menu-list {
   position: fixed;
   top: 80px;
@@ -291,20 +396,6 @@
   padding-top: 20px;
   background-color: #eff0f5;
   overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  ::-webkit-scrollbar-thumb {
-    border-radius: 5px;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: rgba(0, 0, 0, 0.2);
-  }
-  ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-    border-radius: 0;
-    background: rgba(0, 0, 0, 0.1);
-  }
 
   .menu-item {
     width: 100%;

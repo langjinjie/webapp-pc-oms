@@ -32,7 +32,8 @@ export const operationTransferTask: HttpFC = (param) => {
 // 1.7 下载任务数据明细
 export const exportTransferTask: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/transfer/task/export', param, {
-    responseType: 'blob'
+    responseType: 'blob',
+    timeout: 120000
   });
 };
 // 1.8 创建群发任务
@@ -87,7 +88,8 @@ export const requestOpWechatTransferTask: HttpFC = (param) => {
  */
 export const requestExportTransferWechatTask: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/transfer/wechat/task/export', param, {
-    responseType: 'blob'
+    responseType: 'blob',
+    timeout: 12000
   });
 };
 

@@ -12,10 +12,34 @@
     .ant-space-align-center {
       align-items: flex-start;
     }
-    .ant-space {
-      .ant-form-item {
-        margin-bottom: 0;
-      }
+
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+    .ant-form-item-label {
+      width: auto;
+    }
+  }
+}
+
+.formBlock {
+  border: 1px solid #e1e2e6;
+  border-radius: 8px;
+
+  .blockHeader {
+    height: 50px;
+    padding: 0 20px;
+    border-bottom: 1px solid #e1e2e6;
+  }
+
+  .tmpSelect {
+    width: 136px;
+  }
+}
+.customItem {
+  :global {
+    .ant-form-item-explain-error {
+      margin-left: 20px;
     }
   }
 }

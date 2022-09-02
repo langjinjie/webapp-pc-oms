@@ -20,7 +20,7 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
   const getList = async (params?: any) => {
     const pageNum = params?.pageNum || pagination.current;
     const res = await activityList({
-      syncBank: 1,
+      status: 2,
       pageSize: pagination.pageSize,
       ...formValues,
       ...params,
@@ -55,7 +55,7 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
         onValuesChange={(changeValue, values) => setFormValues(values)}
         searchCols={[
           {
-            name: 'title',
+            name: 'activityName',
             type: 'input',
             label: '活动名称',
             width: '200px',

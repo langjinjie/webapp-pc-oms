@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, MutableRefObject, useImperativeHandle } from 'react';
 
 import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'antd';
 import style from './style.module.less';
@@ -13,7 +13,7 @@ export interface OptionProps {
   [prop: string]: any;
 }
 export interface SearchCol {
-  type: 'input' | 'select' | 'date' | 'rangePicker' | 'cascader';
+  type: 'input' | 'select' | 'date' | 'rangePicker' | 'cascader' | 'custom';
   name: string;
   label: string;
   width?: number | string;
@@ -23,7 +23,7 @@ export interface SearchCol {
   cascaderOptions?: any[];
   selectNameKey?: string;
   selectValueKey?: string;
-
+  customNode?: React.ReactNode;
   fieldNames?: {
     label: string;
     value: string;
@@ -47,6 +47,7 @@ interface SearchComponentProps {
   className?: string;
   hideReset?: boolean;
   children?: React.ReactNode;
+  searchRef?: MutableRefObject<any>;
 }
 const { RangePicker } = DatePicker;
 
@@ -60,7 +61,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     onChangeOfCascader,
     onReset,
     firstRowChildCount,
-    hideReset
+    hideReset,
+    searchRef
   } = props;
   const [searchForm] = Form.useForm();
   const handleReset = () => {
@@ -88,6 +90,12 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     }
     onChangeOfCascader?.(value, selectedOptions);
   };
+
+  useImperativeHandle(searchRef, () => ({
+    handleReset: () => {
+      searchForm.resetFields();
+    }
+  }));
   useEffect(() => {
     if (props.defaultValues?.catalogIds) {
       searchForm.setFieldsValue({ catalogIds: props.defaultValues.catalogIds, ...props.defaultValues });
@@ -169,7 +177,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     onChange={onChange}
                   />
                 </Form.Item>
-              ))
+              )) ||
+              (col.type === 'custom' && col.customNode)
             );
           })}
           {props.children}
@@ -223,7 +232,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <RangePicker format="YYYY-MM-DD" />
                   </Form.Item>
-                ))
+                )) ||
+                (col.type === 'custom' && col.customNode)
               );
             })}
           </Row>
@@ -236,7 +246,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (
-                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                  <Form.Item key={col.name} name={col.name} label={col.label}>
                     <Select placeholder="请选择" allowClear style={{ width: col.width }}>
                       {col.options &&
                         col.options.map((option) => (
@@ -254,7 +264,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <RangePicker format="YYYY-MM-DD" />
                   </Form.Item>
-                ))
+                )) ||
+                (col.type === 'custom' && col.customNode)
               );
             })}
             {props.children}

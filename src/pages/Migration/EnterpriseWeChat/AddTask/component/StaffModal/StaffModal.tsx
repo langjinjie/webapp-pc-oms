@@ -152,6 +152,7 @@ const StaffModal: React.FC<IStaffModalProps> = ({
           // value={name}
           className={style.input}
           placeholder="搜索成员"
+          // @ts-ignore
           onChange={searchStaffList}
         />
         <Icon className={style.inputIcon} name="icon_common_16_seach" />

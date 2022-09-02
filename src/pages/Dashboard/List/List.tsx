@@ -46,7 +46,7 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
       leaderName: record.leaderName,
       leaderId: record.leaderId,
       ...filterData,
-      businessModel: record.businessModel,
+      businessModel: record?.businessModel,
       dataCodeTitle: currentItem?.subTitle
     });
   };
@@ -174,8 +174,8 @@ const AddFriend: React.FC<RouteComponentProps<{ id: string }>> = ({ history, mat
             <Select value={filterData.businessModel} style={{ width: 120 }} onChange={handleModelChange}>
               <Select.Option value="">全部</Select.Option>
               {modelList.map((item) => (
-                <Select.Option value={item.businessModel} key={item.businessModel}>
-                  {item.businessModel}
+                <Select.Option value={item?.businessModel} key={item?.businessModel}>
+                  {item?.businessModel}
                 </Select.Option>
               ))}
             </Select>

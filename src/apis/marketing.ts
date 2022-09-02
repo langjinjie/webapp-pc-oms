@@ -30,14 +30,8 @@ export const getPhoneIdentifier: HttpFunction<Object> = (param: Object) => {
  * 获取文章列表
  * @params getNewsListParamsProps
  */
-interface getNewsListParamsProps {
-  minTime?: string;
-  maxTime?: string;
-  title?: string;
-  pageNum: number | '';
-  pageSize: number | '';
-}
-export const getNewsList: HttpFunction<getNewsListParamsProps> = (params) => {
+
+export const getNewsList: HttpFunction = (params) => {
   return http.post('/tenacity-admin/api/news/list', params);
 };
 
@@ -411,4 +405,52 @@ export const setUserRightWithProduct: HttpFunction = (param) => {
  */
 export const queryMarketArea: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/market/item/scope/data', param);
+};
+
+// 热门专题
+// 1.热门专题列表接口
+export const getHotList: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/topic/list', param);
+};
+// 2. 热门专题详情接口
+export const getHotContentDetail: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/topic/detail', param);
+};
+// 3.热门专题内容配置接口
+export const setHotContent: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/topic/content/set', param);
+};
+// 4.  新增/编辑热门专题接口
+export const setHotConfig: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/topic/addoredit', param);
+};
+
+// 5. 热门专题上下架接口
+export const changeHotStatus: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/topic/status/man', param);
+};
+
+// 6. 热门专题置顶
+export const sortTopHot: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/topic/sort/top', param);
+};
+
+// 朋友圈模块接口
+// 1.11、朋友圈内容库列表接口
+export const getMomentList: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/moment/feed/list', param);
+};
+
+// 1.13、新增/编辑朋友圈内容接口
+export const updateMoment: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/moment/feed/addoredit', param);
+};
+
+// 1.12、朋友圈内容详情接口
+export const getMomentDetail: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/moment/feed/detail', param);
+};
+// 1.12、朋友圈内容详情接口
+export const batchDeleteMoment: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/market/moment/feed/del', param);
 };

@@ -4,6 +4,7 @@ import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'antd/es/pagination';
 import { getActionRuleDetail, getActionRuleList } from 'src/apis/task';
 import RuleActionSetModal from '../../StrategyTask/components/RuleActionSetModal/RuleActionSetModal';
+import MomentRuleActionSetModal from '../../StrategyTask/components/MomentRuleActionSetModal/RuleActionSetModal';
 
 type QueryParamsType = {};
 export const ActionList: React.FC = () => {
@@ -76,13 +77,25 @@ export const ActionList: React.FC = () => {
           }}
         />
       </div>
-      <RuleActionSetModal
-        visible={visible}
-        value={currentValue}
-        hideBtn
-        onCancel={() => setVisible(false)}
-        footer={null}
-      ></RuleActionSetModal>
+      {currentValue?.contentType < 11
+        ? (
+        <RuleActionSetModal
+          visible={visible}
+          value={currentValue}
+          hideBtn
+          onCancel={() => setVisible(false)}
+          footer={null}
+        />
+          )
+        : (
+        <MomentRuleActionSetModal
+          visible={visible}
+          value={currentValue}
+          hideBtn
+          onCancel={() => setVisible(false)}
+          footer={null}
+        />
+          )}
     </div>
   );
 };
