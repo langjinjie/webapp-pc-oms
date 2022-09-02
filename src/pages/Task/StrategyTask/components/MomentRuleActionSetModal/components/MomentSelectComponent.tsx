@@ -66,6 +66,7 @@ export const MomentSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
     <div>
       <NgFormSearch
         hideReset
+        className={'modalForm'}
         searchCols={setSearchCols}
         onSearch={handleSearch}
         onValuesChange={(changesValue, values) => {

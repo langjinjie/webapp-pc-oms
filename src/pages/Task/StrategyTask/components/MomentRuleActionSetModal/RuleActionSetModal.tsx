@@ -95,12 +95,16 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
       console.log(value);
 
       if (value.contentSource === 1) {
-        setSelectRows([
-          {
-            itemId: value?.feedId,
-            itemName: value?.feedName
-          }
-        ]);
+        setSelectRows(
+          value?.feedId
+            ? [
+                {
+                  itemId: value?.feedId,
+                  itemName: value?.feedName
+                }
+              ]
+            : []
+        );
         setSelectRowKeys(value?.feedId ? [value?.feedId] : []);
       }
       if (value.contentSource === 2 && value.contentCategory === 2) {

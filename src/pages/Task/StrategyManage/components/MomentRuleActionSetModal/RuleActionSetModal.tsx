@@ -96,12 +96,16 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
     if (value && (!!visible || !!props.visible)) {
       setValues(value);
 
-      setSelectRows([
-        {
-          itemId: value?.feedId,
-          itemName: value?.feedName
-        }
-      ]);
+      setSelectRows(
+        value?.feedId
+          ? [
+              {
+                itemId: value?.feedId,
+                itemName: value?.feedName
+              }
+            ]
+          : []
+      );
       setSelectRowKeys(value?.feedId ? [value?.feedId] : []);
 
       actionForm.setFieldsValue({
