@@ -15,6 +15,7 @@ interface IPreviewProps {
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
   const [itemIds, setItemIds] = useState<any[]>([]);
+  console.log(value, isMoment);
 
   const getMomentDetailByFeedId = async () => {
     // 如果是今日朋友圈
