@@ -20,7 +20,24 @@ export const actionTypeList = [
   { id: 2, name: '海报' },
   { id: 3, name: '产品' },
   { id: 4, name: '活动' },
-  { id: 5, name: '话术' }
+  { id: 5, name: '话术' },
+  {
+    id: 11,
+    name: '朋友圈Feed-文章'
+  },
+  {
+    id: 12,
+    name: '朋友圈Feed-产品'
+  },
+  {
+    id: 13,
+    name: '朋友圈Feed-活动'
+  },
+  {
+    id: 14,
+    name: '朋友圈Feed-单张海报'
+  },
+  { id: 15, name: '朋友圈Feed-9宫格海报' }
 ];
 export const nodeSearchColsFun = (options: any[]): SearchCol[] => [
   {
