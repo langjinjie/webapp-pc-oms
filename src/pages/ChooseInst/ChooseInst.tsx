@@ -27,10 +27,7 @@ const ChooseInst: React.FC<RouteComponentProps> = ({ history }) => {
     const res: any = await chooseInst({ corpId });
     if (res) {
       localStorage.setItem(TOKEN_KEY, res);
-      window.location.reload();
       sessionStorage.removeItem('tagOptions');
-    }
-    if (res) {
       history.push('/index');
     }
   };
