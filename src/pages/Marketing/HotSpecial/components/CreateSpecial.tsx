@@ -51,7 +51,7 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
   };
 
   const editorChange = (content: string) => {
-    setFormValues((formValues: any) => ({ ...formValues, descChanged: content, topicDesc: content }));
+    setFormValues((formValues: any) => ({ ...formValues, descChanged: content }));
   };
   return (
     <Drawer

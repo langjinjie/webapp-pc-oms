@@ -42,7 +42,6 @@ function filePickerCallback (callback, value, meta) {
 
     input.onchange = function (e: any) {
       const fileInput = e.target;
-      console.log(fileInput.files);
       Array.from(fileInput.files).forEach((item: any) => {
         if (item.size > 1024 * 1024 * 100) {
           message.error('上传视频不大于100M');
