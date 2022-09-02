@@ -60,7 +60,7 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
             <label htmlFor="">
               <span>活动名称：</span>
               <Input
-                name="title"
+                name="activityName"
                 placeholder="请输入"
                 allowClear
                 value={formValues.activityName}
@@ -84,7 +84,7 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
               <Button
                 type="default"
                 shape="round"
-                onClick={() => onSearch({ title: '' })}
+                onClick={() => onSearch({ activityName: '' })}
                 style={{ width: '70px' }}
                 className={style.searchBtn}
               >

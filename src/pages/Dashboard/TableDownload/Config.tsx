@@ -64,7 +64,10 @@ export const columns = (args: OperateProps): ColumnsType<fileProps> => {
       title: '筛选条件',
       dataIndex: 'filter',
       ellipsis: true,
-      width: 160
+      width: 160,
+      render: (text, record) => {
+        return record.reportName + ' ' + text;
+      }
     },
     {
       title: '生成状态',

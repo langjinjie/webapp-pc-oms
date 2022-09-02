@@ -66,6 +66,7 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
   };
   const onResetSearch = () => {
     setFormValues({ productName: '', category: undefined });
+    getList({ productName: '', category: undefined });
   };
   return (
     <div className="pa20">
