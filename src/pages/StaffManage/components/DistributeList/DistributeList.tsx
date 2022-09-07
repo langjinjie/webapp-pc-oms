@@ -301,7 +301,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
             pageSize: pagination.pageSize
           }}
           setRowKey={(record: IClientColumns) => {
-            return record.externalUserid + '-' + record.staffId;
+            return (record.detailId || '') + record.externalUserid;
           }}
         />
       </div>

@@ -41,6 +41,7 @@ export const searchCols: (queryType: '1' | '2') => SearchCol[] = (queryType) => 
 
 // 分配记录
 export interface IClientAssignRecord {
+  detailId?: string;
   externalUserid: string;
   nickName: string;
   handoverStaffId: string;

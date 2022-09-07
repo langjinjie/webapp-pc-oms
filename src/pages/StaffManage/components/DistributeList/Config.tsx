@@ -129,6 +129,7 @@ export const searchCols1: SearchCol[] = [
 ];
 
 export interface IClientColumns {
+  detailId: string;
   externalUserid: string;
   avatar: string;
   nickName: string;
