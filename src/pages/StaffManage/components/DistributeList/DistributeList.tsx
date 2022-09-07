@@ -153,13 +153,16 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   // 选择框配置对象
   const rowSelection = {
     selectedRowKeys: selectedRowList.map(
-      ({ externalUserid, staffId }: IClientColumns) => externalUserid + '-' + staffId
+      ({ detailId, externalUserid, staffId }: IClientColumns) => (detailId || '') + externalUserid + staffId
     ),
     onChange: (_: React.Key[], selectedRows: IClientColumns[]) => {
-      const currentPageKeys = tableSource.list.map(({ externalUserid, staffId }) => externalUserid + '-' + staffId);
+      const currentPageKeys = tableSource.list.map(
+        ({ detailId, externalUserid, staffId }) => (detailId || '') + externalUserid + staffId
+      );
       // 非本页的数据
       const noCurrentRowList = selectedRowList.filter(
-        ({ externalUserid, staffId }) => !currentPageKeys.includes(externalUserid + '-' + staffId)
+        ({ detailId, externalUserid, staffId }) =>
+          !currentPageKeys.includes((detailId || '') + externalUserid + staffId)
       );
       setselectedRowList([...noCurrentRowList, ...selectedRows]);
     },
@@ -301,7 +304,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
             pageSize: pagination.pageSize
           }}
           setRowKey={(record: IClientColumns) => {
-            return (record.detailId || '') + record.externalUserid;
+            return (record.detailId || '') + record.externalUserid + record.staffId;
           }}
         />
       </div>

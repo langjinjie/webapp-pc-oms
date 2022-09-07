@@ -265,10 +265,21 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
         <>
           <div className={style.chooseStaffTips}>
             温馨提醒：
-            <br />
-            (1)可将选中的客户转接给其他员工，进行后续服务，注意：90天内客户只能被转接两次。
-            <br />
-            (2)若客户同意，转接后客户将在24小时后成功转接；若客户拒绝，本次转接将不会生效，还是由原来的员工继续服务客户。
+            {distributeLisType === 1
+              ? (
+              <>
+                <br />
+                （1）可将选中的客户转接给其他员工，进行后续服务，注意：90天内客户只能被转接两次。
+                <br />
+                （2）若客户同意，转接后客户将在24小时后成功转接；若客户拒绝，本次转接将不会生效，还是由原来的员工继续服务客户。
+              </>
+                )
+              : (
+              <>
+                <br />
+                （1）若客户同意，转接后客户将在24小时后成功转接；若客户拒绝，本次转接将不会生效
+              </>
+                )}
           </div>
           <div className={style.staffChooseTree}>
             <div className={style.treeName}>选择接替员工</div>
