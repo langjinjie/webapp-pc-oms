@@ -525,7 +525,7 @@ const MarketIndex: React.FC = () => {
                             { required: true, message: '请选择' },
                             ({ getFieldValue }) => ({
                               validator (_, value) {
-                                const itemValue = getFieldValue('productTypeList')[index];
+                                const itemValue = getFieldValue('posterList')[index];
                                 if (!value || itemValue.status !== 3) {
                                   return Promise.resolve();
                                 }
@@ -598,7 +598,7 @@ const MarketIndex: React.FC = () => {
                             { message: '请选择' },
                             ({ getFieldValue }) => ({
                               validator (_, value) {
-                                const itemValue = getFieldValue('productTypeList')[index];
+                                const itemValue = getFieldValue('activityList')[index];
                                 if (!value || itemValue.status !== 3) {
                                   return Promise.resolve();
                                 }

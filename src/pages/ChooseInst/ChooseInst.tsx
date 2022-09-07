@@ -9,6 +9,7 @@ import { Context } from 'src/store';
 import { queryInstList, chooseInst } from 'src/apis';
 import { InstItem } from 'src/utils/interface';
 import style from './style.module.less';
+import { TOKEN_KEY } from 'src/utils/config';
 
 const colors: string[] = ['#76A2FA', '#7AC2FE', '#889BF0', '#91A9FF', '#7AD9FF', '#6BDAED'];
 
@@ -25,6 +26,8 @@ const ChooseInst: React.FC<RouteComponentProps> = ({ history }) => {
   const handleChooseInst = async (corpId: string) => {
     const res: any = await chooseInst({ corpId });
     if (res) {
+      localStorage.setItem(TOKEN_KEY, res);
+      sessionStorage.removeItem('tagOptions');
       history.push('/index');
     }
   };
