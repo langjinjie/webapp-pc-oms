@@ -67,7 +67,29 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
       }
     }, '');
     if (department) {
-      await requestStaffBatchSetSaveValidate({ staffIds, deptId: department?.id, cardPosition, desc, tags });
+      const res2 = await requestStaffBatchSetSaveValidate({
+        staffIds,
+        deptId: department?.id,
+        cardPosition,
+        desc,
+        tags
+      });
+      // 后端返回的是文案
+      if (typeof res2 === 'string') {
+        return Modal.confirm({
+          title: '温馨提示',
+          content: res2,
+          onOk: async () => {
+            const res = await requestMultiSave({ staffIds, deptId: department?.id, cardPosition, desc, tags });
+            if (res) {
+              setMultiVisible(false);
+              onResetHandle();
+              message.success('批量修改成功');
+            }
+            setLoading(false);
+          }
+        });
+      }
     }
     const res = await requestMultiSave({ staffIds, deptId: department?.id, cardPosition, desc, tags });
     if (res) {
@@ -213,13 +235,13 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
               : (
               <span onClick={addStaffHandle}>
                 {staffInfo.staffList?.map((item: any) => (
-                  <>
+                  <span key={item.staffId}>
                     <span className={classNames(style.staffItem, { [style.isLeader]: !!item.isLeader })} key={item.id}>
                       {item.name}
-                      <span className={!!item.isLeader && style.isLeader}>{!!item.isLeader && '（上级）'}</span>
+                      <span className={item.isLeader ? style.isLeader : ''}>{!!item.isLeader && '（上级）'}</span>
                     </span>
                     ；
-                  </>
+                  </span>
                 ))}
               </span>
                 )}

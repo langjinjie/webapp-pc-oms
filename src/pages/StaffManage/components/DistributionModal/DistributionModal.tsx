@@ -277,7 +277,7 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
               : (
               <>
                 <br />
-                （1）若客户同意，转接后客户将在24小时后成功转接；若客户拒绝，本次转接将不会生效
+                （1）若客户同意，转接后客户将在24小时后成功转接；若客户拒绝后，客户流失好友，需被转接人再次添加好友
               </>
                 )}
           </div>
