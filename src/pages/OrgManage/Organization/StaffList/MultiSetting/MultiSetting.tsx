@@ -76,6 +76,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
       });
       // 后端返回的是文案
       if (typeof res2 === 'string') {
+        setLoading(false);
         return Modal.confirm({
           title: '温馨提示',
           content: res2,
@@ -86,7 +87,6 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
               onResetHandle();
               message.success('批量修改成功');
             }
-            setLoading(false);
           }
         });
       }
