@@ -353,6 +353,11 @@ export const routes: RouteProps[] = [
   {
     path: '/resign/record',
     component: lazy(() => import('src/pages/StaffManage/Resign/record'))
+  },
+  // 打卡与激励任务
+  {
+    path: '/pointsConfig',
+    component: lazy(() => import('src/pages/PointsManage/PointsConfig/PointsConfig'))
   }
 ];
 
