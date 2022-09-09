@@ -158,7 +158,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
           <Cascader options={categoryList} fieldNames={{ label: 'name', value: 'typeId', children: 'childs' }} />
         </Form.Item>
         <Form.Item label="标签" name={'tags'} rules={[{ required: true }]}>
-          <Select mode="tags" placeholder="待添加" maxTagCount={4}>
+          <Select mode="multiple" placeholder="待添加" maxTagCount={4}>
             {tagList.map((tag, index) => (
               <Select.Option key={index} value={tag.name}>
                 {tag.name}
