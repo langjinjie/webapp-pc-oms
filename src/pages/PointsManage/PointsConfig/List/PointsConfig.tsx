@@ -5,6 +5,7 @@ import { Icon } from 'tenacity-ui';
 import { NgTable } from 'src/components';
 import { tableColumnsFun, IPointsConfigItem } from './Config';
 import style from './style.module.less';
+import { useHistory } from 'react-router-dom';
 
 const tabList = [
   { path: '/clockPoints', name: '打卡任务', key: '1' },
@@ -15,6 +16,8 @@ const PointsConfig: React.FC = () => {
   const { btnList } = useContext(Context);
   const [list, setList] = useState<IPointsConfigItem[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const history = useHistory();
 
   // 获取列表
   const getList = () => {
@@ -40,6 +43,11 @@ const PointsConfig: React.FC = () => {
     setLoading(false);
   };
 
+  // 查看操作记录
+  const viewRecord = () => {
+    history.push('/pointsConfig/record');
+  };
+
   const authorTabList = useMemo(() => {
     return tabList.filter((tabItem) => btnList.includes(tabItem.path));
   }, []);
@@ -53,7 +61,7 @@ const PointsConfig: React.FC = () => {
           return <Tabs.TabPane tab={item.name} key={item.key} />;
         })}
       </Tabs>
-      <div className={style.record}>
+      <div className={style.record} onClick={viewRecord}>
         <Icon className={style.recordIcon} name="jifenshuoming" />
         操作记录
       </div>

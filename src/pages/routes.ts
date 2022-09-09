@@ -357,7 +357,15 @@ export const routes: RouteProps[] = [
   // 打卡与激励任务
   {
     path: '/pointsConfig',
-    component: lazy(() => import('src/pages/PointsManage/PointsConfig/PointsConfig'))
+    component: lazy(() => import('src/pages/PointsManage/PointsConfig/List/PointsConfig'))
+  },
+  {
+    path: '/pointsConfig/edit',
+    component: lazy(() => import('src/pages/PointsManage/PointsConfig/Edit/Edit'))
+  },
+  {
+    path: '/pointsConfig/record',
+    component: lazy(() => import('src/pages/PointsManage/PointsConfig/Record/Record'))
   }
 ];
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 import style from './style.module.less';
+import { useHistory } from 'react-router-dom';
 
 export interface IPointsConfigItem {
   pointsTaskId: string;
@@ -18,10 +19,28 @@ export interface IPointsConfigItem {
   effectiveTime: string;
 }
 
-export const periodType2Name = { 1: '每日', 2: '每周', 3: '每月' };
-export const state2Name = { 0: '下架', 1: '上架' };
+export const periodType2Name = [
+  { value: 1, name: '每日' },
+  { value: 2, name: '每周' },
+  { value: 3, name: '每月' }
+];
+
+export const state2Name = [
+  { value: 0, name: '下架' },
+  { value: 1, name: '上架' }
+];
 
 export const tableColumnsFun: () => ColumnsType<IPointsConfigItem> = () => {
+  const history = useHistory();
+  // 上架
+  const upHandle = () => {
+    console.log('上架');
+  };
+  // 编辑/新增
+  const editHandle = (edit: 0 | 1) => {
+    console.log(edit ? '编辑' : '新增');
+    history.push('/pointsConfig/edit');
+  };
   return [
     {
       title: 'A端展示排序',
@@ -55,9 +74,15 @@ export const tableColumnsFun: () => ColumnsType<IPointsConfigItem> = () => {
       render () {
         return (
           <>
-            <span className={style.up}>上架</span>
-            <span className={style.edit}>编辑</span>
-            <span className={style.add}>新增</span>
+            <span className={style.up} onClick={upHandle}>
+              上架
+            </span>
+            <span className={style.edit} onClick={() => editHandle(1)}>
+              编辑
+            </span>
+            <span className={style.add} onClick={() => editHandle(0)}>
+              新增
+            </span>
           </>
         );
       }
