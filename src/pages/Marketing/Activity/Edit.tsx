@@ -309,7 +309,13 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
           label="活动标签："
           rules={[{ type: 'array', required: true, message: '请选择活动标签' }]}
         >
-          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags" disabled={isReadOnly}>
+          <Select
+            placeholder="请选择"
+            allowClear
+            className={classNames('width320')}
+            mode="multiple"
+            disabled={isReadOnly}
+          >
             {tags?.map((tag, index) => {
               return (
                 <Select.Option key={index} value={tag.name}>
