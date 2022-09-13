@@ -47,8 +47,10 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
       ...others,
       pageNum: 1
     });
+    setQueryParams({ nodeId: node?.value || '', ...others });
   };
 
+  // 重置无法触发该方法
   const onValuesChange = (changeValues: any, values: any) => {
     const { node, ...others } = values;
     setQueryParams({ nodeId: node?.value || '', ...others });
