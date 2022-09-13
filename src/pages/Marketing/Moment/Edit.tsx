@@ -174,17 +174,20 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
       });
       setFormValues((formValues: any) => ({ ...formValues, speechcraft: res.speechcraft }));
     } else if (tplType === 4) {
+      let res: any;
       // 单张海报
-      const res = await getPosterDetail({ posterId: itemId });
+      if (itemId) {
+        res = await getPosterDetail({ posterId: itemId });
+      }
       setShareInfo([
         {
-          itemUrl: res.imgUrl
+          itemUrl: itemId ? res.imgUrl : ''
         }
       ]);
       momentForm.setFieldsValue({
-        speechcraft: res.speechcraft
+        speechcraft: itemId ? res.speechcraft : ''
       });
-      setFormValues((formValues: any) => ({ ...formValues, speechcraft: res.speechcraft }));
+      setFormValues((formValues: any) => ({ ...formValues, speechcraft: itemId ? res.speechcraft : '' }));
     }
   };
 
