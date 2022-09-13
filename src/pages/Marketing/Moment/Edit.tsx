@@ -131,6 +131,21 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   // 选择的内容切换
   const onItemChange = async (itemId: string) => {
+    if (!itemId) {
+      setShareInfo([
+        {
+          itemName: '',
+          itemShareTitle: '',
+          itemShareImgUrl: '',
+          itemUrl: ''
+        }
+      ]);
+      setFormValues((formValues: any) => ({ ...formValues, speechcraft: '' }));
+      momentForm.setFieldsValue({
+        speechcraft: ''
+      });
+      return false;
+    }
     if (tplType === 1) {
       // 文章
       const res = await getNewsDetail({ newsId: itemId });

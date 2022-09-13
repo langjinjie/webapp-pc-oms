@@ -122,7 +122,7 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
             }}
             paginationChange={paginationChange}
             setRowKey={(record: IClientAssignRecord) => {
-              return record.externalUserid + '-' + record.handoverStaffId + '-' + record.takeoverStaffId;
+              return (record.detailId || '') + record.externalUserid;
             }}
           />
         </div>

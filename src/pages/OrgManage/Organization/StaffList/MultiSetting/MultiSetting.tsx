@@ -1,7 +1,7 @@
 import React, { useState, useRef, MutableRefObject, useEffect } from 'react';
 import { message, Modal, Popover, Tag } from 'antd';
 import { Icon } from 'src/components';
-import { requestMultiSave } from 'src/apis/orgManage';
+import { requestMultiSave, requestStaffBatchSetSaveValidate } from 'src/apis/orgManage';
 import ChooseTreeModal from 'src/pages/OrgManage/Organization/StaffList/ChooseTreeModal/ChooseTreeModal';
 import style from './style.module.less';
 import classNames from 'classnames';
@@ -40,6 +40,8 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   const descRef: MutableRefObject<any> = useRef(null);
   const allDesc: MutableRefObject<any> = useRef(null);
   const allDescInputRef: MutableRefObject<any> = useRef(null);
+  const [loading, setLoading] = useState(false);
+
   let timerId: NodeJS.Timeout;
   // 重置
   const onResetHandle = () => {
@@ -54,6 +56,7 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
   };
   // modal确认
   const onOkHandle = async () => {
+    setLoading(true);
     const { staffList, department, cardPosition, desc } = staffInfo;
     const staffIds = staffList.map((item) => item.id);
     const tags = tagList.reduce((prev: string, now: { tagId: string; tagName: string }, index: number) => {
@@ -63,12 +66,38 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
         return prev + now.tagName + '，';
       }
     }, '');
+    if (department) {
+      const res2 = await requestStaffBatchSetSaveValidate({
+        staffIds,
+        deptId: department?.id,
+        cardPosition,
+        desc,
+        tags
+      });
+      // 后端返回的是文案
+      if (typeof res2 === 'string') {
+        setLoading(false);
+        return Modal.confirm({
+          title: '温馨提示',
+          content: res2,
+          onOk: async () => {
+            const res = await requestMultiSave({ staffIds, deptId: department?.id, cardPosition, desc, tags });
+            if (res) {
+              setMultiVisible(false);
+              onResetHandle();
+              message.success('批量修改成功');
+            }
+          }
+        });
+      }
+    }
     const res = await requestMultiSave({ staffIds, deptId: department?.id, cardPosition, desc, tags });
     if (res) {
       setMultiVisible(false);
       onResetHandle();
       message.success('批量修改成功');
     }
+    setLoading(false);
   };
   // 点击添加员工
   const addStaffHandle = () => {
@@ -180,7 +209,8 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
         onOk={onOkHandle}
         okButtonProps={{
           disabled:
-            !staffInfo.staffList.length || ![...Object.values(staffInfo).slice(1), tagList.length].some((item) => item)
+            !staffInfo.staffList.length || ![...Object.values(staffInfo).slice(1), tagList.length].some((item) => item),
+          loading: loading
         }}
       >
         {/* 选择员工 */}
@@ -205,13 +235,13 @@ const MultiSetting: React.FC<IMultiSettingProps> = ({ visible, setMultiVisible }
               : (
               <span onClick={addStaffHandle}>
                 {staffInfo.staffList?.map((item: any) => (
-                  <>
+                  <span key={item.staffId}>
                     <span className={classNames(style.staffItem, { [style.isLeader]: !!item.isLeader })} key={item.id}>
                       {item.name}
-                      <span className={!!item.isLeader && style.isLeader}>{!!item.isLeader && '（上级）'}</span>
+                      <span className={item.isLeader ? style.isLeader : ''}>{!!item.isLeader && '（上级）'}</span>
                     </span>
                     ；
-                  </>
+                  </span>
                 ))}
               </span>
                 )}

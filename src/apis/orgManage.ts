@@ -282,3 +282,9 @@ export const deleteMenu: HttpFC = (param) => {
 export const searchMenu: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/privilege/sys/menu/search', param);
 };
+/**
+ * @description 批量修改信息校验
+ */
+export const requestStaffBatchSetSaveValidate: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/stafforg/staffBatchSetSaveValidate', param);
+};

@@ -473,7 +473,13 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           label="产品标签："
           rules={[{ type: 'array', required: true, message: '请选择产品标签' }]}
         >
-          <Select placeholder="请选择" allowClear className={classNames('width320')} mode="tags" disabled={isReadOnly}>
+          <Select
+            placeholder="请选择"
+            allowClear
+            className={classNames('width320')}
+            mode="multiple"
+            disabled={isReadOnly}
+          >
             {config.tagList?.map((item, index) => {
               return (
                 <Option key={index} value={item.name}>
