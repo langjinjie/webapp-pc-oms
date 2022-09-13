@@ -131,6 +131,21 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   // 选择的内容切换
   const onItemChange = async (itemId: string) => {
+    if (!itemId) {
+      setShareInfo([
+        {
+          itemName: '',
+          itemShareTitle: '',
+          itemShareImgUrl: '',
+          itemUrl: ''
+        }
+      ]);
+      setFormValues((formValues: any) => ({ ...formValues, speechcraft: '' }));
+      momentForm.setFieldsValue({
+        speechcraft: ''
+      });
+      return false;
+    }
     if (tplType === 1) {
       // 文章
       const res = await getNewsDetail({ newsId: itemId });
@@ -174,20 +189,17 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
       });
       setFormValues((formValues: any) => ({ ...formValues, speechcraft: res.speechcraft }));
     } else if (tplType === 4) {
-      let res: any;
       // 单张海报
-      if (itemId) {
-        res = await getPosterDetail({ posterId: itemId });
-      }
+      const res = await getPosterDetail({ posterId: itemId });
       setShareInfo([
         {
-          itemUrl: itemId ? res.imgUrl : ''
+          itemUrl: res.imgUrl
         }
       ]);
       momentForm.setFieldsValue({
-        speechcraft: itemId ? res.speechcraft : ''
+        speechcraft: res.speechcraft
       });
-      setFormValues((formValues: any) => ({ ...formValues, speechcraft: itemId ? res.speechcraft : '' }));
+      setFormValues((formValues: any) => ({ ...formValues, speechcraft: res.speechcraft }));
     }
   };
 
