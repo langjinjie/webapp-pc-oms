@@ -366,6 +366,11 @@ export const routes: RouteProps[] = [
   {
     path: '/pointsConfig/record',
     component: lazy(() => import('src/pages/PointsManage/PointsConfig/Record/Record'))
+  },
+  // 闪人提醒
+  {
+    path: '/deletionReminder',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/List'))
   }
 ];
 
