@@ -1,0 +1,1263 @@
+/**
+* @name style.module
+* @author Lester
+* @date 2021-07-01 14:52
+*/
+
+.detailWrap {
+  padding: 30px 30px 20px;
+  font-size: 12px;
+  line-height: 12px;
+  background-color: white;
+
+  .contentWrap {
+    width: 100%;
+    padding: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+
+    .left {
+      width: 660px;
+      padding: 0 20px;
+
+      .baseWrap {
+        padding-bottom: 5px;
+
+        .baseInfo {
+          display: flex;
+          margin-bottom: 20px;
+
+          .baseTitle {
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #111111;
+            line-height: 14px;
+          }
+
+          .orderWrap {
+            flex: 1;
+
+            .orderInfo {
+              color: @primary-color;
+              font-size: 12px;
+              font-weight: bold;
+              line-height: 12px;
+
+              .orderIcon {
+                margin-left: 10px;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+
+        .userInfoWrap {
+          width: 50%;
+
+          .userInfo {
+            display: flex;
+            align-items: center;
+
+            .avatar {
+              width: 60px;
+              height: 60px;
+              border-radius: 50%;
+            }
+
+            .mainInfo {
+              margin-left: 10px;
+
+              .nameWrap {
+                display: flex;
+                align-items: center;
+
+                .name {
+                  margin: 10px 0;
+                  font-size: 16px;
+                  font-weight: 500;
+                  color: #111111;
+                  line-height: 16px;
+                }
+              }
+
+              .nickName {
+                font-size: 12px;
+                font-weight: 500;
+                color: #999aa1;
+              }
+            }
+          }
+        }
+      }
+
+      .infoRowWrap {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .infoCol {
+        width: 50%;
+        display: inline-block;
+        font-size: 14px;
+        line-height: 14px;
+
+        .infoRow {
+          position: relative;
+          width: 100%;
+          display: flex;
+          align-items: center;
+
+          &:hover {
+            .modifyBtn {
+              visibility: visible;
+            }
+          }
+
+          &.flexStart {
+            align-items: flex-start;
+          }
+        }
+
+        .infoRow + .infoRow {
+          margin-top: 20px;
+
+          &.mt0 {
+            margin-top: 0;
+          }
+        }
+
+        .infoValue {
+          white-space: pre-wrap;
+          margin-left: 14px;
+          font-weight: 500;
+          color: #111111;
+
+          .greyColor {
+            color: #999aa1;
+          }
+
+          .infoValueRow {
+            margin-top: 10px;
+
+            &.insuranceRow {
+              .editIcon {
+                top: -5px;
+              }
+            }
+          }
+
+          .insuranceRow {
+            display: flex;
+            position: relative;
+            margin-bottom: 15px;
+            align-items: center;
+
+            // .editIcon {
+            // position: absolute;
+            // top: -5px;
+            // }
+
+            .syncIcon {
+              margin-left: 10px;
+              // position: absolute;
+              // top: -6px;
+              // right: -68px;
+              // left: 20px;
+              font-size: 26px;
+              cursor: pointer;
+            }
+          }
+        }
+
+        .editIcon {
+          margin-left: 10px;
+          font-size: 24px;
+          cursor: pointer;
+        }
+
+        .dateWrap {
+          //width: 200px;
+          position: absolute;
+          left: 0;
+          visibility: hidden;
+        }
+
+        .inputValue {
+          margin: 0 7px;
+          padding: 5px 7px;
+          width: 90px;
+          height: 24px;
+          border-radius: 4px;
+          border: 1px solid #318cf5;
+          outline: none;
+          line-height: 24px;
+
+          &:focus {
+            border: 1px solid #318cf5;
+          }
+        }
+
+        .infoLabel {
+          color: #606366;
+          flex: none;
+
+          .labelIcon {
+            font-size: 14px;
+            margin-right: 6px;
+          }
+        }
+      }
+
+      .clientTag {
+        padding-left: 20px;
+        margin-top: 40px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #111111;
+        line-height: 14px;
+      }
+
+      .tagWrap {
+        margin-top: 15px;
+        position: relative;
+
+        &.cardWrap {
+          background-color: white;
+          box-shadow: 0 2px 16px 0 rgba(129, 141, 168, 0.2);
+          border-radius: 4px;
+        }
+
+        &:hover {
+          .modifyBtn {
+            visibility: visible;
+          }
+        }
+
+        .tagBtn {
+          position: absolute;
+          right: 20px;
+          top: 52px;
+        }
+
+        .tagGroup {
+          color: #606366;
+
+          .tagDesc {
+            margin-left: 10px;
+            color: #999aa1;
+          }
+        }
+
+        .tagContainer {
+          margin-top: 6px;
+          width: 100%;
+          max-height: 38px;
+          overflow: hidden;
+
+          &.expand {
+            max-height: unset;
+          }
+        }
+
+        .tagList {
+          width: calc(100% - 10px);
+          display: flex;
+          flex-wrap: wrap;
+
+          .tagTips {
+            margin-top: 10px;
+            margin-right: 10px;
+            color: #999aa1;
+            line-height: 20px;
+          }
+
+          .addTag {
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+
+            .addTagIcon {
+              font-size: 28px;
+              cursor: pointer;
+            }
+          }
+
+          .tagItem {
+            margin-top: 10px;
+            margin-right: 10px;
+            position: relative;
+            padding: 7px 11px;
+            line-height: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid white;
+
+            &.yellow {
+              background-color: #fff0d8;
+              color: #fb851c;
+            }
+
+            &.blue {
+              background-color: #eaf3fe;
+              color: #318cf5;
+            }
+
+            &.hide {
+              display: none;
+            }
+
+            .modifyTagWrap {
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
+              background: white;
+              border: 1px solid #e6e7eb;
+              width: 524px;
+            }
+          }
+        }
+
+        .expandWrap {
+          margin-top: 20px;
+          width: 100%;
+          text-align: center;
+          font-size: 12px;
+          color: #999aa1;
+          cursor: pointer;
+
+          .expandIcon {
+            margin-left: 4px;
+          }
+        }
+      }
+
+      .tagEmptyWrap {
+        margin-top: 67px;
+      }
+
+      .cardInfoWrap {
+        width: 100%;
+        margin-top: 20px;
+
+        .cardInfoTitleWrap {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 20px;
+          border-top: 1px solid #e6e7eb;
+
+          .cardInfoTitle {
+            font-size: 14px;
+            font-weight: 500;
+            color: #111111;
+          }
+
+          .boundTips {
+            display: inline-flex;
+            align-items: center;
+            font-size: 12px;
+            color: #999aa1;
+            line-height: 12px;
+
+            .boundBtn {
+              margin-left: 6px;
+              padding: 3px 10px;
+              border-radius: 9px;
+              border: 1px solid @primary-color;
+              font-size: 12px;
+              color: @primary-color;
+              line-height: 12px;
+              cursor: pointer;
+            }
+          }
+        }
+
+        .addCarBtn {
+          display: block;
+          margin: 20px auto 0;
+        }
+
+        .carNumList {
+          margin: 10px 0 21px;
+          display: flex;
+
+          .carNumItem {
+            width: 88px;
+            height: 26px;
+            background-color: #e6e7eb;
+            border-radius: 2px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #999aa1;
+            line-height: 26px;
+            text-align: center;
+            cursor: pointer;
+            background: url('src/assets/images/exception/car_num_default.png') no-repeat 100%;
+
+            &.active {
+              color: white;
+              background: url('src/assets/images/exception/car_num_active.png') no-repeat 100%;
+            }
+          }
+
+          .carNumItem + .carNumItem {
+            margin-left: 14px;
+          }
+
+          .carAdd {
+            margin-left: 10px;
+
+            .addCarIcon {
+              position: relative;
+              top: -2px;
+              font-size: 28px;
+              cursor: pointer;
+            }
+          }
+        }
+
+        .carInfoWrap {
+          position: relative;
+          width: 100%;
+          overflow: hidden;
+        }
+
+        .carInfo {
+          padding-top: 5px;
+          padding-bottom: 5px;
+          width: 100%;
+          display: flex;
+        }
+      }
+    }
+
+    .right {
+      width: 440px;
+
+      .tabWrap {
+        width: 100%;
+        padding: 0 20px;
+      }
+
+      .tabList {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 32px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+        .tabItem {
+          height: 100%;
+          display: inline-flex;
+          align-items: center;
+          font-size: 14px;
+          font-weight: 500;
+          color: #999aa1;
+          line-height: 14px;
+          cursor: pointer;
+
+          &.active {
+            position: relative;
+            color: #318cf5;
+
+            &::after {
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              transform: translateX(-50%);
+              width: 100%;
+              height: 4px;
+              border-radius: 2px;
+              content: '';
+              background: #318cf5;
+            }
+          }
+        }
+
+        .tabItem + .tabItem {
+          margin-left: 64px;
+        }
+      }
+
+      .tabContent {
+        padding-top: 42px;
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+      }
+    }
+  }
+}
+
+.tagModal {
+  .tagCategoryName {
+    font-size: 14px;
+    color: #111111;
+    line-height: 14px;
+  }
+
+  .tagList {
+    margin-top: 4px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 12px;
+    line-height: 12px;
+
+    .tagTips {
+      color: #999aa1;
+      line-height: 12px;
+    }
+
+    .tagItem {
+      margin-top: 10px;
+      margin-right: 10px;
+      position: relative;
+      padding: 7px 11px;
+      line-height: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid white;
+      background-color: #f7f7f8;
+      color: #606366;
+
+      &.active {
+        background-color: #fff0d8;
+        color: #fb851c;
+      }
+    }
+  }
+
+  .inputWrap {
+    display: flex;
+    margin-bottom: 40px;
+
+    :global {
+      .ant-input-affix-wrapper {
+        width: 340px;
+        background-color: #f7f7f8;
+        border-radius: 18px;
+      }
+
+      .ant-input {
+        background-color: #f7f7f8;
+      }
+
+      .ant-btn {
+        margin-left: 10px;
+        width: 100px;
+        height: 36px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 18px;
+        font-size: 14px;
+      }
+
+      .ant-btn-primary[disabled] {
+        background: #318cf5;
+        color: white;
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+.addBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 148px;
+  height: 36px;
+  margin: 50px auto 0;
+  background-color: #318cf5;
+  border-radius: 18px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 14px;
+  color: white;
+  cursor: pointer;
+  text-align: center;
+
+  .addIcon {
+    margin-right: 4px;
+  }
+}
+
+.dynamicWrap {
+  width: 100%;
+  height: calc(100vh - 240px);
+}
+
+.dynamicList {
+  width: 100%;
+  padding: 0 20px;
+
+  .dynamicItem {
+    display: flex;
+    font-size: 14px;
+    line-height: 14px;
+
+    .dynamicDate {
+      color: #999aa1;
+      flex: none;
+      white-space: nowrap;
+      line-height: 16px;
+      text-align: right;
+    }
+
+    .dynamicCircle {
+      flex: none;
+      position: relative;
+      margin: 0 25px;
+      width: 14px;
+      height: 14px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      border: 2px solid #999aa1;
+      border-radius: 50%;
+      z-index: 100;
+
+      .circleInner {
+        width: 6px;
+        height: 6px;
+        background-color: #999aa1;
+        border-radius: 50%;
+      }
+    }
+
+    .dynamicInfo {
+      padding-bottom: 40px;
+
+      &.line {
+        position: relative;
+
+        &::before {
+          position: absolute;
+          top: 0;
+          left: -33px;
+          content: '';
+          width: 0;
+          height: 100%;
+          border-left: 2px dashed #e5e5e5;
+          z-index: 10;
+        }
+      }
+
+      .dynamicTitle {
+        display: inline-flex;
+        font-size: 14px;
+        color: #111111;
+        line-height: 18px;
+      }
+
+      .dynamicDesc {
+        padding-top: 10px;
+        display: flex;
+
+        .dynamicLogo {
+          display: inline-flex;
+          justify-content: center;
+          align-content: center;
+          flex: none;
+          width: 32px;
+          height: 16px;
+          border-radius: 2px;
+          font-size: 12px;
+        }
+
+        .dynamicProduct {
+          border: 1px solid #faac2f;
+          color: #faac2f;
+        }
+
+        .dynamicArticle {
+          border: 1px solid #318cf5;
+          color: #318cf5;
+        }
+
+        .dynamicDescText {
+          width: 220px;
+          margin-left: 6px;
+          font-size: 14px;
+          color: #999aa1;
+          line-height: 14px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+}
+
+.emptyWrap {
+  margin-top: 64px;
+}
+
+.mulCar {
+  margin-left: 10px;
+  width: 46px;
+  height: 20px;
+}
+
+.cardUserInfo {
+  margin-top: 10px;
+  display: flex;
+
+  .categoryName {
+    font-size: 18px;
+    font-weight: 500;
+    color: #111111;
+    line-height: 18px;
+  }
+}
+
+.clientPortraitWrap {
+  width: 100%;
+
+  .cardIWrap {
+    padding: 0 20px;
+
+    .cardContent {
+      position: relative;
+      padding: 0 20px;
+      display: flex;
+      background-color: #fbfbfb;
+      border-radius: 6px;
+      border: 1px solid #e6e7eb;
+    }
+
+    .cardInfo {
+      flex: none;
+      width: 206px;
+
+      .cardTips {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #999aa1;
+        line-height: 12px;
+      }
+
+      .intimacyTips {
+        margin: 20px 0;
+        font-size: 12px;
+        color: #999aa1;
+        line-height: 12px;
+
+        .intimacyValue {
+          font-weight: 500;
+          color: #111111;
+        }
+      }
+
+      .heartList {
+        margin-bottom: 16px;
+
+        .heartIcon {
+          font-size: 30px;
+          color: #e6e7eb;
+
+          &.red {
+            color: #ffdcdc;
+          }
+        }
+      }
+    }
+
+    .cardImg {
+      position: absolute;
+      bottom: 0;
+      right: 24px;
+      width: 163px;
+      height: 183px;
+    }
+  }
+
+  .charContainer {
+    padding: 0 3px 3px;
+
+    &:hover {
+      .modifyBtn {
+        visibility: visible;
+      }
+    }
+  }
+
+  .charWrap {
+    padding: 0 17px;
+
+    &.cardEdit {
+      box-shadow: 0 2px 16px 0 rgba(129, 141, 168, 0.2);
+      border-radius: 4px;
+
+      .charCol,
+      .preferenceCol {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .portraitRow {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0 16px;
+
+    .portraitLabel {
+      font-size: 14px;
+      font-weight: 500;
+      color: #111111;
+      line-height: 14px;
+    }
+
+    .charBtnWrap {
+      .charBtn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 66px;
+        height: 30px;
+        padding: 0;
+        border-radius: 18px;
+        border: 1px solid #e6e7eb;
+        font-size: 12px;
+        font-weight: 500;
+        color: #606366;
+        line-height: 12px;
+        cursor: pointer;
+
+        .modifyIcon {
+          margin-right: 4px;
+          font-size: 12px;
+        }
+      }
+
+      .charBtn + .charBtn {
+        margin-left: 10px;
+        background-color: #318cf5;
+        color: white;
+      }
+    }
+
+    &:hover {
+      .modifyBtn {
+        visibility: visible;
+      }
+    }
+  }
+
+  .charHeader {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #e6e7eb;
+    padding: 6px 0;
+
+    .colOne {
+      width: 70px;
+    }
+
+    .colItem {
+      width: 48px;
+      text-align: center;
+    }
+  }
+
+  .charList {
+    .charItem {
+      padding: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .colOne {
+        width: 70px;
+        font-size: 14px;
+        color: #111111;
+        line-height: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .charCol {
+        width: 48px;
+        height: 8px;
+        background-color: #e6e7eb;
+        border-radius: 5px;
+
+        &.blue {
+          background-color: #318cf5;
+        }
+
+        &.orange {
+          background-color: #fb851c;
+        }
+      }
+    }
+  }
+
+  .preferenceList {
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: 4px;
+
+    .preferenceItem {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 20px;
+
+      &:nth-child(2n + 2) {
+        margin-left: 40px;
+      }
+
+      .colOne {
+        width: 42px;
+        font-size: 14px;
+        color: #111111;
+        line-height: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .colOneDesc {
+        position: absolute;
+        left: 7px;
+        top: 25px;
+        color: #ccccd0;
+      }
+
+      .preferenceCol {
+        margin-left: 10px;
+        width: 36px;
+        line-height: 28px;
+        background-color: #f7f7f8;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #606366;
+        text-align: center;
+
+        &.blue {
+          background-color: #eaf3fe;
+          color: #318cf5;
+        }
+
+        &.orange {
+          background-color: #fff0d8;
+          color: #fb851c;
+        }
+      }
+    }
+  }
+}
+
+.serviceSuggestWrap {
+  width: 100%;
+
+  .cardIWrap {
+    padding: 0 20px;
+
+    .cardContent {
+      position: relative;
+      padding: 0 20px;
+      display: flex;
+      background-color: #fbfbfb;
+      border-radius: 6px;
+      border: 1px solid #e6e7eb;
+    }
+
+    .cardInfo {
+      flex: none;
+      width: 206px;
+
+      .cardTips {
+        margin-top: 20px;
+        font-size: 12px;
+        color: #999aa1;
+        line-height: 12px;
+      }
+
+      .intimacyTips {
+        margin: 20px 0 18px;
+        font-size: 12px;
+        color: #999aa1;
+        line-height: 12px;
+
+        .intimacyValue {
+          font-weight: 500;
+          color: #111111;
+        }
+      }
+
+      .sendBtn {
+        margin-bottom: 20px;
+        padding: 0;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        width: 100px;
+        height: 30px;
+        background-color: #318cf5;
+        border-radius: 18px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: none;
+        border: none;
+
+        .messageIcon {
+          margin-right: 4px;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .cardImg {
+      position: absolute;
+      bottom: 0;
+      right: 24px;
+      width: 163px;
+      height: 183px;
+    }
+  }
+
+  .recommendWrap {
+    margin-top: 20px;
+    padding: 0 20px;
+
+    .recommendTitle {
+      font-size: 14px;
+      font-weight: 500;
+      color: #111111;
+      line-height: 14px;
+    }
+
+    .recommendList {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+
+      .recommendItem {
+        padding: 10px;
+        width: 120px;
+        height: 202px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e6e7eb;
+
+        &:nth-child(3n + 1),
+        &:nth-child(3n + 2) {
+          margin-right: 20px;
+        }
+
+        .recommendImg {
+          width: 100px;
+          height: 100px;
+        }
+
+        .recommendName {
+          margin: 10px 0;
+          height: 32px;
+          font-size: 12px;
+          color: #111111;
+          line-height: 16px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+
+        .copyBtn {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 0;
+          width: 100px;
+          height: 30px;
+          border-radius: 18px;
+          border: 1px solid #318cf5;
+          font-size: 12px;
+          font-weight: 500;
+          color: #318cf5;
+        }
+      }
+    }
+  }
+}
+
+.modifyBtn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 66px;
+  height: 30px;
+  padding: 0;
+  border-radius: 18px;
+  border: 1px solid #e6e7eb;
+  font-size: 12px;
+  font-weight: 500;
+  color: #606366;
+  line-height: 12px;
+  cursor: pointer;
+  visibility: hidden;
+
+  &:hover {
+    color: #318cf5;
+    border: 1px solid #318cf5;
+  }
+
+  .modifyIcon {
+    margin-right: 4px;
+    font-size: 12px;
+  }
+}
+
+.tipsModal {
+  .tipsContent {
+    padding: 36px 35px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .emailImg {
+    width: 176px;
+  }
+
+  .mainText {
+    margin: 20px 0 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #111111;
+    line-height: 18px;
+  }
+
+  .deputyText {
+    font-size: 12px;
+    color: #606366;
+    line-height: 16px;
+  }
+}
+
+.selectWrap {
+  :global {
+    .ant-select-selector {
+      border-radius: 18px !important;
+    }
+  }
+}
+
+.loadingWrap {
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .loadingImg {
+    width: 205px;
+  }
+
+  .loadingText {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #111111;
+    line-height: 14px;
+  }
+}
+
+.boundTipsText {
+  padding: 18px 0;
+  text-align: center;
+  font-size: 14px;
+  color: #111111;
+  line-height: 14px;
+}
+
+.orderTip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+
+  :global {
+    .ant-tooltip-inner {
+      border-radius: 20px;
+    }
+  }
+}
+
+.orderModal {
+  .orderDesc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #999aa1;
+    line-height: 12px;
+    .submit {
+      width: 100px;
+      height: 30px;
+      border-radius: 18px;
+    }
+  }
+
+  .orderStatus {
+    position: relative;
+    margin-top: 10px;
+    display: flex;
+
+    .statusList {
+      width: 100px;
+
+      .statusItem {
+        padding-left: 10px;
+        width: 80px;
+        height: 28px;
+        border-radius: 4px;
+        border: 1px solid #999aa1;
+        font-size: 12px;
+        color: #606366;
+        line-height: 28px;
+        cursor: pointer;
+
+        &.active {
+          font-weight: bold;
+          color: @primary-color;
+        }
+      }
+
+      .statusItem + .statusItem {
+        margin-top: 6px;
+      }
+    }
+
+    :global {
+      .ant-input {
+        margin-left: 20px;
+      }
+    }
+
+    .descLength {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 12px;
+      color: #ccccd0;
+      line-height: 12px;
+      z-index: 999;
+    }
+  }
+}

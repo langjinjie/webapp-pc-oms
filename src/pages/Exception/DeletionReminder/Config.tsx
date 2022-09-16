@@ -1,9 +1,10 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { useHistory } from 'react-router-dom';
+import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 import classNames from 'classnames';
 
 export const takeoverTypeList: any[] = [
@@ -19,48 +20,47 @@ export const transferStatusList = [
   { id: 5, name: '已拒绝（成员已超过最大客户数）' }
 ];
 
-export const searchCols: (reasonCodeList: any[]) => SearchCol[] = (reasonCodeList) => {
+export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
   return [
     {
-      name: 'clientName',
-      type: 'input',
-      label: '客户昵称',
-      // width: '140px',
-      placeholder: '请输入'
+      name: 'staffList',
+      type: 'custom',
+      label: '所属客户经理',
+      customNode: (
+        <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
+          <SelectStaff key={1} type="staff" />
+        </Form.Item>
+      )
     },
     {
       name: 'type',
-      type: 'select',
-      label: '转接类型',
-      width: 100,
-      placeholder: '请输入',
-      options: takeoverTypeList
+      type: 'input',
+      label: '删除客户',
+      placeholder: '请输入'
     },
     {
       name: 'assignTime',
       type: 'rangePicker',
-      label: '分配时间',
+      label: '选择删除时间'
       // width: '140px',
-      placeholder: '请输入'
+      // placeholder: '请输入'
     },
     {
-      name: 'reasonCode',
-      type: 'select',
+      name: 'deptList',
+      type: 'custom',
       width: 120,
-      label: '分配原因',
-      options: reasonCodeList
+      label: '组织架构',
+      customNode: (
+        <Form.Item key={'deptList'} name="deptList" label="所属客户经理">
+          <SelectStaff key={1} type="dept" />
+        </Form.Item>
+      )
     },
     {
       name: 'takeoverTime',
-      label: '转接时间',
-      type: 'rangePicker'
-    },
-    {
-      name: 'transferStatus',
-      label: '转接状态',
-      type: 'select',
-      width: 320,
-      options: transferStatusList
+      label: '客户经理上级',
+      type: 'input',
+      placeholder: '请输入'
     }
   ];
 };

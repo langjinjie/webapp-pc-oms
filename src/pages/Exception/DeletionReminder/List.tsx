@@ -50,6 +50,7 @@ const List: React.FC = () => {
   };
 
   const onSearch = (value?: any) => {
+    console.log('value', value);
     const { clientName, type, transferStatus, assignTime, takeoverTime, reasonCode } = value;
     let assignBeginTime = '';
     let assignEndTime = '';
@@ -103,7 +104,13 @@ const List: React.FC = () => {
   }, []);
   return (
     <Card className="container" bordered={false}>
-      <NgFormSearch searchCols={searchCols(reasonCodeList)} onSearch={onSearch} onReset={onResetHandle} />
+      <NgFormSearch
+        searchCols={searchCols(reasonCodeList)}
+        isInline={false}
+        firstRowChildCount={3}
+        onSearch={onSearch}
+        onReset={onResetHandle}
+      />
       <div className="mt20">
         <NgTable
           columns={tableColumnsFun()}
