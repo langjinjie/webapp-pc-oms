@@ -379,6 +379,11 @@ export const routes: RouteProps[] = [
   {
     path: '/deletionReminder/chatLog',
     component: lazy(() => import('src/pages/Exception/DeletionReminder/ChatLog/ChatLog'))
+  },
+  // 登录异常
+  {
+    path: '/loginException',
+    component: lazy(() => import('src/pages/Exception/LoginException/List'))
   }
 ];
 

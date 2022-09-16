@@ -4,14 +4,14 @@
 import React, { useEffect, useState } from 'react';
 import { Card, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
-import { searchCols, IDelStaffList, tableColumnsFun } from './Config';
+import { searchCols, IUnLoginStaffList, tableColumnsFun } from './Config';
 // import { useHistory } from 'react-router-dom';
 // import { requestGetReasonList, requestGetAssignInheritList } from 'src/apis/client';
 // import style from './style.module.less';
 // import classNames from 'classnames';
 
 const List: React.FC = () => {
-  const [tableSource, setTableSource] = useState<{ total: number; list: IDelStaffList[] }>({ total: 0, list: [] });
+  const [tableSource, setTableSource] = useState<{ total: number; list: IUnLoginStaffList[] }>({ total: 0, list: [] });
   const [reasonCodeList, setReasonCodeList] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -119,8 +119,8 @@ const List: React.FC = () => {
           pagination={{ ...pagination, total: tableSource.total }}
           paginationChange={paginationChange}
           scroll={{ x: 'max-content' }}
-          setRowKey={(record: IDelStaffList) => {
-            return record.externalUserid + '-' + record.staffId;
+          setRowKey={(record: IUnLoginStaffList) => {
+            return record.staffId;
           }}
         />
       </div>

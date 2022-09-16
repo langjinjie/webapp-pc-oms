@@ -2,10 +2,9 @@ import React from 'react';
 import { Button, Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { UNKNOWN } from 'src/utils/base';
 import { useHistory } from 'react-router-dom';
 import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
-import classNames from 'classnames';
+import style from './style.module.less';
 
 export const takeoverTypeList: any[] = [
   { id: 1, name: '在职转接' },
@@ -24,19 +23,19 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
   return [
     {
       name: 'staffList',
+      type: 'input',
+      label: '所属团队长',
+      placeholder: '请输入'
+    },
+    {
+      name: 'staffList',
       type: 'custom',
-      label: '所属客户经理',
+      label: '客户经理',
       customNode: (
         <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
           <SelectStaff key={1} type="staff" />
         </Form.Item>
       )
-    },
-    {
-      name: 'type',
-      type: 'input',
-      label: '删除客户',
-      placeholder: '请输入'
     },
     {
       name: 'assignTime',
@@ -58,83 +57,73 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
     },
     {
       name: 'takeoverTime',
-      label: '客户经理上级',
+      label: '近7日未登录次数',
       type: 'input',
       placeholder: '请输入'
     }
   ];
 };
 
-export interface IAssignClient {
-  detailId: string;
+export interface IDelStaffList {
+  staffId: string;
+  userid: string;
+  staffName: string;
+  leaderName: string;
+  deptName: string;
   externalUserid: string;
-  avatar: string;
-  nickName: string;
-  type: number;
-  transferStatus: number;
-  reasonName: string;
-  takeoverTime: string;
-  assignTime: string;
-  handoverStaffId: string;
-  handoverUserid: string;
-  handoverStaffName: string;
+  clientName: string;
+  clientAvatar: string;
+  deleteTime: string;
+  addTime: string;
 }
 
-export const tableColumnsFun = (): ColumnsType<IAssignClient> => {
+export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
   const history = useHistory();
+
+  // 查看用户信息
+  const viewClientDetail = (row: IDelStaffList) => {
+    history.push('/deletionReminder/clientDetail?externalUserid=' + row.externalUserid);
+  };
   // 查看聊天记录
-  const viewChatList = (row: IAssignClient) => {
-    history.push('/inherited/chatLog?partnerId=' + row.externalUserid + '&userId=' + row.handoverUserid, {
+  const viewChatList = (row: IDelStaffList) => {
+    history.push('/deletionReminder/chatLog?partnerId=' + row.externalUserid + '&userId=', {
       clientInfo: row
     });
   };
 
   return [
-    { title: '客户昵称', dataIndex: 'nickName' },
     {
-      title: '转接类型',
-      dataIndex: 'type',
-      render (type: number) {
-        return <>{takeoverTypeList.find((findItem) => findItem.id === type)?.name}</>;
+      title: '删除客户',
+      render (row: IDelStaffList) {
+        return (
+          <>
+            <img className={style.avatar} src={row.clientAvatar} alt="头像" />
+            <span className={style.nickName}>{row.clientName}</span>
+          </>
+        );
       }
     },
-    {
-      title: '转接状态',
-      dataIndex: 'transferStatus',
-      render: (status) => (
-        <span>
-          <span>
-            <i
-              className={classNames(
-                'status-point',
-                { 'status-point-gray': status === 1 },
-                { 'status-point-danger': [3, 5].includes(status) }
-              )}
-            />
-            {transferStatusList.find((findItem) => findItem.id === status)?.name}
-          </span>
-        </span>
-      )
-    },
-    { title: '分配原因', dataIndex: 'reasonName' },
-    {
-      title: '转接时间',
-      dataIndex: 'takeoverTime',
-      render (takeoverTime: string) {
-        return <>{takeoverTime || UNKNOWN}</>;
-      }
-    },
-    { title: '分配时间', align: 'center', dataIndex: 'assignTime' },
+    { title: '所属客户经理', dataIndex: 'staffName' },
+    { title: '组织架构', dataIndex: 'deptName' },
+    { title: '客户经理上级', dataIndex: 'leaderName' },
+    { title: '删除时间', dataIndex: 'deleteTime' },
+    { title: '添加好友时间', dataIndex: 'addTime' },
     {
       title: '操作',
       width: 260,
-      render: (row: IAssignClient) => {
+      render: (row: IDelStaffList) => {
         return (
-          [2, 4].includes(row.transferStatus) && (
+          <>
+            <Button type="link" onClick={() => viewClientDetail(row)}>
+              查看用户信息
+            </Button>
             <Button type="link" onClick={() => viewChatList(row)}>
               查看聊天记录
             </Button>
-          )
+            <Button disabled type="link">
+              联系坐席
+            </Button>
+          </>
         );
       }
     }
