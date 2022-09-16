@@ -4,8 +4,9 @@ import { Tabs } from 'antd';
 import { Icon } from 'tenacity-ui';
 import { NgTable } from 'src/components';
 import { tableColumnsFun, IPointsConfigItem } from './Config';
-import style from './style.module.less';
 import { useHistory } from 'react-router-dom';
+import { requestGetPointsConfigList } from 'src/apis/pointsMall';
+import style from './style.module.less';
 
 const tabList = [
   { path: '/clockPoints', name: '打卡任务', key: '1' },
@@ -16,30 +17,30 @@ const PointsConfig: React.FC = () => {
   const { btnList } = useContext(Context);
   const [list, setList] = useState<IPointsConfigItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [tabKey, setTabKey] = useState('');
 
   const history = useHistory();
 
+  const authorTabList = useMemo(() => {
+    return tabList.filter((tabItem) => btnList.includes(tabItem.path));
+  }, []);
+
   // 获取列表
-  const getList = () => {
-    const list = [
-      {
-        pointsTaskId: '1',
-        taskType: 1,
-        taskName: '发送朋友圈',
-        taskDesc: '尽情装扮，尽情可爱...',
-        taskDetail: '任务详细说明',
-        actionNum: 2,
-        sort: 1,
-        taskPoints: 20,
-        maxPoints: 100,
-        periodType: 1,
-        state: 1,
-        businessModel: '',
-        effectiveTime: '2022-09-08'
-      }
-    ];
+  const getList = async () => {
     setLoading(true);
-    setList(list);
+    const res = await requestGetPointsConfigList({ taskType: tabKey || authorTabList[0].key });
+    console.log('res', res);
+    if (res) {
+      const list = res.map((mapItem: any) => {
+        if (mapItem.modifyLog) {
+          return { ...mapItem, children: [mapItem.modifyLog] };
+        } else {
+          return { ...mapItem };
+        }
+      });
+      console.log('list', list);
+      setList(list);
+    }
     setLoading(false);
   };
 
@@ -47,16 +48,13 @@ const PointsConfig: React.FC = () => {
   const viewRecord = () => {
     history.push('/pointsConfig/record');
   };
-
-  const authorTabList = useMemo(() => {
-    return tabList.filter((tabItem) => btnList.includes(tabItem.path));
-  }, []);
   useEffect(() => {
     getList();
+    setTabKey(authorTabList[0].key);
   }, []);
   return (
     <div className={style.wrap}>
-      <Tabs defaultActiveKey={authorTabList?.[0].key || ''}>
+      <Tabs defaultActiveKey={authorTabList?.[0].key || ''} onChange={(key) => setTabKey(key)}>
         {authorTabList.map((item) => {
           return <Tabs.TabPane tab={item.name} key={item.key} />;
         })}
@@ -68,8 +66,9 @@ const PointsConfig: React.FC = () => {
       <NgTable
         loading={loading}
         dataSource={list}
+        scroll={{ x: 'max-content' }}
         columns={tableColumnsFun()}
-        setRowKey={(record: IPointsConfigItem) => record.pointsTaskId}
+        setRowKey={(record: IPointsConfigItem) => record.pointsTaskId + '-' + record.logId}
       />
     </div>
   );

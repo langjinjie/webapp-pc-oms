@@ -17,6 +17,7 @@ export interface IPointsConfigItem {
   state: number;
   businessModel: string;
   effectiveTime: string;
+  logId?: string;
 }
 
 export const periodType2Name = [
