@@ -59,7 +59,7 @@ export const searchCols: SearchCol[] = [
 
 export const tableColumnsFun: () => ColumnsType<IRecord> = () => {
   return [
-    // { title: '操作时间', dataIndex: 'effectiveTime' },
+    { title: '操作时间', dataIndex: 'lastUpdated' },
     { title: 'A端展示排序', dataIndex: 'sort' },
     {
       title: '生效状态',
