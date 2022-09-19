@@ -186,7 +186,10 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         }
       }
     } else {
-      newSelectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id));
+      // 判断已选列表是否需要显示部门
+      newSelectedList = filterChildren([
+        ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
+      ]);
     }
     setSelectedList(newSelectedList);
   };

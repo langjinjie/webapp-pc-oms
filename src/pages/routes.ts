@@ -353,6 +353,33 @@ export const routes: RouteProps[] = [
   {
     path: '/resign/record',
     component: lazy(() => import('src/pages/StaffManage/Resign/record'))
+  },
+  // 打卡与激励任务
+  {
+    path: '/pointsConfig/edit',
+    component: lazy(() => import('src/pages/PointsManage/PointsConfig/Edit/Edit'))
+  },
+  {
+    path: '/pointsConfig/record',
+    component: lazy(() => import('src/pages/PointsManage/PointsConfig/Record/Record'))
+  },
+  // 删人提醒
+  {
+    path: '/deletionReminder',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/List'))
+  },
+  {
+    path: '/deletionReminder/clientDetail',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
+  },
+  {
+    path: '/deletionReminder/chatLog',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/ChatLog/ChatLog'))
+  },
+  // 登录异常
+  {
+    path: '/loginException',
+    component: lazy(() => import('src/pages/Exception/LoginException/List'))
   }
 ];
 
@@ -426,6 +453,11 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/tabledownload',
     component: lazy(() => import('src/pages/Dashboard/TableDownload/TableDownLoad'))
+  },
+  // 打卡与激励任务
+  {
+    path: '/pointsConfig',
+    component: lazy(() => import('src/pages/PointsManage/PointsConfig/List/PointsConfig'))
   }
 ];
 

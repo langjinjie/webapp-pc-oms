@@ -1,0 +1,131 @@
+import React from 'react';
+import { Button, Form } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
+import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { useHistory } from 'react-router-dom';
+import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
+import style from './style.module.less';
+
+export const takeoverTypeList: any[] = [
+  { id: 1, name: '在职转接' },
+  { id: 2, name: '离职继承' }
+];
+
+export const transferStatusList = [
+  { id: 1, name: '转接中' },
+  { id: 2, name: '已转接' },
+  { id: 3, name: '已拒绝' },
+  { id: 4, name: '已转接（90天无法转接）' },
+  { id: 5, name: '已拒绝（成员已超过最大客户数）' }
+];
+
+export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
+  return [
+    {
+      name: 'staffList',
+      type: 'input',
+      label: '所属团队长',
+      placeholder: '请输入'
+    },
+    {
+      name: 'staffList',
+      type: 'custom',
+      label: '客户经理',
+      customNode: (
+        <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
+          <SelectStaff key={1} type="staff" />
+        </Form.Item>
+      )
+    },
+    {
+      name: 'assignTime',
+      type: 'rangePicker',
+      label: '选择删除时间'
+      // width: '140px',
+      // placeholder: '请输入'
+    },
+    {
+      name: 'deptList',
+      type: 'custom',
+      width: 120,
+      label: '组织架构',
+      customNode: (
+        <Form.Item key={'deptList'} name="deptList" label="所属客户经理">
+          <SelectStaff key={1} type="dept" />
+        </Form.Item>
+      )
+    },
+    {
+      name: 'takeoverTime',
+      label: '近7日未登录次数',
+      type: 'input',
+      placeholder: '请输入'
+    }
+  ];
+};
+
+export interface IDelStaffList {
+  staffId: string;
+  userid: string;
+  staffName: string;
+  leaderName: string;
+  deptName: string;
+  externalUserid: string;
+  clientName: string;
+  clientAvatar: string;
+  deleteTime: string;
+  addTime: string;
+}
+
+export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
+  const history = useHistory();
+
+  // 查看用户信息
+  const viewClientDetail = (row: IDelStaffList) => {
+    history.push('/deletionReminder/clientDetail?externalUserid=' + row.externalUserid);
+  };
+  // 查看聊天记录
+  const viewChatList = (row: IDelStaffList) => {
+    history.push('/deletionReminder/chatLog?partnerId=' + row.externalUserid + '&userId=', {
+      clientInfo: row
+    });
+  };
+
+  return [
+    {
+      title: '删除客户',
+      render (row: IDelStaffList) {
+        return (
+          <>
+            <img className={style.avatar} src={row.clientAvatar} alt="头像" />
+            <span className={style.nickName}>{row.clientName}</span>
+          </>
+        );
+      }
+    },
+    { title: '所属客户经理', dataIndex: 'staffName' },
+    { title: '组织架构', dataIndex: 'deptName' },
+    { title: '客户经理上级', dataIndex: 'leaderName' },
+    { title: '删除时间', dataIndex: 'deleteTime' },
+    { title: '添加好友时间', dataIndex: 'addTime' },
+    {
+      title: '操作',
+      width: 260,
+      render: (row: IDelStaffList) => {
+        return (
+          <>
+            <Button type="link" onClick={() => viewClientDetail(row)}>
+              查看用户信息
+            </Button>
+            <Button type="link" onClick={() => viewChatList(row)}>
+              查看聊天记录
+            </Button>
+            <Button disabled type="link">
+              联系坐席
+            </Button>
+          </>
+        );
+      }
+    }
+  ];
+};
