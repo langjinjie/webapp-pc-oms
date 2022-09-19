@@ -47,7 +47,7 @@ export const TelDisplaySetModal: React.FC<TelDisplaySetModalProps> = ({ visible,
         <Form.Item
           name={'displayCoverImg'}
           label="封面图片"
-          extra="为确保最佳展示效果，请上传274*166像素高清图片，支持.png及.jpg格式的图片。若不上传，则默认为链接对应文章的自带封面。"
+          extra="为确保最佳展示效果，请上传274*166像素高清图片，支持.png及.jpg格式的图片。若不上传，则会使用默认封面。"
         >
           <NgUpload></NgUpload>
         </Form.Item>
