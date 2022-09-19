@@ -6,6 +6,8 @@ import { NgTable } from 'src/components';
 import { tableColumnsFun, IPointsConfigItem } from './Config';
 import { useHistory } from 'react-router-dom';
 import { requestGetPointsConfigList } from 'src/apis/pointsMall';
+import { useDidRecover } from 'react-router-cache-route';
+import qs from 'qs';
 import style from './style.module.less';
 
 const tabList = [
@@ -26,35 +28,44 @@ const PointsConfig: React.FC = () => {
   }, []);
 
   // 获取列表
-  const getList = async () => {
+  const getList = async (taskType: string) => {
     setLoading(true);
-    const res = await requestGetPointsConfigList({ taskType: tabKey || authorTabList[0].key });
-    console.log('res', res);
+    const res = await requestGetPointsConfigList({ taskType });
     if (res) {
-      const list = res.map((mapItem: any) => {
-        if (mapItem.modifyLog) {
-          return { ...mapItem, children: [mapItem.modifyLog] };
-        } else {
-          return { ...mapItem };
+      const list = res.reduce((prev: any[], item: any) => {
+        prev.push(item);
+        if (item.modifyLog) {
+          prev.push(item.modifyLog);
         }
-      });
-      console.log('list', list);
+        return prev;
+      }, []);
       setList(list);
     }
     setLoading(false);
+  };
+
+  // tab切换
+  const tabOnChange = (key: string) => {
+    setTabKey(key);
+    getList(key);
   };
 
   // 查看操作记录
   const viewRecord = () => {
     history.push('/pointsConfig/record');
   };
+  useDidRecover(() => {
+    if (qs.parse(window.location.search, { ignoreQueryPrefix: true }).refresh === 'true') {
+      getList(tabKey);
+    }
+  }, []);
   useEffect(() => {
-    getList();
+    getList(authorTabList[0].key);
     setTabKey(authorTabList[0].key);
   }, []);
   return (
     <div className={style.wrap}>
-      <Tabs defaultActiveKey={authorTabList?.[0].key || ''} onChange={(key) => setTabKey(key)}>
+      <Tabs defaultActiveKey={authorTabList?.[0].key || ''} onChange={tabOnChange}>
         {authorTabList.map((item) => {
           return <Tabs.TabPane tab={item.name} key={item.key} />;
         })}
@@ -67,8 +78,9 @@ const PointsConfig: React.FC = () => {
         loading={loading}
         dataSource={list}
         scroll={{ x: 'max-content' }}
-        columns={tableColumnsFun()}
+        columns={tableColumnsFun(() => getList(tabKey))}
         setRowKey={(record: IPointsConfigItem) => record.pointsTaskId + '-' + record.logId}
+        rowClassName={(record: IPointsConfigItem) => (record.logId ? style.sign : '')}
       />
     </div>
   );

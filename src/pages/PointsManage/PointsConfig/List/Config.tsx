@@ -1,7 +1,10 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
-import style from './style.module.less';
 import { useHistory } from 'react-router-dom';
+import { requestPointsConfigState } from 'src/apis/pointsMall';
+import { Modal, message } from 'antd';
+import style from './style.module.less';
+import classNames from 'classnames';
 
 export interface IPointsConfigItem {
   pointsTaskId: string;
@@ -15,8 +18,9 @@ export interface IPointsConfigItem {
   maxPoints: number;
   periodType: number;
   state: number;
-  businessModel: string;
+  businessModel?: string;
   effectiveTime: string;
+  effectiveState: number;
   logId?: string;
 }
 
@@ -31,28 +35,33 @@ export const state2Name = [
   { value: 1, name: '上架' }
 ];
 
-export const tableColumnsFun: () => ColumnsType<IPointsConfigItem> = () => {
+export const tableColumnsFun: (getList: () => void) => ColumnsType<IPointsConfigItem> = (getList) => {
   const history = useHistory();
   // 上架
-  const upHandle = () => {
-    console.log('上架');
+  const upHandle = async ({ pointsTaskId, state }: IPointsConfigItem) => {
+    Modal.confirm({
+      title: '温馨提示',
+      content: `是否${state ? '下架' : '上架'}该任务`,
+      onOk: async () => {
+        const res = await requestPointsConfigState({ pointsTaskId, state: state ? 0 : 1 });
+        if (res) {
+          message.success(`${state ? '下架' : '上架'}成功`);
+          getList();
+        }
+      }
+    });
   };
   // 编辑/新增
-  const editHandle = (edit: 0 | 1) => {
-    console.log(edit ? '编辑' : '新增');
-    history.push('/pointsConfig/edit');
+  const editHandle = (value: IPointsConfigItem, type: string) => {
+    history.push('/pointsConfig/edit?pointsTaskId=' + value.pointsTaskId + '&type=' + type + '&logId=' + value.logId);
   };
   return [
-    {
-      title: 'A端展示排序',
-      render (_: IPointsConfigItem, __: IPointsConfigItem, index) {
-        return <>{index + 1}</>;
-      }
-    },
+    { title: 'A端展示排序', dataIndex: 'sort' },
     {
       title: '生效状态',
-      render () {
-        return <>{'已生效'}</>;
+      dataIndex: 'effectiveState',
+      render (effectiveState: number) {
+        return <>{effectiveState ? '已生效' : '待生效'}</>;
       }
     },
     { title: '生效时间', dataIndex: 'effectiveTime' },
@@ -61,7 +70,13 @@ export const tableColumnsFun: () => ColumnsType<IPointsConfigItem> = () => {
     { title: '任务详细说明', dataIndex: 'taskDetail' },
     { title: '奖励分值', dataIndex: 'taskPoints' },
     { title: '积分上限', dataIndex: 'maxPoints' },
-    { title: '时间限制', dataIndex: 'periodType' },
+    {
+      title: '时间限制',
+      dataIndex: 'periodType',
+      render (value: number) {
+        return <>{periodType2Name.find((findItem) => findItem.value === value)?.name}</>;
+      }
+    },
     {
       title: '业务模式',
       dataIndex: 'businessModel',
@@ -69,21 +84,36 @@ export const tableColumnsFun: () => ColumnsType<IPointsConfigItem> = () => {
         return <>{businessModel || '全部'}</>;
       }
     },
-    { title: '上架状态', dataIndex: 'state' },
     {
-      title: '操作',
-      render () {
+      title: '上架状态',
+      dataIndex: 'state',
+      render (value: number) {
         return (
           <>
-            <span className={style.up} onClick={upHandle}>
-              上架
-            </span>
-            <span className={style.edit} onClick={() => editHandle(1)}>
+            <i className={classNames('status-point', { 'status-point-gray': value === 0 })} />
+            {value ? '已上架' : '未上架'}
+          </>
+        );
+      }
+    },
+    {
+      title: '操作',
+      render (value: IPointsConfigItem) {
+        return (
+          <>
+            {+value.effectiveState === 1 && (
+              <span className={style.up} onClick={() => upHandle(value)}>
+                {value.state ? '下架' : '上架'}
+              </span>
+            )}
+            <span className={style.edit} onClick={() => editHandle(value, value.logId ? 'add' : 'edit')}>
               编辑
             </span>
-            <span className={style.add} onClick={() => editHandle(0)}>
-              新增
-            </span>
+            {+value.effectiveState === 1 && (
+              <span className={style.add} onClick={() => editHandle(value, 'add')}>
+                新增
+              </span>
+            )}
           </>
         );
       }

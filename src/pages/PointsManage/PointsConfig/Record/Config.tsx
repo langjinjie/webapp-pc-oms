@@ -3,13 +3,41 @@ import { ColumnsType } from 'antd/es/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { state2Name, periodType2Name } from 'src/pages/PointsManage/PointsConfig/List/Config';
 import classNames from 'classnames';
+import style from './style.module.less';
+
+export interface IRecord {
+  logId: string;
+  pointsTaskId: string;
+  taskType: number;
+  taskName: string;
+  taskNameModify: number;
+  taskDesc: string;
+  taskDescModify: number;
+  taskDetail: string;
+  taskDetailModify: number;
+  actionNum: number;
+  taskPoints: number;
+  taskPointsModify: number;
+  maxPoints: number;
+  maxPointsModify: number;
+  periodType: number;
+  periodTypeModify: number;
+  sort: number;
+  sortModify: number;
+  state: number;
+  stateModify: number;
+  effectiveTime: string;
+  businessModel?: string;
+  effectiveState: number;
+}
 
 export const searchCols: SearchCol[] = [
   {
     name: 'taskName',
     label: '任务名称',
     width: '230px',
-    type: 'input'
+    type: 'input',
+    placeholder: '请输入'
   },
   {
     name: 'taskTime',
@@ -29,23 +57,48 @@ export const searchCols: SearchCol[] = [
   }
 ];
 
-export const tableColumnsFun: () => ColumnsType<any> = () => {
+export const tableColumnsFun: () => ColumnsType<IRecord> = () => {
   return [
     // { title: '操作时间', dataIndex: 'effectiveTime' },
     { title: 'A端展示排序', dataIndex: 'sort' },
     {
       title: '生效状态',
-      dataIndex: 'state',
-      render (state: number) {
-        return <>{state2Name.find((stateItem) => stateItem.value === state)?.name}</>;
+      dataIndex: 'effectiveState',
+      render (effectiveState: number) {
+        return <>{effectiveState ? '已生效' : '未生效'}</>;
       }
     },
     { title: '生效时间', dataIndex: 'effectiveTime' },
-    { title: '任务名称', dataIndex: 'taskName' },
-    { title: '任务描述（小贴士）', dataIndex: 'taskDesc' },
-    { title: '任务详细说明', dataIndex: 'taskDetail' },
-    { title: '激励分值', dataIndex: 'taskPoints' },
-    { title: '积分上限', dataIndex: 'maxPoints' },
+    {
+      title: '任务名称',
+      render (value: IRecord) {
+        return <span className={value.taskNameModify ? style.modify : ''}>{value.taskName}</span>;
+      }
+    },
+    {
+      title: '任务描述（小贴士）',
+      render (value: IRecord) {
+        return <span className={value.taskDescModify ? style.modify : ''}>{value.taskDesc}</span>;
+      }
+    },
+    {
+      title: '任务详细说明',
+      render (value: IRecord) {
+        return <span className={value.taskDetailModify ? style.modify : ''}>{value.taskDetail}</span>;
+      }
+    },
+    {
+      title: '激励分值',
+      render (value: IRecord) {
+        return <span className={value.taskPointsModify ? style.modify : ''}>{value.taskPoints}</span>;
+      }
+    },
+    {
+      title: '积分上限',
+      render (value: IRecord) {
+        return <span className={value.maxPointsModify ? style.modify : ''}>{value.maxPoints}</span>;
+      }
+    },
     {
       title: '时间限制',
       dataIndex: 'periodType',
@@ -72,6 +125,9 @@ export const tableColumnsFun: () => ColumnsType<any> = () => {
         );
       }
     },
-    { title: '操作人', dataIndex: '' }
+    {
+      title: '操作人',
+      dataIndex: 'createBy'
+    }
   ];
 };

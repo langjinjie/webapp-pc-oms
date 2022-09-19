@@ -25,3 +25,17 @@
   color: #318cf5;
   cursor: pointer;
 }
+
+// 自定义行
+tr.sign {
+  &:hover {
+    > td {
+      background-color: #fffaf1 !important;
+    }
+  }
+  :global {
+    td {
+      background-color: #fffaf1;
+    }
+  }
+}

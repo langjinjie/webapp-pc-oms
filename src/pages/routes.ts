@@ -356,10 +356,6 @@ export const routes: RouteProps[] = [
   },
   // 打卡与激励任务
   {
-    path: '/pointsConfig',
-    component: lazy(() => import('src/pages/PointsManage/PointsConfig/List/PointsConfig'))
-  },
-  {
     path: '/pointsConfig/edit',
     component: lazy(() => import('src/pages/PointsManage/PointsConfig/Edit/Edit'))
   },
@@ -457,6 +453,11 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/tabledownload',
     component: lazy(() => import('src/pages/Dashboard/TableDownload/TableDownLoad'))
+  },
+  // 打卡与激励任务
+  {
+    path: '/pointsConfig',
+    component: lazy(() => import('src/pages/PointsManage/PointsConfig/List/PointsConfig'))
   }
 ];
 
