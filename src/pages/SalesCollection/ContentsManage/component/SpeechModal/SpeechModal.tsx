@@ -8,10 +8,11 @@ interface ISpeechModalProps {
   visible: boolean;
   title?: string;
   catalogId?: string;
+  sceneId?: number;
   onClose?: () => void;
 }
 
-const SpeechModal: React.FC<ISpeechModalProps> = ({ visible, title, catalogId, onClose }) => {
+const SpeechModal: React.FC<ISpeechModalProps> = ({ visible, title, catalogId, sceneId, onClose }) => {
   const [dataSource, setDataSource] = useState<SpeechProps[]>([]);
   const [pagination, setPagination] = useState<{ current: number; pageSize: number; total: number; simple: boolean }>({
     current: 1,
@@ -34,7 +35,7 @@ const SpeechModal: React.FC<ISpeechModalProps> = ({ visible, title, catalogId, o
   // 获取话术列表
   const getSpeechListHandle = async (param?: { pageNum: number; pageSize: number }) => {
     const { pageNum = pagination.current, pageSize = pagination.pageSize } = param || {};
-    const res = await getSpeechList({ catalogId, queryMain: 1, pageNum, pageSize });
+    const res = await getSpeechList({ catalogId, sceneId, queryMain: 1, pageNum, pageSize });
     if (res) {
       setDataSource(res.list);
       setPagination((pagination) => ({ ...pagination, total: res.total }));
