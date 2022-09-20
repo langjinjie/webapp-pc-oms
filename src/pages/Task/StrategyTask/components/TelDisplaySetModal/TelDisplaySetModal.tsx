@@ -62,7 +62,7 @@ export const TelDisplaySetModal: React.FC<TelDisplaySetModalProps> = ({ visible,
             }
           ]}
         >
-          <Input placeholder="限定不超过50个字"></Input>
+          <Input placeholder="限定不超过50个字" maxLength={50}></Input>
         </Form.Item>
         <Form.Item
           label="任务说明"
@@ -70,12 +70,12 @@ export const TelDisplaySetModal: React.FC<TelDisplaySetModalProps> = ({ visible,
           rules={[
             { required: true, message: '任务说明不可以为空' },
             {
-              max: 50,
+              max: 100,
               message: '限定不超过100个字'
             }
           ]}
         >
-          <Input.TextArea placeholder="限定不超过100个字"></Input.TextArea>
+          <Input.TextArea placeholder="限定不超过100个字" maxLength={100}></Input.TextArea>
         </Form.Item>
         <Form.Item
           label="任务场景"
@@ -83,12 +83,12 @@ export const TelDisplaySetModal: React.FC<TelDisplaySetModalProps> = ({ visible,
           rules={[
             { required: true, message: '任务场景不可以为空' },
             {
-              max: 50,
+              max: 100,
               message: '限定不超过100个字'
             }
           ]}
         >
-          <Input.TextArea placeholder="限定不超过100个字"></Input.TextArea>
+          <Input.TextArea placeholder="限定不超过100个字" maxLength={100}></Input.TextArea>
         </Form.Item>
       </Form>
     </NgModal>
