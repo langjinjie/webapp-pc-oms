@@ -19,16 +19,16 @@ export const transferStatusList = [
   { id: 5, name: '已拒绝（成员已超过最大客户数）' }
 ];
 
-export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
+export const searchCols: () => SearchCol[] = () => {
   return [
     {
-      name: 'staffList',
+      name: 'leaderName',
       type: 'input',
       label: '所属团队长',
       placeholder: '请输入'
     },
     {
-      name: 'staffList',
+      name: 'staffName',
       type: 'custom',
       label: '客户经理',
       customNode: (
@@ -38,7 +38,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
       )
     },
     {
-      name: 'assignTime',
+      name: 'time',
       type: 'rangePicker',
       label: '选择删除时间'
       // width: '140px',
@@ -65,6 +65,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
 };
 
 export interface IDelStaffList {
+  id: string;
   staffId: string;
   userid: string;
   staffName: string;
@@ -113,7 +114,7 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
       width: 260,
       render: (row: IDelStaffList) => {
         return (
-          <>
+          <span className={style.operation}>
             <Button type="link" onClick={() => viewClientDetail(row)}>
               查看用户信息
             </Button>
@@ -123,7 +124,7 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
             <Button disabled type="link">
               联系坐席
             </Button>
-          </>
+          </span>
         );
       }
     }

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IDelStaffList, tableColumnsFun } from './Config';
+import { requestGetStaffDelClientList } from 'src/apis/exception';
 // import { useHistory } from 'react-router-dom';
 // import { requestGetReasonList, requestGetAssignInheritList } from 'src/apis/client';
 // import style from './style.module.less';
@@ -12,7 +13,7 @@ import { searchCols, IDelStaffList, tableColumnsFun } from './Config';
 
 const List: React.FC = () => {
   const [tableSource, setTableSource] = useState<{ total: number; list: IDelStaffList[] }>({ total: 0, list: [] });
-  const [reasonCodeList, setReasonCodeList] = useState<{ id: string; name: string }[]>([]);
+  // const [reasonCodeList, setReasonCodeList] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -22,26 +23,11 @@ const List: React.FC = () => {
 
   // const history = useHistory();
 
-  // 获取分配原因配置值
-  const getReasonCodeListHandle = async () => {
-    // const res = await requestGetReasonList({ queryType: 2 });
-    const res = { list: [] };
-    if (res) {
-      setReasonCodeList(
-        res.list.map(({ reasonCode, reasonName }: { reasonCode: string; reasonName: string }) => ({
-          id: reasonCode,
-          name: reasonName
-        }))
-      );
-    }
-  };
-
   // 获取继承客户列表接口
   const getList = async (param?: { [key: string]: any }) => {
     setLoading(true);
     console.log('param', param);
-    // const res = await requestGetAssignInheritList({ ...param });
-    const res = { total: 0, list: [] };
+    const res = await requestGetStaffDelClientList({ ...param });
     if (res) {
       const { total, list } = res;
       setTableSource({ total, list });
@@ -51,12 +37,13 @@ const List: React.FC = () => {
 
   const onSearch = (value?: any) => {
     console.log('value', value);
-    const { clientName, type, transferStatus, assignTime, takeoverTime, reasonCode } = value;
-    let assignBeginTime = '';
-    let assignEndTime = '';
-    if (assignTime) {
-      assignBeginTime = assignTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      assignEndTime = assignTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
+    const { leaderName, staffList, type, transferStatus, time, takeoverTime, reasonCode } = value;
+    const staffName = staffList?.map((mapItem: { staffName: string }) => mapItem.staffName);
+    let beginTime = '';
+    let endTime = '';
+    if (time) {
+      beginTime = time[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
+      endTime = time[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
     }
     let takeoverBeginTime = '';
     let takeoverEndTime = '';
@@ -65,21 +52,23 @@ const List: React.FC = () => {
       takeoverEndTime = takeoverTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
     }
     setFormValue({
-      clientName,
+      leaderName,
+      staffName,
       type,
       transferStatus,
-      assignBeginTime,
-      assignEndTime,
+      beginTime,
+      endTime,
       takeoverBeginTime,
       takeoverEndTime,
       reasonCode
     });
     getList({
-      clientName,
+      leaderName,
+      staffName,
       type,
       transferStatus,
-      assignBeginTime,
-      assignEndTime,
+      beginTime,
+      endTime,
       takeoverBeginTime,
       takeoverEndTime,
       reasonCode
@@ -99,13 +88,12 @@ const List: React.FC = () => {
   };
 
   useEffect(() => {
-    getReasonCodeListHandle();
     getList();
   }, []);
   return (
     <Card className="container" bordered={false}>
       <NgFormSearch
-        searchCols={searchCols(reasonCodeList)}
+        searchCols={searchCols()}
         isInline={false}
         firstRowChildCount={3}
         onSearch={onSearch}
@@ -119,9 +107,6 @@ const List: React.FC = () => {
           pagination={{ ...pagination, total: tableSource.total }}
           paginationChange={paginationChange}
           scroll={{ x: 'max-content' }}
-          setRowKey={(record: IDelStaffList) => {
-            return record.externalUserid + '-' + record.staffId;
-          }}
         />
       </div>
     </Card>

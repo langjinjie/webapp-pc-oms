@@ -1021,7 +1021,7 @@ const chatLog: React.FC = () => {
     <div className={style.chatLog}>
       <div className={style.breadCrumbs}>
         <BreadCrumbs
-          navList={[{ name: '继承客户', path: '/inherited' }, { name: clientInfo?.nickName + '的聊天记录' }]}
+          navList={[{ name: '删人提醒', path: '/deletionReminder' }, { name: clientInfo?.nickName + '的聊天记录' }]}
         />
       </div>
       <div className={style.header}>

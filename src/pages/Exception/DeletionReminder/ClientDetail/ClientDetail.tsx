@@ -124,8 +124,8 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
 
   const navList: Nav[] = [
     {
-      name: '客户列表',
-      path: '/clientList'
+      name: '删人提醒',
+      path: '/deletionReminder'
     },
     {
       name: '客户详情'
