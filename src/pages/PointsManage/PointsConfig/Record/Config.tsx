@@ -61,7 +61,12 @@ export const searchCols: SearchCol[] = [
 export const tableColumnsFun: () => ColumnsType<IRecord> = () => {
   return [
     { title: '操作时间', dataIndex: 'lastUpdated' },
-    { title: 'A端展示排序', dataIndex: 'sort' },
+    {
+      title: 'A端展示排序',
+      render (value: IRecord) {
+        return <span className={value.sortModify ? style.modify : ''}>{value.sort}</span>;
+      }
+    },
     {
       title: '生效状态',
       dataIndex: 'effectiveState',
@@ -118,12 +123,13 @@ export const tableColumnsFun: () => ColumnsType<IRecord> = () => {
     },
     {
       title: '上架状态',
-      dataIndex: 'state',
-      render (state: number) {
+      render (value: IRecord) {
         return (
           <>
-            <i className={classNames('status-point', { 'status-point-gray': state === 0 })} />
-            <span>{state2Name.find((stateItem) => stateItem.value === state)?.name}</span>
+            <i className={classNames('status-point', { 'status-point-gray': value.state === 0 })} />
+            <span className={value.stateModify ? style.modify : ''}>
+              {state2Name.find((stateItem) => stateItem.value === value.state)?.name}
+            </span>
           </>
         );
       }
