@@ -28,6 +28,7 @@ export interface IRecord {
   stateModify: number;
   effectiveTime: string;
   businessModel?: string;
+  businessModelModify: number;
   effectiveState: number;
 }
 
@@ -101,16 +102,18 @@ export const tableColumnsFun: () => ColumnsType<IRecord> = () => {
     },
     {
       title: '时间限制',
-      dataIndex: 'periodType',
-      render (periodType: number) {
-        return <>{periodType2Name.find((periodTypeItem) => periodTypeItem.value === periodType)?.name}</>;
+      render (value: IRecord) {
+        return (
+          <span className={value.periodTypeModify ? style.modify : ''}>
+            {periodType2Name.find((periodTypeItem) => periodTypeItem.value === value.periodType)?.name}
+          </span>
+        );
       }
     },
     {
       title: '业务模式',
-      dataIndex: 'businessModel',
-      render (businessModel: string) {
-        return <>{businessModel || '全部'}</>;
+      render (value: IRecord) {
+        return <span className={value.businessModelModify ? style.modify : ''}>{value.businessModel || '全部'}</span>;
       }
     },
     {
@@ -120,7 +123,7 @@ export const tableColumnsFun: () => ColumnsType<IRecord> = () => {
         return (
           <>
             <i className={classNames('status-point', { 'status-point-gray': state === 0 })} />
-            {state2Name.find((stateItem) => stateItem.value === state)?.name}
+            <span>{state2Name.find((stateItem) => stateItem.value === state)?.name}</span>
           </>
         );
       }
