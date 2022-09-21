@@ -1,28 +1,14 @@
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { DatePicker, Input, Button, message, Spin, Radio, Pagination, Tag, Tooltip, Modal, Image } from 'antd';
-// import { requesrtGetSingleChatList /* , requestDownLoadImg */ } from 'src/apis/client';
+import { requesrtGetSingleChatList } from 'src/apis/exception';
 import moment, { Moment } from 'moment';
 import { Icon, BreadCrumbs } from 'src/components';
 import { copy, getQueryParam } from 'tenacity-tools';
 import { useLocation } from 'react-router-dom';
+import { TOKEN_KEY } from 'src/utils/config';
+import { IDelStaffList } from 'src/pages/Exception/DeletionReminder/Config';
 import AudioPlay from './AudioPlay';
 import style from './style.module.less';
-import { TOKEN_KEY } from 'src/utils/config';
-
-export interface IAssignClient {
-  detailId: string;
-  externalUserid: string;
-  avatar: string;
-  nickName: string;
-  type: number;
-  transferStatus: number;
-  reasonName: string;
-  takeoverTime: string;
-  assignTime: string;
-  handoverStaffId: string;
-  handoverUserid: string;
-  handoverStaffName: string;
-}
 
 const chatLog: React.FC = () => {
   const [filterDateRange, setfilterDateRange] = useState<[Moment | null, Moment | null]>([
@@ -30,7 +16,7 @@ const chatLog: React.FC = () => {
     moment()
   ]);
   const [filterKey, setFilterKey] = useState('');
-  const [clientInfo, setClientInfo] = useState<IAssignClient>();
+  const [clientInfo, setClientInfo] = useState<IDelStaffList>();
   const [isChatListLoading, setIsChatListLoading] = useState(false);
   const [filterChatType, setFilterChatType] = useState(0);
   const [audioModalVisible, setAudioModalVisible] = useState(false);
@@ -64,9 +50,8 @@ const chatLog: React.FC = () => {
 
   // 获取外部联系人信息
   const getClientInfo = () => {
-    console.log('location', location);
-    // const { clientInfo } = location.state as { clientInfo: IAssignClient };
-    const clientInfo = {};
+    const { clientInfo } = location.state as { clientInfo: IDelStaffList };
+    console.log('clientInfo', clientInfo);
     setClientInfo(clientInfo);
   };
 
@@ -99,25 +84,13 @@ const chatLog: React.FC = () => {
     // 获取聊天记录
     console.log('data', data);
     console.log('paream', paream);
-    // const res = await requesrtGetSingleChatList({ ...data, ...paream });
-    const res: any = null;
+    const res = await requesrtGetSingleChatList({ ...data, ...paream });
     setIsChatListLoading(false);
     if (res) {
       const { list, total } = res;
       setChatList({ total, list });
     }
   };
-
-  // 添加header请求图片
-  // const getImage = async (e: any, param: string) => {
-  //   // 获得base64格式的图片
-  //   const res = await requestDownLoadImg(param);
-  //   const reader = new FileReader();
-  //   reader.readAsDataURL(res.data);
-  //   reader.onload = function (e1) {
-  //     e.target.src = e1.target?.result;
-  //   };
-  // };
 
   // 混合消息
   const formatChatMsgHunhe = (type: any, msgObj: any /* , chatObj: any */) => {
@@ -1021,7 +994,7 @@ const chatLog: React.FC = () => {
     <div className={style.chatLog}>
       <div className={style.breadCrumbs}>
         <BreadCrumbs
-          navList={[{ name: '删人提醒', path: '/deletionReminder' }, { name: clientInfo?.nickName + '的聊天记录' }]}
+          navList={[{ name: '删人提醒', path: '/deletionReminder' }, { name: clientInfo?.clientName + '的聊天记录' }]}
         />
       </div>
       <div className={style.header}>
@@ -1053,7 +1026,7 @@ const chatLog: React.FC = () => {
       <Spin spinning={isChatListLoading}>
         <div className={style.content}>
           <div className={style.contentMiddle}>
-            <div className={style.contentLeftTitle}>{clientInfo?.handoverStaffName}的聊天对象</div>
+            <div className={style.contentLeftTitle}>{clientInfo?.staffName}的聊天对象</div>
             <div className={style.targetPersonWrap}>
               <div className={style.targetPerson}>
                 <span className={style.myTitle}>
@@ -1065,10 +1038,10 @@ const chatLog: React.FC = () => {
                       borderRadius: '50%',
                       margin: '0 10px 0 0'
                     }}
-                    src={clientInfo?.avatar}
+                    src={clientInfo?.clientAvatar}
                   />
                   <span className={style.title}>
-                    {clientInfo?.nickName}
+                    {clientInfo?.clientName}
                     <Icon
                       className={style.editIcon}
                       name="a-icon_common_16_modelcharge"

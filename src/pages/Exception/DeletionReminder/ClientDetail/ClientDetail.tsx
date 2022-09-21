@@ -8,20 +8,12 @@ import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { Tooltip } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
-import { Button } from 'tenacity-ui';
+// import { Button } from 'tenacity-ui';
 import { BreadCrumbs, Icon, Empty, DrawerItem } from 'src/components';
 // import { wxAgentConfig } from 'src/utils/wx';
 import { Nav, TagItem } from 'src/utils/interface';
-// import {
-//   queryClientInfo,
-//   queryTagByGroup,
-//   modifyClientTag,
-//   queryCustomTag,
-//   modifyCustomTag,
-//   modifyCarTag,
-//   queryBoundCar,
-//   saveCarInfo
-// } from 'src/apis/client';
+import { requestGetClientDetail } from 'src/apis/exception';
+import qs from 'qs';
 import DynamicList from './DynamicList';
 import ClientPortrait from './ClientPortrait';
 import ServiceSuggestion from './ServiceSuggestion';
@@ -86,7 +78,8 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   // const [tagList, setTagList] = useState<Tag[]>([]);
   // const [groupName, setGroupName] = useState<string>('');
   // const [tagIndex, setTagIndex] = useState<number>(0);
-  const [externalUserid, setExternalUserid] = useState<string>('');
+  const [externalUserId, setExternalUserId] = useState<string>('');
+  const [followStaffId, setfollowStaffId] = useState('');
   // const [customTagList, setCustomTagList] = useState<Tag[]>([]);
   const [attrCollapse, setAttrCollapse] = useState<boolean>(false);
   const [customCollapse, setCustomCollapse] = useState<boolean>(false);
@@ -108,7 +101,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   const [interestCollapse, setInterestCollapse] = useState<boolean>(false);
   // const [editInterestVisible, setEditInterestVisible] = useState<boolean>(false);
   // const [modifyField, setModifyField] = useState<string>('');
-  const [boundCarInfo, setBoundCarInfo] = useState<BoundCarInfo>({});
   // const [boundVisible, setBoundVisible] = useState<boolean>(false);
   // const [boundType, setBoundType] = useState<number>(0);
   // const [boundTipVisible, setBoundTipVisible] = useState<boolean>(false);
@@ -131,19 +123,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
       name: '客户详情'
     }
   ];
-
-  const getToBoundCarInfo = async (externalUserId?: string) => {
-    console.log('externalUserId', externalUserId);
-    const res: any = null;
-    // const res: any = await queryBoundCar({ externalUserid: externalUserId || externalUserid });
-    if (res) {
-      setBoundCarInfo({
-        ...res,
-        unBindCarList: (res.unBindCarList || []).map((item: any) => item.carNumber)
-      });
-      // setBoundTipVisible(res.isPrompt === 1);
-    }
-  };
 
   const calcAttrTag = () => {
     if (!attrHasExpand || attrCollapse) {
@@ -202,147 +181,16 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
     setLoadCustomTag(false);
   };
 
-  const getClientInfo = async (externalUserId?: string) => {
-    console.log('externalUserId', externalUserId);
-    const res: any = null;
-    // const res: any = await queryClientInfo({ externalUserid: externalUserId || externalUserid });
+  const getClientInfo = async (externalUserId: string, followStaffId: string) => {
+    const res: any = await requestGetClientDetail({ externalUserid: externalUserId, followStaffId });
     if (res) {
+      console.log('res', res);
       setClientInfo(res);
       setLoadAttrTag(true);
       setLoadInterestTag(true);
       setLoadCustomTag(true);
     }
   };
-
-  // const getTagListByGroup = async (groupId: string, tagId: string) => {
-  //   console.log('externalUserId', groupId);
-  //   const res: any = null;
-  //   // const res: any = await queryTagByGroup({ groupId });
-  //   if (res) {
-  //     setGroupName(res.groupName);
-  //     setTagList(res.tagList || []);
-  //     const currentTagIndex: number = (res.tagList || []).findIndex((item: Tag) => item.tagId === tagId);
-  //     setTagIndex(currentTagIndex > -1 ? currentTagIndex : 0);
-  //   }
-  // };
-
-  // const modifyTag = async () => {
-  //   const modifyApi: Function = [0, 2].includes(tagType) ? modifyClientTag : modifyCarTag;
-  //   const param: any = {
-  //     externalUserid,
-  //     list: [
-  //       {
-  //         tagId: tagList[tagIndex].tagId,
-  //         oldTagId: oldTag.tagId,
-  //         groupId: oldTag.groupId
-  //       }
-  //     ]
-  //   };
-  //   if (tagType === 1) {
-  //     param.carNumber = ((clientInfo.carList || [])[carIndex] || {}).carNumber;
-  //   }
-  //   const res: any = await modifyApi(param);
-  //   if (res) {
-  //     message.success('修改成功');
-  //     setAttrVisible(false);
-  //     getClientInfo();
-  //     window.$sensors.track('client_tag_modify', {
-  //       tag_type: `${[0, 2].includes(tagType) ? '人' : '车'}标签`,
-  //       tag_name_id1: oldTag.groupId,
-  //       tag_name1: oldTag.groupName,
-  //       tag_vlaue_old_id1: oldTag.tagId,
-  //       tag_vlaue_old1: oldTag.tagName,
-  //       tag_vlaue_new_id1: tagList[tagIndex].tagId,
-  //       tag_vlaue_new1: tagList[tagIndex].tagName,
-  //       external_user_id: externalUserid
-  //     });
-  //     console.log('oldTag', oldTag);
-  //     report({
-  //       event: 1,
-  //       scene: 120402,
-  //       externalUserId: externalUserid,
-  //       itemId: tagList[tagIndex].tagId,
-  //       extraId: oldTag.tagId
-  //     });
-  //   }
-  // };
-
-  /**
-   * 获取自定义标签列表
-   */
-  // const getCustomTagList = async (externalUserId?: string) => {
-  //   const res: any = await queryCustomTag({ externalUserid: externalUserId || externalUserid });
-  //   setCustomTagList(Array.isArray(res) ? res : []);
-  // };
-
-  // const addTag = async (tag?: Tag) => {
-  //   let param: any = {
-  //     externalUserid
-  //   };
-  //   let tipsText = '添加';
-  //   if (tag) {
-  //     param = {
-  //       ...param,
-  //       ...tag,
-  //       isSelected: tag.isSelected === 0 ? 1 : 0
-  //     };
-  //     tipsText = '修改';
-  //   } else {
-  //     param = {
-  //       ...param,
-  //       tagName
-  //     };
-  //   }
-  //   const res: any = await modifyCustomTag(param);
-  //   if (res) {
-  //     setTagName('');
-  //     message.success(`${tipsText}成功`);
-  //     getCustomTagList();
-  //     getClientInfo();
-  //     if (tag) {
-  //       if (tag.isSelected === 0) {
-  //         window.$sensors.track('client_tag_self_add', {
-  //           tag_vlaue_add: tag.tagName,
-  //           external_user_id: externalUserid
-  //         });
-  //       } else {
-  //         window.$sensors.track('client_tag_self_modify', {
-  //           tag_vlaue_delete: tag.tagName,
-  //           external_user_id: externalUserid
-  //         });
-  //       }
-  //     } else {
-  //       window.$sensors.track('client_tag_self_add', {
-  //         tag_vlaue_add: tagName,
-  //         external_user_id: externalUserid
-  //       });
-  //       report({
-  //         event: 1,
-  //         scene: 45,
-  //         externalUserId: externalUserid,
-  //         itemId: tagName
-  //       });
-  //     }
-  //   }
-  // };
-
-  /**
-   * 同步车险日期
-   */
-  // const syncDate = (type: number, param: any) => {
-  //   AntdModal.confirm({
-  //     icon: null,
-  //     title: '温馨提示',
-  //     content: `是否将${type === 1 ? '商业险到期日同步至交强险' : '交强险到期日同步至商业险'}到期日？`,
-  //     async onOk () {
-  //       const res: any = await saveCarInfo(param);
-  //       if (res) {
-  //         message.success('同步成功');
-  //         getClientInfo();
-  //       }
-  //     }
-  //   });
-  // };
 
   const getStatusName = (status?: number) => {
     let statusName = '未知';
@@ -373,11 +221,13 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   }, [loadCustomTag]);
 
   useEffect(() => {
-    const { externalUserid: externalUserId = '' }: any = history.location.state || {};
-    setExternalUserid(externalUserId);
-    getClientInfo(externalUserId);
+    const { externalUserid: externalUserId = '', followStaffId }: any = qs.parse(history.location.search, {
+      ignoreQueryPrefix: true
+    });
+    setExternalUserId(externalUserId);
+    setfollowStaffId(followStaffId);
+    getClientInfo(externalUserId, followStaffId);
     // getCustomTagList(externalUserId);
-    getToBoundCarInfo(externalUserId);
   }, []);
   return (
     <div className={style.detailWrap}>
@@ -416,7 +266,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                     >
                       <span>{clientInfo.tradeOrderStatusTagInfo.tagName || '未知'}</span>
                     </Tooltip>
-                    <Icon className={style.orderIcon} name="bianji" /* onClick={() => setOrderVisible(true)} */ />
                   </div>
                 </div>
               )}
@@ -429,16 +278,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                     居住城市
                   </div>
                   <div className={style.infoValue}>{clientInfo.resideCity || '未知'}</div>
-                  {(clientInfo.resideCityUpdateCount || 0) < 2 && (
-                    <Icon
-                      className={style.editIcon}
-                      name="bianji1"
-                      // onClick={() => {
-                      //   setBaseVisible(true);
-                      //   setModifyField('resideCity');
-                      // }}
-                    />
-                  )}
                 </div>
               </div>
               <div className={style.infoCol}>
@@ -448,16 +287,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                     生日时间
                   </div>
                   <div className={style.infoValue}>{clientInfo.birthDate || '未知'}</div>
-                  {(clientInfo.birthDateUpdateCount || 0) < 2 && (
-                    <Icon
-                      className={style.editIcon}
-                      name="bianji1"
-                      // onClick={() => {
-                      //   setBaseVisible(true);
-                      //   setModifyField('birthDate');
-                      // }}
-                    />
-                  )}
                 </div>
               </div>
             </div>
@@ -495,12 +324,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                     {item.tagName}
                   </li>
                 ))}
-                <li className={style.addTag}>
-                  <Icon
-                    className={style.addTagIcon}
-                    name="tianjiabiaoqian1" /* onClick={() => setEditTagVisible(true)} */
-                  />
-                </li>
               </ul>
             </div>
             {attrTagHideIndex > 0 && (
@@ -553,13 +376,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                     {item.tagName}
                   </li>
                 ))}
-                <li className={style.addTag}>
-                  <Icon
-                    className={style.addTagIcon}
-                    name="tianjiabiaoqian1"
-                    // onClick={() => setEditInterestVisible(true)}
-                  />
-                </li>
               </ul>
             </div>
             {interestTagHideIndex > 0 && (
@@ -609,15 +425,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                     {item.tagName}
                   </li>
                 ))}
-                <li
-                  className={style.addTag}
-                  // onClick={() => {
-                  //   setCustomTagType(1);
-                  //   setCustomizeVisible(true);
-                  // }}
-                >
-                  <Icon className={style.addTagIcon} name="tianjiabiaoqian1" />
-                </li>
               </ul>
             </div>
             {customTagHideIndex > 0 && (
@@ -639,7 +446,7 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
           <div className={style.cardInfoWrap}>
             <div className={style.cardInfoTitleWrap}>
               <span className={style.cardInfoTitle}>车辆信息</span>
-              {boundCarInfo.allowBindCar === 1 && (boundCarInfo.unBindCarList || []).length > 0 && (
+              {/* {boundCarInfo.allowBindCar === 1 && (boundCarInfo.unBindCarList || []).length > 0 && (
                 <div className={style.boundTips}>
                   <span>系统识别到你有{(boundCarInfo.unBindCarList || []).length}辆车未绑定</span>
                   <span
@@ -652,12 +459,12 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                     去绑定
                   </span>
                 </div>
-              )}
+              )} */}
             </div>
             {clientInfo.carList?.length === 0 && (
               <>
                 <Empty />
-                {boundCarInfo.allowBindCar === 1 && (
+                {/* {boundCarInfo.allowBindCar === 1 && (
                   <Button
                     className={style.addCarBtn}
                     type="primary"
@@ -668,7 +475,7 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                   >
                     去添加车辆
                   </Button>
-                )}
+                )} */}
               </>
             )}
             {(clientInfo.carList || []).length > 0 && (
@@ -684,7 +491,7 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                     {item.carNumber}
                   </li>
                 ))}
-                {boundCarInfo.allowBindCar === 1 && (clientInfo.carList || []).length < 5 && (
+                {/* {boundCarInfo.allowBindCar === 1 && (clientInfo.carList || []).length < 5 && (
                   <li
                     className={style.carAdd}
                     // onClick={() => {
@@ -694,7 +501,7 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                   >
                     <Icon className={style.addCarIcon} name="tianjiabiaoqian1" />
                   </li>
-                )}
+                )} */}
               </ul>
             )}
             <div className={style.carInfoWrap}>
@@ -708,14 +515,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                           车品牌
                         </div>
                         <div className={style.infoValue}>{item.carBrandName || '未知'}</div>
-                        <Icon
-                          className={style.editIcon}
-                          name="bianji1"
-                          // onClick={() => {
-                          //   setCardInfoVisible(true);
-                          //   setModifyField('carBrandId');
-                          // }}
-                        />
                       </div>
                       <div className={style.infoRow}>
                         <div className={style.infoLabel}>
@@ -723,14 +522,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                           车险销售状态
                         </div>
                         <div className={style.infoValue}>{getStatusName(item.salesStatus)}</div>
-                        <Icon
-                          className={style.editIcon}
-                          name="bianji1"
-                          // onClick={() => {
-                          //   setCardInfoVisible(true);
-                          //   setModifyField('salesStatus');
-                          // }}
-                        />
                       </div>
                       {item.carInspectionTagInfo && (
                         <>
@@ -747,23 +538,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                               年检状态
                             </div>
                             <div className={style.infoValue}>{item.carInspectionTagInfo?.tagName || '未知'}</div>
-                            <Icon
-                              className={style.editIcon}
-                              name="bianji1"
-                              // onClick={() => {
-                              //   setAttrVisible(true);
-                              //   setTagType(1);
-                              //   getTagListByGroup(
-                              //     item.carInspectionTagInfo?.groupId,
-                              //     item.carInspectionTagInfo?.tagId || ''
-                              //   );
-                              //   setOldTag({
-                              //     tagId: item.carInspectionTagInfo?.tagId || '',
-                              //     tagName: item.carInspectionTagInfo?.tagName || '',
-                              //     groupId: item.carInspectionTagInfo?.groupId || ''
-                              //   });
-                              // }}
-                            />
                           </div>
                         </>
                       )}
@@ -778,94 +552,18 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                           {item.compInsBuyStatusTagInfo && (
                             <div className={style.insuranceRow}>
                               交强险 {item.compInsBuyStatusTagInfo?.tagName || '未知'}
-                              <Icon
-                                className={style.editIcon}
-                                name="bianji1"
-                                // onClick={() => {
-                                //   setAttrVisible(true);
-                                //   setTagType(1);
-                                //   getTagListByGroup(
-                                //     item.compInsBuyStatusTagInfo?.groupId,
-                                //     item.compInsBuyStatusTagInfo?.tagId || ''
-                                //   );
-                                //   setOldTag({
-                                //     tagId: item.compInsBuyStatusTagInfo?.tagId || '',
-                                //     tagName: item.compInsBuyStatusTagInfo?.tagName || '',
-                                //     groupId: item.compInsBuyStatusTagInfo?.groupId || ''
-                                //   });
-                                // }}
-                              />
                             </div>
                           )}
                           <div className={style.insuranceRow}>
                             交强险到期 {item.compulsoryInsuranceExpireDate || '未知'}
-                            <Icon
-                              className={style.editIcon}
-                              name="bianji1"
-                              // onClick={() => {
-                              //   setCardInfoVisible(true);
-                              //   setModifyField('compulsoryInsuranceExpireDate');
-                              // }}
-                            />
-                            {!item.compulsoryInsuranceExpireDate && item.commercialInsuranceExpireDate && (
-                              <Icon
-                                className={style.syncIcon}
-                                name="tongbu"
-                                // onClick={() =>
-                                //   syncDate(1, {
-                                //     externalUserid,
-                                //     carNumber: item.carNumber,
-                                //     compulsoryInsuranceExpireDate: item.commercialInsuranceExpireDate
-                                //   })
-                                // }
-                              />
-                            )}
                           </div>
                           {item.commInsBuyStatusTagInfo && (
                             <div className={style.insuranceRow}>
                               商业险 {item.commInsBuyStatusTagInfo?.tagName || '未知'}
-                              <Icon
-                                className={style.editIcon}
-                                name="bianji1"
-                                // onClick={() => {
-                                //   setAttrVisible(true);
-                                //   setTagType(1);
-                                //   getTagListByGroup(
-                                //     item.commInsBuyStatusTagInfo?.groupId,
-                                //     item.commInsBuyStatusTagInfo?.tagId || ''
-                                //   );
-                                //   setOldTag({
-                                //     tagId: item.commInsBuyStatusTagInfo?.tagId || '',
-                                //     tagName: item.commInsBuyStatusTagInfo?.tagName || '',
-                                //     groupId: item.commInsBuyStatusTagInfo?.groupId || ''
-                                //   });
-                                // }}
-                              />
                             </div>
                           )}
                           <div className={classNames(style.infoValueRow, style.insuranceRow)}>
                             商业险到期 {item.commercialInsuranceExpireDate || '未知'}
-                            <Icon
-                              className={style.editIcon}
-                              name="bianji1"
-                              // onClick={() => {
-                              //   setCardInfoVisible(true);
-                              //   setModifyField('commercialInsuranceExpireDate');
-                              // }}
-                            />
-                            {item.compulsoryInsuranceExpireDate && !item.commercialInsuranceExpireDate && (
-                              <Icon
-                                className={style.syncIcon}
-                                name="tongbu"
-                                // onClick={() =>
-                                //   syncDate(2, {
-                                //     externalUserid,
-                                //     carNumber: item.carNumber,
-                                //     commercialInsuranceExpireDate: item.compulsoryInsuranceExpireDate
-                                //   })
-                                // }
-                              />
-                            )}
                           </div>
                         </div>
                       </div>
@@ -887,24 +585,11 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                             [style.yellow]: item?.modified === 1,
                             [style.blue]: item?.modified === 0
                           })}
-                          // onClick={() => {
-                          //   setAttrVisible(true);
-                          //   setTagType(1);
-                          //   getTagListByGroup(item?.groupId || '', item?.tagId);
-                          //   setOldTag(item);
-                          // }}
                         >
                           {item?.displayType === 1 ? item?.groupName : ''}
                           {item?.tagName}
                         </li>
                       ))}
-                      <li className={style.addTag}>
-                        <Icon
-                          className={style.addTagIcon}
-                          name="tianjiabiaoqian1"
-                          // onClick={() => setCarVisible(true)}
-                        />
-                      </li>
                     </ul>
                   </div>
                 </DrawerItem>
@@ -935,13 +620,19 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
           </div>
           <div className={style.tabContent}>
             <DrawerItem visible={tabIndex === 0}>
-              {externalUserid && <DynamicList externalUserid={externalUserid} />}
+              {externalUserId && followStaffId && (
+                <DynamicList externalUserid={externalUserId} followStaffId={followStaffId} />
+              )}
             </DrawerItem>
             <DrawerItem visible={tabIndex === 1}>
-              {externalUserid && tabIndexes.includes(1) && <ClientPortrait externalUserid={externalUserid} />}
+              {externalUserId && followStaffId && tabIndexes.includes(1) && (
+                <ClientPortrait externalUserid={externalUserId} followStaffId={followStaffId} />
+              )}
             </DrawerItem>
             <DrawerItem visible={tabIndex === 2}>
-              {externalUserid && tabIndexes.includes(2) && <ServiceSuggestion externalUserid={externalUserid} />}
+              {externalUserId && followStaffId && tabIndexes.includes(2) && (
+                <ServiceSuggestion externalUserid={externalUserId} followStaffId={followStaffId} />
+              )}
             </DrawerItem>
           </div>
         </div>

@@ -22,20 +22,20 @@ export const transferStatusList = [
 export const searchCols: () => SearchCol[] = () => {
   return [
     {
-      name: 'leaderName',
-      type: 'input',
-      label: '所属团队长',
-      placeholder: '请输入'
-    },
-    {
       name: 'staffName',
       type: 'custom',
-      label: '客户经理',
+      label: '所属客户经理',
       customNode: (
         <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
           <SelectStaff key={1} type="staff" />
         </Form.Item>
       )
+    },
+    {
+      name: 'clientName',
+      type: 'input',
+      label: '客户昵称',
+      placeholder: '请输入'
     },
     {
       name: 'time',
@@ -50,15 +50,15 @@ export const searchCols: () => SearchCol[] = () => {
       width: 120,
       label: '组织架构',
       customNode: (
-        <Form.Item key={'deptList'} name="deptList" label="所属客户经理">
+        <Form.Item key={'deptList'} name="deptList" label="组织架构">
           <SelectStaff key={1} type="dept" />
         </Form.Item>
       )
     },
     {
-      name: 'takeoverTime',
-      label: '近7日未登录次数',
+      name: 'leaderName',
       type: 'input',
+      label: '客户经理上级',
       placeholder: '请输入'
     }
   ];
@@ -83,7 +83,9 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
 
   // 查看用户信息
   const viewClientDetail = (row: IDelStaffList) => {
-    history.push('/deletionReminder/clientDetail?externalUserid=' + row.externalUserid);
+    history.push(
+      '/deletionReminder/clientDetail?externalUserid=' + row.externalUserid + '&followStaffId=' + row.staffId
+    );
   };
   // 查看聊天记录
   const viewChatList = (row: IDelStaffList) => {

@@ -29,7 +29,7 @@ export const requestGetClientPortrait: HttpFunction = (param) => {
  * @param param
  */
 export const requestGetClientRecommend: HttpFunction = (param) => {
-  return http.post('/tenacity-webapp/api/tag/client/recommend', param);
+  return http.post('/tenacity-admin/api/tag/client/recommend', param);
 };
 
 /**

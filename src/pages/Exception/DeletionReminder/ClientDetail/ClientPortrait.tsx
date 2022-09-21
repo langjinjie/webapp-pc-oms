@@ -6,11 +6,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 // import { Button, Modal } from 'antd';
 import classNames from 'classnames';
-import { useHistory } from 'react-router-dom';
 import { Icon, TagEmpty } from 'src/components';
-// import { queryClientPortrait, modifyClientTag, queryTagList } from 'src/apis/client';
+import { requestGetClientPortrait } from 'src/apis/exception';
 import { TagItem, TagCategory as ITagCategory, TagGroup } from 'src/utils/interface';
-// import { reportBatch } from 'src/apis';
 import style from './style.module.less';
 
 const groupMapNames: any[] = [
@@ -45,26 +43,22 @@ interface PortraitInfo {
 
 interface ClientPortraitProps {
   externalUserid: string;
+  followStaffId: string;
 }
 
-const ClientPortrait: React.FC<ClientPortraitProps> = ({ externalUserid }) => {
-  // const [editChar, setEditChar] = useState<boolean>(false);
-  // const [editPreference, setEditPreference] = useState<boolean>(false);
-  // const [tipsVisible, setTipsVisible] = useState<boolean>(false);
+const ClientPortrait: React.FC<ClientPortraitProps> = ({ externalUserid, followStaffId }) => {
   const [portraitInfo, setPortraitInfo] = useState<PortraitInfo>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
   const [allClientPortraitTagListRes, setAllClientPortraitTagListRes] = useState<ITagCategory[]>([]);
 
-  const history = useHistory();
-
   /**
    * 获取客户画像信息
    */
   const getClientPortraitInfo = async () => {
+    console.log('followStaffId', followStaffId);
     !hasLoaded && setIsLoading(true);
-    const res: any = null;
-    // const res: any = await queryClientPortrait({ externalUserid });
+    const res: any = await requestGetClientPortrait({ externalUserid, followStaffId });
     setHasLoaded(true);
     setTimeout(() => {
       setIsLoading(false);
@@ -101,35 +95,6 @@ const ClientPortrait: React.FC<ClientPortraitProps> = ({ externalUserid }) => {
     }
   };
 
-  /**
-   * 修改标签
-   * @param type
-   */
-  // const modifyTag = async (type: number) => {
-  //   const tagList: FrontTagItem[] = ((portraitInfo.list || [])[type] || {}).tagList || [];
-  //   const modifyList = tagList.filter((item) => item.newTagName !== item.tagName);
-  //   const res: any = null;
-  //   // const res: any = await modifyClientTag({
-  //   //   externalUserid,
-  //   //   list: modifyList.map((item) => ({
-  //   //     oldTagId: item.tagId,
-  //   //     tagName: item.newTagName,
-  //   //     groupId: item.groupId
-  //   //   }))
-  //   // });
-  //   if (res) {
-  //     const { externalUserid: externalUserId = '' }: any = history.location.state || {};
-  //     getClientPortraitInfo();
-  //     if (type === 1) {
-  //       setEditChar(false);
-  //       setTipsVisible(true);
-  //     } else {
-  //       setEditPreference(false);
-  //       setTipsVisible(true);
-  //     }
-  //   }
-  // };
-
   const getGroupName = (fullName: string) => {
     const groupName: string[] = groupMapNames.find((item: any) => item[0] === fullName) || [];
     return groupName.slice(1);
@@ -159,10 +124,10 @@ const ClientPortrait: React.FC<ClientPortraitProps> = ({ externalUserid }) => {
       {!isLoading && (!portraitInfo.list || portraitInfo.list.length < 2) && (
         <div className={style.emptyWrap}>
           <TagEmpty type="portrait" />
-          <div className={style.addBtn} onClick={() => history.push('/clientList/editTag', { externalUserid })}>
+          {/* <div className={style.addBtn} onClick={() => history.push('/clientList/editTag', { externalUserid })}>
             <Icon className={style.addIcon} name="tianjiabiaoqian" />
             添加标签
-          </div>
+          </div> */}
         </div>
       )}
       {!isLoading && portraitInfo.list && portraitInfo.list.length > 1 && (

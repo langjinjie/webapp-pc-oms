@@ -6,14 +6,13 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message } from 'antd';
 import { copy } from 'tenacity-tools';
-import { useHistory } from 'react-router-dom';
-import { Icon, TagEmpty } from 'src/components';
-// import { queryRecommendInfo } from 'src/apis/client';
-// import { wxOpenEnterpriseChat } from 'src/utils/wx';
+import { TagEmpty } from 'src/components';
+import { requestGetClientRecommend } from 'src/apis/exception';
 import style from './style.module.less';
 
 interface ServiceSuggestionProps {
   externalUserid: string;
+  followStaffId: string;
 }
 
 interface Article {
@@ -46,14 +45,11 @@ interface RecommendInfo {
   recommendActivityList?: Activity[];
 }
 
-const ServiceSuggestion: React.FC<ServiceSuggestionProps> = ({ externalUserid }) => {
+const ServiceSuggestion: React.FC<ServiceSuggestionProps> = ({ externalUserid, followStaffId }) => {
   const [recommendInfo, setRecommendInfo] = useState<RecommendInfo>({});
 
-  const history = useHistory();
-
   const getRecommendInfo = async () => {
-    // const res: any = await queryRecommendInfo({ externalUserid });
-    const res: any = null;
+    const res: any = await requestGetClientRecommend({ externalUserid, followStaffId });
     if (res) {
       setRecommendInfo(res);
     }
@@ -74,10 +70,10 @@ const ServiceSuggestion: React.FC<ServiceSuggestionProps> = ({ externalUserid })
       {Object.keys(recommendInfo).length === 0 && (
         <div className={style.emptyWrap}>
           <TagEmpty type="service" />
-          <Button className={style.addBtn} onClick={() => history.push('/clientList/editTag', { externalUserid })}>
+          {/* <Button className={style.addBtn} onClick={() => history.push('/clientList/editTag', { externalUserid })}>
             <Icon className={style.addIcon} name="tianjiabiaoqian" />
             添加标签
-          </Button>
+          </Button> */}
         </div>
       )}
       {Object.keys(recommendInfo).length > 0 && (
@@ -96,10 +92,6 @@ const ServiceSuggestion: React.FC<ServiceSuggestionProps> = ({ externalUserid })
                   建议接触的时间：
                   <span className={style.intimacyValue}>{recommendInfo.recommendConcatTime}</span>
                 </div>
-                <Button className={style.sendBtn} /* onClick={() => wxOpenEnterpriseChat(externalUserid)} */>
-                  <Icon className={style.messageIcon} name="biaotianliaotian" />
-                  发送消息
-                </Button>
               </div>
               <img className={style.cardImg} src={recommendInfo.clientCategoryUrl} alt="" />
             </div>

@@ -20,10 +20,17 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'sta
   };
 
   const inputValue = useMemo(() => {
-    return value
-      ?.map((mapItem: any) => mapItem.staffName)
-      .toString()
-      .replace(/,/g, '；');
+    if (type === 'staff') {
+      return value
+        ?.map((mapItem: any) => mapItem.staffName)
+        .toString()
+        .replace(/,/g, '；');
+    } else {
+      return value
+        ?.map((mapItem: any) => mapItem.deptName)
+        .toString()
+        .replace(/,/g, '；');
+    }
   }, [value]);
   return (
     <>

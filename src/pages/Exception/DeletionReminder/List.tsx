@@ -6,22 +6,15 @@ import { Card, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IDelStaffList, tableColumnsFun } from './Config';
 import { requestGetStaffDelClientList } from 'src/apis/exception';
-// import { useHistory } from 'react-router-dom';
-// import { requestGetReasonList, requestGetAssignInheritList } from 'src/apis/client';
-// import style from './style.module.less';
-// import classNames from 'classnames';
 
 const List: React.FC = () => {
   const [tableSource, setTableSource] = useState<{ total: number; list: IDelStaffList[] }>({ total: 0, list: [] });
-  // const [reasonCodeList, setReasonCodeList] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10
   });
   const [formValue, setFormValue] = useState<{ [key: string]: any }>({});
-
-  // const history = useHistory();
 
   // 获取继承客户列表接口
   const getList = async (param?: { [key: string]: any }) => {
@@ -36,42 +29,32 @@ const List: React.FC = () => {
   };
 
   const onSearch = (value?: any) => {
-    console.log('value', value);
-    const { leaderName, staffList, type, transferStatus, time, takeoverTime, reasonCode } = value;
+    // 重置分页
+    setPagination((param) => ({ ...param, current: 1 }));
+    const { staffList, clientName, time, deptList, leaderName } = value;
     const staffName = staffList?.map((mapItem: { staffName: string }) => mapItem.staffName);
-    let beginTime = '';
-    let endTime = '';
+    const deptIds = deptList?.map(({ deptId }: { deptId: string }) => ({ deptId }));
+    let beginTime: any;
+    let endTime: any;
     if (time) {
       beginTime = time[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
       endTime = time[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
     }
-    let takeoverBeginTime = '';
-    let takeoverEndTime = '';
-    if (takeoverTime) {
-      takeoverBeginTime = takeoverTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      takeoverEndTime = takeoverTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
-    }
     setFormValue({
-      leaderName,
       staffName,
-      type,
-      transferStatus,
+      clientName,
       beginTime,
       endTime,
-      takeoverBeginTime,
-      takeoverEndTime,
-      reasonCode
+      deptIds,
+      leaderName
     });
     getList({
-      leaderName,
       staffName,
-      type,
-      transferStatus,
+      clientName,
       beginTime,
       endTime,
-      takeoverBeginTime,
-      takeoverEndTime,
-      reasonCode
+      deptIds,
+      leaderName
     });
   };
 

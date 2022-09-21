@@ -389,6 +389,7 @@ export interface TagItem {
   groupName?: string;
   modified?: number;
   displayType?: number;
+  remark?: string;
 }
 export interface TagInterface {
   tagId: string;
