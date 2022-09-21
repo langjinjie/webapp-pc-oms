@@ -9,42 +9,42 @@ import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
   return [
     {
-      name: 'staffList',
+      name: 'staffName',
       type: 'custom',
-      label: '所属客户经理',
+      label: '客户经理',
       customNode: (
-        <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
+        <Form.Item key={'staffName'} name="staffName" label="客户经理">
           <SelectStaff key={1} type="staff" />
         </Form.Item>
       )
     },
     {
-      name: 'type',
+      name: 'leaderName',
       type: 'input',
-      label: '删除客户',
+      label: '所属团队长',
       placeholder: '请输入'
     },
     {
-      name: 'assignTime',
+      name: 'date',
       type: 'rangePicker',
-      label: '选择删除时间'
+      label: '选择时间'
       // width: '140px',
       // placeholder: '请输入'
     },
     {
-      name: 'deptList',
+      name: 'deptIds',
       type: 'custom',
       width: 120,
       label: '组织架构',
       customNode: (
-        <Form.Item key={'deptList'} name="deptList" label="所属客户经理">
+        <Form.Item key={'deptIds'} name="deptIds" label="组织架构">
           <SelectStaff key={1} type="dept" />
         </Form.Item>
       )
     },
     {
-      name: 'takeoverTime',
-      label: '客户经理上级',
+      name: 'unloginCountWeek',
+      label: '近7日未登录次数',
       type: 'input',
       placeholder: '请输入'
     }
@@ -59,6 +59,7 @@ export interface IUnLoginStaffList {
   unloginDate: string;
   lastLoginTime: string;
   unloginCountWeek: number;
+  deptIds: [];
 }
 
 export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {

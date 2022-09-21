@@ -50,7 +50,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
       width: 120,
       label: '组织架构',
       customNode: (
-        <Form.Item key={'deptList'} name="deptList" label="所属客户经理">
+        <Form.Item key={'deptList'} name="deptList" label="组织架构">
           <SelectStaff key={1} type="dept" />
         </Form.Item>
       )

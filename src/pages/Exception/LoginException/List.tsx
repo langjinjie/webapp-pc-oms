@@ -6,7 +6,7 @@ import { Card, PaginationProps } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IUnLoginStaffList, tableColumnsFun } from './Config';
 // import { useHistory } from 'react-router-dom';
-// import { requestGetReasonList, requestGetAssignInheritList } from 'src/apis/client';
+import { requestGetLoginExceptionList } from 'src/apis/exception';
 // import style from './style.module.less';
 // import classNames from 'classnames';
 
@@ -14,6 +14,7 @@ const List: React.FC = () => {
   const [tableSource, setTableSource] = useState<{ total: number; list: IUnLoginStaffList[] }>({ total: 0, list: [] });
   const [reasonCodeList, setReasonCodeList] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  // const [searchName,setSearchName] = useState('')
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10
@@ -40,8 +41,10 @@ const List: React.FC = () => {
   const getList = async (param?: { [key: string]: any }) => {
     setLoading(true);
     console.log('param', param);
-    // const res = await requestGetAssignInheritList({ ...param });
-    const res = { total: 0, list: [] };
+    const res = await requestGetLoginExceptionList({ ...param });
+    console.log(res, '--------------------------res');
+
+    // const res = { total: 0, list: [] };
     if (res) {
       const { total, list } = res;
       setTableSource({ total, list });
@@ -51,7 +54,18 @@ const List: React.FC = () => {
 
   const onSearch = (value?: any) => {
     console.log('value', value);
-    const { clientName, type, transferStatus, assignTime, takeoverTime, reasonCode } = value;
+    const {
+      type,
+      transferStatus,
+      assignTime,
+      takeoverTime,
+      reasonCode,
+      staffName,
+      leaderName,
+      unloginCountWeek,
+      deptIds
+    } = value;
+
     let assignBeginTime = '';
     let assignEndTime = '';
     if (assignTime) {
@@ -65,7 +79,10 @@ const List: React.FC = () => {
       takeoverEndTime = takeoverTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
     }
     setFormValue({
-      clientName,
+      leaderName,
+      staffName: staffName?.map(({ staffName }: { staffName: string }) => staffName),
+      unloginCountWeek,
+      deptIds: deptIds?.map(({ deptIds }: { deptIds: string }) => deptIds),
       type,
       transferStatus,
       assignBeginTime,
@@ -75,7 +92,10 @@ const List: React.FC = () => {
       reasonCode
     });
     getList({
-      clientName,
+      leaderName,
+      staffName: staffName?.map(({ staffName }: { staffName: string }) => staffName),
+      deptIds: deptIds?.map(({ deptIds }: { deptIds: string }) => deptIds),
+      unloginCountWeek,
       type,
       transferStatus,
       assignBeginTime,
