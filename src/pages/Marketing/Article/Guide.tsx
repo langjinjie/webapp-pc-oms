@@ -11,11 +11,11 @@ const Guide: React.FC = () => {
         <h2>如何添加公众号？</h2>
         <p>1、公众号是微信公众号的名称，必须取全称。下面以“中国光大银行”作为实例。</p>
         <p>
-          <img src={require('src/assets/images/marketing/publicAddress1.png')} alt="" />
+          <img src={require('src/assets/images/marketing/publicAddress1.jpg')} alt="" />
         </p>
         <p>{'2、年高内部运营系统->营销素材->新增热门文章中输入公众号，多个公众号用逗号分隔。'}</p>
         <p>
-          <img src={require('src/assets/images/marketing/publicAddress2.png')} alt="" />
+          <img src={require('src/assets/images/marketing/publicAddress2.jpg')} alt="" />
         </p>
         <p>
           {
