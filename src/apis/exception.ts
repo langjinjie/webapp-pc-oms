@@ -59,3 +59,11 @@ export const requestDownLoadImg: HttpFunction = (param) => {
     }
   );
 };
+
+/**
+ * 查询标签列表
+ * @param param
+ */
+export const queryTagList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/tag/list', param);
+};
