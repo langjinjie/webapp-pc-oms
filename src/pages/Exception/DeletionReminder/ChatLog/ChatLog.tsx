@@ -107,7 +107,7 @@ const chatLog: React.FC = () => {
               <span>
                 <Image
                   src={
-                    '/tenacity-webapp/api/chat/chat_record/chat_file_preview?' + msgObj.fileUrl + '&myToken=' + myToken
+                    '/tenacity-admin/api/chat/chat_record/chat_file_preview?' + msgObj.fileUrl + '&myToken=' + myToken
                   }
                   // onError={(e) => getImage(e, msgObj.fileUrl)}
                   className={style.chatImgHunhe}
