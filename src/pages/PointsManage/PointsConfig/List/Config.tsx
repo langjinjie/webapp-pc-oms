@@ -22,6 +22,7 @@ export interface IPointsConfigItem {
   effectiveTime: string;
   effectiveState: number;
   logId?: string;
+  modifyLog?: IPointsConfigItem;
 }
 
 export const periodType2Name = [
@@ -109,7 +110,8 @@ export const tableColumnsFun: (getList: () => void) => ColumnsType<IPointsConfig
             <span className={style.edit} onClick={() => editHandle(value, value.logId ? 'add' : 'edit')}>
               编辑
             </span>
-            {+value.effectiveState === 1 && (
+            {/* 既要判断本身的effectiveState,也要判断modifyLog的effectiveState */}
+            {+value.effectiveState === 1 && (!value.modifyLog || value.modifyLog.effectiveState === 1) && (
               <span className={style.add} onClick={() => editHandle(value, 'add')}>
                 新增
               </span>

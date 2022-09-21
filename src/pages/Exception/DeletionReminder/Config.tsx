@@ -19,18 +19,12 @@ export const transferStatusList = [
   { id: 5, name: '已拒绝（成员已超过最大客户数）' }
 ];
 
-export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
+export const searchCols: () => SearchCol[] = () => {
   return [
     {
-      name: 'staffList',
-      type: 'input',
-      label: '所属团队长',
-      placeholder: '请输入'
-    },
-    {
-      name: 'staffList',
+      name: 'staffName',
       type: 'custom',
-      label: '客户经理',
+      label: '所属客户经理',
       customNode: (
         <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
           <SelectStaff key={1} type="staff" />
@@ -38,7 +32,13 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
       )
     },
     {
-      name: 'assignTime',
+      name: 'clientName',
+      type: 'input',
+      label: '客户昵称',
+      placeholder: '请输入'
+    },
+    {
+      name: 'time',
       type: 'rangePicker',
       label: '选择删除时间'
       // width: '140px',
@@ -56,15 +56,16 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
       )
     },
     {
-      name: 'takeoverTime',
-      label: '近7日未登录次数',
+      name: 'leaderName',
       type: 'input',
+      label: '客户经理上级',
       placeholder: '请输入'
     }
   ];
 };
 
 export interface IDelStaffList {
+  id: string;
   staffId: string;
   userid: string;
   staffName: string;
@@ -82,7 +83,9 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
 
   // 查看用户信息
   const viewClientDetail = (row: IDelStaffList) => {
-    history.push('/deletionReminder/clientDetail?externalUserid=' + row.externalUserid);
+    history.push(
+      '/deletionReminder/clientDetail?externalUserid=' + row.externalUserid + '&followStaffId=' + row.staffId
+    );
   };
   // 查看聊天记录
   const viewChatList = (row: IDelStaffList) => {
@@ -113,7 +116,7 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
       width: 260,
       render: (row: IDelStaffList) => {
         return (
-          <>
+          <span className={style.operation}>
             <Button type="link" onClick={() => viewClientDetail(row)}>
               查看用户信息
             </Button>
@@ -123,7 +126,7 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
             <Button disabled type="link">
               联系坐席
             </Button>
-          </>
+          </span>
         );
       }
     }

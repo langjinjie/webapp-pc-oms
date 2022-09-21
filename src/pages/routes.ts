@@ -365,10 +365,6 @@ export const routes: RouteProps[] = [
   },
   // 删人提醒
   {
-    path: '/deletionReminder',
-    component: lazy(() => import('src/pages/Exception/DeletionReminder/List'))
-  },
-  {
     path: '/deletionReminder/clientDetail',
     component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
   },
@@ -458,6 +454,11 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/pointsConfig',
     component: lazy(() => import('src/pages/PointsManage/PointsConfig/List/PointsConfig'))
+  },
+  // 删人提醒
+  {
+    path: '/deletionReminder',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/List'))
   }
 ];
 

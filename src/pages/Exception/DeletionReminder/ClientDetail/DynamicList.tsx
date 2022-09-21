@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 // import moment from 'moment';
 import classNames from 'classnames';
 import { TagEmpty, ScrollList } from 'src/components';
-// import { queryClientDynamic } from 'src/apis/client';
+import { requestGetClientDynamic } from 'src/apis/exception';
 import style from './style.module.less';
 
 interface Dynamic {
@@ -20,6 +20,7 @@ interface Dynamic {
 
 interface DynamicListProps {
   externalUserid: string;
+  followStaffId: string;
 }
 
 interface PageParam {
@@ -28,7 +29,7 @@ interface PageParam {
   externalUserid?: string;
 }
 
-const DynamicList: React.FC<DynamicListProps> = ({ externalUserid }) => {
+const DynamicList: React.FC<DynamicListProps> = ({ externalUserid, followStaffId }) => {
   const [dynamicList, setDynamicList] = useState<Dynamic[]>([]);
   const [pageParam, setPageParam] = useState<PageParam>({ pageNum: 1, pageSize: 20 });
   const [loaded, setLoaded] = useState<boolean>(false);
@@ -46,11 +47,11 @@ const DynamicList: React.FC<DynamicListProps> = ({ externalUserid }) => {
     const params: any = {
       ...pageParam,
       ...param,
-      externalUserid
+      externalUserid,
+      followStaffId
     };
     console.log('params', params);
-    const res: any = null;
-    // const res: any = await queryClientDynamic(params);
+    const res: any = await requestGetClientDynamic(params);
     if (res) {
       const { list } = res;
       const resList = list || [];
