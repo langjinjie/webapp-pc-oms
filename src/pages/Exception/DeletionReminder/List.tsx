@@ -90,6 +90,7 @@ const List: React.FC = () => {
           pagination={{ ...pagination, total: tableSource.total }}
           paginationChange={paginationChange}
           scroll={{ x: 'max-content' }}
+          rowKey="id"
         />
       </div>
     </Card>
