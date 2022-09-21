@@ -125,7 +125,19 @@ const Edit: React.FC = () => {
           <TextArea className={style.textArea} showCount maxLength={100} />
         </Item>
         <Item required label="奖励分值">
-          <Item name="taskPoints" noStyle>
+          <Item
+            rules={[
+              { required: true, max: 9999, message: '奖励分值不可超过9999', type: 'number' },
+              () => ({
+                validator () {
+                  form.validateFields(['maxPoints']);
+                  return Promise.resolve();
+                }
+              })
+            ]}
+            name="taskPoints"
+            noStyle
+          >
             <InputNumber
               disabled={searchParam.type === 'edit'}
               className={classNames(style.inputNum, { [style.disabled]: searchParam.type === 'edit' })}
@@ -135,7 +147,20 @@ const Edit: React.FC = () => {
           <span className={style.unit}>分</span>
         </Item>
         <Item required label="积分上限">
-          <Item name="maxPoints" noStyle>
+          <Item
+            rules={[
+              ({ getFieldValue }) => ({
+                validator (_, value) {
+                  if (+value < +getFieldValue('taskPoints')) {
+                    return Promise.reject(new Error('积分上限小于奖励分值，请重新填写'));
+                  }
+                  return Promise.resolve();
+                }
+              })
+            ]}
+            name="maxPoints"
+            noStyle
+          >
             <InputNumber
               disabled={searchParam.type === 'edit'}
               className={classNames(style.inputNum, { [style.disabled]: searchParam.type === 'edit' })}
