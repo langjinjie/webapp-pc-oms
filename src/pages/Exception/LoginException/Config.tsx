@@ -69,9 +69,8 @@ export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {
 
   return [
     { title: '客户经理', dataIndex: 'staffName' },
-    { title: '所属团队长', dataIndex: 'IUnLoginStaffList' },
+    { title: '所属团队长', dataIndex: 'leaderName' },
     { title: '组织架构', dataIndex: 'deptName' },
-    { title: '分配原因', dataIndex: 'reasonName' },
     { title: '未登录日期', dataIndex: 'unloginDate' },
     { title: '上次登录时间', dataIndex: 'lastLoginTime' },
     { title: '近7天未登录次数', dataIndex: 'unloginCountWeek' },
@@ -80,7 +79,7 @@ export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {
       width: 200,
       render: (row: IUnLoginStaffList) => {
         return (
-          <Button type="link" onClick={() => viewChatList(row)}>
+          <Button type="link" onClick={() => viewChatList(row)} disabled={true}>
             催催TA
           </Button>
         );
