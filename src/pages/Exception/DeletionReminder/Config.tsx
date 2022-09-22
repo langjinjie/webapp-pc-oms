@@ -34,7 +34,7 @@ export const searchCols: () => SearchCol[] = () => {
     {
       name: 'clientName',
       type: 'input',
-      label: '客户昵称',
+      label: '删除客户',
       placeholder: '请输入'
     },
     {
@@ -118,10 +118,10 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
         return (
           <span className={style.operation}>
             <Button type="link" onClick={() => viewClientDetail(row)}>
-              查看用户信息
+              查看客户信息
             </Button>
             <Button type="link" onClick={() => viewChatList(row)}>
-              查看聊天记录
+              查看聊天信息
             </Button>
             <Button disabled type="link">
               联系坐席

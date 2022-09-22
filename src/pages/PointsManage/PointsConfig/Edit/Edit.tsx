@@ -9,7 +9,7 @@ import {
 } from 'src/apis/pointsMall';
 import qs from 'qs';
 import style from './style.module.less';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -89,6 +89,10 @@ const Edit: React.FC = () => {
     }
   };
 
+  const disabledDate = (current: Moment) => {
+    return current < moment().add(1, 'days');
+  };
+
   useEffect(() => {
     getDetail();
   }, []);
@@ -113,7 +117,7 @@ const Edit: React.FC = () => {
           <InputNumber placeholder="请输入" className={style.inputNum} controls={false} />
         </Item>
         <Item required name="effectiveTime" label="生效时间">
-          <DatePicker disabled={searchParam.type === 'edit'} />
+          <DatePicker disabledDate={disabledDate} disabled={searchParam.type === 'edit'} />
         </Item>
         <Item required name="taskName" label="任务名称">
           <Input placeholder="请输入" className={style.input} showCount maxLength={18} />

@@ -79,7 +79,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
     }
     const param = { ...values, startTime, endTime };
     setSearchParam(param);
-    setPaginationParam((param) => ({ ...param }));
+    setPaginationParam((param) => ({ ...param, pageNum: 1 }));
   };
   // 重置
   const onReset = () => {
