@@ -7,6 +7,7 @@ import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IUnLoginStaffList, tableColumnsFun } from './Config';
 // import { useHistory } from 'react-router-dom';
 import { requestGetLoginExceptionList } from 'src/apis/exception';
+// import moment, { Moment } from 'moment';
 // import style from './style.module.less';
 // import classNames from 'classnames';
 
@@ -14,11 +15,11 @@ const List: React.FC = () => {
   const [tableSource, setTableSource] = useState<{ total: number; list: IUnLoginStaffList[] }>({ total: 0, list: [] });
   const [reasonCodeList, setReasonCodeList] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
-  // const [searchName,setSearchName] = useState('')
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10
   });
+
   const [formValue, setFormValue] = useState<{ [key: string]: any }>({});
 
   // const history = useHistory();
@@ -54,55 +55,33 @@ const List: React.FC = () => {
 
   const onSearch = (value?: any) => {
     console.log('value', value);
-    const {
-      type,
-      transferStatus,
-      assignTime,
-      takeoverTime,
-      reasonCode,
-      staffName,
-      leaderName,
-      unloginCountWeek,
-      deptIds
-    } = value;
+    const { type, transferStatus, reasonCode, staffNames, leaderName, unloginCountWeek, deptIds, beginTime, endTime } =
+      value;
 
-    let assignBeginTime = '';
-    let assignEndTime = '';
-    if (assignTime) {
-      assignBeginTime = assignTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      assignEndTime = assignTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
-    }
-    let takeoverBeginTime = '';
-    let takeoverEndTime = '';
-    if (takeoverTime) {
-      takeoverBeginTime = takeoverTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      takeoverEndTime = takeoverTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
-    }
+    const date = {
+      // 日期
+      beginTime,
+      endTime
+    };
     setFormValue({
       leaderName,
-      staffName: staffName?.map(({ staffName }: { staffName: string }) => staffName),
+      staffNames: staffNames?.map(({ staffName }: { staffName: string }) => staffName),
       unloginCountWeek,
-      deptIds: deptIds?.map(({ deptIds }: { deptIds: string }) => deptIds),
+      deptIds: deptIds?.map(({ deptId }: { deptId: string }) => deptId),
       type,
       transferStatus,
-      assignBeginTime,
-      assignEndTime,
-      takeoverBeginTime,
-      takeoverEndTime,
-      reasonCode
+      reasonCode,
+      date
     });
     getList({
       leaderName,
-      staffName: staffName?.map(({ staffName }: { staffName: string }) => staffName),
-      deptIds: deptIds?.map(({ deptIds }: { deptIds: string }) => deptIds),
+      staffNames: staffNames?.map(({ staffName }: { staffName: string }) => staffName),
+      deptIds: deptIds?.map(({ deptId }: { deptId: string }) => deptId),
       unloginCountWeek,
       type,
       transferStatus,
-      assignBeginTime,
-      assignEndTime,
-      takeoverBeginTime,
-      takeoverEndTime,
-      reasonCode
+      reasonCode,
+      date
     });
   };
 

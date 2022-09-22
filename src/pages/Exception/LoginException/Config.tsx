@@ -9,11 +9,11 @@ import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
   return [
     {
-      name: 'staffName',
+      name: 'staffNames',
       type: 'custom',
       label: '客户经理',
       customNode: (
-        <Form.Item key={'staffName'} name="staffName" label="客户经理">
+        <Form.Item key={'staffNames'} name="staffNames" label="客户经理">
           <SelectStaff key={1} type="staff" />
         </Form.Item>
       )
@@ -26,7 +26,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
     },
     {
       name: 'date',
-      type: 'rangePicker',
+      type: 'date',
       label: '选择时间'
       // width: '140px',
       // placeholder: '请输入'
@@ -59,7 +59,6 @@ export interface IUnLoginStaffList {
   unloginDate: string;
   lastLoginTime: string;
   unloginCountWeek: number;
-  deptIds: [];
 }
 
 export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {
