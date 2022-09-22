@@ -178,6 +178,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   />
                 </Form.Item>
               )) ||
+              (col.type === 'date' && (
+                <Form.Item key={col.name} label={col.label} name={col.name}>
+                  <DatePicker format="YYYY-MM-DD" />
+                </Form.Item>
+              )) ||
               (col.type === 'custom' && col.customNode)
             );
           })}
@@ -233,6 +238,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <RangePicker format="YYYY-MM-DD" />
                   </Form.Item>
                 )) ||
+                (col.type === 'date' && (
+                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                    <DatePicker format="YYYY-MM-DD" />
+                  </Form.Item>
+                )) ||
                 (col.type === 'custom' && col.customNode)
               );
             })}
@@ -263,6 +273,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 (col.type === 'rangePicker' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <RangePicker format="YYYY-MM-DD" />
+                  </Form.Item>
+                )) ||
+                (col.type === 'date' && (
+                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                    <DatePicker format="YYYY-MM-DD" />
                   </Form.Item>
                 )) ||
                 (col.type === 'custom' && col.customNode)
