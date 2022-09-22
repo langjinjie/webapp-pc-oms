@@ -28,6 +28,7 @@ const List: React.FC = () => {
   const getList = async (param?: { [key: string]: any }) => {
     setLoading(true);
     const res = await requestGetLoginExceptionList({ ...param });
+
     if (res) {
       const { total, list } = res;
       setTableSource({ total, list });
@@ -84,6 +85,7 @@ const List: React.FC = () => {
         onSearch={onSearch}
         onReset={onResetHandle}
       />
+      <div>共{tableSource.total}条数据</div>
       <div className="mt20">
         <NgTable
           columns={tableColumnsFun()}
