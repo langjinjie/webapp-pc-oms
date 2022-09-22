@@ -2,12 +2,16 @@ import React from 'react';
 import { Button, Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-// import { UNKNOWN } from 'src/utils/base';
 import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
-// import classNames from 'classnames';
 
 export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
   return [
+    {
+      name: 'leaderName',
+      type: 'input',
+      label: '所属团队长',
+      placeholder: '请输入'
+    },
     {
       name: 'staffNames',
       type: 'custom',
@@ -17,12 +21,6 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
           <SelectStaff key={1} type="staff" />
         </Form.Item>
       )
-    },
-    {
-      name: 'leaderName',
-      type: 'input',
-      label: '所属团队长',
-      placeholder: '请输入'
     },
     {
       name: 'date',
@@ -73,7 +71,7 @@ export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {
     { title: '组织架构', dataIndex: 'deptName' },
     { title: '未登录日期', dataIndex: 'unloginDate' },
     { title: '上次登录时间', dataIndex: 'lastLoginTime' },
-    { title: '近7天未登录次数', dataIndex: 'unloginCountWeek' },
+    { title: '本周内未登录天数', dataIndex: 'unloginCountWeek' },
     {
       title: '操作',
       width: 200,
