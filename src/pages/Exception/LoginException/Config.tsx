@@ -43,7 +43,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
     {
       name: 'unloginCountWeek',
       label: '近7日未登录次数',
-      type: 'input',
+      type: 'inputNumber',
       placeholder: '请输入'
     }
   ];
