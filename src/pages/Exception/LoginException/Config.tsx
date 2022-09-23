@@ -78,7 +78,7 @@ export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {
       render: (row: IUnLoginStaffList) => {
         return (
           <Button type="link" onClick={() => viewChatList(row)} disabled={true}>
-            催催TA
+            催催他
           </Button>
         );
       }
