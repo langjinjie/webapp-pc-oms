@@ -59,7 +59,7 @@ export interface IUnLoginStaffList {
   unloginCountWeek: number;
 }
 
-export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {
+export const tableColumnsFun = (isShow: boolean): ColumnsType<IUnLoginStaffList> => {
   // 催催他
   const viewChatList = (row: IUnLoginStaffList) => {
     console.log('催催他', row);
@@ -77,9 +77,11 @@ export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {
       width: 200,
       render: (row: IUnLoginStaffList) => {
         return (
-          <Button type="link" onClick={() => viewChatList(row)} disabled={true}>
-            催催他
-          </Button>
+          isShow && (
+            <Button type="link" onClick={() => viewChatList(row)} disabled={true}>
+              催催他
+            </Button>
+          )
         );
       }
     }

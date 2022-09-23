@@ -144,7 +144,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 <Form.Item key={col.name} label={col.label} name={col.name}>
                   <InputNumber
                     type={'number'}
-                    max={col.maxLength || 50}
+                    max={col.maxLength}
                     placeholder={col.placeholder as string}
                     style={{ width: col.width }}
                     controls={false}
@@ -233,7 +233,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <InputNumber
                       type={'number'}
-                      max={col.maxLength || 50}
+                      max={col.maxLength}
                       placeholder={col.placeholder as string}
                       style={{ width: col.width }}
                       controls={false}
@@ -281,7 +281,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <InputNumber
                       type={'number'}
-                      max={col.maxLength || 50}
+                      max={col.maxLength}
                       placeholder={col.placeholder as string}
                       style={{ width: col.width }}
                       controls={false}
