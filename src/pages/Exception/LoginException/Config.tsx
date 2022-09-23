@@ -71,7 +71,7 @@ export const tableColumnsFun = (isShow: boolean): ColumnsType<IUnLoginStaffList>
     { title: '组织架构', dataIndex: 'deptName' },
     { title: '未登录日期', dataIndex: 'unloginDate' },
     { title: '上次登录时间', dataIndex: 'lastLoginTime' },
-    { title: '本周内未登录天数', dataIndex: 'unloginCountWeek' },
+    { title: '本周内未登录天数', dataIndex: 'unloginCountWeek', align: 'center' },
     {
       title: '操作',
       width: 200,
