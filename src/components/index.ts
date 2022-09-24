@@ -23,3 +23,5 @@ export { NgModal } from './NgModal/NgModal';
 export { default as BreadCrumbs } from './BreadCrumbs/BreadCrumbs';
 export { default as AuthBtn } from './AuthBtn/AuthBtn';
 export { default as Preview } from './Preview/Preview';
+export { default as TagEmpty } from './TagEmpty/TagEmpty';
+export { default as ScrollList } from './ScrollList/ScrollList';

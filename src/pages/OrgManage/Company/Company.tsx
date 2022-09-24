@@ -143,7 +143,7 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   const getCompanyList = async (param = {}) => {
     const res: any = await queryCompanyList(param);
     if (res) {
-      setCompanyList(res);
+      setCompanyList(Array.isArray(res) ? res : []);
     }
   };
 

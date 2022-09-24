@@ -449,7 +449,12 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
       {true && (
         <div className={style.tips}>温馨提醒：主机构已选择的话术目录向下的内容都会同步到机构选择目录下，请您知悉</div>
       )}
-      <SpeechModal visible={speechVisible} catalogId={catalogId} onClose={() => setSpeechVisible(false)} />
+      <SpeechModal
+        visible={speechVisible}
+        catalogId={catalogId}
+        sceneId={value?.sceneId}
+        onClose={() => setSpeechVisible(false)}
+      />
     </Modal>
   );
 };

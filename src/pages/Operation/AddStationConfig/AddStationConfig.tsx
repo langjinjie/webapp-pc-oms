@@ -148,21 +148,21 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
         })),
         productList: productList
       });
-      if (+type === 0) {
-        activityList.forEach(({ status, activityId }: Activity) => {
-          if (+status !== 3) {
-            getAreaTips(1, activityId);
-          }
-        });
-        productList.forEach(({ status, productId }: Product) => {
-          if (+status !== 3) {
-            getAreaTips(2, productId);
-          }
-        });
-        setProductList(productList);
-        setActivityList(activityList);
-        form.validateFields();
-      }
+      // if (+type !== 0) {
+      activityList.forEach(({ status, activityId }: Activity) => {
+        if (+status !== 3) {
+          getAreaTips(1, activityId);
+        }
+      });
+      productList.forEach(({ status, productId }: Product) => {
+        if (+status !== 3) {
+          getAreaTips(2, productId);
+        }
+      });
+      setProductList(productList);
+      setActivityList(activityList);
+      form.validateFields();
+      // }
     }
   };
 

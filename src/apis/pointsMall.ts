@@ -180,3 +180,61 @@ export const requestSendLotteryManage: HttpFunction = (param) => {
 export const getGoodsExchangeDesc: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/lottery/goods/defaultExchangeDesc', param);
 };
+
+/* ----------------------------------- 打卡和奖励任务 ----------------------------------- */
+
+/**
+ * @description 查询打卡和奖励任务列表
+ * @param param
+ */
+export const requestGetPointsConfigList: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/config/list', param);
+};
+
+/**
+ * @description 任务配置上下架
+ * @param param
+ */
+export const requestPointsConfigState: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/config/state', param);
+};
+
+/**
+ * @description 任务配置新增修改接口(T+1)生效
+ * @param param
+ */
+export const requestPointsConfigAddEdit: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/config/addEdit', param);
+};
+
+/**
+ * @description 任务配置编辑修改接口(T+0)生效
+ * @param param
+ */
+export const requestPointsConfigEdit: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/config/edit', param);
+};
+
+/**
+ * @description 获取编辑配置任务详情
+ * @param param
+ */
+export const requestGetPointsConfigDetail: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/config/detail', param);
+};
+
+/**
+ * @description 获取新增待生效配置任务详情
+ * @param param
+ */
+export const requestGetPointsConfigLogDetail: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/config/log/detail', param);
+};
+
+/**
+ * @description 配置任务日志查询
+ * @param param
+ */
+export const requestGetPointsConfigLogList: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/config/log/list', param);
+};

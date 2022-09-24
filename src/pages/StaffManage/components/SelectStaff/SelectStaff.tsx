@@ -8,9 +8,10 @@ import style from './style.module.less';
 interface ISelectStaffProps {
   value?: any;
   onChange?: (value?: any) => void;
+  type?: 'staff' | 'dept';
 }
 
-const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange }) => {
+const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'staff' }) => {
   const [orgParam, setOrgParam] = useState<{ visible: boolean; add: boolean }>({ visible: false, add: true });
 
   // 取消选择
@@ -19,10 +20,17 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange }) => {
   };
 
   const inputValue = useMemo(() => {
-    return value
-      ?.map((mapItem: any) => mapItem.staffName)
-      .toString()
-      .replace(/,/g, '；');
+    if (type === 'staff') {
+      return value
+        ?.map((mapItem: any) => mapItem.staffName)
+        .toString()
+        .replace(/,/g, '；');
+    } else {
+      return value
+        ?.map((mapItem: any) => mapItem.deptName)
+        .toString()
+        .replace(/,/g, '；');
+    }
   }, [value]);
   return (
     <>
@@ -37,8 +45,8 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange }) => {
       />
       <OrganizationalTree
         onCancel={() => setOrgParam((orgParam) => ({ ...orgParam, visible: false }))}
-        showStaff
-        selectedDept={false}
+        showStaff={type === 'staff'}
+        selectedDept={type === 'dept'}
         value={value}
         params={orgParam}
         title="选择客户经理"
