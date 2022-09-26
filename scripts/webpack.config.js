@@ -9,6 +9,7 @@ const HtmlPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const DotEnvWebpack = require('dotenv-webpack');
 const CopyPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -205,6 +206,10 @@ module.exports = function () {
         filename: isDev ? time + '/css/[name][hash:8].css' : time + '/css/[name].[chunkhash:8].css',
         chunkFilename: isDev ? time + '/css/[id][hash:8].css' : time + '/css/[id].[chunkhash:8].css',
         ignoreOrder: true
+      }),
+      new webpack.DefinePlugin({
+        'process.env.BASE_PATH': time,
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
       })
     ]
   };

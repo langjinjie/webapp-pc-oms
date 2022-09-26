@@ -85,7 +85,7 @@ function filePickerCallback (callback, value, meta) {
   }
 }
 
-const TinyEidtor: React.FC<EditorProps> = (props) => {
+const TinyEditor: React.FC<EditorProps> = (props) => {
   const editorRef = useRef(null);
   const { onChange, value } = props;
 
@@ -97,8 +97,9 @@ const TinyEidtor: React.FC<EditorProps> = (props) => {
       <Editor
         apiKey="jv782ngskqvvejx3o8u7gjyw310tgqkt0j4vrluu0tk13tac"
         tinymceScriptSrc={
-          'https://insure-prod-web-1305111576.cos.ap-guangzhou.myqcloud.com/web/res/tinymce/js/tinymce/tinymce.min.js'
-          // '/tenacity-oms/static/tinymce/js/tinymce/tinymce.min.js'
+          process.env.NODE_ENV !== 'development'
+            ? '/tenacity-oms/' + process.env.BASE_PATH + '/static/tinymce/js/tinymce/tinymce.min.js'
+            : '/static/tinymce/js/tinymce/tinymce.min.js'
         }
         // @ts-ignore
         onInit={(evt, editor) => (editorRef.current = editor)}
@@ -136,4 +137,4 @@ const TinyEidtor: React.FC<EditorProps> = (props) => {
     </>
   );
 };
-export default TinyEidtor;
+export default TinyEditor;
