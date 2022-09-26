@@ -434,7 +434,7 @@ const TabView2: React.FC = () => {
                               type: +recommendType && undefined
                             });
 
-                            setRecommendList([...res, ...recommendList] || []);
+                            setRecommendList([...res] || []);
                           }
                           add();
                         }}
