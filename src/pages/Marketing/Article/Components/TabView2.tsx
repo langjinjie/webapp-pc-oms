@@ -268,7 +268,7 @@ const TabView2: React.FC = () => {
         <Form.Item
           name="defaultImg"
           label={'文章分享封面'}
-          extra=" 为确保最佳展示效果，请上传154*154像素高清图片，支持.png及.jpg格式的图片。若不上传，则默认为链接对应文章的自带封面。"
+          extra=" 为确保最佳展示效果，请上传154*154像素高清图片，支持.png及.jpg格式的图片。若不上传，则会使用默认封面。"
         >
           <NgUpload beforeUpload={beforeUpload} />
         </Form.Item>
