@@ -43,7 +43,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
     {
       name: 'unloginCountWeek',
       label: '近7日未登录次数',
-      type: 'input',
+      type: 'inputNumber',
       placeholder: '请输入'
     }
   ];
@@ -59,7 +59,7 @@ export interface IUnLoginStaffList {
   unloginCountWeek: number;
 }
 
-export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {
+export const tableColumnsFun = (isShow: boolean): ColumnsType<IUnLoginStaffList> => {
   // 催催他
   const viewChatList = (row: IUnLoginStaffList) => {
     console.log('催催他', row);
@@ -71,15 +71,17 @@ export const tableColumnsFun = (): ColumnsType<IUnLoginStaffList> => {
     { title: '组织架构', dataIndex: 'deptName' },
     { title: '未登录日期', dataIndex: 'unloginDate' },
     { title: '上次登录时间', dataIndex: 'lastLoginTime' },
-    { title: '本周内未登录天数', dataIndex: 'unloginCountWeek' },
+    { title: '本周内未登录天数', dataIndex: 'unloginCountWeek', align: 'center' },
     {
       title: '操作',
       width: 200,
       render: (row: IUnLoginStaffList) => {
         return (
-          <Button type="link" onClick={() => viewChatList(row)} disabled={true}>
-            催催TA
-          </Button>
+          isShow && (
+            <Button type="link" onClick={() => viewChatList(row)} disabled={true}>
+              催催他
+            </Button>
+          )
         );
       }
     }

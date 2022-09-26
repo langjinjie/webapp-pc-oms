@@ -597,15 +597,15 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         style={{ display: 'none' }}
         src={
           recommendType === 2
-            ? require('src/assets/images/marketing/productDemo.png')
-            : require('src/assets/images/marketing/newsDemo.png')
+            ? require('src/assets/images/marketing/productDemo.jpg')
+            : require('src/assets/images/marketing/newsDemo.jpg')
         }
         preview={{
           visible: visibleImage,
           src:
             recommendType === 2
-              ? require('src/assets/images/marketing/productDemo.png')
-              : require('src/assets/images/marketing/newsDemo.png'),
+              ? require('src/assets/images/marketing/productDemo.jpg')
+              : require('src/assets/images/marketing/newsDemo.jpg'),
           onVisibleChange: (value) => {
             setVisibleImage(value);
           }

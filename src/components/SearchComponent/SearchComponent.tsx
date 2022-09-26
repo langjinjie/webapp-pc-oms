@@ -1,6 +1,6 @@
 import React, { useEffect, MutableRefObject, useImperativeHandle } from 'react';
 
-import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader } from 'antd';
+import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader, InputNumber } from 'antd';
 import style from './style.module.less';
 import { DefaultOptionType } from 'antd/lib/cascader';
 import { NamePath } from 'rc-field-form/lib/interface';
@@ -13,7 +13,7 @@ export interface OptionProps {
   [prop: string]: any;
 }
 export interface SearchCol {
-  type: 'input' | 'select' | 'date' | 'rangePicker' | 'cascader' | 'custom';
+  type: 'input' | 'select' | 'date' | 'rangePicker' | 'cascader' | 'custom' | 'inputNumber';
   name: string;
   label: string;
   width?: number | string;
@@ -140,6 +140,17 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   />
                 </Form.Item>
               )) ||
+              (col.type === 'inputNumber' && (
+                <Form.Item key={col.name} label={col.label} name={col.name}>
+                  <InputNumber
+                    type={'number'}
+                    max={col.maxLength}
+                    placeholder={col.placeholder as string}
+                    style={{ width: col.width }}
+                    controls={false}
+                  />
+                </Form.Item>
+              )) ||
               (col.type === 'select' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
                   <Select placeholder="请选择" allowClear style={{ width: col.width }}>
@@ -218,6 +229,17 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <Input placeholder={col.placeholder as string} style={{ width: col.width }} allowClear />
                   </Form.Item>
                 )) ||
+                (col.type === 'inputNumber' && (
+                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                    <InputNumber
+                      type={'number'}
+                      max={col.maxLength}
+                      placeholder={col.placeholder as string}
+                      style={{ width: col.width }}
+                      controls={false}
+                    />
+                  </Form.Item>
+                )) ||
                 (col.type === 'select' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <Select placeholder="请选择" allowClear style={{ width: col.width }}>
@@ -253,6 +275,17 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
                     <Input placeholder={col.placeholder as string} style={{ width: col.width }} allowClear />
+                  </Form.Item>
+                )) ||
+                (col.type === 'inputNumber' && (
+                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                    <InputNumber
+                      type={'number'}
+                      max={col.maxLength}
+                      placeholder={col.placeholder as string}
+                      style={{ width: col.width }}
+                      controls={false}
+                    />
                   </Form.Item>
                 )) ||
                 (col.type === 'select' && (

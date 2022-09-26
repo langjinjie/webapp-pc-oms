@@ -7,7 +7,7 @@ import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IUnLoginStaffList, tableColumnsFun } from './Config';
 // import { useHistory } from 'react-router-dom';
 import { requestGetLoginExceptionList } from 'src/apis/exception';
-// import moment, { Moment } from 'moment';
+import moment from 'moment';
 // import style from './style.module.less';
 // import classNames from 'classnames';
 
@@ -21,7 +21,7 @@ const List: React.FC = () => {
   });
 
   const [formValue, setFormValue] = useState<{ [key: string]: any }>({});
-
+  const [isShow, setIsShow] = useState(true);
   // const history = useHistory();
 
   // 获取客户列表接口
@@ -45,8 +45,11 @@ const List: React.FC = () => {
   };
 
   const onSearch = (value?: any) => {
+    setPagination((param) => ({ ...param, current: 1 }));
     const { staffNames, leaderName, unloginCountWeek, deptIds, date } = value;
     const fromDate = date?.format('YYYY-MM-DD HH:mm:ss');
+    const isShoe = date ? date.format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') : true;
+    setIsShow(isShoe);
     setFormValue({
       leaderName,
       staffNames: staffNames?.map(({ staffName }: { staffName: string }) => staffName),
@@ -88,7 +91,7 @@ const List: React.FC = () => {
       <div>共{tableSource.total}条数据</div>
       <div className="mt20">
         <NgTable
-          columns={tableColumnsFun()}
+          columns={tableColumnsFun(isShow)}
           loading={loading}
           dataSource={tableSource.list}
           pagination={{ ...pagination, total: tableSource.total }}
