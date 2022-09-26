@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { deleteMenu, getMenuList, operateMenu, searchMenu } from 'src/apis/orgManage';
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
-import { changeTreeItem, filterTree, listToTree, treeFindPath, URLSearchParams } from 'src/utils/base';
+import { changeTreeItem, filterTree, treeFindPath, URLSearchParams } from 'src/utils/base';
 import { MenuProps, searchCols, setTableColumns, systemList } from './Config';
 import { useDidRecover } from 'react-router-cache-route';
 
@@ -42,12 +42,8 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
       getList();
     } else {
       const res = await searchMenu({ sysType: currentTab, ...values });
-      console.log(res);
 
-      const tree = listToTree(res, 'parentId', 'menuId');
-      console.log(tree);
-
-      setDataSource(tree);
+      setDataSource(res || []);
     }
   };
   useDidRecover(async () => {
