@@ -32,14 +32,12 @@ const List: React.FC = () => {
     if (res) {
       const { total, list } = res;
       setTableSource({ total, list });
-      if (res) {
-        setReasonCodeList(
-          res.list.map(({ reasonCode, reasonName }: { reasonCode: string; reasonName: string }) => ({
-            id: reasonCode,
-            name: reasonName
-          }))
-        );
-      }
+      setReasonCodeList(
+        res.list.map(({ reasonCode, reasonName }: { reasonCode: string; reasonName: string }) => ({
+          id: reasonCode,
+          name: reasonName
+        }))
+      );
     }
     setLoading(false);
   };
