@@ -76,6 +76,7 @@ export interface IDelStaffList {
   clientAvatar: string;
   deleteTime: string;
   addTime: string;
+  isChatsyn: number;
 }
 
 export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
@@ -120,7 +121,7 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
             <Button type="link" onClick={() => viewClientDetail(row)}>
               查看客户信息
             </Button>
-            <Button type="link" onClick={() => viewChatList(row)}>
+            <Button type="link" disabled={row.isChatsyn === 0} onClick={() => viewChatList(row)}>
               查看聊天信息
             </Button>
             <Button disabled type="link">
