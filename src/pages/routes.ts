@@ -376,6 +376,14 @@ export const routes: RouteProps[] = [
   {
     path: '/loginException',
     component: lazy(() => import('src/pages/Exception/LoginException/List'))
+  },
+  {
+    path: '/taskRule',
+    component: lazy(() => import('src/pages/Task/RuleManage/List/List'))
+  },
+  {
+    path: '/taskNode',
+    component: lazy(() => import('src/pages/Task/NodeManage/List'))
   }
 ];
 
@@ -429,14 +437,14 @@ export const cacheRoutes: CacheRouteProps[] = [
     path: '/taskScene',
     component: lazy(() => import('src/pages/Task/SceneTask/List/List'))
   },
-  {
-    path: '/taskRule',
-    component: lazy(() => import('src/pages/Task/RuleManage/List/List'))
-  },
-  {
-    path: '/taskNode',
-    component: lazy(() => import('src/pages/Task/NodeManage/List'))
-  },
+  // {
+  //   path: '/taskRule',
+  //   component: lazy(() => import('src/pages/Task/RuleManage/List/List'))
+  // },
+  // {
+  //   path: '/taskNode',
+  //   component: lazy(() => import('src/pages/Task/NodeManage/List'))
+  // },
   {
     path: '/strategyManage',
     component: lazy(() => import('src/pages/Task/StrategyManage/StrategyManageList/List'))

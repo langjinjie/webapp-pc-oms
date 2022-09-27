@@ -37,9 +37,12 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
   // 搜索菜单
   const onSearch = async (values: any) => {
     if ((values.menuName === undefined || values.menuName === '') && values.status === undefined) {
+      console.log('reset');
+
       getList();
     } else {
       const res = await searchMenu({ sysType: currentTab, ...values });
+
       setDataSource(res || []);
     }
   };
@@ -77,7 +80,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
     if (expanded) {
       const children = record.children;
       // 判断没有加载children时，请求子列表
-      if (!children) {
+      if (!children || children.length === 0) {
         const res = await getMenuList({
           parentId: record.menuId,
           sysType: currentTab
@@ -161,7 +164,7 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
         </AuthBtn>
         <NgTable
           className="mt30"
-          rowKey={'menuId'}
+          rowKey={(record) => record.menuId}
           expandable={{
             // fixed: 'left',
             expandedRowKeys: expandedRowKeys,

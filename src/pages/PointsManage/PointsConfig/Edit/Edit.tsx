@@ -37,8 +37,8 @@ const Edit: React.FC = () => {
 
   // 确认提交
   const onFinishHandle = async () => {
-    const { type, pointsTaskId, logId } = searchParam;
     await form.validateFields();
+    const { type, pointsTaskId, logId } = searchParam;
     const values = form.getFieldsValue();
     let res: any = null;
     setLoading(true);
@@ -61,10 +61,10 @@ const Edit: React.FC = () => {
         effectiveTime: values.effectiveTime.format('YYYY-MM-DD')
       });
     }
+    setLoading(false);
     if (res) {
       history.push('/pointsConfig?refresh=true');
     }
-    setLoading(false);
   };
 
   // 获取任务详情
@@ -93,6 +93,16 @@ const Edit: React.FC = () => {
     return current < moment().add(1, 'days');
   };
 
+  // 字段更新时触发回调事件
+  const onValuesChangeHandle = (changedValues: any) => {
+    const changedValuesList = Object.keys(changedValues);
+    if (changedValuesList.includes('maxPoints')) {
+      form.validateFields(['taskPoints']);
+    } else if (changedValuesList.includes('taskPoints')) {
+      form.validateFields(['maxPoints']);
+    }
+  };
+
   useEffect(() => {
     getDetail();
   }, []);
@@ -112,7 +122,7 @@ const Edit: React.FC = () => {
         </Button>
       </div>
       <div className={style.desc}>任务说明：{taskTip}</div>
-      <Form className={style.form} form={form} layout="horizontal">
+      <Form className={style.form} form={form} layout="horizontal" onValuesChange={onValuesChangeHandle}>
         <Item required name="sort" label="A端展示排序：">
           <InputNumber placeholder="请输入" className={style.inputNum} controls={false} />
         </Item>
@@ -132,10 +142,12 @@ const Edit: React.FC = () => {
           <Item
             rules={[
               { required: true, max: 9999, message: '奖励分值不可超过9999', type: 'number' },
-              () => ({
-                validator () {
-                  form.validateFields(['maxPoints']);
-                  return Promise.resolve();
+              ({ getFieldValue }) => ({
+                async validator (_, value) {
+                  if (value <= +getFieldValue('maxPoints')) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('积分上限小于奖励分值，请重新填写'));
                 }
               })
             ]}
@@ -155,7 +167,7 @@ const Edit: React.FC = () => {
             rules={[
               ({ getFieldValue }) => ({
                 validator (_, value) {
-                  if (+value < +getFieldValue('taskPoints')) {
+                  if (+value <= +getFieldValue('taskPoints')) {
                     return Promise.reject(new Error('积分上限小于奖励分值，请重新填写'));
                   }
                   return Promise.resolve();

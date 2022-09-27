@@ -226,6 +226,19 @@ export const arry2Tree = (arr: any[], parentId: string, idName = 'id'): any => {
   }
   return map.get(parentId);
 };
+// 列表转为树
+export const listToTree = (list: any[], parentKey = 'parentId', itemKey = 'id'): any[] => {
+  const info = list.reduce((map, node) => {
+    node.children = [];
+    map[node[itemKey]] = node;
+    return map;
+  }, {});
+  return list.filter((node) => {
+    info[node[parentKey]] && info[node[parentKey]].children.push(node);
+    // return !node[parentKey];
+    return node[parentKey] === '0';
+  });
+};
 
 // 删除树的某个节点
 export const filterTree = (tree: any[], func: (node: any) => boolean): any[] => {

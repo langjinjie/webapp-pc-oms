@@ -89,7 +89,7 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
   };
   // 查看聊天记录
   const viewChatList = (row: IDelStaffList) => {
-    history.push('/deletionReminder/chatLog?partnerId=' + row.externalUserid + '&userId=', {
+    history.push('/deletionReminder/chatLog?partnerId=' + row.externalUserid + '&userId=' + row.userid, {
       clientInfo: row
     });
   };
@@ -110,7 +110,7 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
     { title: '组织架构', dataIndex: 'deptName' },
     { title: '客户经理上级', dataIndex: 'leaderName' },
     { title: '删除时间', dataIndex: 'deleteTime' },
-    { title: '添加好友时间', dataIndex: 'addTime' },
+    { title: '添加时间', dataIndex: 'addTime' },
     {
       title: '操作',
       width: 260,

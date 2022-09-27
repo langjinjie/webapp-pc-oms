@@ -376,7 +376,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
           wrapperCol={{ span: 12 }}
           rules={[{ required: true, message: '请上传文章封面' }]}
           name="defaultImg"
-          extra=" 为确保最佳展示效果，请上传154*154像素高清图片，支持.png及.jpg格式的图片。若不上传，则默认为链接对应文章的自带封面"
+          extra=" 为确保最佳展示效果，请上传154*154像素高清图片，支持.png及.jpg格式的图片。若不上传，则会使用默认封面。"
         >
           <NgUpload beforeUpload={beforeUpload} />
         </Form.Item>
@@ -568,7 +568,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                                   type: +recommendType && undefined
                                 });
 
-                                setRecommendList([...res, ...recommendList] || []);
+                                setRecommendList([...res] || []);
                               }
                               add();
                             }}
@@ -597,15 +597,15 @@ const TabView3: React.FC<TabView3Props> = (props) => {
         style={{ display: 'none' }}
         src={
           recommendType === 2
-            ? require('src/assets/images/marketing/productDemo.png')
-            : require('src/assets/images/marketing/newsDemo.png')
+            ? require('src/assets/images/marketing/productDemo.jpg')
+            : require('src/assets/images/marketing/newsDemo.jpg')
         }
         preview={{
           visible: visibleImage,
           src:
             recommendType === 2
-              ? require('src/assets/images/marketing/productDemo.png')
-              : require('src/assets/images/marketing/newsDemo.png'),
+              ? require('src/assets/images/marketing/productDemo.jpg')
+              : require('src/assets/images/marketing/newsDemo.jpg'),
           onVisibleChange: (value) => {
             setVisibleImage(value);
           }
