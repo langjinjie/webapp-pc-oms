@@ -89,7 +89,7 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
   };
   // 查看聊天记录
   const viewChatList = (row: IDelStaffList) => {
-    history.push('/deletionReminder/chatLog?partnerId=' + row.externalUserid + '&userId=', {
+    history.push('/deletionReminder/chatLog?partnerId=' + row.externalUserid + '&userId=' + row.userid, {
       clientInfo: row
     });
   };
