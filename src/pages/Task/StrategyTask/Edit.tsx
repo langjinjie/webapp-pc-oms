@@ -66,6 +66,10 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
                 itemId: item.itemId
               }));
             }
+            // 今日朋友圈不传话术默认
+            if (rule.wayCode === 'today_moment') {
+              rule.speechcraft = '';
+            }
             rule.pushTime = moment(rule.pushTime)?.format('HH:mm') || '';
             return rule;
           });

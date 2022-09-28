@@ -45,7 +45,9 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   const onFieldsChange = (changeValue: any, values: any) => {
-    setWayCodeList(values?.sceneList?.[0]?.nodeRuleList || []);
+    if (values?.sceneList) {
+      setWayCodeList(values?.sceneList?.[0]?.nodeRuleList || []);
+    }
     setFormValues(values);
   };
   // 预览内容
@@ -84,6 +86,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
       });
       setNodeDetails(nodeDetails);
       setNodeOptions(nodeOptions);
+      setWayCodeList(copyValue?.[0]?.nodeRuleList || []);
       blockForm.setFieldsValue({
         sceneList: copyValue
       });
@@ -107,6 +110,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
 
   useEffect(() => {
     initFormData(value);
+    console.log('value', value);
   }, [value]);
   useEffect(() => {
     getTouchWayOptions();
@@ -510,11 +514,15 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
 
                                     <Form.Item
                                       name={[nodeName, 'speechcraft']}
-                                      rules={[{ required: true, message: '请输入自定义话术' }]}
+                                      rules={
+                                        wayCodeList[nodeIndex]?.wayCode === 'today_moment'
+                                          ? []
+                                          : [{ required: true, message: '请输入自定义话术' }]
+                                      }
                                       className={styles.speechCol}
                                     >
                                       <ManuallyAddSpeech
-                                        isReadonly={wayCodeList[index]?.wayCode === 'today_moment' || isReadonly}
+                                        isReadonly={wayCodeList[nodeIndex]?.wayCode === 'today_moment' || isReadonly}
                                       />
                                     </Form.Item>
                                     <Form.Item
