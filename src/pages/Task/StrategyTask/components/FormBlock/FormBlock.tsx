@@ -45,7 +45,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   const onFieldsChange = (changeValue: any, values: any) => {
-    setWayCodeList(changeValue.sceneList[0].nodeRuleList);
+    setWayCodeList(changeValue?.sceneList?.[0]?.nodeRuleList || []);
     setFormValues(values);
   };
   // 预览内容
