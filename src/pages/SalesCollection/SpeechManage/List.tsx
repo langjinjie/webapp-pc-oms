@@ -712,7 +712,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
                 type="primary"
                 shape={'round'}
                 ghost
-                disabled={delBtnDisabled || selectedRowKeys.length === 0}
+                disabled={currentType === 1 || delBtnDisabled || selectedRowKeys.length === 0}
                 onClick={() => operateStatus(3)}
               >
                 删除
