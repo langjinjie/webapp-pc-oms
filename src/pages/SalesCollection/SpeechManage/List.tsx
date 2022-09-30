@@ -349,8 +349,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     // 从目录查看话术
     if (location.search.includes('catalog=')) {
       initSetFormQuery();
-      getSensitiveCheckedInfo();
     }
+    getSensitiveCheckedInfo();
   }, []);
   // 分页改变
   const paginationChange = (pageNum: number, pageSize?: number) => {
