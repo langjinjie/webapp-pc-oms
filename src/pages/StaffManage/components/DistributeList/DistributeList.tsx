@@ -280,13 +280,11 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
             </Button>
           </AuthBtn>
         )}
-        <AuthBtn path={distributeLisType === 1 ? '/assignRecord' : '/dimissionRecord'}>
-          <span className={classNames(style.selectNum, 'inline-block')}>
-            *共计{tableSource.total}位待分配客户，
-            <span className={style.selected}>已选择{selectedRowList.length}位</span>
-            {distributeLisType === 2 && <span className={style.syncTime}>上次同步时间: {tableSource?.syncTime}</span>}
-          </span>
-        </AuthBtn>
+        <span className={classNames(style.selectNum, 'inline-block')}>
+          *共计{tableSource.total}位待分配客户，
+          <span className={style.selected}>已选择{selectedRowList.length}位</span>
+          {distributeLisType === 2 && <span className={style.syncTime}>上次同步时间: {tableSource?.syncTime}</span>}
+        </span>
       </div>
       <div className="mt20">
         <NgTable
