@@ -83,6 +83,7 @@ const List: React.FC = () => {
           onReset={onResetHandle}
         />
       </AuthBtn>
+      <div>共{tableSource.total}条数据</div>
       <div className="mt20">
         <NgTable
           columns={tableColumnsFun()}
