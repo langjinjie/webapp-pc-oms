@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Card, PaginationProps } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IDelStaffList, tableColumnsFun } from './Config';
 import { requestGetStaffDelClientList } from 'src/apis/exception';
 
@@ -19,7 +19,6 @@ const List: React.FC = () => {
   // 获取继承客户列表接口
   const getList = async (param?: { [key: string]: any }) => {
     setLoading(true);
-    console.log('param', param);
     const res = await requestGetStaffDelClientList({ ...param });
     if (res) {
       const { total, list } = res;
@@ -75,13 +74,15 @@ const List: React.FC = () => {
   }, []);
   return (
     <Card className="container" bordered={false}>
-      <NgFormSearch
-        searchCols={searchCols()}
-        isInline={false}
-        firstRowChildCount={3}
-        onSearch={onSearch}
-        onReset={onResetHandle}
-      />
+      <AuthBtn path="/query">
+        <NgFormSearch
+          searchCols={searchCols()}
+          isInline={false}
+          firstRowChildCount={3}
+          onSearch={onSearch}
+          onReset={onResetHandle}
+        />
+      </AuthBtn>
       <div className="mt20">
         <NgTable
           columns={tableColumnsFun()}

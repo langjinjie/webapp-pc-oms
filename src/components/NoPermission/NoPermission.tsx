@@ -4,17 +4,13 @@
  * @date 2022-05-17 10:23
  */
 import React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
 import style from './style.module.less';
 
-const NoPermission: React.FC<RouteComponentProps> = ({ location }) => {
-  const { errCode }: any = location?.state || {};
-
+const NoPermission: React.FC = () => {
   return (
     <div className={style.wrap}>
-      {errCode}
       <img className={style.img} src={require('src/assets/images/permission/no_permission.png')} alt="" />
-      <div className={style.text}>暂无使用权限，请联系管理员</div>
+      <div className={style.text}>该菜单暂无使用权限，请联系管理员</div>
     </div>
   );
 };

@@ -9,7 +9,6 @@ import { getMomentDetail } from 'src/apis/marketing';
 interface IPreviewProps {
   value?: IPreviewValue;
   className?: string;
-
   isMoment?: boolean; // 是否是朋友圈（默认为聊天框）
 }
 

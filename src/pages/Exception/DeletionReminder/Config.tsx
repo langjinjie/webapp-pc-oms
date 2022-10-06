@@ -5,6 +5,7 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { useHistory } from 'react-router-dom';
 import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 import style from './style.module.less';
+import { AuthBtn } from 'src/components';
 
 export const takeoverTypeList: any[] = [
   { id: 1, name: '在职转接' },
@@ -118,15 +119,21 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
       render: (row: IDelStaffList) => {
         return (
           <span className={style.operation}>
-            <Button type="link" onClick={() => viewClientDetail(row)}>
-              查看客户信息
-            </Button>
-            <Button type="link" disabled={row.isChatsyn === 0} onClick={() => viewChatList(row)}>
-              查看聊天信息
-            </Button>
-            <Button disabled type="link">
-              联系坐席
-            </Button>
+            <AuthBtn path="/clientInfo">
+              <Button type="link" onClick={() => viewClientDetail(row)}>
+                查看客户信息
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/chatRecord">
+              <Button type="link" disabled={row.isChatsyn === 0} onClick={() => viewChatList(row)}>
+                查看聊天信息
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/contactStaff">
+              <Button disabled type="link">
+                联系坐席
+              </Button>
+            </AuthBtn>
           </span>
         );
       }

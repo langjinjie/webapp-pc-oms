@@ -22,7 +22,6 @@ const NumberInput: React.FC<NumberInputProps> = (props) => {
   };
 
   const onBlur = () => {
-    console.log('1');
     const { value, onBlur, onChange } = props;
     let valueTemp = value;
     if (value.charAt(value.length - 1) === '.') {

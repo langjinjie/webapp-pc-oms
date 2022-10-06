@@ -383,16 +383,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
         {/* </Form> */}
         <div style={{ textAlign: 'center', width: 1000, marginTop: 32 }}>
           {!isReadOnly && (
-            <Button
-              type="primary"
-              shape="round"
-              htmlType="submit"
-              size="large"
-              style={{ width: 128 }}
-              onClick={() => {
-                console.log(form.getFieldsValue());
-              }}
-            >
+            <Button type="primary" shape="round" htmlType="submit" size="large" style={{ width: 128 }}>
               确定
             </Button>
           )}

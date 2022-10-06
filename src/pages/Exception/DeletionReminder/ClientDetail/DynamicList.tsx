@@ -50,7 +50,6 @@ const DynamicList: React.FC<DynamicListProps> = ({ externalUserid, followStaffId
       externalUserid,
       followStaffId
     };
-    console.log('params', params);
     const res: any = await requestGetClientDynamic(params);
     if (res) {
       const { list } = res;

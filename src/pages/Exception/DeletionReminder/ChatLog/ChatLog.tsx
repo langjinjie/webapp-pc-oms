@@ -52,7 +52,6 @@ const chatLog: React.FC = () => {
   // 获取外部联系人信息
   const getClientInfo = () => {
     const { clientInfo } = location.state as { clientInfo: IDelStaffList };
-    console.log('clientInfo', clientInfo);
     setClientInfo(clientInfo);
   };
 
@@ -83,8 +82,6 @@ const chatLog: React.FC = () => {
       pageNum: pagination.pageNum
     };
     // 获取聊天记录
-    console.log('data', data);
-    console.log('paream', paream);
     const res = await requesrtGetSingleChatList({ ...data, ...paream });
     setIsChatListLoading(false);
     if (res) {

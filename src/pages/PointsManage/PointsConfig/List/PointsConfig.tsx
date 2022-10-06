@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Context } from 'src/store';
 import { Tabs } from 'antd';
 import { Icon } from 'tenacity-ui';
-import { NgTable } from 'src/components';
+import { NgTable, NoPermission } from 'src/components';
 import { tableColumnsFun, IPointsConfigItem } from './Config';
 import { useHistory } from 'react-router-dom';
 import { requestGetPointsConfigList } from 'src/apis/pointsMall';
@@ -60,10 +60,14 @@ const PointsConfig: React.FC = () => {
     }
   }, []);
   useEffect(() => {
-    getList(authorTabList[0].key);
-    setTabKey(authorTabList[0].key);
+    getList(authorTabList[0]?.key);
+    setTabKey(authorTabList[0]?.key);
   }, []);
-  return (
+  return authorTabList.length === 0
+    ? (
+    <NoPermission />
+      )
+    : (
     <div className={style.wrap}>
       <Tabs defaultActiveKey={authorTabList?.[0].key || ''} onChange={tabOnChange}>
         {authorTabList.map((item) => {
@@ -83,6 +87,6 @@ const PointsConfig: React.FC = () => {
         rowClassName={(record: IPointsConfigItem) => (record.logId ? style.sign : '')}
       />
     </div>
-  );
+      );
 };
 export default PointsConfig;
