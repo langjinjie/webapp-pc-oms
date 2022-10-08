@@ -40,7 +40,7 @@ export const ManuallyAddSpeech: React.FC<ManuallyAddSpeechProps> = ({ value, onC
         onCancel={() => setSpeechVisible(false)}
       >
         <div className="mb10">话术详情</div>
-        <Input.TextArea rows={4} defaultValue={inputValue} onChange={onHandleChange} />
+        <Input.TextArea rows={4} defaultValue={inputValue} maxLength={100} onChange={onHandleChange} />
       </NgModal>
     </>
   );
