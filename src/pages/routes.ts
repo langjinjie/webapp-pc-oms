@@ -384,6 +384,11 @@ export const routes: RouteProps[] = [
   {
     path: '/taskNode',
     component: lazy(() => import('src/pages/Task/NodeManage/List'))
+  },
+  // 积分-激励任务管理
+  {
+    path: '/excitation',
+    component: lazy(() => import('src/pages/PointsManage/Excitation/Excitation'))
   }
 ];
 
