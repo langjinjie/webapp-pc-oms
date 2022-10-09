@@ -327,10 +327,12 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       setNewUploadProductIdList(list);
     }
     // 保存当前推荐上传的图片
-    setFormData((formData) => {
-      formData.recommendList[index].recommendImgUrl = currentItem.recommendImgUrl;
-      return { ...formData, recommendList: formData.recommendList };
-    });
+    if (formData.recommendList[index]) {
+      setFormData((formData) => {
+        formData.recommendList[index].recommendImgUrl = currentItem.recommendImgUrl;
+        return { ...formData, recommendList: formData.recommendList };
+      });
+    }
   };
 
   return (
@@ -552,7 +554,12 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                             <Icon
                               className={style.removeBtn}
                               name="cangpeitubiao_shanchu"
-                              onClick={() => remove(name)}
+                              onClick={() => {
+                                const recommendList = formData.recommendList;
+                                recommendList.splice(index, 1);
+                                setFormData((formDatar) => ({ ...formDatar, recommendList }));
+                                remove(name);
+                              }}
                             />
                           </Form.Item>
                         );
