@@ -22,7 +22,6 @@ interface FormBlockProps {
 }
 const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonly }) => {
   const [formValues, setFormValues] = useState<any>();
-  const [wayCodeList, setWayCodeList] = useState<any[]>([]);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [nodeOptions, setNodeOptions] = useState<any[]>([]);
   const [nodeDetails, setNodeDetails] = useState<any[]>([]);
@@ -45,9 +44,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   const onFieldsChange = (changeValue: any, values: any) => {
-    if (values?.sceneList) {
-      setWayCodeList(values?.sceneList?.[0]?.nodeRuleList || []);
-    }
     setFormValues(values);
   };
   // 预览内容
@@ -86,7 +82,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
       });
       setNodeDetails(nodeDetails);
       setNodeOptions(nodeOptions);
-      setWayCodeList(copyValue?.[0]?.nodeRuleList || []);
       blockForm.setFieldsValue({
         sceneList: copyValue
       });
@@ -514,16 +509,10 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
 
                                     <Form.Item
                                       name={[nodeName, 'speechcraft']}
-                                      rules={
-                                        wayCodeList[nodeIndex]?.wayCode === 'today_moment'
-                                          ? []
-                                          : [{ required: true, message: '请输入自定义话术' }]
-                                      }
+                                      rules={[{ required: true, message: '请输入自定义话术' }]}
                                       className={styles.speechCol}
                                     >
-                                      <ManuallyAddSpeech
-                                        isReadonly={wayCodeList[nodeIndex]?.wayCode === 'today_moment' || isReadonly}
-                                      />
+                                      <ManuallyAddSpeech isReadonly={isReadonly} />
                                     </Form.Item>
                                     <Form.Item
                                       name={[nodeName, 'pushTime']}
