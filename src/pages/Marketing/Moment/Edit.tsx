@@ -310,7 +310,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
                 }
               ]}
             >
-              <Input.TextArea className={styles.textAreaWrap} placeholder="请输入" />
+              <Input.TextArea className={styles.textAreaWrap} maxLength={250} placeholder="请输入" />
             </Form.Item>
             <Form.Item label="预览效果">
               <div className={classNames(styles.previewWrap, 'flex')}>

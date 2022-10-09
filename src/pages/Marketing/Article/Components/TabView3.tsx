@@ -326,6 +326,11 @@ const TabView3: React.FC<TabView3Props> = (props) => {
       list.push(currentItem.marketId);
       setNewUploadProductIdList(list);
     }
+    // 保存当前推荐上传的图片
+    setFormData((formData) => {
+      formData.recommendList[index].recommendImgUrl = currentItem.recommendImgUrl;
+      return { ...formData, recommendList: formData.recommendList };
+    });
   };
 
   return (
@@ -567,7 +572,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                                   recommendType,
                                   type: +recommendType && undefined
                                 });
-
                                 setRecommendList([...res] || []);
                               }
                               add();
