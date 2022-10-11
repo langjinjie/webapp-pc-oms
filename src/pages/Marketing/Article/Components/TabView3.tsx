@@ -239,7 +239,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
       specType: 0,
-      type: formData.recommendType || undefined,
+      type: +formData.recommendType && undefined, // 0：只获取本地化文章
       recommendType: formData.recommendType
     });
     const resList = [...formData.recommendList.filter((item) => item !== undefined), ...res];
