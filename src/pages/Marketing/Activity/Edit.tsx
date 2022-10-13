@@ -29,6 +29,20 @@ interface ActivityProps {
   [porp: string]: any;
 }
 
+// 配置类型列表
+const displayTypeList = [
+  { value: 1, label: '添加链接' },
+  { value: 2, label: '小程序ID' },
+  { value: 3, label: '上传图片' },
+  { value: 4, label: '上传视频' }
+];
+
+// 活动类型
+const activityTypeList = [
+  { value: 0, label: '否' },
+  { value: 1, label: '是' }
+];
+
 interface Tag {
   id: string;
   name: string;
@@ -52,6 +66,8 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
   const [displayType, setDisplayType] = useState<number>(1);
   const [oldSourceUrlParam, setOldSourceUrlParam] = useState({ displayType: 0, sourceUrl: '' });
   const [oldUrlParam, setOldUrlParam] = useState({ displayType: 0, url: '' });
+  const [activityType, setActivityType] = useState();
+
   const [form] = Form.useForm();
 
   const getDetail = async (activityId: string) => {
@@ -91,13 +107,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
       });
     }
   };
-  // 配置类型列表
-  const displayTypeList = [
-    { value: 1, label: '添加链接' },
-    { value: 2, label: '小程序ID' },
-    { value: 3, label: '上传图片' },
-    { value: 4, label: '上传视频' }
-  ];
+
   const getSystemAcTagConfig = async () => {
     const res = await productConfig({ type: [7] });
     const { acTagList = [] } = res;
@@ -226,6 +236,13 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
     }
     setDisplayType(e.target.value);
   };
+
+  // 年高活动RadioOnChange
+  const activityTypeOnChange = (e: any) => {
+    console.log('e', e.target.value);
+    setActivityType(e.target.value);
+  };
+
   return (
     <Card title="活动配置" bordered={false} className="edit">
       <Form
@@ -338,6 +355,20 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
         <Form.Item label="可见范围设置" name={'groupId'}>
           <SetUserRightFormItem form={form} />
         </Form.Item>
+        <Form.Item label="年高活动" name="activityType" rules={[{ required: true, message: '请选择活动类型' }]}>
+          <Radio.Group onChange={activityTypeOnChange}>
+            {activityTypeList.map((typeItem) => (
+              <Radio key={typeItem.value} value={typeItem.value}>
+                {typeItem.label}
+              </Radio>
+            ))}
+          </Radio.Group>
+        </Form.Item>
+        {activityType === 1 && (
+          <Form.Item name="corpActivityId" label="年高活动ID" rules={[{ required: true, message: '请输入活动ID' }]}>
+            <Input placeholder="请输入" className="width320" />
+          </Form.Item>
+        )}
         {/* </Form> */}
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
           <span className="bold margin-right20">分享设置</span>
