@@ -41,6 +41,8 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
       // 对表单数据进行拷贝，防止污染表单渲染
       const copyData = JSON.parse(JSON.stringify(values));
       const { contentSource } = copyData;
+      // 回写营销素材名称
+      copyData.feedName = selectRows[0].itemName;
       // 1. 判断来源
       // 公有库
       if (contentSource === 1) {
