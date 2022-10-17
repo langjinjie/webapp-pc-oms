@@ -42,7 +42,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
       const copyData = JSON.parse(JSON.stringify(values));
       const { contentSource } = copyData;
       // 回写营销素材名称
-      copyData.feedName = selectRows[0].itemName;
+      copyData.feedName = selectRows[0]?.itemName;
       // 1. 判断来源
       // 公有库
       if (contentSource === 1) {
