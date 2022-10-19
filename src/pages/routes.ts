@@ -384,6 +384,11 @@ export const routes: RouteProps[] = [
   {
     path: '/taskNode',
     component: lazy(() => import('src/pages/Task/NodeManage/List'))
+  },
+  // Banner位管理
+  {
+    path: '/banner',
+    component: lazy(() => import('src/pages/Operation/Banner/List'))
   }
 ];
 
