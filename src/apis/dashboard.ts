@@ -62,6 +62,10 @@ export const getTeamLineChartData: HttpFC = (param) => {
 export const getTeamLineChartData1: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/data/bi/tag/clienttagrate', param);
 };
+// 1.8、【新增】客户标签覆盖率接口
+export const getTagCoverageRate: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bi/tag/clienttagrate', param);
+};
 // 1.9、【新增】在线培训视频完成率数据接口
 export const getVideoFinrateData: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/data/bi/train/videofinrate', param);

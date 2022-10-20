@@ -453,9 +453,10 @@ export const dataCodeList: CodeListType = [
         subTitle: '日人均客户标签调用数'
       },
       {
-        key: '',
+        key: 'clienttagrate',
         title: '客户标签覆盖率',
-        subTitle: '客户标签覆盖率'
+        subTitle: '客户标签覆盖率',
+        tplType: 'bar'
       }
     ]
   },

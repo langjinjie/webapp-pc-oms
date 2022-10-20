@@ -5,10 +5,11 @@ import { Tabs } from 'antd';
 import styles from '../style.module.less';
 import { dataCodeList } from './config';
 
-import ListTable from './components/ListTable';
 import { RouteComponentProps } from 'react-router-dom';
 import { getModelList } from 'src/apis/dashboard';
+import ListTable from './components/ListTable';
 import ListLineChart from './components/ListLineChart';
+import ListBarChart from './components/ListBarChart';
 interface ModalProps {
   businessModel: string;
   staffNum: number;
@@ -64,9 +65,13 @@ const DashBoardDetail: React.FC<RouteComponentProps<{ id: string }>> = ({ match 
         ? (
         <ListTable id={id!} currentItem={currentItem} modelList={modelList} />
           )
-        : (
+        : tplType === 'line'
+          ? (
         <ListLineChart currentItem={currentItem} modelList={modelList} />
-          )}
+            )
+          : (
+        <ListBarChart currentItem={currentItem}></ListBarChart>
+            )}
     </div>
   );
 };

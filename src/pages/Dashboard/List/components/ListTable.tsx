@@ -5,7 +5,7 @@ import { AuthBtn, NgTable } from 'src/components';
 import { ItemProps, tableColumns1, tableColumns2 } from '../config';
 import { Button, Divider, Pagination, PaginationProps, Radio, Select } from 'antd';
 
-import styles from '../style.module.less';
+import styles from '../../style.module.less';
 import { getDashboardItemData, getListTotal, getVideoFinrateData } from 'src/apis/dashboard';
 import { exportFile, throttle } from 'src/utils/base';
 interface ModalProps {
@@ -95,6 +95,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
       item.slice(3, item.length).forEach((child: string, index: number) => {
         obj['data' + index] = child;
         obj.businessModel = item[1];
+        obj.id = item[0];
         obj.leaderName = item[2];
       });
       return obj;
@@ -207,7 +208,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
                 }}
                 columns={tableColumns1({ toDetailPage, titleList, visibleLineChart })}
                 dataSource={[totalItem, ...dataSource]}
-                rowKey={(record, index) => record.leaderId + record.id || 'total' + index}
+                rowKey={(record) => record.leaderId + record.id || 'total'}
                 loading={false}
               ></NgTable>
                 )
@@ -222,7 +223,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
                 }}
                 columns={tableColumns2({ toDetailPage, titleList, visibleLineChart })}
                 dataSource={dataSource}
-                rowKey={(record, index) => record.leaderId + record.id || 'total' + index}
+                rowKey={(record) => record.leaderId + record.id || 'total'}
                 loading={false}
               ></NgTable>
                 )}
