@@ -55,8 +55,6 @@ const TagBarChart: React.FC<{ data: any[] }> = ({ data }) => {
             show: true,
             position: 'top',
             formatter: ({ value }) => {
-              console.log(value);
-
               return value + '%';
             }
           }

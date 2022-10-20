@@ -75,7 +75,7 @@ const ListLineChart: React.FC<{ currentItem: any; modelList: ModalProps[] }> = (
                 margin: '0 30px'
               }}
             />
-            <span className="f16 color-text-regular">{'全部团队'}</span>
+            <span className="f16 text-primary">{'全部团队'}</span>
           </div>
           {/* <Button type="primary" shape="round" ghost className={styles.smallTipBtn}>
             {TimeTypes[stateProps?.dayType as number]}
