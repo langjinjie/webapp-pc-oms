@@ -2,6 +2,23 @@ import React, { useMemo } from 'react';
 
 import { ECOption, NgBarChart } from 'src/components/BarChart/BarChart';
 
+interface toolTipSourceProps {
+  name: string;
+  seriesName: string;
+  value: string;
+}
+export function tooltipCustom (toolTipSource: toolTipSourceProps): string {
+  if (!toolTipSource) {
+    return '';
+  }
+  // const item = data.filter((item: any) => item.dataX === toolTipSource.name)[0];
+
+  return `<div class="tooltip">
+    <div>${toolTipSource.name}</div>
+    <div class="mt10 bold">${toolTipSource.value}%</div> 
+  </div>`;
+}
+
 const TagBarChart: React.FC<{ data: any[] }> = ({ data }) => {
   const options = useMemo<ECOption>(() => {
     return {
@@ -13,6 +30,17 @@ const TagBarChart: React.FC<{ data: any[] }> = ({ data }) => {
         axisLabel: {
           formatter: '{value} %'
         }
+      },
+      tooltip: {
+        trigger: 'axis',
+        formatter (params: any) {
+          return tooltipCustom(params[0]);
+        },
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        padding: 0,
+        borderRadius: 16,
+        extraCssText: 'box-shadow: none; opacity: 0.9'
       },
       series: [
         {
