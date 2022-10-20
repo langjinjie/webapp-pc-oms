@@ -5,6 +5,7 @@ import { setHotConfig } from 'src/apis/marketing';
 import { HotColumns } from '../ListConfig';
 import styles from './style.module.less';
 import { tplTypeOptions } from './config';
+// import moment from 'moment';
 interface CreateSpecialProps {
   visible: boolean;
   onClose: () => void;
@@ -12,28 +13,33 @@ interface CreateSpecialProps {
   onSuccess: () => void;
 }
 const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, onSuccess }) => {
+  console.log(visible);
+
   const [topForm] = Form.useForm();
   const [formValues, setFormValues] = useState<Partial<HotColumns>>({
     topicName: '',
     topicImg: '',
     topicDesc: '',
-    descChanged: ''
+    descChanged: '',
+    createTime: ''
   });
   const [tplType, setTplType] = useState(0);
+  const [bannerId, setBannerId] = useState('');
   useEffect(() => {
     if (visible && value) {
-      console.log(value);
-
+      console.log(value.createTime);
+      setBannerId(value.topicId);
       topForm.setFieldsValue({
         ...value
       });
-      setFormValues(value);
+      setFormValues({ ...value });
     } else {
       setFormValues({
         topicName: '',
         topicImg: '',
         topicDesc: '',
-        descChanged: ''
+        descChanged: '',
+        createTime: ''
       });
       topForm.resetFields();
     }
@@ -44,6 +50,7 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
       if (!desc) return;
       const res = await setHotConfig({ ...values, desc: desc, topicId: formValues.topicId });
       if (res) {
+        setBannerId('');
         message.success(value ? '编辑成功' : '新增成功');
         onSuccess();
         onClose();
@@ -71,17 +78,20 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
       });
     }
   };
+  const onCloseBtn = () => {
+    onClose();
+    setBannerId('');
+  };
   return (
     <Modal
-      title="创建热门专题"
+      title={bannerId ? '编辑' : '新增'}
       className={styles.modalBox}
-      onClose={onClose}
       visible={visible}
       closable={false}
       footer={
         <div className="flex justify-end">
           <Space size={20}>
-            <Button onClick={onClose} shape="round">
+            <Button onClick={() => onCloseBtn()} shape="round">
               取消
             </Button>
             <Button type="primary" onClick={onConfirm} shape="round">
@@ -101,25 +111,37 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
             ))}
           </Select>
         </Form.Item>
-        <Form.Item name="tplType2" label="选择内容：" rules={[{ required: true }]}>
-          <Select placeholder="请选择" className={styles.typeSelect2} onChange={tplTypeChange}>
-            {tplTypeOptions.map((option) => (
-              <Select.Option key={option.id} value={option.id}>
-                {option.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        {visible && (
+        {!bannerId
+          ? (
+              tplType === 2
+                ? (
+            <Form.Item name="tplType2" label="选择内容：" rules={[{ required: true }]}>
+              <Input defaultValue={'系统自动取每周最新的周报内容'} disabled className={styles.typeSelect2}></Input>
+            </Form.Item>
+                  )
+                : (
+            <Form.Item name="tplType2" label="选择内容：" rules={[{ required: true }]}>
+              <Select placeholder="请选择" className={styles.typeSelect2} onChange={tplTypeChange}>
+                {tplTypeOptions.map((option) => (
+                  <Select.Option key={option.id} value={option.id}>
+                    {option.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+                  )
+            )
+          : (
           <>
-            <Form.Item label="内容标题" required>
+            <Form.Item label="内容标题" required name={'topicName'}>
               <Input type="text" placeholder="请输入" className={styles.typeSelect2} />
             </Form.Item>
             <Form.Item label="链接地址" required>
               <Input type="text" placeholder="请输入链接地址" className={styles.typeSelect2} />
             </Form.Item>
           </>
-        )}
+            )}
+
         <Form.Item
           name="topicImg"
           label="上传图片"
@@ -129,13 +151,7 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
           <NgUpload />
         </Form.Item>
         <Form.Item label="展示时间" required>
-          <DatePicker
-            className={styles.typeSelect2}
-            // disabledDate={(date) => date.valueOf() < moment().startOf('day').valueOf()}
-            showTime
-            placeholder="请选择推送时间"
-            allowClear
-          />
+          <DatePicker name="createTime" className={styles.typeSelect2} showTime placeholder="请选择" allowClear />
         </Form.Item>
       </Form>
     </Modal>

@@ -1,13 +1,15 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { Button, message, Image } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { changeHotStatus, getHotList, sortTopHot } from 'src/apis/marketing';
 import { NgTable } from 'src/components';
 import { OperateType } from 'src/utils/interface';
+import { Icon } from 'tenacity-ui';
 import CreateSpecial from './components/CreateSpecial';
 import { HotColumns, tableColumnsFun } from './ListConfig';
+import style from './style.module.less';
 
 type QueryParamsType = Partial<{
   name: string;
@@ -27,7 +29,7 @@ const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const [visible, setVisible] = useState(false);
   const [currentItem, setCurrentItem] = useState<HotColumns>();
-
+  const [visibleImg, setVisibleImg] = useState(false);
   const getList = async (params?: any) => {
     const pageNum = params?.pageNum || pagination.current;
     const pageSize = params?.pageSize || pagination.pageSize;
@@ -89,19 +91,32 @@ const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className="container">
-      <Button
-        type="primary"
-        shape="round"
-        icon={<PlusOutlined />}
-        onClick={() => {
-          setVisible(true);
-          setCurrentItem(undefined);
-        }}
-        size="large"
-      >
-        新增
-      </Button>
-
+      <div className={style.warpBtn}>
+        <Button
+          type="primary"
+          shape="round"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            setVisible(true);
+            setCurrentItem(undefined);
+          }}
+          size="large"
+        >
+          新增
+        </Button>
+        <Button
+          type="primary"
+          shape="round"
+          onClick={() => {
+            console.log(111);
+            setVisibleImg(true);
+          }}
+          size="large"
+        >
+          <Icon name="yulan" />
+          &nbsp; 预览
+        </Button>
+      </div>
       <div className="mt20">
         <NgTable
           columns={tableColumnsFun({
@@ -127,6 +142,19 @@ const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
         value={currentItem}
         onClose={() => {
           setVisible(false);
+        }}
+      />
+      <Image
+        width={200}
+        style={{ display: 'none' }}
+        src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Flmg.jj20.com%2Fup%2Fallimg%2F1114%2F041621122252%2F210416122252-1-1200.jpg&refer=http%3A%2F%2Flmg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1668837016&t=1dbd430a4bb76c73975152fe1be2bc12"
+        preview={{
+          visible: visibleImg,
+          // visible,
+          src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Flmg.jj20.com%2Fup%2Fallimg%2F1114%2F041621122252%2F210416122252-1-1200.jpg&refer=http%3A%2F%2Flmg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1668837016&t=1dbd430a4bb76c73975152fe1be2bc12',
+          onVisibleChange: (value) => {
+            setVisibleImg(value);
+          }
         }}
       />
     </div>

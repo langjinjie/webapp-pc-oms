@@ -96,7 +96,7 @@ const NgUpload: React.FC<NgUploadProps> = ({
       onChange?.(res.filePath);
       setStates((states) => ({ ...states, loading: false, imageUrl: res.filePath || '' }));
     } else {
-      message.error('长传失败');
+      message.error('上传失败，请上传规定尺寸的图片');
       setStates((states) => ({ ...states, loading: false }));
     }
   };
