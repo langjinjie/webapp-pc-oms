@@ -54,3 +54,15 @@ export const exportFileWithTable: HttpFC = (param) => {
     timeout: 120000
   });
 };
+// 1.6、【新增】指定团队近30日曲线数据接口
+export const getTeamLineChartData: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bi/whole/team30detail', param);
+};
+// 1.7、【新增】指定团队近30日曲线数据接口
+export const getTeamLineChartData1: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bi/tag/clienttagrate', param);
+};
+// 1.9、【新增】在线培训视频完成率数据接口
+export const getVideoFinrateData: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bi/train/videofinrate', param);
+};

@@ -173,9 +173,6 @@ const NgMapChart: React.FC<NgBarChartProps> = ({ options, height, width }) => {
           coordinateSystem: 'geo',
           data: dataValue,
           symbolSize: function (val: any) {
-            console.log(val);
-            console.log(val[2] / 10);
-
             return val[0] / 10;
           },
           symbol: 'circle',
