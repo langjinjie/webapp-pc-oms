@@ -39,11 +39,13 @@ const DashBoardDetail: React.FC<RouteComponentProps<{ id: string }>> = ({ match 
   }, []);
   useEffect(() => {
     const { id } = match.params;
+
     setId(id);
     const current = dataCodeList.filter((code) => code.key === id)[0];
     const item = current.children.filter((item) => item.key === id)[0];
     setCurrentCode(current);
     setCurrentItem(item);
+    console.log(id, item);
     setTplType(item?.tplType || 'table');
   }, [match.params.id]);
 
@@ -56,7 +58,7 @@ const DashBoardDetail: React.FC<RouteComponentProps<{ id: string }>> = ({ match 
 
   return (
     <div className={classNames(styles.addFriend)}>
-      <Tabs defaultActiveKey={currentCode?.key} onChange={onTabsChange}>
+      <Tabs activeKey={currentItem?.key} onChange={onTabsChange}>
         {currentCode?.children.map((item) => {
           return <Tabs.TabPane tab={item.title} key={item.key}></Tabs.TabPane>;
         })}

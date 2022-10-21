@@ -94,7 +94,7 @@ export const tableColumns2 = ({ titleList }: tableOperations): ColumnsType<ItemP
   const titleCols = useMemo(() => {
     return titleList.map((item: any) => ({
       title: item.label,
-      width: 100,
+      width: 200,
       className: 'space-left',
       ellipsis: true,
       dataIndex: item.key
