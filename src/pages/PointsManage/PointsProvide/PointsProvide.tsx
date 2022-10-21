@@ -65,7 +65,7 @@ const PointsProvide: React.FC = () => {
       setPonitsList({ total: res.total, list: res.list });
       setDisabledColumnType(-1);
       setIsloading(false);
-      ponitsParam.sendStatus || setSelectedRowKeys([]);
+      ponitsParam.sendStatus && setSelectedRowKeys([]);
       setAllSendStatus(false);
     }
   };
