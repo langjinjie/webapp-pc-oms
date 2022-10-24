@@ -91,6 +91,8 @@ const ViewStaffModal: React.FC<IViewStaffModal> = ({ modalParam, setModalParam }
           columns={columns}
           pagination={{
             total: staffList.total,
+            current: paginationPram.pageNum,
+            pageSize: paginationPram.pageSize,
             onChange (size: number) {
               setPaginationPram((param) => ({ ...param, pageNum: size }));
             }
