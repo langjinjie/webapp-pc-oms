@@ -111,6 +111,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
         setVisibleLineChart(false);
         getVideoTableData();
       } else {
+        setVisibleLineChart(true);
         getList({ dataCode: currentItem.key || id, pageNum: 1 });
         getTotal({ dataCode: currentItem.key || id });
         setFilterData({
@@ -215,12 +216,6 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
               : (
               <NgTable
                 className={styles.listCustom}
-                rowClassName={(record, index) => {
-                  if (index === 0) {
-                    return 'trHighlight';
-                  }
-                  return '';
-                }}
                 columns={tableColumns2({ toDetailPage, titleList, visibleLineChart })}
                 dataSource={dataSource}
                 rowKey={(record) => record.leaderId + record.id || 'total'}
