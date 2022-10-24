@@ -94,7 +94,7 @@ const ListLineChart: React.FC<{ currentItem: any; modelList: ModalProps[] }> = (
             </Select>
           </span>
         </div>
-        <TrendChart data={dataSource} legend={[currentItem?.subTitle as string]} />
+        <TrendChart data={dataSource} legend={[currentItem?.subTitle as string]} percentage={currentItem.percentage} />
       </div>
     </div>
   );

@@ -155,6 +155,7 @@ export type CodeListType = {
     title: string;
     subTitle: string;
     tplType?: string;
+    percentage?: boolean;
     children?: { key: string; title: string; subTitle: string; tplType?: string }[];
   }[];
 }[];
@@ -239,7 +240,8 @@ export const dataCodeList: CodeListType = [
         key: 'reply_percentage',
         title: '客户经理已回复聊天占比',
         subTitle: '客户经理已回复聊天占比',
-        tplType: 'line'
+        tplType: 'line',
+        percentage: true
       },
       {
         key: 'avg_reply_time',
@@ -269,7 +271,8 @@ export const dataCodeList: CodeListType = [
         key: 'reply_staff_percentage',
         title: '客户经理回复占比',
         subTitle: '客户经理回复占比',
-        tplType: 'line'
+        tplType: 'line',
+        percentage: true
       },
       {
         key: 'avg_clientreply_time',
@@ -281,7 +284,8 @@ export const dataCodeList: CodeListType = [
         key: 'reply_client_percentage',
         title: '客户回复占比',
         subTitle: '客户回复占比',
-        tplType: 'line'
+        tplType: 'line',
+        percentage: true
       },
       {
         key: 'day_client_actchat_cnt',
