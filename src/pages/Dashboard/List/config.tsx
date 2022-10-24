@@ -228,7 +228,8 @@ export const dataCodeList: CodeListType = [
         key: 'day_client_chat_rate',
         title: '总客户联系率',
         subTitle: '总客户联系率',
-        tplType: 'line'
+        tplType: 'line',
+        percentage: true
       },
       {
         key: 'message_cnt',
