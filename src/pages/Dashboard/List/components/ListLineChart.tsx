@@ -16,6 +16,7 @@ const ListLineChart: React.FC<{ currentItem: any; modelList: ModalProps[] }> = (
     businessModel: ''
   });
   const [activeCode, setActiveCode] = useState('');
+  const [legendTitle, setLegendTitle] = useState('');
   const subTitleList = useMemo(() => {
     setActiveCode(currentItem.key);
     return currentItem.children || [];
@@ -40,14 +41,15 @@ const ListLineChart: React.FC<{ currentItem: any; modelList: ModalProps[] }> = (
   };
   useEffect(() => {
     if (currentItem) {
+      setLegendTitle(currentItem.subTitle);
       getDetail({ businessModel: '' });
     }
   }, [currentItem]);
 
-  const radioGroupChange = (value: string) => {
-    setActiveCode(value);
-
-    getDetail({ dataCode: value, businessModel: '' });
+  const radioGroupChange = (item: any) => {
+    setActiveCode(item.key);
+    setLegendTitle(item.subTitle);
+    getDetail({ dataCode: item.key, businessModel: '' });
   };
 
   return (
@@ -58,7 +60,7 @@ const ListLineChart: React.FC<{ currentItem: any; modelList: ModalProps[] }> = (
             shape="round"
             key={item.key}
             type={activeCode === item.key ? 'primary' : 'default'}
-            onClick={() => radioGroupChange(item.key)}
+            onClick={() => radioGroupChange(item)}
           >
             {item.title}
           </Button>
@@ -94,7 +96,7 @@ const ListLineChart: React.FC<{ currentItem: any; modelList: ModalProps[] }> = (
             </Select>
           </span>
         </div>
-        <TrendChart data={dataSource} legend={[currentItem?.subTitle as string]} percentage={currentItem.percentage} />
+        <TrendChart data={dataSource} legend={[legendTitle]} percentage={currentItem.percentage} />
       </div>
     </div>
   );

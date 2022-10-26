@@ -236,7 +236,8 @@ export const dataCodeList: CodeListType = [
         title: '客户经理发送信息条数',
         subTitle: '客户经理发送信息条数',
         tplType: 'line'
-      },
+      }
+      /*
       {
         key: 'reply_percentage',
         title: '客户经理已回复聊天占比',
@@ -294,6 +295,7 @@ export const dataCodeList: CodeListType = [
         subTitle: '客户主动发起聊天的客户数',
         tplType: 'line'
       }
+      */
     ]
   },
   {
@@ -350,7 +352,7 @@ export const dataCodeList: CodeListType = [
       {
         key: 'day_news_send_cnt',
         title: '文章',
-        subTitle: '文章',
+        subTitle: '文章发送次数',
         tplType: 'line',
         children: [
           {
@@ -368,7 +370,7 @@ export const dataCodeList: CodeListType = [
       {
         key: 'day_activity_send_cnt',
         title: '活动',
-        subTitle: '活动',
+        subTitle: '活动发送次数',
         tplType: 'line',
         children: [
           {
@@ -386,7 +388,7 @@ export const dataCodeList: CodeListType = [
       {
         key: 'day_station_share_cnt',
         title: '小站',
-        subTitle: '小站',
+        subTitle: '小站分享次数',
         tplType: 'line',
         children: [
           {
@@ -404,7 +406,7 @@ export const dataCodeList: CodeListType = [
       {
         key: 'day_paper_send_cnt',
         title: '周报',
-        subTitle: '周报',
+        subTitle: '周报发送次数',
         tplType: 'line',
         children: [
           {

@@ -31,7 +31,6 @@ interface TrendChartProps {
   percentage?: boolean;
 }
 export const TrendChart: React.FC<TrendChartProps> = ({ data, legend, percentage }) => {
-  console.log(legend);
   const options: ECOption = {
     legend: {
       data: legend

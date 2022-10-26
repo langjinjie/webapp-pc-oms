@@ -75,9 +75,11 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
   };
 
   const getVideoTableData = async (params?: any) => {
+    const pageNum = params?.pageNum || pagination.current;
     const res = await getVideoFinrateData({
       businessModel: filterData.businessModel,
-      ...params
+      ...params,
+      pageNum
     });
     if (!res) return;
     const titleArr = res.bodyList[0].slice(3, res.bodyList[0].length);
@@ -101,7 +103,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
       return obj;
     });
 
-    setPagination((pagination) => ({ ...pagination, total }));
+    setPagination((pagination) => ({ ...pagination, total, current: pageNum }));
     setDataSource(resList);
   };
 
@@ -109,7 +111,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
     if (id) {
       if (id === 'videofinrate') {
         setVisibleLineChart(false);
-        getVideoTableData();
+        getVideoTableData({ pageNum: 1 });
       } else {
         setVisibleLineChart(true);
         getList({ dataCode: currentItem.key || id, pageNum: 1 });
@@ -127,7 +129,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
   const handleModelChange = (value: string) => {
     setFilterData((filterData) => ({ ...filterData, businessModel: value }));
     if (id === 'videofinrate') {
-      getVideoTableData({ businessModel: value });
+      getVideoTableData({ businessModel: value, pageNum: 1 });
     } else {
       getList({ businessModel: value, pageNum: 1 });
       getTotal({ businessModel: value });

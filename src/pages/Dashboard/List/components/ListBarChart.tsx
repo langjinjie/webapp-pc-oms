@@ -21,6 +21,8 @@ const ListBarChart: React.FC<{ currentItem: any }> = ({ currentItem }) => {
   useEffect(() => {
     getTagData();
   }, []);
+  console.log(currentItem);
+
   return (
     <div className="container">
       <div className={styles.contentWrap}>
