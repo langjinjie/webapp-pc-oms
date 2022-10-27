@@ -167,7 +167,7 @@ const Edit: React.FC = () => {
             rules={[
               ({ getFieldValue }) => ({
                 validator (_, value) {
-                  if (+value <= +getFieldValue('taskPoints')) {
+                  if (+value < +getFieldValue('taskPoints')) {
                     return Promise.reject(new Error('积分上限小于奖励分值，请重新填写'));
                   }
                   return Promise.resolve();
