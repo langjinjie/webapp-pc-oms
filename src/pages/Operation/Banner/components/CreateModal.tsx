@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, message, Modal, Space, Select, DatePicker } from 'antd';
-import NgUpload from '../components/Upload/Upload';
+import NgUpload from './Upload/Upload';
 import { setHotConfig } from 'src/apis/marketing';
 import { HotColumns } from '../ListConfig';
 import styles from './style.module.less';
 import { tplTypeOptions } from './config';
-// import moment from 'moment';
-interface CreateSpecialProps {
+import moment from 'moment';
+interface CreateModalProps {
   visible: boolean;
   onClose: () => void;
   value?: HotColumns;
   onSuccess: () => void;
 }
-const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, onSuccess }) => {
+const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSuccess }) => {
   console.log(visible);
 
   const [topForm] = Form.useForm();
@@ -28,9 +28,13 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
   useEffect(() => {
     if (visible && value) {
       console.log(value.createTime);
+      const createTime = moment(value.createTime);
+      console.log(createTime, '111111111111');
+
       setBannerId(value.topicId);
       topForm.setFieldsValue({
-        ...value
+        ...value,
+        createTime
       });
       setFormValues({ ...value });
     } else {
@@ -44,11 +48,13 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
       topForm.resetFields();
     }
   }, [visible]);
+
+  // 获取数据发送请求
   const onConfirm = () => {
     topForm.validateFields().then(async (values) => {
-      const desc = formValues.descChanged || formValues.topicDesc;
-      if (!desc) return;
-      const res = await setHotConfig({ ...values, desc: desc, topicId: formValues.topicId });
+      // 格式化时间
+      const createTime = values.createTime.format('YYYY-MM-DD hh:mm:ss');
+      const res = await setHotConfig({ ...values, topicId: formValues.topicId, createTime });
       if (res) {
         setBannerId('');
         message.success(value ? '编辑成功' : '新增成功');
@@ -86,6 +92,7 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
     <Modal
       title={bannerId ? '编辑' : '新增'}
       className={styles.modalBox}
+      forceRender
       visible={visible}
       closable={false}
       footer={
@@ -136,7 +143,7 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
             <Form.Item label="内容标题" required name={'topicName'}>
               <Input type="text" placeholder="请输入" className={styles.typeSelect2} />
             </Form.Item>
-            <Form.Item label="链接地址" required>
+            <Form.Item label="链接地址" required name={'topicLink'}>
               <Input type="text" placeholder="请输入链接地址" className={styles.typeSelect2} />
             </Form.Item>
           </>
@@ -150,12 +157,12 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
         >
           <NgUpload />
         </Form.Item>
-        <Form.Item label="展示时间" required>
-          <DatePicker name="createTime" className={styles.typeSelect2} showTime placeholder="请选择" allowClear />
+        <Form.Item label="展示时间" required name="createTime">
+          <DatePicker className={styles.typeSelect2} showTime placeholder="请选择" allowClear />
         </Form.Item>
       </Form>
     </Modal>
   );
 };
 
-export default CreateSpecial;
+export default CreateModal;

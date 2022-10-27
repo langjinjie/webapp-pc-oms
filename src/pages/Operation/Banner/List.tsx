@@ -7,7 +7,7 @@ import { changeHotStatus, getHotList, sortTopHot } from 'src/apis/marketing';
 import { NgTable } from 'src/components';
 import { OperateType } from 'src/utils/interface';
 import { Icon } from 'tenacity-ui';
-import CreateSpecial from './components/CreateSpecial';
+import CreateModal from './components/CreateModal';
 import { HotColumns, tableColumnsFun } from './ListConfig';
 import style from './style.module.less';
 
@@ -108,7 +108,6 @@ const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
           type="primary"
           shape="round"
           onClick={() => {
-            console.log(111);
             setVisibleImg(true);
           }}
           size="large"
@@ -131,7 +130,7 @@ const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
         />
       </div>
 
-      <CreateSpecial
+      <CreateModal
         onSuccess={() =>
           onSearch({
             name: '',
@@ -150,7 +149,6 @@ const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
         src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Flmg.jj20.com%2Fup%2Fallimg%2F1114%2F041621122252%2F210416122252-1-1200.jpg&refer=http%3A%2F%2Flmg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1668837016&t=1dbd430a4bb76c73975152fe1be2bc12"
         preview={{
           visible: visibleImg,
-          // visible,
           src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Flmg.jj20.com%2Fup%2Fallimg%2F1114%2F041621122252%2F210416122252-1-1200.jpg&refer=http%3A%2F%2Flmg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1668837016&t=1dbd430a4bb76c73975152fe1be2bc12',
           onVisibleChange: (value) => {
             setVisibleImg(value);
