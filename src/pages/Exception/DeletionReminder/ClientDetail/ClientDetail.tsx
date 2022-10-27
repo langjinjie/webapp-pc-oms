@@ -184,7 +184,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   const getClientInfo = async (externalUserId: string, followStaffId: string) => {
     const res: any = await requestGetClientDetail({ externalUserid: externalUserId, followStaffId });
     if (res) {
-      console.log('res', res);
       setClientInfo(res);
       setLoadAttrTag(true);
       setLoadInterestTag(true);

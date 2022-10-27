@@ -101,9 +101,6 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
       <div className={styles.content}>
         <h3 className={classNames(styles.contentTitle, 'flex justify-between align-center')}>
           <div className="f18">配置内容</div>
-          <Button type="primary" shape="round" onClick={() => onSubmit()} className={styles.btn}>
-            提交
-          </Button>
         </h3>
         <Divider className={styles.divider} />
         <Form
@@ -218,6 +215,9 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
             )}
           </Form.List>
         </Form>
+        <Button type="primary" shape="round" onClick={() => onSubmit()} className={classNames(styles.btn, 'mt20')}>
+          提交
+        </Button>
       </div>
     </div>
   );

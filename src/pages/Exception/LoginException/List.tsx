@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Card, PaginationProps } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IUnLoginStaffList, tableColumnsFun } from './Config';
 // import { useHistory } from 'react-router-dom';
 import { requestGetLoginExceptionList } from 'src/apis/exception';
@@ -79,13 +79,15 @@ const List: React.FC = () => {
   }, []);
   return (
     <Card className="container" bordered={false}>
-      <NgFormSearch
-        searchCols={searchCols(reasonCodeList)}
-        isInline={false}
-        firstRowChildCount={3}
-        onSearch={onSearch}
-        onReset={onResetHandle}
-      />
+      <AuthBtn path="/query">
+        <NgFormSearch
+          searchCols={searchCols(reasonCodeList)}
+          isInline={false}
+          firstRowChildCount={3}
+          onSearch={onSearch}
+          onReset={onResetHandle}
+        />
+      </AuthBtn>
       <div>共{tableSource.total}条数据</div>
       <div className="mt20">
         <NgTable

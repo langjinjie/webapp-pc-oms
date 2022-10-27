@@ -9,6 +9,7 @@ import { TOKEN_KEY } from 'src/utils/config';
 import { IDelStaffList } from 'src/pages/Exception/DeletionReminder/Config';
 import AudioPlay from './AudioPlay';
 import style from './style.module.less';
+import classNames from 'classnames';
 
 const chatLog: React.FC = () => {
   const [filterDateRange, setfilterDateRange] = useState<[Moment | null, Moment | null]>([
@@ -51,7 +52,6 @@ const chatLog: React.FC = () => {
   // 获取外部联系人信息
   const getClientInfo = () => {
     const { clientInfo } = location.state as { clientInfo: IDelStaffList };
-    console.log('clientInfo', clientInfo);
     setClientInfo(clientInfo);
   };
 
@@ -82,8 +82,6 @@ const chatLog: React.FC = () => {
       pageNum: pagination.pageNum
     };
     // 获取聊天记录
-    console.log('data', data);
-    console.log('paream', paream);
     const res = await requesrtGetSingleChatList({ ...data, ...paream });
     setIsChatListLoading(false);
     if (res) {
@@ -1040,17 +1038,17 @@ const chatLog: React.FC = () => {
                     }}
                     src={clientInfo?.clientAvatar}
                   />
-                  <span className={style.title}>
+                  <span title={clientInfo?.clientName} className={classNames(style.title, 'ellipsis')}>
                     {clientInfo?.clientName}
-                    <Icon
-                      className={style.editIcon}
-                      name="a-icon_common_16_modelcharge"
-                      onClick={() => {
-                        copy(clientInfo?.externalUserid || '', false);
-                        message.success('外部联系人id复制成功');
-                      }}
-                    />
                   </span>
+                  <Icon
+                    className={style.editIcon}
+                    name="a-icon_common_16_modelcharge"
+                    onClick={() => {
+                      copy(clientInfo?.externalUserid || '', false);
+                      message.success('外部联系人id复制成功');
+                    }}
+                  />
                 </span>
               </div>
             </div>

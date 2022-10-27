@@ -76,7 +76,7 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
         {envName && <span>({envName})</span>}
       </div>
       <div className="header-info">
-        <img className="header-avatar" src={userInfo.avatar} alt="" />
+        {/* <img className="header-avatar" src={userInfo.avatar} alt="" /> */}
         <span className="user-name">
           {userInfo.name} [{userInfo.corpName}]
         </span>

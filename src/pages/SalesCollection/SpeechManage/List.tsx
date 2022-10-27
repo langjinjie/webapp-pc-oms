@@ -349,8 +349,8 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     // 从目录查看话术
     if (location.search.includes('catalog=')) {
       initSetFormQuery();
-      getSensitiveCheckedInfo();
     }
+    getSensitiveCheckedInfo();
   }, []);
   // 分页改变
   const paginationChange = (pageNum: number, pageSize?: number) => {
@@ -712,7 +712,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
                 type="primary"
                 shape={'round'}
                 ghost
-                disabled={delBtnDisabled || selectedRowKeys.length === 0}
+                disabled={currentType === 1 || delBtnDisabled || selectedRowKeys.length === 0}
                 onClick={() => operateStatus(3)}
               >
                 删除

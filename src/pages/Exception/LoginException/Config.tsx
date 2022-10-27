@@ -3,6 +3,7 @@ import { Button, Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
+import { AuthBtn } from 'src/components';
 
 export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
   return [
@@ -60,11 +61,6 @@ export interface IUnLoginStaffList {
 }
 
 export const tableColumnsFun = (isShow: boolean): ColumnsType<IUnLoginStaffList> => {
-  // 催催他
-  const viewChatList = (row: IUnLoginStaffList) => {
-    console.log('催催他', row);
-  };
-
   return [
     { title: '客户经理', dataIndex: 'staffName' },
     { title: '所属团队长', dataIndex: 'leaderName' },
@@ -75,12 +71,14 @@ export const tableColumnsFun = (isShow: boolean): ColumnsType<IUnLoginStaffList>
     {
       title: '操作',
       width: 200,
-      render: (row: IUnLoginStaffList) => {
+      render: () => {
         return (
           isShow && (
-            <Button type="link" onClick={() => viewChatList(row)} disabled={true}>
-              催催他
-            </Button>
+            <AuthBtn path="/contactStaff">
+              <Button type="link" disabled={true}>
+                催催他
+              </Button>
+            </AuthBtn>
           )
         );
       }

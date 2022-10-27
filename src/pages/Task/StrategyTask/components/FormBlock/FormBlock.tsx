@@ -105,6 +105,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
 
   useEffect(() => {
     initFormData(value);
+    console.log('value', value);
   }, [value]);
   useEffect(() => {
     getTouchWayOptions();
@@ -518,7 +519,12 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
                                       rules={[{ required: true, message: '请选择推送时间' }]}
                                       className={classNames(styles.timeCol)}
                                     >
-                                      <TimePicker disabled={isReadonly} bordered={false} format={'HH:mm'} />
+                                      <TimePicker
+                                        disabled={isReadonly}
+                                        placement="topLeft"
+                                        bordered={false}
+                                        format={'HH:mm'}
+                                      />
                                     </Form.Item>
                                     <div className={styles.operateCol}>
                                       <Space>

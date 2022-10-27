@@ -68,7 +68,17 @@ export const tableColumnsFun: (getList: () => void) => ColumnsType<IPointsConfig
     { title: '生效时间', dataIndex: 'effectiveTime' },
     { title: '任务名称', dataIndex: 'taskName' },
     { title: '任务描述（小贴士）', dataIndex: 'taskDesc' },
-    { title: '任务详细说明', dataIndex: 'taskDetail' },
+    {
+      title: '任务详细说明',
+      dataIndex: 'taskDetail',
+      render (taskDetail: string) {
+        return (
+          <span className={classNames(style.taskDetail, 'ellipsis')} title={taskDetail}>
+            {taskDetail}
+          </span>
+        );
+      }
+    },
     { title: '奖励分值', dataIndex: 'taskPoints' },
     { title: '积分上限', dataIndex: 'maxPoints' },
     {

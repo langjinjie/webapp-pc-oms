@@ -239,7 +239,7 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     const res: RecommendMarketProps[] = await searchRecommendGoodsList({
       title: value,
       specType: 0,
-      type: formData.recommendType || undefined,
+      type: +formData.recommendType && undefined, // 0：只获取本地化文章
       recommendType: formData.recommendType
     });
     const resList = [...formData.recommendList.filter((item) => item !== undefined), ...res];
@@ -325,6 +325,13 @@ const TabView3: React.FC<TabView3Props> = (props) => {
     if (!list.includes(currentItem.marketId)) {
       list.push(currentItem.marketId);
       setNewUploadProductIdList(list);
+    }
+    // 保存当前推荐上传的图片
+    if (formData.recommendList[index]) {
+      setFormData((formData) => {
+        formData.recommendList[index].recommendImgUrl = currentItem.recommendImgUrl;
+        return { ...formData, recommendList: formData.recommendList };
+      });
     }
   };
 
@@ -547,7 +554,12 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                             <Icon
                               className={style.removeBtn}
                               name="cangpeitubiao_shanchu"
-                              onClick={() => remove(name)}
+                              onClick={() => {
+                                const recommendList = formData.recommendList;
+                                recommendList.splice(index, 1);
+                                setFormData((formDatar) => ({ ...formDatar, recommendList }));
+                                remove(name);
+                              }}
                             />
                           </Form.Item>
                         );
@@ -567,7 +579,6 @@ const TabView3: React.FC<TabView3Props> = (props) => {
                                   recommendType,
                                   type: +recommendType && undefined
                                 });
-
                                 setRecommendList([...res] || []);
                               }
                               add();
