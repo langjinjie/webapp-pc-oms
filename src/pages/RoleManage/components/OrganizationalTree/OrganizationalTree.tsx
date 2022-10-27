@@ -18,6 +18,7 @@ interface IAddLotteryListProps extends ModalProps {
   onCancel?: () => void;
   onOk?: (value: any) => void;
   isDeleted?: 0 | 1; // 0：在职 1：离职
+  checkStrictly?: boolean; // checkable 状态下节点选择完全受控（父子节点选中状态不再关联）
 }
 
 interface ItreeProps {
@@ -41,17 +42,24 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   onOk,
   onCancel: onClose,
   isDeleted,
+  checkStrictly,
   ...props
 }) => {
   const { currentCorpId: corpId } = useContext<{ currentCorpId: string }>(Context);
   const [treeData, setTreeData] = useState<any[]>([]);
-  const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
   const [flatTreeData, setFlatTreeData] = useState<any[]>([]);
   const [selectedList, setSelectedList] = useState<any[]>([]);
   const [autoExpand, setAutoExpand] = useState(true);
   const [treeSearchValue, setTreeSearchValue] = useState('');
   const [selectSearchValue, setSelectSearchValue] = useState('');
   const [treeSearchList, setTreeSearchList] = useState<any[]>([]);
+  const [checkedKeys, setCheckedKeys] = useState<
+    | Key[]
+    | {
+        checked: Key[];
+        halfChecked: Key[];
+      }
+  >([]);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -143,7 +151,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     info: any
   ) => {
     setAutoExpand(false);
-    setCheckedKeys(checked as Key[]);
+    setCheckedKeys(checked);
     let newSelectedList = [];
     if (showStaff) {
       newSelectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.staffId));
@@ -190,6 +198,20 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       newSelectedList = filterChildren([
         ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
       ]);
+      if (checkStrictly) {
+        newSelectedList = flatTreeData.filter((filterItem) =>
+          (
+            checked as {
+              checked: Key[];
+              halfChecked: Key[];
+            }
+          ).checked.includes(filterItem.id)
+        );
+      } else {
+        newSelectedList = filterChildren([
+          ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
+        ]);
+      }
     }
     setSelectedList(newSelectedList);
   };
@@ -204,7 +226,19 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   // 删除选中
   const clickDelStaffHandle = (item: any) => {
     setSelectedList((param) => [...param.filter((filterItem) => filterItem.id !== item.id)]);
-    setCheckedKeys((keys) => [...keys.filter((keysItem) => keysItem !== item.id)]);
+    if (checkStrictly) {
+      setCheckedKeys((keys) => ({
+        checked: (
+          keys as {
+            checked: Key[];
+            halfChecked: Key[];
+          }
+        ).checked.filter((keysItem) => keysItem !== item.id),
+        halfChecked: []
+      }));
+    } else {
+      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id)]);
+    }
   };
   // 点击左侧搜索结果的部门或者
   const searchList = async () => {
@@ -227,11 +261,38 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     let selected: any[] = [];
     if (!checked) {
       selected = [...selectedList, item];
-      setCheckedKeys((keys) => [...keys, item.id]);
+      if (checkStrictly) {
+        setCheckedKeys((keys) => ({
+          checked: [
+            ...(
+              keys as {
+                checked: Key[];
+                halfChecked: Key[];
+              }
+            ).checked,
+            item.id
+          ],
+          halfChecked: []
+        }));
+      } else {
+        setCheckedKeys((keys) => [...(keys as React.Key[]), item.id]);
+      }
       // onChange?.([...selectedList, item]);
     } else {
       selected = selectedList.filter((filterItem) => filterItem.id !== item.id);
-      setCheckedKeys((keys) => keys.filter((filterItem) => filterItem !== item.id));
+      if (checkStrictly) {
+        setCheckedKeys((keys) => ({
+          checked: (
+            keys as {
+              checked: Key[];
+              halfChecked: Key[];
+            }
+          ).checked.filter((keysItem) => keysItem !== item.id),
+          halfChecked: []
+        }));
+      } else {
+        setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id)]);
+      }
     }
     setSelectedList(selected);
   };
@@ -279,7 +340,18 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       const deptKeys = flatTreeData
         .filter((filterItem) => deptValue?.some((someItem) => someItem.deptId.toString() === filterItem.id.toString())) // deptId有时候是string 有时候是number
         .map((mapItem) => mapItem.id);
-      setCheckedKeys((checkedKeys) => Array.from(new Set([...checkedKeys, ...staffKeys, ...deptKeys])));
+      if (checkStrictly) {
+        setCheckedKeys((keys) => ({
+          checked: Array.from(
+            new Set([...(keys as { checked: Key[]; halfChecked: Key[] }).checked, ...staffKeys, ...deptKeys])
+          ),
+          halfChecked: []
+        }));
+      } else {
+        setCheckedKeys((checkedKeys) =>
+          Array.from(new Set([...(checkedKeys as React.Key[]), ...staffKeys, ...deptKeys]))
+        );
+      }
       const selectedList = flatTreeData.filter((filterItem) =>
         Array.from(new Set([...staffKeys, ...deptKeys])).includes(filterItem.id)
       );
@@ -350,6 +422,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
             </div>
           )}
           <Tree
+            checkStrictly={checkStrictly}
             className={classNames(style.tree, { [style.hiden]: !!treeSearchValue })}
             {...treeProps}
             fieldNames={{ title: 'name', key: 'id' }}
