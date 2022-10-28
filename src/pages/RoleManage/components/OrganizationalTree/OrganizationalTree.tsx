@@ -339,8 +339,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         .filter((filterItem) => filterValue?.some((someItem) => someItem.staffId === filterItem.id))
         .map((mapItem) => mapItem.id);
 
-      const deptValue = selectedDept ? filterValue : filterValue.filter((filterItem) => !filterItem.staffId);
-      // const deptValue = filterValue.filter((filterItem) => !filterItem.staffId);
+      // const deptValue = selectedDept ? filterValue : filterValue.filter((filterItem) => !filterItem.staffId);
+      const deptValue = filterValue.filter((filterItem) => !filterItem.staffId);
       const deptKeys = flatTreeData
         .filter((filterItem) => deptValue?.some((someItem) => someItem.deptId.toString() === filterItem.id.toString())) // deptId有时候是string 有时候是number
         .map((mapItem) => mapItem.id);
