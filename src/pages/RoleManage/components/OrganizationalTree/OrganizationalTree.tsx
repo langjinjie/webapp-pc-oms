@@ -310,6 +310,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   }, [params.visible, corpId]);
   // 自动展开以及自动勾选
   useEffect(() => {
+    console.log(flatTreeData, value);
+
     if (params.visible && value && flatTreeData.length && autoExpand) {
       // 过滤掉fullDeptId为null的
       const filterValue = value.filter((filterItem) => filterItem.fullDeptId);
@@ -336,15 +338,18 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       const staffKeys = flatTreeData
         .filter((filterItem) => filterValue?.some((someItem) => someItem.staffId === filterItem.id))
         .map((mapItem) => mapItem.id);
-      const deptValue = filterValue.filter((filterItem) => !filterItem.staffId);
+
+      const deptValue = selectedDept ? filterValue : filterValue.filter((filterItem) => !filterItem.staffId);
+      // const deptValue = filterValue.filter((filterItem) => !filterItem.staffId);
       const deptKeys = flatTreeData
         .filter((filterItem) => deptValue?.some((someItem) => someItem.deptId.toString() === filterItem.id.toString())) // deptId有时候是string 有时候是number
         .map((mapItem) => mapItem.id);
       if (checkStrictly) {
-        setCheckedKeys((keys) => ({
-          checked: Array.from(
-            new Set([...(keys as { checked: Key[]; halfChecked: Key[] }).checked, ...staffKeys, ...deptKeys])
-          ),
+        const oldData = (checkedKeys as { checked: Key[]; halfChecked: Key[] })?.checked
+          ? (checkedKeys as { checked: Key[]; halfChecked: Key[] })?.checked
+          : [];
+        setCheckedKeys(() => ({
+          checked: Array.from(new Set([...oldData, ...staffKeys, ...deptKeys])),
           halfChecked: []
         }));
       } else {
