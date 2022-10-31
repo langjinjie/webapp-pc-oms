@@ -1,7 +1,7 @@
 .cockpit {
   background-color: #171b3c;
   min-height: 600px;
-  background-image: url('~@/assets/images/cockpit_bg.png');
+  background-image: url('~@/assets/images/cockpit/cockpit_bg.png');
   background-repeat: no-repeat;
 
   .cockpitBanner {
@@ -49,13 +49,44 @@
     // box-shadow: 0px 2px 4px 0px rgba(7, 6, 6, 0.4);
     // border-radius: 4px;
     // opacity: 0.3;
+    padding-top: 30px;
   }
   .targetItem {
-    width: 276px;
+    min-width: 276px;
     height: 140px;
     background: #383efe;
     box-shadow: 0px 2px 4px 0px rgba(7, 6, 6, 0.4);
     border-radius: 4px;
-    opacity: 0.3;
+    background: rgba(56, 62, 254, 0.2);
+    color: #fff;
+    padding: 20px 0px 20px 20px !important;
+    margin-right: 24px;
+    &:last-child {
+      margin-right: 0;
+    }
+
+    .count {
+      margin: 0;
+      font-size: 40px;
+      line-height: 47px;
+    }
+  }
+
+  .targetIcon {
+    float: right;
+    width: 100px;
+    height: 120px;
+  }
+  .targetIcon1 {
+    background: url('~@/assets/images/cockpit/target_01.png') no-repeat;
+  }
+  .targetIcon2 {
+    background: url('~@/assets/images/cockpit/target_02.png') no-repeat;
+  }
+  .targetIcon3 {
+    background: url('~@/assets/images/cockpit/target_03.png') no-repeat;
+  }
+  .targetIcon4 {
+    background: url('~@/assets/images/cockpit/target_04.png') no-repeat;
   }
 }

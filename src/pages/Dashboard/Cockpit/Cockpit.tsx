@@ -19,44 +19,44 @@ const Cockpit: React.FC = () => {
             <span className={styles.time}>2022-06-04 11:30:00</span>
           </div>
           <ul className={classNames(styles.importantTarget, 'flex justify-between')}>
-            <li>
+            <li className={classNames(styles.targetItem, 'cell')}>
               <dl>
+                <dt className={classNames(styles.targetIcon, styles.targetIcon1)}></dt>
                 <dd>今日客户总人数</dd>
-                <dd>6,906</dd>
-                <dd>
-                  较昨日 <span>+120</span>
+                <dd className={styles.count}>6,906</dd>
+                <dd className="mt14">
+                  较昨日 <span className="color-danger ">+120</span>
                 </dd>
-                <dt></dt>
               </dl>
             </li>
-            <li>
+            <li className={classNames(styles.targetItem, 'cell')}>
               <dl>
+                <dt className={classNames(styles.targetIcon, styles.targetIcon2)}></dt>
                 <dd>今日新增客户数</dd>
                 <dd>6,906</dd>
                 <dd>
                   较昨日 <span>+120</span>
                 </dd>
-                <dt></dt>
               </dl>
             </li>
-            <li>
+            <li className={classNames(styles.targetItem, 'cell')}>
               <dl>
+                <dt className={classNames(styles.targetIcon, styles.targetIcon3)}></dt>
                 <dd>今日删除客户数</dd>
                 <dd>6,906</dd>
                 <dd>
                   较昨日 <span>+120</span>
                 </dd>
-                <dt></dt>
               </dl>
             </li>
-            <li>
+            <li className={classNames(styles.targetItem, 'cell')}>
               <dl>
+                <dt className={classNames(styles.targetIcon, styles.targetIcon4)}></dt>
                 <dd>昨日联系客户数</dd>
                 <dd>6,906</dd>
                 <dd>
                   较昨日 <span>+120</span>
                 </dd>
-                <dt></dt>
               </dl>
             </li>
           </ul>
