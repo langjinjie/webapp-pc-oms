@@ -384,6 +384,10 @@ export const routes: RouteProps[] = [
   {
     path: '/taskNode',
     component: lazy(() => import('src/pages/Task/NodeManage/List'))
+  },
+  {
+    path: '/cockpit',
+    component: lazy(() => import('src/pages/Dashboard/Cockpit/Cockpit'))
   }
 ];
 
