@@ -152,9 +152,9 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   ) => {
     setAutoExpand(false);
     setCheckedKeys(checked);
-    let newSelectedList = [];
+    let newSelectedList = [...selectedList];
+
     if (showStaff) {
-      newSelectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.staffId));
       if (selectedDept) {
         // 判断已选列表是否需要显示部门
         newSelectedList = filterChildren([
@@ -178,18 +178,22 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
           });
           // 判断是选中还是取消
           if (info.checked) {
-            newSelectedList = [...res.list];
+            const selectedListKeys = selectedList.map((mapItem) => mapItem.id);
+            newSelectedList = [
+              ...newSelectedList,
+              ...res.list.filter((filterItem: { id: string }) => !selectedListKeys.includes(filterItem.id))
+            ];
+          } else {
+            const resListKeys = res.list.map((mapItem: { id: string }) => mapItem.id);
+            newSelectedList = newSelectedList.filter((filterItem) => !resListKeys.includes(filterItem.id));
           }
         } else {
           if (info.checked) {
             // 选择单个员工
-            newSelectedList = [
-              ...selectedList.filter((filterItem) => !(checked as Key[]).includes(filterItem.staffId)),
-              ...newSelectedList
-            ];
+            newSelectedList = [...newSelectedList, { ...info.node }];
           } else {
             // 取消选择按个员工
-            newSelectedList = [...selectedList.filter((filterItem) => filterItem.staffId !== info.node.staffId)];
+            newSelectedList = [...newSelectedList.filter((filterItem) => filterItem.staffId !== info.node.staffId)];
           }
         }
       }
@@ -244,11 +248,11 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const searchList = async () => {
     const res = await searchStaffList({
       keyWords: treeSearchValue,
-      searchType: selectedDept ? undefined : 2,
+      searchType: selectedDept ? 1 : 2, // 1-搜索部门 2-搜索员工 不传则搜索全部
       isFull: true
     });
     if (res) {
-      const list = [...res.staffList, ...(res.deptList || [])];
+      const list = [...(res.staffList || []), ...(res.deptList || [])];
       list.forEach((item: any) => {
         item.id = item.staffId || item.deptId;
         item.name = item.staffName || item.deptName;
@@ -310,8 +314,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   }, [params.visible, corpId]);
   // 自动展开以及自动勾选
   useEffect(() => {
-    console.log(flatTreeData, value);
-
     if (params.visible && value && flatTreeData.length && autoExpand) {
       // 过滤掉fullDeptId为null的
       const filterValue = value.filter((filterItem) => filterItem.fullDeptId);
