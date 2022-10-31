@@ -62,8 +62,10 @@ const Cockpit: React.FC = () => {
           </ul>
         </div>
 
-        <div>
-          <h3>关键指标趋势</h3>
+        <div className="mt40">
+          <div className={classNames('flex justify-between', styles.panelHeader)}>
+            <h3 className={styles.panelTitle}>关键指标趋势</h3>
+          </div>
           <div>
             <div>
               <h4>客户总人数</h4>
