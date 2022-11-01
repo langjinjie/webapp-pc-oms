@@ -117,7 +117,7 @@ const Cockpit: React.FC = () => {
           </div>
 
           <div className={styles.tableBox}>
-            <div className={styles.table}>
+            <div className={''}>
               <div>地图</div>
             </div>
             <div className={styles.table1}>
@@ -139,7 +139,7 @@ const Cockpit: React.FC = () => {
             </div>
           </div>
           <div className={styles.tableBox}>
-            <div className={styles.table1}>
+            <div className={styles.table2}>
               <div className={styles.browse}>浏览客户数</div>
               <div className={styles.browseNum}>1362</div>
               <Table rowKey={'taskId'} columns={tableColumns4()} />
