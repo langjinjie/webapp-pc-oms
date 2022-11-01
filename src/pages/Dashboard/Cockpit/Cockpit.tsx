@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
-
+import { Table } from 'antd';
+import { tableColumns1, tableColumns2, tableColumns3, tableColumns4, tableColumns5 } from './Config';
 import styles from './style.module.less';
 
 const Cockpit: React.FC = () => {
@@ -81,6 +82,71 @@ const Cockpit: React.FC = () => {
           <div>
             <h3>团队排名</h3>
             <div></div>
+          </div>
+        </div>
+        <div className="mt40">
+          <div className={classNames('flex justify-between')}>
+            <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
+              <h3 className={styles.panelTitle}>团队排名</h3>
+              <span className={styles.time}>2022-06-04 11:30:00</span>
+            </div>
+            <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
+              <h3 className={styles.panelTitle}>客户经理排名</h3>
+              <span className={styles.time}>2022-06-04 11:30:00</span>
+            </div>
+          </div>
+          <div className={styles.tableBox}>
+            <div className={styles.table}>
+              <Table rowKey={'taskId'} columns={tableColumns1()} />
+            </div>
+            <div className={styles.table}>
+              <Table rowKey={'taskId'} columns={tableColumns2()} />
+            </div>
+          </div>
+        </div>
+        <div className="mt40">
+          <div className={classNames('flex justify-between')}>
+            <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
+              <h3 className={styles.panelTitle}>特征标签</h3>
+              <span className={styles.time}>2022-06-04 11:30:00</span>
+            </div>
+            <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
+              <h3 className={styles.panelTitle}>文章查看情况</h3>
+              <span className={styles.time}>2022-06-04 11:30:00</span>
+            </div>
+          </div>
+
+          <div className={styles.tableBox}>
+            <div className={styles.table}>
+              <div>地图</div>
+            </div>
+            <div className={styles.table1}>
+              <div className={styles.browse}>浏览客户数</div>
+              <div className={styles.browseNum}>16.362</div>
+              <Table rowKey={'taskId'} columns={tableColumns3()} />
+            </div>
+          </div>
+        </div>
+        <div className="mt40">
+          <div className={classNames('flex justify-between')}>
+            <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
+              <h3 className={styles.panelTitle}>产品偏好</h3>
+              <span className={styles.time}>2022-06-04 11:30:00</span>
+            </div>
+            <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
+              <h3 className={styles.panelTitle}>销售概率</h3>
+              <span className={styles.time}>2022-06-04 11:30:00</span>
+            </div>
+          </div>
+          <div className={styles.tableBox}>
+            <div className={styles.table1}>
+              <div className={styles.browse}>浏览客户数</div>
+              <div className={styles.browseNum}>1362</div>
+              <Table rowKey={'taskId'} columns={tableColumns4()} />
+            </div>
+            <div className={styles.table}>
+              <Table rowKey={'taskId'} columns={tableColumns5()} />
+            </div>
           </div>
         </div>
       </div>
