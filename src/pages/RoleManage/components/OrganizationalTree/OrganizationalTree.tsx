@@ -248,7 +248,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const searchList = async () => {
     const res = await searchStaffList({
       keyWords: treeSearchValue,
-      searchType: selectedDept ? 1 : 2, // 1-搜索部门 2-搜索员工 不传则搜索全部
+      searchType: showStaff ? (selectedDept ? undefined : 2) : 1, // 1-搜索部门 2-搜索员工 不传则搜索全部
       isFull: true
     });
     if (res) {
