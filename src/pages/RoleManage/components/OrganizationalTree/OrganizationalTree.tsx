@@ -333,7 +333,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     }
   }, [flatTreeData, value]);
   const seletedCount = useMemo(() => {
-    const seletedCount = selectedList.reduce((prev: number, now: any) => {
+    const seletedCount = filterChildren(selectedList).reduce((prev: number, now: any) => {
       if (!now.staffId) {
         prev += now.effCount || now.staffCount || 0;
       } else {
