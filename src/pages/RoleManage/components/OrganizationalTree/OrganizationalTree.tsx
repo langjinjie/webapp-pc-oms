@@ -105,9 +105,10 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
             item.isLeaf &&
             (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId, isDeleted })).list.length
           ) {
-            return { ...item, parentId, name: item.deptName, id: item.deptId, isLeaf: false };
+            // deptId是number类型，需要统一转成跟staffId一样的string类型
+            return { ...item, parentId, name: item.deptName, id: item.deptId.toString(), isLeaf: false };
           } else {
-            return { ...item, parentId, name: item.deptName, id: item.deptId };
+            return { ...item, parentId, name: item.deptName, id: item.deptId.toString() };
           }
         })
       );
@@ -229,13 +230,22 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const clickDelStaffHandle = (item: any) => {
     if (checkStrictly) {
       setSelectedList((param) => [...param.filter((filterItem) => !(filterItem.id === item.id))]);
-      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id)]);
+      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => !(keysItem === item.id))]);
     } else {
-      const itemChildrenKeys = selectedList
-        .filter((filterItem) => filterItem.fullDeptId.includes(item.id))
-        .map((mapItem) => mapItem.id);
+      const itemFullDeptIdList = item.fullDeptId.split(',');
+      const itemChildrenKeys = [
+        item.id,
+        ...selectedList
+          .filter((filterItem) => filterItem.fullDeptId.split(',').includes(item.id))
+          .map((mapItem) => mapItem.id)
+      ];
+      // 将该成员、子级及其祖先级全部取消选择
       setSelectedList((param) => [...param.filter((filterItem) => !itemChildrenKeys.includes(filterItem.id))]);
-      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => !itemChildrenKeys.includes(keysItem))]);
+      setCheckedKeys((keys) => [
+        ...(keys as React.Key[]).filter(
+          (keysItem) => !(keysItem === item.id || [...itemFullDeptIdList, ...itemChildrenKeys].includes(keysItem))
+        )
+      ]);
     }
   };
   // 点击左侧搜索结果的部门或者
