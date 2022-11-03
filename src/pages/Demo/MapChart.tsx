@@ -59,7 +59,7 @@ const NgMapChart: React.FC<NgBarChartProps> = ({ options, height, width }) => {
     const dealWithData = () => {
       const geoCoordMap = {
         海门: [121.15, 31.89],
-        鄂尔多斯: [109.781327, 39.608266],
+        北京: [116.405285, 39.904989],
         招远: [120.38, 37.35],
         舟山: [122.207216, 29.985295],
         齐齐哈尔: [123.97, 47.33],
