@@ -263,7 +263,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     let selected: any[] = [];
     if (!checked) {
       selected = [...selectedList, item];
-      setCheckedKeys((keys) => [...(keys as React.Key[]), item.id]);
       // onChange?.([...selectedList, item]);
     } else {
       selected = selectedList.filter((filterItem) => filterItem.id !== item.id);
@@ -329,14 +328,11 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         setSelectedList(() => [...selectedList]);
       } else {
         if (!checkStrictly) {
-          const { expandedKeys } = treeProps;
-          const expandedKey = expandedKeys[expandedKeys.length - 1];
-          if (checkedKeys.includes(expandedKey)) {
-            const newExpandedKeys: Key[] = flatTreeData
-              .filter((filterItem) => filterItem.parentId.toString() === expandedKey)
-              .map((mapItem) => mapItem.id);
-            setCheckedKeys((keys) => [...(keys as Key[]), ...newExpandedKeys]);
-          }
+          const selectedListKes = selectedList.map((mapItem) => mapItem.id);
+          const newExpandedKeys: Key[] = flatTreeData
+            .filter((filterItem) => selectedListKes.includes(filterItem.id))
+            .map((mapItem) => mapItem.id);
+          setCheckedKeys((keys) => [...(keys as Key[]), ...newExpandedKeys]);
         }
       }
     }
