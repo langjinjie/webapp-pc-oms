@@ -53,13 +53,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const [treeSearchValue, setTreeSearchValue] = useState('');
   const [selectSearchValue, setSelectSearchValue] = useState('');
   const [treeSearchList, setTreeSearchList] = useState<any[]>([]);
-  const [checkedKeys, setCheckedKeys] = useState<
-    | Key[]
-    | {
-        checked: Key[];
-        halfChecked: Key[];
-      }
-  >([]);
+  const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -291,55 +285,60 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   }, [params.visible, corpId]);
   // 自动展开以及自动勾选
   useEffect(() => {
-    if (params.visible && value && flatTreeData.length && autoExpand) {
-      // 过滤掉fullDeptId为null的
-      const filterValue = value.filter((filterItem) => filterItem.fullDeptId);
-      const expandedKeys = flatTreeData
-        .filter((filterItem) =>
-          Array.from(
-            new Set(
-              filterValue
-                ?.map((mapItem) => [...mapItem.fullDeptId?.split(',')])
-                .toString()
-                .split(',')
+    if (params.visible && flatTreeData.length) {
+      const filterValue = value?.filter((filterItem) => filterItem.fullDeptId) || [];
+      if (autoExpand) {
+        // 过滤掉fullDeptId为null的
+        const expandedKeys = flatTreeData
+          .filter((filterItem) =>
+            Array.from(
+              new Set(
+                filterValue
+                  ?.map((mapItem) => [...mapItem.fullDeptId?.split(',')])
+                  .toString()
+                  .split(',')
+              )
+            ).includes(
+              // .toString().split(',') 数组扁平化
+              filterItem.deptId.toString() // fullDeptId 是string deptId 是number
             )
-          ).includes(
-            // .toString().split(',') 数组扁平化
-            filterItem.deptId.toString() // fullDeptId 是string deptId 是number
           )
-        )
-        .map((item) => item.deptId);
-      setTreeProps({
-        ...treeProps,
-        autoExpandParent: true,
-        expandedKeys
-      });
-      const staffKeys = flatTreeData
-        .filter((filterItem) => filterValue?.some((someItem) => someItem.staffId === filterItem.id))
-        .map((mapItem) => mapItem.id);
+          .map((item) => item.deptId.toString());
+        setTreeProps({
+          ...treeProps,
+          autoExpandParent: true,
+          expandedKeys
+        });
+        const staffKeys = flatTreeData
+          .filter((filterItem) => filterValue?.some((someItem) => someItem.staffId === filterItem.id))
+          .map((mapItem) => mapItem.id);
 
-      // const deptValue = selectedDept ? filterValue : filterValue.filter((filterItem) => !filterItem.staffId);
-      const deptValue = filterValue.filter((filterItem) => !filterItem.staffId);
-      const deptKeys = flatTreeData
-        .filter((filterItem) => deptValue?.some((someItem) => someItem.deptId.toString() === filterItem.id.toString())) // deptId有时候是string 有时候是number
-        .map((mapItem) => mapItem.id);
-      if (checkStrictly) {
-        const oldData = (checkedKeys as { checked: Key[]; halfChecked: Key[] })?.checked
-          ? (checkedKeys as { checked: Key[]; halfChecked: Key[] })?.checked
-          : [];
-        setCheckedKeys(() => ({
-          checked: Array.from(new Set([...oldData, ...staffKeys, ...deptKeys])),
-          halfChecked: []
-        }));
-      } else {
+        // const deptValue = selectedDept ? filterValue : filterValue.filter((filterItem) => !filterItem.staffId);
+        const deptValue = filterValue.filter((filterItem) => !filterItem.staffId);
+        const deptKeys = flatTreeData
+          .filter((filterItem) =>
+            deptValue?.some((someItem) => someItem.deptId.toString() === filterItem.id.toString())
+          ) // deptId有时候是string 有时候是number
+          .map((mapItem) => mapItem.id);
         setCheckedKeys((checkedKeys) =>
           Array.from(new Set([...(checkedKeys as React.Key[]), ...staffKeys, ...deptKeys]))
         );
+        const selectedList = flatTreeData.filter((filterItem) =>
+          Array.from(new Set([...staffKeys, ...deptKeys])).includes(filterItem.id)
+        );
+        setSelectedList(() => [...selectedList]);
+      } else {
+        if (!checkStrictly) {
+          const { expandedKeys } = treeProps;
+          const expandedKey = expandedKeys[expandedKeys.length - 1];
+          if (checkedKeys.includes(expandedKey)) {
+            const newExpandedKeys: Key[] = flatTreeData
+              .filter((filterItem) => filterItem.parentId.toString() === expandedKey)
+              .map((mapItem) => mapItem.id);
+            setCheckedKeys((keys) => [...(keys as Key[]), ...newExpandedKeys]);
+          }
+        }
       }
-      const selectedList = flatTreeData.filter((filterItem) =>
-        Array.from(new Set([...staffKeys, ...deptKeys])).includes(filterItem.id)
-      );
-      setSelectedList(() => [...selectedList]);
     }
   }, [flatTreeData, value]);
   const seletedCount = useMemo(() => {
