@@ -244,10 +244,11 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   };
   // 点击左侧搜索结果的部门或者
   const searchList = async () => {
+    const searchType = showStaff ? (selectedDept ? undefined : 2) : 1;
     const res = await searchStaffList({
       keyWords: treeSearchValue,
-      searchType: showStaff ? (selectedDept ? undefined : 2) : 1, // 1-搜索部门 2-搜索员工 不传则搜索全部
-      isFull: true
+      searchType, // 1-搜索部门 2-搜索员工 不传则搜索全部
+      isFull: searchType === 1 ? undefined : true
     });
     if (res) {
       const list = [...(res.staffList || []), ...(res.deptList || [])];
@@ -432,12 +433,12 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
                         className={style.name}
                         title={
                           item.name +
-                          (!item.staffId ? '（' + (item.effCount || item.staffCount) + '）' : '') +
+                          (!item.staffId ? '（' + (item.effCount || item.staffCount || 0) + '）' : '') +
                           (item.staffId ? '（' + item.deptName + '）' : '')
                         }
                       >
                         {item.name +
-                          (!item.staffId ? '（' + (item.effCount || item.staffCount) + '）' : '') +
+                          (!item.staffId ? '（' + (item.effCount || item.staffCount || 0) + '）' : '') +
                           (item.staffId ? '（' + item.deptName + '）' : '')}
                       </span>
                       <Icon
