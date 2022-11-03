@@ -113,8 +113,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   };
   const onOkHandle = async () => {
     setParams?.({ visible: false, added: true, roleId: '' });
-    onChange?.(selectedList);
-    onOk?.(selectedList);
+    onChange?.(filterChildren(selectedList));
+    onOk?.(filterChildren(selectedList));
     onClose?.();
   };
   const onCancel = () => {
