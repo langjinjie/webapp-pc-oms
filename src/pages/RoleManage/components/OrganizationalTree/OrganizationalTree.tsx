@@ -53,13 +53,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const [treeSearchValue, setTreeSearchValue] = useState('');
   const [selectSearchValue, setSelectSearchValue] = useState('');
   const [treeSearchList, setTreeSearchList] = useState<any[]>([]);
-  const [checkedKeys, setCheckedKeys] = useState<
-    | Key[]
-    | {
-        checked: Key[];
-        halfChecked: Key[];
-      }
-  >([]);
+  const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
   const [treeProps, setTreeProps] = useState<ItreeProps>({
     autoExpandParent: true,
     expandedKeys: [],
@@ -105,9 +99,10 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
             item.isLeaf &&
             (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId, isDeleted })).list.length
           ) {
-            return { ...item, parentId, name: item.deptName, id: item.deptId, isLeaf: false };
+            // deptId是number类型，需要统一转成跟staffId一样的string类型
+            return { ...item, parentId, name: item.deptName, id: item.deptId.toString(), isLeaf: false };
           } else {
-            return { ...item, parentId, name: item.deptName, id: item.deptId };
+            return { ...item, parentId, name: item.deptName, id: item.deptId.toString() };
           }
         })
       );
@@ -118,8 +113,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   };
   const onOkHandle = async () => {
     setParams?.({ visible: false, added: true, roleId: '' });
-    onChange?.(selectedList);
-    onOk?.(selectedList);
+    onChange?.(filterChildren(selectedList));
+    onOk?.(filterChildren(selectedList));
     onClose?.();
   };
   const onCancel = () => {
@@ -142,7 +137,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   };
   // 选中节点
   const onCheckHandle = async (
-    checked:
+    checke:
       | Key[]
       | {
           checked: Key[];
@@ -151,15 +146,24 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     info: any
   ) => {
     setAutoExpand(false);
+    let checked: Key[] = [];
+    if (checkStrictly) {
+      checked = (
+        checke as {
+          checked: Key[];
+          halfChecked: Key[];
+        }
+      ).checked;
+    } else {
+      checked = checke as Key[];
+    }
     setCheckedKeys(checked);
-    let newSelectedList = [];
+    let newSelectedList = [...selectedList];
+
     if (showStaff) {
-      newSelectedList = flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.staffId));
       if (selectedDept) {
         // 判断已选列表是否需要显示部门
-        newSelectedList = filterChildren([
-          ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
-        ]);
+        newSelectedList = [...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))];
       } else {
         // 判断点击的是部门还是员工
         if (!info.node.staffId) {
@@ -178,39 +182,32 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
           });
           // 判断是选中还是取消
           if (info.checked) {
-            newSelectedList = [...res.list];
+            const selectedListKeys = selectedList.map((mapItem) => mapItem.id);
+            newSelectedList = [
+              ...newSelectedList,
+              ...res.list.filter((filterItem: { id: string }) => !selectedListKeys.includes(filterItem.id))
+            ];
+          } else {
+            const resListKeys = res.list.map((mapItem: { id: string }) => mapItem.id);
+            newSelectedList = newSelectedList.filter((filterItem) => !resListKeys.includes(filterItem.id));
           }
         } else {
           if (info.checked) {
             // 选择单个员工
-            newSelectedList = [
-              ...selectedList.filter((filterItem) => !(checked as Key[]).includes(filterItem.staffId)),
-              ...newSelectedList
-            ];
+            newSelectedList = [...newSelectedList, { ...info.node }];
           } else {
             // 取消选择按个员工
-            newSelectedList = [...selectedList.filter((filterItem) => filterItem.staffId !== info.node.staffId)];
+            newSelectedList = [...newSelectedList.filter((filterItem) => filterItem.staffId !== info.node.staffId)];
           }
         }
       }
     } else {
       // 判断已选列表是否需要显示部门
-      newSelectedList = filterChildren([
-        ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
-      ]);
+      newSelectedList = [...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))];
       if (checkStrictly) {
-        newSelectedList = flatTreeData.filter((filterItem) =>
-          (
-            checked as {
-              checked: Key[];
-              halfChecked: Key[];
-            }
-          ).checked.includes(filterItem.id)
-        );
+        newSelectedList = flatTreeData.filter((filterItem) => checked.includes(filterItem.id));
       } else {
-        newSelectedList = filterChildren([
-          ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
-        ]);
+        newSelectedList = [...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))];
       }
     }
     setSelectedList(newSelectedList);
@@ -225,30 +222,36 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   };
   // 删除选中
   const clickDelStaffHandle = (item: any) => {
-    setSelectedList((param) => [...param.filter((filterItem) => filterItem.id !== item.id)]);
     if (checkStrictly) {
-      setCheckedKeys((keys) => ({
-        checked: (
-          keys as {
-            checked: Key[];
-            halfChecked: Key[];
-          }
-        ).checked.filter((keysItem) => keysItem !== item.id),
-        halfChecked: []
-      }));
+      setSelectedList((param) => [...param.filter((filterItem) => !(filterItem.id === item.id))]);
+      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => !(keysItem === item.id))]);
     } else {
-      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id)]);
+      const itemFullDeptIdList = item.fullDeptId.split(',');
+      const itemChildrenKeys = [
+        item.id,
+        ...selectedList
+          .filter((filterItem) => filterItem.fullDeptId.split(',').includes(item.id))
+          .map((mapItem) => mapItem.id)
+      ];
+      // 将该成员、子级及其祖先级全部取消选择
+      setSelectedList((param) => [...param.filter((filterItem) => !itemChildrenKeys.includes(filterItem.id))]);
+      setCheckedKeys((keys) => [
+        ...(keys as React.Key[]).filter(
+          (keysItem) => !(keysItem === item.id || [...itemFullDeptIdList, ...itemChildrenKeys].includes(keysItem))
+        )
+      ]);
     }
   };
   // 点击左侧搜索结果的部门或者
   const searchList = async () => {
+    const searchType = showStaff ? (selectedDept ? undefined : 2) : 1;
     const res = await searchStaffList({
       keyWords: treeSearchValue,
-      searchType: selectedDept ? undefined : 2,
-      isFull: true
+      searchType, // 1-搜索部门 2-搜索员工 不传则搜索全部
+      isFull: searchType === 1 ? undefined : true
     });
     if (res) {
-      const list = [...res.staffList, ...(res.deptList || [])];
+      const list = [...(res.staffList || []), ...(res.deptList || [])];
       list.forEach((item: any) => {
         item.id = item.staffId || item.deptId;
         item.name = item.staffName || item.deptName;
@@ -261,38 +264,10 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     let selected: any[] = [];
     if (!checked) {
       selected = [...selectedList, item];
-      if (checkStrictly) {
-        setCheckedKeys((keys) => ({
-          checked: [
-            ...(
-              keys as {
-                checked: Key[];
-                halfChecked: Key[];
-              }
-            ).checked,
-            item.id
-          ],
-          halfChecked: []
-        }));
-      } else {
-        setCheckedKeys((keys) => [...(keys as React.Key[]), item.id]);
-      }
       // onChange?.([...selectedList, item]);
     } else {
       selected = selectedList.filter((filterItem) => filterItem.id !== item.id);
-      if (checkStrictly) {
-        setCheckedKeys((keys) => ({
-          checked: (
-            keys as {
-              checked: Key[];
-              halfChecked: Key[];
-            }
-          ).checked.filter((keysItem) => keysItem !== item.id),
-          halfChecked: []
-        }));
-      } else {
-        setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id)]);
-      }
+      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id)]);
     }
     setSelectedList(selected);
   };
@@ -310,61 +285,61 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   }, [params.visible, corpId]);
   // 自动展开以及自动勾选
   useEffect(() => {
-    console.log(flatTreeData, value);
-
-    if (params.visible && value && flatTreeData.length && autoExpand) {
-      // 过滤掉fullDeptId为null的
-      const filterValue = value.filter((filterItem) => filterItem.fullDeptId);
-      const expandedKeys = flatTreeData
-        .filter((filterItem) =>
-          Array.from(
-            new Set(
-              filterValue
-                ?.map((mapItem) => [...mapItem.fullDeptId?.split(',')])
-                .toString()
-                .split(',')
+    if (params.visible && flatTreeData.length) {
+      const filterValue = value?.filter((filterItem) => filterItem.fullDeptId) || [];
+      if (autoExpand) {
+        // 过滤掉fullDeptId为null的
+        const expandedKeys = flatTreeData
+          .filter((filterItem) =>
+            Array.from(
+              new Set(
+                filterValue
+                  ?.map((mapItem) => [...mapItem.fullDeptId?.split(',')])
+                  .toString()
+                  .split(',')
+              )
+            ).includes(
+              // .toString().split(',') 数组扁平化
+              filterItem.deptId.toString() // fullDeptId 是string deptId 是number
             )
-          ).includes(
-            // .toString().split(',') 数组扁平化
-            filterItem.deptId.toString() // fullDeptId 是string deptId 是number
           )
-        )
-        .map((item) => item.deptId);
-      setTreeProps({
-        ...treeProps,
-        autoExpandParent: true,
-        expandedKeys
-      });
-      const staffKeys = flatTreeData
-        .filter((filterItem) => filterValue?.some((someItem) => someItem.staffId === filterItem.id))
-        .map((mapItem) => mapItem.id);
+          .map((item) => item.deptId.toString());
+        setTreeProps({
+          ...treeProps,
+          autoExpandParent: true,
+          expandedKeys
+        });
+        const staffKeys = flatTreeData
+          .filter((filterItem) => filterValue?.some((someItem) => someItem.staffId === filterItem.id))
+          .map((mapItem) => mapItem.id);
 
-      // const deptValue = selectedDept ? filterValue : filterValue.filter((filterItem) => !filterItem.staffId);
-      const deptValue = filterValue.filter((filterItem) => !filterItem.staffId);
-      const deptKeys = flatTreeData
-        .filter((filterItem) => deptValue?.some((someItem) => someItem.deptId.toString() === filterItem.id.toString())) // deptId有时候是string 有时候是number
-        .map((mapItem) => mapItem.id);
-      if (checkStrictly) {
-        const oldData = (checkedKeys as { checked: Key[]; halfChecked: Key[] })?.checked
-          ? (checkedKeys as { checked: Key[]; halfChecked: Key[] })?.checked
-          : [];
-        setCheckedKeys(() => ({
-          checked: Array.from(new Set([...oldData, ...staffKeys, ...deptKeys])),
-          halfChecked: []
-        }));
-      } else {
+        // const deptValue = selectedDept ? filterValue : filterValue.filter((filterItem) => !filterItem.staffId);
+        const deptValue = filterValue.filter((filterItem) => !filterItem.staffId);
+        const deptKeys = flatTreeData
+          .filter((filterItem) =>
+            deptValue?.some((someItem) => someItem.deptId.toString() === filterItem.id.toString())
+          ) // deptId有时候是string 有时候是number
+          .map((mapItem) => mapItem.id);
         setCheckedKeys((checkedKeys) =>
           Array.from(new Set([...(checkedKeys as React.Key[]), ...staffKeys, ...deptKeys]))
         );
+        const selectedList = flatTreeData.filter((filterItem) =>
+          Array.from(new Set([...staffKeys, ...deptKeys])).includes(filterItem.id)
+        );
+        setSelectedList(() => [...selectedList]);
+      } else {
+        if (!checkStrictly) {
+          const selectedListKes = selectedList.map((mapItem) => mapItem.id);
+          const newExpandedKeys: Key[] = flatTreeData
+            .filter((filterItem) => selectedListKes.includes(filterItem.id))
+            .map((mapItem) => mapItem.id);
+          setCheckedKeys((keys) => [...(keys as Key[]), ...newExpandedKeys]);
+        }
       }
-      const selectedList = flatTreeData.filter((filterItem) =>
-        Array.from(new Set([...staffKeys, ...deptKeys])).includes(filterItem.id)
-      );
-      setSelectedList(() => [...selectedList]);
     }
   }, [flatTreeData, value]);
   const seletedCount = useMemo(() => {
-    const seletedCount = selectedList.reduce((prev: number, now: any) => {
+    const seletedCount = filterChildren(selectedList).reduce((prev: number, now: any) => {
       if (!now.staffId) {
         prev += now.effCount || now.staffCount || 0;
       } else {
@@ -448,7 +423,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
           />
           <div className={style.seletedTitle}>已选择成员 {seletedCount} 人</div>
           <div className={classNames(style.selectList, 'scroll-strip')}>
-            {selectedList
+            {filterChildren(selectedList)
               .filter((filterItem) => filterItem.name.includes(selectSearchValue))
               .map(
                 (item) =>
@@ -458,12 +433,12 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
                         className={style.name}
                         title={
                           item.name +
-                          (!item.staffId ? '（' + (item.effCount || item.staffCount) + '）' : '') +
+                          (!item.staffId ? '（' + (item.effCount || item.staffCount || 0) + '）' : '') +
                           (item.staffId ? '（' + item.deptName + '）' : '')
                         }
                       >
                         {item.name +
-                          (!item.staffId ? '（' + (item.effCount || item.staffCount) + '）' : '') +
+                          (!item.staffId ? '（' + (item.effCount || item.staffCount || 0) + '）' : '') +
                           (item.staffId ? '（' + item.deptName + '）' : '')}
                       </span>
                       <Icon

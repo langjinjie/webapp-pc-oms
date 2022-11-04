@@ -291,7 +291,7 @@ export const filterChildren = (arr: any[]): any[] => {
 // 向树结构添加子节点
 export const updateTreeData = (list: any[], key: React.Key, children: any[]): any[] => {
   return list.map((node) => {
-    if (node.deptId === key) {
+    if (node.deptId.toString() === key.toString()) {
       return {
         ...node,
         children

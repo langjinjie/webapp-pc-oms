@@ -52,6 +52,7 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'sta
         title="选择客户经理"
         okText={'确认'}
         onChange={onChange}
+        checkStrictly={type === 'dept'}
       />
     </>
   );
