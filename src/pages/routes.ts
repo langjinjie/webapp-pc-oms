@@ -388,6 +388,11 @@ export const routes: RouteProps[] = [
   {
     path: '/cockpit',
     component: lazy(() => import('src/pages/Dashboard/Cockpit/Cockpit'))
+  },
+  // 聊天记录查询
+  {
+    path: '/chatRecord',
+    component: lazy(() => import('src/pages/OrgManage/ChatRecord/List/List'))
   }
 ];
 
