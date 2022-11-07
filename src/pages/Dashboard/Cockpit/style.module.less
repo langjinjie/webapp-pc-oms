@@ -40,6 +40,44 @@
     line-height: 24px;
     color: #fff;
   }
+  .ngLineChart {
+    position: relative;
+    flex-grow: 1;
+  }
+  .ngLineChartTitle {
+    position: absolute;
+    width: 90px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: center;
+    line-height: 22px;
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      bottom: -9px;
+      width: 90px;
+      height: 2px;
+      background: linear-gradient(315deg, #07bdff 0%, #665dff 100%);
+    }
+  }
+  .ranking {
+    width: 360px;
+    height: 371px;
+    padding: 10px;
+    background-color: rgba(56, 62, 254, 0.3);
+    box-shadow: 0px 2px 4px 0px rgba(7, 6, 6, 0.4);
+    border-radius: 4px;
+    .titleWrap {
+      padding-top: 8px;
+      color: #ffffff;
+    }
+  }
+  .rankingTable {
+    background: #bfa !important;
+  }
 
   .time {
     font-size: 14px;

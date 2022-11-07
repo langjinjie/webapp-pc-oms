@@ -1,7 +1,16 @@
 import classNames from 'classnames';
 import React from 'react';
+import * as echarts from 'echarts/core';
 import { Table } from 'antd';
-import { tableColumns1, tableColumns2, tableColumns3, tableColumns4, tableColumns5 } from './Config';
+import {
+  tableColumns1,
+  tableColumns2,
+  tableColumns3,
+  tableColumns4,
+  tableColumns5,
+  tableColumnsSubCenterRangking
+} from './Config';
+import { NgLineChart, NgTable } from 'src/components';
 import styles from './style.module.less';
 
 const Cockpit: React.FC = () => {
@@ -67,23 +76,69 @@ const Cockpit: React.FC = () => {
           <div className={classNames('flex justify-between', styles.panelHeader)}>
             <h3 className={styles.panelTitle}>关键指标趋势</h3>
           </div>
-          <div>
-            <div>
-              <h4>客户总人数</h4>
+          <div className={'flex justify-between pt20'}>
+            <div className={styles.ngLineChart}>
+              <h4 className={styles.ngLineChartTitle}>客户总人数</h4>
+              <div className={'pt40'}>
+                <NgLineChart
+                  options={{
+                    xAxis: {
+                      type: 'category',
+                      boundaryGap: false,
+                      data: ['10/31', '11/01', '11/02', '11/03', '11/04', '11/05', '11/06']
+                    },
+                    yAxis: {
+                      type: 'value',
+                      splitLine: {
+                        lineStyle: {
+                          color: 'rgba(82, 81, 125, 1)',
+                          type: 'dashed'
+                        }
+                      }
+                    },
+                    series: [
+                      {
+                        data: [150, 230, 321, 356, 387, 400, 410],
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {
+                          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {
+                              offset: 0,
+                              color: 'rgba(255, 134, 46, 0.2)'
+                            },
+                            {
+                              offset: 1,
+                              color: 'rgba(255, 134, 46, 0)'
+                            }
+                          ])
+                        },
+                        lineStyle: {
+                          width: 2,
+                          color: 'rgba(255, 155, 27, 1)'
+                        },
+                        itemStyle: { color: 'rgb(255, 155, 27)' }
+                      }
+                    ]
+                  }}
+                />
+              </div>
               <div></div>
             </div>
-            <div>
-              <h4>分中心排名</h4>
+            <div className={styles.ranking}>
+              <div className={classNames(styles.titleWrap, 'flex justify-between')}>
+                <span>分中心排名</span>
+                <span>2022-06-04</span>
+              </div>
+              <NgTable
+                className={styles.rankingTable}
+                scroll={{ x: 'max-content' }}
+                columns={tableColumnsSubCenterRangking()}
+              />
             </div>
           </div>
         </div>
 
-        <div>
-          <div>
-            <h3>团队排名</h3>
-            <div></div>
-          </div>
-        </div>
         <div className="mt40">
           <div className={classNames('flex justify-between')}>
             <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
@@ -100,7 +155,7 @@ const Cockpit: React.FC = () => {
               <Table rowKey={'taskId'} columns={tableColumns1()} />
             </div>
             <div className={styles.table}>
-              <Table rowKey={'taskId'} columns={tableColumns2()} />
+              <Table rowKey={'taskId'} columns={tableColumns2()} scroll={{ x: 'max-content' }} />
             </div>
           </div>
         </div>

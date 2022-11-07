@@ -1,4 +1,4 @@
-// import React from 'react';
+import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 
 export const tableColumns1: () => ColumnsType<any> = () => {
@@ -125,5 +125,20 @@ export const tableColumns5: () => ColumnsType<any> = () => {
       sorter: true,
       dataIndex: ''
     }
+  ];
+};
+
+// 分中心排名
+export const tableColumnsSubCenterRangking: () => ColumnsType<any> = () => {
+  return [
+    {
+      title: '排名',
+      render (_: any, __: any, index: number) {
+        return <>{index}</>;
+      }
+    },
+    { title: '分中心' },
+    { title: '联系客户数' },
+    { title: '内容发送数' }
   ];
 };
