@@ -1,15 +1,18 @@
 import { PaginationProps, Divider, PageHeader } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+// import { getChatList,getChatDetail } from 'src/apis/orgManage';
 import { getSceneList } from 'src/apis/task';
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { useDocumentTitle } from 'src/utils/base';
+import CreateDrawer from '../Components/CreateDrawer';
 import { SceneColumns, searchCols, tableColumnsFun } from './ListConfig';
-// import style from './style.module.less';
-const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
+const ChatRecordList: React.FC<RouteComponentProps> = () => {
   const [tableSource, setTableSource] = useState<Partial<SceneColumns>[]>([]);
+  const [visible, setVisible] = useState(false);
+  const [chatValue, setChatValue] = useState<any>();
   const [queryParams, setQueryParams] = useState<any>();
-  useDocumentTitle('智能运营-场景管理');
+  useDocumentTitle('合规管理-聊天记录查询');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -20,17 +23,20 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
   });
 
   const getList = async (params?: any) => {
+    console.log(params, '-------------------params');
     const pageNum = params?.pageNum || pagination.current;
     const pageSize = params?.pageSize || pagination.pageSize;
+    // const res = await getChatList({ getSceneList
     const res = await getSceneList({
       ...queryParams,
       ...params,
       pageNum,
       pageSize
     });
+    console.log(res, '-------------res');
     if (res) {
       const { list, total } = res;
-      setTableSource(list);
+      setTableSource(list || []);
       setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
     }
   };
@@ -40,19 +46,13 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   const onSearch = (values: any) => {
-    const { node, ...others } = values;
-    getList({
-      nodeId: node?.value || '',
-      ...others,
-      pageNum: 1
-    });
-    setQueryParams({ nodeId: node?.value || '', ...others });
+    const { carNumber = '', externalName = '', staffId = '', startTime = '', endTime = '' } = values;
+    getList({ carNumber, externalName, staffId, startTime, endTime, pageNum: 1 });
+    setQueryParams({ carNumber, externalName, staffId, startTime, endTime });
   };
 
-  // 重置无法触发该方法
   const onValuesChange = (changeValues: any, values: any) => {
-    const { node, ...others } = values;
-    setQueryParams({ nodeId: node?.value || '', ...others });
+    setQueryParams(values);
   };
 
   const paginationChange = (pageNum: number, pageSize?: number) => {
@@ -60,8 +60,12 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   // 查询场景详情
-  const jumpToDetail = (sceneId: string) => {
-    history.push('/taskScene/detail?sceneId=' + sceneId);
+  const chatDetail = async (sceneId: string) => {
+    console.log(sceneId, '---------------record');
+    // const res = await getChatDetail({ proposalId: record.proposalId });
+    setVisible(true);
+    // setChatValue({ ...record, retdata: res });
+    setChatValue('111111111');
   };
 
   return (
@@ -81,18 +85,26 @@ const TaskSceneList: React.FC<RouteComponentProps> = ({ history }) => {
       <div className="mt20">
         <NgTable
           columns={tableColumnsFun({
-            onOperate: jumpToDetail
+            onOperate: chatDetail
           })}
           dataSource={tableSource}
           pagination={pagination}
           paginationChange={paginationChange}
           setRowKey={(record: SceneColumns) => {
+            // return record.proposalId;
             return record.sceneId;
           }}
         />
       </div>
+      <CreateDrawer
+        visible={visible}
+        value={chatValue}
+        onClose={() => {
+          setVisible(false);
+        }}
+      />
     </div>
   );
 };
 
-export default TaskSceneList;
+export default ChatRecordList;
