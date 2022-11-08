@@ -1,5 +1,6 @@
 import http from 'src/utils/http';
 type HttpFC<T = { [key: string]: unknown }> = (param?: T, config?: any) => Promise<any>;
+type HttpVoid = () => Promise<any>;
 
 /**
  * @description 获取看板整体数据
@@ -69,4 +70,12 @@ export const getTagCoverageRate: HttpFC = (param) => {
 // 1.9、【新增】在线培训视频完成率数据接口
 export const getVideoFinrateData: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/data/bi/train/videofinrate', param);
+};
+
+/**
+ * @description 获取下载报名分类
+ * @param param
+ */
+export const quesetGetTempleList: HttpVoid = () => {
+  return http.post('/tenacity-admin/api/data/download/templelist');
 };
