@@ -76,6 +76,49 @@ export const getVideoFinrateData: HttpFC = (param) => {
  * @description 获取下载报名分类
  * @param param
  */
-export const quesetGetTempleList: HttpVoid = () => {
+export const requestGetTempleList: HttpVoid = () => {
   return http.post('/tenacity-admin/api/data/download/templelist');
+};
+
+/* ------------------------------ 大屏驾驶舱 ------------------------------ */
+/**
+ * @description 总体数据接口
+ */
+export const requestGetBicontrolAdminView: HttpVoid = () => {
+  return http.post('/tenacity-admin/api/data/bicontrol/adminView');
+};
+
+/**
+ * @description 团队排名接口
+ */
+export const requestGetBicontrolTeamlist: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bicontrol/teamlist', param);
+};
+
+/**
+ * @description 客户经理排名接口
+ */
+export const requestGetBicontrolStafflist: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bicontrol/stafflist', param);
+};
+
+/**
+ * @description 查看文章分类排名接口
+ */
+export const requestGetBicontrolNewstypelist: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bicontrol/newstypelist', param);
+};
+
+/**
+ * @description 查看产品排名接口
+ */
+export const requestGetBicontrolProductlist: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bicontrol/productlist', param);
+};
+
+/**
+ * @description 销售概率险种排名接口
+ */
+export const requestGetBicontrolTagslist: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bicontrol/tagslist', param);
 };

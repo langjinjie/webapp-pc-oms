@@ -1,5 +1,8 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
+import { fix } from 'src/utils/base';
+import style from './style.module.less';
+import classNames from 'classnames';
 
 export const tableColumns1: () => ColumnsType<any> = () => {
   return [
@@ -128,17 +131,33 @@ export const tableColumns5: () => ColumnsType<any> = () => {
   ];
 };
 
+const rankImg = [
+  require('src/assets/images/dashboard/rank_1.png'),
+  require('src/assets/images/dashboard/rank_2.png'),
+  require('src/assets/images/dashboard/rank_3.png')
+];
+
 // 分中心排名
 export const tableColumnsSubCenterRangking: () => ColumnsType<any> = () => {
   return [
     {
       title: '排名',
       render (_: any, __: any, index: number) {
-        return <>{index}</>;
+        return <span>{index > 2 ? fix(index + 1, 2) : <img src={rankImg[index]} />}</span>;
       }
     },
-    { title: '分中心' },
-    { title: '联系客户数' },
-    { title: '内容发送数' }
+    {
+      title: '分中心',
+      dataIndex: 'areaName',
+      render (areaName: string) {
+        return (
+          <span className={classNames(style.areaName, 'ellipsis')} title={areaName}>
+            {areaName}
+          </span>
+        );
+      }
+    },
+    { title: '联系客户数', dataIndex: 'chatFriendCount' },
+    { title: '内容发送数', dataIndex: 'dayMarket' }
   ];
 };

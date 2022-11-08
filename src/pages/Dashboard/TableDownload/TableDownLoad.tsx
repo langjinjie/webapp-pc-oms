@@ -5,7 +5,7 @@ import {
   asyncCreateDownloadFile,
   dataDownloadList,
   exportFileWithTable,
-  quesetGetTempleList
+  requestGetTempleList
 } from 'src/apis/dashboard';
 import { AuthBtn, NgTable } from 'src/components';
 import { exportFile } from 'src/utils/base';
@@ -40,7 +40,7 @@ const TableDownLoad: React.FC = () => {
 
   // 获取报表类别
   const getListCategory = async () => {
-    const res = await quesetGetTempleList();
+    const res = await requestGetTempleList();
     if (res) {
       setTempleList(res);
     }

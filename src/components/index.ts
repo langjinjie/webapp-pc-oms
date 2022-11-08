@@ -26,4 +26,3 @@ export { default as Preview } from './Preview/Preview';
 export { default as TagEmpty } from './TagEmpty/TagEmpty';
 export { default as ScrollList } from './ScrollList/ScrollList';
 export { default as NoPermission } from 'src/components/NoPermission/NoPermission';
-export { NgLineChart } from 'src/components/LineChart/LineChart';
