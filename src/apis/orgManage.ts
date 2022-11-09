@@ -296,3 +296,7 @@ export const getChatList: HttpFC = (params) => {
 export const getChatDetail: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/proposal/get', params);
 };
+// 查询详细沟通记录接口
+export const getChatSearchList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/proposal/getDynamicList', params);
+};

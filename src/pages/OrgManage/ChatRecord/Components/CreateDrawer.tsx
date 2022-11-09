@@ -1,5 +1,6 @@
-import { Button, Drawer, Form, Input, Divider, Space, Avatar, List } from 'antd';
-import React from 'react';
+import { Button, Drawer, Form, Input, Divider, Space, Avatar, List, PaginationProps } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { getChatSearchList } from 'src/apis/orgManage';
 import style from './style.module.less';
 interface CreateDrawerProps {
   visible: boolean;
@@ -8,24 +9,75 @@ interface CreateDrawerProps {
   // onSuccess: () => void;
 }
 const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value }) => {
+  const [list, setList] = useState<[]>([]);
+  const [chatProposalId, setChatProposalId] = useState<String>();
+  const [pagination, setPagination] = useState<PaginationProps>({
+    current: 0,
+    pageSize: 10,
+    total: 0
+  });
   const { Item } = Form;
   const [form] = Form.useForm();
   console.log(value);
-  /**
-   * 查询
-   * @param values
-   */
+  // 获取列表数据
+  const getList = async (param: any) => {
+    const params: any = {
+      ...param,
+      pageNum: param.pageNum,
+      pageSize: param.pageSize,
+      ...chatProposalId
+    };
+    console.log(params);
+    const res = await getChatSearchList({ ...params });
+    if (res) {
+      const { list } = res;
+      setList(list || []);
+
+      //   setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
+      setPagination((pagination) => ({ ...pagination }));
+    }
+  };
   const onSearch = (values: any) => {
     console.log(values);
-
-    // const param: any = {
-    //   ...values,
-    //   pageNum: 1
-    // };
-    // setStaffName(values);
-    // getList(param);
+    const param: any = {
+      ...values,
+      pageNum: 1
+    };
+    setChatProposalId(values);
+    getList(param);
   };
+  useEffect(() => {
+    getList({});
+  }, []);
   const data = [
+    {
+      title: (
+        <Space>
+          <div className={style.chatName}>{'李斯'}</div>
+          <div className={style.chatcard}>{'客户经理'}</div>
+          <div className={style.chatTime}>{'2022-11-11 12:20'}</div>
+          <div className={style.chatTime}>{list}</div>
+        </Space>
+      )
+    },
+    {
+      title: '李斯 客户经理   2022-11-11 12:20'
+    },
+    {
+      title: '李斯 客户经理   2022-11-11 12:20'
+    },
+    {
+      title: '李斯 客户经理   2022-11-11 12:20'
+    },
+    {
+      title: '李斯 客户经理   2022-11-11 12:20'
+    },
+    {
+      title: '李斯 客户经理   2022-11-11 12:20'
+    },
+    {
+      title: '李斯 客户经理   2022-11-11 12:20'
+    },
     {
       title: '李斯 客户经理   2022-11-11 12:20'
     },
@@ -94,11 +146,22 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value }) 
               <List
                 itemLayout="horizontal"
                 dataSource={data}
+                pagination={{
+                  onChange: (pageNum: number, pageSize?: number) => {
+                    getList({ pageNum, pageSize });
+                    console.log({ pageNum, pageSize });
+                  },
+                  pageSize: pagination.pageSize
+                }}
                 renderItem={(item) => (
                   <List.Item>
                     <List.Item.Meta
                       avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                      title={`${item.title}`}
+                      title={
+                        <>
+                          <div className={style.chatName}>{item.title}</div>
+                        </>
+                      }
                       description="Ant Design, a design language for background applications, is refined by Ant UED Team"
                     />
                   </List.Item>
