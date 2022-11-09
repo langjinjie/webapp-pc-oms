@@ -68,7 +68,7 @@ const TableDownLoad: React.FC = () => {
           <Form.Item label="日期" name="dateRange" rules={[{ required: true }]}>
             <DatePicker.RangePicker allowClear />
           </Form.Item>
-          <Form.Item extra="备注：同样的报表，1分钟内仅能下载一次">
+          <Form.Item extra="备注：点击生成报表按钮后，若列表还在处理中状态，请稍后手动刷新页面试试。">
             <Button type="primary" shape="round" htmlType="submit">
               生成报表
             </Button>
