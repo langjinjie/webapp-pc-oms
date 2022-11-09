@@ -458,7 +458,9 @@ export interface IBicontrolAdminView {
   lastChatFriendCount: number;
   compareChatFriendCount?: number; // 较昨日联系客户数
   totalClientCntList: ITotalClientCntList[];
+  areaDay: string;
   areaRankList: IAreaRankList[];
+  tagDay: string;
   tagDistbList: ITagDistbList[];
 }
 
@@ -466,14 +468,12 @@ export interface ITotalClientCntList {
   dateStr: string;
   dataX: string;
   dataY: string;
-  areaDay: string;
 }
 
 export interface IAreaRankList {
   areaName: string;
   chatFriendCount: number;
   dayMarket: number;
-  tagDay: string;
 }
 
 export interface ITagDistbList {

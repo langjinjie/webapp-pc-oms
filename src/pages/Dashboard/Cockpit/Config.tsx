@@ -9,31 +9,33 @@ export const tableColumns1: () => ColumnsType<any> = () => {
     {
       className: 'titles',
       title: '排名',
-      dataIndex: '',
-      color: 'red'
+      dataIndex: 'sort',
+      width: 60
     },
     {
       title: '团队名称',
-      dataIndex: ''
+      dataIndex: 'teamName',
+      ellipsis: true
     },
     {
       title: '分中心',
-      dataIndex: ''
+      dataIndex: 'centerName',
+      ellipsis: true
     },
     {
       title: '联系客户数',
       sorter: true,
-      dataIndex: ''
+      dataIndex: 'chatFriendCount'
     },
     {
       title: '人均联系客户数',
       sorter: true,
-      dataIndex: ''
+      dataIndex: 'perChatFriendCount'
     },
     {
       title: '内容发送数',
       sorter: true,
-      dataIndex: ''
+      dataIndex: 'dayMarket'
     }
   ];
 };
@@ -42,31 +44,33 @@ export const tableColumns2: () => ColumnsType<any> = () => {
     {
       className: 'titles',
       title: '排名',
-      dataIndex: '',
-      color: 'red'
+      dataIndex: 'sort',
+      width: 60
     },
     {
       title: '坐席名称',
-      dataIndex: ''
+      dataIndex: 'staffName',
+      ellipsis: true
+    },
+    {
+      title: '团队名称',
+      dataIndex: 'teamName',
+      ellipsis: true
     },
     {
       title: '分中心',
-      dataIndex: ''
+      dataIndex: 'centerName',
+      ellipsis: true
     },
     {
       title: '联系客户数',
       sorter: true,
-      dataIndex: ''
-    },
-    {
-      title: '人均联系客户数',
-      sorter: true,
-      dataIndex: ''
+      dataIndex: 'chatCnt'
     },
     {
       title: '内容发送数',
       sorter: true,
-      dataIndex: ''
+      dataIndex: 'dayMarket'
     }
   ];
 };
@@ -74,16 +78,19 @@ export const tableColumns3: () => ColumnsType<any> = () => {
   return [
     {
       title: '排名',
-      dataIndex: ''
+      dataIndex: 'sort',
+      width: 60
     },
     {
       title: '文章分类',
-      dataIndex: ''
+      dataIndex: 'title',
+      ellipsis: true
     },
     {
       title: '客户浏览人数',
       sorter: true,
-      dataIndex: ''
+      dataIndex: 'totalCnt',
+      width: 150
     }
   ];
 };
@@ -91,16 +98,19 @@ export const tableColumns4: () => ColumnsType<any> = () => {
   return [
     {
       title: '排名',
-      dataIndex: ''
+      dataIndex: 'sort',
+      width: 60
     },
     {
       title: '产品名称',
-      dataIndex: ''
+      dataIndex: 'title',
+      ellipsis: true
     },
     {
       title: '客户浏览人数',
       sorter: true,
-      dataIndex: ''
+      dataIndex: 'totalCnt',
+      width: 150
     }
   ];
 };
@@ -109,24 +119,28 @@ export const tableColumns5: () => ColumnsType<any> = () => {
     {
       title: '排名',
       align: 'center',
-      dataIndex: ''
+      dataIndex: 'sort',
+      width: 60
     },
     {
       title: '险种名称',
       align: 'center',
-      dataIndex: ''
+      dataIndex: 'title',
+      ellipsis: true
     },
     {
       title: '客户浏览人数',
       align: 'center',
       sorter: true,
-      dataIndex: ''
+      dataIndex: 'totalCnt',
+      width: 150
     },
     {
       title: '客户占比',
       align: 'center',
       sorter: true,
-      dataIndex: ''
+      dataIndex: 'clientRate',
+      width: 150
     }
   ];
 };

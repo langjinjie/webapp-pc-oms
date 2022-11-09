@@ -104,9 +104,9 @@
       }
       // 1,2,3名背景
       .ant-table-tbody {
-        > tr:nth-child(2),
-        > tr:nth-child(3),
-        > tr:nth-child(4) {
+        > tr.ant-table-row:nth-child(2),
+        > tr.ant-table-row:nth-child(3),
+        > tr.ant-table-row:nth-child(4) {
           background: linear-gradient(to right, rgb(75, 56, 100) 0%, rgb(33, 38, 119) 101%) no-repeat !important;
           background-size: 100% 75% !important;
           background-position: center center !important;
@@ -117,10 +117,10 @@
             background: transparent;
           }
         }
-        > tr:nth-child(3) {
+        > tr.ant-table-row:nth-child(3) {
           background-image: linear-gradient(90deg, rgba(65, 44, 130) 0%, rgb(33, 38, 119) 100%) !important;
         }
-        > tr:nth-child(4) {
+        > tr.ant-table-row:nth-child(4) {
           background-image: linear-gradient(90deg, rgba(30, 61, 140) 0%, rgb(33, 38, 119) 100%) !important;
         }
       }
@@ -282,8 +282,12 @@
 
     // 地图
     .mapWrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 49%;
       position: relative;
-      flex-grow: 1;
+      background-color: #1f2183;
     }
     .totalClient {
       position: absolute;
@@ -308,6 +312,29 @@
       font-size: 14px;
       font-weight: 400;
       color: #9ca3bf;
+    }
+    .ant-pagination-total-text,
+    .ant-pagination-item-ellipsis {
+      color: #9ca3bf !important;
+    }
+    .ant-pagination-item {
+      background-color: #1c1e71;
+      border-color: #9c9ae2;
+      > a {
+        color: #9ca3bf;
+      }
+    }
+    .ant-pagination-item-active {
+      background-color: #1c1e71;
+      > a {
+        color: #fff;
+      }
+      border-color: #9c9ae2;
+    }
+    .ant-pagination-item-link {
+      background-color: #1c1e71;
+      color: #9ca3bf;
+      border-color: #9c9ae2;
     }
   }
 }
