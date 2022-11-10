@@ -71,7 +71,7 @@
   // 分中心排名
   .ranking {
     width: 360px;
-    height: 371px;
+    min-height: 371px;
     padding: 10px;
     background-color: rgba(56, 62, 254, 0.3);
     box-shadow: 0px 2px 4px 0px rgba(7, 6, 6, 0.4);
@@ -90,22 +90,21 @@
         background: rgb(45, 59, 137);
         border-bottom: 1px solid #52517d;
         border-top: 1px solid #52517d;
-      }
-      .ant-table-tbody td,
-      .ant-table-tbody td:hover {
-        background: rgb(33, 38, 119);
-      }
-      .ant-table-thead > tr > th {
         background: rgb(33, 38, 119) !important;
-      }
-      .ant-table-tbody > tr > td {
-        border: none !important;
       }
       .ant-table-cell {
         padding: 16px 5px;
       }
-      // 1,2,3名背景
+      // 1,2,3名及其后续排序背景
       .ant-table-tbody {
+        tr.ant-table-row {
+          background-color: rgb(33, 38, 119);
+          td,
+          td:hover {
+            background: transparent;
+            border: none;
+          }
+        }
         > tr.ant-table-row:nth-child(2),
         > tr.ant-table-row:nth-child(3),
         > tr.ant-table-row:nth-child(4) {
@@ -113,10 +112,8 @@
           background-size: 100% 75% !important;
           background-position: center center !important;
           background-color: rgb(33, 38, 119) !important;
-          border: none !important;
           td {
             color: #fff;
-            background: transparent;
           }
         }
         > tr.ant-table-row:nth-child(3) {
@@ -315,6 +312,7 @@
       font-weight: 400;
       color: #9ca3bf;
     }
+    // 分页器样式
     .ant-pagination-total-text,
     .ant-pagination-item-ellipsis {
       color: #9ca3bf !important;
