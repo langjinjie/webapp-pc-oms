@@ -54,7 +54,12 @@ const Cockpit: React.FC = () => {
   });
   // 文章排名列表
   const [newsListLoading, setNewsListLoading] = useState(true);
-  const [bicontrolNewsList, setBicontrolNewsList] = useState<{ day: string; list: any[] }>({ day: '', list: [] });
+  const [bicontrolNewsList, setBicontrolNewsList] = useState<{
+    day: string;
+    list: any[];
+    sumTotalCnt: number;
+    totalPerCnt: number;
+  }>({ day: '', list: [], sumTotalCnt: 0, totalPerCnt: 0 });
   const [newsListPagination, setNewsListPagination] = useState<{
     total: number;
     pageNum: number;
@@ -159,6 +164,8 @@ const Cockpit: React.FC = () => {
             sort = 1;
           } else if (sorter.order === 'ascend') {
             sort = 2;
+          } else {
+            sort = undefined;
           }
           break;
         // 人均联系客户数
@@ -167,6 +174,8 @@ const Cockpit: React.FC = () => {
             sort = 3;
           } else if (sorter.order === 'ascend') {
             sort = 4;
+          } else {
+            sort = undefined;
           }
           break;
         // 内容发送次数
@@ -175,6 +184,8 @@ const Cockpit: React.FC = () => {
             sort = 5;
           } else if (sorter.order === 'ascend') {
             sort = 6;
+          } else {
+            sort = undefined;
           }
           break;
 
@@ -219,6 +230,8 @@ const Cockpit: React.FC = () => {
             sort = 1;
           } else if (sorter.order === 'ascend') {
             sort = 2;
+          } else {
+            sort = undefined;
           }
           break;
         // 内容发送次数
@@ -227,6 +240,8 @@ const Cockpit: React.FC = () => {
             sort = 5;
           } else if (sorter.order === 'ascend') {
             sort = 6;
+          } else {
+            sort = undefined;
           }
           break;
 
@@ -247,8 +262,8 @@ const Cockpit: React.FC = () => {
     setNewsListLoading(true);
     const res = await requestGetBicontrolNewstypelist({ ...param });
     if (res) {
-      const { day, list, total } = res;
-      setBicontrolNewsList({ day, list });
+      const { day, list, total, sumTotalCnt, totalPerCnt } = res;
+      setBicontrolNewsList({ day, list, sumTotalCnt, totalPerCnt });
       setNewsListPagination((param) => ({ ...param, pageNum: param.pageNum, total }));
     }
     setNewsListLoading(false);
@@ -268,6 +283,17 @@ const Cockpit: React.FC = () => {
             sort = 1;
           } else if (sorter.order === 'ascend') {
             sort = 2;
+          } else {
+            sort = undefined;
+          }
+          break;
+        case 'perCnt':
+          if (sorter.order === 'descend') {
+            sort = 3;
+          } else if (sorter.order === 'ascend') {
+            sort = 4;
+          } else {
+            sort = undefined;
           }
           break;
         default:
@@ -308,6 +334,8 @@ const Cockpit: React.FC = () => {
             sort = 1;
           } else if (sorter.order === 'ascend') {
             sort = 2;
+          } else {
+            sort = undefined;
           }
           break;
         default:
@@ -349,6 +377,8 @@ const Cockpit: React.FC = () => {
             sort = 1;
           } else if (sorter.order === 'ascend') {
             sort = 2;
+          } else {
+            sort = undefined;
           }
           break;
         // 客户占比
@@ -357,6 +387,8 @@ const Cockpit: React.FC = () => {
             sort = 3;
           } else if (sorter.order === 'ascend') {
             sort = 4;
+          } else {
+            sort = undefined;
           }
           break;
         // 内容发送次数
@@ -365,6 +397,8 @@ const Cockpit: React.FC = () => {
             sort = 5;
           } else if (sorter.order === 'ascend') {
             sort = 6;
+          } else {
+            sort = undefined;
           }
           break;
 
@@ -494,10 +528,10 @@ const Cockpit: React.FC = () => {
             <div className={classNames('flex justify-between', styles.panelHeader)}>
               <h3 className={styles.panelTitle}>关键指标趋势</h3>
             </div>
-            <div className={'flex justify-between pt20'}>
-              <div className={styles.ngLineChart}>
+            <div className={classNames(styles.chartAndRank, 'flex justify-between pt20')}>
+              <div className={classNames(styles.ngLineChart, 'mr20')}>
                 <h4 className={styles.ngLineChartTitle}>客户总人数</h4>
-                <div className={'pt40'}>
+                <div>
                   <LineChart lineChartData={lineChartData} />
                 </div>
                 <div></div>
@@ -587,8 +621,16 @@ const Cockpit: React.FC = () => {
                 </span>
               </div>
               <div className={styles.table1}>
-                <div className={styles.browse}>浏览客户数</div>
-                <div className={styles.browseNum}>{}</div>
+                <div className="flex justify-around">
+                  <div>
+                    <div className={styles.browse}>查看内容总次数</div>
+                    <div className={styles.browseNum}>{bicontrolNewsList.totalPerCnt}</div>
+                  </div>
+                  <div>
+                    <div className={styles.browse}>人均查看数</div>
+                    <div className={styles.browseNum}>{bicontrolNewsList.sumTotalCnt}</div>
+                  </div>
+                </div>
                 {/* 文章查看情况 */}
                 <Table
                   rowKey={({ sort, title }: { sort: number; title: string }) => sort + title}

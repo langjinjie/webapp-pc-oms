@@ -17,10 +17,6 @@ export interface Menu {
 
 export const noVerRoutes: RouteProps[] = [
   {
-    path: '/demo',
-    component: lazy(() => import('src/pages/Demo/MapDemo'))
-  },
-  {
     path: '/',
     component: lazy(() => import('src/pages/Index/Index'))
   },

@@ -87,9 +87,17 @@ export const tableColumns3: () => ColumnsType<any> = () => {
       ellipsis: true
     },
     {
-      title: '客户浏览人数',
+      title: '查看内容总次数',
       sorter: true,
+      align: 'center',
       dataIndex: 'totalCnt',
+      width: 150
+    },
+    {
+      title: '人均查看数',
+      sorter: true,
+      align: 'center',
+      dataIndex: 'perCnt',
       width: 150
     }
   ];

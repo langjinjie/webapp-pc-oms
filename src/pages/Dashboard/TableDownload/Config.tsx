@@ -1,7 +1,7 @@
 import { Button, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
-import React from 'react';
+import React, { useState } from 'react';
 import { AuthBtn } from 'src/components';
 // import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
@@ -41,7 +41,13 @@ interface OperateProps {
 }
 
 export const columns = (args: OperateProps): ColumnsType<fileProps> => {
+  const [loadingId, setLoadingId] = useState('');
   const { handleOperate } = args;
+  const downLoadFile = async (record: any) => {
+    setLoadingId(record.fileId);
+    await handleOperate(record);
+    setLoadingId('');
+  };
   return [
     {
       title: '下载ID',
@@ -107,7 +113,7 @@ export const columns = (args: OperateProps): ColumnsType<fileProps> => {
           <AuthBtn path="/export">
             {status === 1
               ? (
-              <Button type="link" onClick={() => handleOperate(record)}>
+              <Button loading={loadingId === record.fileId} type="link" onClick={() => downLoadFile(record)}>
                 下载文件
               </Button>
                 )
