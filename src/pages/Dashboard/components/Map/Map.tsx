@@ -28,6 +28,21 @@ const Map: React.FC<IMapProps> = ({ data }) => {
           color: '#fff'
         }
       },
+      geo: {
+        map: 'china',
+        roam: false, // 一定要关闭拖拽
+        zoom: 1.23,
+        center: [105, 36], // 调整地图位置
+        itemStyle: {
+          areaColor: '#1F2183',
+          borderColor: '#389dff',
+          borderWidth: 1, // 设置外层边框
+          shadowBlur: 5,
+          shadowOffsetY: 8,
+          shadowOffsetX: 0,
+          shadowColor: '#01012a'
+        }
+      },
       series: [
         {
           name: '客户数',
@@ -36,7 +51,7 @@ const Map: React.FC<IMapProps> = ({ data }) => {
           roam: false,
           zoom: 1.23,
           center: [105, 36],
-          showLegendSymbol: true, // 存在legend时显示
+          showLegendSymbol: false, // 存在legend时显示
           emphasis: {
             show: true, // 高亮状态下的多边形和标签样式。
             label: {

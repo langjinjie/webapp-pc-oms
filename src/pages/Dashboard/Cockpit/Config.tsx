@@ -10,7 +10,7 @@ export const tableColumns1: () => ColumnsType<any> = () => {
       className: 'titles',
       title: '排名',
       dataIndex: 'sort',
-      width: 60
+      width: 70
     },
     {
       title: '团队名称',
@@ -45,7 +45,7 @@ export const tableColumns2: () => ColumnsType<any> = () => {
       className: 'titles',
       title: '排名',
       dataIndex: 'sort',
-      width: 60
+      width: 70
     },
     {
       title: '坐席名称',
@@ -79,7 +79,7 @@ export const tableColumns3: () => ColumnsType<any> = () => {
     {
       title: '排名',
       dataIndex: 'sort',
-      width: 60
+      width: 150
     },
     {
       title: '文章分类',
@@ -107,7 +107,7 @@ export const tableColumns4: () => ColumnsType<any> = () => {
     {
       title: '排名',
       dataIndex: 'sort',
-      width: 60
+      width: 70
     },
     {
       title: '产品名称',
@@ -128,7 +128,7 @@ export const tableColumns5: () => ColumnsType<any> = () => {
       title: '排名',
       align: 'center',
       dataIndex: 'sort',
-      width: 60
+      width: 70
     },
     {
       title: '险种名称',
@@ -154,9 +154,9 @@ export const tableColumns5: () => ColumnsType<any> = () => {
 };
 
 const rankImg = [
-  require('src/assets/images/dashboard/rank_1.png'),
-  require('src/assets/images/dashboard/rank_2.png'),
-  require('src/assets/images/dashboard/rank_3.png')
+  require('src/assets/images/cockpit/rank_1.png'),
+  require('src/assets/images/cockpit/rank_2.png'),
+  require('src/assets/images/cockpit/rank_3.png')
 ];
 
 // 分中心排名

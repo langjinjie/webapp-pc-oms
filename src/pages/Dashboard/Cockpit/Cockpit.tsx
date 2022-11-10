@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import React, { useEffect, useState } from 'react';
-import { Spin, Table } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Spin, Table, Tooltip } from 'antd';
 import {
   tableColumns1,
   tableColumns2,
@@ -134,6 +134,10 @@ const Cockpit: React.FC = () => {
     }
     setLoading(false);
   };
+  // 其他地图数据处理
+  const otherProv = useMemo(() => {
+    return bicontrolAdminView?.tagDistbList.find((findItem) => +findItem.provCode === -1);
+  }, [bicontrolAdminView]);
 
   // 获取团队排名
   const getBicontrolTeamlist = async (param?: { sort?: number; pageNum?: number }) => {
@@ -147,7 +151,6 @@ const Cockpit: React.FC = () => {
     setTeamlistLoading(false);
   };
   const teamlistOnChange = (pagination: any, _: any, sorter: any) => {
-    console.log('pagination', pagination);
     let sort = teamlistPagination.sort;
     let newTeamlistPagination: any = {};
     if (pagination.current === pagination.pageNum) {
@@ -213,7 +216,6 @@ const Cockpit: React.FC = () => {
     setStafflistLoading(false);
   };
   const stafflistOnChange = (pagination: any, _: any, sorter: any) => {
-    console.log('pagination', pagination);
     let newStafflistPagination: any = {};
     let sort = stafflistPagination.sort;
     if (pagination.current === pagination.pageNum) {
@@ -454,7 +456,7 @@ const Cockpit: React.FC = () => {
                     <span
                       className={classNames(
                         'ml5',
-                        (bicontrolAdminView?.compareTotalClientCnt || 0) >= 0 ? 'color-success' : 'color-danger '
+                        (bicontrolAdminView?.compareTotalClientCnt || 0) >= 0 ? styles.ascend : styles.descend
                       )}
                     >
                       {((bicontrolAdminView?.compareTotalClientCnt || 0) >= 0 ? '+' : '') +
@@ -473,7 +475,7 @@ const Cockpit: React.FC = () => {
                     <span
                       className={classNames(
                         'ml5',
-                        (bicontrolAdminView?.compareAddClientCnt || 0) >= 0 ? 'color-success' : 'color-danger '
+                        (bicontrolAdminView?.compareAddClientCnt || 0) >= 0 ? styles.ascend : styles.descend
                       )}
                     >
                       {((bicontrolAdminView?.compareAddClientCnt || 0) >= 0 ? '+' : '') +
@@ -492,7 +494,7 @@ const Cockpit: React.FC = () => {
                     <span
                       className={classNames(
                         'ml5',
-                        (bicontrolAdminView?.compareDelClientCnt || 0) >= 0 ? 'color-success' : 'color-danger '
+                        (bicontrolAdminView?.compareDelClientCnt || 0) >= 0 ? styles.ascend : styles.descend
                       )}
                     >
                       {((bicontrolAdminView?.compareDelClientCnt || 0) >= 0 ? '+' : '') +
@@ -511,7 +513,7 @@ const Cockpit: React.FC = () => {
                     <span
                       className={classNames(
                         'ml5',
-                        (bicontrolAdminView?.compareChatFriendCount || 0) >= 0 ? 'color-success' : 'color-danger '
+                        (bicontrolAdminView?.compareChatFriendCount || 0) >= 0 ? styles.ascend : styles.descend
                       )}
                     >
                       {((bicontrolAdminView?.compareChatFriendCount || 0) >= 0 ? '+' : '') +
@@ -619,6 +621,26 @@ const Cockpit: React.FC = () => {
                     {((bicontrolAdminView?.totalClientCnt || 0) + '').replace(/\B(?=(\d{3})+\b)/g, ',')}
                   </span>
                 </span>
+                {/* 火星 */}
+                <Tooltip
+                  placement="rightTop"
+                  title={
+                    <>
+                      火星
+                      <br />
+                      客户数 <b className="italic">{otherProv?.clientCnt || 0}</b>
+                      <br />
+                      互动客户数 <b className="italic">{otherProv?.interactClientCnt || 0}</b>
+                      <br />
+                      沉默客户数 <b className="italic">{otherProv?.silClientCnt || 0}</b>
+                      <br />
+                    </>
+                  }
+                  color="rgba(29, 77, 214, 0.6)"
+                >
+                  <div className={styles.otherProv} />
+                </Tooltip>
+                <div className={styles.otherPov}></div>
               </div>
               <div className={styles.table1}>
                 <div className="flex justify-around">

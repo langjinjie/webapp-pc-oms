@@ -92,8 +92,11 @@
         border-top: 1px solid #52517d;
         background: rgb(33, 38, 119) !important;
       }
-      .ant-table-cell {
+      .ant-table-cell,
+      .ant-table-cell:hover {
         padding: 16px 5px;
+        background-color: rgb(33, 38, 119);
+        border: none;
       }
       // 1,2,3名及其后续排序背景
       .ant-table-tbody {
@@ -123,6 +126,10 @@
           background-image: linear-gradient(90deg, rgba(30, 61, 140) 0%, rgb(33, 38, 119) 100%) !important;
         }
       }
+      // 列表为空背景
+      // .ant-table-expanded-row-fixed {
+      //   background-color: rgb(33, 38, 119);
+      // }
     }
   }
 
@@ -160,6 +167,12 @@
       margin: 0;
       font-size: 40px;
       line-height: 47px;
+    }
+    .ascend {
+      color: red;
+    }
+    .descend {
+      color: green;
     }
   }
 
@@ -285,6 +298,7 @@
       justify-content: center;
       align-items: center;
       width: 49%;
+      min-height: 800px;
       position: relative;
       background-color: #1f2183;
     }
@@ -301,6 +315,14 @@
       font-size: 36px;
       font-weight: bold;
       color: #ffffff;
+    }
+    .otherProv {
+      position: absolute;
+      right: 70px;
+      bottom: 40px;
+      width: 48px;
+      height: 48px;
+      background: url('src/assets/images/cockpit/otherProv.png') no-repeat;
     }
   }
   :global {
