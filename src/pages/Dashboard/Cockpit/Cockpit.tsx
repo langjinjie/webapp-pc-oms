@@ -220,7 +220,6 @@ const Cockpit: React.FC = () => {
     let sort = stafflistPagination.sort;
     if (pagination.current === pagination.pageNum) {
       // 排序
-
       /**
        * 联系客户数 1=倒序，2=升序;
        * 内容发送次数 5=倒序，6=升序
@@ -253,10 +252,10 @@ const Cockpit: React.FC = () => {
       newStafflistPagination = { ...stafflistPagination, pageNum: 1, sort };
     } else {
       // 分页
-      newStafflistPagination = { ...stafflistPagination, pageNum: pagination.current, sort };
+      newStafflistPagination = { ...stafflistPagination, pageNum: pagination.current };
     }
     setStafflistPagination(newStafflistPagination);
-    getBicontrolStafflist({ pageNum: newStafflistPagination.pageNum });
+    getBicontrolStafflist({ pageNum: newStafflistPagination.pageNum, sort });
   };
 
   // 文章查看情况
