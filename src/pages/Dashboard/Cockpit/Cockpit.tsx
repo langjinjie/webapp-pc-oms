@@ -628,11 +628,6 @@ const Cockpit: React.FC = () => {
                       火星
                       <br />
                       客户数 <b className="italic">{otherProv?.clientCnt || 0}</b>
-                      <br />
-                      互动客户数 <b className="italic">{otherProv?.interactClientCnt || 0}</b>
-                      <br />
-                      沉默客户数 <b className="italic">{otherProv?.silClientCnt || 0}</b>
-                      <br />
                     </>
                   }
                   color="rgba(29, 77, 214, 0.6)"
