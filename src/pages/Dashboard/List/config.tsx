@@ -236,8 +236,7 @@ export const dataCodeList: CodeListType = [
         title: '客户经理发送信息条数',
         subTitle: '客户经理发送信息条数',
         tplType: 'line'
-      }
-      /*
+      },
       {
         key: 'reply_percentage',
         title: '客户经理已回复聊天占比',
@@ -295,7 +294,6 @@ export const dataCodeList: CodeListType = [
         subTitle: '客户主动发起聊天的客户数',
         tplType: 'line'
       }
-      */
     ]
   },
   {

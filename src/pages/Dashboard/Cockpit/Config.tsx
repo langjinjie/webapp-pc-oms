@@ -1,8 +1,8 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { fix } from 'src/utils/base';
-import style from './style.module.less';
-import classNames from 'classnames';
+// import style from './style.module.less';
+// import classNames from 'classnames';
 
 export const tableColumns1: () => ColumnsType<any> = () => {
   return [
@@ -48,7 +48,7 @@ export const tableColumns2: () => ColumnsType<any> = () => {
       width: 70
     },
     {
-      title: '坐席名称',
+      title: '坐席姓名',
       dataIndex: 'staffName',
       ellipsis: true
     },
@@ -115,7 +115,7 @@ export const tableColumns4: () => ColumnsType<any> = () => {
       ellipsis: true
     },
     {
-      title: '客户浏览人数',
+      title: '客户浏览次数',
       sorter: true,
       dataIndex: 'totalCnt',
       width: 150
@@ -164,22 +164,18 @@ export const tableColumnsSubCenterRangking: () => ColumnsType<any> = () => {
   return [
     {
       title: '排名',
+      width: 42,
       render (_: any, __: any, index: number) {
-        return <span>{index > 2 ? fix(index + 1, 2) : <img src={rankImg[index]} />}</span>;
+        return <>{index > 2 ? fix(index + 1, 2) : <img src={rankImg[index]} />}</>;
       }
     },
     {
       title: '分中心',
       dataIndex: 'areaName',
-      render (areaName: string) {
-        return (
-          <span className={classNames(style.areaName, 'ellipsis')} title={areaName}>
-            {areaName}
-          </span>
-        );
-      }
+      width: 110,
+      ellipsis: true
     },
-    { title: '联系客户数', dataIndex: 'chatFriendCount' },
-    { title: '内容发送数', dataIndex: 'dayMarket' }
+    { title: '联系客户数', dataIndex: 'chatFriendCount', width: 70 },
+    { title: '内容发送数', dataIndex: 'dayMarket', width: 70 }
   ];
 };

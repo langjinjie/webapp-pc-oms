@@ -545,7 +545,7 @@ const Cockpit: React.FC = () => {
                 <NgTable
                   rowKey={'areaName'}
                   className={styles.rankingTable}
-                  scroll={{ x: 'max-content' }}
+                  scroll={{}}
                   columns={tableColumnsSubCenterRangking()}
                   dataSource={bicontrolAdminView?.areaRankList}
                 />
@@ -640,11 +640,11 @@ const Cockpit: React.FC = () => {
                 <div className="flex justify-around">
                   <div>
                     <div className={styles.browse}>查看内容总次数</div>
-                    <div className={styles.browseNum}>{bicontrolNewsList.totalPerCnt}</div>
+                    <div className={styles.browseNum}>{bicontrolNewsList.sumTotalCnt}</div>
                   </div>
                   <div>
                     <div className={styles.browse}>人均查看数</div>
-                    <div className={styles.browseNum}>{bicontrolNewsList.sumTotalCnt}</div>
+                    <div className={styles.browseNum}>{bicontrolNewsList.totalPerCnt}</div>
                   </div>
                 </div>
                 {/* 文章查看情况 */}
