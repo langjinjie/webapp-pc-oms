@@ -46,7 +46,13 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
   }, []);
 
   const onSearch = (values: any) => {
-    const { carNumber = '', externalName = '', staffId = '', startTime = '', endTime = '' } = values;
+    const { carNumber = '', externalName = '', staffId = '', rangePicker = '' } = values;
+    let startTime = '';
+    let endTime = '';
+    if (rangePicker && rangePicker.length > 0) {
+      startTime = rangePicker[0].format('YYYY-MM-DD');
+      endTime = rangePicker[1].format('YYYY-MM-DD');
+    }
     getList({ carNumber, externalName, staffId, startTime, endTime, pageNum: 1 });
     setQueryParams({ carNumber, externalName, staffId, startTime, endTime });
   };
@@ -65,7 +71,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
     // const res = await getChatDetail({ proposalId: record.proposalId });
     setVisible(true);
     // setChatValue({ ...record, retdata: res });
-    setChatValue('111111111');
+    setChatValue(sceneId);
   };
 
   return (
