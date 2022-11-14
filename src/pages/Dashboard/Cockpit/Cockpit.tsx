@@ -508,7 +508,7 @@ const Cockpit: React.FC = () => {
                   <dd>昨日联系客户数</dd>
                   <dd className={styles.count}>{bicontrolAdminView?.chatFriendCount || 0}</dd>
                   <dd className="mt14">
-                    较昨日
+                    较前日
                     <span
                       className={classNames(
                         'ml5',
