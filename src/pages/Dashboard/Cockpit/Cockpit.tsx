@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Spin, Table, Tooltip } from 'antd';
+import React, { useEffect /* , useMemo */, useState } from 'react';
+import { Spin, Table /* , Tooltip */ } from 'antd';
 import {
   tableColumns1,
   tableColumns2,
@@ -20,7 +20,7 @@ import {
 } from 'src/apis/dashboard';
 import { IBicontrolAdminView } from 'src/utils/interface';
 import LineChart from 'src/pages/Dashboard/Cockpit/LineChart';
-import Map from 'src/pages/Dashboard/components/Map/Map';
+// import Map from 'src/pages/Dashboard/components/Map/Map';
 import styles from './style.module.less';
 
 const Cockpit: React.FC = () => {
@@ -135,9 +135,9 @@ const Cockpit: React.FC = () => {
     setLoading(false);
   };
   // 其他地图数据处理
-  const otherProv = useMemo(() => {
-    return bicontrolAdminView?.tagDistbList.find((findItem) => +findItem.provCode === -1);
-  }, [bicontrolAdminView]);
+  // const otherProv = useMemo(() => {
+  //   return bicontrolAdminView?.tagDistbList.find((findItem) => +findItem.provCode === -1);
+  // }, [bicontrolAdminView]);
 
   // 获取团队排名
   const getBicontrolTeamlist = async (param?: { sort?: number; pageNum?: number }) => {
@@ -601,9 +601,13 @@ const Cockpit: React.FC = () => {
           </div>
           <div className="mt40">
             <div className={classNames('flex justify-between')}>
-              <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
+              {/* <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
                 <h3 className={styles.panelTitle}>特征标签</h3>
                 <span className={styles.time}>{bicontrolAdminView?.tagDay}</span>
+              </div> */}
+              <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
+                <h3 className={styles.panelTitle}>产品偏好</h3>
+                <span className={styles.time}>{bicontrolProductlist.day}</span>
               </div>
               <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
                 <h3 className={styles.panelTitle}>文章查看情况</h3>
@@ -612,7 +616,7 @@ const Cockpit: React.FC = () => {
             </div>
 
             <div className={styles.tableBox}>
-              <div className={styles.mapWrap}>
+              {/* <div className={styles.mapWrap}>
                 <Map data={bicontrolAdminView?.tagDistbList} />
                 <span className={styles.totalClient}>
                   总客户数
@@ -620,7 +624,6 @@ const Cockpit: React.FC = () => {
                     {((bicontrolAdminView?.totalClientCnt || 0) + '').replace(/\B(?=(\d{3})+\b)/g, ',')}
                   </span>
                 </span>
-                {/* 火星 */}
                 <Tooltip
                   placement="rightTop"
                   title={
@@ -635,7 +638,7 @@ const Cockpit: React.FC = () => {
                   <div className={styles.otherProv} />
                 </Tooltip>
                 <div className={styles.otherPov}></div>
-              </div>
+              </div> */}
               <div className={styles.table1}>
                 <div className="flex justify-around">
                   <div>
@@ -662,21 +665,7 @@ const Cockpit: React.FC = () => {
                   loading={newsListLoading}
                 />
               </div>
-            </div>
-          </div>
-          <div className="mt40">
-            <div className={classNames('flex justify-between')}>
-              <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
-                <h3 className={styles.panelTitle}>产品偏好</h3>
-                <span className={styles.time}>{bicontrolProductlist.day}</span>
-              </div>
-              <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
-                <h3 className={styles.panelTitle}>销售概率</h3>
-                <span className={styles.time}>{bicontrolTagslist.day}</span>
-              </div>
-            </div>
-            <div className={styles.tableBox}>
-              <div className={styles.table2}>
+              <div className={styles.table1}>
                 <div className={styles.browse}>客户浏览总次数</div>
                 <div className={styles.browseNum}>{bicontrolProductlist.sumTotalCnt}</div>
                 <Table
@@ -693,6 +682,37 @@ const Cockpit: React.FC = () => {
                   loading={productlistLoading}
                 />
               </div>
+            </div>
+          </div>
+          <div className="mt40">
+            <div className={classNames('flex justify-between')}>
+              {/* <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
+                <h3 className={styles.panelTitle}>产品偏好</h3>
+                <span className={styles.time}>{bicontrolProductlist.day}</span>
+              </div> */}
+              <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
+                <h3 className={styles.panelTitle}>销售概率</h3>
+                <span className={styles.time}>{bicontrolTagslist.day}</span>
+              </div>
+            </div>
+            <div className={styles.tableBox}>
+              {/* <div className={styles.table2}>
+                <div className={styles.browse}>客户浏览总次数</div>
+                <div className={styles.browseNum}>{bicontrolProductlist.sumTotalCnt}</div>
+                <Table
+                  rowKey={'title'}
+                  columns={tableColumns4()}
+                  dataSource={bicontrolProductlist.list}
+                  pagination={{
+                    ...productlistPagination,
+                    current: productlistPagination.pageNum,
+                    showSizeChanger: false,
+                    showTotal: (total: number) => `共${total}条记录`
+                  }}
+                  onChange={productlistOnChange}
+                  loading={productlistLoading}
+                />
+              </div> */}
               <div className={styles.table}>
                 <Table
                   rowKey={({ sort, title }: { sort: number; title: string }) => sort + title}
