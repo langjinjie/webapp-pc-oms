@@ -263,11 +263,14 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   const clickSearchList = (item: any, checked: boolean) => {
     let selected: any[] = [];
     if (!checked) {
-      selected = [...selectedList, item];
+      selected = [...selectedList, { ...item, id: item.id.toString() }];
+      if (flatTreeData.some((someItem) => someItem.id === item.id.toString())) {
+        setCheckedKeys((keys) => [...(keys as React.Key[]), item.id.toString()]);
+      }
       // onChange?.([...selectedList, item]);
     } else {
-      selected = selectedList.filter((filterItem) => filterItem.id !== item.id);
-      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id)]);
+      selected = selectedList.filter((filterItem) => filterItem.id !== item.id.toString());
+      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id.toString())]);
     }
     setSelectedList(selected);
   };
@@ -328,13 +331,13 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         );
         setSelectedList(() => [...selectedList]);
       } else {
-        if (!checkStrictly) {
-          const selectedListKes = selectedList.map((mapItem) => mapItem.id);
-          const newExpandedKeys: Key[] = flatTreeData
-            .filter((filterItem) => selectedListKes.includes(filterItem.id))
-            .map((mapItem) => mapItem.id);
-          setCheckedKeys((keys) => [...(keys as Key[]), ...newExpandedKeys]);
-        }
+        // if (!checkStrictly) {
+        const selectedListKes = selectedList.map((mapItem) => mapItem.id);
+        const newExpandedKeys: Key[] = flatTreeData
+          .filter((filterItem) => selectedListKes.includes(filterItem.id))
+          .map((mapItem) => mapItem.id);
+        setCheckedKeys((keys) => [...(keys as Key[]), ...newExpandedKeys]);
+        // }
       }
     }
   }, [flatTreeData, value]);
@@ -381,12 +384,12 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
                   <div
                     key={item.id}
                     className={classNames(style.searchItem, {
-                      [style.active]: selectedList.some((selectItem) => item.id === selectItem.id)
+                      [style.active]: selectedList.some((selectItem) => item.id.toString() === selectItem.id)
                     })}
                     onClick={() =>
                       clickSearchList(
                         item,
-                        selectedList.some((selectItem) => item.id === selectItem.id)
+                        selectedList.some((selectItem) => item.id.toString() === selectItem.id)
                       )
                     }
                   >
