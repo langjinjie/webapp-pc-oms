@@ -1,7 +1,12 @@
 import { Button, DatePicker, Form, message, PaginationProps, Select } from 'antd';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 import React, { useEffect, useState } from 'react';
-import { asyncCreateDownloadFile, dataDownloadList, exportFileWithTable } from 'src/apis/dashboard';
+import {
+  asyncCreateDownloadFile,
+  dataDownloadList,
+  exportFileWithTable,
+  requestGetTempleList
+} from 'src/apis/dashboard';
 import { AuthBtn, NgTable } from 'src/components';
 import { exportFile } from 'src/utils/base';
 import { columns, fileProps } from './Config';
@@ -16,6 +21,8 @@ const TableDownLoad: React.FC = () => {
     }
   });
   const [dataSource, setDataSource] = useState<fileProps[]>([]);
+  const [templeList, setTempleList] = useState<{ templateName: string; tmpId: string; type: 0 | 1 }[]>([]);
+  const [templeType, setTempleType] = useState<0 | 1>(0);
 
   const getList = async (params?: any) => {
     const pageNum = params?.pageNum || pagination.current;
@@ -31,8 +38,23 @@ const TableDownLoad: React.FC = () => {
     }
   };
 
+  // 获取报表类别
+  const getListCategory = async () => {
+    const res = await requestGetTempleList();
+    if (res) {
+      setTempleList(res);
+    }
+  };
+
+  // 选择报表类型
+  const selectOnChange = (value: string) => {
+    const templeType = templeList.find((findItem) => findItem.tmpId === value)?.type || 0;
+    setTempleType(templeType);
+  };
+
   useEffect(() => {
     getList();
+    getListCategory();
   }, []);
 
   const exportFileExcel = async (record: fileProps) => {
@@ -42,8 +64,9 @@ const TableDownLoad: React.FC = () => {
   };
   const createFile = async (values: { tmpId: string; dateRange: [Moment, Moment] }) => {
     const { tmpId, dateRange } = values;
-    const startTime = dateRange[0].format('YYYY-MM-DD');
-    const endTime = dateRange[1].format('YYYY-MM-DD');
+    // templeType为1时,时间的开始时间为2021-08-01, 结束时间为当前时间
+    const startTime = dateRange?.[0].format('YYYY-MM-DD') || '2021-08-01';
+    const endTime = dateRange?.[1].format('YYYY-MM-DD') || moment().format('YYYY-MM-DD');
     const res = await asyncCreateDownloadFile({ tmpId, startTime, endTime });
     if (res) {
       message.success('提交成功');
@@ -60,13 +83,17 @@ const TableDownLoad: React.FC = () => {
       <AuthBtn path="/create">
         <Form layout="inline" onFinish={createFile}>
           <Form.Item label="报表类别" name="tmpId" rules={[{ required: true }]}>
-            <Select placeholder="请选择报表类别" allowClear>
-              <Select.Option value={1}>每日战报数据</Select.Option>
-              <Select.Option value={2}>战报剔除黑名单统计数据</Select.Option>
+            <Select placeholder="请选择报表类别" allowClear onChange={selectOnChange}>
+              {templeList.map((mapItem) => (
+                <Select.Option key={mapItem.tmpId} value={mapItem.tmpId}>
+                  {mapItem.templateName}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
-          <Form.Item label="日期" name="dateRange" rules={[{ required: true }]}>
-            <DatePicker.RangePicker allowClear />
+          <Form.Item label="日期" name="dateRange" rules={[{ required: templeType === 0 }]}>
+            {/* type为1 不能选择时间 */}
+            <DatePicker.RangePicker disabled={templeType === 1} allowClear />
           </Form.Item>
           <Form.Item extra="备注：点击生成报表按钮后，若列表还在处理中状态，请稍后手动刷新页面试试。">
             <Button type="primary" shape="round" htmlType="submit">
@@ -77,6 +104,7 @@ const TableDownLoad: React.FC = () => {
       </AuthBtn>
       <div className="mt20">
         <NgTable
+          rowKey={'id'}
           dataSource={dataSource}
           pagination={pagination}
           paginationChange={paginationChange}

@@ -315,3 +315,10 @@ export const replaceEnter = (str: string): string => {
   // \n 匹配一个换行符, \r 匹配一个回车符
   return str.replace(/\\n|\n/g, '<br/>');
 };
+
+/**
+ * @description 自动补0
+ */
+export const fix = (num: number, length: number): string => {
+  return ('' + num).length < length ? (new Array(length + 1).join('0') + num).slice(-length) : '' + num;
+};

@@ -441,3 +441,53 @@ export type NodeType = {
 export type OperateType = 'add' | 'putAway' | 'delete' | 'view' | 'outline' | 'edit' | 'other';
 
 export type NodeCodeType = 'node_tag' | 'node_date' | 'node_quota' | 'node_calendar';
+
+/* ------------------------------ 驾驶舱 ------------------------------ */
+export interface IBicontrolAdminView {
+  dayUpdate: string;
+  totalClientCnt: number;
+  lastTotalClientCnt: number;
+  compareTotalClientCnt?: number; // 较昨日客户总数
+  dayAddClientCnt: number;
+  lastDayAddClientCnt: number;
+  compareAddClientCnt?: number; // 较昨日新增客户数
+  dayDelClientCnt: number;
+  lastDayDelClientCnt: number;
+  compareDelClientCnt?: number; // 较昨日删除客户数
+  chatFriendCount: number;
+  lastChatFriendCount: number;
+  compareChatFriendCount?: number; // 较昨日联系客户数
+  totalClientCntList: ITotalClientCntList[];
+  areaDay: string;
+  areaRankList: IAreaRankList[];
+  tagDay: string;
+  tagDistbList: ITagDistbList[];
+}
+
+export interface ITotalClientCntList {
+  dateStr: string;
+  dataX: string;
+  dataY: string;
+}
+
+export interface IAreaRankList {
+  areaName: string;
+  chatFriendCount: number;
+  dayMarket: number;
+}
+
+export interface ITagDistbList {
+  provName: string;
+  provCode: string;
+  clientCnt: number;
+  interactClientCnt: number;
+  silClientCnt: number;
+  name?: string;
+  value?: number;
+  tooltip?: ITooltip;
+}
+
+export interface ITooltip {
+  show: boolean;
+  formatter: string;
+}
