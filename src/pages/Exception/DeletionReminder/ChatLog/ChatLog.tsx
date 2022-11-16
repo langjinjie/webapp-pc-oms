@@ -10,8 +10,14 @@ import { IDelStaffList } from 'src/pages/Exception/DeletionReminder/Config';
 import AudioPlay from './AudioPlay';
 import style from './style.module.less';
 import classNames from 'classnames';
+interface ChatLogProps {
+  userId?: string;
+  externalUserId?: string;
+}
+const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId }) => {
+  console.log(chatUserId, '------------------userId');
+  console.log(externalUserId, '------------------externalUserId');
 
-const chatLog: React.FC = () => {
   const [filterDateRange, setfilterDateRange] = useState<[Moment | null, Moment | null]>([
     moment().subtract(1, 'months'),
     moment()
@@ -51,14 +57,15 @@ const chatLog: React.FC = () => {
 
   // 获取外部联系人信息
   const getClientInfo = () => {
-    const { clientInfo } = location.state as { clientInfo: IDelStaffList };
+    const { clientInfo } = (location.state as { clientInfo: IDelStaffList }) || {};
     setClientInfo(clientInfo);
   };
 
   // 获取私聊记录
   const fetchSingleChat = async (paream?: { [key: string]: any }) => {
     setIsChatListLoading(true);
-    const { partnerId, userId } = getQueryParam();
+    const { partnerId = chatUserId, userId = externalUserId } = getQueryParam();
+    if (!partnerId || !userId) return;
     // @ts-ignore
     const fromDate = filterDateRange?.[0] ? filterDateRange?.[0].format('YYYY-MM-DD') : '';
     // @ts-ignore
@@ -75,7 +82,7 @@ const chatLog: React.FC = () => {
       userId,
       // 私聊对象
       // partnerId: 'LiuJunJie',
-      partnerId,
+      partnerId: partnerId,
       // 聊天记录类型
       msgType: filterChatType,
       pageSize: pagination.pageSize,
@@ -181,7 +188,7 @@ const chatLog: React.FC = () => {
   useEffect(() => {
     fetchSingleChat();
     getClientInfo();
-  }, []);
+  }, [chatUserId, externalUserId]);
 
   // 聊天记录展现
   const formatChatMsg = (type: any, msgObj: any /* , chatObj: any */) => {

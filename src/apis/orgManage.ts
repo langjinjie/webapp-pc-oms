@@ -292,7 +292,7 @@ export const requestStaffBatchSetSaveValidate: HttpFC = (param) => {
 export const getChatList: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/proposal/getHistory', params);
 };
-// 查询详细沟通记录接口
+// 查询详细沟通记录
 export const getChatDetail: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/proposal/get', params);
 };

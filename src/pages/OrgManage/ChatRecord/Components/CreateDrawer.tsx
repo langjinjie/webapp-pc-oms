@@ -6,30 +6,38 @@ interface CreateDrawerProps {
   visible: boolean;
   onClose: () => void;
   value?: any;
-  // onSuccess: () => void;
+  chatProposalId?: string;
 }
-const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value }) => {
-  const [list, setList] = useState<[]>([]);
-  // const [chatProposalId, setChatProposalId] = useState<String>();
+interface ChatListProps {
+  avatar: string;
+  content: string;
+  dateCreated: string;
+  dynamicId: string;
+  name: string;
+  source: string;
+}
+const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, chatProposalId }) => {
+  const [list, setList] = useState<ChatListProps[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>({
-    current: 0,
+    current: 1,
     pageSize: 10,
     total: 0
   });
   const { Item } = Form;
   const [form] = Form.useForm();
-  console.log(value);
+  console.log('value', value);
+
   // 获取列表数据
   const getList = async (param: any) => {
     const params: any = {
       ...param,
-      pageNum: param.pageNum,
-      pageSize: param.pageSize,
-      chatProposalId: value
+      proposalId: chatProposalId,
+      pageNum: pagination.current,
+      pageSize: pagination.pageSize
     };
-
-    console.log(params, '========================');
     const res = await getChatSearchList({ ...params });
+    console.log(res, '-----------res30');
+
     if (res) {
       const { list } = res;
       setList(list || []);
@@ -48,12 +56,15 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value }) 
     getList(param);
   };
   useEffect(() => {
-    getList({});
-  }, []);
+    if (chatProposalId) {
+      getList({ value, chatProposalId });
+    }
+  }, [chatProposalId]);
   return (
     <>
       <Drawer
-        title="202210-02 经理小王与张程程思的详细沟通记录"
+        title={`${value?.dateCreated}
+        经理${value?.staffId}与${value?.externalName}的详细沟通记录"`}
         placement="right"
         width={466}
         visible={visible}
@@ -65,15 +76,13 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value }) 
             <div className={style.chatTitle}>沟通内容</div>
             <div className={style.chatText}>
               <span className={style.chatWord}>车牌号：</span>
-              <span className={style.chatNum}>{'粤B-12345'}</span>
+              <span className={style.chatNum}>{value?.carNumber}</span>
               <span className={style.chatWord} style={{ marginLeft: '8px' }}>
                 创建时间：
               </span>
-              <span className={style.chatNum}>{'2022-11-11 12:20'}</span>
+              <span className={style.chatNumTime}>{value?.dateCreated}</span>
             </div>
-            <div className={style.chatFootText}>
-              {'公安备案号11010502030143经营性网站备案信息北京互联网违法和不良信息举报中心 家长监网络110报警服务'}
-            </div>
+            <div className={style.chatFootText}>{value?.content}</div>
           </div>
           <Divider />
           <div>
@@ -104,22 +113,27 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value }) 
                   pageSize: pagination.pageSize
                 }}
                 renderItem={(item) => (
-                  <List.Item key={'item'}>
+                  <List.Item key={item.name}>
                     <List.Item.Meta
-                      avatar={<Avatar src={`${'item.avatar'}`} />}
+                      avatar={<Avatar src={item.avatar} />}
                       title={
                         <>
                           <div className={style.chatName}>
-                            <Space>
-                              <div className={style.chatName}>{'item.name'}</div>
-                              <div className={style.chatcard}>{'item.soure'}</div>
-                              <div className={style.chatTime}>{'item.dateCreated'}</div>
-                              <div className={style.chatTime}>{item}</div>
+                            <Space key={item.content}>
+                              <div className={style.chatName}>{item.name}</div>
+                              {item.source
+                                ? (
+                                <div className={style.chatcard1}>客户经理</div>
+                                  )
+                                : (
+                                <div className={style.chatcard2}>客户</div>
+                                  )}
+                              <div className={style.chatTime}>{item.dateCreated}</div>
                             </Space>
                           </div>
                         </>
                       }
-                      description={'item.content'}
+                      description={item.content}
                     />
                   </List.Item>
                 )}

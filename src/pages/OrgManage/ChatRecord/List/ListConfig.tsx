@@ -3,6 +3,7 @@ import { Button, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { AuthBtn } from 'src/components';
+import { OperateType } from 'src/utils/interface';
 
 export const searchCols: SearchCol[] = [
   {
@@ -34,77 +35,62 @@ export const searchCols: SearchCol[] = [
   }
 ];
 
-// export interface SceneColumns {
-//   proposalId: string;
-//   staffId: string;
-//   sceneName: string;
-//   carNumber: string;
-//   externalName: string;
-//   dateCreated: string;
-// }
 export interface SceneColumns {
-  sceneId: string;
-  sceneCode: string;
+  proposalId: string;
+  staffId: string;
   sceneName: string;
-  nodeId: string;
-  nodeName: string;
-  updateTime: string;
-  updateBy: string;
+  carNumber: string;
+  externalName: string;
+  dateCreated: string;
+  externalUserId: string;
+  userId: string;
 }
 interface OperateProps {
-  onOperate: (proposalId: string) => void;
+  onOperate: (operateType: OperateType, proposalId: SceneColumns) => void;
 }
 export const tableColumnsFun = (args: OperateProps): ColumnsType<SceneColumns> => {
   return [
     { title: '沟通编号', dataIndex: 'proposalId', key: 'proposalId', width: 200 },
     {
       title: '客户经理',
-      // dataIndex: 'staffId',
-      dataIndex: 'sceneName',
+      dataIndex: 'staffId',
       key: 'staffId',
       width: 200
     },
 
     {
       title: '客户名称',
-      // dataIndex: 'externalName',
-      dataIndex: 'sceneName',
+      dataIndex: 'externalName',
       width: 260,
       align: 'center'
     },
     {
       title: '车牌号',
-      // dataIndex: 'carNumber',
-      dataIndex: 'sceneName',
+      dataIndex: 'carNumber',
       width: 260,
       align: 'center'
     },
     {
       title: '创建时间',
-      // dataIndex: 'dateCreated',
-      dataIndex: 'sceneName',
+      dataIndex: 'dateCreated',
       width: 260,
       align: 'center'
     },
     {
       title: '操作',
-      // dataIndex: 'fromSource',
-      dataIndex: 'sceneName',
+      dataIndex: 'fromSource',
       width: 260,
       align: 'center',
       render: (value, record) => {
         return (
           <Space>
             <AuthBtn path="/view">
-              {/* <Button type="link" key={record.proposalId} onClick={() => args.onOperate(record.proposalId)}>
-               */}
-              <Button type="link" key={record.sceneId} onClick={() => args.onOperate(record.sceneId)}>
+              <Button type="link" key={record.proposalId} onClick={() => args.onOperate('view', record)}>
                 查看详细沟通记录
               </Button>
             </AuthBtn>
-            <AuthBtn path="/view">
-              {/* <Button type="link" key={record.proposalId} onClick={() => args.onOperate(record.proposalId)}> */}
-              <Button type="link" key={record.sceneId} onClick={() => args.onOperate(record.sceneId)}>
+            <AuthBtn path="/query">
+              <Button type="link" key={record.proposalId} onClick={() => args.onOperate('edit', record)}>
                 查看企业微会话
               </Button>
             </AuthBtn>
