@@ -114,7 +114,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
         getVideoTableData({ pageNum: 1 });
       } else {
         setVisibleLineChart(true);
-        getList({ dataCode: currentItem.key || id, pageNum: 1 });
+        getList({ dataCode: currentItem.key || id, pageNum: 1, dayType: 2 });
         getTotal({ dataCode: currentItem.key || id });
         setFilterData({
           businessModel: '',

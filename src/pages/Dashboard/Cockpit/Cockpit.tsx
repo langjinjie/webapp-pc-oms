@@ -109,7 +109,7 @@ const Cockpit: React.FC = () => {
         compareChatFriendCount: res.chatFriendCount - res.lastChatFriendCount
       };
       bicontrolAdminView.tagDistbList =
-        bicontrolAdminView?.tagDistbList.map((item) => {
+        bicontrolAdminView?.tagDistbList?.map((item) => {
           return {
             ...item,
             name: item.provName,
@@ -127,8 +127,8 @@ const Cockpit: React.FC = () => {
       setBicontrolAdminView(bicontrolAdminView);
       // 处理折线图数据
       const lineChartData = {
-        xAxisData: res.totalClientCntList.map((mapItem) => mapItem.dataX),
-        yAxisData: res.totalClientCntList.map((mapItem) => mapItem.dataY)
+        xAxisData: res.totalClientCntList?.map((mapItem) => mapItem.dataX),
+        yAxisData: res.totalClientCntList?.map((mapItem) => mapItem.dataY)
       };
       setLineChatrData(lineChartData);
     }
@@ -136,7 +136,7 @@ const Cockpit: React.FC = () => {
   };
   // 其他地图数据处理
   const otherProv = useMemo(() => {
-    return bicontrolAdminView?.tagDistbList.find((findItem) => +findItem.provCode === -1);
+    return bicontrolAdminView?.tagDistbList?.find((findItem) => +findItem.provCode === -1);
   }, [bicontrolAdminView]);
 
   // 获取团队排名
@@ -602,11 +602,11 @@ const Cockpit: React.FC = () => {
           <div className="mt40">
             <div className={classNames('flex justify-between')}>
               <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
-                <h3 className={styles.panelTitle}>特征标签</h3>
+                <h3 className={styles.panelTitle}>标签特征</h3>
                 <span className={styles.time}>{bicontrolAdminView?.tagDay}</span>
               </div>
               <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
-                <h3 className={styles.panelTitle}>文章查看情况</h3>
+                <h3 className={styles.panelTitle}>查看内容情况</h3>
                 <span className={styles.time}>{bicontrolNewsList.day}</span>
               </div>
             </div>
