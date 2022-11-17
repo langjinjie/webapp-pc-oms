@@ -65,6 +65,7 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
   };
   const showDrawer = () => {
     onClose();
+    setPagination((pagination) => ({ ...pagination, current: 1, pageSize: 10 }));
     form.resetFields();
   };
   useEffect(() => {

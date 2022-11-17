@@ -20,6 +20,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
   const [visible, setVisible] = useState(false);
   const [visibleList, setVisibleList] = useState(false);
   const [chatValue, setChatValue] = useState<any>();
+  const [drawerValue, setdrawerValue] = useState<any>();
   const [userId, setUserId] = useState<string>();
   const [externalUserId, setExternalUserId] = useState<string>();
   const [loading, setLoading] = useState(true);
@@ -103,6 +104,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
       setVisibleList(true);
       setUserId(record.userId);
       setExternalUserId(record.externalUserId);
+      setdrawerValue({ ...record });
     }
   };
 
@@ -149,7 +151,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
           setVisibleList(false);
         }}
       >
-        <ChatLog userId={userId} externalUserId={externalUserId} showDrawer={visibleList} />
+        <ChatLog userId={userId} externalUserId={externalUserId} showDrawer={visibleList} drawerValue={drawerValue} />
       </Drawer>
     </div>
   );

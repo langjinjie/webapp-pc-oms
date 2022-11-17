@@ -50,6 +50,7 @@ export interface SceneColumns {
   externalUserId: string;
   userId: string;
   staffName: string;
+  isChatsyn: number;
 }
 interface OperateProps {
   onOperate: (operateType: OperateType, proposalId: SceneColumns) => void;
@@ -96,7 +97,12 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<SceneColumns> =
               </Button>
             </AuthBtn>
             <AuthBtn path="/query">
-              <Button type="link" key={record.proposalId} onClick={() => args.onOperate('edit', record)}>
+              <Button
+                type="link"
+                key={record.proposalId}
+                disabled={record.isChatsyn === 0}
+                onClick={() => args.onOperate('edit', record)}
+              >
                 查看企业微会话
               </Button>
             </AuthBtn>
