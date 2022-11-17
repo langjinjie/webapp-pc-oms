@@ -20,6 +20,7 @@ interface ChatListProps {
 }
 const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, chatProposalId }) => {
   const [list, setList] = useState<ChatListProps[]>([]);
+  const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -33,6 +34,7 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
 
   // 获取列表数据
   const getList = async (param: any) => {
+    setLoading(true);
     const pageNum = param?.pageNum || pagination.current;
     const pageSize = param?.pageSize || pagination.pageSize;
     const params: any = {
@@ -48,6 +50,7 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
       setList(list || []);
       setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize, total }));
     }
+    setLoading(false);
   };
   const onSearch = (values: any) => {
     const param: any = {
@@ -60,8 +63,12 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
   const paginationChange = (pageNum: number, pageSize?: number) => {
     getList({ pageNum, pageSize });
   };
+  const showDrawer = () => {
+    onClose();
+    form.resetFields();
+  };
   useEffect(() => {
-    if (chatProposalId && visible) {
+    if (chatProposalId) {
       getList({ chatProposalId });
     }
   }, [chatProposalId, visible]);
@@ -74,7 +81,7 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
         width={466}
         visible={visible}
         closable={true}
-        onClose={onClose}
+        onClose={showDrawer}
       >
         <div className={style.chatBox}>
           <div>
@@ -109,6 +116,7 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
             <div className={style.formFootBox}>
               <List
                 itemLayout="horizontal"
+                loading={loading}
                 dataSource={list}
                 pagination={{
                   ...pagination,

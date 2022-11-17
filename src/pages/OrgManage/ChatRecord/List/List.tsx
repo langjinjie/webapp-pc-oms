@@ -1,7 +1,7 @@
 import { PaginationProps, Divider, PageHeader, Drawer } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { getChatList, getChatDetail } from 'src/apis/orgManage';
+import { getChatList } from 'src/apis/orgManage';
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { useDocumentTitle } from 'src/utils/base';
 import CreateDrawer from '../Components/CreateDrawer';
@@ -51,7 +51,6 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
       pageNum,
       pageSize
     });
-    console.log(res, '---------------------50res');
 
     if (res) {
       const { list, total } = res;
@@ -66,26 +65,29 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
   }, []);
 
   const onSearch = (values: any) => {
-    const { carNumber, externalName, staffName, rangePicker } = values;
+    const { carNumber, externalName, staffList, rangePicker } = values;
+    console.log(values);
+    const staffIds = staffList?.map((mapItem: { staffId: string }) => mapItem.staffId);
     let startTime = '';
     let endTime = '';
     if (rangePicker && rangePicker.length > 0) {
       startTime = rangePicker[0].format('YYYY-MM-DD HH:mm:ss');
       endTime = rangePicker[1].format('YYYY-MM-DD HH:mm:ss');
     }
-    getList({ carNumber, externalName, staffName, startTime, endTime, pageNum: 1 });
-    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffName, startTime, endTime }));
+    getList({ carNumber, externalName, staffIds, startTime, endTime, pageNum: 1 });
+    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffIds, startTime, endTime }));
   };
 
   const onValuesChange = (changeValues: any, values: any) => {
-    const { carNumber, externalName, staffName, rangePicker } = values;
+    const { carNumber, externalName, staffList, rangePicker } = values;
+    const staffIds = staffList?.map((mapItem: { staffId: string }) => mapItem.staffId);
     let startTime = '';
     let endTime = '';
     if (rangePicker && rangePicker.length > 0) {
       startTime = rangePicker[0].format('YYYY-MM-DD HH:mm:ss');
       endTime = rangePicker[1].format('YYYY-MM-DD HH:mm:ss');
     }
-    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffName, startTime, endTime }));
+    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffIds, startTime, endTime }));
   };
   const paginationChange = (pageNum: number, pageSize?: number) => {
     getList({ pageNum, pageSize });
@@ -95,8 +97,6 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
   const chatDetail = async (operateType: OperateType, record: SceneColumns) => {
     if (operateType === 'view') {
       setChatProposalId(record.proposalId);
-      const res = await getChatDetail({ proposalId: record.proposalId });
-      console.log(res, '查询场景详情');
       setVisible(true);
       setChatValue({ ...record });
     } else if (operateType === 'edit') {
@@ -149,7 +149,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
           setVisibleList(false);
         }}
       >
-        <ChatLog userId={userId} externalUserId={externalUserId} />
+        <ChatLog userId={userId} externalUserId={externalUserId} showDrawer={visibleList} />
       </Drawer>
     </div>
   );

@@ -13,8 +13,9 @@ import classNames from 'classnames';
 interface ChatLogProps {
   userId?: string;
   externalUserId?: string;
+  showDrawer?: boolean;
 }
-const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId }) => {
+const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, showDrawer }) => {
   console.log(chatUserId, '------------------userId');
   console.log(externalUserId, '------------------externalUserId');
 
@@ -998,9 +999,18 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId })
   return (
     <div className={style.chatLog}>
       <div className={style.breadCrumbs}>
-        <BreadCrumbs
-          navList={[{ name: '删人提醒', path: '/deletionReminder' }, { name: clientInfo?.clientName + '的聊天记录' }]}
-        />
+        {showDrawer
+          ? (
+              ''
+            )
+          : (
+          <BreadCrumbs
+            navList={[
+              { name: '删人提醒', path: '/deletionReminder' },
+              { name: (clientInfo ? clientInfo?.clientName + '的' : '') + '聊天记录' }
+            ]}
+          />
+            )}
       </div>
       <div className={style.header}>
         <span className={style.left}>
@@ -1030,36 +1040,38 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId })
       </div>
       <Spin spinning={isChatListLoading}>
         <div className={style.content}>
-          <div className={style.contentMiddle}>
-            <div className={style.contentLeftTitle}>{clientInfo?.staffName}的聊天对象</div>
-            <div className={style.targetPersonWrap}>
-              <div className={style.targetPerson}>
-                <span className={style.myTitle}>
-                  <Image
-                    style={{
-                      display: 'block',
-                      width: '30px',
-                      height: '30px',
-                      borderRadius: '50%',
-                      margin: '0 10px 0 0'
-                    }}
-                    src={clientInfo?.clientAvatar}
-                  />
-                  <span title={clientInfo?.clientName} className={classNames(style.title, 'ellipsis')}>
-                    {clientInfo?.clientName}
+          {clientInfo && (
+            <div className={style.contentMiddle}>
+              <div className={style.contentLeftTitle}>{clientInfo?.staffName}的聊天对象</div>
+              <div className={style.targetPersonWrap}>
+                <div className={style.targetPerson}>
+                  <span className={style.myTitle}>
+                    <Image
+                      style={{
+                        display: 'block',
+                        width: '30px',
+                        height: '30px',
+                        borderRadius: '50%',
+                        margin: '0 10px 0 0'
+                      }}
+                      src={clientInfo?.clientAvatar}
+                    />
+                    <span title={clientInfo?.clientName} className={classNames(style.title, 'ellipsis')}>
+                      {clientInfo?.clientName}
+                    </span>
+                    <Icon
+                      className={style.editIcon}
+                      name="a-icon_common_16_modelcharge"
+                      onClick={() => {
+                        copy(clientInfo?.externalUserid || '', false);
+                        message.success('外部联系人id复制成功');
+                      }}
+                    />
                   </span>
-                  <Icon
-                    className={style.editIcon}
-                    name="a-icon_common_16_modelcharge"
-                    onClick={() => {
-                      copy(clientInfo?.externalUserid || '', false);
-                      message.success('外部联系人id复制成功');
-                    }}
-                  />
-                </span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
           <div className={style.contentRight}>
             <div className={style.contentRightTitle}>
               <span style={{ lineHeight: '24px' }}>聊天记录</span>
