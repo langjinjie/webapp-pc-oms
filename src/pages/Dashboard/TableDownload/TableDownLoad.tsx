@@ -24,6 +24,8 @@ const TableDownLoad: React.FC = () => {
   const [templeList, setTempleList] = useState<{ templateName: string; tmpId: string; type: 0 | 1 }[]>([]);
   const [templeType, setTempleType] = useState<0 | 1>(0);
 
+  const [form] = Form.useForm();
+
   const getList = async (params?: any) => {
     const pageNum = params?.pageNum || pagination.current;
     const pageSize = params?.pageSize || pagination.pageSize;
@@ -50,6 +52,9 @@ const TableDownLoad: React.FC = () => {
   const selectOnChange = (value: string) => {
     const templeType = templeList.find((findItem) => findItem.tmpId === value)?.type || 0;
     setTempleType(templeType);
+    if (templeType === 1) {
+      form.setFieldsValue({ dateRange: null });
+    }
   };
 
   useEffect(() => {
@@ -81,7 +86,7 @@ const TableDownLoad: React.FC = () => {
   return (
     <div className="container">
       <AuthBtn path="/create">
-        <Form layout="inline" onFinish={createFile}>
+        <Form form={form} layout="inline" onFinish={createFile}>
           <Form.Item label="报表类别" name="tmpId" rules={[{ required: true }]}>
             <Select placeholder="请选择报表类别" allowClear onChange={selectOnChange}>
               {templeList.map((mapItem) => (
