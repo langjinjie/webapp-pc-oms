@@ -27,7 +27,7 @@ export const searchCols: SearchCol[] = [
     width: '160px'
   },
   {
-    name: 'staffId',
+    name: 'staffName',
     type: 'input',
     label: '客户经理',
     placeholder: '请输入',
@@ -53,7 +53,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<SceneColumns> =
     { title: '沟通编号', dataIndex: 'proposalId', key: 'proposalId', width: 200 },
     {
       title: '客户经理',
-      dataIndex: 'staffId',
+      dataIndex: 'staffName',
       key: 'staffId',
       width: 200
     },

@@ -66,26 +66,26 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
   }, []);
 
   const onSearch = (values: any) => {
-    const { carNumber, externalName, staffId, rangePicker } = values;
+    const { carNumber, externalName, staffName, rangePicker } = values;
     let startTime = '';
     let endTime = '';
     if (rangePicker && rangePicker.length > 0) {
       startTime = rangePicker[0].format('YYYY-MM-DD HH:mm:ss');
       endTime = rangePicker[1].format('YYYY-MM-DD HH:mm:ss');
     }
-    getList({ carNumber, externalName, staffId, startTime, endTime, pageNum: 1 });
-    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffId, startTime, endTime }));
+    getList({ carNumber, externalName, staffName, startTime, endTime, pageNum: 1 });
+    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffName, startTime, endTime }));
   };
 
   const onValuesChange = (changeValues: any, values: any) => {
-    const { carNumber, externalName, staffId, rangePicker } = values;
+    const { carNumber, externalName, staffName, rangePicker } = values;
     let startTime = '';
     let endTime = '';
     if (rangePicker && rangePicker.length > 0) {
       startTime = rangePicker[0].format('YYYY-MM-DD HH:mm:ss');
       endTime = rangePicker[1].format('YYYY-MM-DD HH:mm:ss');
     }
-    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffId, startTime, endTime }));
+    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffName, startTime, endTime }));
   };
   const paginationChange = (pageNum: number, pageSize?: number) => {
     getList({ pageNum, pageSize });
@@ -93,12 +93,10 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
 
   // 查询场景详情
   const chatDetail = async (operateType: OperateType, record: SceneColumns) => {
-    console.log(record, '--------record');
-
     if (operateType === 'view') {
       setChatProposalId(record.proposalId);
       const res = await getChatDetail({ proposalId: record.proposalId });
-      console.log(res);
+      console.log(res, '查询场景详情');
       setVisible(true);
       setChatValue({ ...record });
     } else if (operateType === 'edit') {
@@ -110,7 +108,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
 
   return (
     <div className={'container'}>
-      <PageHeader title="聊天记查询" style={{ padding: '0' }}></PageHeader>
+      <PageHeader title="聊天记录查询" style={{ padding: '0' }}></PageHeader>
       <Divider style={{ marginTop: '21px' }} />
       <AuthBtn path="/query">
         <NgFormSearch

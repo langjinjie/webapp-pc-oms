@@ -1,6 +1,7 @@
 import { Button, Drawer, Form, Input, Divider, Space, Avatar, List, PaginationProps } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { getChatSearchList } from 'src/apis/orgManage';
+import moment from 'moment';
 import style from './style.module.less';
 interface CreateDrawerProps {
   visible: boolean;
@@ -15,39 +16,40 @@ interface ChatListProps {
   dynamicId: string;
   name: string;
   source: string;
+  staffName: string;
 }
 const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, chatProposalId }) => {
   const [list, setList] = useState<ChatListProps[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
-    total: 0
+    total: 0,
+    showTotal: (total) => {
+      return `共 ${total} 条记录`;
+    }
   });
   const { Item } = Form;
   const [form] = Form.useForm();
-  console.log('value', value);
 
   // 获取列表数据
   const getList = async (param: any) => {
+    const pageNum = param?.pageNum || pagination.current;
+    const pageSize = param?.pageSize || pagination.pageSize;
     const params: any = {
       ...param,
       proposalId: chatProposalId,
-      pageNum: pagination.current,
-      pageSize: pagination.pageSize
+      pageNum,
+      pageSize
     };
-    const res = await getChatSearchList({ ...params });
-    console.log(res, '-----------res30');
+    const res: any = await getChatSearchList({ ...params });
 
     if (res) {
-      const { list } = res;
+      const { list, total } = res;
       setList(list || []);
-
-      // setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
-      setPagination((pagination) => ({ ...pagination }));
+      setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize, total }));
     }
   };
   const onSearch = (values: any) => {
-    console.log(values);
     const param: any = {
       ...values,
       pageNum: 1,
@@ -55,16 +57,19 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
     };
     getList(param);
   };
+  const paginationChange = (pageNum: number, pageSize?: number) => {
+    getList({ pageNum, pageSize });
+  };
   useEffect(() => {
-    if (chatProposalId) {
-      getList({ value, chatProposalId });
+    if (chatProposalId && visible) {
+      getList({ chatProposalId });
     }
-  }, [chatProposalId]);
+  }, [chatProposalId, visible]);
   return (
     <>
       <Drawer
-        title={`${value?.dateCreated}
-        经理${value?.staffId}与${value?.externalName}的详细沟通记录"`}
+        title={`${moment(value?.dateCreated).format('YYYYMM-DD')}
+        经理${value?.staffName}与${value?.externalName}的详细沟通记录`}
         placement="right"
         width={466}
         visible={visible}
@@ -91,7 +96,7 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
               <Form form={form} onFinish={onSearch}>
                 <Space>
                   <Item label="关键词" name={'sontent'}>
-                    <Input type="text" placeholder="请输入" />
+                    <Input type="text" placeholder="请输入" allowClear />
                   </Item>
                   <Item>
                     <Button type="primary" htmlType="submit" shape="round">
@@ -106,20 +111,18 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
                 itemLayout="horizontal"
                 dataSource={list}
                 pagination={{
-                  onChange: (pageNum: number, pageSize?: number) => {
-                    getList({ pageNum, pageSize });
-                    console.log({ pageNum, pageSize });
-                  },
-                  pageSize: pagination.pageSize
+                  ...pagination,
+                  hideOnSinglePage: true,
+                  onChange: paginationChange
                 }}
                 renderItem={(item) => (
-                  <List.Item key={item.name}>
+                  <List.Item key={item.dynamicId}>
                     <List.Item.Meta
                       avatar={<Avatar src={item.avatar} />}
                       title={
                         <>
                           <div className={style.chatName}>
-                            <Space key={item.content}>
+                            <Space>
                               <div className={style.chatName}>{item.name}</div>
                               {item.source
                                 ? (
