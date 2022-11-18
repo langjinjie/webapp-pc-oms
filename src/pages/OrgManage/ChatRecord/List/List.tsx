@@ -11,7 +11,7 @@ import ChatLog from 'src/pages/Exception/DeletionReminder/ChatLog/ChatLog';
 interface SearchParamsProps {
   carNumber: string;
   externalName: string;
-  staffId: string;
+  staffIds: string;
   startTime: string;
   endTime: string;
 }
@@ -28,7 +28,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
   const [queryParams, setQueryParams] = useState<SearchParamsProps>({
     carNumber: '',
     externalName: '',
-    staffId: '',
+    staffIds: '',
     startTime: '',
     endTime: ''
   });
@@ -67,7 +67,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
 
   const onSearch = (values: any) => {
     const { carNumber, externalName, staffList, rangePicker } = values;
-    console.log(values);
+    console.log(values, '--------------------values');
     const staffIds = staffList?.map((mapItem: { staffId: string }) => mapItem.staffId);
     let startTime = '';
     let endTime = '';
@@ -79,17 +79,6 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
     setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffIds, startTime, endTime }));
   };
 
-  const onValuesChange = (changeValues: any, values: any) => {
-    const { carNumber, externalName, staffList, rangePicker } = values;
-    const staffIds = staffList?.map((mapItem: { staffId: string }) => mapItem.staffId);
-    let startTime = '';
-    let endTime = '';
-    if (rangePicker && rangePicker.length > 0) {
-      startTime = rangePicker[0].format('YYYY-MM-DD HH:mm:ss');
-      endTime = rangePicker[1].format('YYYY-MM-DD HH:mm:ss');
-    }
-    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffIds, startTime, endTime }));
-  };
   const paginationChange = (pageNum: number, pageSize?: number) => {
     getList({ pageNum, pageSize });
   };
@@ -113,13 +102,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
       <PageHeader title="聊天记录查询" style={{ padding: '0' }}></PageHeader>
       <Divider style={{ marginTop: '21px' }} />
       <AuthBtn path="/query">
-        <NgFormSearch
-          searchCols={searchCols}
-          isInline
-          firstRowChildCount={3}
-          onSearch={onSearch}
-          onValuesChange={onValuesChange}
-        />
+        <NgFormSearch searchCols={searchCols} isInline firstRowChildCount={3} onSearch={onSearch} />
       </AuthBtn>
 
       <div className="mt20">
