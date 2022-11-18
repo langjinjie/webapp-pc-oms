@@ -288,3 +288,15 @@ export const searchMenu: HttpFC = (param) => {
 export const requestStaffBatchSetSaveValidate: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/stafforg/staffBatchSetSaveValidate', param);
 };
+// 查询聊天记录列表接口
+export const getChatList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/proposal/getHistory', params);
+};
+// 查询详细沟通记录
+export const getChatDetail: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/proposal/get', params);
+};
+// 查询详细沟通记录接口
+export const getChatSearchList: HttpFC = (params) => {
+  return http.post('/tenacity-admin/api/proposal/getDynamicList', params);
+};

@@ -10,8 +10,13 @@ import { IDelStaffList } from 'src/pages/Exception/DeletionReminder/Config';
 import AudioPlay from './AudioPlay';
 import style from './style.module.less';
 import classNames from 'classnames';
-
-const chatLog: React.FC = () => {
+interface ChatLogProps {
+  userId?: string;
+  externalUserId?: string;
+  showDrawer?: boolean;
+  drawerValue: any;
+}
+const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, showDrawer, drawerValue }) => {
   const [filterDateRange, setfilterDateRange] = useState<[Moment | null, Moment | null]>([
     moment().subtract(1, 'months'),
     moment()
@@ -36,6 +41,7 @@ const chatLog: React.FC = () => {
   const myToken = useMemo(() => {
     return window.localStorage.getItem(TOKEN_KEY);
   }, []);
+  console.log(showDrawer);
 
   // 获取token
 
@@ -51,14 +57,15 @@ const chatLog: React.FC = () => {
 
   // 获取外部联系人信息
   const getClientInfo = () => {
-    const { clientInfo } = location.state as { clientInfo: IDelStaffList };
+    const { clientInfo } = (location.state as { clientInfo: IDelStaffList }) || {};
     setClientInfo(clientInfo);
   };
 
   // 获取私聊记录
   const fetchSingleChat = async (paream?: { [key: string]: any }) => {
     setIsChatListLoading(true);
-    const { partnerId, userId } = getQueryParam();
+    const { partnerId = chatUserId, userId = externalUserId } = getQueryParam();
+    if (!partnerId || !userId) return;
     // @ts-ignore
     const fromDate = filterDateRange?.[0] ? filterDateRange?.[0].format('YYYY-MM-DD') : '';
     // @ts-ignore
@@ -75,7 +82,7 @@ const chatLog: React.FC = () => {
       userId,
       // 私聊对象
       // partnerId: 'LiuJunJie',
-      partnerId,
+      partnerId: partnerId,
       // 聊天记录类型
       msgType: filterChatType,
       pageSize: pagination.pageSize,
@@ -181,7 +188,7 @@ const chatLog: React.FC = () => {
   useEffect(() => {
     fetchSingleChat();
     getClientInfo();
-  }, []);
+  }, [chatUserId, externalUserId]);
 
   // 聊天记录展现
   const formatChatMsg = (type: any, msgObj: any /* , chatObj: any */) => {
@@ -991,9 +998,18 @@ const chatLog: React.FC = () => {
   return (
     <div className={style.chatLog}>
       <div className={style.breadCrumbs}>
-        <BreadCrumbs
-          navList={[{ name: '删人提醒', path: '/deletionReminder' }, { name: clientInfo?.clientName + '的聊天记录' }]}
-        />
+        {showDrawer
+          ? (
+              ''
+            )
+          : (
+          <BreadCrumbs
+            navList={[
+              { name: '删人提醒', path: '/deletionReminder' },
+              { name: (clientInfo ? clientInfo?.clientName + '的' : '') + '聊天记录' }
+            ]}
+          />
+            )}
       </div>
       <div className={style.header}>
         <span className={style.left}>
@@ -1023,8 +1039,9 @@ const chatLog: React.FC = () => {
       </div>
       <Spin spinning={isChatListLoading}>
         <div className={style.content}>
+          {/* {clientInfo && ( */}
           <div className={style.contentMiddle}>
-            <div className={style.contentLeftTitle}>{clientInfo?.staffName}的聊天对象</div>
+            <div className={style.contentLeftTitle}>{clientInfo?.staffName || drawerValue?.staffName}的聊天对象</div>
             <div className={style.targetPersonWrap}>
               <div className={style.targetPerson}>
                 <span className={style.myTitle}>
@@ -1036,10 +1053,13 @@ const chatLog: React.FC = () => {
                       borderRadius: '50%',
                       margin: '0 10px 0 0'
                     }}
-                    src={clientInfo?.clientAvatar}
+                    src={clientInfo?.clientAvatar || drawerValue?.clientAvatar}
                   />
-                  <span title={clientInfo?.clientName} className={classNames(style.title, 'ellipsis')}>
-                    {clientInfo?.clientName}
+                  <span
+                    title={clientInfo?.clientName || drawerValue?.externalName}
+                    className={classNames(style.title, 'ellipsis')}
+                  >
+                    {clientInfo?.clientName || drawerValue?.externalName}
                   </span>
                   <Icon
                     className={style.editIcon}
@@ -1053,6 +1073,7 @@ const chatLog: React.FC = () => {
               </div>
             </div>
           </div>
+          {/* )} */}
           <div className={style.contentRight}>
             <div className={style.contentRightTitle}>
               <span style={{ lineHeight: '24px' }}>聊天记录</span>
