@@ -41,6 +41,7 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, s
   const myToken = useMemo(() => {
     return window.localStorage.getItem(TOKEN_KEY);
   }, []);
+  console.log(showDrawer);
 
   // 获取token
 
@@ -1055,10 +1056,10 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, s
                     src={clientInfo?.clientAvatar || drawerValue?.clientAvatar}
                   />
                   <span
-                    title={clientInfo?.clientName || drawerValue?.staffName}
+                    title={clientInfo?.clientName || drawerValue?.externalName}
                     className={classNames(style.title, 'ellipsis')}
                   >
-                    {clientInfo?.clientName || drawerValue?.staffName}
+                    {clientInfo?.clientName || drawerValue?.externalName}
                   </span>
                   <Icon
                     className={style.editIcon}
