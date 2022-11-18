@@ -109,6 +109,8 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
 
   useEffect(() => {
     if (id) {
+      setTitleList([]);
+      setDataSource([]);
       if (id === 'videofinrate') {
         setVisibleLineChart(false);
         getVideoTableData({ pageNum: 1 });

@@ -45,7 +45,6 @@ const DashBoardDetail: React.FC<RouteComponentProps<{ id: string }>> = ({ match 
     const item = current.children.filter((item) => item.key === id)[0];
     setCurrentCode(current);
     setCurrentItem(item);
-    console.log(id, item);
     setTplType(item?.tplType || 'table');
   }, [match.params.id]);
 
