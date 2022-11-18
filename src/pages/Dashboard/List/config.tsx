@@ -156,6 +156,7 @@ export type CodeListType = {
     subTitle: string;
     tplType?: string;
     percentage?: boolean;
+    isTime?: boolean;
     children?: { key: string; title: string; subTitle: string; tplType?: string }[];
   }[];
 }[];
@@ -248,7 +249,8 @@ export const dataCodeList: CodeListType = [
         key: 'avg_reply_time',
         title: '客户经理平均首次回复时长',
         subTitle: '客户经理平均首次回复时长',
-        tplType: 'line'
+        tplType: 'line',
+        isTime: true
       },
       {
         key: 'day_client_chat_cnt',
@@ -279,7 +281,8 @@ export const dataCodeList: CodeListType = [
         key: 'avg_clientreply_time',
         title: '客户平均首次回复时长',
         subTitle: '客户平均首次回复时长',
-        tplType: 'line'
+        tplType: 'line',
+        isTime: true
       },
       {
         key: 'reply_client_percentage',

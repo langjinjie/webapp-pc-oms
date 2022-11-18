@@ -12,7 +12,12 @@ interface toolTipSourceProps {
   seriesName: string;
   value: string;
 }
-export function tooltipCustom (toolTipSource: toolTipSourceProps, data: any[], percentage = false): string {
+export function tooltipCustom (
+  toolTipSource: toolTipSourceProps,
+  data: any[],
+  percentage = false,
+  isTime = false
+): string {
   if (!toolTipSource) {
     return '';
   }
@@ -21,7 +26,7 @@ export function tooltipCustom (toolTipSource: toolTipSourceProps, data: any[], p
   return `<div class="tooltip">
     <div>${item.dateStr}</div>
     <div class="mt10">${toolTipSource.seriesName} 
-    <span class="ml10 count">${toolTipSource.value + (percentage ? '%' : '')}</span></div>
+    <span class="ml10 count">${toolTipSource.value + (percentage ? '%' : isTime ? '分' : '')}</span></div>
   </div>`;
 }
 
@@ -29,8 +34,9 @@ interface TrendChartProps {
   data: any[];
   legend: string[];
   percentage?: boolean;
+  isTime?: boolean;
 }
-export const TrendChart: React.FC<TrendChartProps> = ({ data, legend, percentage }) => {
+export const TrendChart: React.FC<TrendChartProps> = ({ data, legend, percentage, isTime }) => {
   const options: ECOption = {
     legend: {
       data: legend
@@ -45,14 +51,14 @@ export const TrendChart: React.FC<TrendChartProps> = ({ data, legend, percentage
         show: true
       },
       axisLabel: {
-        formatter: percentage ? '{value}%' : '{value}'
+        formatter: percentage ? '{value}%' : isTime ? '{value}分' : '{value}'
       }
     },
 
     tooltip: {
       trigger: 'axis',
       formatter (params: any) {
-        return tooltipCustom(params[0], data, percentage);
+        return tooltipCustom(params[0], data, percentage, isTime);
       },
       backgroundColor: 'transparent',
       borderColor: 'transparent',
