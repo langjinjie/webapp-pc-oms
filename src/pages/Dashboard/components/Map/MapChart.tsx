@@ -13,7 +13,7 @@ import {
   LegendComponent
 } from 'echarts/components';
 // @ignore
-import geoJson from './china2.json';
+import geoJson from './china3.json';
 import { MapChart, ScatterChart, EffectScatterChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 
