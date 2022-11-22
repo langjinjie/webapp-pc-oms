@@ -64,7 +64,8 @@ const Map: React.FC<IMapProps> = ({ data }) => {
           },
           label: {
             show: true,
-            color: '#fff'
+            color: '#fff',
+            fontSize: 10
           },
           data,
           itemStyle: {
