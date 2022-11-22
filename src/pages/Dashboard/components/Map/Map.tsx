@@ -31,7 +31,7 @@ const Map: React.FC<IMapProps> = ({ data }) => {
       geo: {
         map: 'china',
         roam: false, // 一定要关闭拖拽
-        zoom: 1.23,
+        zoom: 0.95,
         center: [105, 36], // 调整地图位置
         itemStyle: {
           areaColor: '#1F2183',
@@ -49,7 +49,7 @@ const Map: React.FC<IMapProps> = ({ data }) => {
           type: 'map',
           map: 'china',
           roam: false,
-          zoom: 1.23,
+          zoom: 0.95,
           center: [105, 36],
           showLegendSymbol: false, // 存在legend时显示
           emphasis: {
@@ -57,8 +57,6 @@ const Map: React.FC<IMapProps> = ({ data }) => {
             label: {
               show: true,
               color: '#fff'
-              // position: 'inside'
-              // formatter: (value: any) => value.name + ':' + (value.value || 0)
             },
             itemStyle: {
               areaColor: 'rgba(29, 77, 214, 0.3)'
@@ -67,8 +65,6 @@ const Map: React.FC<IMapProps> = ({ data }) => {
           label: {
             show: true,
             color: '#fff'
-            // position: 'inside'
-            // formatter: (value: any) => value.name + ':' + (value.value || 0)
           },
           data,
           itemStyle: {

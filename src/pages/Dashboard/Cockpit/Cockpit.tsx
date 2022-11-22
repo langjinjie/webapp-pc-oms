@@ -640,11 +640,11 @@ const Cockpit: React.FC = () => {
                 <div className="flex justify-around">
                   <div>
                     <div className={styles.browse}>查看内容总次数</div>
-                    <div className={styles.browseNum}>{bicontrolNewsList.sumTotalCnt}</div>
+                    <div className={styles.browseNum}>{bicontrolNewsList.sumTotalCnt || 0}</div>
                   </div>
                   <div>
                     <div className={styles.browse}>人均查看数</div>
-                    <div className={styles.browseNum}>{bicontrolNewsList.totalPerCnt}</div>
+                    <div className={styles.browseNum}>{bicontrolNewsList.totalPerCnt || 0}</div>
                   </div>
                 </div>
                 {/* 文章查看情况 */}
@@ -678,7 +678,7 @@ const Cockpit: React.FC = () => {
             <div className={styles.tableBox}>
               <div className={styles.table2}>
                 <div className={styles.browse}>客户浏览总次数</div>
-                <div className={styles.browseNum}>{bicontrolProductlist.sumTotalCnt}</div>
+                <div className={styles.browseNum}>{bicontrolProductlist.sumTotalCnt || 0}</div>
                 <Table
                   rowKey={'title'}
                   columns={tableColumns4()}

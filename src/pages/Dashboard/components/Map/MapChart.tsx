@@ -78,7 +78,7 @@ const NgMapChart: React.FC<NgBarChartProps> = ({ options, height, width }) => {
     };
   }, []);
 
-  return <div ref={NgMapChartRef} style={{ width: width || '100%', height: height || '600px' }}></div>;
+  return <div ref={NgMapChartRef} style={{ width: width || '100%', height: height || '100%' }}></div>;
 };
 
 export default NgMapChart;
