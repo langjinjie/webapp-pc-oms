@@ -229,7 +229,7 @@ const TableDownLoad: React.FC = () => {
               </Select>
             </Form.Item>
             <Form.Item
-              label={showSelect ? '数据产生日期' : '日期'}
+              label={showSelect ? '产生日期' : '日期'}
               name="dateRange"
               rules={[{ required: templeType === 0 }]}
             >
