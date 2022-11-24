@@ -122,3 +122,11 @@ export const requestGetBicontrolProductlist: HttpFC = (param) => {
 export const requestGetBicontrolTagslist: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/data/bicontrol/tagslist', param);
 };
+
+/**
+ * @description 中心大区列表接口
+ * @param param
+ */
+export const requestGetDepttypeList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/bicontrol/depttype', param);
+};
