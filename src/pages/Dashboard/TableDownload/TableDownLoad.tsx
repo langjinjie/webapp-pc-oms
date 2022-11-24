@@ -228,7 +228,11 @@ const TableDownLoad: React.FC = () => {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item label="日期" name="dateRange" rules={[{ required: templeType === 0 }]}>
+            <Form.Item
+              label={showSelect ? '数据产生日期' : '日期'}
+              name="dateRange"
+              rules={[{ required: templeType === 0 }]}
+            >
               {/* type为1 不能选择时间 */}
               <DatePicker.RangePicker disabled={templeType === 1} allowClear />
             </Form.Item>
