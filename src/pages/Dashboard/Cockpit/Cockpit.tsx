@@ -677,7 +677,7 @@ const Cockpit: React.FC = () => {
             </div>
             <div className={styles.tableBox}>
               <div className={styles.table2}>
-                <div className={styles.browse}>昨日客户浏览总次数</div>
+                <div className={styles.browse}>客户浏览总次数</div>
                 <div className={styles.browseNum}>{bicontrolProductlist.sumTotalCnt || 0}</div>
                 <Table
                   rowKey={'title'}
