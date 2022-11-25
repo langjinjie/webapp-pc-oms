@@ -639,11 +639,11 @@ const Cockpit: React.FC = () => {
               <div className={styles.table1}>
                 <div className="flex justify-around">
                   <div>
-                    <div className={styles.browse}>查看内容总次数</div>
+                    <div className={styles.browse}>昨日查看内容总次数</div>
                     <div className={styles.browseNum}>{bicontrolNewsList.sumTotalCnt || 0}</div>
                   </div>
                   <div>
-                    <div className={styles.browse}>人均查看数</div>
+                    <div className={styles.browse}>昨日人均查看数</div>
                     <div className={styles.browseNum}>{bicontrolNewsList.totalPerCnt || 0}</div>
                   </div>
                 </div>
@@ -677,7 +677,7 @@ const Cockpit: React.FC = () => {
             </div>
             <div className={styles.tableBox}>
               <div className={styles.table2}>
-                <div className={styles.browse}>客户浏览总次数</div>
+                <div className={styles.browse}>昨日客户浏览总次数</div>
                 <div className={styles.browseNum}>{bicontrolProductlist.sumTotalCnt || 0}</div>
                 <Table
                   rowKey={'title'}

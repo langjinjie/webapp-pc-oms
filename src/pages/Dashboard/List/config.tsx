@@ -77,7 +77,7 @@ export const tableColumns1 = ({ toDetailPage, titleList }: tableOperations): Col
       render: (text: string, record) => {
         const { data1 = 0, data2 = 0, data3 = 0, data4 = 0, data5 = 0, data6 = 0 } = record;
         return (
-          <div className="cursor" onClick={() => toDetailPage(record)} style={{ width: '100px', margin: '0 auto' }}>
+          <div className="cursor" onClick={() => toDetailPage?.(record)} style={{ width: '100px', margin: '0 auto' }}>
             <SmallLineChart
               width="96px"
               height="22px"
@@ -141,7 +141,7 @@ export const tableColumns2 = ({ titleList }: tableOperations): ColumnsType<ItemP
 // avg_smart日人均销售宝典调用数
 // avg_cust_count日人均客户信息调用数
 // avg_radar_count日人均客户雷达调用数
-// avg_tag_count 日人均客户标签调用数
+// avg_tag_count 日人均客户标签变更数
 // avg_speech_count日人均我的收藏调用数
 // avg_orc_count日人均文字识别调用数
 // avg_rank_count日人均排行榜调用数
@@ -458,7 +458,7 @@ export const dataCodeList: CodeListType = [
       {
         key: 'avg_tag_count',
         title: '客户标签',
-        subTitle: '日人均客户标签调用数'
+        subTitle: '日人均客户标签变更数'
       },
       {
         key: 'clienttagrate',
