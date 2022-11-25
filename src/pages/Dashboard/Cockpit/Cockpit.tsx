@@ -539,7 +539,7 @@ const Cockpit: React.FC = () => {
               </div>
               <div className={styles.ranking}>
                 <div className={classNames(styles.titleWrap, 'flex justify-between')}>
-                  <span>分中心排名</span>
+                  <span>昨日分中心排名</span>
                   <span>{bicontrolAdminView?.areaDay}</span>
                 </div>
                 <NgTable
@@ -556,11 +556,11 @@ const Cockpit: React.FC = () => {
           <div className="mt40">
             <div className={classNames('flex justify-between')}>
               <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
-                <h3 className={styles.panelTitle}>团队排名</h3>
+                <h3 className={styles.panelTitle}>昨日团队排名</h3>
                 <span className={styles.time}>{bicontrolTeamlist.day}</span>
               </div>
               <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
-                <h3 className={styles.panelTitle}>客户经理排名</h3>
+                <h3 className={styles.panelTitle}>昨日客户经理排名</h3>
                 <span className={styles.time}>{bicontrolStafflist.day}</span>
               </div>
             </div>
@@ -606,7 +606,7 @@ const Cockpit: React.FC = () => {
                 <span className={styles.time}>{bicontrolAdminView?.tagDay}</span>
               </div>
               <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
-                <h3 className={styles.panelTitle}>查看内容情况</h3>
+                <h3 className={styles.panelTitle}>昨日查看内容情况</h3>
                 <span className={styles.time}>{bicontrolNewsList.day}</span>
               </div>
             </div>
@@ -639,11 +639,11 @@ const Cockpit: React.FC = () => {
               <div className={styles.table1}>
                 <div className="flex justify-around">
                   <div>
-                    <div className={styles.browse}>昨日查看内容总次数</div>
+                    <div className={styles.browse}>查看内容总次数</div>
                     <div className={styles.browseNum}>{bicontrolNewsList.sumTotalCnt || 0}</div>
                   </div>
                   <div>
-                    <div className={styles.browse}>昨日人均查看数</div>
+                    <div className={styles.browse}>人均查看数</div>
                     <div className={styles.browseNum}>{bicontrolNewsList.totalPerCnt || 0}</div>
                   </div>
                 </div>
@@ -667,11 +667,11 @@ const Cockpit: React.FC = () => {
           <div className="mt40">
             <div className={classNames('flex justify-between')}>
               <div className={classNames('flex justify-between', styles.panelHeaderChildren1)}>
-                <h3 className={styles.panelTitle}>产品偏好</h3>
+                <h3 className={styles.panelTitle}>昨日产品偏好</h3>
                 <span className={styles.time}>{bicontrolProductlist.day}</span>
               </div>
               <div className={classNames('flex justify-between', styles.panelHeaderChildren2)}>
-                <h3 className={styles.panelTitle}>销售概率</h3>
+                <h3 className={styles.panelTitle}>昨日销售概率</h3>
                 <span className={styles.time}>{bicontrolTagslist.day}</span>
               </div>
             </div>

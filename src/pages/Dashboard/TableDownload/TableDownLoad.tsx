@@ -96,21 +96,36 @@ const TableDownLoad: React.FC = () => {
     }
   };
 
-  // 获取中心大区
-  const getDepttypeList = async ({
+  // 获取部门类型列表
+  const getAllDepttypeList = async ({
     typeNameAttribute,
     parentDeptIds
   }: {
-    typeNameAttribute: string;
+    typeNameAttribute: 'subCenter' | 'businessZone' | 'businessDepartment' | 'team';
     parentDeptIds?: string[];
   }) => {
     const res = await requestGetDepttypeList({ corpId, typeNameAttribute, parentDeptIds });
     if (res) {
-      setCenterDeptIdList(res.list);
+      switch (typeNameAttribute) {
+        case 'subCenter':
+          setCenterDeptIdList(res.list || []);
+          break;
+        case 'businessZone':
+          setAreaDeptIdList(res.list || []);
+          break;
+        case 'businessDepartment':
+          setBossDeptIdList(res.list || []);
+          break;
+        case 'team':
+          setLeaderDeptIdList(res.list || []);
+          break;
+        default:
+          break;
+      }
     }
   };
 
-  // 选择销售大区(分中心)
+  // 选择销售中心(分中心)
   const centerDeptIdsOnChange = async (val: string[]) => {
     form.setFieldsValue({
       areaDeptIds: [],
@@ -118,18 +133,13 @@ const TableDownLoad: React.FC = () => {
       leaderDeptIds: []
     });
     if (val.filter((filterItem) => filterItem).length) {
-      const res = await requestGetDepttypeList({
-        corpId,
-        typeNameAttribute: 'businessZone',
-        parentDeptIds: val.filter((filterItem) => filterItem)
-      });
-      if (res) {
-        setAreaDeptIdList(res.list);
-      }
-    } else {
-      setAreaDeptIdList([]);
+      getAllDepttypeList({ typeNameAttribute: 'businessZone', parentDeptIds: val });
       setBossDeptIdList([]);
       setLeaderDeptIdList([]);
+    } else {
+      getAllDepttypeList({ typeNameAttribute: 'businessZone' });
+      getAllDepttypeList({ typeNameAttribute: 'businessDepartment' });
+      getAllDepttypeList({ typeNameAttribute: 'team' });
     }
   };
   // 选择销售大区(营业区)
@@ -139,44 +149,37 @@ const TableDownLoad: React.FC = () => {
       leaderDeptIds: []
     });
     if (val.filter((filterItem) => filterItem).length) {
-      const res = await requestGetDepttypeList({
-        corpId,
-        typeNameAttribute: 'businessDepartment',
-        parentDeptIds: val.filter((filterItem) => filterItem)
-      });
-      if (res) {
-        setBossDeptIdList(res.list);
-      }
-    } else {
-      setBossDeptIdList([]);
+      getAllDepttypeList({ typeNameAttribute: 'businessDepartment', parentDeptIds: val });
       setLeaderDeptIdList([]);
+    } else {
+      getAllDepttypeList({ typeNameAttribute: 'businessDepartment' });
+      getAllDepttypeList({ typeNameAttribute: 'team' });
     }
   };
-  // 选择销售区域(营业区域)
+  // 选择销售区域(营业部)
   const bossDeptIdsOnChange = async (val: string[]) => {
     form.setFieldsValue({
       leaderDeptIds: []
     });
     if (val.filter((filterItem) => filterItem).length) {
-      const res = await requestGetDepttypeList({
-        corpId,
-        typeNameAttribute: 'team',
-        parentDeptIds: val.filter((filterItem) => filterItem)
-      });
-      if (res) {
-        setLeaderDeptIdList(res.list);
-      }
+      getAllDepttypeList({ typeNameAttribute: 'team', parentDeptIds: val });
     } else {
-      setLeaderDeptIdList([]);
+      getAllDepttypeList({ typeNameAttribute: 'team' });
     }
   };
 
   useEffect(() => {
     getList();
     getListCategory();
-    // 获取分中心
-    getDepttypeList({ typeNameAttribute: 'subCenter' });
   }, []);
+  useEffect(() => {
+    if (showSelect) {
+      getAllDepttypeList({ typeNameAttribute: 'subCenter' });
+      getAllDepttypeList({ typeNameAttribute: 'businessZone' });
+      getAllDepttypeList({ typeNameAttribute: 'businessDepartment' });
+      getAllDepttypeList({ typeNameAttribute: 'team' });
+    }
+  }, [showSelect]);
 
   const exportFileExcel = async (record: fileProps) => {
     const { data } = await exportFileWithTable({ fileId: record.fileId });
