@@ -116,6 +116,7 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
     {
       title: '操作',
       width: 260,
+      fixed: 'right',
       render: (row: IDelStaffList) => {
         return (
           <span className={style.operation}>
