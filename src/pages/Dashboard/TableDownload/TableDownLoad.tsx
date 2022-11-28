@@ -132,7 +132,7 @@ const TableDownLoad: React.FC = () => {
       bossDeptIds: [],
       leaderDeptIds: []
     });
-    if (val.filter((filterItem) => filterItem).length) {
+    if (val.length) {
       getAllDepttypeList({ typeNameAttribute: 'businessZone', parentDeptIds: val });
       setBossDeptIdList([]);
       setLeaderDeptIdList([]);
@@ -148,12 +148,18 @@ const TableDownLoad: React.FC = () => {
       bossDeptIds: [],
       leaderDeptIds: []
     });
-    if (val.filter((filterItem) => filterItem).length) {
+    if (val.length) {
       getAllDepttypeList({ typeNameAttribute: 'businessDepartment', parentDeptIds: val });
       setLeaderDeptIdList([]);
     } else {
-      getAllDepttypeList({ typeNameAttribute: 'businessDepartment' });
-      getAllDepttypeList({ typeNameAttribute: 'team' });
+      // 判断销售中心是否被选中
+      if (form.getFieldValue('centerDeptIds') && form.getFieldValue('centerDeptIds').length) {
+        setBossDeptIdList([]);
+        setLeaderDeptIdList([]);
+      } else {
+        getAllDepttypeList({ typeNameAttribute: 'businessDepartment' });
+        getAllDepttypeList({ typeNameAttribute: 'team' });
+      }
     }
   };
   // 选择销售区域(营业部)
@@ -161,10 +167,15 @@ const TableDownLoad: React.FC = () => {
     form.setFieldsValue({
       leaderDeptIds: []
     });
-    if (val.filter((filterItem) => filterItem).length) {
+
+    if (val.length) {
       getAllDepttypeList({ typeNameAttribute: 'team', parentDeptIds: val });
     } else {
-      getAllDepttypeList({ typeNameAttribute: 'team' });
+      if (form.getFieldValue('areaDeptIds') && form.getFieldValue('areaDeptIds').length) {
+        setLeaderDeptIdList([]);
+      } else {
+        getAllDepttypeList({ typeNameAttribute: 'team' });
+      }
     }
   };
 
