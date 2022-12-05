@@ -387,8 +387,8 @@ export const routes: RouteProps[] = [
   },
   // 积分-激励任务管理
   {
-    path: '/excitation',
-    component: lazy(() => import('src/pages/PointsManage/Excitation/Excitation'))
+    path: '/incentive',
+    component: lazy(() => import('src/pages/PointsManage/Incentive/Incentive'))
   }
 ];
 

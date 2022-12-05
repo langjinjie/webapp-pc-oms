@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Select } from 'antd';
 import { NgTable } from 'src/components';
-import { sendStatusOptions } from 'src/pages/PointsManage/Excitation/Excitation';
-import { TableColumns } from 'src/pages/PointsManage/Excitation/PointsSend/Config';
+import { sendStatusOptions } from 'src/pages/PointsManage/Incentive/Incentive';
+import { TableColumns } from 'src/pages/PointsManage/Incentive/PointsSend/Config';
 import style from './style.module.less';
 
 const PointsSend: React.FC = () => {

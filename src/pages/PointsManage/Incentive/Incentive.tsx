@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Tabs } from 'antd';
 import { /* NgTable, */ NoPermission } from 'src/components';
-import Manage from 'src/pages/PointsManage/Excitation/Manage/Manage';
-import PointsSend from 'src/pages/PointsManage/Excitation/PointsSend/PointsSend';
+import Manage from 'src/pages/PointsManage/Incentive/Manage/Manage';
+import PointsSend from 'src/pages/PointsManage/Incentive/PointsSend/PointsSend';
 import style from './style.module.less';
 
 export const stateOptions = [

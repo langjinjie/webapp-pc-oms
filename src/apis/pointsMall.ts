@@ -238,3 +238,68 @@ export const requestGetPointsConfigLogDetail: HttpFunction = (param) => {
 export const requestGetPointsConfigLogList: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/points/config/log/list', param);
 };
+
+/* ----------------------------------- 打卡和奖励任务 ----------------------------------- */
+/**
+ * @description 1.1激励任务列表接口
+ * @param param
+ */
+export const requestGetIncentiveTaskList: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/incentive/task/list', param);
+};
+
+/**
+ * @description 1.2激励任务详情接口
+ * @param param
+ */
+export const requestGetIncentiveTaskDetail: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/incentive/task/detail', param);
+};
+
+/**
+ * @description 1.3激励任务编辑接口
+ * @param param
+ */
+export const requestEditIncentiveTask: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/incentive/task/edit', param);
+};
+
+/**
+ * @description 1.4激励任务管理接口
+ * @param param
+ */
+export const requestManageIncentiveTask: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/incentive/task/manage', param);
+};
+
+/**
+ * @description 1.5激励积分列表接口
+ * @param param
+ */
+export const requestGetIncentivePointsList: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/incentive/send/list', param);
+};
+
+/**
+ * @description 1.6发放选中激励积分接口
+ * @param param
+ */
+export const requestBatchSendIncentivePoints: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/incentive/send/batch', param);
+};
+
+/**
+ * @description 1.7批量发放激励积分接口
+ * @param param
+ */
+export const requestSendAllIncentivePoints: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/incentive/send/all', param);
+};
+
+/**
+ * @description 1.8一键导入激励积分接口
+ * @param param
+ */
+export const requestImportIncentivePoints: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/incentive/send/import', param);
+};

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 // import { UNKNOWN } from 'src/utils/base';
-import style from 'src/pages/PointsManage/Excitation/Manage/style.module.less';
+import style from 'src/pages/PointsManage/Incentive/Manage/style.module.less';
 
 export const TableColumns: () => ColumnsType = () => {
   return [
