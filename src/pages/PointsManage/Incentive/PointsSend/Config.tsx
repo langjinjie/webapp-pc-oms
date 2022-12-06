@@ -1,15 +1,16 @@
 import React from 'react';
 import { Popconfirm } from 'antd';
-import {} from 'src/apis/pointsMall';
+import { requestBatchSendIncentivePoints } from 'src/apis/pointsMall';
 import { ColumnsType } from 'antd/es/table';
 // import { UNKNOWN } from 'src/utils/base';
 import { sendStatusOptions } from 'src/pages/PointsManage/Incentive/Incentive';
+import { IIncentivePointSend } from './PointsSend';
 import classNames from 'classnames';
 import style from './style.module.less';
 
 export const TableColumns: () => ColumnsType = () => {
-  const sendPoints = () => {
-    console.log('发放积分');
+  const sendPoints = async (sendId: string) => {
+    await requestBatchSendIncentivePoints({ list: { sendId } });
   };
   return [
     { title: '客户经理姓名', dataIndex: 'staffName' },
@@ -32,10 +33,10 @@ export const TableColumns: () => ColumnsType = () => {
     { title: '操作人', dataIndex: 'opName' },
     {
       title: '操作',
-      render () {
+      render (value: IIncentivePointSend) {
         return (
           <>
-            <Popconfirm title="确认发放该积分吗?" onConfirm={() => sendPoints()}>
+            <Popconfirm title="确认发放该积分吗?" onConfirm={() => sendPoints(value.sendId)}>
               <span className={style.send}>发放积分</span>
             </Popconfirm>
           </>

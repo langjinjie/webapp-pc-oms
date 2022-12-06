@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Select } from 'antd';
+import React, { Key, useEffect, useState } from 'react';
+import { Button, Form, Input, message, Select } from 'antd';
 import { NgTable } from 'src/components';
 import { sendStatusOptions } from 'src/pages/PointsManage/Incentive/Incentive';
 import { TableColumns } from 'src/pages/PointsManage/Incentive/PointsSend/Config';
-import { requestGetIncentivePointsList } from 'src/apis/pointsMall';
+import {
+  requestGetIncentivePointsList,
+  requestBatchSendIncentivePoints,
+  requestImportIncentivePoints
+} from 'src/apis/pointsMall';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import style from './style.module.less';
 
@@ -22,7 +26,9 @@ export interface IIncentivePointSend {
 export const PointsSend: React.FC = () => {
   const [list, setList] = useState<IIncentivePointSend[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sendBtnLoading, setSendLoading] = useState(false);
   const [exportVisible, setExportVisible] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [pagination, setPagination] = useState<{ total: number; pageNum: number; pageSize: number }>({
     total: 0,
     pageNum: 1,
@@ -92,6 +98,41 @@ export const PointsSend: React.FC = () => {
     getList({ taskName, status, startTime, endTime, ...newPagination });
   };
 
+  const onSelectChange = (selectedRowKeys: Key[]) => {
+    console.log('selectedRowKeys', selectedRowKeys);
+    setSelectedRowKeys(selectedRowKeys);
+  };
+
+  const rowSelection: any = {
+    hideSelectAll: true,
+    selectedRowKeys: selectedRowKeys,
+    onChange: (selectedRowKeys: Key[]) => {
+      onSelectChange(selectedRowKeys);
+    },
+    getCheckboxProps: (record: IIncentivePointSend) => {
+      return {
+        disabled: record.sendStatus === 1
+      };
+    }
+  };
+
+  // 批量发放
+  const batchSend = async () => {
+    setSendLoading(true);
+    const list = selectedRowKeys.map((key) => ({ sendId: key }));
+    await requestBatchSendIncentivePoints({ list });
+    setSendLoading(false);
+  };
+
+  // 一键导入
+  const exportFile = async (file: File) => {
+    const res = await requestImportIncentivePoints({ file });
+    console.log('res', res);
+    if (res) {
+      message.success('导入成功');
+    }
+  };
+
   useEffect(() => {
     getList();
   }, []);
@@ -118,8 +159,9 @@ export const PointsSend: React.FC = () => {
         <Button className={style.resetBtn}>重置</Button>
       </Form>
       <NgTable
+        rowKey="sendId"
         loading={loading}
-        rowSelection={{ onChange: () => 1 }}
+        rowSelection={rowSelection}
         columns={TableColumns()}
         scroll={{ x: 'max-content' }}
         dataSource={list}
@@ -132,14 +174,17 @@ export const PointsSend: React.FC = () => {
       />
       {list.length === 0 || (
         <div className={style.batchSendWrap}>
-          <Button className={style.batchSendBtn}>批量发放</Button>
+          <Button
+            className={style.batchSendBtn}
+            loading={sendBtnLoading}
+            disabled={selectedRowKeys.length === 0}
+            onClick={batchSend}
+          >
+            批量发放
+          </Button>
         </div>
       )}
-      <ExportModal
-        visible={exportVisible}
-        onOK={() => setExportVisible(false)}
-        onCancel={() => setExportVisible(false)}
-      />
+      <ExportModal visible={exportVisible} onOK={exportFile} onCancel={() => setExportVisible(false)} />
     </>
   );
 };
