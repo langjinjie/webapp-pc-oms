@@ -1,1 +1,1 @@
-export { default as EditAddExcitation } from 'src/pages/PointsManage/Incentive/components/EditModal/EditModal';
+export { default as EditModal } from 'src/pages/PointsManage/Incentive/components/EditModal/EditModal';

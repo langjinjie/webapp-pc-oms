@@ -2,6 +2,8 @@ import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN } from 'src/utils/base';
 import { IIncentiveManage } from './Manage';
+import { Popconfirm } from 'antd';
+import { requestManageIncentiveTask } from 'src/apis/pointsMall';
 import style from 'src/pages/PointsManage/Incentive/Manage/style.module.less';
 import classNames from 'classnames';
 
@@ -12,6 +14,12 @@ export const stateOptions: { [key: string]: string } = {
 };
 
 export const TableColumns: (editViewHandle: (row: any, isView: boolean) => void) => ColumnsType = (editViewHandle) => {
+  // 上架任务
+  const upTask = async (taskId: string) => {
+    const res = await requestManageIncentiveTask({ taskId });
+    console.log('res', res);
+  };
+
   return [
     { title: '任务名称', dataIndex: 'taskName' },
     {
@@ -42,10 +50,12 @@ export const TableColumns: (editViewHandle: (row: any, isView: boolean) => void)
     },
     {
       title: '操作',
-      render (row: any) {
+      render (row: IIncentiveManage) {
         return (
           <>
-            <span className={style.up}>上架</span>
+            <Popconfirm title="确认上架该任务吗?" onConfirm={() => upTask(row.taskId)}>
+              <span className={style.up}>上架</span>
+            </Popconfirm>
             <span className={style.edit} onClick={() => editViewHandle(row, false)}>
               编辑
             </span>

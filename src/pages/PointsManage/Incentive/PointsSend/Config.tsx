@@ -1,23 +1,43 @@
 import React from 'react';
+import { Popconfirm } from 'antd';
+import {} from 'src/apis/pointsMall';
 import { ColumnsType } from 'antd/es/table';
 // import { UNKNOWN } from 'src/utils/base';
-import style from 'src/pages/PointsManage/Incentive/Manage/style.module.less';
+import { sendStatusOptions } from 'src/pages/PointsManage/Incentive/Incentive';
+import classNames from 'classnames';
+import style from './style.module.less';
 
 export const TableColumns: () => ColumnsType = () => {
+  const sendPoints = () => {
+    console.log('发放积分');
+  };
   return [
-    { title: '客户经理姓名', dataIndex: '' },
-    { title: '客户经理id', dataIndex: '' },
-    { title: '团队长姓名', dataIndex: '' },
-    { title: '应发积分', dataIndex: '' },
-    { title: '积分发放状态', dataIndex: '' },
-    { title: '发放时间', dataIndex: '' },
-    { title: '操作人', dataIndex: '' },
+    { title: '客户经理姓名', dataIndex: 'staffName' },
+    { title: '客户经理id', dataIndex: 'staffId' },
+    { title: '团队长姓名', dataIndex: 'leaderName' },
+    { title: '应发积分', dataIndex: 'sendPoints' },
+    {
+      title: '积分发放状态',
+      dataIndex: 'sendStatus',
+      render (value: number) {
+        return (
+          <>
+            <i className={classNames('status-point', { 'points-gray': value === 0 })} />
+            <span>{sendStatusOptions.find((findItem) => findItem.value === value)?.label}</span>
+          </>
+        );
+      }
+    },
+    { title: '发放时间', dataIndex: 'sendTime' },
+    { title: '操作人', dataIndex: 'opName' },
     {
       title: '操作',
       render () {
         return (
           <>
-            <span className={style.send}>发放积分</span>
+            <Popconfirm title="确认发放该积分吗?" onConfirm={() => sendPoints()}>
+              <span className={style.send}>发放积分</span>
+            </Popconfirm>
           </>
         );
       }

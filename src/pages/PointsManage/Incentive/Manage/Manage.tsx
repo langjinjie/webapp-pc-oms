@@ -3,9 +3,10 @@ import { Button, Form, Input, DatePicker, Select } from 'antd';
 import { stateOptions } from 'src/pages/PointsManage/Incentive/Incentive';
 import { NgTable } from 'src/components';
 import { TableColumns } from 'src/pages/PointsManage/Incentive/Manage/Config';
-import { EditAddExcitation } from 'src/pages/PointsManage/Incentive/components';
-// import { requestGetIncentiveTaskList } from 'src/apis/pointsMall';
+import { EditModal } from 'src/pages/PointsManage/Incentive/components';
+import { requestGetIncentiveTaskList } from 'src/apis/pointsMall';
 import style from './style.module.less';
+import moment, { Moment } from 'moment';
 
 export interface IIncentiveManage {
   taskId: string;
@@ -17,12 +18,24 @@ export interface IIncentiveManage {
   status: number;
 }
 
+export interface IEditModalValue {
+  taskName: string;
+  taskTime: [Moment, Moment];
+  target: string;
+  desc: string;
+}
+
 const IncentiveManage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [list, setList] = useState<any[]>([]);
   const [visible, setVisible] = useState(false);
-  const [editValue, setEditValue] = useState<{ [key: string]: any }>();
+  const [editValue, setEditValue] = useState<IEditModalValue>();
   const [isView, setIsView] = useState(false);
+  const [pagination, setPagination] = useState<{ total: number; pageNum: number; pageSize: number }>({
+    total: 0,
+    pageNum: 1,
+    pageSize: 10
+  });
 
   const [form] = Form.useForm();
   const { Item } = Form;
@@ -31,9 +44,14 @@ const IncentiveManage: React.FC = () => {
 
   // 获取列表
   const getList = async (value?: any) => {
-    console.log('value', value);
     setLoading(true);
-    // const res = await requestGetIncentiveTaskList({});
+    const res = await requestGetIncentiveTaskList(value);
+    console.log(res);
+    if (res) {
+      const { total, list } = res;
+      setList(list);
+      setPagination((pagination) => ({ ...pagination, total }));
+    }
     const item: IIncentiveManage = {
       taskId: '1',
       taskName: '激励任务名称',
@@ -47,27 +65,58 @@ const IncentiveManage: React.FC = () => {
     setLoading(false);
   };
 
+  const onFinish = (value: { [key: string]: any }) => {
+    console.log('value', value);
+    const { taskName, taskTime, status } = value;
+    let startTime = '';
+    let endTime = '';
+    if (taskTime) {
+      startTime = taskTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      endTime = taskTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+    }
+    // 重置分页
+    setPagination((pagination) => ({ ...pagination, pageNum: 1 }));
+    console.log('param', { taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
+    getList({ taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
+  };
+
   // 创建激励任务
   const AddTask = () => {
     setVisible(true);
+    setIsView(false);
+  };
+
+  // 编辑/查看
+  const editViewHandle = (row: any, isView: boolean) => {
+    setIsView(isView);
+    setEditValue({ ...row, taskTime: [moment(row.startTime), moment(row.endTime)] });
+    setVisible(true);
+  };
+
+  const paginationChange = (current: number, pageSize?: number) => {
+    const newPagination = { pageNum: current, pageSize: pageSize || pagination.pageSize };
+    setPagination((pagination) => ({ ...pagination, ...newPagination }));
+    const { taskName, taskTime, status } = form.getFieldsValue();
+    let startTime = '';
+    let endTime = '';
+    if (taskTime) {
+      startTime = taskTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      endTime = taskTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+    }
+    console.log('param', { taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
+    getList({ taskName, status, startTime, endTime, ...newPagination });
   };
 
   useEffect(() => {
     getList();
   }, []);
 
-  // 编辑/查看
-  const editViewHandle = (row: any, isView: boolean) => {
-    setIsView(isView);
-    setEditValue(row);
-  };
-
   return (
     <>
       <Button type="primary" className={style.addExcitation} onClick={AddTask}>
         创建激励任务
       </Button>
-      <Form form={form} className={style.form} layout="inline" onFinish={getList}>
+      <Form form={form} className={style.form} layout="inline" onFinish={onFinish}>
         <Item label="任务名称：" name="taskName">
           <Input className={style.textInput} placeholder="请输入" />
         </Item>
@@ -95,13 +144,21 @@ const IncentiveManage: React.FC = () => {
         dataSource={list}
         className={style.table}
         loading={loading}
+        pagination={{
+          ...pagination,
+          current: pagination.pageNum
+        }}
+        paginationChange={paginationChange}
       />
       {/* 新增/编辑 */}
-      <EditAddExcitation
+      <EditModal
         title={editValue ? '编辑激励任务' : '创建激励任务'}
+        value={editValue}
         visible={visible}
+        onChange={(value) => setEditValue(value)}
         onCancel={() => setVisible(false)}
         isView={isView}
+        onSuccess={getList}
       />
     </>
   );
