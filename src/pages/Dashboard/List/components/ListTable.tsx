@@ -36,7 +36,6 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
     pageSize: 10
   });
   const toDetailPage = (record: any) => {
-    console.log({ filterData });
     history.push(`/dashboardList/${id}/detail`, {
       leaderName: record.leaderName,
       leaderId: record.leaderId,
@@ -57,7 +56,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
       dayType: filterData.dayType,
       queryType: 1,
       dataCode: filterData.dataCode,
-      businessModel: '',
+      businessModel: filterData.businessModel,
       pageSize: 10,
       pageNum,
       ...dataCode
@@ -141,7 +140,7 @@ const ListTable: React.FC<{ id: string; currentItem: any; modelList: ModalProps[
   // 时间类型切换时
   const onDayTypeChange = (value: any) => {
     setFilterData((filterData) => ({ ...filterData, dayType: value, businessModel: '' }));
-    getList({ dayType: value, businessModel: '' });
+    getList({ dayType: value, businessModel: '', pageNum: 1 });
     getTotal({ dayType: value, businessModel: '' });
   };
 

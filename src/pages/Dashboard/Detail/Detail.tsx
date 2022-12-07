@@ -20,7 +20,6 @@ const DashboardDetail: React.FC<RouteComponentProps<{ id: string }, any, StatePr
   const [stateProps, setStateProps] = useState<StateProps>();
   const [dataSource, setDataSource] = useState<any[]>([]);
   const getDetail = async () => {
-    console.log(location.state);
     const res = await getDashboardTeamDetail({
       dayType: location.state.dayType,
       queryType: 1,
