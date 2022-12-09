@@ -9,11 +9,11 @@ import { SceneColumns, searchCols, tableColumnsFun } from './ListConfig';
 import { OperateType } from 'src/utils/interface';
 import ChatLog from 'src/pages/Exception/DeletionReminder/ChatLog/ChatLog';
 interface SearchParamsProps {
-  carNumber: string;
-  externalName: string;
-  staffIds: string;
-  startTime: string;
-  endTime: string;
+  carNumber?: string;
+  externalName?: string;
+  staffIds?: string[];
+  startTime?: string;
+  endTime?: string;
 }
 const ChatRecordList: React.FC<RouteComponentProps> = () => {
   const [tableSource, setTableSource] = useState<Partial<SceneColumns>[]>([]);
@@ -25,13 +25,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
   const [externalUserId, setExternalUserId] = useState<string>();
   const [loading, setLoading] = useState(true);
   const [chatProposalId, setChatProposalId] = useState<string>();
-  const [queryParams, setQueryParams] = useState<SearchParamsProps>({
-    carNumber: '',
-    externalName: '',
-    staffIds: '',
-    startTime: '',
-    endTime: ''
-  });
+  const [queryParams, setQueryParams] = useState<SearchParamsProps>({});
   useDocumentTitle('合规管理-聊天记录查询');
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -67,13 +61,12 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
 
   const onSearch = (values: any) => {
     const { carNumber, externalName, staffList, rangePicker } = values;
-    console.log(values, '--------------------values');
     const staffIds = staffList?.map((mapItem: { staffId: string }) => mapItem.staffId);
-    let startTime = '';
-    let endTime = '';
+    let startTime: string | undefined;
+    let endTime: string | undefined;
     if (rangePicker && rangePicker.length > 0) {
-      startTime = rangePicker[0].format('YYYY-MM-DD HH:mm:ss');
-      endTime = rangePicker[1].format('YYYY-MM-DD HH:mm:ss');
+      startTime = rangePicker[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
+      endTime = rangePicker[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
     }
     getList({ carNumber, externalName, staffIds, startTime, endTime, pageNum: 1 });
     setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffIds, startTime, endTime }));
