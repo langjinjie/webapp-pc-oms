@@ -53,14 +53,17 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
 
   // 获取外部联系人信息
   const getClientInfo = () => {
-    const { clientInfo } = (location.state as { clientInfo: IDelStaffList }) || {};
+    // 合规管理中客户昵称为externalName字段，删人提醒中为 clientName
+    const { clientInfo = { ...value, clientName: value.externalName } } =
+      (location.state as { clientInfo: IDelStaffList }) || {};
     setClientInfo(clientInfo);
   };
 
   // 获取私聊记录
   const fetchSingleChat = async (param?: { [key: string]: any }) => {
     setIsChatListLoading(true);
-    const { partnerId, userId } = getQueryParam();
+    const { partnerId = value?.externalUserId, userId = value?.userId } = getQueryParam();
+    if (!(partnerId && userId)) return;
     // @ts-ignore
     const fromDate = filterDateRange?.[0] ? filterDateRange?.[0].format('YYYY-MM-DD') : '';
     // @ts-ignore
@@ -82,7 +85,6 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
       pageNum: pagination.pageNum,
       ...param
     };
-    if (!(data.partnerId && data.userId)) return;
     // 获取聊天记录
     const res = await requesrtGetSingleChatList(data);
     setIsChatListLoading(false);
@@ -144,19 +146,30 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
 
   // 聊天记录翻页
   const onChangePage = (pageNum: number, pageSize?: number) => {
-    setPagination((pagination) => ({ ...pagination, pageNum, pageSize: pageSize as number }));
-    fetchSingleChat({ pageNum });
+    let newPagination = { ...pagination };
+    if (pageSize === pagination.pageSize) {
+      newPagination = { ...newPagination, pageNum, pageSize: pageSize as number };
+    } else {
+      newPagination = { ...newPagination, pageNum: 1, pageSize: pageSize as number };
+    }
+    setPagination(newPagination);
+    fetchSingleChat(newPagination);
   };
 
-  // 重置
   const reset = () => {
     setfilterDateRange([moment().subtract(1, 'months'), moment()]);
     setFilterKey('');
     setFilterChatType(0);
     setPagination({ pageNum: 1, pageSize: 10 });
+  };
+
+  // 重置
+  const resetSearch = () => {
+    reset();
     fetchSingleChat({
       msgType: 0,
       pageNum: 1,
+      pageSize: 10,
       beginTime: moment().subtract(1, 'months').format('YYYY-MM-DD'),
       endTime: moment().format('YYYY-MM-DD'),
       queryContent: ''
@@ -182,28 +195,8 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
   };
 
   useEffect(() => {
-    fetchSingleChat();
     getClientInfo();
-  }, []);
-
-  useEffect(() => {
-    if (value) {
-      setClientInfo({ ...value, clientName: value.externalName });
-      setfilterDateRange([moment().subtract(1, 'months'), moment()]);
-      setFilterKey('');
-      setFilterChatType(0);
-      setPagination({ pageNum: 1, pageSize: 10 });
-      fetchSingleChat({
-        msgType: 0,
-        pageNum: 1,
-        beginTime: moment().subtract(1, 'months').format('YYYY-MM-DD'),
-        endTime: moment().format('YYYY-MM-DD'),
-        queryContent: '',
-        userId: value.userId,
-        partnerId: value.externalUserId
-      });
-      // 合规管理中客户昵称为externalName字段，删人提醒中为 clientName
-    }
+    resetSearch();
   }, [value]);
 
   // 聊天记录展现
@@ -1045,7 +1038,7 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
             </Button>
           </span>
           <span className={style.leftItem}>
-            <Button onClick={reset}>重置</Button>
+            <Button onClick={resetSearch}>重置</Button>
           </span>
         </span>
       </div>
