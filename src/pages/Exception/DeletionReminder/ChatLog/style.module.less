@@ -50,7 +50,8 @@
     clear: both;
     overflow: hidden;
     display: flex;
-    > div {
+    .contentMiddle,
+    .contentRight {
       height: 660px;
       float: left;
       border: 1px solid #ddd;
@@ -191,6 +192,11 @@
       padding: 5px 0 5px 31px;
       border-top: 1px solid #ddd;
       background: #f8f8f8;
+      :global {
+        .ant-select-single .ant-select-selector .ant-select-selection-item {
+          line-height: 22px !important;
+        }
+      }
     }
     .downloadIcon {
       cursor: pointer;

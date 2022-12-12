@@ -18,7 +18,7 @@ interface SearchParamsProps {
 const ChatRecordList: React.FC<RouteComponentProps> = () => {
   const [tableSource, setTableSource] = useState<Partial<SceneColumns>[]>([]);
   const [visible, setVisible] = useState(false);
-  const [visibleList, setVisibleList] = useState(false);
+  const [visibleDrawer, setVisibleDrawer] = useState(false);
   const [chatValue, setChatValue] = useState<any>();
   const [drawerValue, setdrawerValue] = useState<any>();
   const [userId, setUserId] = useState<string>();
@@ -83,7 +83,7 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
       setVisible(true);
       setChatValue({ ...record });
     } else if (operateType === 'edit') {
-      setVisibleList(true);
+      setVisibleDrawer(true);
       setUserId(record.userId);
       setExternalUserId(record.externalUserId);
       setdrawerValue({ ...record });
@@ -122,12 +122,12 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
       />
       <Drawer
         width={1200}
-        visible={visibleList}
+        visible={visibleDrawer}
         onClose={() => {
-          setVisibleList(false);
+          setVisibleDrawer(false);
         }}
       >
-        <ChatLog userId={userId} externalUserId={externalUserId} showDrawer={visibleList} drawerValue={drawerValue} />
+        <ChatLog userId={userId} externalUserId={externalUserId} value={drawerValue} />
       </Drawer>
     </div>
   );

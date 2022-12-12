@@ -13,10 +13,9 @@ import classNames from 'classnames';
 interface ChatLogProps {
   userId?: string;
   externalUserId?: string;
-  showDrawer?: boolean;
-  drawerValue: any;
+  value?: any;
 }
-const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, showDrawer, drawerValue }) => {
+const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, value }) => {
   const [filterDateRange, setfilterDateRange] = useState<[Moment | null, Moment | null]>([
     moment().subtract(1, 'months'),
     moment()
@@ -41,7 +40,6 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, s
   const myToken = useMemo(() => {
     return window.localStorage.getItem(TOKEN_KEY);
   }, []);
-  console.log(showDrawer);
 
   // 获取token
 
@@ -65,7 +63,7 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, s
   const fetchSingleChat = async (paream?: { [key: string]: any }) => {
     setIsChatListLoading(true);
     const { partnerId = chatUserId, userId = externalUserId } = getQueryParam();
-    if (!partnerId || !userId) return;
+    if (!(partnerId && userId)) return;
     // @ts-ignore
     const fromDate = filterDateRange?.[0] ? filterDateRange?.[0].format('YYYY-MM-DD') : '';
     // @ts-ignore
@@ -158,6 +156,7 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, s
     setfilterDateRange([moment().subtract(1, 'months'), moment()]);
     setFilterKey('');
     setFilterChatType(0);
+    setPagination({ pageNum: 1, pageSize: 10 });
     fetchSingleChat({
       msgType: 0,
       pageNum: 1,
@@ -189,6 +188,14 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, s
     fetchSingleChat();
     getClientInfo();
   }, [chatUserId, externalUserId]);
+
+  useEffect(() => {
+    if (value) {
+      reset();
+      // 合规管理中客户昵称为externalName字段，删人提醒中为 clientName
+      setClientInfo({ ...value, clientName: value.externalName });
+    }
+  }, [value]);
 
   // 聊天记录展现
   const formatChatMsg = (type: any, msgObj: any /* , chatObj: any */) => {
@@ -998,18 +1005,14 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, s
   return (
     <div className={style.chatLog}>
       <div className={style.breadCrumbs}>
-        {showDrawer
-          ? (
-              ''
-            )
-          : (
+        {!value && (
           <BreadCrumbs
             navList={[
               { name: '删人提醒', path: '/deletionReminder' },
-              { name: (clientInfo ? clientInfo?.clientName + '的' : '') + '聊天记录' }
+              { name: (clientInfo?.clientName ? clientInfo?.clientName + '的' : '') + '聊天记录' }
             ]}
           />
-            )}
+        )}
       </div>
       <div className={style.header}>
         <span className={style.left}>
@@ -1041,7 +1044,7 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, s
         <div className={style.content}>
           {/* {clientInfo && ( */}
           <div className={style.contentMiddle}>
-            <div className={style.contentLeftTitle}>{clientInfo?.staffName || drawerValue?.staffName}的聊天对象</div>
+            <div className={style.contentLeftTitle}>{clientInfo?.staffName}的聊天对象</div>
             <div className={style.targetPersonWrap}>
               <div className={style.targetPerson}>
                 <span className={style.myTitle}>
@@ -1053,13 +1056,10 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, s
                       borderRadius: '50%',
                       margin: '0 10px 0 0'
                     }}
-                    src={clientInfo?.clientAvatar || drawerValue?.clientAvatar}
+                    src={clientInfo?.clientAvatar}
                   />
-                  <span
-                    title={clientInfo?.clientName || drawerValue?.externalName}
-                    className={classNames(style.title, 'ellipsis')}
-                  >
-                    {clientInfo?.clientName || drawerValue?.externalName}
+                  <span title={clientInfo?.clientName} className={classNames(style.title, 'ellipsis')}>
+                    {clientInfo?.clientName}
                   </span>
                   <Icon
                     className={style.editIcon}
