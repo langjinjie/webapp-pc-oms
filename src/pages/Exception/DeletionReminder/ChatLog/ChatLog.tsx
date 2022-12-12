@@ -61,9 +61,9 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
 
   // 获取私聊记录
   const fetchSingleChat = async (param?: { [key: string]: any }) => {
-    setIsChatListLoading(true);
     const { partnerId = value?.externalUserId, userId = value?.userId } = getQueryParam();
     if (!(partnerId && userId)) return;
+    setIsChatListLoading(true);
     // @ts-ignore
     const fromDate = filterDateRange?.[0] ? filterDateRange?.[0].format('YYYY-MM-DD') : '';
     // @ts-ignore
