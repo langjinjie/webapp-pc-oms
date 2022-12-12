@@ -11,11 +11,9 @@ import AudioPlay from './AudioPlay';
 import style from './style.module.less';
 import classNames from 'classnames';
 interface ChatLogProps {
-  userId?: string;
-  externalUserId?: string;
   value?: any;
 }
-const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, value }) => {
+const chatLog: React.FC<ChatLogProps> = ({ value }) => {
   const [filterDateRange, setfilterDateRange] = useState<[Moment | null, Moment | null]>([
     moment().subtract(1, 'months'),
     moment()
@@ -60,10 +58,9 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, v
   };
 
   // 获取私聊记录
-  const fetchSingleChat = async (paream?: { [key: string]: any }) => {
+  const fetchSingleChat = async (param?: { [key: string]: any }) => {
     setIsChatListLoading(true);
-    const { partnerId = chatUserId, userId = externalUserId } = getQueryParam();
-    if (!(partnerId && userId)) return;
+    const { partnerId, userId } = getQueryParam();
     // @ts-ignore
     const fromDate = filterDateRange?.[0] ? filterDateRange?.[0].format('YYYY-MM-DD') : '';
     // @ts-ignore
@@ -75,19 +72,19 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, v
       endTime: toDate,
       // 关键词
       queryContent: filterKey,
-      // 私聊者
-      // userId: 'LangJinJie',
+      // userId 私聊者（坐席） 必传,
       userId,
-      // 私聊对象
-      // partnerId: 'LiuJunJie',
-      partnerId: partnerId,
+      // partnerId 私聊对象（外部联系人） 必传,
+      partnerId,
       // 聊天记录类型
       msgType: filterChatType,
       pageSize: pagination.pageSize,
-      pageNum: pagination.pageNum
+      pageNum: pagination.pageNum,
+      ...param
     };
+    if (!(data.partnerId && data.userId)) return;
     // 获取聊天记录
-    const res = await requesrtGetSingleChatList({ ...data, ...paream });
+    const res = await requesrtGetSingleChatList(data);
     setIsChatListLoading(false);
     if (res) {
       const { list, total } = res;
@@ -187,13 +184,25 @@ const chatLog: React.FC<ChatLogProps> = ({ userId: chatUserId, externalUserId, v
   useEffect(() => {
     fetchSingleChat();
     getClientInfo();
-  }, [chatUserId, externalUserId]);
+  }, []);
 
   useEffect(() => {
     if (value) {
-      reset();
-      // 合规管理中客户昵称为externalName字段，删人提醒中为 clientName
       setClientInfo({ ...value, clientName: value.externalName });
+      setfilterDateRange([moment().subtract(1, 'months'), moment()]);
+      setFilterKey('');
+      setFilterChatType(0);
+      setPagination({ pageNum: 1, pageSize: 10 });
+      fetchSingleChat({
+        msgType: 0,
+        pageNum: 1,
+        beginTime: moment().subtract(1, 'months').format('YYYY-MM-DD'),
+        endTime: moment().format('YYYY-MM-DD'),
+        queryContent: '',
+        userId: value.userId,
+        partnerId: value.externalUserId
+      });
+      // 合规管理中客户昵称为externalName字段，删人提醒中为 clientName
     }
   }, [value]);
 
