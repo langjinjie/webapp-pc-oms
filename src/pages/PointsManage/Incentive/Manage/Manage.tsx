@@ -5,8 +5,8 @@ import { NgTable } from 'src/components';
 import { TableColumns } from 'src/pages/PointsManage/Incentive/Manage/Config';
 import { EditModal } from 'src/pages/PointsManage/Incentive/components';
 import { requestGetIncentiveTaskList } from 'src/apis/pointsMall';
-import style from './style.module.less';
 import moment, { Moment } from 'moment';
+import style from './style.module.less';
 
 export interface IIncentiveManage {
   taskId: string;
@@ -45,7 +45,7 @@ const IncentiveManage: React.FC = () => {
   // 获取列表
   const getList = async (value?: any) => {
     setLoading(true);
-    const res = await requestGetIncentiveTaskList(value);
+    const res = await requestGetIncentiveTaskList({ value });
     console.log(res);
     if (res) {
       const { total, list } = res;
@@ -68,8 +68,8 @@ const IncentiveManage: React.FC = () => {
   const onFinish = (value: { [key: string]: any }) => {
     console.log('value', value);
     const { taskName, taskTime, status } = value;
-    let startTime = '';
-    let endTime = '';
+    let startTime: string | undefined;
+    let endTime: string | undefined;
     if (taskTime) {
       startTime = taskTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       endTime = taskTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
@@ -78,6 +78,14 @@ const IncentiveManage: React.FC = () => {
     setPagination((pagination) => ({ ...pagination, pageNum: 1 }));
     console.log('param', { taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
     getList({ taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
+  };
+
+  // 查询重置
+  const searchReset = (event: React.FormEvent<HTMLFormElement>) => {
+    console.log('event', event);
+    // 重置分页
+    setPagination((pagination) => ({ ...pagination, pageNum: 1, pageSize: 10 }));
+    getList();
   };
 
   // 创建激励任务
@@ -94,7 +102,13 @@ const IncentiveManage: React.FC = () => {
   };
 
   const paginationChange = (current: number, pageSize?: number) => {
-    const newPagination = { pageNum: current, pageSize: pageSize || pagination.pageSize };
+    const newPagination = { ...pagination };
+    if (pageSize === pagination.pageSize) {
+      newPagination.pageNum = current;
+    } else {
+      newPagination.pageNum = 1;
+      newPagination.pageSize = pageSize || 10;
+    }
     setPagination((pagination) => ({ ...pagination, ...newPagination }));
     const { taskName, taskTime, status } = form.getFieldsValue();
     let startTime = '';
@@ -116,7 +130,7 @@ const IncentiveManage: React.FC = () => {
       <Button type="primary" className={style.addExcitation} onClick={AddTask}>
         创建激励任务
       </Button>
-      <Form form={form} className={style.form} layout="inline" onFinish={onFinish}>
+      <Form form={form} className={style.form} layout="inline" onFinish={onFinish} onReset={searchReset}>
         <Item label="任务名称：" name="taskName">
           <Input className={style.textInput} placeholder="请输入" />
         </Item>

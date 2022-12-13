@@ -13,6 +13,7 @@ export const TableColumns: () => ColumnsType = () => {
     await requestBatchSendIncentivePoints({ list: { sendId } });
   };
   return [
+    { title: '任务id', dataIndex: 'taskId' },
     { title: '客户经理姓名', dataIndex: 'staffName' },
     { title: '客户经理id', dataIndex: 'staffId' },
     { title: '团队长姓名', dataIndex: 'leaderName' },

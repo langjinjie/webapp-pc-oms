@@ -1,5 +1,6 @@
 import React, { Key, useEffect, useState } from 'react';
 import { Button, Form, Input, message, Select } from 'antd';
+import { RcFile } from 'antd/es/upload/interface';
 import { NgTable } from 'src/components';
 import { sendStatusOptions } from 'src/pages/PointsManage/Incentive/Incentive';
 import { TableColumns } from 'src/pages/PointsManage/Incentive/PointsSend/Config';
@@ -84,6 +85,13 @@ export const PointsSend: React.FC = () => {
     getList({ taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
   };
 
+  // 搜索重置
+  const searchReset = () => {
+    // 重置分页
+    setPagination((pagination) => ({ ...pagination, pageNum: 1, pageSize: 10 }));
+    getList();
+  };
+
   const paginationChange = (current: number, pageSize?: number) => {
     const newPagination = { pageNum: current, pageSize: pageSize || pagination.pageSize };
     setPagination((pagination) => ({ ...pagination, ...newPagination }));
@@ -125,7 +133,7 @@ export const PointsSend: React.FC = () => {
   };
 
   // 一键导入
-  const exportFile = async (file: File) => {
+  const exportFile = async (file: RcFile) => {
     const res = await requestImportIncentivePoints({ file });
     console.log('res', res);
     if (res) {
@@ -142,21 +150,26 @@ export const PointsSend: React.FC = () => {
       <Button className={style.uploadBtn} type="primary" onClick={() => setExportVisible(true)}>
         一键导入
       </Button>
-      <Form className={style.form} form={form} layout="inline" onFinish={onFinish}>
-        <Item label="客户经理姓名">
+      <Form className={style.form} form={form} layout="inline" onFinish={onFinish} onReset={searchReset}>
+        <Item label="任务名称" name="taskName">
           <Input className={style.input} placeholder="请输入" />
         </Item>
-        <Item label="任务状态：">
+        <Item label="客户经理姓名" name="staffName">
+          <Input className={style.input} placeholder="请输入" />
+        </Item>
+        <Item label="任务状态" name="sendStatus">
           <Select className={style.select} placeholder="请选择">
             {sendStatusOptions.map((mapItem) => (
               <Option key={mapItem.value}>{mapItem.label}</Option>
             ))}
           </Select>
         </Item>
-        <Button className={style.submitBtn} type="primary">
+        <Button className={style.submitBtn} htmlType="submit" type="primary">
           查询
         </Button>
-        <Button className={style.resetBtn}>重置</Button>
+        <Button className={style.resetBtn} htmlType="reset">
+          重置
+        </Button>
       </Form>
       <NgTable
         rowKey="sendId"
