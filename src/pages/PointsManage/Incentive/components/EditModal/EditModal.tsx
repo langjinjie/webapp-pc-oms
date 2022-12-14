@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NgModal } from 'src/components';
 import { Form, Input, DatePicker, message } from 'antd';
-import { getUrlQueryParam } from 'src/utils/base';
 import { requestEditIncentiveTask } from 'src/apis/pointsMall';
 import style from './style.module.less';
 
@@ -38,8 +37,6 @@ const EditModal: React.FC<IEditModalProps> = ({
   };
   const onOkHandle = async () => {
     await form.validateFields();
-    const taskId = getUrlQueryParam('taskId');
-    console.log('taskId', taskId);
     setLoading(true);
     const { taskName, taskTime, target, desc } = form.getFieldsValue();
     let startTime = '';
@@ -48,14 +45,12 @@ const EditModal: React.FC<IEditModalProps> = ({
       startTime = taskTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       endTime = taskTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-    console.log('param', { taskName, startTime, endTime, target, desc });
-    const res = await requestEditIncentiveTask({ taskId, taskName, startTime, endTime, target, desc });
+    const res = await requestEditIncentiveTask({ taskId: value?.taskId, taskName, startTime, endTime, target, desc });
     setLoading(false);
-    console.log('res', res);
-    if (!res) {
+    if (res) {
       message.success('成功创建激励任务');
       onSuccess?.();
-      onCancel();
+      onCancelHandle();
     }
   };
   useEffect(() => {
@@ -74,7 +69,7 @@ const EditModal: React.FC<IEditModalProps> = ({
       className={style.modalWrap}
       width={600}
       visible={visible}
-      title={'创建激励任务' || title}
+      title={title || '新增激励任务'}
       okText={okText}
       onCancel={onCancelHandle}
       onOk={onOkHandle}

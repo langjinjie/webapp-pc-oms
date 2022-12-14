@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { UNKNOWN } from 'src/utils/base';
 import { IIncentiveManage } from './Manage';
-import { Popconfirm } from 'antd';
+import { message, Popconfirm } from 'antd';
 import { requestManageIncentiveTask } from 'src/apis/pointsMall';
 import style from 'src/pages/PointsManage/Incentive/Manage/style.module.less';
 import classNames from 'classnames';
@@ -13,37 +13,53 @@ export const stateOptions: { [key: string]: string } = {
   2: '已结束'
 };
 
-export const TableColumns: (editViewHandle: (row: any, isView: boolean) => void) => ColumnsType = (editViewHandle) => {
+export const TableColumns: (
+  editViewHandle: (row: any, isView: boolean) => void,
+  upSuccess?: () => void
+) => ColumnsType = (editViewHandle, upSuccess) => {
   // 上架任务
-  const upTask = async (taskId: string) => {
-    const res = await requestManageIncentiveTask({ taskId });
-    console.log('res', res);
+  const upTask = async (row: IIncentiveManage) => {
+    if (row.status !== 0) return;
+    const res = await requestManageIncentiveTask({ taskId: row.taskId, type: 1 });
+    if (res) {
+      message.success('该任务上架成功');
+      upSuccess?.();
+    }
   };
 
   return [
-    { title: '任务名称', dataIndex: 'taskName' },
+    { title: '任务名称', dataIndex: 'taskName', width: 300, ellipsis: true },
     {
       title: '任务时间',
       render (value: IIncentiveManage) {
-        return <>{`${value.startTime}~${value.endTime}`}</>;
-      }
+        return <>{`${value.startTime}～${value.endTime}`}</>;
+      },
+      width: 330
     },
     {
       title: '规则说明',
       dataIndex: 'desc',
       render (value: string) {
         return <>{value || UNKNOWN}</>;
-      }
+      },
+      width: 350,
+      ellipsis: true
     },
     { title: '任务对象', dataIndex: 'target' },
     {
       title: '任务状态',
       dataIndex: 'status',
-      render (value: number) {
+      render (status: number) {
         return (
           <>
-            <i className={classNames('status-point', { '': value })} />
-            <span>{stateOptions[value]}</span>
+            <i
+              className={classNames(
+                'status-point',
+                { 'status-point-gray': status === 0 },
+                { 'status-point-red': status === 2 }
+              )}
+            />
+            <span>{stateOptions[status]}</span>
           </>
         );
       }
@@ -53,10 +69,17 @@ export const TableColumns: (editViewHandle: (row: any, isView: boolean) => void)
       render (row: IIncentiveManage) {
         return (
           <>
-            <Popconfirm title="确认上架该任务吗?" onConfirm={() => upTask(row.taskId)}>
-              <span className={style.up}>上架</span>
+            <Popconfirm
+              disabled={row.status !== 0}
+              title={`确认${row.status === 0 ? '上架' : '结束'}该任务吗?`}
+              onConfirm={() => upTask(row)}
+            >
+              <span className={classNames(style.up, { disabled: row.status !== 0 })}>上架</span>
             </Popconfirm>
-            <span className={style.edit} onClick={() => editViewHandle(row, false)}>
+            <span
+              className={classNames(style.edit, { disabled: row.status === 2 })}
+              onClick={() => editViewHandle(row, false)}
+            >
               编辑
             </span>
             <span className={style.view} onClick={() => editViewHandle(row, true)}>

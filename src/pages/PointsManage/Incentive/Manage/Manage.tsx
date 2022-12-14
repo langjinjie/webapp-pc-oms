@@ -45,28 +45,16 @@ const IncentiveManage: React.FC = () => {
   // 获取列表
   const getList = async (value?: any) => {
     setLoading(true);
-    const res = await requestGetIncentiveTaskList({ value });
-    console.log(res);
+    const res = await requestGetIncentiveTaskList(value);
     if (res) {
       const { total, list } = res;
       setList(list);
       setPagination((pagination) => ({ ...pagination, total }));
     }
-    const item: IIncentiveManage = {
-      taskId: '1',
-      taskName: '激励任务名称',
-      startTime: '2022-12-1',
-      endTime: '2022-12-2',
-      desc: '激励任务描述',
-      target: '激励任务对象',
-      status: 0
-    };
-    setList([item]);
     setLoading(false);
   };
 
   const onFinish = (value: { [key: string]: any }) => {
-    console.log('value', value);
     const { taskName, taskTime, status } = value;
     let startTime: string | undefined;
     let endTime: string | undefined;
@@ -76,13 +64,11 @@ const IncentiveManage: React.FC = () => {
     }
     // 重置分页
     setPagination((pagination) => ({ ...pagination, pageNum: 1 }));
-    console.log('param', { taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
     getList({ taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
   };
 
   // 查询重置
-  const searchReset = (event: React.FormEvent<HTMLFormElement>) => {
-    console.log('event', event);
+  const searchReset = () => {
     // 重置分页
     setPagination((pagination) => ({ ...pagination, pageNum: 1, pageSize: 10 }));
     getList();
@@ -96,6 +82,8 @@ const IncentiveManage: React.FC = () => {
 
   // 编辑/查看
   const editViewHandle = (row: any, isView: boolean) => {
+    // 下架不能编辑
+    if (!isView && row.status === 2) return;
     setIsView(isView);
     setEditValue({ ...row, taskTime: [moment(row.startTime), moment(row.endTime)] });
     setVisible(true);
@@ -111,13 +99,12 @@ const IncentiveManage: React.FC = () => {
     }
     setPagination((pagination) => ({ ...pagination, ...newPagination }));
     const { taskName, taskTime, status } = form.getFieldsValue();
-    let startTime = '';
-    let endTime = '';
+    let startTime: string | undefined;
+    let endTime: string | undefined;
     if (taskTime) {
       startTime = taskTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       endTime = taskTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-    console.log('param', { taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
     getList({ taskName, status, startTime, endTime, ...newPagination });
   };
 
@@ -132,13 +119,13 @@ const IncentiveManage: React.FC = () => {
       </Button>
       <Form form={form} className={style.form} layout="inline" onFinish={onFinish} onReset={searchReset}>
         <Item label="任务名称：" name="taskName">
-          <Input className={style.textInput} placeholder="请输入" />
+          <Input className={style.textInput} placeholder="请输入" allowClear />
         </Item>
         <Item label="任务时间：" name="taskTime">
-          <RangePicker className={style.rangePicker} />
+          <RangePicker className={style.rangePicker} allowClear />
         </Item>
         <Item label="任务状态：" name="status">
-          <Select className={style.select}>
+          <Select className={style.select} placeholder="请选择" allowClear>
             {stateOptions.map((mapItem) => (
               <Option key={mapItem.value}>{mapItem.label}</Option>
             ))}
@@ -153,7 +140,7 @@ const IncentiveManage: React.FC = () => {
       </Form>
       <NgTable
         rowKey="taskId"
-        columns={TableColumns(editViewHandle)}
+        columns={TableColumns(editViewHandle, () => paginationChange(pagination.pageNum, pagination.pageSize))}
         scroll={{ x: 'max-content' }}
         dataSource={list}
         className={style.table}
@@ -166,7 +153,7 @@ const IncentiveManage: React.FC = () => {
       />
       {/* 新增/编辑 */}
       <EditModal
-        title={editValue ? '编辑激励任务' : '创建激励任务'}
+        title={editValue ? (isView ? '查看激励任务' : '编辑激励任务') : '创建激励任务'}
         value={editValue}
         visible={visible}
         onChange={(value) => setEditValue(value)}

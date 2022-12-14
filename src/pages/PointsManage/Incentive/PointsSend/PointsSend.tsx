@@ -1,14 +1,16 @@
-import React, { Key, useEffect, useState } from 'react';
+import React, { Dispatch, Key, SetStateAction, useContext, useEffect, useState } from 'react';
 import { Button, Form, Input, message, Select } from 'antd';
-import { RcFile } from 'antd/es/upload/interface';
 import { NgTable } from 'src/components';
 import { sendStatusOptions } from 'src/pages/PointsManage/Incentive/Incentive';
 import { TableColumns } from 'src/pages/PointsManage/Incentive/PointsSend/Config';
 import {
   requestGetIncentivePointsList,
   requestBatchSendIncentivePoints,
-  requestImportIncentivePoints
+  requestImportIncentivePoints,
+  requestSendAllIncentivePoints
 } from 'src/apis/pointsMall';
+import { IConfirmModalParam } from 'src/utils/interface';
+import { Context } from 'src/store';
 import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
 import style from './style.module.less';
 
@@ -25,6 +27,9 @@ export interface IIncentivePointSend {
 }
 
 export const PointsSend: React.FC = () => {
+  const { setConfirmModalParam } = useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(
+    Context
+  );
   const [list, setList] = useState<IIncentivePointSend[]>([]);
   const [loading, setLoading] = useState(true);
   const [sendBtnLoading, setSendLoading] = useState(false);
@@ -46,7 +51,6 @@ export const PointsSend: React.FC = () => {
     setLoading(true);
     const res = await requestGetIncentivePointsList({ pageNum, pageSize, ...params });
     setLoading(false);
-    console.log('res', res);
     if (res) {
       const { total, list } = res;
       setList(list);
@@ -71,7 +75,6 @@ export const PointsSend: React.FC = () => {
 
   // 搜索
   const onFinish = (value: any) => {
-    console.log('value', value);
     const { taskName, taskTime, status } = value;
     let startTime = '';
     let endTime = '';
@@ -81,33 +84,33 @@ export const PointsSend: React.FC = () => {
     }
     // 重置分页
     setPagination((pagination) => ({ ...pagination, pageNum: 1 }));
-    console.log('param', { taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
     getList({ taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
+    setSelectedRowKeys([]);
   };
 
   // 搜索重置
   const searchReset = () => {
     // 重置分页
     setPagination((pagination) => ({ ...pagination, pageNum: 1, pageSize: 10 }));
+    setSelectedRowKeys([]);
     getList();
   };
 
   const paginationChange = (current: number, pageSize?: number) => {
-    const newPagination = { pageNum: current, pageSize: pageSize || pagination.pageSize };
-    setPagination((pagination) => ({ ...pagination, ...newPagination }));
-    const { taskName, taskTime, status } = form.getFieldsValue();
-    let startTime = '';
-    let endTime = '';
-    if (taskTime) {
-      startTime = taskTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      endTime = taskTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+    const newPagination = { ...pagination };
+    if (pageSize === pagination.pageSize) {
+      newPagination.pageNum = current;
+    } else {
+      newPagination.pageNum = 1;
+      newPagination.pageSize = pageSize || 10;
     }
-    console.log('param', { taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
-    getList({ taskName, status, startTime, endTime, ...newPagination });
+    const { taskName, status } = form.getFieldsValue();
+    getList({ taskName, status, ...newPagination });
+    setPagination((pagination) => ({ ...pagination, ...newPagination }));
+    setSelectedRowKeys([]);
   };
 
   const onSelectChange = (selectedRowKeys: Key[]) => {
-    console.log('selectedRowKeys', selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -127,18 +130,59 @@ export const PointsSend: React.FC = () => {
   // 批量发放
   const batchSend = async () => {
     setSendLoading(true);
-    const list = selectedRowKeys.map((key) => ({ sendId: key }));
-    await requestBatchSendIncentivePoints({ list });
+    if (selectedRowKeys.length === 0) {
+      // 一键全部发放
+      setConfirmModalParam({
+        visible: true,
+        tips: '确定发放所有积分吗？',
+        onOk: async () => {
+          const res = await requestSendAllIncentivePoints(form.getFieldsValue());
+          if (res) {
+            message.success('积分发放成功');
+            setConfirmModalParam({ visible: false });
+          }
+        }
+      });
+    } else {
+      // 批量发放已选中
+      const list = selectedRowKeys.map((key) => ({ sendId: key }));
+      setConfirmModalParam({
+        visible: true,
+        tips: '确定批量发放积分吗？',
+        onOk: async () => {
+          const res = await requestBatchSendIncentivePoints({ list });
+          if (res) {
+            message.success('积分发放成功');
+            setConfirmModalParam({ visible: false });
+          }
+        }
+      });
+    }
     setSendLoading(false);
   };
 
+  // 发放积分
+  const sendPoints = async (row: IIncentivePointSend) => {
+    if (row.sendStatus === 1) return;
+    const res = await requestBatchSendIncentivePoints({ list: [{ sendId: row.sendId }] });
+    if (res) {
+      getList();
+    }
+  };
+
   // 一键导入
-  const exportFile = async (file: RcFile) => {
-    const res = await requestImportIncentivePoints({ file });
-    console.log('res', res);
+  const exportFile = async (file: File) => {
+    const res = await requestImportIncentivePoints(file);
     if (res) {
       message.success('导入成功');
+      setExportVisible(false);
     }
+  };
+
+  // 下载模板
+  const downloadTemplate = () => {
+    window.location.href =
+      'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/task/%E6%BF%80%E5%8A%B1%E4%BB%BB%E5%8A%A1%E7%A7%AF%E5%88%86%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF.xlsx';
   };
 
   useEffect(() => {
@@ -175,7 +219,7 @@ export const PointsSend: React.FC = () => {
         rowKey="sendId"
         loading={loading}
         rowSelection={rowSelection}
-        columns={TableColumns()}
+        columns={TableColumns(sendPoints)}
         scroll={{ x: 'max-content' }}
         dataSource={list}
         className={style.table}
@@ -187,17 +231,17 @@ export const PointsSend: React.FC = () => {
       />
       {list.length === 0 || (
         <div className={style.batchSendWrap}>
-          <Button
-            className={style.batchSendBtn}
-            loading={sendBtnLoading}
-            disabled={selectedRowKeys.length === 0}
-            onClick={batchSend}
-          >
+          <Button className={style.batchSendBtn} loading={sendBtnLoading} onClick={batchSend}>
             批量发放
           </Button>
         </div>
       )}
-      <ExportModal visible={exportVisible} onOK={exportFile} onCancel={() => setExportVisible(false)} />
+      <ExportModal
+        visible={exportVisible}
+        onOK={exportFile}
+        onCancel={() => setExportVisible(false)}
+        onDownLoad={downloadTemplate}
+      />
     </>
   );
 };

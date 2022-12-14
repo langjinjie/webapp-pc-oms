@@ -301,5 +301,9 @@ export const requestSendAllIncentivePoints: HttpFunction = (param) => {
  * @param param
  */
 export const requestImportIncentivePoints: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/points/incentive/send/import', param);
+  // 创建一个空对象实例
+  const formData = new FormData();
+  // 调用append()方法来添加数据
+  formData.append('file', param);
+  return http.post('/tenacity-admin/api/points/incentive/send/import', formData);
 };
