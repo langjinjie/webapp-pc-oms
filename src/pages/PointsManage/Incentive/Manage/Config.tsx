@@ -10,7 +10,8 @@ import classNames from 'classnames';
 export const stateOptions: { [key: string]: string } = {
   0: '未上架',
   1: '已上架',
-  2: '已结束'
+  2: '已下架',
+  3: '已结束'
 };
 
 export const TableColumns: (
@@ -56,7 +57,7 @@ export const TableColumns: (
               className={classNames(
                 'status-point',
                 { 'status-point-gray': status === 0 },
-                { 'status-point-red': status === 2 }
+                { 'status-point-red': status === 2 || status === 3 }
               )}
             />
             <span>{stateOptions[status]}</span>
@@ -71,14 +72,19 @@ export const TableColumns: (
           <>
             <Popconfirm
               disabled={row.status !== 0}
-              title={`确认${row.status === 0 ? '上架' : '结束'}该任务吗?`}
+              title={`确认${row.status === 0 ? '上架' : '下架'}该任务吗?`}
               onConfirm={() => upTask(row)}
             >
-              <span className={classNames(style.up, { disabled: row.status !== 0 })}>上架</span>
+              <span className={classNames(style.up, { disabled: row.status !== 0 })}>
+                {row.status === 0 ? '上架' : '下架'}
+              </span>
             </Popconfirm>
             <span
-              className={classNames(style.edit, { disabled: row.status === 2 })}
-              onClick={() => editViewHandle(row, false)}
+              className={classNames(style.edit, { disabled: row.status === 2 || row.status === 3 })}
+              onClick={() => {
+                if ([2, 3].includes(row.status)) return;
+                editViewHandle(row, false);
+              }}
             >
               编辑
             </span>

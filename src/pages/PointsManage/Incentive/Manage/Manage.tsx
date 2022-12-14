@@ -64,7 +64,7 @@ const IncentiveManage: React.FC = () => {
     }
     // 重置分页
     setPagination((pagination) => ({ ...pagination, pageNum: 1 }));
-    getList({ taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
+    getList({ taskName, status: +status, startTime, endTime, pageNum: 1, pageSize: 10 });
   };
 
   // 查询重置

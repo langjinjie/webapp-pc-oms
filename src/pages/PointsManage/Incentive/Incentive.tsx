@@ -8,7 +8,8 @@ import style from './style.module.less';
 export const stateOptions = [
   { value: 0, label: '未上架' },
   { value: 1, label: '已上架' },
-  { value: 2, label: '已下架' }
+  { value: 2, label: '已下架' },
+  { value: 3, label: '已结束' }
 ];
 
 // 积分发放状态

@@ -47,29 +47,13 @@ export const PointsSend: React.FC = () => {
 
   // 获取列表
   const getList = async (params?: { [key: string]: any }) => {
-    const { pageNum, pageSize } = pagination;
     setLoading(true);
-    const res = await requestGetIncentivePointsList({ pageNum, pageSize, ...params });
+    const res = await requestGetIncentivePointsList({ ...params });
     setLoading(false);
     if (res) {
       const { total, list } = res;
       setList(list);
       setPagination((pagination) => ({ ...pagination, total }));
-    } else {
-      const list = [
-        {
-          sendId: '1',
-          taskId: '1',
-          staffId: '1',
-          staffName: '李思',
-          leaderName: '李斯',
-          sendPoints: 1500,
-          sendStatus: 1,
-          sendTime: '2022-12-6 08:08:08',
-          opName: '郎金杰'
-        }
-      ];
-      setList(list);
     }
   };
 
@@ -176,6 +160,7 @@ export const PointsSend: React.FC = () => {
     if (res) {
       message.success('导入成功');
       setExportVisible(false);
+      searchReset();
     }
   };
 
