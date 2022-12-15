@@ -59,16 +59,9 @@ export const PointsSend: React.FC = () => {
 
   // 搜索
   const onFinish = (value: any) => {
-    const { taskName, taskTime, status } = value;
-    let startTime = '';
-    let endTime = '';
-    if (taskTime) {
-      startTime = taskTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      endTime = taskTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
     // 重置分页
     setPagination((pagination) => ({ ...pagination, pageNum: 1 }));
-    getList({ taskName, status, startTime, endTime, pageNum: 1, pageSize: 10 });
+    getList({ ...value, pageNum: 1, pageSize: pagination.pageSize });
     setSelectedRowKeys([]);
   };
 
@@ -88,8 +81,7 @@ export const PointsSend: React.FC = () => {
       newPagination.pageNum = 1;
       newPagination.pageSize = pageSize || 10;
     }
-    const { taskName, status } = form.getFieldsValue();
-    getList({ taskName, status, ...newPagination });
+    getList({ ...form.getFieldsValue(), pageNum: newPagination.pageNum, pageSize: newPagination.pageSize });
     setPagination((pagination) => ({ ...pagination, ...newPagination }));
     setSelectedRowKeys([]);
   };
@@ -124,6 +116,7 @@ export const PointsSend: React.FC = () => {
           if (res) {
             message.success('积分发放成功');
             setConfirmModalParam({ visible: false });
+            getList({ ...form.getFieldsValue(), pageNum: pagination.pageNum, pageSize: pagination.pageSize });
           }
         }
       });
@@ -138,6 +131,7 @@ export const PointsSend: React.FC = () => {
           if (res) {
             message.success('积分发放成功');
             setConfirmModalParam({ visible: false });
+            getList({ ...form.getFieldsValue(), pageNum: pagination.pageNum, pageSize: pagination.pageSize });
           }
         }
       });
@@ -150,7 +144,7 @@ export const PointsSend: React.FC = () => {
     if (row.sendStatus === 1) return;
     const res = await requestBatchSendIncentivePoints({ list: [{ sendId: row.sendId }] });
     if (res) {
-      getList();
+      getList({ ...form.getFieldsValue(), pageNum: pagination.pageNum, pageSize: pagination.pageSize });
     }
   };
 
