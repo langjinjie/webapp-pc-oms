@@ -393,6 +393,11 @@ export const routes: RouteProps[] = [
   {
     path: '/chatRecord',
     component: lazy(() => import('src/pages/OrgManage/ChatRecord/List/List'))
+  },
+  // 积分-激励任务管理
+  {
+    path: '/incentive',
+    component: lazy(() => import('src/pages/PointsManage/Incentive/Incentive'))
   }
 ];
 

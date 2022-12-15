@@ -24,6 +24,7 @@ const ExportModal: React.FC<ExportModalProps> = ({
   isShowDownLoad = true,
   confirmLoading
 }) => {
+  const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState<any[]>([]);
   const props = {
     multiple: false,
@@ -45,6 +46,14 @@ const ExportModal: React.FC<ExportModalProps> = ({
     },
     fileList
   };
+
+  const onOkHandle = async () => {
+    setLoading(true);
+    await onOK(fileList[0]);
+
+    setLoading(false);
+  };
+
   useEffect(() => {
     visible || setFileList([]);
   }, [visible]);
@@ -53,13 +62,14 @@ const ExportModal: React.FC<ExportModalProps> = ({
       title={title || '批量新增'}
       centered
       visible={visible}
-      onOk={() => onOK(fileList[0])}
+      onOk={onOkHandle}
       onCancel={() => onCancel()}
       width={640}
       confirmLoading={confirmLoading}
       className={styles.exportWrap}
       okButtonProps={{
-        disabled: !fileList.length
+        disabled: !fileList.length,
+        loading: loading
       }}
     >
       <Form>

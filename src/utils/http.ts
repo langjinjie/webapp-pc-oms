@@ -4,7 +4,7 @@
  */
 
 import Axios, { AxiosInstance, Method, AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 import { TOKEN_KEY } from './config';
 
 type HttpMethod = (...args: any) => Promise<any>;
@@ -64,6 +64,13 @@ const handleRes = (res: AxiosResponse, resolve: Function) => {
     }
     if (res.data.ret === 0) {
       resolve(res.data.retdata || typeof res.data.retdata === 'boolean' ? res.data.retdata : {});
+      // 激励积分导入失败，通用错误码 400001
+    } else if (res.data.ret === 400001) {
+      Modal.warning({
+        title: '温馨提示',
+        content: res.data.retmsg
+      });
+      resolve(null);
     } else {
       if (res.data.ret === 1000001) {
         const { origin, href } = window.location;
