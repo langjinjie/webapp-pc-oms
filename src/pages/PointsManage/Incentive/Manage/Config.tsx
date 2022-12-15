@@ -57,7 +57,8 @@ export const TableColumns: (
               className={classNames(
                 'status-point',
                 { 'status-point-gray': status === 0 },
-                { 'status-point-red': status === 2 || status === 3 }
+                { 'status-point-red': status === 2 },
+                { 'status-point-green': status === 3 }
               )}
             />
             <span>{stateOptions[status]}</span>
