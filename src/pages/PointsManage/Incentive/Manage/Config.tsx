@@ -20,7 +20,7 @@ export const TableColumns: (
 ) => ColumnsType = (editViewHandle, upSuccess) => {
   // 上/下架任务
   const upTask = async (row: IIncentiveManage) => {
-    if ([1, 2].includes(row.status)) return;
+    if (row.status === 2) return;
     const res = await requestManageIncentiveTask({ taskId: row.taskId, type: row.status === 0 ? 1 : 2 });
     if (res) {
       message.success('该任务上架成功');
@@ -43,7 +43,7 @@ export const TableColumns: (
       render (value: string) {
         return <>{value || UNKNOWN}</>;
       },
-      width: 350,
+      width: 400,
       ellipsis: true
     },
     { title: '任务对象', dataIndex: 'target' },
@@ -94,7 +94,8 @@ export const TableColumns: (
             </span>
           </>
         );
-      }
+      },
+      fixed: 'right'
     }
   ];
 };

@@ -91,7 +91,7 @@ export const PointsSend: React.FC = () => {
   };
 
   const rowSelection: any = {
-    hideSelectAll: true,
+    // hideSelectAll: true,
     selectedRowKeys: selectedRowKeys,
     onChange: (selectedRowKeys: Key[]) => {
       onSelectChange(selectedRowKeys);
@@ -129,6 +129,7 @@ export const PointsSend: React.FC = () => {
         onOk: async () => {
           const res = await requestBatchSendIncentivePoints({ list });
           if (res) {
+            setSelectedRowKeys([]);
             message.success('积分发放成功');
             setConfirmModalParam({ visible: false });
             getList({ ...form.getFieldsValue(), pageNum: pagination.pageNum, pageSize: pagination.pageSize });
@@ -199,7 +200,6 @@ export const PointsSend: React.FC = () => {
         loading={loading}
         rowSelection={rowSelection}
         columns={TableColumns(sendPoints)}
-        scroll={{ x: 'max-content' }}
         dataSource={list}
         className={style.table}
         pagination={{

@@ -141,7 +141,6 @@ const IncentiveManage: React.FC = () => {
       <NgTable
         rowKey="taskId"
         columns={TableColumns(editViewHandle, () => paginationChange(pagination.pageNum, pagination.pageSize))}
-        scroll={{ x: 'max-content' }}
         dataSource={list}
         className={style.table}
         loading={loading}

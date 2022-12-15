@@ -9,15 +9,24 @@ import style from './style.module.less';
 
 export const TableColumns: (sendPoints: (row: IIncentivePointSend) => Promise<any>) => ColumnsType = (sendPoints) => {
   return [
-    { title: '任务id', dataIndex: 'taskId' },
-    { title: '任务名称', dataIndex: 'taskName' },
-    { title: '客户经理姓名', dataIndex: 'staffName' },
-    { title: '客户经理id', dataIndex: 'staffId' },
-    { title: '团队长姓名', dataIndex: 'leaderName' },
-    { title: '应发积分', dataIndex: 'sendPoints' },
+    { title: '任务id', dataIndex: 'taskId', width: 200 },
+    { title: '任务名称', dataIndex: 'taskName', width: 300, ellipsis: true },
+    { title: '客户经理姓名', dataIndex: 'staffName', width: 120 },
+    { title: '客户经理id', dataIndex: 'staffId', width: 300 },
+    {
+      title: '团队长姓名',
+      dataIndex: 'leaderName',
+      width: 110,
+      render (leaderName: string) {
+        return <>{leaderName || UNKNOWN}</>;
+      },
+      ellipsis: true
+    },
+    { title: '应发积分', dataIndex: 'sendPoints', width: 100 },
     {
       title: '积分发放状态',
       dataIndex: 'sendStatus',
+      width: 150,
       render (value: number) {
         return (
           <>
@@ -32,14 +41,16 @@ export const TableColumns: (sendPoints: (row: IIncentivePointSend) => Promise<an
       dataIndex: 'sendTime',
       render (sendTime: string) {
         return <>{sendTime || UNKNOWN}</>;
-      }
+      },
+      width: 200
     },
     {
       title: '操作人',
       dataIndex: 'opName',
       render (opName: string) {
         return <>{opName || UNKNOWN}</>;
-      }
+      },
+      width: 100
     },
     {
       title: '操作',
@@ -51,7 +62,9 @@ export const TableColumns: (sendPoints: (row: IIncentivePointSend) => Promise<an
             </Popconfirm>
           </>
         );
-      }
+      },
+      width: 100,
+      fixed: 'right'
     }
   ];
 };
