@@ -18,10 +18,10 @@ export const TableColumns: (
   editViewHandle: (row: any, isView: boolean) => void,
   upSuccess?: () => void
 ) => ColumnsType = (editViewHandle, upSuccess) => {
-  // 上架任务
+  // 上/下架任务
   const upTask = async (row: IIncentiveManage) => {
-    if (row.status !== 0) return;
-    const res = await requestManageIncentiveTask({ taskId: row.taskId, type: 1 });
+    if ([1, 2].includes(row.status)) return;
+    const res = await requestManageIncentiveTask({ taskId: row.taskId, type: row.status === 0 ? 1 : 2 });
     if (res) {
       message.success('该任务上架成功');
       upSuccess?.();
@@ -72,16 +72,16 @@ export const TableColumns: (
         return (
           <>
             <Popconfirm
-              disabled={row.status !== 0}
+              disabled={row.status === 2}
               title={`确认${row.status === 0 ? '上架' : '下架'}该任务吗?`}
               onConfirm={() => upTask(row)}
             >
-              <span className={classNames(style.up, { disabled: row.status !== 0 })}>
+              <span className={classNames(style.up, { disabled: row.status === 2 })}>
                 {row.status === 0 ? '上架' : '下架'}
               </span>
             </Popconfirm>
             <span
-              className={classNames(style.edit, { disabled: row.status === 2 || row.status === 3 })}
+              className={classNames(style.edit, { disabled: [2, 3].includes(row.status) })}
               onClick={() => {
                 if ([2, 3].includes(row.status)) return;
                 editViewHandle(row, false);
