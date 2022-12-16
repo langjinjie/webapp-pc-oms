@@ -181,7 +181,7 @@ export const PointsSend: React.FC = () => {
         <Item label="客户经理姓名" name="staffName">
           <Input className={style.input} placeholder="请输入" />
         </Item>
-        <Item label="任务状态" name="sendStatus">
+        <Item label="积分发放状态" name="sendStatus">
           <Select className={style.select} placeholder="请选择">
             {sendStatusOptions.map((mapItem) => (
               <Option key={mapItem.value}>{mapItem.label}</Option>

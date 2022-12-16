@@ -23,12 +23,13 @@ export const TableColumns: (
     if (row.status === 2) return;
     const res = await requestManageIncentiveTask({ taskId: row.taskId, type: row.status === 0 ? 1 : 2 });
     if (res) {
-      message.success('该任务上架成功');
+      message.success(`任务${row.status === 0 ? '上架' : '下架'}成功`);
       upSuccess?.();
     }
   };
 
   return [
+    { title: '任务id', dataIndex: 'taskId', width: 200 },
     { title: '任务名称', dataIndex: 'taskName', width: 300, ellipsis: true },
     {
       title: '任务时间',
@@ -46,7 +47,7 @@ export const TableColumns: (
       width: 400,
       ellipsis: true
     },
-    { title: '任务对象', dataIndex: 'target' },
+    { title: '任务对象', dataIndex: 'target', width: 200, ellipsis: true },
     {
       title: '任务状态',
       dataIndex: 'status',
@@ -64,7 +65,8 @@ export const TableColumns: (
             <span>{stateOptions[status]}</span>
           </>
         );
-      }
+      },
+      width: 100
     },
     {
       title: '操作',
@@ -95,6 +97,7 @@ export const TableColumns: (
           </>
         );
       },
+      width: 150,
       fixed: 'right'
     }
   ];

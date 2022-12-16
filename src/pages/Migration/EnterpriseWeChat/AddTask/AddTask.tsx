@@ -52,7 +52,6 @@ const AddTask: React.FC = () => {
   // 选中时间的回调
   const onCalendarChange: (value: any) => void = (value) => {
     if (value && value[0]) {
-      console.log('value', value);
       setDefaultValue(value[0]);
     }
   };
