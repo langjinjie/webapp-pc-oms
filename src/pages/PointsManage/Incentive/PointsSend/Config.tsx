@@ -30,7 +30,7 @@ export const TableColumns: (sendPoints: (row: IIncentivePointSend) => Promise<an
       render (value: number) {
         return (
           <>
-            <i className={classNames('status-point', { 'points-gray': value === 0 })} />
+            <i className={classNames('status-point', { 'status-point-gray': value === 0 })} />
             <span>{sendStatusOptions.find((findItem) => findItem.value === value)?.label}</span>
           </>
         );

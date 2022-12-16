@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
+import { Context } from 'src/store';
 import { Tabs } from 'antd';
 import { /* NgTable, */ NoPermission } from 'src/components';
 import Manage from 'src/pages/PointsManage/Incentive/Manage/Manage';
@@ -19,34 +20,28 @@ export const sendStatusOptions = [
 ];
 
 const tabList = [
-  { path: '/excitation', name: '激励任务', key: '1' },
-  { path: '/pointsSend', name: '积分发放', key: '2' }
+  { path: '/incentiveManage', name: '激励任务', key: '1' },
+  { path: '/sendPoints', name: '积分发放', key: '2' }
 ];
 
 const tabComponentsList = [
-  { path: '/excitation', component: <Manage /> },
-  { path: '/pointsSend', component: <PointsSend /> }
+  { path: '/incentiveManage', component: <Manage /> },
+  { path: '/sendPoints', component: <PointsSend /> }
 ];
 
-const Excitation: React.FC = () => {
-  // tab切换
-  const tabOnChange = (key: string) => {
-    // setTabKey(key);
-    // getList(key);
-    console.log('key', key);
-  };
+const Incentive: React.FC = () => {
+  const { btnList } = useContext(Context);
 
   const authorTabList = useMemo(() => {
-    // return tabList.filter((tabItem) => btnList.includes(tabItem.path));
-    return tabList;
-  }, []);
+    return tabList.filter((tabItem) => btnList.includes(tabItem.path));
+  }, [btnList]);
   return authorTabList.length === 0
     ? (
     <NoPermission />
       )
     : (
     <div className={style.wrap}>
-      <Tabs defaultActiveKey={authorTabList?.[0].key || ''} onChange={tabOnChange}>
+      <Tabs defaultActiveKey={authorTabList?.[0].key || ''}>
         {authorTabList.map((item) => {
           return (
             <Tabs.TabPane tab={item.name} key={item.key}>
@@ -58,4 +53,4 @@ const Excitation: React.FC = () => {
     </div>
       );
 };
-export default Excitation;
+export default Incentive;
