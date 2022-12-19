@@ -176,13 +176,13 @@ export const PointsSend: React.FC = () => {
       </Button>
       <Form className={style.form} form={form} layout="inline" onFinish={onFinish} onReset={searchReset}>
         <Item label="任务名称" name="taskName">
-          <Input className={style.input} placeholder="请输入" />
+          <Input className={style.input} placeholder="请输入" allowClear />
         </Item>
         <Item label="客户经理姓名" name="staffName">
-          <Input className={style.input} placeholder="请输入" />
+          <Input className={style.input} placeholder="请输入" allowClear />
         </Item>
         <Item label="积分发放状态" name="sendStatus">
-          <Select className={style.select} placeholder="请选择">
+          <Select className={style.select} placeholder="请选择" allowClear>
             {sendStatusOptions.map((mapItem) => (
               <Option key={mapItem.value}>{mapItem.label}</Option>
             ))}
