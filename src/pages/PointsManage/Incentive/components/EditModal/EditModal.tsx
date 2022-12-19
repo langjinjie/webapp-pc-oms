@@ -50,7 +50,7 @@ const EditModal: React.FC<IEditModalProps> = ({
     const res = await requestEditIncentiveTask({ taskId: value?.taskId, taskName, startTime, endTime, target, desc });
     setLoading(false);
     if (res) {
-      message.success('成功创建激励任务');
+      message.success(`成功${value ? '编辑' : '创建'}激励任务`);
       onSuccess?.();
       onCancelHandle();
     }
