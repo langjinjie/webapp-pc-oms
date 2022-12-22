@@ -72,7 +72,7 @@ const TableDownLoad: React.FC = () => {
   const getListCategory = async () => {
     const res = await requestGetTempleList();
     if (res) {
-      setTempleList(res);
+      setTempleList(res.tplList);
     }
   };
 
