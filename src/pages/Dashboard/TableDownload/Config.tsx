@@ -59,22 +59,13 @@ export const columns = (args: OperateProps): ColumnsType<fileProps> => {
     },
     {
       title: '报表名称',
-      dataIndex: 'filter',
+      dataIndex: 'fileName',
       ellipsis: true,
-      width: 160,
-      render: (text, record) => {
-        return record.reportName + ' ' + text;
+      width: 180,
+      render: (text: String) => {
+        return text || UNKNOWN;
       }
     },
-    // {
-    //   title: '报表名称',
-    //   dataIndex: 'fileName',
-    //   ellipsis: true,
-    //   width: 180,
-    //   render: (text: String) => {
-    //     return text || UNKNOWN;
-    //   }
-    // },
     {
       title: '筛选条件',
       dataIndex: 'filter',
@@ -84,15 +75,6 @@ export const columns = (args: OperateProps): ColumnsType<fileProps> => {
         return text || UNKNOWN;
       }
     },
-    // {
-    //   title: '筛选条件',
-    //   dataIndex: 'filter',
-    //   ellipsis: true,
-    //   width: 160,
-    //   render: (text, record) => {
-    //     return record.reportName + ' ' + text;
-    //   }
-    // },
     {
       title: '生成状态',
       dataIndex: 'status',
