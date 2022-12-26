@@ -73,11 +73,18 @@ export const getVideoFinrateData: HttpFC = (param) => {
 };
 
 /**
- * @description 获取下载报名分类
+ * @description 获取下载报表分类
  * @param param
  */
-export const requestGetTempleList: HttpVoid = () => {
-  return http.post('/tenacity-admin/api/data/download/templelist');
+export const requestGetTempleList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/data/download/templelist', param);
+};
+/**
+ * @description 模板类型列表接口
+ * @param param
+ */
+export const requestGetTypelist: HttpVoid = () => {
+  return http.post('/tenacity-admin/api/data/download/tptypelist');
 };
 
 /* ------------------------------ 大屏驾驶舱 ------------------------------ */

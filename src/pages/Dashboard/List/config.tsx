@@ -134,17 +134,20 @@ export const tableColumns2 = ({ titleList }: tableOperations): ColumnsType<ItemP
 };
 
 // 指标代码:
-// avg_add_friend_count日人均加好友数
-// avg_chat_friend_count日人均聊天客户数
-// avg_circle_send_count日人均朋友圈发送数
-// avg_market日人均营销平台调用数
-// avg_smart日人均销售宝典调用数
-// avg_cust_count日人均客户信息调用数
-// avg_radar_count日人均客户雷达调用数
+// avg_add_friend_count 日人均加好友数
+// avg_chat_friend_count 日人均聊天客户数
+// avg_circle_send_count 日人均朋友圈发送数
+// avg_market 日人均营销平台调用数
+// avg_smart 日人均销售宝典调用数
+// avg_cust_count 日人均客户信息调用数
+// avg_radar_count 日人均客户雷达调用数
 // avg_tag_count 日人均客户标签变更数
-// avg_speech_count日人均我的收藏调用数
-// avg_orc_count日人均文字识别调用数
-// avg_rank_count日人均排行榜调用数
+// avg_speech_count 日人均我的收藏调用数
+// avg_orc_count 日人均文字识别调用数
+// avg_rank_count 日人均排行榜调用数
+// day_spec_taskfin_rate 个性任务完成率
+// daymoment_taskfin_rate 今日朋友圈任务完成率
+// day_stra_taskfin_rate 策略任务完成率(不包含今日朋友圈)
 
 export type CodeListType = {
   key: string;
@@ -522,6 +525,42 @@ export const dataCodeList: CodeListType = [
         key: 'avg_rank_count',
         title: '排行榜',
         subTitle: '日人均排行榜调用数'
+      }
+    ]
+  },
+  {
+    key: 'day_spec_taskfin_rate',
+    title: '个性任务完成率',
+    children: [
+      {
+        key: 'day_spec_taskfin_rate',
+        title: '个性任务完成率',
+        subTitle: '个性任务完成率',
+        tplType: 'line'
+      }
+    ]
+  },
+  {
+    key: 'daymoment_taskfin_rate',
+    title: '今日朋友圈任务完成率',
+    children: [
+      {
+        key: 'daymoment_taskfin_rate',
+        title: '今日朋友圈任务完成率',
+        subTitle: '今日朋友圈任务完成率',
+        tplType: 'line'
+      }
+    ]
+  },
+  {
+    key: 'day_stra_taskfin_rate',
+    title: '策略任务完成率(不包含今日朋友圈)',
+    children: [
+      {
+        key: 'day_stra_taskfin_rate',
+        title: '策略任务完成率(不包含今日朋友圈)',
+        subTitle: '策略任务完成率(不包含今日朋友圈)',
+        tplType: 'line'
       }
     ]
   }

@@ -6,7 +6,8 @@ import {
   dataDownloadList,
   exportFileWithTable,
   requestGetTempleList,
-  requestGetDepttypeList
+  requestGetDepttypeList,
+  requestGetTypelist
 } from 'src/apis/dashboard';
 import { AuthBtn, NgTable } from 'src/components';
 import { Context } from 'src/store';
@@ -37,6 +38,7 @@ const TableDownLoad: React.FC = () => {
   const [templeList, setTempleList] = useState<
     { templateName: string; tmpId: string; type: 0 | 1; chooseDept: 0 | 1 }[]
   >([]);
+  const [typeList, setTypeList] = useState<{ tyName: string; ftpId: string }[]>([]);
   const [templeType, setTempleType] = useState<0 | 1>(0);
   const [showSelect, setShowSelect] = useState(false);
   // // 销售中心=》分中心部门
@@ -68,15 +70,28 @@ const TableDownLoad: React.FC = () => {
     }
   };
 
-  // 获取报表类别
-  const getListCategory = async () => {
-    const res = await requestGetTempleList();
+  // 获取报表类型
+  const getTypelist = async () => {
+    const res = await requestGetTypelist();
+    if (res) {
+      setTypeList(res.tplList);
+    }
+  };
+
+  // 获取报表名称
+  const getListCategory = async (ftpId?: string) => {
+    const res = await requestGetTempleList({ ftpId });
     if (res) {
       setTempleList(res.tplList);
     }
   };
 
-  // 选择报表类型
+  // 选择报表
+  const typeListOnChange = (value: string) => {
+    getListCategory(value);
+  };
+
+  // 选择报表名称
   const selectOnChange = (value: string) => {
     const typeItem = templeList.find((findItem) => findItem.tmpId === value);
     setTempleType(typeItem?.type || 0);
@@ -180,6 +195,7 @@ const TableDownLoad: React.FC = () => {
   };
 
   useEffect(() => {
+    getTypelist();
     getList();
     getListCategory();
   }, []);
@@ -233,7 +249,16 @@ const TableDownLoad: React.FC = () => {
       <AuthBtn path="/create">
         <Form form={form} layout="inline" className={style.form} onFinish={createFile}>
           <Row wrap>
-            <Form.Item label="报表类别" name="tmpId" rules={[{ required: true }]}>
+            <Form.Item label="报表分类" name="ftpId" rules={[{ required: true }]}>
+              <Select placeholder="请选择报表类别" allowClear onChange={typeListOnChange}>
+                {typeList.map((mapItem) => (
+                  <Select.Option key={mapItem.ftpId} value={mapItem.ftpId}>
+                    {mapItem.tyName}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="报表名称" name="tmpId" rules={[{ required: true }]}>
               <Select placeholder="请选择报表类别" allowClear onChange={selectOnChange}>
                 {templeList.map((mapItem) => (
                   <Select.Option key={mapItem.tmpId} value={mapItem.tmpId}>
