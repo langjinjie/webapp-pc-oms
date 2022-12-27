@@ -529,7 +529,7 @@ export const dataCodeList: CodeListType = [
     ]
   },
   {
-    key: 'all_taskfin_rate',
+    key: 'day_spec_taskfin_rate',
     title: '总任务完成情况',
     children: [
       {
