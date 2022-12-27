@@ -89,6 +89,8 @@ const TableDownLoad: React.FC = () => {
   // 选择报表
   const typeListOnChange = (value: string) => {
     getListCategory(value);
+    // 清楚已选择的报表名称
+    form.setFieldsValue({ tmpId: undefined });
   };
 
   // 选择报表名称
@@ -250,7 +252,7 @@ const TableDownLoad: React.FC = () => {
         <Form form={form} layout="inline" className={style.form} onFinish={createFile}>
           <Row wrap>
             <Form.Item label="报表分类" name="ftpId" rules={[{ required: true }]}>
-              <Select placeholder="请选择报表类别" allowClear onChange={typeListOnChange}>
+              <Select className={style.select} placeholder="请选择报表类别" allowClear onChange={typeListOnChange}>
                 {typeList.map((mapItem) => (
                   <Select.Option key={mapItem.ftpId} value={mapItem.ftpId}>
                     {mapItem.tyName}
@@ -259,7 +261,7 @@ const TableDownLoad: React.FC = () => {
               </Select>
             </Form.Item>
             <Form.Item label="报表名称" name="tmpId" rules={[{ required: true }]}>
-              <Select placeholder="请选择报表类别" allowClear onChange={selectOnChange}>
+              <Select className={style.select} placeholder="请选择报表类别" allowClear onChange={selectOnChange}>
                 {templeList.map((mapItem) => (
                   <Select.Option key={mapItem.tmpId} value={mapItem.tmpId}>
                     {mapItem.templateName}
