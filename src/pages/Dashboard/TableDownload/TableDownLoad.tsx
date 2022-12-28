@@ -91,6 +91,7 @@ const TableDownLoad: React.FC = () => {
     getListCategory(value);
     // 清楚已选择的报表名称
     form.setFieldsValue({ tmpId: undefined });
+    setShowSelect(false);
   };
 
   // 选择报表名称
