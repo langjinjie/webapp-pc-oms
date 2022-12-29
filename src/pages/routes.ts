@@ -44,6 +44,11 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/marketingMoment/edit',
     component: lazy(() => import('src/pages/Marketing/Moment/Edit'))
+  },
+  // 新人任务
+  {
+    path: '/newerPoints',
+    component: lazy(() => import('src/pages/PointsManage/NewerPoints/List/NewerPoints'))
   }
 ];
 
@@ -398,6 +403,15 @@ export const routes: RouteProps[] = [
   {
     path: '/incentive',
     component: lazy(() => import('src/pages/PointsManage/Incentive/Incentive'))
+  },
+  // 新人任务
+  {
+    path: '/newerPoints/edit',
+    component: lazy(() => import('src/pages/PointsManage/NewerPoints/Edit/Edit'))
+  },
+  {
+    path: '/newerPoints/record',
+    component: lazy(() => import('src/pages/PointsManage/NewerPoints/Record/Record'))
   }
 ];
 

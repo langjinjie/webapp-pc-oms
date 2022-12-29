@@ -1,0 +1,51 @@
+.wrap {
+  position: relative;
+  padding: 20px 30px;
+}
+.updateRule {
+  width: 120px;
+  height: 36px;
+  border-radius: 20px;
+}
+.record {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  height: 46px;
+  line-height: 46px;
+  cursor: pointer;
+  .recordIcon {
+    margin-right: 4px;
+  }
+}
+
+// config style
+.up,
+.edit,
+.add {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #318cf5;
+  cursor: pointer;
+}
+
+// 自定义行
+tr.sign {
+  &:hover {
+    > td {
+      background-color: #fffaf1 !important;
+    }
+  }
+  :global {
+    td {
+      background-color: #fffaf1;
+    }
+  }
+}
+
+.taskDetail {
+  display: inline-block;
+  max-width: 240px;
+}
