@@ -25,30 +25,35 @@ const TableColumns = (
   const [inputWidth, setInputWidth] = useState(0);
   const [spanNode, setSpanNode] = useState<HTMLSpanElement>();
   // 功能模块
-  const businessType2NameList = [
-    '朋友圈',
-    '加好友',
-    '销售宝典',
-    '营销平台',
-    '我的收藏',
-    '客户标签',
-    '客户雷达',
-    '删好友'
-  ];
+  const businessType2NameList: { [key: number]: string } = {
+    1: '朋友圈',
+    2: '加好友',
+    3: '销售宝典',
+    4: '营销平台',
+    5: '我的收藏',
+    6: '客户标签',
+    7: '客户雷达',
+    8: '删好友',
+    9: '整体',
+    10: '积分体系'
+  };
   // 行为
-  const action2NameList = [
-    '发送',
-    '点赞',
-    '评论',
-    '新加好友',
-    '坐席主动删好友',
-    '浏览',
-    '分享',
-    '新增标签',
-    '服务建议发送',
-    '点击客户雷达',
-    '参与年高活动'
-  ];
+  const action2NameList: { [key: number]: string } = {
+    1: '发送',
+    2: '点赞',
+    3: '评论',
+    4: '新加好友',
+    5: '坐席主动删好友',
+    6: '浏览',
+    7: '分享',
+    8: '新增标签',
+    9: '服务建议发送',
+    10: '点击客户雷达',
+    11: '参与年高活动',
+    12: '登录',
+    13: '领取',
+    14: '收藏'
+  };
   // 提交添加黑名单
   const addBlackListHandle = async (row: IFlowList, rewardId: string) => {
     const { externalUserid } = row;
@@ -181,7 +186,7 @@ const TableColumns = (
     {
       title: '功能模块',
       render (row: ISendPointsDetail) {
-        return <span className={style.funModule}>{businessType2NameList[row.businessType - 1]}</span>;
+        return <span className={style.funModule}>{businessType2NameList[row.businessType]}</span>;
       }
     },
     {
@@ -197,7 +202,7 @@ const TableColumns = (
     {
       title: '行为',
       render (row: ISendPointsDetail) {
-        return <span>{action2NameList[row.action - 1]}</span>;
+        return <span>{action2NameList[row.action]}</span>;
       }
     },
     {

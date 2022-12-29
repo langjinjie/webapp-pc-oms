@@ -33,7 +33,8 @@ const PointsConfig: React.FC = () => {
   // 获取列表
   const getList = async (taskType: string) => {
     setLoading(true);
-    const res = await requestGetPointsConfigList({ taskType });
+    // 查询新人任务
+    const res = await requestGetPointsConfigList({ taskType, configType: 3 });
     if (res) {
       const list = res.reduce((prev: any[], item: any) => {
         prev.push(item);
