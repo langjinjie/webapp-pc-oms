@@ -536,19 +536,22 @@ export const dataCodeList: CodeListType = [
         key: 'day_spec_taskfin_rate',
         title: '个性任务完成率',
         subTitle: '个性任务完成率',
-        tplType: 'line'
+        tplType: 'line',
+        percentage: true
       },
       {
         key: 'daymoment_taskfin_rate',
         title: '今日朋友圈任务完成率',
         subTitle: '今日朋友圈任务完成率',
-        tplType: 'line'
+        tplType: 'line',
+        percentage: true
       },
       {
         key: 'day_stra_taskfin_rate',
         title: '策略任务完成率(不包含今日朋友圈)',
         subTitle: '策略任务完成率(不包含今日朋友圈)',
-        tplType: 'line'
+        tplType: 'line',
+        percentage: true
       }
     ]
   }
