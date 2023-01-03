@@ -16,6 +16,7 @@ import {
 import { LabelLayout, UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import { TooltipComponentOption } from 'echarts';
+import { useDidRecover } from 'react-router-cache-route';
 
 export type ECOption = echarts.ComposeOption<
   LineSeriesOption | TitleComponentOption | TooltipComponentOption | GridComponentOption | DatasetComponentOption
@@ -78,6 +79,11 @@ export const NgLineChart: React.FC<NgLineChartProps> = ({ options, height, width
     return () => {
       window.removeEventListener('resize', onResizeChange);
     };
+  }, []);
+
+  // 当页面被缓存时 resize 事件触发会造成折线图的宽度为100
+  useDidRecover(() => {
+    lineChartDom.current?.resize();
   }, []);
 
   return <div ref={NgLineChartRef} style={{ width: width || '100%', height: height || '400px' }}></div>;
