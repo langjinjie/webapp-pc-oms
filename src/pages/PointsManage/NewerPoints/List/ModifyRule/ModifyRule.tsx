@@ -1,7 +1,7 @@
 import { Form, Input, message, Modal } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import { Modal } from 'src/components';
-import { requestModifyNewcomerPoints } from 'src/apis/pointsMall';
+import { requestModifyNewcomerPoints, requestQueryNewcomerPoints } from 'src/apis/pointsMall';
 import style from './style.module.less';
 
 interface IModifyRuleProps {
@@ -16,7 +16,6 @@ const ModifyRule: React.FC<IModifyRuleProps> = ({ visible, title, onClose }) => 
 
   const onCloseHanele = () => {
     onClose();
-    form.resetFields();
   };
 
   const onOkHandle = async () => {
@@ -30,6 +29,19 @@ const ModifyRule: React.FC<IModifyRuleProps> = ({ visible, title, onClose }) => 
       onCloseHanele();
     }
   };
+
+  // 获取新人规则详情
+  const getNewcomerPoints = async () => {
+    const res = await requestQueryNewcomerPoints();
+    if (res) {
+      form.setFieldsValue(res);
+    }
+  };
+  useEffect(() => {
+    if (visible) {
+      getNewcomerPoints();
+    }
+  }, [visible]);
   return (
     <Modal
       width={360}

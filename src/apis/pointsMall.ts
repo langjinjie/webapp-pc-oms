@@ -315,3 +315,11 @@ export const requestImportIncentivePoints: (param: any) => Promise<any> = (param
 export const requestModifyNewcomerPoints: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/points/newcomer/edit', param);
 };
+
+/**
+ * @description 修改新人积分规则接口
+ * @param param
+ */
+export const requestQueryNewcomerPoints: VoidFC = () => {
+  return http.post('/tenacity-admin/api/points/newcomer/query');
+};
