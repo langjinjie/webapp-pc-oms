@@ -1,6 +1,6 @@
-import { Form, Input, message } from 'antd';
+import { Form, Input, message, Modal } from 'antd';
 import React, { useState } from 'react';
-import { Modal } from 'src/components';
+// import { Modal } from 'src/components';
 import { requestModifyNewcomerPoints } from 'src/apis/pointsMall';
 import style from './style.module.less';
 
@@ -36,11 +36,11 @@ const ModifyRule: React.FC<IModifyRuleProps> = ({ visible, title, onClose }) => 
       title={title || '修改新人规则'}
       className={style.wrap}
       visible={visible}
-      onClose={onCloseHanele}
+      onCancel={onCloseHanele}
       onOk={onOkHandle}
       centered
       okButtonProps={{
-        loading
+        loading: loading
       }}
     >
       <Form form={form}>

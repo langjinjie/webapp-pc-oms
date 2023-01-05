@@ -109,6 +109,7 @@ export const tableColumnsFun: (getList: () => void) => ColumnsType<IPointsConfig
     },
     {
       title: '操作',
+      fixed: 'right',
       render (value: IPointsConfigItem) {
         return (
           <>

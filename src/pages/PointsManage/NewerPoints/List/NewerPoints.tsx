@@ -6,9 +6,9 @@ import { NgTable, NoPermission } from 'src/components';
 import { tableColumnsFun, IPointsConfigItem } from './Config';
 import { useHistory } from 'react-router-dom';
 import { requestGetPointsConfigList } from 'src/apis/pointsMall';
-import { useDidRecover } from 'react-router-cache-route';
+// import { useDidRecover } from 'react-router-cache-route';
 import ModifyRule from './ModifyRule/ModifyRule';
-import qs from 'qs';
+// import qs from 'qs';
 import style from './style.module.less';
 
 const tabList = [
@@ -26,7 +26,6 @@ const PointsConfig: React.FC = () => {
   const history = useHistory();
 
   const authorTabList = useMemo(() => {
-    return tabList;
     return tabList.filter((tabItem) => btnList.includes(tabItem.path));
   }, []);
 
@@ -34,7 +33,7 @@ const PointsConfig: React.FC = () => {
   const getList = async (taskType: string) => {
     setLoading(true);
     // 查询新人任务
-    const res = await requestGetPointsConfigList({ taskType, configType: 3 });
+    const res = await requestGetPointsConfigList({ taskType: +taskType, configType: 3 });
     if (res) {
       const list = res.reduce((prev: any[], item: any) => {
         prev.push(item);
@@ -65,11 +64,11 @@ const PointsConfig: React.FC = () => {
     setVisible(true);
   };
 
-  useDidRecover(() => {
-    if (qs.parse(window.location.search, { ignoreQueryPrefix: true }).refresh === 'true') {
-      getList(tabKey);
-    }
-  }, []);
+  // useDidRecover(() => {
+  //   if (qs.parse(window.location.search, { ignoreQueryPrefix: true }).refresh === 'true') {
+  //     getList(tabKey);
+  //   }
+  // }, []);
   useEffect(() => {
     getList(authorTabList[0]?.key);
     setTabKey(authorTabList[0]?.key);

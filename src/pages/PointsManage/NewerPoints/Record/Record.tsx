@@ -23,7 +23,7 @@ const Record: React.FC = () => {
   });
   const getList = async (values: any) => {
     setLoading(true);
-    const res = await requestGetPointsConfigLogList(values);
+    const res = await requestGetPointsConfigLogList({ ...values, configType: 3 });
     if (res) {
       const { total, list } = res;
       setList(list);
@@ -57,7 +57,7 @@ const Record: React.FC = () => {
       <div className={style.breadCrumbsWrap}>
         <BreadCrumbs
           navList={[
-            { path: '/pointsConfig', name: '打卡与奖励任务' },
+            { path: '/newerPoints', name: '新人任务' },
             { path: '', name: '操作记录' }
           ]}
         />
