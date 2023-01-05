@@ -300,10 +300,18 @@ export const requestSendAllIncentivePoints: HttpFunction = (param) => {
  * @description 1.8一键导入激励积分接口
  * @param param
  */
-export const requestImportIncentivePoints: HttpFunction = (param) => {
+export const requestImportIncentivePoints: (param: any) => Promise<any> = (param) => {
   // 创建一个空对象实例
   const formData = new FormData();
   // 调用append()方法来添加数据
   formData.append('file', param);
   return http.post('/tenacity-admin/api/points/incentive/send/import', formData);
+};
+
+/**
+ * @description 修改新人积分规则接口
+ * @param param
+ */
+export const requestModifyNewcomerPoints: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/points/newcomer/edit', param);
 };

@@ -398,6 +398,20 @@ export const routes: RouteProps[] = [
   {
     path: '/incentive',
     component: lazy(() => import('src/pages/PointsManage/Incentive/Incentive'))
+  },
+  // 新人任务
+  // 新人任务
+  {
+    path: '/newerPoints',
+    component: lazy(() => import('src/pages/PointsManage/NewerPoints/List/NewerPoints'))
+  },
+  {
+    path: '/newerPoints/edit',
+    component: lazy(() => import('src/pages/PointsManage/NewerPoints/Edit/Edit'))
+  },
+  {
+    path: '/newerPoints/record',
+    component: lazy(() => import('src/pages/PointsManage/NewerPoints/Record/Record'))
   }
 ];
 

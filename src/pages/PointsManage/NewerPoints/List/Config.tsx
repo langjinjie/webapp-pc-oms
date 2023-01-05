@@ -54,7 +54,7 @@ export const tableColumnsFun: (getList: () => void) => ColumnsType<IPointsConfig
   };
   // 编辑/新增
   const editHandle = (value: IPointsConfigItem, type: string) => {
-    history.push('/pointsConfig/edit?pointsTaskId=' + value.pointsTaskId + '&type=' + type + '&logId=' + value.logId);
+    history.push('/newerPoints/edit?pointsTaskId=' + value.pointsTaskId + '&type=' + type + '&logId=' + value.logId);
   };
   return [
     { title: 'A端展示排序', dataIndex: 'sort' },
