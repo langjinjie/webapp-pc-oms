@@ -45,12 +45,14 @@ const ModifyRule: React.FC<IModifyRuleProps> = ({ visible, title, onClose }) => 
     >
       <Form form={form}>
         <Form.Item>
+          每天需完成
           <Form.Item name="newcomerPoints" rules={[{ required: true, message: '积分不能为空' }]} noStyle>
             <Input className={style.input} placeholder="请输入" type="number" />
           </Form.Item>
           积分
         </Form.Item>
         <Form.Item>
+          需累计完成
           <Form.Item name="newcomerDay" rules={[{ required: true, message: '天数不能为空' }]} noStyle>
             <Input className={style.input} placeholder="请输入" type="number" />
           </Form.Item>
