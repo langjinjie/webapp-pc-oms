@@ -27,20 +27,16 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   const [editForm] = Form.useForm();
   const { currentCorpId: corpId } = useContext(Context);
   const [catalogSenceAndLevel, setCatalogSenceAndLevel] = useState<ICatalogSenceAndLevel>({ sence: 0, level: 0 });
-  const [btnIsLoading, setBtnIsLoading] = useState(false);
   const resetHandle = () => {
     setCatalogSenceAndLevel({ sence: 0, level: 0 });
     setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
-    setBtnIsLoading(false);
   };
 
   // 确认修改/增加目录handle
   const firmModalOnOk = async () => {
-    setBtnIsLoading(true);
     const { parentId, catalog } = editOrAddCatalogParam;
     const { sceneId, catalogId, level, lastLevel } = catalog;
     const { groupId, name, logoUrl } = editForm.getFieldsValue();
-    console.log({ groupId });
     const res = await requestEditCatalog({
       corpId,
       parentId,
@@ -52,7 +48,6 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       catalogId: editOrAddCatalogParam.title === '新增' ? undefined : catalogId,
       logoUrl
     });
-    setBtnIsLoading(false);
     if (res) {
       setFirmModalParam({ title: '', content: '', visible: false });
       message.success(`目录${editOrAddCatalogParam.title}成功`);
@@ -149,9 +144,6 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       onCancel={onCancelHandle}
       onOk={modalOnOkHandle}
       maskClosable={false}
-      okButtonProps={{
-        loading: btnIsLoading
-      }}
     >
       <Form form={editForm} labelCol={{ span: 5 }} initialValues={{ isSet: 0 }}>
         <Form.Item
