@@ -6,6 +6,83 @@
   "description": "tenacity-pc A B端",
   "glyphs": [
     {
+      "icon_id": "33663922",
+      "name": "置顶",
+      "font_class": "zhiding",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "33549131",
+      "name": "icon_导航_28_客户管理",
+      "font_class": "icon_daohang_28_kehuguanli",
+      "unicode": "e643",
+      "unicode_decimal": 58947
+    },
+    {
+      "icon_id": "33549132",
+      "name": "icon_导航_28_分群管理",
+      "font_class": "icon_daohang_28_fenqunguanli",
+      "unicode": "e644",
+      "unicode_decimal": 58948
+    },
+    {
+      "icon_id": "33549133",
+      "name": "icon_导航_28_销售线索",
+      "font_class": "icon_daohang_28_xiaoshouxiansuo",
+      "unicode": "e68f",
+      "unicode_decimal": 59023
+    },
+    {
+      "icon_id": "33549134",
+      "name": "icon_导航_28_渠道活码",
+      "font_class": "icon_daohang_28_qudaohuoma",
+      "unicode": "e690",
+      "unicode_decimal": 59024
+    },
+    {
+      "icon_id": "33549135",
+      "name": "icon_导航_28_ 活动预约",
+      "font_class": "a-icon_daohang_28_huodongyuyue",
+      "unicode": "e691",
+      "unicode_decimal": 59025
+    },
+    {
+      "icon_id": "33036750",
+      "name": "icon_审批_20_fail",
+      "font_class": "icon_shenpi_20_fail",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "33036751",
+      "name": "icon_审批_20_succeed",
+      "font_class": "icon_shenpi_20_succeed",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "33036752",
+      "name": "icon_审批_20_in review",
+      "font_class": "a-icon_shenpi_20_inreview",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "33036753",
+      "name": "icon_审批_20_proposer",
+      "font_class": "icon_shenpi_20_proposer",
+      "unicode": "e642",
+      "unicode_decimal": 58946
+    },
+    {
+      "icon_id": "32985180",
+      "name": "icon_导航_28_审批管理",
+      "font_class": "icon_audit",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
       "icon_id": "31989032",
       "name": "icon_login_56_account manager",
       "font_class": "a-icon_login_56_accountmanager",
@@ -774,6 +851,13 @@
       "font_class": "xin",
       "unicode": "e636",
       "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "32226708",
+      "name": "完成-copy",
+      "font_class": "wancheng-copy",
+      "unicode": "eb12",
+      "unicode_decimal": 60178
     },
     {
       "icon_id": "680358",

@@ -121,18 +121,18 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
       sort: type
     });
     if (res) {
-      message.success(`目录${type === -1 ? '上移' : '下移'}成功`);
+      message.success(`目录${type === 0 ? '同级置顶' : type === -1 ? '上移' : '下移'}成功`);
       await setFirmModalParam({ visible: false, title: '', content: '' });
       getParentChildrenList();
     }
   };
-  // 上/下移 -1上移 1下移
+  // 上/下移/置顶 -1上移 1下移 0置顶
   const moveClickHandle = (e: React.MouseEvent, type: number, hidden: boolean) => {
     e.stopPropagation();
     if (hidden) return;
     setFirmModalParam({
-      title: type === -1 ? '上移' : '下移' + '提醒',
-      content: `确定${type === -1 ? '上移' : '下移'}目录“${catalog.name}”吗？`,
+      title: (type === 0 ? '同级置顶' : type === -1 ? '上移' : '下移') + '提醒',
+      content: `确定${type === 0 ? '同级置顶' : type === -1 ? '上移' : '下移'}目录“${catalog.name}”吗？`,
       visible: true,
       onOk: async () => {
         await firmModalOnOk(type);
@@ -312,6 +312,14 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
             >
               <Icon className={'svgIcon'} name="xiayi" />
               下移
+            </Button>
+            <Button
+              type="link"
+              className={classNames({ is_disabled: isHiddenMoveUp })}
+              onClick={(e) => moveClickHandle(e, 0, isHiddenMoveUp)}
+            >
+              <Icon className={'svgIcon'} name="zhiding" />
+              同级置顶
             </Button>
           </AuthBtn>
           <AuthBtn path="/delete">

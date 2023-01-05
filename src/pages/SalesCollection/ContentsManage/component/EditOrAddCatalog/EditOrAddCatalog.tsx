@@ -27,7 +27,9 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   const [editForm] = Form.useForm();
   const { currentCorpId: corpId } = useContext(Context);
   const [catalogSenceAndLevel, setCatalogSenceAndLevel] = useState<ICatalogSenceAndLevel>({ sence: 0, level: 0 });
-  const resetHandle = () => {
+
+  const onCancelHandle = () => {
+    editForm.resetFields();
     setCatalogSenceAndLevel({ sence: 0, level: 0 });
     setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
   };
@@ -52,7 +54,7 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
       setFirmModalParam({ title: '', content: '', visible: false });
       message.success(`目录${editOrAddCatalogParam.title}成功`);
       editOrAddCatalogParam.getParentChildrenList();
-      resetHandle();
+      onCancelHandle();
     }
   };
   // modal确认
@@ -113,11 +115,6 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
     });
   };
 
-  const onCancelHandle = () => {
-    editForm.resetFields();
-    resetHandle();
-    setEditOrAddCatalogParam({ ...editOrAddCatalogParam, visible: false });
-  };
   useEffect(() => {
     if (editOrAddCatalogParam?.visible) {
       if (editOrAddCatalogParam.title === '编辑') {
