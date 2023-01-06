@@ -313,14 +313,16 @@ const ContentBanner: React.FC<IContentBannerProps> = ({
               <Icon className={'svgIcon'} name="xiayi" />
               下移
             </Button>
-            <Button
-              type="link"
-              className={classNames({ is_disabled: isHiddenMoveUp })}
-              onClick={(e) => moveClickHandle(e, 0, isHiddenMoveUp)}
-            >
-              <Icon className={'svgIcon'} name="zhiding" />
-              同级置顶
-            </Button>
+            {!catalog.level || (
+              <Button
+                type="link"
+                className={classNames({ is_disabled: isHiddenMoveUp })}
+                onClick={(e) => moveClickHandle(e, 0, isHiddenMoveUp)}
+              >
+                <Icon className={'svgIcon'} name="zhiding" />
+                同级置顶
+              </Button>
+            )}
           </AuthBtn>
           <AuthBtn path="/delete">
             {!catalog.level || isHiddenDelete || (
