@@ -456,5 +456,5 @@ export const batchDeleteMoment: HttpFunction = (param: object) => {
 };
 // 1.12、链接转化
 export const connectionTransform: HttpFunction = (param: object) => {
-  return http.post('/tenacity-admin/api/shortUrl/create', param);
+  return http.post('/tenacity-admin/api/shorturl/create', param);
 };

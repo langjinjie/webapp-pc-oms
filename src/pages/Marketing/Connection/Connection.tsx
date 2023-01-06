@@ -8,9 +8,7 @@ const Connection: React.FC = () => {
   const { currentCorpId } = useContext(Context);
 
   const onFinish = async (values: any) => {
-    console.log(values);
-    const res = await connectionTransform({ ...values, base64encoded: 0, corpId: currentCorpId });
-    console.log(res);
+    const res = await connectionTransform({ ...values, base64encoded: 1, corpId: currentCorpId });
     setShortUrl(res);
   };
   return (
