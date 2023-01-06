@@ -27,7 +27,7 @@ const PointsConfig: React.FC = () => {
 
   const authorTabList = useMemo(() => {
     return tabList.filter((tabItem) => btnList.includes(tabItem.path));
-  }, []);
+  }, [btnList]);
 
   // 获取列表
   const getList = async (taskType: string) => {
