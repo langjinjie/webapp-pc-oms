@@ -412,6 +412,10 @@ export const routes: RouteProps[] = [
   {
     path: '/newerPoints/record',
     component: lazy(() => import('src/pages/PointsManage/NewerPoints/Record/Record'))
+  },
+  {
+    path: '/connection',
+    component: lazy(() => import('src/pages/Marketing/Connection/Connection'))
   }
 ];
 

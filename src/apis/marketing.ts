@@ -454,3 +454,7 @@ export const getMomentDetail: HttpFunction = (param: object) => {
 export const batchDeleteMoment: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/market/moment/feed/del', param);
 };
+// 1.12、链接转化
+export const connectionTransform: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/shortUrl/create', param);
+};
