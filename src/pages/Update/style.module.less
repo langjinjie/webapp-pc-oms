@@ -1,13 +1,70 @@
 .wrap {
-  width: 100%;
-  height: 100%;
+  position: relative;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  margin: 0 auto;
+  width: 100%;
+  height: 100vh;
+  min-width: 1200px;
+  min-height: 675px;
+  padding: 0 103px 0 96px;
+  background: url('src/assets/images/update/background.png') no-repeat;
+  background-size: 100% 100%;
+}
+.left {
+  padding-top: 176px;
+  background: url('src/assets/images/update/logo.png') no-repeat;
+  background-size: 139px 31px;
+  background-position: 0 50px;
 
-  .img {
-    max-width: 100%;
-    max-height: 100%;
+  .updateImg {
+    width: 526px;
+    height: 138px;
+    background: url('src/assets/images/update/update.png') no-repeat;
+    background-size: 100%;
   }
+  .updating {
+    margin-top: -44px;
+    width: 354px;
+    height: 67px;
+    font-size: 71px;
+    font-weight: 500;
+    color: #5aa3f7;
+    line-height: 67px;
+    white-space: nowrap;
+  }
+  .updateTips {
+    margin-top: 41px;
+    width: 283px;
+    height: 26px;
+    font-size: 27px;
+    font-weight: 500;
+    color: #5aa3f7;
+    line-height: 26px;
+  }
+}
+.right {
+  margin-top: 84px;
+  width: 319px;
+  height: 557px;
+  background: url('src/assets/images/update/rocket.png') no-repeat;
+  background-size: 100%;
+}
+.footer {
+  position: absolute;
+  bottom: 26px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: auto;
+  width: 324px;
+  height: 29px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #9d9daa;
+  color: #9d9daa;
 }

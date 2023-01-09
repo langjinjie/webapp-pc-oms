@@ -56,3 +56,9 @@ export const queryFuncList: Void2Promise = () => {
 export const queryMenuList: Void2Promise = () => {
   return http.post('/tenacity-admin/api/privilege/menu/list', { sysType: 1 });
 };
+/**
+ * @description 是否更新中
+ */
+export const requestGetMstatus: Void2Promise = () => {
+  return http.get('/res/mstatus.json?timestamp=' + Date.now());
+};

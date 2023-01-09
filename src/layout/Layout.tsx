@@ -11,12 +11,13 @@ import classNames from 'classnames';
 import { Icon, ConfirmModal } from 'src/components';
 import { Context } from 'src/store';
 import { routes, cacheRoutes, noVerRoutes } from 'src/pages/routes';
-import { queryUserInfo, queryMenuList } from 'src/apis';
+import { queryUserInfo, queryMenuList, requestGetMstatus } from 'src/apis';
 import { MenuItem } from 'src/utils/interface';
 import Header from './Header';
 import './style.less';
 import { Layout, message, Menu, MenuProps } from 'antd';
 import { TOKEN_KEY } from 'src/utils/config';
+import Update from 'src/pages/Update/Update';
 
 type SiderMenuItem = Required<MenuProps>['items'][number];
 function getItem (
@@ -44,6 +45,7 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [siderMenuList, setSiderMenuList] = useState<SiderMenuItem[]>([]);
   const [selectedKeys, setSelectKeys] = useState<string[]>([]);
+  const [updating, setUpdating] = useState(false);
 
   /**
    * 刷新时获取激活菜单
@@ -132,19 +134,14 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
     );
   };
 
-  useEffect(() => {
-    menuList.length > 0 && initMenu();
-    return () => {
-      setBeforePath(location.pathname);
-    };
-  }, [location]);
-  useEffect(() => {
-    if (document?.documentElement || document?.body) {
-      document.documentElement.scrollTop = document.body.scrollTop = 0;
+  //
+  const login = async () => {
+    // 判断是否处于系统更新中
+    const res = await requestGetMstatus();
+    // 999 维护中
+    if (res === '999') {
+      return setUpdating(true);
     }
-  }, [history.location.pathname]);
-
-  useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
       getUserInfo();
@@ -158,6 +155,22 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
       setOpenKeys([keyPath[1]]);
       setSelectKeys([keyPath[0]]);
     }
+  };
+
+  useEffect(() => {
+    menuList.length > 0 && initMenu();
+    return () => {
+      setBeforePath(location.pathname);
+    };
+  }, [location]);
+  useEffect(() => {
+    if (document?.documentElement || document?.body) {
+      document.documentElement.scrollTop = document.body.scrollTop = 0;
+    }
+  }, [history.location.pathname]);
+
+  useEffect(() => {
+    login();
   }, []);
 
   // submenu keys of first level
@@ -180,89 +193,99 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
 
   return (
-    <Layout className="layout">
-      <Layout.Header style={{ position: 'fixed', zIndex: 1000, width: '100%' }}>
-        <Header setMenuIndex={setMenuIndex} setSubMenus={setSubMenus} />
-      </Layout.Header>
-      <Layout.Sider
-        trigger={null}
-        collapsible
-        width={252}
-        collapsedWidth={88}
-        className={'navWrap'}
-        collapsed={isCollapse}
-      >
-        <Menu
-          className="menuWrap"
-          mode="inline"
-          items={siderMenuList}
-          openKeys={openKeys}
-          selectedKeys={selectedKeys}
-          onClick={onMenuClick}
-          onOpenChange={onOpenChange}
-        ></Menu>
-        {false && (
-          <ul className="menu-list">
-            {menuList.map((menu: MenuItem, index: number) => (
-              <li
-                className={classNames('menu-item', {
-                  'menu-active': menuIndex === index
-                })}
-                key={menu.menuId}
-                onClick={() => {
-                  if (menu.children && menu.children.length > 0) {
-                    const path = ((menu.children || [])[0] || {}).path;
-                    if (path.indexOf('http') > -1) {
-                      window.open(path, '_blank');
-                      return false;
-                    }
-                    setMenuIndex(index);
-                    history.push(((menu.children || [])[0] || {}).path);
-                  } else {
-                    message.warn('无子级菜单，请联系管理员');
-                  }
-                }}
-              >
-                <Icon className="menu-icon" name={menu.menuIcon!} />
-                <span className="menu-name">{menu.menuName}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {false && (
-          <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
-            {subMenus.map((subMenu: MenuItem) => {
-              return (
-                subMenu?.path && (
-                  <li key={subMenu.menuId}>
-                    {subMenu?.path.indexOf('http') > -1
-                      ? (
-                      <a target={'_blank'} className="sub-menu-item" href={subMenu?.path as string} rel="noreferrer">
-                        {subMenu.menuName}
-                      </a>
-                        )
-                      : (
-                      <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
-                        {subMenu.menuName}
-                      </NavLink>
-                        )}
-                    ||{' '}
+    <>
+      {updating || (
+        <Layout className="layout">
+          <Layout.Header style={{ position: 'fixed', zIndex: 1000, width: '100%' }}>
+            <Header setMenuIndex={setMenuIndex} setSubMenus={setSubMenus} />
+          </Layout.Header>
+          <Layout.Sider
+            trigger={null}
+            collapsible
+            width={252}
+            collapsedWidth={88}
+            className={'navWrap'}
+            collapsed={isCollapse}
+          >
+            <Menu
+              className="menuWrap"
+              mode="inline"
+              items={siderMenuList}
+              openKeys={openKeys}
+              selectedKeys={selectedKeys}
+              onClick={onMenuClick}
+              onOpenChange={onOpenChange}
+            ></Menu>
+            {false && (
+              <ul className="menu-list">
+                {menuList.map((menu: MenuItem, index: number) => (
+                  <li
+                    className={classNames('menu-item', {
+                      'menu-active': menuIndex === index
+                    })}
+                    key={menu.menuId}
+                    onClick={() => {
+                      if (menu.children && menu.children.length > 0) {
+                        const path = ((menu.children || [])[0] || {}).path;
+                        if (path.indexOf('http') > -1) {
+                          window.open(path, '_blank');
+                          return false;
+                        }
+                        setMenuIndex(index);
+                        history.push(((menu.children || [])[0] || {}).path);
+                      } else {
+                        message.warn('无子级菜单，请联系管理员');
+                      }
+                    }}
+                  >
+                    <Icon className="menu-icon" name={menu.menuIcon!} />
+                    <span className="menu-name">{menu.menuName}</span>
                   </li>
-                )
-              );
-            })}
-          </ul>
-        )}
-      </Layout.Sider>
-      <Layout style={{ marginTop: 80, background: '#fff' }}>
-        <Layout.Content>
-          <div>{renderRoute()}</div>
-        </Layout.Content>
-      </Layout>
+                ))}
+              </ul>
+            )}
 
-      <ConfirmModal />
-    </Layout>
+            {false && (
+              <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
+                {subMenus.map((subMenu: MenuItem) => {
+                  return (
+                    subMenu?.path && (
+                      <li key={subMenu.menuId}>
+                        {subMenu?.path.indexOf('http') > -1
+                          ? (
+                          <a
+                            target={'_blank'}
+                            className="sub-menu-item"
+                            href={subMenu?.path as string}
+                            rel="noreferrer"
+                          >
+                            {subMenu.menuName}
+                          </a>
+                            )
+                          : (
+                          <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
+                            {subMenu.menuName}
+                          </NavLink>
+                            )}
+                        ||{' '}
+                      </li>
+                    )
+                  );
+                })}
+              </ul>
+            )}
+          </Layout.Sider>
+          <Layout style={{ marginTop: 80, background: '#fff' }}>
+            <Layout.Content>
+              <div>{renderRoute()}</div>
+            </Layout.Content>
+          </Layout>
+
+          <ConfirmModal />
+        </Layout>
+      )}
+      {updating && <Update />}
+    </>
   );
 };
 
