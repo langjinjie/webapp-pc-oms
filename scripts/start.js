@@ -43,7 +43,7 @@ const devServerOptions = {
   },
   proxy: [
     {
-      context: ['/api', '/tenacity-admin'],
+      context: ['/api', '/tenacity-admin', '/res'],
       target: 'https://dev.tenacity.com.cn',
       // target: 'http://172.30.15.141:7060',
       secure: false,
