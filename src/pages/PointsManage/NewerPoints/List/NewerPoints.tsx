@@ -70,8 +70,8 @@ const PointsConfig: React.FC = () => {
   //   }
   // }, []);
   useEffect(() => {
-    getList(authorTabList[0]?.key);
-    setTabKey(authorTabList[0]?.key);
+    getList(authorTabList[0]?.key || '1');
+    setTabKey(authorTabList[0]?.key || '1');
   }, []);
   return (
     <>
