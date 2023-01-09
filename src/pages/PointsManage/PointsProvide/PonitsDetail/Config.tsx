@@ -279,7 +279,7 @@ const TableColumns = (
                 overlayClassName={style.contentTooltip}
               >
                 <div className={style.content} key={item.flowId}>
-                  {item.content}
+                  {item.content || UNKNOWN}
                 </div>
               </Tooltip>
             ))}
