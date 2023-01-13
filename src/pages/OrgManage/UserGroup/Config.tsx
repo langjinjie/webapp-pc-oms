@@ -13,7 +13,7 @@ const TableColumns = (readonly?: boolean): ColumnType<any>[] => {
   const history = useHistory();
   // 查看员工组
   const viewGroup = (groupId: string) => {
-    history.push('/userGroup/add?groupId=' + groupId + '&type=view');
+    history.replace('/userGroup/add?groupId=' + groupId + '&type=view');
   };
   // 编辑员工组
   const editGroup = (groupId: string) => {
@@ -42,7 +42,7 @@ const TableColumns = (readonly?: boolean): ColumnType<any>[] => {
       render (row: any) {
         return (
           <>
-            <AuthBtn path="/view">
+            <AuthBtn path="/userGroupView">
               <span className={style.check} onClick={() => viewGroup(row.groupId)}>
                 查看
               </span>

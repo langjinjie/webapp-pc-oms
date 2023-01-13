@@ -48,10 +48,6 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
   };
 
   useEffect(() => {
-    if (instList.length === 0) {
-      getInstList();
-    }
-
     const callback = () => setChangeVisible(false);
 
     window.document.addEventListener('click', callback);
@@ -83,6 +79,9 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
         <span
           className="change-btn"
           onClick={(e) => {
+            if (instList.length === 0) {
+              getInstList();
+            }
             e.stopPropagation();
             setChangeVisible(true);
           }}
