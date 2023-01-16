@@ -7,7 +7,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
-import { chooseInst, logout, queryInstList } from 'src/apis';
+import { chooseInst, logout, queryInstList, requestGetMstatus } from 'src/apis';
 import { InstItem } from 'src/utils/interface';
 import './style.less';
 import { TOKEN_KEY } from 'src/utils/config';
@@ -32,6 +32,12 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
   };
 
   const getInstList = async () => {
+    // 判断是否处于系统更新中
+    const updateRes = await requestGetMstatus();
+    // 999 维护中
+    if (updateRes === '999') {
+      return;
+    }
     const res: any = await queryInstList();
     if (Array.isArray(res)) {
       setInstList(res);
@@ -48,6 +54,9 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
   };
 
   useEffect(() => {
+    if (instList.length === 0) {
+      getInstList();
+    }
     const callback = () => setChangeVisible(false);
 
     window.document.addEventListener('click', callback);
@@ -79,9 +88,6 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
         <span
           className="change-btn"
           onClick={(e) => {
-            if (instList.length === 0) {
-              getInstList();
-            }
             e.stopPropagation();
             setChangeVisible(true);
           }}
