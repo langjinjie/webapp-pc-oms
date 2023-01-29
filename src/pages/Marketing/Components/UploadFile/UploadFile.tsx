@@ -103,7 +103,7 @@ const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, 
         ? (
         <div>
           <a href={value} target="_blank" rel="noreferrer">
-            {value.split('/pdf/')[1].split('?')[0]}
+            {value.split('/pdf/')[1]?.split('?')[0]}
           </a>
           <Icon onClick={deletePic} className={styles.delIcon} name="icon_common_16_inputclean"></Icon>
         </div>
