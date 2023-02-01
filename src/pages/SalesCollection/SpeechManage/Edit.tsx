@@ -266,10 +266,9 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
 
   const handleCustomTypeChange = (value: any) => {
     setOriginSpeech((originSpeech) => ({ ...originSpeech!, 'contentObj.contentType': value }));
-    console.log('value', value);
     // 切换话术内容清空话术内容
     if (value === speech?.['contentObj.contentType']) {
-      speechForm.setFieldsValue({ ...originSpeech });
+      speechForm.setFieldsValue({ ...originSpeech, 'contentObj.contentType': value });
     } else {
       speechForm.setFieldsValue({
         ...originSpeech,
