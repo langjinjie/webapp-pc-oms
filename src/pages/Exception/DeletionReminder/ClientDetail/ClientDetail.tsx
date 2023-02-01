@@ -7,11 +7,11 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { Tooltip } from 'antd';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useLocation } from 'react-router-dom';
 // import { Button } from 'tenacity-ui';
 import { BreadCrumbs, Icon, Empty, DrawerItem } from 'src/components';
 // import { wxAgentConfig } from 'src/utils/wx';
-import { Nav, TagItem } from 'src/utils/interface';
+import { TagItem } from 'src/utils/interface';
 import { requestGetClientDetail } from 'src/apis/exception';
 import qs from 'qs';
 import DynamicList from './DynamicList';
@@ -109,20 +109,11 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   const attrContentRef: MutableRefObject<any> = useRef(null);
   const interestContentRef: MutableRefObject<any> = useRef(null);
   const customContentRef: MutableRefObject<any> = useRef(null);
+  const location = useLocation();
 
   const tabList: string[] = ['客户动态', '客户画像', '服务建议'];
 
   // const hasTag = (clientInfo.factTagList || []).length > 0 || (clientInfo.personalTagList || []).length > 0;
-
-  const navList: Nav[] = [
-    {
-      name: '删人提醒',
-      path: '/deletionReminder'
-    },
-    {
-      name: '客户详情'
-    }
-  ];
 
   const calcAttrTag = () => {
     if (!attrHasExpand || attrCollapse) {
@@ -220,6 +211,7 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   }, [loadCustomTag]);
 
   useEffect(() => {
+    console.log(location.state);
     const { externalUserid: externalUserId = '', followStaffId }: any = qs.parse(history.location.search, {
       ignoreQueryPrefix: true
     });
@@ -230,7 +222,7 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
   return (
     <div className={style.detailWrap}>
-      <BreadCrumbs navList={navList} />
+      <BreadCrumbs navList={(location.state as any)?.navList || []} />
       <div className={style.contentWrap}>
         <div className={style.left}>
           <div className={style.baseWrap}>

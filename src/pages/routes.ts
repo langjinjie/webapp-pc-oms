@@ -416,6 +416,13 @@ export const routes: RouteProps[] = [
   {
     path: '/connection',
     component: lazy(() => import('src/pages/Marketing/Connection/Connection'))
+  },
+  /**
+   * 客户管理
+   */
+  {
+    path: '/customerManage',
+    component: lazy(() => import('src/pages/CustomerManage/CustomerList/CustomerList'))
   }
 ];
 
