@@ -97,6 +97,14 @@ export const routes: RouteProps[] = [
     path: '/marketingMoment',
     component: lazy(() => import('src/pages/Marketing/Moment/List'))
   },
+  {
+    path: '/marketingVideo',
+    component: lazy(() => import('src/pages/Marketing/VideoManage/VideoList/List'))
+  },
+  {
+    path: '/marketingVideo/edit',
+    component: lazy(() => import('src/pages/Marketing/VideoManage/AddVideo/AddVideo'))
+  },
 
   // 首页配置
   {
