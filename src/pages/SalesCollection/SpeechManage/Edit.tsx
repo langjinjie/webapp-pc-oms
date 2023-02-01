@@ -266,10 +266,34 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
 
   const handleCustomTypeChange = (value: any) => {
     setOriginSpeech((originSpeech) => ({ ...originSpeech!, 'contentObj.contentType': value }));
+    console.log('value', value);
+    // 切换话术内容清空话术内容
+    if (value === speech?.['contentObj.contentType']) {
+      speechForm.setFieldsValue({ ...originSpeech });
+    } else {
+      speechForm.setFieldsValue({
+        ...originSpeech,
+        'contentObj.content': '',
+        'contentObj.contentType': value,
+        'contentObj.tip': '',
+        'contentObj.ageType': '',
+        'contentObj.genderType': '',
+        'contentObj.contentUrl': '',
+        'contentObj.title': '',
+        'contentObj.summary': '',
+        'contentObj.thumbnail': '',
+        'contentObj.appId': '',
+        'contentObj.appPath': ''
+      });
+    }
   };
 
   return (
-    <Card title="新增话术" bordered={false} className="edit">
+    <Card
+      title={`${(URLSearchParams(location.search) as { [key: string]: string }).contentId ? '编辑' : '新增'}话术`}
+      bordered={false}
+      className="edit"
+    >
       <Form
         form={speechForm}
         onFinish={onFinish}

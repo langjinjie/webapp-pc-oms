@@ -108,6 +108,7 @@ const EditOrAddLastCatalog: React.FC<IAddOrEditContentProps> = ({
   const selectOnchangeHandle = (e: any) => {
     const name = form.getFieldValue('name');
     setCatalogParam({ ...catalogParam, contentType: e });
+    // 切换话术格式重置表单内容
     if (e === catalogDetail.contentType) {
       form.setFieldsValue({ ...catalogDetail });
       setUploadImg(catalogDetail.contentUrl as string);
