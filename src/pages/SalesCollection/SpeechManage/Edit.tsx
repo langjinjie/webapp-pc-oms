@@ -273,11 +273,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
     } else {
       speechForm.setFieldsValue({
         ...originSpeech,
-        'contentObj.content': '',
         'contentObj.contentType': value,
-        'contentObj.tip': '',
-        'contentObj.ageType': '',
-        'contentObj.genderType': '',
         'contentObj.contentUrl': '',
         'contentObj.title': '',
         'contentObj.summary': '',
