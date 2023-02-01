@@ -423,6 +423,11 @@ export const routes: RouteProps[] = [
   {
     path: '/customerManage',
     component: lazy(() => import('src/pages/CustomerManage/CustomerList/CustomerList'))
+  },
+  // 客户管理->客户信息
+  {
+    path: '/customerManage/clientDetail',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
   }
 ];
 
