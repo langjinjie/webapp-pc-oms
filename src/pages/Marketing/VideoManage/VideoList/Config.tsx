@@ -3,13 +3,14 @@ import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { OperateType } from 'src/utils/interface';
 
 const statusOptions = [
   { id: 1, name: '未上架' },
   { id: 2, name: '已上架' },
   { id: 2, name: '已下架' }
 ];
-export const searchCols: SearchCol[] = [
+export const searchColsFun = (options: any[]): SearchCol[] => [
   {
     type: 'input',
     label: '视频ID',
@@ -38,14 +39,17 @@ export const searchCols: SearchCol[] = [
     label: '分类',
     name: 'typeId',
     width: '100px',
-    options: statusOptions
+    options: options
   }
 ];
 
-interface VideoColumn {
+export interface VideoColumn {
+  videoId: string;
   [prop: string]: any;
 }
-export const tableColumnsFun = (): ColumnsType<VideoColumn> => {
+export const tableColumnsFun = (
+  onOperate: (type: OperateType, record: VideoColumn, index?: number) => void
+): ColumnsType<VideoColumn> => {
   return [
     {
       key: 'videoId',
@@ -55,7 +59,9 @@ export const tableColumnsFun = (): ColumnsType<VideoColumn> => {
     {
       key: 'videoName',
       dataIndex: 'videoName',
-      title: '视频标题'
+      title: '视频标题',
+      ellipsis: true,
+      width: 200
     },
     {
       key: 'typeName',
@@ -104,11 +110,33 @@ export const tableColumnsFun = (): ColumnsType<VideoColumn> => {
       render: (operate, record) => {
         return (
           <div>
-            <Button type="link">置顶</Button>
-            <Button type="link">编辑</Button>
-            {record.key3 === 1 ? <Button type="link">下架</Button> : <Button type="link">上架</Button>}
+            <Button type="link" onClick={() => onOperate('top', record)}>
+              置顶
+            </Button>
+            <Button type="link" onClick={() => onOperate('unTop', record)}>
+              取消置顶
+            </Button>
+            <Button type="link" onClick={() => onOperate('edit', record)}>
+              编辑
+            </Button>
+            {record.key3 === 1
+              ? (
+              <Button type="link" onClick={() => onOperate('outline', record)}>
+                下架
+              </Button>
+                )
+              : (
+              <Button type="link" onClick={() => onOperate('putAway', record)}>
+                上架
+              </Button>
+                )}
+            <Button type="link" onClick={() => onOperate('delete', record)}>
+              删除
+            </Button>
 
-            <Button type="link">配置可见范围</Button>
+            <Button type="link" onClick={() => onOperate('other', record)}>
+              配置可见范围
+            </Button>
           </div>
         );
       }

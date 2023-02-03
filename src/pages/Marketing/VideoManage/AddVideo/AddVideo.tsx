@@ -1,19 +1,47 @@
 import { Button, Form, Input, Select, Space } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { getVideoDetail, getVideoTypeList } from 'src/apis/marketing';
 import { BreadCrumbs, UploadFile } from 'src/components';
+import { URLSearchParams } from 'src/utils/base';
 import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
 import NgUpload from '../../Components/Upload/Upload';
+import { VideoColumn } from '../VideoList/Config';
 
-const AddVideo: React.FC<RouteComponentProps> = ({ history }) => {
+const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [addForm] = Form.useForm();
+  const [typeList, setTypeList] = useState<any[]>([]);
+  const [video, setVideo] = useState<VideoColumn>();
+  const getDetail = async () => {
+    const { videoId } = URLSearchParams(location.search);
+    if (videoId) {
+      const res = await getVideoDetail({ videoId });
+      console.log(res, video);
+      if (res) {
+        setVideo(res);
+        addForm.setFieldsValue(res);
+      }
+    }
+  };
+
+  const getCategoryList = async () => {
+    const res = await getVideoTypeList({});
+    if (res) {
+      const { typeList } = res;
+      setTypeList(typeList.map((item: any) => ({ id: item.typeId, name: item.typeName })));
+    }
+  };
+  useEffect(() => {
+    getDetail();
+    getCategoryList();
+  }, []);
   return (
     <div className="container">
       <BreadCrumbs navList={[{ name: '视频库', path: '/marketingVideo' }, { name: '新增视频' }]} />
 
       <Form form={addForm} className="mt20 edit">
         <div className="sectionTitle">基本信息</div>
-        <Form.Item label="视频标题">
+        <Form.Item label="视频标题" rules={[{ required: true }]}>
           <Input className="width240" placeholder="请输入"></Input>
         </Form.Item>
         <Form.Item label="视频摘要">
@@ -42,7 +70,13 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history }) => {
         </Form.Item>
 
         <Form.Item label="选择分类">
-          <Select></Select>
+          <Select>
+            {typeList.map((item: any) => (
+              <Select.Option value={item.id} key={item.id}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item label="选择标签">
           <Select></Select>

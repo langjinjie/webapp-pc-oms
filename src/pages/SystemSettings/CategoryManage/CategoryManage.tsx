@@ -23,6 +23,7 @@ import classNames from 'classnames';
 import style from './style.module.less';
 import { Drag, Drop, DropChild } from 'src/components/drag-and-drop';
 import { useDocumentTitle } from 'src/utils/base';
+import { addVideoType, delVideoType, getVideoTypeList, sortVideoType } from 'src/apis/marketing';
 
 const CategoryManage: React.FC = () => {
   const { btnList } = useContext(Context);
@@ -41,7 +42,7 @@ const CategoryManage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   useDocumentTitle('系统设置-分类管理');
 
-  const tabs = ['产品库', '文章库', '海报库'];
+  const tabs = ['产品库', '文章库', '海报库', '视频库'];
   const addInputNode: MutableRefObject<any> = useRef();
 
   // 获取产品分类列表
@@ -59,13 +60,40 @@ const CategoryManage: React.FC = () => {
     const res = await requestGetPosterTypeList();
     res && setTypeList(res.categoryList as IPosterTypeItem[]);
   };
+  // 获取视频分类列表
+  const getVideoTypes = async () => {
+    const res = await getVideoTypeList({});
+    res && setTypeList(res.typeList.map((item: any) => ({ id: item.typeList, name: item.typeId })));
+  };
 
   // 获取分类列表
-  const getTypeList: (() => Promise<void>)[] = [getProductTypeList, getArticleTypeList, getPosterTypeList];
+  const getTypeList: (() => Promise<void>)[] = [
+    getProductTypeList,
+    getArticleTypeList,
+    getPosterTypeList,
+    getVideoTypes
+  ];
+
+  // 新增/修改视频分类
+  const saveVideoType = async (values: any) => {
+    console.log(values);
+    const res = await addVideoType({ typeId: '', typeName: values.name });
+    return res;
+  };
+
+  // 删除视频分类
+  const deleteVideoType = async (values: any) => {
+    return await delVideoType({ typeId: values.typeId });
+  };
   // 添加/修改分类名称
-  const modifyTypeName: HttpFC[] = [requestSaveProducType, requestSaveNewType, requestSavePosterType];
+  const modifyTypeName: HttpFC[] = [requestSaveProducType, requestSaveNewType, requestSavePosterType, saveVideoType];
   // 删除分类
-  const deleteTypeName: HttpFC[] = [requestDeleteProductType, requestDeleteNewType, requestDeletePosterType];
+  const deleteTypeName: HttpFC[] = [
+    requestDeleteProductType,
+    requestDeleteNewType,
+    requestDeletePosterType,
+    deleteVideoType
+  ];
 
   // 重新记录数组顺序
   const reorder = (list: (IProductTypeItem | IPosterTypeItem)[], startIndex: number, endIndex: number) => {
@@ -130,7 +158,13 @@ const CategoryManage: React.FC = () => {
         const newData = reorder(typeList, source.index, destination.index);
         setTypeList(newData as IProductTypeItem[] | IPosterTypeItem[]);
         const sortTypeIdList = [...newData].reverse().map((item: any) => item.typeId || item.id);
-        const res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
+        let res: any;
+        // 视频类型
+        if (tabIndex === 3) {
+          res = await sortVideoType({ typeId: sortTypeIdList });
+        } else {
+          res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
+        }
         if (res) {
           message.success('排序成功');
         } else {
@@ -279,7 +313,7 @@ const CategoryManage: React.FC = () => {
 
   return (
     <div className={style.wrap}>
-      <Tabs tabs={tabs} showCurrentTabContent={getTypeList} tabIndex={tabIndex} setTabIndex={setTabIndex} />
+      <Tabs tabs={tabs} fetchList={getTypeList} tabIndex={tabIndex} setTabIndex={setTabIndex} />
       <div className={style.content}>
         <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
           {/* direction代表拖拽方向  默认垂直方向  水平方向:horizontal */}

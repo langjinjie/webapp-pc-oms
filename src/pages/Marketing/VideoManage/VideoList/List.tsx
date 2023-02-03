@@ -1,11 +1,17 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, PaginationProps } from 'antd';
+import { Button, message, PaginationProps } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { getVideoList, getVideoTypeList, operateVideoItem, setVideoScope, topVideoItem } from 'src/apis/marketing';
 import { NgFormSearch, NgTable } from 'src/components';
-import { searchCols, tableColumnsFun } from './Config';
+import { OperateType } from 'src/utils/interface';
+import { SetUserRight } from '../../Components/ModalSetUserRight/SetUserRight';
+import { searchColsFun, tableColumnsFun, VideoColumn } from './Config';
 
 const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
+  const [visible, setVisible] = useState(false);
+  const [currentItem, setCurrentItem] = useState<VideoColumn>();
+  const [typeList, setTypeList] = useState<any[]>([]);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -14,37 +20,32 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
-  const [dataSource] = useState([
-    {
-      key1: 'V00001',
-      key2: '《时间的托付》',
-      key3: 1,
-      key4: '诺稻科技',
-      key5: '贾璇',
-      key6: '2022-08-11 12:11:12',
-      desc: '抗疫MV，文化'
-    },
-    {
-      key1: 'V00002',
-      key2: '《送教上门》',
-      key3: 2,
-      key4: '诺稻科技',
-      key5: '贾璇',
-      key6: '2022-07-30 14:00:00',
-      desc: '国寿财深圳，管培生计划'
-    },
-    {
-      key1: 'V00003',
-      key2: '《要投就投中国人寿》',
-      key3: 1,
-      key4: '诺稻科技',
-      desc: '姚明，CBA',
-      key5: '贾璇',
-      key6: '2022-07-29 10:10:45'
+  const [dataSource, setDataSource] = useState([]);
+
+  const getCategoryList = async () => {
+    const res = await getVideoTypeList({});
+    if (res) {
+      const { typeList } = res;
+      setTypeList(typeList.map((item: any) => ({ id: item.typeId, name: item.typeName })));
     }
-  ]);
-  const onSearch = () => {
+  };
+  const getList = async (params?: any) => {
+    const pageNum = params.pageNum || pagination.current;
+    const pageSize = params.pageSize || pagination.pageSize;
+    const res = await getVideoList({
+      ...params,
+      pageNum,
+      pageSize
+    });
+    if (res) {
+      const { total, list } = res;
+      setDataSource(list);
+      setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
+    }
+  };
+  const onSearch = (values: any) => {
     console.log('search');
+    getList(values);
   };
   useEffect(() => {
     setPagination((pagination) => ({ ...pagination, total: 3 }));
@@ -53,13 +54,83 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
   const addVideo = () => {
     history.push('/marketingVideo/edit');
   };
+
+  const onPaginationChange = (pageNum: number, pageSize?: number) => {
+    getList({ pageNum, pageSize });
+  };
+
+  const onOperate = async (type: OperateType, record: VideoColumn, index?: number) => {
+    // 上架/下架/删除
+    if (type === 'putAway' || type === 'outline' || type === 'delete') {
+      const res = await operateVideoItem({
+        videoId: record.videoId,
+        type: type === 'putAway' ? 1 : type === 'outline' ? 2 : 3
+      });
+      if (res) {
+        // TODO
+      }
+      console.log(res);
+    } else if (type === 'top' || type === 'unTop') {
+      // 置顶、取消置顶
+      const res = await topVideoItem({
+        videoId: record.videoId,
+        type: type === 'top' ? 1 : 2
+      });
+      console.log(res);
+      if (res) {
+        getList({ pageNum: 1 });
+      }
+    } else if (type === 'edit') {
+      history.push('/marketingVideo/edit?videoId=' + record.videoId);
+    } else {
+      setCurrentItem(record);
+      setVisible(true);
+    }
+
+    console.log(type, record, index);
+  };
+
+  // 确认设置权限
+  const confirmSetRight = async (values: any) => {
+    setVisible(false);
+    const { isSet, groupId } = values;
+    // [adminId];
+    // groupId: 93201136316088326
+
+    const res = await setVideoScope({
+      videoId: currentItem?.videoId,
+      groupId: isSet ? groupId : null
+    });
+    if (res) {
+      message.success('设置成功');
+      getList({ pageNum: 1 });
+    }
+  };
+
+  useEffect(() => {
+    getCategoryList();
+  }, []);
+
   return (
     <div className="container">
       <Button className="mt10 mb20" type="primary" icon={<PlusOutlined />} shape="round" onClick={addVideo}>
         上传视频
       </Button>
-      <NgFormSearch firstRowChildCount={3} searchCols={searchCols} onSearch={onSearch} />
-      <NgTable columns={tableColumnsFun()} dataSource={dataSource} pagination={pagination} />
+      <NgFormSearch firstRowChildCount={3} searchCols={searchColsFun(typeList)} onSearch={onSearch} />
+      <NgTable
+        columns={tableColumnsFun(onOperate)}
+        dataSource={dataSource}
+        pagination={pagination}
+        paginationChange={onPaginationChange}
+      />
+
+      <SetUserRight
+        isBatch={false}
+        groupId={currentItem?.groupId}
+        visible={visible}
+        onOk={confirmSetRight}
+        onCancel={() => setVisible(false)}
+      />
     </div>
   );
 };

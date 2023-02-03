@@ -480,7 +480,7 @@ export const topVideoItem: HttpFunction = (param: object) => {
 };
 // 1.6、视频保存可见范围接口
 export const setVideoScope: HttpFunction = (param: object) => {
-  return http.post('/tenacity-admin/api/video/setscope', param);
+  return http.post('/tenacity-admin/api/video/batch/setscope', param);
 };
 // 1.7、查询视频分类列表
 export const getVideoTypeList: HttpFunction = (param: object) => {
@@ -498,6 +498,7 @@ export const sortVideoType: HttpFunction = (param: object) => {
 export const delVideoType: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/video/typedel', param);
 };
+// 1.11、视频上传接口
 export const uploadVideo: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/upload/video', param);
 };
