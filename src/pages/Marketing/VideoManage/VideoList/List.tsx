@@ -20,7 +20,7 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
-  const [dataSource, setDataSource] = useState([]);
+  const [dataSource, setDataSource] = useState<VideoColumn[]>([]);
 
   const getCategoryList = async () => {
     const res = await getVideoTypeList({});
@@ -30,8 +30,8 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const getList = async (params?: any) => {
-    const pageNum = params.pageNum || pagination.current;
-    const pageSize = params.pageSize || pagination.pageSize;
+    const pageNum = params?.pageNum || pagination.current;
+    const pageSize = params?.pageSize || pagination.pageSize;
     const res = await getVideoList({
       ...params,
       pageNum,
@@ -48,7 +48,7 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
     getList(values);
   };
   useEffect(() => {
-    setPagination((pagination) => ({ ...pagination, total: 3 }));
+    getList();
   }, []);
 
   const addVideo = () => {
@@ -67,9 +67,16 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
         type: type === 'putAway' ? 1 : type === 'outline' ? 2 : 3
       });
       if (res) {
-        // TODO
+        // TODO 更新当前列表的数据
+        message.success(type === 'putAway' ? '上架成功！' : type === 'outline' ? '下架成功！' : '删除成功');
+        const copyData = [...dataSource];
+        if (type === 'putAway' || type === 'outline') {
+          copyData[index as number].status = type === 'putAway' ? 2 : 3;
+        } else {
+          copyData.splice(index as number, 1);
+        }
+        setDataSource(copyData);
       }
-      console.log(res);
     } else if (type === 'top' || type === 'unTop') {
       // 置顶、取消置顶
       const res = await topVideoItem({
@@ -78,6 +85,7 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
       });
       console.log(res);
       if (res) {
+        message.success(type === 'top' ? '置顶成功！' : '取消置顶成功！');
         getList({ pageNum: 1 });
       }
     } else if (type === 'edit') {
@@ -119,6 +127,7 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
       <NgFormSearch firstRowChildCount={3} searchCols={searchColsFun(typeList)} onSearch={onSearch} />
       <NgTable
         columns={tableColumnsFun(onOperate)}
+        rowKey={'videoId'}
         dataSource={dataSource}
         pagination={pagination}
         paginationChange={onPaginationChange}

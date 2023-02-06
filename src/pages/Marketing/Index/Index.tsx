@@ -28,6 +28,7 @@ interface formDataProps {
   posterList: any[];
   productTypeList: any[];
   activityList: any[];
+  videoList: any[];
 }
 const MarketIndex: React.FC = () => {
   useDocumentTitle('移动端首页配置');
@@ -35,12 +36,14 @@ const MarketIndex: React.FC = () => {
   const [articleList, setArticleList] = useState<any[]>([]);
   const [productList, setProductList] = useState<any[]>([]);
   const [activityList, setActivityList] = useState<any[]>([]);
+  const [videoList, setVideoList] = useState<any[]>([]);
   const [fetching, setFetching] = useState(false);
   const [formData, setFormData] = useState<formDataProps>({
     newsList: [],
     posterList: [],
     productTypeList: [],
-    activityList: []
+    activityList: [],
+    videoList: []
   });
 
   const [form] = useForm();
@@ -64,7 +67,10 @@ const MarketIndex: React.FC = () => {
         .map((item: any) => ({ extId: item.marketId || item.posterId })),
       activitys: activityList
         .filter((activity: any) => activity.activityId || activity.marketId)
-        .map((item: any) => ({ extId: item.activityId || item.marketId }))
+        .map((item: any) => ({ extId: item.activityId || item.marketId })),
+      videos: videoList
+        .filter((video: any) => video.videoId || video.marketId)
+        .map((item: any) => ({ extId: item.videoId || item.marketId }))
     };
 
     const res: any = await saveIndexConfig(param);
@@ -79,8 +85,9 @@ const MarketIndex: React.FC = () => {
     const defaultArticleList = [{}, {}, {}];
     const defaultPosterList = [{}, {}, {}];
     const defaultActivityList = [{}, {}, {}];
+    const defaultVideoList = [{}, {}, {}];
     if (res) {
-      let { activityList, newsList, posterList, productTypeList } = res;
+      let { activityList, newsList, posterList, productTypeList, videoList } = res;
       if (newsList && newsList.length > 0) {
         newsList = await Promise.all(
           newsList.map(async (news: any) => {
@@ -136,6 +143,7 @@ const MarketIndex: React.FC = () => {
         posterList = defaultPosterList;
       }
 
+      // 活动列表
       if (activityList && activityList.length > 0) {
         activityList = await Promise.all(
           activityList.map(async (activity: any) => {
@@ -154,13 +162,35 @@ const MarketIndex: React.FC = () => {
       } else {
         activityList = defaultActivityList;
       }
+
+      // 视频列表
+
+      if (videoList && videoList.length > 0) {
+        videoList = await Promise.all(
+          videoList.map(async (video: any) => {
+            const res = await queryMarketArea({
+              itemId: video.activityId,
+              type: 1
+            });
+            video.otherData = res;
+            return video;
+          })
+        );
+        // 数组自动补全
+        setVideoList(() => videoList.filter((item: any) => item.videoId));
+        const spliceIndex: number = videoList.length;
+        videoList = videoList.concat(defaultVideoList.splice(spliceIndex, 3));
+      } else {
+        videoList = defaultVideoList;
+      }
       form.setFieldsValue({
         newsList,
         posterList,
         productTypeList,
-        activityList
+        activityList,
+        videoList
       });
-      setFormData({ newsList, posterList, productTypeList, activityList });
+      setFormData({ newsList, posterList, productTypeList, activityList, videoList });
     }
   };
 
@@ -288,6 +318,37 @@ const MarketIndex: React.FC = () => {
         }));
       }
     }
+    // 视频
+    if (marketType === 5) {
+      if (value) {
+        const res = await queryMarketArea({
+          itemId: value,
+          type: marketType
+        });
+        const selectedItem = videoList.filter((item) => item.marketId === value || item.videoId === value)[0];
+        selectedItem.videoId = selectedItem.videoId || selectedItem.marketId;
+        selectedItem.otherData = res;
+        const oldSelectedList = [...formData.videoList!];
+        oldSelectedList.splice(index, 1, selectedItem);
+        form.setFieldsValue({
+          videoList: oldSelectedList
+        });
+        setFormData((formData: any) => ({
+          ...formData,
+          videoList: oldSelectedList
+        }));
+      } else {
+        const oldSelectedList = [...formData.videoList!];
+        oldSelectedList.splice(index, 1, {});
+        form.setFieldsValue({
+          videoList: oldSelectedList
+        });
+        setFormData((formData: any) => ({
+          ...formData,
+          videoList: oldSelectedList
+        }));
+      }
+    }
   };
 
   const onRecommendSearch = async (value: string, marketType: number) => {
@@ -345,6 +406,18 @@ const MarketIndex: React.FC = () => {
         return newArr;
       }, []);
       setPosterList(arr);
+    } else {
+      const resList = [...formData.videoList?.filter((item: any) => item.posterId), ...res];
+      const obj: any = {};
+      const arr = resList.reduce((newArr: RecommendMarketProps[], next) => {
+        if (obj[next.marketId || next.posterId]) {
+          console.log(obj);
+        } else {
+          obj[next.marketId || next.posterId] = true && newArr.push(next);
+        }
+        return newArr;
+      }, []);
+      setVideoList(arr);
     }
     setFetching(false);
   };
@@ -638,6 +711,80 @@ const MarketIndex: React.FC = () => {
                                   }
                                 >
                                   {option.activityName || option.title}
+                                </Select.Option>
+                              );
+                            })}
+                          </Select>
+                        </Item>
+                        <Form.Item name={[name, 'otherData']} className={style.otherData}>
+                          <AreaTips />
+                        </Form.Item>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+            </Form.List>
+          </Panel>
+
+          <Panel key="video" header="精选视频">
+            <Form.List name={'videoList'} key="videoList">
+              {(fields) => (
+                <>
+                  {fields?.map(({ name, ...restFiled }, index) => {
+                    return (
+                      <div key={'video' + index} className={style.formListWrap}>
+                        <Item
+                          style={{
+                            width: '400px'
+                          }}
+                          label={`视频${index + 1} `}
+                          {...restFiled}
+                          name={[name, 'videoId']}
+                          rules={[
+                            { message: '请选择' },
+                            ({ getFieldValue }) => ({
+                              validator (_, value) {
+                                const itemValue = getFieldValue('videoList')[index];
+                                if (!value || itemValue.status !== 3) {
+                                  return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('相关内容存在已下架/删除，请检查'));
+                              }
+                            })
+                          ]}
+                        >
+                          <Select
+                            placeholder="搜索对应素材标题在下拉框进行选择"
+                            allowClear
+                            showSearch={true}
+                            defaultActiveFirstOption={false}
+                            showArrow={false}
+                            filterOption={false}
+                            notFoundContent={
+                              fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>
+                            }
+                            onChange={(value) => onRecommendSelected(value, index, 5)}
+                            onDropdownVisibleChange={() => {
+                              if (activityList.length < 5) {
+                                debounceFetcher({ value: '', marketType: 4 });
+                              }
+                            }}
+                            onSearch={(value) => debounceFetcher({ value: value, marketType: 4 })}
+                          >
+                            {videoList.map((option) => {
+                              return (
+                                <Select.Option
+                                  key={option.videoId || option.marketId}
+                                  value={option.videoId || option.marketId}
+                                  disabled={
+                                    formData?.videoList?.filter(
+                                      (item: any) =>
+                                        (item?.marketId || item.videoId) === (option.marketId || option.videoId)
+                                    ).length > 0
+                                  }
+                                >
+                                  {option.videoName || option.title}
                                 </Select.Option>
                               );
                             })}

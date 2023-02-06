@@ -63,7 +63,7 @@ const CategoryManage: React.FC = () => {
   // 获取视频分类列表
   const getVideoTypes = async () => {
     const res = await getVideoTypeList({});
-    res && setTypeList(res.typeList.map((item: any) => ({ id: item.typeList, name: item.typeId })));
+    res && setTypeList(res.typeList.map((item: any) => ({ id: item.typeId, name: item.typeName })));
   };
 
   // 获取分类列表
@@ -77,13 +77,15 @@ const CategoryManage: React.FC = () => {
   // 新增/修改视频分类
   const saveVideoType = async (values: any) => {
     console.log(values);
-    const res = await addVideoType({ typeId: '', typeName: values.name });
+    const res = await addVideoType({ typeId: values.id, typeName: values.name });
     return res;
   };
 
   // 删除视频分类
   const deleteVideoType = async (values: any) => {
-    return await delVideoType({ typeId: values.typeId });
+    console.log(values);
+
+    return await delVideoType({ typeId: values.id });
   };
   // 添加/修改分类名称
   const modifyTypeName: HttpFC[] = [requestSaveProducType, requestSaveNewType, requestSavePosterType, saveVideoType];
@@ -194,7 +196,10 @@ const CategoryManage: React.FC = () => {
 
   // 删除的二确confirm
   const onConfirmHandle = async (item: IProductTypeItem | IPosterTypeItem) => {
-    const param = tabIndex === 2 ? { id: (item as IPosterTypeItem).id } : { typeId: (item as IProductTypeItem).typeId };
+    const param =
+      tabIndex === 2 || tabIndex === 3
+        ? { id: (item as IPosterTypeItem).id }
+        : { typeId: (item as IProductTypeItem).typeId };
     const res = await deleteTypeName[tabIndex](param);
     if (res) {
       setPopconfirmVisible('');

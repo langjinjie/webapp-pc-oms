@@ -1,14 +1,15 @@
-import { Button } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { UNKNOWN } from 'src/utils/base';
 import { OperateType } from 'src/utils/interface';
 
 const statusOptions = [
   { id: 1, name: '未上架' },
   { id: 2, name: '已上架' },
-  { id: 2, name: '已下架' }
+  { id: 3, name: '已下架' }
 ];
 export const searchColsFun = (options: any[]): SearchCol[] => [
   {
@@ -54,7 +55,8 @@ export const tableColumnsFun = (
     {
       key: 'videoId',
       dataIndex: 'videoId',
-      title: '视频ID'
+      title: '视频ID',
+      width: 200
     },
     {
       key: 'videoName',
@@ -71,22 +73,26 @@ export const tableColumnsFun = (
     {
       key: 'onlineTime',
       dataIndex: 'onlineTime',
-      title: '上架机构'
+      title: '上架时间',
+      width: 160
     },
     {
       key: 'createTime',
       dataIndex: 'createTime',
-      title: '创建时间'
+      title: '创建时间',
+      width: 160
     },
     {
       key: 'createBy',
       dataIndex: 'createBy',
-      title: '创建人'
+      title: '创建人',
+      render: (createBy) => createBy || UNKNOWN
     },
     {
       key: 'status',
       dataIndex: 'status',
       title: '上架状态',
+      width: 95,
       render: (status) => {
         return (
           <div>
@@ -107,36 +113,42 @@ export const tableColumnsFun = (
     {
       key: 'operate',
       title: '操作',
-      render: (operate, record) => {
+      fixed: 'right',
+      width: 320,
+      render: (operate, record, index) => {
         return (
           <div>
-            <Button type="link" onClick={() => onOperate('top', record)}>
-              置顶
-            </Button>
-            <Button type="link" onClick={() => onOperate('unTop', record)}>
-              取消置顶
-            </Button>
-            <Button type="link" onClick={() => onOperate('edit', record)}>
-              编辑
-            </Button>
-            {record.key3 === 1
+            {record.isTop
               ? (
-              <Button type="link" onClick={() => onOperate('outline', record)}>
-                下架
+              <Button type="link" onClick={() => onOperate('unTop', record)}>
+                取消置顶
               </Button>
                 )
               : (
-              <Button type="link" onClick={() => onOperate('putAway', record)}>
-                上架
+              <Button type="link" onClick={() => onOperate('top', record)}>
+                置顶
               </Button>
                 )}
-            <Button type="link" onClick={() => onOperate('delete', record)}>
-              删除
+            <Button type="link" onClick={() => onOperate('edit', record)}>
+              编辑
             </Button>
-
-            <Button type="link" onClick={() => onOperate('other', record)}>
-              配置可见范围
-            </Button>
+            {record.status === 2
+              ? (
+              <Popconfirm title="确定上架？" onConfirm={() => onOperate('outline', record, index)}>
+                <Button type="link">下架</Button>
+              </Popconfirm>
+                )
+              : (
+              <Popconfirm title="确定上架？" onConfirm={() => onOperate('putAway', record, index)}>
+                <Button type="link">上架</Button>
+              </Popconfirm>
+                )}
+            <Popconfirm title="确定要删除当前视频?" onConfirm={() => onOperate('delete', record, index)}>
+              <Button type="link">删除</Button>
+            </Popconfirm>
+            <Popconfirm title="确定要配置可见范围?" onConfirm={() => onOperate('other', record)}>
+              <Button type="link">配置可见范围</Button>
+            </Popconfirm>
           </div>
         );
       }
