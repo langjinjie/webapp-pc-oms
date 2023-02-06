@@ -2,6 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import classNames from 'classnames';
+import style from './style.module.less';
 
 export interface IChannelItem {
   groupId: string; // 是 标签组id
@@ -14,6 +15,11 @@ export interface IChannelTagList {
   tagId: string; // 是 标签id
   tagName: string; // 是 标签名称
 }
+
+export const statusList = [
+  { id: 1, name: '启用' },
+  { id: 2, name: '停用' }
+];
 
 export const SearchCols: SearchCol[] = [
   {
@@ -41,24 +47,38 @@ export const TableColumns: () => ColumnsType<any> = () => {
     {
       title: '状态',
       dataIndex: 'status',
-      render (status: string) {
+      render (status: number) {
+        return (
+          <span>
+            <i className={classNames('status-point', { 'status-point-gray': status === 2 })} />
+            {statusList.find((statusItem) => statusItem.id === status)?.name}
+          </span>
+        );
+      }
+    },
+    {
+      title: '标签值',
+      dataIndex: 'tagList',
+      render (tagList: IChannelTagList[]) {
         return (
           <>
-            <i className={classNames('status-point', { 'status-point-gray': status === '2' })} />
+            {tagList
+              .map((tagItem) => tagItem.tagName)
+              .toString()
+              .replace(/,/g, '，')}
           </>
         );
       }
     },
-    { title: '标签值', dataIndex: '' },
     {
       title: '操作',
       dataIndex: '',
       render () {
         return (
           <>
-            <span className={classNames('text-primary pointer')}>编辑</span>
-            <span className={classNames('text-primary pointer')}>停用</span>
-            <span className={classNames('text-primary pointer')}>删除</span>
+            <span className={classNames(style.edit, 'text-primary pointer mr6')}>编辑</span>
+            <span className={classNames(style.stop, 'text-primary pointer mr6')}>停用</span>
+            <span className={classNames(style.del, 'text-primary pointer')}>删除</span>
           </>
         );
       }

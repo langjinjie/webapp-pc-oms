@@ -44,7 +44,12 @@ const ChannelTag: React.FC = () => {
         <Button className={style.addBtn} type="primary" icon={<PlusOutlined />} onClick={addTagHandle}>
           新增渠道标签
         </Button>
-        <NgTable className={style.table} dataSource={list} columns={TableColumns()} />
+        <NgTable
+          setRowKey={(record: IChannelItem) => record.groupId}
+          className={style.table}
+          dataSource={list}
+          columns={TableColumns()}
+        />
         <div className={style.batch}>
           <Button className={style.batchStop}>批量停用</Button>
           <Button className={style.batchDel}>批量删除</Button>
