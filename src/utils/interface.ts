@@ -491,3 +491,10 @@ export interface ITooltip {
   show: boolean;
   formatter: string;
 }
+
+export interface IPagination {
+  current: number;
+  pageSize: number;
+  total: number;
+  showTotal?: (total: any) => string;
+}

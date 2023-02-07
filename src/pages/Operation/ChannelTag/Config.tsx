@@ -41,7 +41,10 @@ export const SearchCols: SearchCol[] = [
   }
 ];
 
-export const TableColumns: () => ColumnsType<any> = () => {
+export const TableColumns: (
+  editHandle: (row: IChannelItem) => void,
+  manageChannelGroupHandle: (value: IChannelItem, type: number) => Promise<any>
+) => ColumnsType<any> = (editHandle, manageChannelGroupHandle) => {
   return [
     { title: '标签组', dataIndex: 'groupName' },
     {
@@ -72,13 +75,28 @@ export const TableColumns: () => ColumnsType<any> = () => {
     },
     {
       title: '操作',
-      dataIndex: '',
-      render () {
+      render (value: IChannelItem) {
         return (
           <>
-            <span className={classNames(style.edit, 'text-primary pointer mr6')}>编辑</span>
-            <span className={classNames(style.stop, 'text-primary pointer mr6')}>停用</span>
-            <span className={classNames(style.del, 'text-primary pointer')}>删除</span>
+            <span className={classNames(style.edit, 'text-primary pointer mr6')} onClick={() => editHandle(value)}>
+              编辑
+            </span>
+            <span
+              className={classNames(
+                style.stop,
+                { disabled: value.canDel === 2 || value.status === 2 },
+                'text-primary pointer mr6'
+              )}
+              onClick={() => manageChannelGroupHandle(value, 1)}
+            >
+              停用
+            </span>
+            <span
+              className={classNames(style.del, { disabled: value.canDel === 2 }, 'text-primary pointer')}
+              onClick={() => manageChannelGroupHandle(value, 2)}
+            >
+              删除
+            </span>
           </>
         );
       }
