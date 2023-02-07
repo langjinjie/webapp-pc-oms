@@ -81,8 +81,8 @@ const ChannelTag: React.FC = () => {
 
   // 停用/删除
   const manageChannelGroupHandle = async (value: IChannelItem, type: number) => {
-    if (value.canDel === 2 || value.status === 2) {
-      return Modal.warning({ title: '操作提醒', content: `该数据无法${type === 1 ? '停用' : '删除'}` });
+    if (value.canDel === 2 || (type === 1 && value.status === 2)) {
+      return Modal.warning({ title: '操作提醒', centered: true, content: `该数据无法${type === 1 ? '停用' : '删除'}` });
     }
     Modal.confirm({
       title: '操作提示',
@@ -103,7 +103,7 @@ const ChannelTag: React.FC = () => {
     const batchIsUse = selectedRowKeys.map((key) => requestEditChannelGroupIsUse({ groupId: key }));
     const res = await Promise.all(batchIsUse);
     if (res.some((item) => item.isUsed === 1)) {
-      Modal.warn({ title: '操作提醒', content: `该数据无法${type === 1 ? '停用' : '删除'}` });
+      Modal.warn({ title: '操作提醒', centered: true, content: `该数据无法${type === 1 ? '停用' : '删除'}` });
     } else {
       Modal.confirm({
         title: '操作提示',
