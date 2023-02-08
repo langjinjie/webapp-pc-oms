@@ -28,7 +28,7 @@ const AddTagModal: React.FC<IAddTagModalProps> = ({ visible, value, onCancel, on
   };
   // 删除标签值
   const removeTagHandle = async (remove: (index: number | number[]) => void, index: number) => {
-    if (form.getFieldValue('tagList')[index].canDel === 2) {
+    if (form.getFieldValue('tagList')[index]?.canDel === 2) {
       Modal.warn({ title: '操作提醒', content: '该数据无法删除' });
     } else {
       remove(index);

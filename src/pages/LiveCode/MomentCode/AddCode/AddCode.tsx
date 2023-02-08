@@ -1,22 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Select } from 'antd';
+import { Button, Form, Input, Radio } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
-import { BreadCrumbs, Icon, ImageUpload, NgTable } from 'src/components';
-import classNames from 'classnames';
+import { BreadCrumbs, /* Icon, */ ImageUpload, NgTable } from 'src/components';
+import { requestGetChannelGroupList } from 'src/apis/channelTag';
+import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import Preview from '../Preview/Preview';
+import FilterChannelTag from 'src/pages/LiveCode/MomentCode/FilterChannelTag/FilterChannelTag';
+import classNames from 'classnames';
 import style from './style.module.less';
 
 const AddCode: React.FC = () => {
   const [readOnly, setReadOnly] = useState(false);
+  const [channelTagList, setChannelTagList] = useState<IChannelTagList[]>([]);
   const [form] = Form.useForm();
   const { Item } = Form;
   const { TextArea } = Input;
   const history = useHistory();
   const location = useLocation();
 
+  // 获取投放渠道标签
+  const getChannelGroupList = async () => {
+    const res = await requestGetChannelGroupList({ groupName: '投放渠道' });
+    if (res) {
+      console.log('res', res.list?.[0]?.tagList);
+      setChannelTagList(res.list?.[0]?.tagList || []);
+    }
+  };
+
+  // 提交表单
+  const onFinishHandle = (values: any) => {
+    console.log('values', values);
+  };
+
   useEffect(() => {
     setReadOnly(false);
+    getChannelGroupList();
   }, []);
   return (
     <div className={style.wrap}>
@@ -32,7 +51,7 @@ const AddCode: React.FC = () => {
       <Form
         form={form}
         className={style.form}
-        onFinish={() => history.push('/staffCode')}
+        onFinish={onFinishHandle}
         // @ts-ignore
         initialValues={location.state?.row || {}}
       >
@@ -115,13 +134,20 @@ const AddCode: React.FC = () => {
               ]}
             />
             <Item label="投放渠道" required>
-              <Item noStyle>
-                <Select className={style.select} placeholder="默认渠道" />
-              </Item>
-              <span className={style.chooseStaff}>
-                <Icon className={style.addIcon} name="tianjiabiaoqian1" />
-                添加渠道
-              </span>
+              <div className={style.channelTag}>
+                <Item name="channelTagList" label="投放渠道标签">
+                  <Radio.Group>
+                    {channelTagList.map((tagItem) => (
+                      <Radio key={tagItem.tagId} value={[{ tagId: tagItem.tagId, tagName: tagItem.tagName }]}>
+                        {tagItem.tagName}
+                      </Radio>
+                    ))}
+                  </Radio.Group>
+                </Item>
+                <Item label="其他渠道标签" name="otherTagList">
+                  <FilterChannelTag />
+                </Item>
+              </div>
             </Item>
             <Item label="活码备注">
               <TextArea className={style.textArea} placeholder="选填，如不填则默认抓取选定任务推荐话术" />
