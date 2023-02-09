@@ -438,7 +438,7 @@ export type NodeType = {
   typeName: string;
 };
 
-export type OperateType = 'add' | 'putAway' | 'delete' | 'view' | 'outline' | 'edit' | 'other';
+export type OperateType = 'add' | 'putAway' | 'delete' | 'view' | 'outline' | 'edit' | 'other' | 'top' | 'unTop';
 
 export type NodeCodeType = 'node_tag' | 'node_date' | 'node_quota' | 'node_calendar';
 

@@ -6,14 +6,14 @@ interface ITabsProps {
   tabs: any[];
   tabIndex: number;
   setTabIndex: (param: number) => void;
-  showCurrentTabContent?: (() => Promise<void>)[];
+  fetchList?: (() => Promise<void>)[];
 }
 
-const Tabs: React.FC<ITabsProps> = ({ tabs, tabIndex, setTabIndex, showCurrentTabContent }) => {
+const Tabs: React.FC<ITabsProps> = ({ tabs, tabIndex, setTabIndex, fetchList }) => {
   const clickTabHandle = (index: number) => {
     return () => {
       setTabIndex(index);
-      showCurrentTabContent && showCurrentTabContent[index]();
+      fetchList && fetchList[index]?.();
     };
   };
   return (
