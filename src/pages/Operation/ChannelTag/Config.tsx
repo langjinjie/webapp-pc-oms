@@ -31,7 +31,7 @@ export const SearchCols: SearchCol[] = [
   },
   {
     name: 'status',
-    label: '',
+    label: '标签组状态',
     type: 'select',
     placeholder: '请选择',
     width: 84,

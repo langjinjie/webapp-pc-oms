@@ -3,9 +3,10 @@ import { Button, DatePicker, Form, Input, Row, Select } from 'antd';
 import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 import { NgTable } from 'src/components';
 import { tableColumnsFun } from './Config';
-import style from './style.module.less';
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
+import { requestGetGroupLiveCodeList } from 'src/apis/liveCode';
+import style from './style.module.less';
 
 const MomentCode: React.FC = () => {
   const [list, setList] = useState<any[]>([]);
@@ -16,76 +17,12 @@ const MomentCode: React.FC = () => {
 
   const history = useHistory();
 
-  const getList = () => {
-    const list = [
-      {
-        codeId: 'HM0000001',
-        codeName: '超白金客户群1',
-        userStaff: '多人',
-        channel: '企业微信',
-        codeStatus: '正常',
-        createrBy: '经理小王',
-        createTime: '2022-12-22 15:42:21',
-        updateTime: '2022-12-22 15:42:21',
-        QRcodeState: { total: 1, soonLimit: 0, timeLimit: 0 }
-      },
-      {
-        codeId: 'HM0000002',
-        codeName: '超白金客户群2',
-        userStaff: '张三斯',
-        channel: '公众号',
-        codeStatus: '正常',
-        createrBy: '经理小王',
-        createTime: '2022-12-22 18:42:21',
-        updateTime: '2022-12-22 18:42:21',
-        QRcodeState: { total: 1, soonLimit: 0, timeLimit: 0 }
-      },
-      {
-        codeId: 'HM0000003',
-        codeName: '财保群',
-        userStaff: '张三斯',
-        channel: '企业微信',
-        codeStatus: '正常',
-        createrBy: '经理小王',
-        createTime: '2022-12-21 12:42:21',
-        updateTime: '2022-12-21 12:42:21',
-        QRcodeState: { total: 1, soonLimit: 0, timeLimit: 0 }
-      },
-      {
-        codeId: 'HM0000004',
-        codeName: '客户服务节群1',
-        userStaff: '张三斯',
-        channel: '企业微信',
-        codeStatus: '已作废',
-        createrBy: '经理小王',
-        createTime: '2022-05-01 15:42:21',
-        updateTime: '2022-05-01 15:42:21',
-        QRcodeState: { total: 1, soonLimit: 0, timeLimit: 0 }
-      },
-      {
-        codeId: 'HM0000004',
-        codeName: '客户服务节群2',
-        userStaff: '张三斯',
-        channel: '企业微信',
-        codeStatus: '已作废',
-        createrBy: '经理小王',
-        createTime: '2022-06-23 16:44:45',
-        updateTime: '2022-06-23 16:44:45',
-        QRcodeState: { total: 1, soonLimit: 0, timeLimit: 0 }
-      },
-      {
-        codeId: 'HM0000004',
-        codeName: '客户服务节群3',
-        userStaff: '张三斯',
-        channel: '企业微信',
-        codeStatus: '已作废',
-        createrBy: '经理小王',
-        createTime: '2022-06-30 18:32:34',
-        updateTime: '2022-06-30 18:32:34',
-        QRcodeState: { total: 1, soonLimit: 0, timeLimit: 0 }
-      }
-    ];
-    setList(list);
+  const getList = async () => {
+    const res = await requestGetGroupLiveCodeList({});
+    console.log('res', res);
+    if (res) {
+      setList(res.list);
+    }
   };
 
   const onSelectChange = (selectedRowKeys: Key[]) => {

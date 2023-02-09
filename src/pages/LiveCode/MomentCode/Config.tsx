@@ -11,6 +11,18 @@ export const clueStatusList: any = {
   2: '自动分配'
 };
 
+export interface IGroupChatLiveCode {
+  liveId: string; // 是 群活码ID
+  name: string; // 是 群活码名称
+  channel?: string; // 否 投放渠道
+  codeNum: number; // 是 二维码总量
+  expiringNum: number; // 是二维码即将过期数量
+  expiredNum: number; // 是 二维码已过期数量
+  createBy: string; // 是 创建人
+  dateCreated: string; // 是 创建时间
+  lastUpdated: string; // 是 更新时间
+}
+
 export const tableColumnsFun: () => ColumnsType<any> = () => {
   const history = useHistory();
   return [
