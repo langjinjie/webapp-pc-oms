@@ -54,7 +54,7 @@ const MarketIndex: React.FC = () => {
   };
 
   const onSubmit = async (values: any) => {
-    const { newsList, productTypeList, posterList, activityList } = values;
+    const { newsList, productTypeList, posterList, activityList, videoList } = values;
     const param: any = {
       products: productTypeList
         .filter((product: any) => product.marketId || product.productId)
