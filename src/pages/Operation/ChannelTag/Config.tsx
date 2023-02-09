@@ -14,6 +14,7 @@ export interface IChannelItem {
 export interface IChannelTagList {
   tagId: string; // 是 标签id
   tagName: string; // 是 标签名称
+  canDel: number; // 是 是否可以删除，1-允许，2-不允许
 }
 
 export const statusList = [

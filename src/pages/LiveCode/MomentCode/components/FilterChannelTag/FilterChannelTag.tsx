@@ -12,11 +12,21 @@ interface IFilterChannelTagProps {
 
 const FilterChannelTag: React.FC<IFilterChannelTagProps> = ({ value, onChange }) => {
   const [tagModalVisible, setTagModalVisible] = useState(false);
+  // 删除标签
+  const tagOnCloseHandle = (tagItem: IChannelTagList) => {
+    onChange?.(value?.filter((filterItem) => filterItem.tagId !== tagItem.tagId));
+  };
   return (
     <div className={style.wrap}>
       <div className={style.valueList}>
         {value?.map((tagItem) => (
-          <Tag key={tagItem.tagId} closable>
+          <Tag
+            key={tagItem.tagId}
+            color="blue"
+            className={style.tag}
+            closable
+            onClose={() => tagOnCloseHandle(tagItem)}
+          >
             {tagItem.tagName}
           </Tag>
         ))}

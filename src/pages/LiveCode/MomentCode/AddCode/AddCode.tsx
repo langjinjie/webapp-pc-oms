@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Radio } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
-import { BreadCrumbs, /* Icon, */ ImageUpload, NgTable } from 'src/components';
+import { BreadCrumbs, ImageUpload } from 'src/components';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
-import Preview from '../Preview/Preview';
-import FilterChannelTag from 'src/pages/LiveCode/MomentCode/FilterChannelTag/FilterChannelTag';
+import Preview from '../components/Preview/Preview';
+import FilterChannelTag from 'src/pages/LiveCode/MomentCode/components/FilterChannelTag/FilterChannelTag';
+import AccessChatModal from 'src/pages/LiveCode/MomentCode/components/AccessChatModal/AccessChatModal';
 import classNames from 'classnames';
 import style from './style.module.less';
 
 const AddCode: React.FC = () => {
   const [readOnly, setReadOnly] = useState(false);
   const [channelTagList, setChannelTagList] = useState<IChannelTagList[]>([]);
+
   const [form] = Form.useForm();
   const { Item } = Form;
   const { TextArea } = Input;
+
   const history = useHistory();
   const location = useLocation();
 
@@ -102,37 +104,9 @@ const AddCode: React.FC = () => {
         <div className={style.panel}>
           <div className={style.title}>群二维码管理</div>
           <div className={classNames(style.content, style.previewContent)}>
-            <Button className={style.addMoment} icon={<PlusOutlined />}>
-              接入群聊
-            </Button>
-            <div className={style.tips}>入群人数超过200人将自动切换到下一个群</div>
-            <NgTable
-              className={style.table}
-              scroll={{ x: 550 }}
-              dataSource={[
-                {
-                  momentName: '群号码1',
-                  timeEnd: '2022-05-01'
-                }
-              ]}
-              columns={[
-                {
-                  title: '群二维码',
-                  render () {
-                    // return <img width={48} height={48} src={require('src/assets/images/SaleClue/momentId.jpg')} />;
-                    return <img width={48} height={48} src={''} />;
-                  }
-                },
-                { title: '群活码名称', dataIndex: 'momentName' },
-                { title: '群二维码有效期', dataIndex: 'timeEnd' },
-                {
-                  title: '操作',
-                  render () {
-                    return <span style={{ color: '#318cf5' }}>编辑</span>;
-                  }
-                }
-              ]}
-            />
+            <Item>
+              <AccessChatModal />
+            </Item>
             <Item label="投放渠道" required>
               <div className={style.channelTag}>
                 <Item name="channelTagList" label="投放渠道标签">

@@ -90,9 +90,7 @@ const AddTask: React.FC = () => {
       }
     }
   };
-  const onRemoveHandle = () => {
-    form.setFieldsValue({ ...form.getFieldsValue(), thumbnail: '' });
-  };
+
   // 获取任务详情
   const getTaskDetail = async (taskId: string) => {
     const res = await requestGetTaskDetail({ taskId });
@@ -219,7 +217,7 @@ const AddTask: React.FC = () => {
             label="缩略图："
             rules={[{ required: true, message: '请上传图片' }]}
           >
-            <ImageUpload onRemove={onRemoveHandle} disabled={isReadOnly} />
+            <ImageUpload disabled={isReadOnly} />
           </Item>
           <Item
             name="title"

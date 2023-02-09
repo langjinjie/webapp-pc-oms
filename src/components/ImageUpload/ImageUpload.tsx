@@ -20,7 +20,7 @@ interface ImageUploadProps {
   beforeUpload?: (file: any) => void;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, onRemove, beforeUpload }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, beforeUpload }) => {
   const [loading, setLoading] = useState(false);
 
   const beforeUploadHandle = (file: any) => {
@@ -78,7 +78,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, on
   const onRemoveHandle = (e: React.MouseEvent) => {
     if (disabled) return;
     e.stopPropagation();
-    onRemove?.();
+    onChange?.('');
   };
   const uploadImg = (
     <div className={style.imgWrap}>
