@@ -29,7 +29,8 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
       return form.setFieldsValue({
         groupType: 1,
         group1: undefined,
-        group2: undefined
+        group2: undefined,
+        isSet: 0
       });
     }
     const res = await getUserGroup({ groupId: value });

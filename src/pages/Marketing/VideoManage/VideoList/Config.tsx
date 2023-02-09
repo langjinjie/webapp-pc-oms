@@ -134,7 +134,7 @@ export const tableColumnsFun = (
             </Button>
             {record.status === 2
               ? (
-              <Popconfirm title="确定上架？" onConfirm={() => onOperate('outline', record, index)}>
+              <Popconfirm title="确定下架？" onConfirm={() => onOperate('outline', record, index)}>
                 <Button type="link">下架</Button>
               </Popconfirm>
                 )

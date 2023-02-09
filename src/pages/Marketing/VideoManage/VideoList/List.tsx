@@ -1,5 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, PaginationProps } from 'antd';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getVideoList, getVideoTypeList, operateVideoItem, setVideoScope, topVideoItem } from 'src/apis/marketing';
@@ -72,6 +73,9 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
         const copyData = [...dataSource];
         if (type === 'putAway' || type === 'outline') {
           copyData[index as number].status = type === 'putAway' ? 2 : 3;
+          if (type === 'putAway') {
+            copyData[index as number].onlineTime = moment().format('YYYY-MM-DD HH:MM');
+          }
         } else {
           copyData.splice(index as number, 1);
         }
