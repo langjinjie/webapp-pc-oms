@@ -104,6 +104,8 @@ const CategoryManage: React.FC = () => {
     const [removed] = result.splice(startIndex, 1);
     // 将原来的元素添加进数组
     result.splice(endIndex, 0, removed);
+    console.log(result);
+
     return result;
   };
 
@@ -163,7 +165,7 @@ const CategoryManage: React.FC = () => {
         let res: any;
         // 视频类型
         if (tabIndex === 3) {
-          res = await sortVideoType({ typeId: sortTypeIdList });
+          res = await sortVideoType({ typeId: [...newData].map((item: any) => item.typeId || item.id) });
         } else {
           res = await requestSaveSortMarket({ type: tabIndex + 1, typeId: sortTypeIdList });
         }
