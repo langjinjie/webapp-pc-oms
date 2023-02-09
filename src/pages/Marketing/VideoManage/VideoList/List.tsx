@@ -73,13 +73,14 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
         const copyData = [...dataSource];
         if (type === 'putAway' || type === 'outline') {
           copyData[index as number].status = type === 'putAway' ? 2 : 3;
-          if (type === 'putAway') {
-            copyData[index as number].onlineTime = moment().format('YYYY-MM-DD HH:MM');
-          }
         } else {
           copyData.splice(index as number, 1);
         }
-        setDataSource(copyData);
+        if (type === 'putAway') {
+          copyData[index as number].onlineTime = moment().format('YYYY-MM-DD HH:mm');
+        }
+
+        setDataSource(() => [...copyData]);
       }
     } else if (type === 'top' || type === 'unTop') {
       // 置顶、取消置顶
@@ -87,7 +88,6 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
         videoId: record.videoId,
         type: type === 'top' ? 1 : 2
       });
-      console.log(res);
       if (res) {
         message.success(type === 'top' ? '置顶成功！' : '取消置顶成功！');
         getList({ pageNum: 1 });
@@ -98,8 +98,6 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
       setCurrentItem(record);
       setVisible(true);
     }
-
-    console.log(type, record, index);
   };
 
   // 确认设置权限

@@ -74,6 +74,7 @@ export const tableColumnsFun = (
       key: 'onlineTime',
       dataIndex: 'onlineTime',
       title: '上架时间',
+      render: (onlineTime) => onlineTime || UNKNOWN,
       width: 160
     },
     {
@@ -146,9 +147,10 @@ export const tableColumnsFun = (
             <Popconfirm title="确定要删除当前视频?" onConfirm={() => onOperate('delete', record, index)}>
               <Button type="link">删除</Button>
             </Popconfirm>
-            <Popconfirm title="确定要配置可见范围?" onConfirm={() => onOperate('other', record)}>
-              <Button type="link">配置可见范围</Button>
-            </Popconfirm>
+
+            <Button type="link" onClick={() => onOperate('other', record)}>
+              配置可见范围
+            </Button>
           </div>
         );
       }

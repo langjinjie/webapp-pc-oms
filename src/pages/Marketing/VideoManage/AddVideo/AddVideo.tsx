@@ -6,6 +6,7 @@ import { BreadCrumbs, UploadFile } from 'src/components';
 import { URLSearchParams } from 'src/utils/base';
 import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
 import NgUpload from '../../Components/Upload/Upload';
+import { WechatShare } from '../../Components/WechatShare/WechatShare';
 import { VideoColumn } from '../VideoList/Config';
 
 const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
@@ -58,7 +59,12 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
     <div className="container">
       <BreadCrumbs navList={[{ name: '视频库', path: '/marketingVideo' }, { name: '新增视频' }]} />
 
-      <Form form={addForm} className="mt20 edit" onFinish={onFinish}>
+      <Form
+        form={addForm}
+        className="mt20 edit"
+        onFinish={onFinish}
+        onValuesChange={(changeValues, values) => setVideo(values)}
+      >
         <div className="sectionTitle">基本信息</div>
         <Form.Item
           label="视频标题"
@@ -99,7 +105,14 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
         <Form.Item label="视频时长" name="videoTime" rules={[{ required: true }]}>
           <Input className="width240" placeholder="请输入时长，格式如08:58"></Input>
         </Form.Item>
-        <Form.Item label="分享预览">{/* <Input className="width280" placeholder="请输入"></Input> */}</Form.Item>
+        <Form.Item label="分享预览">
+          <WechatShare
+            avatar={''}
+            title={video?.videoName}
+            desc={video?.summary}
+            shareCoverImgUrl={video?.videoCoverUrl}
+          />
+        </Form.Item>
         <Form.Item
           label="营销话术"
           name={'speechcraft'}
