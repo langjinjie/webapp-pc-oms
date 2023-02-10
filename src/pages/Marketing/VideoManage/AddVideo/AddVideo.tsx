@@ -1,8 +1,8 @@
 import { Button, Form, Input, message, Select, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { editVideo, getVideoDetail, getVideoTypeList, topVideoItem } from 'src/apis/marketing';
-import { BreadCrumbs, UploadFile } from 'src/components';
+import { editVideo, getVideoDetail, getVideoTypeList } from 'src/apis/marketing';
+import { BreadCrumbs, UploadVideo } from 'src/components';
 import { URLSearchParams } from 'src/utils/base';
 import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
 import NgUpload from '../../Components/Upload/Upload';
@@ -55,6 +55,18 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
     }
     console.log(res, isSet, group1);
   };
+
+  const beforeUpload = (file: any) => {
+    const isMp4 = file.type === 'video/mp4';
+    if (!isMp4) {
+      message.error('你只可以上传 MP4 格式视频!');
+    }
+    const isLt100M = file.size / 1024 / 1024 < 100;
+    if (!isLt100M) {
+      message.error('视频大小不能超过 100MB!');
+    }
+    return isMp4 && isLt100M;
+  };
   return (
     <div className="container">
       <BreadCrumbs navList={[{ name: '视频库', path: '/marketingVideo' }, { name: '新增视频' }]} />
@@ -80,7 +92,7 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
         >
           <Input className="width480" placeholder="请输入,限制40个字符以内"></Input>
         </Form.Item>
-        <Form.Item label="原创信息" name="original" rules={[{ max: 20, message: '限制20个字符以内' }]}>
+        <Form.Item label="原创信息" name="original" rules={[{ max: 20, message: '限制20个字符以内', required: true }]}>
           <Input className="width480" placeholder="请输入,限制20个字符以内"></Input>
         </Form.Item>
 
@@ -92,7 +104,7 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
           label="视频文件"
           extra="仅支持MP4格式，最大100M"
         >
-          <UploadFile />
+          <UploadVideo beforeUpload={beforeUpload} />
         </Form.Item>
         <Form.Item
           name="videoCoverUrl"
