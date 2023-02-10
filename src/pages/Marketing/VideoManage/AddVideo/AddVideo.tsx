@@ -1,7 +1,7 @@
 import { Button, Form, Input, message, Select, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { editVideo, getVideoDetail, getVideoTypeList } from 'src/apis/marketing';
+import { editVideo, getVideoDetail, getVideoTypeList, topVideoItem } from 'src/apis/marketing';
 import { BreadCrumbs, UploadFile } from 'src/components';
 import { URLSearchParams } from 'src/utils/base';
 import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
@@ -63,7 +63,7 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
         form={addForm}
         className="mt20 edit"
         onFinish={onFinish}
-        onValuesChange={(changeValues, values) => setVideo(values)}
+        onValuesChange={(changeValues, values) => setVideo((video) => ({ ...video, ...values }))}
       >
         <div className="sectionTitle">基本信息</div>
         <Form.Item
