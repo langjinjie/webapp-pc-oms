@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ColumnsType } from 'antd/es/table';
-// import classNames from 'classnames';
-import style from './style.module.less';
 import { useHistory } from 'react-router-dom';
-import { Popconfirm } from 'antd';
+import { Button, Popconfirm } from 'antd';
+import { UNKNOWN, downloadImage } from 'src/utils/base';
+import { requestDownloadGroupLiveCode } from 'src/apis/liveCode';
+import style from './style.module.less';
+import classNames from 'classnames';
 
-export const clueStatusList: any = {
-  0: '待分配',
-  1: '已分配',
-  2: '自动分配'
-};
+export const statusList = [
+  { value: 0, label: '正常' },
+  { value: 1, label: '异常' },
+  { value: 2, label: '作废' }
+];
 
 export interface IGroupChatLiveCode {
   liveId: string; // 是 群活码ID
@@ -21,64 +23,106 @@ export interface IGroupChatLiveCode {
   createBy: string; // 是 创建人
   dateCreated: string; // 是 创建时间
   lastUpdated: string; // 是 更新时间
+  status: number;
 }
 
-export const tableColumnsFun: () => ColumnsType<any> = () => {
+export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => any }) => ColumnsType<any> = ({
+  updateListHandle
+}) => {
+  const [downLoad, setDownLoad] = useState('');
   const history = useHistory();
+
+  // 下载
+  const downLoadHandle = async (value: IGroupChatLiveCode) => {
+    setDownLoad(value.liveId);
+    const res = await requestDownloadGroupLiveCode({ liveIdList: [value.liveId] });
+    if (res) {
+      const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
+      const blob = new Blob([res]);
+      const url = window.URL.createObjectURL(blob);
+      downloadImage(url, fileName);
+      updateListHandle?.();
+    }
+    setDownLoad('');
+  };
   return [
-    { title: '群活码ID', dataIndex: 'codeId' },
-    { title: '群活码名称', dataIndex: 'codeName' },
-    { title: '群活码状态', dataIndex: 'codeStatus' },
-    { title: '投放渠道', dataIndex: 'channel' },
+    { title: '群活码ID', dataIndex: 'liveId' },
+    { title: '群活码名称', dataIndex: 'name' },
+    {
+      title: '群活码状态',
+      dataIndex: 'status',
+      render (status: number) {
+        return (
+          <span>
+            <i
+              className={classNames(
+                'status-point',
+                { 'status-point-gray': status === 2 },
+                { 'status-point-red': status === 1 }
+              )}
+            />
+            {statusList.find((findItem) => findItem.value === status)?.label}
+          </span>
+        );
+      }
+    },
+    {
+      title: '投放渠道',
+      dataIndex: 'channel',
+      render (channel: string) {
+        return <>{channel || UNKNOWN}</>;
+      }
+    },
     {
       title: '二维码情况',
-      dataIndex: 'QRcodeState',
-      render (QRcodeState: any) {
+      render (QRcodeState: IGroupChatLiveCode) {
         return (
           <span
             dangerouslySetInnerHTML={{
               __html:
                 '总量：' +
-                QRcodeState.total +
+                (QRcodeState.codeNum || 0) +
                 '<br />' +
                 '即将过期：' +
-                QRcodeState.soonLimit +
+                (QRcodeState.expiringNum || 0) +
                 '<br />' +
                 '已过期：' +
-                QRcodeState.timeLimit
+                (QRcodeState.expiredNum || 0)
             }}
           />
         );
       }
     },
-    { title: '创建人', dataIndex: 'createrBy' },
-    { title: '创建时间', dataIndex: 'createTime' },
-    { title: '更新时间', dataIndex: 'updateTime' },
+    { title: '创建人', dataIndex: 'createBy' },
+    { title: '创建时间', dataIndex: 'dateCreated' },
+    { title: '更新时间', dataIndex: 'lastUpdated' },
     {
       title: '操作',
       fixed: 'right',
-      render (value: any) {
+      render (value: IGroupChatLiveCode) {
         return (
           <>
             <span className={style.check} onClick={() => history.push('/momentCode/addCode', { row: value })}>
               查看
             </span>
-            {value.codeStatus !== '已作废' && (
-              <span className={style.edit} onClick={() => history.push('/momentCode/addCode', { row: value })}>
-                编辑
-              </span>
-            )}
-            <span className={style.downLoad}>下载</span>
-            {value.codeStatus !== '已作废' && (
-              <Popconfirm title="确认发放该积分吗?" disabled={value.sendStatus === 1}>
-                <span className={style.void}>作废</span>
-              </Popconfirm>
-            )}
-            {value.codeStatus === '已作废' && (
-              <Popconfirm title="确认发放该积分吗?" disabled={value.sendStatus === 1}>
-                <span className={style.del}>删除</span>
-              </Popconfirm>
-            )}
+            <span className={style.edit} onClick={() => history.push('/momentCode/addCode', { row: value })}>
+              编辑
+            </span>
+            <Button
+              className={style.downLoad}
+              loading={downLoad === value.liveId}
+              onClick={() => downLoadHandle(value)}
+            >
+              下载
+            </Button>
+
+            <Popconfirm title="确认作废该活码吗?" disabled={value.status === 2}>
+              <span className={classNames(style.void, { disabled: value.status === 2 })}>作废</span>
+            </Popconfirm>
+
+            <Popconfirm title="确认删除该活码吗?">
+              <span className={style.del}>删除</span>
+            </Popconfirm>
           </>
         );
       }

@@ -47,9 +47,10 @@ export const TableColumns: (
   manageChannelGroupHandle: (value: IChannelItem, type: number) => Promise<any>
 ) => ColumnsType<any> = (editHandle, manageChannelGroupHandle) => {
   return [
-    { title: '标签组', dataIndex: 'groupName' },
+    { title: '标签组', width: 300, dataIndex: 'groupName' },
     {
       title: '状态',
+      width: 100,
       dataIndex: 'status',
       render (status: number) {
         return (
@@ -63,6 +64,8 @@ export const TableColumns: (
     {
       title: '标签值',
       dataIndex: 'tagList',
+      width: 600,
+      ellipsis: true,
       render (tagList: IChannelTagList[]) {
         return (
           <>
@@ -76,6 +79,8 @@ export const TableColumns: (
     },
     {
       title: '操作',
+      width: 150,
+      fixed: 'right',
       render (value: IChannelItem) {
         return (
           <>

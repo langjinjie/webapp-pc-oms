@@ -33,6 +33,7 @@ const ChannelTag: React.FC = () => {
       const { list, total } = res;
       setPagination((pagination) => ({ ...pagination, total }));
       setList(list);
+      setSelectedRowKeys([]);
     }
     setTableLoading(false);
   };
@@ -46,12 +47,12 @@ const ChannelTag: React.FC = () => {
   const paginationChange = (current: number, pageSize?: number) => {
     setPagination((pagination) => ({ ...pagination, current, pageSize: pageSize as number }));
     getList({ ...formParam, pageNum: current, pageSize: pageSize as number });
-    setSelectedRowKeys([]);
   };
   // 重置搜索
   const onResetHandle = () => {
-    setPagination((pagination) => ({ ...pagination, current: 1, pageSize: 10 }));
     getList();
+    setPagination((pagination) => ({ ...pagination, current: 1, pageSize: 10 }));
+    setFormParam({});
   };
   // 添加渠道标签
   const addTagHandle = () => {

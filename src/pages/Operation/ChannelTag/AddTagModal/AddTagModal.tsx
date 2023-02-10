@@ -74,7 +74,11 @@ const AddTagModal: React.FC<IAddTagModalProps> = ({ visible, value, onCancel, on
                     </Item>
                   </div>
                 ))}
-                <Button className={style.addBtn} icon={<PlusOutlined />} onClick={() => add()}>
+                <Button
+                  className={style.addBtn}
+                  icon={<PlusOutlined />}
+                  onClick={() => add({ tagName: '', tagId: undefined })}
+                >
                   添加标签
                 </Button>
               </>

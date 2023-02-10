@@ -37,7 +37,9 @@ export const requestManageGroupLiveCode: HttpFunction = (param) => {
  * @param param
  */
 export const requestDownloadGroupLiveCode: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/group/live/download', param);
+  return http.post('/tenacity-admin/api/group/live/download', param, {
+    responseType: 'blob'
+  });
 };
 
 /**
