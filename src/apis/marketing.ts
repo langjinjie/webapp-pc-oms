@@ -500,5 +500,5 @@ export const delVideoType: HttpFunction = (param: object) => {
 };
 // 1.11、视频上传接口
 export const uploadVideo: HttpFunction = (param: object) => {
-  return http.post('/tenacity-admin/api/upload/video', param);
+  return http.post('/tenacity-admin/api/video/upload', param);
 };

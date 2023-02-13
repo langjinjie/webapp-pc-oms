@@ -16,7 +16,7 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
-    total: 3,
+    total: 0,
     showTotal: (total) => {
       return `共 ${total} 条记录`;
     }
@@ -75,6 +75,12 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
           copyData[index as number].status = type === 'putAway' ? 2 : 3;
         } else {
           copyData.splice(index as number, 1);
+          const total = pagination.total! - 1;
+          if (copyData.length > 0) {
+            setPagination((pagination) => ({ ...pagination, total }));
+          } else {
+            getList({ pageNum: pagination.current! - 1 || 1 });
+          }
         }
         if (type === 'putAway') {
           copyData[index as number].onlineTime = moment().format('YYYY-MM-DD HH:mm');
