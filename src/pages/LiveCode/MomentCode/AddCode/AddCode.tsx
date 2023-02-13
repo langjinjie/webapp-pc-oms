@@ -8,6 +8,7 @@ import { requestGetGroupLiveCodeDetail, requestEditGroupLiveCode } from 'src/api
 import Preview from '../components/Preview/Preview';
 import FilterChannelTag from 'src/pages/LiveCode/MomentCode/components/FilterChannelTag/FilterChannelTag';
 import AccessChatModal from 'src/pages/LiveCode/MomentCode/components/AccessChatModal/AccessChatModal';
+import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 import classNames from 'classnames';
 import qs from 'qs';
 import style from './style.module.less';
@@ -15,6 +16,7 @@ import style from './style.module.less';
 const AddCode: React.FC = () => {
   const [readOnly, setReadOnly] = useState(false);
   const [channelTagList, setChannelTagList] = useState<IChannelTagList[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const [form] = Form.useForm();
   const { Item } = Form;
@@ -45,15 +47,18 @@ const AddCode: React.FC = () => {
 
   // 提交表单
   const onFinishHandle = async (values: any) => {
+    setLoading(true);
     const { liveId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     const res = await requestEditGroupLiveCode({
       liveId,
       ...values,
-      channelTagList: [channelTagList.find((findItem) => findItem.tagId === values.channelTagList)]
+      channelTagList: [channelTagList.find((findItem) => findItem.tagId === values.channelTagList)],
+      notifyUser: (values.notifyUser || []).map((mapItem: any) => mapItem.userId).toString()
     });
     if (res) {
       history.push('/momentCode');
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -121,9 +126,10 @@ const AddCode: React.FC = () => {
             <Item
               label="客服二维码"
               name="customerCode"
-              extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
+              // extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
             >
-              <ImageUpload disabled={readOnly} />
+              {/* <ImageUpload disabled={readOnly} /> */}
+              <Input placeholder="请输入链接" className={style.input} />
             </Item>
             <Item label="客户引导话术" name="customerWord">
               <TextArea
@@ -133,6 +139,9 @@ const AddCode: React.FC = () => {
                 maxLength={120}
                 disabled={readOnly}
               />
+            </Item>
+            <Item label="过期提醒人员" name="notifyUser">
+              <SelectStaff className={style.input} />
             </Item>
           </div>
         </div>
@@ -171,7 +180,13 @@ const AddCode: React.FC = () => {
               </div>
             </Item>
             <div className={style.btnWrap}>
-              <Button className={style.submitBtn} type="primary" htmlType="submit" disabled={readOnly}>
+              <Button
+                className={style.submitBtn}
+                type="primary"
+                htmlType="submit"
+                disabled={readOnly}
+                loading={loading}
+              >
                 确定
               </Button>
               <Button className={style.cancelBtn} onClick={() => history.goBack()}>

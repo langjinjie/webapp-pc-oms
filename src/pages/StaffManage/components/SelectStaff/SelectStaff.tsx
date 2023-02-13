@@ -3,15 +3,15 @@ import { Input } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { OrganizationalTree } from 'src/pages/RoleManage/components';
 import { Icon } from 'src/components';
-import style from './style.module.less';
 
 interface ISelectStaffProps {
   value?: any;
   onChange?: (value?: any) => void;
   type?: 'staff' | 'dept';
+  className?: string;
 }
 
-const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'staff' }) => {
+const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'staff', className }) => {
   const [orgParam, setOrgParam] = useState<{ visible: boolean; add: boolean }>({ visible: false, add: true });
 
   // 取消选择
@@ -37,7 +37,7 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'sta
       <Input
         readOnly
         suffix={value ? <Icon name="guanbi" onClick={delAll} /> : <DownOutlined />}
-        className={style.viewInput}
+        className={className}
         value={inputValue}
         style={{ color: '#E1E2E6' }}
         onClick={() => setOrgParam((orgParam) => ({ ...orgParam, visible: true }))}
