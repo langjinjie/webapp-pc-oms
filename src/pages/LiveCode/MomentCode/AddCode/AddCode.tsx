@@ -90,10 +90,10 @@ const AddCode: React.FC = () => {
               <Input
                 placeholder="待输入"
                 disabled={readOnly}
-                className={style.input}
+                className={classNames(style.input, 'width480')}
                 readOnly={readOnly}
                 showCount
-                maxLength={30}
+                maxLength={50}
               />
             </Item>
             <Item label="活码备注" name="remark">
