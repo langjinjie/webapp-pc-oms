@@ -97,13 +97,7 @@ const AddCode: React.FC = () => {
               />
             </Item>
             <Item label="活码备注" name="remark">
-              <Input
-                className={style.input}
-                placeholder="选填，如不填则默认抓取选定任务推荐话术"
-                disabled={readOnly}
-                maxLength={30}
-                showCount
-              />
+              <Input className={style.input} placeholder="待输入" disabled={readOnly} maxLength={30} showCount />
             </Item>
             <Item
               label="引导语"
