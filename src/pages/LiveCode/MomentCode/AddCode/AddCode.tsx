@@ -128,8 +128,8 @@ const AddCode: React.FC = () => {
               name="customerCode"
               // extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
             >
-              {/* <ImageUpload disabled={readOnly} /> */}
-              <Input placeholder="请输入链接" className={style.input} />
+              <ImageUpload disabled={readOnly} />
+              {/* <Input placeholder="请输入链接" className={style.input} /> */}
             </Item>
             <Item label="客户引导话术" name="customerWord">
               <TextArea

@@ -50,7 +50,7 @@ const MomentCode: React.FC = () => {
   };
 
   const onFinishHandle = (values?: any) => {
-    const { liveId, name, channel, createTime, updateTime } = values;
+    const { liveId, name, channel, createTime, updateTime, status } = values;
     let createStartTime;
     let createEndTime;
     let updateStartTime;
@@ -63,9 +63,9 @@ const MomentCode: React.FC = () => {
       updateStartTime = updateTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       updateEndTime = updateTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-    getList({ liveId, name, channel, createStartTime, createEndTime, updateStartTime, updateEndTime });
+    getList({ liveId, name, channel, createStartTime, createEndTime, updateStartTime, updateEndTime, status });
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    setFormParam({ liveId, name, channel, createStartTime, createEndTime, updateStartTime, updateEndTime });
+    setFormParam({ liveId, name, channel, createStartTime, createEndTime, updateStartTime, updateEndTime, status });
   };
 
   // 重置

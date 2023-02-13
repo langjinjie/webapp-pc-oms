@@ -32,6 +32,11 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
   const [downLoad, setDownLoad] = useState('');
   const history = useHistory();
 
+  const editHandle = (value: IGroupChatLiveCode) => {
+    if (value.status === 2) return;
+    history.push('/momentCode/addCode?liveId=' + value.liveId);
+  };
+
   // 下载
   const downLoadHandle = async (value: IGroupChatLiveCode) => {
     setDownLoad(value.liveId);
@@ -116,11 +121,15 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
             >
               查看
             </span>
-            <span className={style.edit} onClick={() => history.push('/momentCode/addCode?liveId=' + value.liveId)}>
+            <span
+              className={classNames(style.edit, { disabled: value.status === 2 })}
+              onClick={() => editHandle(value)}
+            >
               编辑
             </span>
             <Button
               className={style.downLoad}
+              disabled={value.status === 2 || value.status === 1}
               loading={downLoad === value.liveId}
               onClick={() => downLoadHandle(value)}
             >
@@ -135,7 +144,11 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
               <span className={classNames(style.void, { disabled: value.status === 2 })}>作废</span>
             </Popconfirm>
 
-            <Popconfirm title="确认删除该活码吗?" onConfirm={() => manageGroupLive(2, value)}>
+            <Popconfirm
+              title="确认删除该活码吗?"
+              onConfirm={() => manageGroupLive(2, value)}
+              disabled={value.status === 1}
+            >
               <span className={style.del}>删除</span>
             </Popconfirm>
           </>
