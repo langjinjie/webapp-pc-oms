@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { useHistory } from 'react-router-dom';
-import { Button, Popconfirm } from 'antd';
+import { Button, message, Popconfirm } from 'antd';
 import { UNKNOWN, downloadImage } from 'src/utils/base';
-import { requestDownloadGroupLiveCode } from 'src/apis/liveCode';
+import { requestDownloadGroupLiveCode, requestManageGroupLiveCode } from 'src/apis/liveCode';
 import style from './style.module.less';
 import classNames from 'classnames';
 
@@ -38,12 +38,20 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
     const res = await requestDownloadGroupLiveCode({ liveIdList: [value.liveId] });
     if (res) {
       const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
-      const blob = new Blob([res]);
+      const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
       downloadImage(url, fileName);
       updateListHandle?.();
     }
     setDownLoad('');
+  };
+  // 作废/删除 1-作废 2-删除
+  const manageGroupLive = async (type: number, value: IGroupChatLiveCode) => {
+    const res = await requestManageGroupLiveCode({ type, liveIdList: [value.liveId] });
+    if (res) {
+      message.success(`群活码${type === 1 ? '作废' : '删除'}成功`);
+      updateListHandle?.();
+    }
   };
   return [
     { title: '群活码ID', dataIndex: 'liveId' },
@@ -102,10 +110,13 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
       render (value: IGroupChatLiveCode) {
         return (
           <>
-            <span className={style.check} onClick={() => history.push('/momentCode/addCode', { row: value })}>
+            <span
+              className={style.check}
+              onClick={() => history.push('/momentCode/addCode?liveId=' + value.liveId + '&readOnly=true')}
+            >
               查看
             </span>
-            <span className={style.edit} onClick={() => history.push('/momentCode/addCode', { row: value })}>
+            <span className={style.edit} onClick={() => history.push('/momentCode/addCode?liveId=' + value.liveId)}>
               编辑
             </span>
             <Button
@@ -116,11 +127,15 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
               下载
             </Button>
 
-            <Popconfirm title="确认作废该活码吗?" disabled={value.status === 2}>
+            <Popconfirm
+              title="确认作废该活码吗?"
+              disabled={value.status === 2}
+              onConfirm={() => manageGroupLive(1, value)}
+            >
               <span className={classNames(style.void, { disabled: value.status === 2 })}>作废</span>
             </Popconfirm>
 
-            <Popconfirm title="确认删除该活码吗?">
+            <Popconfirm title="确认删除该活码吗?" onConfirm={() => manageGroupLive(2, value)}>
               <span className={style.del}>删除</span>
             </Popconfirm>
           </>

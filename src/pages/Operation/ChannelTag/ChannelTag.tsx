@@ -34,6 +34,7 @@ const ChannelTag: React.FC = () => {
       setPagination((pagination) => ({ ...pagination, total }));
       setList(list);
       setSelectedRowKeys([]);
+      setRecordItem(undefined);
     }
     setTableLoading(false);
   };

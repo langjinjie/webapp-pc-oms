@@ -1,10 +1,14 @@
 import React, { Key, useEffect, useState } from 'react';
-import { Button, DatePicker, Form, Input, Row, Select } from 'antd';
+import { Button, DatePicker, Form, Input, message, Row, Select } from 'antd';
 import { NgTable } from 'src/components';
 import { tableColumnsFun, statusList, IGroupChatLiveCode } from './Config';
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
-import { requestDownloadGroupLiveCode, requestGetGroupLiveCodeList } from 'src/apis/liveCode';
+import {
+  requestDownloadGroupLiveCode,
+  requestGetGroupLiveCodeList,
+  requestManageGroupLiveCode
+} from 'src/apis/liveCode';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { IPagination } from 'src/utils/interface';
@@ -30,7 +34,6 @@ const MomentCode: React.FC = () => {
   const getChannelGroupList = async () => {
     const res = await requestGetChannelGroupList({ groupName: '投放渠道' });
     if (res) {
-      console.log('res', res.list?.[0]?.tagList);
       setChannelTagList(res.list?.[0]?.tagList || []);
     }
   };
@@ -38,10 +41,10 @@ const MomentCode: React.FC = () => {
   const getList = async (values?: any) => {
     setTableLoading(true);
     const res = await requestGetGroupLiveCodeList({ ...values });
-    console.log('res', res);
     if (res) {
       setList(res.list);
       setSelectedRowKeys([]);
+      setRecordItem(undefined);
     }
     setTableLoading(false);
   };
@@ -100,8 +103,16 @@ const MomentCode: React.FC = () => {
     const res = await requestDownloadGroupLiveCode({ liveIdList: selectedRowKeys });
     if (res) {
       const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
-      exportFile(res, fileName.split('.')[0], fileName.split('.')[1]);
+      exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
       setSelectedRowKeys([]);
+    }
+  };
+  // 作废/删除 1-作废 2-删除
+  const batchManageGroupLive = async (type: number) => {
+    const res = await requestManageGroupLiveCode({ type, liveIdList: selectedRowKeys });
+    if (res) {
+      message.success(`群活码${type === 1 ? '作废' : '删除'}成功`);
+      getList({ ...formParam, ...pagination });
     }
   };
   useEffect(() => {
@@ -167,10 +178,18 @@ const MomentCode: React.FC = () => {
         loading={tableLoading}
       />
       <div className={style.batch}>
-        <Button className={style.batchVoid} disabled={selectedRowKeys.length === 0 || recordItem?.status === 2}>
+        <Button
+          className={style.batchVoid}
+          disabled={selectedRowKeys.length === 0 || recordItem?.status === 2}
+          onClick={() => batchManageGroupLive(1)}
+        >
           批量作废
         </Button>
-        <Button className={style.batchDel} disabled={selectedRowKeys.length === 0}>
+        <Button
+          className={style.batchDel}
+          disabled={selectedRowKeys.length === 0}
+          onClick={() => batchManageGroupLive(2)}
+        >
           批量删除
         </Button>
         <Button className={style.batchDownLoad} disabled={selectedRowKeys.length === 0} onClick={batchDownLoadHandle}>

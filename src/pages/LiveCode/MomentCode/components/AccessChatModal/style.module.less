@@ -21,6 +21,13 @@
 }
 
 // 选择群聊
+.chooseChat {
+  display: flex;
+  .name {
+    margin-right: 10px;
+    line-height: 32px;
+  }
+}
 .datePicker {
   width: 280px;
   border-radius: 18px;
@@ -49,36 +56,40 @@
   }
 }
 .gruopWrap {
+  justify-content: space-between;
+  min-height: 260px;
   padding: 10px;
 }
 .radioItem {
+  align-items: center;
   &:not(:last-child) {
     margin-bottom: 10px;
   }
-  width: 100%;
+  width: 48%;
 }
-.radioLabel {
-  display: flex;
-  align-items: center;
-  .gruopImg {
-    margin-right: 8px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
+// .radioLabel {
+//   display: flex;
+//   align-items: center;
+.gruopImg {
+  margin-right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+.chatGroupInfo {
+  .groupName {
+    max-width: 168px;
+    height: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #111111;
+    line-height: 20px;
   }
-  .chatGroupInfo {
-    .groupName {
-      height: 20px;
-      font-size: 14px;
-      font-weight: 400;
-      color: #111111;
-      line-height: 20px;
-    }
-    .leader {
-      font-size: 12px;
-      font-weight: 400;
-      color: #7e8185;
-      line-height: 18px;
-    }
+  .leader {
+    font-size: 12px;
+    font-weight: 400;
+    color: #7e8185;
+    line-height: 18px;
   }
 }
+// }

@@ -8,9 +8,10 @@ import style from './style.module.less';
 interface IFilterChannelTagProps {
   value?: IChannelTagList[];
   onChange?: (value?: IChannelTagList[]) => void;
+  disabled?: boolean;
 }
 
-const FilterChannelTag: React.FC<IFilterChannelTagProps> = ({ value, onChange }) => {
+const FilterChannelTag: React.FC<IFilterChannelTagProps> = ({ value, onChange, disabled }) => {
   const [tagModalVisible, setTagModalVisible] = useState(false);
   // 删除标签
   const tagOnCloseHandle = (tagItem: IChannelTagList) => {
@@ -24,14 +25,20 @@ const FilterChannelTag: React.FC<IFilterChannelTagProps> = ({ value, onChange })
             key={tagItem.tagId}
             color="blue"
             className={style.tag}
-            closable
+            closable={!disabled}
             onClose={() => tagOnCloseHandle(tagItem)}
           >
             {tagItem.tagName}
           </Tag>
         ))}
       </div>
-      <Button size="small" className={style.addTag} icon={<PlusOutlined />} onClick={() => setTagModalVisible(true)}>
+      <Button
+        size="small"
+        className={style.addTag}
+        icon={<PlusOutlined />}
+        onClick={() => setTagModalVisible(true)}
+        disabled={disabled}
+      >
         添加标签
       </Button>
       <TagModal

@@ -20,9 +20,8 @@ const TagModal: React.FC<IModalProps> = ({ visible, onCancel, onChange }) => {
   // 获取渠道标签
   const getChannelGroupList = async () => {
     const res = await requestGetChannelGroupList({ pageSize: 999, status: 1 });
-    console.log('res', res.list);
     if (res) {
-      setGroupList(res.list.filter((groupItem: IChannelItem) => groupItem.groupName === '投放渠道'));
+      setGroupList(res.list.filter((groupItem: IChannelItem) => groupItem.groupName !== '投放渠道'));
     }
   };
   // 选择标签
@@ -36,7 +35,7 @@ const TagModal: React.FC<IModalProps> = ({ visible, onCancel, onChange }) => {
     setChooseTags(newChooseTags);
   };
   const onOkHandle = () => {
-    onChange?.(chooseTags);
+    onChange?.(chooseTags.map(({ tagId, tagName }) => ({ tagId, tagName })));
     onCancel?.();
   };
   useEffect(() => {
