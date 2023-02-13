@@ -77,12 +77,21 @@ const ChannelTag: React.FC = () => {
         addTagModalOnCancelHandle();
         const { current: pageNum, pageSize } = pagination;
         getList({ ...formParam, pageNum, pageSize });
+        message.success(`标签组${value.groupId ? '编辑' : '新增'}成功`);
       }
     }
   };
 
   // 停用/删除
   const manageChannelGroupHandle = async (value: IChannelItem, type: number) => {
+    const res = await requestEditChannelGroupIsUse({ groupId: value.groupId });
+    if (res.isUsed === 1) {
+      return Modal.warning({
+        title: '操作提醒',
+        centered: true,
+        content: `该数据已被使用，无法${type === 1 ? '停用' : '删除'}`
+      });
+    }
     if (value.canDel === 2 || (type === 1 && value.status === 2)) {
       return Modal.warning({ title: '操作提醒', centered: true, content: `该数据无法${type === 1 ? '停用' : '删除'}` });
     }
@@ -105,7 +114,11 @@ const ChannelTag: React.FC = () => {
     const batchIsUse = selectedRowKeys.map((key) => requestEditChannelGroupIsUse({ groupId: key }));
     const res = await Promise.all(batchIsUse);
     if (res.some((item) => item.isUsed === 1)) {
-      Modal.warn({ title: '操作提醒', centered: true, content: `该数据无法${type === 1 ? '停用' : '删除'}` });
+      return Modal.warn({
+        title: '操作提醒',
+        centered: true,
+        content: `有已被使用的标签组，无法${type === 1 ? '停用' : '删除'}`
+      });
     } else {
       Modal.confirm({
         title: '操作提示',
