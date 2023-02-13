@@ -40,8 +40,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
             <div className={style.customerTip}>若无法扫码进群，请联系客服</div>
           </div>
         </div>
-        {isMoment && <div className={style.footerLine} />}
-        {/* {isMoment || <footer className={style.footer} />} */}
+        <div className={style.footerLine} />
       </div>
     </div>
   );

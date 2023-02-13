@@ -35,12 +35,14 @@ const TagModal: React.FC<IModalProps> = ({ visible, onCancel, onChange }) => {
     setChooseTags(newChooseTags);
   };
   const onOkHandle = () => {
-    onChange?.(chooseTags.map(({ tagId, tagName }) => ({ tagId, tagName })));
+    onChange?.(chooseTags);
     onCancel?.();
   };
   useEffect(() => {
-    getChannelGroupList();
-  }, []);
+    if (visible && groupList.length === 0) {
+      getChannelGroupList();
+    }
+  }, [visible]);
   return (
     <Modal
       title="添加标签"
