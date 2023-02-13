@@ -5,6 +5,7 @@ import { BreadCrumbs, ImageUpload } from 'src/components';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { requestGetGroupLiveCodeDetail, requestEditGroupLiveCode } from 'src/apis/liveCode';
+import { IGroupLive } from 'src/pages/LiveCode/MomentCode/components/Preview/Preview';
 import Preview from '../components/Preview/Preview';
 import FilterChannelTag from 'src/pages/LiveCode/MomentCode/components/FilterChannelTag/FilterChannelTag';
 import AccessChatModal from 'src/pages/LiveCode/MomentCode/components/AccessChatModal/AccessChatModal';
@@ -17,6 +18,7 @@ const AddCode: React.FC = () => {
   const [readOnly, setReadOnly] = useState(false);
   const [channelTagList, setChannelTagList] = useState<IChannelTagList[]>([]);
   const [loading, setLoading] = useState(false);
+  const [previewValue, setPreviewValue] = useState<IGroupLive>();
 
   const [form] = Form.useForm();
   const { Item } = Form;
@@ -42,6 +44,7 @@ const AddCode: React.FC = () => {
     if (liveId) {
       const res = await requestGetGroupLiveCodeDetail({ liveId });
       form.setFieldsValue({ ...res, channelTagList: res.channelTagList[0]?.tagId || '' });
+      setPreviewValue({ name: res.name, word: res.word, codeList: res.codeList });
     }
   };
 
@@ -53,12 +56,23 @@ const AddCode: React.FC = () => {
       liveId,
       ...values,
       channelTagList: [channelTagList.find((findItem) => findItem.tagId === values.channelTagList)],
-      notifyUser: (values.notifyUser || []).map((mapItem: any) => mapItem.userId).toString()
+      notifyUser: (values.notifyUsers || []).map((mapItem: any) => mapItem.userId).toString(),
+      notifyUsers: undefined
     });
     if (res) {
       history.push('/momentCode');
     }
     setLoading(false);
+  };
+
+  //
+  const onValuesChangeHandle = (changedValues: any, values: any) => {
+    const key = Object.keys(changedValues)?.[0];
+    const changedValuesList = ['name', 'word', 'codeList'];
+    if (changedValuesList.includes(key)) {
+      // @ts-ignore
+      setPreviewValue((previewValue) => ({ ...previewValue, [key]: values[key] }));
+    }
   };
 
   useEffect(() => {
@@ -83,6 +97,7 @@ const AddCode: React.FC = () => {
         onFinish={onFinishHandle}
         // @ts-ignore
         initialValues={location.state?.row || {}}
+        onValuesChange={onValuesChangeHandle}
       >
         <div className={style.panel}>
           <div className={style.title}>基本信息</div>
@@ -140,7 +155,7 @@ const AddCode: React.FC = () => {
                 disabled={readOnly}
               />
             </Item>
-            <Item label="过期提醒人员" name="notifyUser">
+            <Item label="过期提醒人员" name="notifyUsers">
               <SelectStaff className={style.input} />
             </Item>
           </div>
@@ -153,7 +168,7 @@ const AddCode: React.FC = () => {
             </Item>
 
             <div className={style.preview}>
-              <Preview value={{ speechcraft: '送你一张专属4.8折【幸运有理】专享券' }} />
+              <Preview value={previewValue} />
             </div>
           </div>
         </div>

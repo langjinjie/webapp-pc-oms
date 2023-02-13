@@ -1,37 +1,24 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Icon } from 'src/components';
-import { IPreviewValue } from 'src/utils/interface';
 import style from './style.module.less';
 import classNames from 'classnames';
-// import moment from 'moment';
-import { getMomentDetail } from 'src/apis/marketing';
+
+export interface IGroupLive {
+  name: string; // 是
+  word: string; // 是
+  codeList: {
+    chatName: string; // 是
+    chatCode: string; // 是
+  }[];
+}
 
 interface IPreviewProps {
-  value?: Partial<IPreviewValue>;
+  value?: IGroupLive;
   className?: string;
   isMoment?: boolean; // 是否是朋友圈（默认为聊天框）
 }
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
-  // const [itemIds, setItemIds] = useState<any[]>([]);
-  console.log(value, isMoment);
-
-  const getMomentDetailByFeedId = async () => {
-    // 如果是今日朋友圈
-    if (value?.wayName === '今日朋友圈' && value?.actionRule?.feedId && value?.actionRule?.itemIds?.length === 0) {
-      const res = await getMomentDetail({ feedId: value?.actionRule.feedId });
-      if (res) {
-        // setItemIds(res.itemList);
-      }
-    } else {
-      // setItemIds(value?.actionRule?.itemIds || []);
-    }
-  };
-
-  useEffect(() => {
-    getMomentDetailByFeedId();
-  }, [value]);
-
   return (
     <div className={classNames(style.phoneWrap, className)}>
       <div className={style.inner}>
@@ -41,9 +28,20 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
           <div className={style.staffName}>加入群聊</div>
           <Icon name="diandian" className={style.more}></Icon>
         </header>
-        <div className={classNames(style.content, { [style.isMoment]: isMoment })}></div>
+        <div className={classNames(style.content, { [style.isMoment]: isMoment })}>
+          <div className={style.banner}>
+            <div className={style.name}>{value?.name}</div>
+            <div className={style.word}>{value?.word}</div>
+          </div>
+          <div className={style.groupChat}>
+            <div className={style.chatName}>{value?.codeList?.[0]?.chatName}</div>
+            <img className={style.chatCode} src={value?.codeList?.[0]?.chatCode} alt="群二维码" />
+            <div className={style.scanTip}>长按识别二维码</div>
+            <div className={style.customerTip}>若无法扫码进群，请联系客服</div>
+          </div>
+        </div>
         {isMoment && <div className={style.footerLine} />}
-        {isMoment || <footer className={style.footer} />}
+        {/* {isMoment || <footer className={style.footer} />} */}
       </div>
     </div>
   );
