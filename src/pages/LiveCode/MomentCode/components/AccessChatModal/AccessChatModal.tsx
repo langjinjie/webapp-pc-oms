@@ -102,7 +102,7 @@ const AccessChat: React.FC<IAccessChatProps> = ({ value, onChange, disabled }) =
               return <Image title="" width={48} height={48} src={value.chatCode} />;
             }
           },
-          { title: '群活码名称', dataIndex: 'chatName' },
+          { title: '群名称', dataIndex: 'chatName' },
           { title: '群二维码有效期', dataIndex: 'expireDate' },
           {
             title: '操作',

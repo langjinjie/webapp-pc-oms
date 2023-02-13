@@ -96,6 +96,15 @@ const AddCode: React.FC = () => {
                 maxLength={30}
               />
             </Item>
+            <Item label="活码备注" name="remark">
+              <Input
+                className={style.input}
+                placeholder="选填，如不填则默认抓取选定任务推荐话术"
+                disabled={readOnly}
+                maxLength={30}
+                showCount
+              />
+            </Item>
             <Item
               label="引导语"
               name="word"
@@ -139,6 +148,18 @@ const AddCode: React.FC = () => {
             <Item name="codeList">
               <AccessChatModal disabled={readOnly} />
             </Item>
+
+            <div className={style.preview}>
+              <Preview value={{ speechcraft: '送你一张专属4.8折【幸运有理】专享券' }} />
+            </div>
+          </div>
+        </div>
+        <div className={style.panel}>
+          <div className={style.title}>渠道设置</div>
+          <div className={style.content}>
+            <Item label="活码头像" name="logo" extra="建议上传尺寸：50*50px，图片比例1:1，大小不超过2MB">
+              <ImageUpload disabled={readOnly} />
+            </Item>
             <Item label="投放渠道" required>
               <div className={style.channelTag}>
                 <Item name="channelTagList" label="投放渠道标签">
@@ -154,24 +175,6 @@ const AddCode: React.FC = () => {
                   <FilterChannelTag disabled={readOnly} />
                 </Item>
               </div>
-            </Item>
-            <div className={style.preview}>
-              <Preview value={{ speechcraft: '送你一张专属4.8折【幸运有理】专享券' }} />
-            </div>
-          </div>
-        </div>
-        <div className={style.panel}>
-          <div className={style.title}>渠道设置</div>
-          <div className={style.content}>
-            <Item label="活码头像" name="logo" extra="建议上传尺寸：50*50px，图片比例1:1，大小不超过2MB">
-              <ImageUpload disabled={readOnly} />
-            </Item>
-            <Item label="活码备注" name="remark">
-              <TextArea
-                className={style.textArea}
-                placeholder="选填，如不填则默认抓取选定任务推荐话术"
-                disabled={readOnly}
-              />
             </Item>
             <div className={style.btnWrap}>
               <Button className={style.submitBtn} type="primary" htmlType="submit" disabled={readOnly}>
