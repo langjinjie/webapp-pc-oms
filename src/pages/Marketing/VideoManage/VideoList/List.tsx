@@ -4,7 +4,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getVideoList, getVideoTypeList, operateVideoItem, setVideoScope, topVideoItem } from 'src/apis/marketing';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { OperateType } from 'src/utils/interface';
 import { SetUserRight } from '../../Components/ModalSetUserRight/SetUserRight';
 import { searchColsFun, tableColumnsFun, VideoColumn } from './Config';
@@ -129,10 +129,14 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className="container">
-      <Button className="mt10 mb20" type="primary" icon={<PlusOutlined />} shape="round" onClick={addVideo}>
-        上传视频
-      </Button>
-      <NgFormSearch firstRowChildCount={3} searchCols={searchColsFun(typeList)} onSearch={onSearch} />
+      <AuthBtn path="add">
+        <Button className="mt10 mb20" type="primary" icon={<PlusOutlined />} shape="round" onClick={addVideo}>
+          上传视频
+        </Button>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <NgFormSearch firstRowChildCount={3} searchCols={searchColsFun(typeList)} onSearch={onSearch} />
+      </AuthBtn>
       <NgTable
         columns={tableColumnsFun(onOperate)}
         rowKey={'videoId'}

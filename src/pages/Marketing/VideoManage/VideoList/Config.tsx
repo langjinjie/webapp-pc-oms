@@ -2,6 +2,7 @@ import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import React from 'react';
+import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { OperateType } from 'src/utils/interface';
@@ -119,38 +120,48 @@ export const tableColumnsFun = (
       render: (operate, record, index) => {
         return (
           <div>
-            {record.isTop
-              ? (
-              <Button type="link" onClick={() => onOperate('unTop', record)}>
-                取消置顶
+            <AuthBtn path="/top">
+              {record.isTop
+                ? (
+                <Button type="link" onClick={() => onOperate('unTop', record)}>
+                  取消置顶
+                </Button>
+                  )
+                : (
+                <Button type="link" onClick={() => onOperate('top', record)}>
+                  置顶
+                </Button>
+                  )}
+            </AuthBtn>
+            <AuthBtn path="/edit">
+              <Button type="link" onClick={() => onOperate('edit', record)}>
+                编辑
               </Button>
-                )
-              : (
-              <Button type="link" onClick={() => onOperate('top', record)}>
-                置顶
-              </Button>
-                )}
-            <Button type="link" onClick={() => onOperate('edit', record)}>
-              编辑
-            </Button>
-            {record.status === 2
-              ? (
-              <Popconfirm title="确定下架？" onConfirm={() => onOperate('outline', record, index)}>
-                <Button type="link">下架</Button>
+            </AuthBtn>
+            <AuthBtn path="/operate">
+              {record.status === 2
+                ? (
+                <Popconfirm title="确定下架？" onConfirm={() => onOperate('outline', record, index)}>
+                  <Button type="link">下架</Button>
+                </Popconfirm>
+                  )
+                : (
+                <Popconfirm title="确定上架？" onConfirm={() => onOperate('putAway', record, index)}>
+                  <Button type="link">上架</Button>
+                </Popconfirm>
+                  )}
+            </AuthBtn>
+            <AuthBtn path="/delete">
+              <Popconfirm title="确定要删除当前视频?" onConfirm={() => onOperate('delete', record, index)}>
+                <Button type="link">删除</Button>
               </Popconfirm>
-                )
-              : (
-              <Popconfirm title="确定上架？" onConfirm={() => onOperate('putAway', record, index)}>
-                <Button type="link">上架</Button>
-              </Popconfirm>
-                )}
-            <Popconfirm title="确定要删除当前视频?" onConfirm={() => onOperate('delete', record, index)}>
-              <Button type="link">删除</Button>
-            </Popconfirm>
+            </AuthBtn>
 
-            <Button type="link" onClick={() => onOperate('other', record)}>
-              配置可见范围
-            </Button>
+            <AuthBtn path="batch">
+              <Button type="link" onClick={() => onOperate('other', record)}>
+                配置可见范围
+              </Button>
+            </AuthBtn>
           </div>
         );
       }
