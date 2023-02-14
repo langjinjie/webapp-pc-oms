@@ -100,6 +100,7 @@ const ChannelTag: React.FC = () => {
     // 可以正常被删除和停用二确
     Modal.confirm({
       title: '操作提示',
+      centered: true,
       content: `${
         res.isUsed === 1
           ? '该数据已被使用，如果停用的话，则所有的历史标签数据不做修改，但是未来此标签则不会展示。确定停用标签组吗？'
@@ -129,6 +130,7 @@ const ChannelTag: React.FC = () => {
     } else {
       Modal.confirm({
         title: '操作提示',
+        centered: true,
         content: `
         ${
           res.some((item) => item.isUsed === 1)

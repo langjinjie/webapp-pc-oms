@@ -1,5 +1,5 @@
 import React, { Key, useEffect, useState } from 'react';
-import { Button, DatePicker, Form, Input, message, Row, Select } from 'antd';
+import { Button, DatePicker, Form, Input, message, Modal, Row, Select } from 'antd';
 import { NgTable } from 'src/components';
 import { tableColumnsFun, statusList, IGroupChatLiveCode } from './Config';
 import { PlusOutlined } from '@ant-design/icons';
@@ -86,6 +86,7 @@ const MomentCode: React.FC = () => {
   };
 
   const rowSelection: any = {
+    hideSelectAll: true,
     selectedRowKeys: selectedRowKeys,
     onChange: (selectedRowKeys: Key[], records: IGroupChatLiveCode[]) => {
       onSelectChange(selectedRowKeys);
@@ -93,7 +94,7 @@ const MomentCode: React.FC = () => {
     },
     getCheckboxProps: (record: IGroupChatLiveCode) => {
       return {
-        disabled: recordItem?.status && record.status !== recordItem?.status
+        disabled: recordItem && record.status !== recordItem?.status
       };
     }
   };
@@ -108,12 +109,19 @@ const MomentCode: React.FC = () => {
     }
   };
   // 作废/删除 1-作废 2-删除
-  const batchManageGroupLive = async (type: number) => {
-    const res = await requestManageGroupLiveCode({ type, liveIdList: selectedRowKeys });
-    if (res) {
-      message.success(`群活码${type === 1 ? '作废' : '删除'}成功`);
-      getList({ ...formParam, ...pagination });
-    }
+  const batchManageGroupLive = (type: number) => {
+    Modal.confirm({
+      title: '操作提醒',
+      centered: true,
+      content: `确定${type === 1 ? '作废' : '删除'}群活码吗？`,
+      async onOk () {
+        const res = await requestManageGroupLiveCode({ type, liveIdList: selectedRowKeys });
+        if (res) {
+          message.success(`群活码${type === 1 ? '作废' : '删除'}成功`);
+          getList({ ...formParam, ...pagination });
+        }
+      }
+    });
   };
   useEffect(() => {
     getChannelGroupList();
@@ -187,12 +195,16 @@ const MomentCode: React.FC = () => {
         </Button>
         <Button
           className={style.batchDel}
-          disabled={selectedRowKeys.length === 0}
+          disabled={selectedRowKeys.length === 0 || recordItem?.status !== 2}
           onClick={() => batchManageGroupLive(2)}
         >
           批量删除
         </Button>
-        <Button className={style.batchDownLoad} disabled={selectedRowKeys.length === 0} onClick={batchDownLoadHandle}>
+        <Button
+          className={style.batchDownLoad}
+          disabled={selectedRowKeys.length === 0 || recordItem?.status !== 0}
+          onClick={batchDownLoadHandle}
+        >
           批量下载
         </Button>
       </div>
