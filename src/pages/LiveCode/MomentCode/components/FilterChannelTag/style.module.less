@@ -1,0 +1,60 @@
+// FilterChannelTag
+.wrap {
+  display: flex;
+}
+.tag {
+  border: none;
+  border-radius: 8px;
+}
+.addTag {
+  border-radius: 16px;
+  color: #40a9ff;
+  border-color: #40a9ff;
+}
+// TagModal
+.collapse {
+  border: none;
+  .panel {
+    margin-bottom: 10px;
+    border: none;
+    border-bottom: none;
+    :global {
+      .ant-collapse-content {
+        border: none;
+      }
+      .ant-collapse-header {
+        height: 44px;
+        background: #f7f7f8;
+        border-radius: 8px;
+      }
+      .ant-collapse-expand-icon {
+        order: 999;
+      }
+    }
+  }
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+
+  .tagItem {
+    margin-bottom: 20px;
+    margin-right: 10px;
+    height: 28px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0);
+    border-radius: 8px;
+    border: 1px solid #999aa1;
+    font-size: 14px;
+    font-weight: 400;
+    color: #7e8185;
+    line-height: 28px;
+    cursor: pointer;
+
+    &.active {
+      background: #1890ff;
+      color: #ffffff;
+    }
+  }
+}

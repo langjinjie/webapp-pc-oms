@@ -424,6 +424,26 @@ export const routes: RouteProps[] = [
   {
     path: '/connection',
     component: lazy(() => import('src/pages/Marketing/Connection/Connection'))
+  },
+  /**
+   * 渠道活码
+   */
+  // 群活码
+  {
+    path: '/momentCode',
+    component: lazy(() => import('src/pages/LiveCode/MomentCode/MomentCode'))
+  },
+  // {
+  //   path: '/momentCode/addCode'
+  //   // component: lazy(() => import('src/pages/LiveCode/MomentCode/AddCode/AddCode'))
+  // }
+  {
+    path: '/momentCode/addCode',
+    component: lazy(() => import('src/pages/LiveCode/MomentCode/AddCode/AddCode'))
+  },
+  {
+    path: '/channelTag',
+    component: lazy(() => import('src/pages/Operation/ChannelTag/ChannelTag'))
   }
 ];
 

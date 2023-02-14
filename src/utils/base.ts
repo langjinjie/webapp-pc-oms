@@ -129,13 +129,14 @@ export const throttle = (fn: { apply: (arg0: any, arg1: any) => void }, interval
  * @param data
  * @param fileName
  */
-export const exportFile = (data: BlobPart, fileName: string): void => {
+export const exportFile = (data: BlobPart, fileName: string, suffix = 'xlsx'): void => {
+  console.log('suffix', suffix);
   const blob = new Blob([data]);
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.style.display = 'none';
   link.href = url;
-  link.setAttribute('download', fileName + '.xlsx');
+  link.setAttribute('download', fileName + '.' + suffix);
   document.body.appendChild(link);
   link.click(); // 点击下载
   link.remove(); // 下载完成移除元素
