@@ -32,7 +32,8 @@ const AccessChat: React.FC<IAccessChatProps> = ({ value, onChange, disabled }) =
     setAccessChatModalVisivle(false);
   };
 
-  const onOkHandle = () => {
+  const onOkHandle = async () => {
+    await form.validateFields();
     const { addChat, chatCode, expireDate } = form.getFieldsValue();
     if (chatId) {
       const item: any = value?.find((findItem) => findItem.chatId === chatId) || {};
@@ -141,13 +142,18 @@ const AccessChat: React.FC<IAccessChatProps> = ({ value, onChange, disabled }) =
       >
         <Form form={form}>
           {/* chatId chatName */}
-          <Item label="企业微信群" name="addChat" required extra="员工或管理员可在企业微信后台或移动客户端">
+          <Item
+            label="企业微信群"
+            name="addChat"
+            rules={[{ required: true, message: '请选择客户群' }]}
+            extra="员工或管理员可在企业微信后台或移动客户端"
+          >
             <ChooseMoment />
           </Item>
           <Item
             label="群二维码"
             name="chatCode"
-            required
+            rules={[{ required: true, message: '请上传群二维码' }]}
             extra="群二维码需和客户群对应；支持jpg/png格式图片，且大小不超过2M"
           >
             <ImageUpload />
@@ -155,7 +161,7 @@ const AccessChat: React.FC<IAccessChatProps> = ({ value, onChange, disabled }) =
           <Item
             label="群码有效期"
             name="expireDate"
-            required
+            rules={[{ required: true, message: '请选择群有效期' }]}
             extra="群二维码有效期为7天，请选择实际客户群二维码的有效日期"
           >
             <DatePicker className={style.datePicker} />

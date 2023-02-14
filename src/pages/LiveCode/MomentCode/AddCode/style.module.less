@@ -22,6 +22,20 @@
       min-height: 600px;
     }
   }
+  // 接入群聊列表
+  .codeListItem {
+    display: flex;
+    flex-wrap: nowrap;
+    &::before {
+      display: inline-block;
+      margin-right: 4px;
+      color: #ff4d4f;
+      font-size: 14px;
+      font-family: SimSun, sans-serif;
+      line-height: 1;
+      content: '*';
+    }
+  }
   // 手机预览
   .preview {
     position: absolute;

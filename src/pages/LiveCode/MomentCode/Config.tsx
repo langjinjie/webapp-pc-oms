@@ -60,7 +60,17 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
   };
   return [
     { title: '群活码ID', dataIndex: 'liveId' },
-    { title: '群活码名称', dataIndex: 'name' },
+    {
+      title: '群活码名称',
+      dataIndex: 'name',
+      render (name: string) {
+        return (
+          <span className={classNames(style.codeName, 'ellipsis')} title={name}>
+            {name || UNKNOWN}
+          </span>
+        );
+      }
+    },
     {
       title: '群活码状态',
       dataIndex: 'status',
@@ -82,6 +92,7 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
     {
       title: '投放渠道',
       dataIndex: 'channel',
+
       render (channel: string) {
         return <>{channel || UNKNOWN}</>;
       }

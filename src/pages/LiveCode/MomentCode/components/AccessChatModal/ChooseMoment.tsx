@@ -40,9 +40,12 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
   // 获取群聊列表
   const getGroupChatList = async (value?: any) => {
     setLoading(true);
-    const { list, total } = await requestGetGroupChatList({ ...value });
-    list && setGroupChatList(list);
-    setPagination((pagination) => ({ ...pagination, total }));
+    const res = await requestGetGroupChatList({ ...value });
+    if (res) {
+      const { list, total } = res;
+      list && setGroupChatList(list);
+      setPagination((pagination) => ({ ...pagination, total }));
+    }
     setLoading(false);
   };
 
@@ -59,7 +62,9 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
 
   // 搜索
   const searchHandle = async () => {
-    await getGroupChatList({ name, pageNum: 1 });
+    const { name } = form.getFieldsValue();
+    await getGroupChatList({ name });
+    setName(name);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
   };
   // 切换分页
@@ -75,6 +80,7 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
       getGroupChatList();
     }
   }, [groupChatListVisible]);
+  // useEffect(() => {}, []);
   return (
     <div>
       <div className={style.chooseChat}>
@@ -100,19 +106,16 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
         onOk={onOkHandle}
         maskClosable={false}
       >
-        <div className={style.inputWrap}>
-          <Input
-            prefix={<Icon name="icon_common_16_seach" />}
-            value={name}
-            onChange={(e) => setName(e.target.value || '')}
-            className={style.searchInput}
-          />
-          <Button className={style.searchBtn} type="primary" onClick={searchHandle}>
-            搜索
-          </Button>
-        </div>
-        <Spin tip="加载中..." spinning={loading}>
-          <Form form={form}>
+        <Form form={form}>
+          <div className={style.inputWrap}>
+            <Item name="name" className={style.item}>
+              <Input prefix={<Icon name="icon_common_16_seach" />} className={style.searchInput} />
+            </Item>
+            <Button className={style.searchBtn} type="primary" onClick={searchHandle}>
+              搜索
+            </Button>
+          </div>
+          <Spin tip="加载中..." spinning={loading}>
             <Item name="chooseChat">
               <Radio.Group className={style.gruopWrap}>
                 {groupChatList.map((mapItem) => (
@@ -134,8 +137,8 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
                 ))}
               </Radio.Group>
             </Item>
-          </Form>
-        </Spin>
+          </Spin>
+        </Form>
         <Pagination size="small" {...pagination} onChange={paginationChange} showSizeChanger={false} />
       </Modal>
     </div>

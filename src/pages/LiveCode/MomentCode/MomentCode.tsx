@@ -133,7 +133,7 @@ const MomentCode: React.FC = () => {
           <Item label="投放渠道" name="channel">
             <Select
               options={channelTagList}
-              fieldNames={{ label: 'tagName', value: 'tagId' }}
+              fieldNames={{ label: 'tagName', value: 'tagName' }}
               placeholder="请选择"
               allowClear
             />

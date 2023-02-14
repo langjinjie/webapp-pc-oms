@@ -22,7 +22,7 @@ const AddCode: React.FC = () => {
 
   const [form] = Form.useForm();
   const { Item } = Form;
-  const { TextArea } = Input;
+  // const { TextArea } = Input;
 
   const history = useHistory();
   const location = useLocation();
@@ -105,7 +105,7 @@ const AddCode: React.FC = () => {
             <Item
               label="活码名称"
               name="name"
-              // rules={[{ required: true, max: 30, message: '请输入30个字以内的任务名称' }]}
+              rules={[{ required: true, max: 30, message: '请输入30个字以内的活码名称' }]}
             >
               <Input
                 placeholder="待输入"
@@ -147,11 +147,11 @@ const AddCode: React.FC = () => {
               {/* <Input placeholder="请输入链接" className={style.input} /> */}
             </Item>
             <Item label="客户引导话术" name="customerWord">
-              <TextArea
-                className={style.textArea}
+              <Input
+                className={style.input}
                 placeholder="如无法进群，请及时联系我"
                 showCount
-                maxLength={120}
+                maxLength={30}
                 disabled={readOnly}
               />
             </Item>
@@ -163,7 +163,12 @@ const AddCode: React.FC = () => {
         <div className={style.panel}>
           <div className={style.title}>群二维码管理</div>
           <div className={classNames(style.content, style.previewContent)}>
-            <Item name="codeList">
+            <Item
+              name="codeList"
+              className={style.codeListItem}
+              required
+              rules={[{ required: true, message: '请接入群聊' }]}
+            >
               <AccessChatModal disabled={readOnly} />
             </Item>
 
