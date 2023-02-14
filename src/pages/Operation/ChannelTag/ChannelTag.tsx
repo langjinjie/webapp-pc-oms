@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal } from 'antd';
 import React, { Key, useEffect, useState } from 'react';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { SearchCols, TableColumns } from 'src/pages/Operation/ChannelTag/Config';
 import { IChannelItem } from './Config';
 import {
@@ -154,6 +154,7 @@ const ChannelTag: React.FC = () => {
   };
 
   const rowSelection: any = {
+    hideSelectAll: true,
     selectedRowKeys: selectedRowKeys,
     onChange: (selectedRowKeys: Key[], records: IChannelItem[]) => {
       setSelectedRowKeys(selectedRowKeys);
@@ -172,10 +173,14 @@ const ChannelTag: React.FC = () => {
     <>
       <h1>渠道标签</h1>
       <div className={style.content}>
-        <NgFormSearch onSearch={onSearchHandle} searchCols={SearchCols} onReset={onResetHandle} />
-        <Button className={style.addBtn} type="primary" icon={<PlusOutlined />} onClick={addTagHandle}>
-          新增渠道标签
-        </Button>
+        <AuthBtn path="/query">
+          <NgFormSearch onSearch={onSearchHandle} searchCols={SearchCols} onReset={onResetHandle} />
+        </AuthBtn>
+        <AuthBtn path="/add">
+          <Button className={style.addBtn} type="primary" icon={<PlusOutlined />} onClick={addTagHandle}>
+            新增渠道标签
+          </Button>
+        </AuthBtn>
         <NgTable
           setRowKey={(record: IChannelItem) => record.groupId}
           className={style.table}
@@ -187,22 +192,26 @@ const ChannelTag: React.FC = () => {
           paginationChange={paginationChange}
         />
         <div className={style.batch}>
-          <Button
-            className={style.batchStop}
-            loading={btnLoading}
-            disabled={recordItem?.status === 2 || selectedRowKeys.length === 0}
-            onClick={() => batchManageHandle(1)}
-          >
-            批量停用
-          </Button>
-          <Button
-            className={style.batchDel}
-            loading={btnLoading}
-            disabled={selectedRowKeys.length === 0}
-            onClick={() => batchManageHandle(2)}
-          >
-            批量删除
-          </Button>
+          <AuthBtn path="/batchStop">
+            <Button
+              className={style.batchStop}
+              loading={btnLoading}
+              disabled={recordItem?.status === 2 || selectedRowKeys.length === 0}
+              onClick={() => batchManageHandle(1)}
+            >
+              批量停用
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/batchDelete">
+            <Button
+              className={style.batchDel}
+              loading={btnLoading}
+              disabled={selectedRowKeys.length === 0}
+              onClick={() => batchManageHandle(2)}
+            >
+              批量删除
+            </Button>
+          </AuthBtn>
         </div>
       </div>
       <AddTagModal value={addTagValue} visible={addTagVisible} onCancel={addTagModalOnCancelHandle} onOk={onOkHandle} />

@@ -3,6 +3,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { AuthBtn } from 'src/components';
 
 export interface IChannelItem {
   groupId: string; // 是 标签组id
@@ -84,25 +85,31 @@ export const TableColumns: (
       render (value: IChannelItem) {
         return (
           <>
-            <span className={classNames(style.edit, 'text-primary pointer mr6')} onClick={() => editHandle(value)}>
-              编辑
-            </span>
-            <span
-              className={classNames(
-                style.stop,
-                { disabled: value.canDel === 2 || value.status === 2 },
-                'text-primary pointer mr6'
-              )}
-              onClick={() => manageChannelGroupHandle(value, 1)}
-            >
-              停用
-            </span>
-            <span
-              className={classNames(style.del, { disabled: value.canDel === 2 }, 'text-primary pointer')}
-              onClick={() => manageChannelGroupHandle(value, 2)}
-            >
-              删除
-            </span>
+            <AuthBtn path="/edit">
+              <span className={classNames(style.edit, 'text-primary pointer mr6')} onClick={() => editHandle(value)}>
+                编辑
+              </span>
+            </AuthBtn>
+            <AuthBtn path="/stop">
+              <span
+                className={classNames(
+                  style.stop,
+                  { disabled: value.canDel === 2 || value.status === 2 },
+                  'text-primary pointer mr6'
+                )}
+                onClick={() => manageChannelGroupHandle(value, 1)}
+              >
+                停用
+              </span>
+            </AuthBtn>
+            <AuthBtn path="/delete">
+              <span
+                className={classNames(style.del, { disabled: value.canDel === 2 }, 'text-primary pointer')}
+                onClick={() => manageChannelGroupHandle(value, 2)}
+              >
+                删除
+              </span>
+            </AuthBtn>
           </>
         );
       }

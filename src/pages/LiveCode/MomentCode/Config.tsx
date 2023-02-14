@@ -6,6 +6,7 @@ import { UNKNOWN, downloadImage } from 'src/utils/base';
 import { requestDownloadGroupLiveCode, requestManageGroupLiveCode } from 'src/apis/liveCode';
 import style from './style.module.less';
 import classNames from 'classnames';
+import { AuthBtn } from 'src/components';
 
 export const statusList = [
   { value: 0, label: '正常' },
@@ -126,44 +127,52 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
       render (value: IGroupChatLiveCode) {
         return (
           <>
-            <span
-              className={style.check}
-              onClick={() => history.push('/momentCode/addCode?liveId=' + value.liveId + '&readOnly=true')}
-            >
-              查看
-            </span>
-            <span
-              className={classNames(style.edit, { disabled: value.status === 2 })}
-              onClick={() => editHandle(value)}
-            >
-              编辑
-            </span>
-            <Button
-              className={style.downLoad}
-              disabled={value.status === 2 || value.status === 1}
-              loading={downLoad === value.liveId}
-              onClick={() => downLoadHandle(value)}
-            >
-              下载
-            </Button>
-
-            <Popconfirm
-              title="确认作废该活码吗?"
-              disabled={value.status === 2}
-              onConfirm={() => manageGroupLive(1, value)}
-            >
-              <span className={classNames(style.void, { disabled: value.status === 2 })}>作废</span>
-            </Popconfirm>
-
-            <Popconfirm
-              title="确认删除该活码吗?"
-              onConfirm={() => manageGroupLive(2, value)}
-              disabled={value.status === 1 || value.status === 0}
-            >
-              <span className={classNames(style.del, { disabled: value.status === 0 || value.status === 1 })}>
-                删除
+            <AuthBtn path="/view">
+              <span
+                className={style.check}
+                onClick={() => history.push('/momentCode/addCode?liveId=' + value.liveId + '&readOnly=true')}
+              >
+                查看
               </span>
-            </Popconfirm>
+            </AuthBtn>
+            <AuthBtn path="/edit">
+              <span
+                className={classNames(style.edit, { disabled: value.status === 2 })}
+                onClick={() => editHandle(value)}
+              >
+                编辑
+              </span>
+            </AuthBtn>
+            <AuthBtn path="/download">
+              <Button
+                className={style.downLoad}
+                disabled={value.status === 2 || value.status === 1}
+                loading={downLoad === value.liveId}
+                onClick={() => downLoadHandle(value)}
+              >
+                下载
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/void">
+              <Popconfirm
+                title="确认作废该活码吗?"
+                disabled={value.status === 2}
+                onConfirm={() => manageGroupLive(1, value)}
+              >
+                <span className={classNames(style.void, { disabled: value.status === 2 })}>作废</span>
+              </Popconfirm>
+            </AuthBtn>
+            <AuthBtn path="/delete">
+              <Popconfirm
+                title="确认删除该活码吗?"
+                onConfirm={() => manageGroupLive(2, value)}
+                disabled={value.status === 1 || value.status === 0}
+              >
+                <span className={classNames(style.del, { disabled: value.status === 0 || value.status === 1 })}>
+                  删除
+                </span>
+              </Popconfirm>
+            </AuthBtn>
           </>
         );
       }

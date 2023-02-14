@@ -1,6 +1,6 @@
 import React, { Key, useEffect, useState } from 'react';
 import { Button, DatePicker, Form, Input, message, Modal, Row, Select } from 'antd';
-import { NgTable } from 'src/components';
+import { AuthBtn, NgTable } from 'src/components';
 import { tableColumnsFun, statusList, IGroupChatLiveCode } from './Config';
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
@@ -101,12 +101,19 @@ const MomentCode: React.FC = () => {
 
   // 批量下载
   const batchDownLoadHandle = async () => {
-    const res = await requestDownloadGroupLiveCode({ liveIdList: selectedRowKeys });
-    if (res) {
-      const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
-      exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
-      setSelectedRowKeys([]);
-    }
+    Modal.confirm({
+      title: '操作提醒',
+      centered: true,
+      content: `此次下载${selectedRowKeys.length}条数据，确定要下载吗？`,
+      async onOk () {
+        const res = await requestDownloadGroupLiveCode({ liveIdList: selectedRowKeys });
+        if (res) {
+          const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
+          exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
+          setSelectedRowKeys([]);
+        }
+      }
+    });
   };
   // 作废/删除 1-作废 2-删除
   const batchManageGroupLive = (type: number) => {
@@ -130,51 +137,55 @@ const MomentCode: React.FC = () => {
   return (
     <div className={style.wrap}>
       <h1>群活码列表</h1>
-      <Form className={style.form} form={form} onFinish={onFinishHandle} onReset={onResetHandle}>
-        <Row>
-          <Item label="群活码ID" name="liveId">
-            <Input placeholder="请输入" allowClear />
-          </Item>
-          <Item label="群活码名称" name="name">
-            <Input placeholder="请输入" allowClear />
-          </Item>
-          <Item label="投放渠道" name="channel">
-            <Select
-              options={channelTagList}
-              fieldNames={{ label: 'tagName', value: 'tagName' }}
-              placeholder="请选择"
-              allowClear
-            />
-          </Item>
-          <Item label="活码状态" name="status">
-            <Select options={statusList} placeholder="请选择" allowClear />
-          </Item>
-        </Row>
-        <Row>
-          <Item label="创建时间" name="createTime">
-            <RangePicker allowClear />
-          </Item>
-          <Item label="更新时间" name="updateTime">
-            <RangePicker allowClear />
-          </Item>
-          <Button className={style.submitBtn} type="primary" htmlType="submit" loading={tableLoading}>
-            查询
+      <AuthBtn path="/query">
+        <Form className={style.form} form={form} onFinish={onFinishHandle} onReset={onResetHandle}>
+          <Row>
+            <Item label="群活码ID" name="liveId">
+              <Input placeholder="请输入" allowClear />
+            </Item>
+            <Item label="群活码名称" name="name">
+              <Input placeholder="请输入" allowClear />
+            </Item>
+            <Item label="投放渠道" name="channel">
+              <Select
+                options={channelTagList}
+                fieldNames={{ label: 'tagName', value: 'tagName' }}
+                placeholder="请选择"
+                allowClear
+              />
+            </Item>
+            <Item label="活码状态" name="status">
+              <Select options={statusList} placeholder="请选择" allowClear />
+            </Item>
+          </Row>
+          <Row>
+            <Item label="创建时间" name="createTime">
+              <RangePicker allowClear />
+            </Item>
+            <Item label="更新时间" name="updateTime">
+              <RangePicker allowClear />
+            </Item>
+            <Button className={style.submitBtn} type="primary" htmlType="submit" loading={tableLoading}>
+              查询
+            </Button>
+            <Button className={style.resetBtn} htmlType="reset" loading={tableLoading}>
+              重置
+            </Button>
+          </Row>
+        </Form>
+      </AuthBtn>
+      <AuthBtn path="/add">
+        <div className={style.addCode}>
+          <Button
+            className={style.addCodeBtn}
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => history.push('/momentCode/addCode')}
+          >
+            新增群活码
           </Button>
-          <Button className={style.resetBtn} htmlType="reset" loading={tableLoading}>
-            重置
-          </Button>
-        </Row>
-      </Form>
-      <div className={style.addCode}>
-        <Button
-          className={style.addCodeBtn}
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => history.push('/momentCode/addCode')}
-        >
-          新增群活码
-        </Button>
-      </div>
+        </div>
+      </AuthBtn>
       <NgTable
         rowKey="liveId"
         columns={tableColumnsFun({ updateListHandle: () => getList({ ...formParam, ...pagination }) })}
@@ -186,27 +197,33 @@ const MomentCode: React.FC = () => {
         loading={tableLoading}
       />
       <div className={style.batch}>
-        <Button
-          className={style.batchVoid}
-          disabled={selectedRowKeys.length === 0 || recordItem?.status === 2}
-          onClick={() => batchManageGroupLive(1)}
-        >
-          批量作废
-        </Button>
-        <Button
-          className={style.batchDel}
-          disabled={selectedRowKeys.length === 0 || recordItem?.status !== 2}
-          onClick={() => batchManageGroupLive(2)}
-        >
-          批量删除
-        </Button>
-        <Button
-          className={style.batchDownLoad}
-          disabled={selectedRowKeys.length === 0 || recordItem?.status !== 0}
-          onClick={batchDownLoadHandle}
-        >
-          批量下载
-        </Button>
+        <AuthBtn path="/batchVoid">
+          <Button
+            className={style.batchVoid}
+            disabled={selectedRowKeys.length === 0 || recordItem?.status === 2}
+            onClick={() => batchManageGroupLive(1)}
+          >
+            批量作废
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/batchDelete">
+          <Button
+            className={style.batchDel}
+            disabled={selectedRowKeys.length === 0 || recordItem?.status !== 2}
+            onClick={() => batchManageGroupLive(2)}
+          >
+            批量删除
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/batchDownload">
+          <Button
+            className={style.batchDownLoad}
+            disabled={selectedRowKeys.length === 0 || recordItem?.status !== 0}
+            onClick={batchDownLoadHandle}
+          >
+            批量下载
+          </Button>
+        </AuthBtn>
       </div>
     </div>
   );
