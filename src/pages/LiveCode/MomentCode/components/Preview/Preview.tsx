@@ -30,11 +30,15 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
         </header>
         <div className={classNames(style.content, { [style.isMoment]: isMoment })}>
           <div className={style.banner}>
-            <div className={style.name}>{value?.name}</div>
-            <div className={style.word}>{value?.word}</div>
+            <div className={classNames(style.name, 'two-line-ellipsis')} title={value?.name}>
+              {value?.name}
+            </div>
+            <div className={classNames(style.word, 'two-line-ellipsis')} title={value?.word}>
+              {value?.word}
+            </div>
           </div>
           <div className={style.groupChat}>
-            <div className={style.chatName}>{value?.codeList?.[0]?.chatName}</div>
+            <div className={classNames(style.chatName, 'ellipsis')}>{value?.codeList?.[0]?.chatName}</div>
             <img className={style.chatCode} src={value?.codeList?.[0]?.chatCode} alt="群二维码" />
             <div className={style.scanTip}>长按识别二维码</div>
             <div className={style.customerTip}>若无法扫码进群，请联系客服</div>

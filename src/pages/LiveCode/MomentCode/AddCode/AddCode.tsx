@@ -178,9 +178,14 @@ const AddCode: React.FC = () => {
             <Item label="活码头像" name="logo" extra="建议上传尺寸：50*50px，图片比例1:1，大小不超过2MB">
               <ImageUpload disabled={readOnly} />
             </Item>
-            <Item label="投放渠道" required>
+            <Item label="渠道标签">
               <div className={style.channelTag}>
-                <Item name="channelTagList" label="投放渠道标签">
+                <Item
+                  name="channelTagList"
+                  label="投放渠道标签"
+                  rules={[{ required: true, message: '请选择投放渠道' }]}
+                  extra="*未找到适合的渠道，请联系管理员进行新增"
+                >
                   <Radio.Group disabled={readOnly}>
                     {channelTagList.map((tagItem) => (
                       <Radio key={tagItem.tagId} value={tagItem.tagId}>

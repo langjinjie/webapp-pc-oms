@@ -93,19 +93,21 @@ const AccessChat: React.FC<IAccessChatProps> = ({ value, onChange, disabled }) =
           record.codeId + record.chatId + record.expireDate + record.chatCode + record.chatName
         }
         className={style.table}
-        scroll={{ x: 550 }}
+        scroll={{ x: 600 }}
         dataSource={value}
         columns={[
           {
             title: '群二维码',
+            width: 100,
             render (value: ICodeList) {
               return <Image title="" width={48} height={48} src={value.chatCode} />;
             }
           },
-          { title: '群名称', dataIndex: 'chatName' },
-          { title: '群二维码有效期', dataIndex: 'expireDate' },
+          { title: '群名称', dataIndex: 'chatName', ellipsis: true },
+          { title: '群二维码有效期', dataIndex: 'expireDate', width: 130 },
           {
             title: '操作',
+            width: 100,
             render (value: ICodeList) {
               return (
                 <>
