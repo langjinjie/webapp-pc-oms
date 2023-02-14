@@ -458,3 +458,47 @@ export const batchDeleteMoment: HttpFunction = (param: object) => {
 export const connectionTransform: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/shorturl/create', param);
 };
+// 1.1、查询视频列表
+export const getVideoList: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/list', param);
+};
+// 1.2、查询视频详情
+export const getVideoDetail: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/detail', param);
+};
+// 1.3、新增/编辑视频
+export const editVideo: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/edit', param);
+};
+// 1.4、视频管理接口(上架/下架/删除)
+export const operateVideoItem: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/manage', param);
+};
+// 1.5、视频置顶/取消置顶接口
+export const topVideoItem: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/top', param);
+};
+// 1.6、视频保存可见范围接口
+export const setVideoScope: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/batch/setscope', param);
+};
+// 1.7、查询视频分类列表
+export const getVideoTypeList: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/typeList', param);
+};
+// 1.8、新增视频分类
+export const addVideoType: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/typeadd', param);
+};
+// 1.9、保存视频分类排序接口
+export const sortVideoType: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/typesavesort', param);
+};
+// 1.10、删除视频分类
+export const delVideoType: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/typedel', param);
+};
+// 1.11、视频上传接口
+export const uploadVideo: HttpFunction = (param: object) => {
+  return http.post('/tenacity-admin/api/video/upload', param);
+};
