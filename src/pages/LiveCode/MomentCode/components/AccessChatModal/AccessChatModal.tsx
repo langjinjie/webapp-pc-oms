@@ -58,6 +58,12 @@ const AccessChat: React.FC<IAccessChatProps> = ({ value, onChange, disabled }) =
     form.resetFields();
   };
 
+  // 接入群聊
+  const addGroupHandle = () => {
+    form.resetFields();
+    setAccessChatModalVisivle(true);
+  };
+
   // 编辑群聊
   const editChat = (value: ICodeList) => {
     if (disabled) return;
@@ -80,12 +86,7 @@ const AccessChat: React.FC<IAccessChatProps> = ({ value, onChange, disabled }) =
 
   return (
     <>
-      <Button
-        className={style.addMoment}
-        icon={<PlusOutlined />}
-        onClick={() => setAccessChatModalVisivle(true)}
-        disabled={disabled}
-      >
+      <Button className={style.addMoment} icon={<PlusOutlined />} onClick={addGroupHandle} disabled={disabled}>
         接入群聊
       </Button>
       <div className={style.tips}>入群人数超过200人将自动切换到下一个群</div>

@@ -25,6 +25,7 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
   const [pagination, setPagination] = useState<IPagination>({ current: 1, pageSize: 10, total: 0 });
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [chooseChat, setChooseChat] = useState<IGroupChat>();
 
   const { Item } = Form;
   const [form] = Form.useForm();
@@ -33,7 +34,8 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
     setGroupChatListVisible(false);
   };
   const onOkHandle = () => {
-    onChange?.(form.getFieldsValue().chooseChat);
+    console.log('chooseChat', chooseChat);
+    onChange?.(chooseChat);
     onCancelHandle();
   };
 
@@ -72,15 +74,29 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
     setPagination((pagination) => ({ ...pagination, current: page, pageSize }));
     getGroupChatList({ pageNum: page, name });
   };
+
+  const onValuesChangeHandle = (changedValues: any) => {
+    const keys = Object.entries(changedValues)?.[0];
+    if (keys[0] === 'chatId') {
+      const chooseChat = groupChatList.find((findItem) => findItem.chatId === keys[1]);
+      if (chooseChat) {
+        const { name: chatName } = chooseChat;
+        setChooseChat({ ...chooseChat, chatName });
+      }
+    }
+  };
+
   useEffect(() => {
     // 每次进入弹窗都在第一页并且搜索条件为空
-    if (groupChatListVisible && (groupChatList.length === 0 || name || pagination.current !== 1)) {
-      setPagination((pagination) => ({ ...pagination, current: 1 }));
-      setName('');
-      getGroupChatList();
+    if (groupChatListVisible) {
+      form.setFieldsValue({ name: '', chatId: value?.chatId || '' });
+      if (groupChatList.length === 0 || name || pagination.current !== 1) {
+        setPagination((pagination) => ({ ...pagination, current: 1 }));
+        setName('');
+        getGroupChatList();
+      }
     }
   }, [groupChatListVisible]);
-  // useEffect(() => {}, []);
   return (
     <div>
       <div className={style.chooseChat}>
@@ -105,8 +121,11 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
         onCancel={onCancelHandle}
         onOk={onOkHandle}
         maskClosable={false}
+        okButtonProps={{
+          disabled: !chooseChat
+        }}
       >
-        <Form form={form}>
+        <Form form={form} onValuesChange={onValuesChangeHandle}>
           <div className={style.inputWrap}>
             <Item name="name" className={style.item}>
               <Input prefix={<Icon name="icon_common_16_seach" />} className={style.searchInput} />
@@ -116,14 +135,10 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
             </Button>
           </div>
           <Spin tip="加载中..." spinning={loading}>
-            <Item name="chooseChat">
+            <Item name="chatId">
               <Radio.Group className={style.gruopWrap}>
                 {groupChatList.map((mapItem) => (
-                  <Radio
-                    key={mapItem.chatId}
-                    className={style.radioItem}
-                    value={{ chatId: mapItem.chatId, chatName: mapItem.name }}
-                  >
+                  <Radio key={mapItem.chatId} className={style.radioItem} value={mapItem.chatId}>
                     {/* <div className={style.radioLabel}> */}
                     {/* <Image className={style.gruopImg} src={require(mapItem.)} /> */}
                     <div className={style.chatGroupInfo}>

@@ -15,9 +15,9 @@ interface IModalProps {
   onChange?: (value?: IChannelTagList[]) => void;
 }
 
-const TagModal: React.FC<IModalProps> = ({ visible, onCancel, onChange }) => {
+const TagModal: React.FC<IModalProps> = ({ visible, value, onCancel, onChange }) => {
   const [groupList, setGroupList] = useState<IChannelItem[]>([]);
-  const [chooseTags, setChooseTags] = useState<IChannelTagList[]>([]);
+  const [chooseTags, setChooseTags] = useState<IChannelTagList[]>();
 
   const history = useHistory();
   // 获取渠道标签
@@ -30,10 +30,10 @@ const TagModal: React.FC<IModalProps> = ({ visible, onCancel, onChange }) => {
   // 选择标签
   const handleTagClick = (item: IChannelTagList) => {
     let newChooseTags = [];
-    if (chooseTags.some((tagItem) => tagItem.tagId === item.tagId)) {
+    if (chooseTags?.some((tagItem) => tagItem.tagId === item.tagId)) {
       newChooseTags = chooseTags.filter((filterItem) => filterItem.tagId !== item.tagId);
     } else {
-      newChooseTags = [...chooseTags, item];
+      newChooseTags = [...(chooseTags || []), item];
     }
     setChooseTags(newChooseTags);
   };
@@ -47,8 +47,9 @@ const TagModal: React.FC<IModalProps> = ({ visible, onCancel, onChange }) => {
     onCancel?.();
   };
   useEffect(() => {
-    if (visible && groupList.length === 0) {
-      getChannelGroupList();
+    if (visible) {
+      setChooseTags(value);
+      groupList.length === 0 && getChannelGroupList();
     }
   }, [visible]);
   return (
