@@ -4,6 +4,7 @@ import { requestGetChannelGroupList } from 'src/apis/channelTag';
 import { IChannelTagList, IChannelItem } from 'src/pages/Operation/ChannelTag/Config';
 import style from './style.module.less';
 import classNames from 'classnames';
+import { useHistory } from 'react-router-dom';
 
 const { Panel } = Collapse;
 
@@ -17,6 +18,8 @@ interface IModalProps {
 const TagModal: React.FC<IModalProps> = ({ visible, onCancel, onChange }) => {
   const [groupList, setGroupList] = useState<IChannelItem[]>([]);
   const [chooseTags, setChooseTags] = useState<IChannelTagList[]>([]);
+
+  const history = useHistory();
   // 获取渠道标签
   const getChannelGroupList = async () => {
     const res = await requestGetChannelGroupList({ pageSize: 999, status: 1 });
@@ -38,21 +41,18 @@ const TagModal: React.FC<IModalProps> = ({ visible, onCancel, onChange }) => {
     onChange?.(chooseTags);
     onCancel?.();
   };
+  // 添加渠道标签
+  const addTagHandle = () => {
+    history.push('/channelTag');
+    onCancel?.();
+  };
   useEffect(() => {
     if (visible && groupList.length === 0) {
       getChannelGroupList();
     }
   }, [visible]);
   return (
-    <Modal
-      title="添加标签"
-      centered
-      className={style.wrap}
-      visible={visible}
-      onCancel={onCancel}
-      onOk={onOkHandle}
-      maskClosable={false}
-    >
+    <Modal title="添加标签" centered visible={visible} onCancel={onCancel} onOk={onOkHandle} maskClosable={false}>
       {groupList.length === 0 || (
         <Collapse className={style.collapse} defaultActiveKey={['0']}>
           {groupList.map((groupItem) => (
@@ -74,6 +74,12 @@ const TagModal: React.FC<IModalProps> = ({ visible, onCancel, onChange }) => {
           ))}
         </Collapse>
       )}
+      <div className={style.addChannelTag}>
+        *如未找到适合的标签或需编辑标签，
+        <span className={style.goAdd} onClick={addTagHandle}>
+          去标签页面进行修改
+        </span>
+      </div>
     </Modal>
   );
 };
