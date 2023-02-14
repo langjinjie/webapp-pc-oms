@@ -84,20 +84,27 @@ const ChannelTag: React.FC = () => {
 
   // 停用/删除
   const manageChannelGroupHandle = async (value: IChannelItem, type: number) => {
-    const res = await requestEditChannelGroupIsUse({ groupId: value.groupId });
-    if (res.isUsed === 1) {
-      return Modal.warning({
-        title: '操作提醒',
-        centered: true,
-        content: `该数据已被使用，无法${type === 1 ? '停用' : '删除'}`
-      });
-    }
+    // canDel === 2 不能删除和停用 || 已被停用的数据不能在被停用
     if (value.canDel === 2 || (type === 1 && value.status === 2)) {
       return Modal.warning({ title: '操作提醒', centered: true, content: `该数据无法${type === 1 ? '停用' : '删除'}` });
     }
+    const res = await requestEditChannelGroupIsUse({ groupId: value.groupId });
+    // 已被使用的数据不能删除
+    if (type === 2 && res.isUsed === 1) {
+      return Modal.warning({
+        title: '操作提醒',
+        centered: true,
+        content: '该数据已被使用，无法删除'
+      });
+    }
+    // 可以正常被删除和停用二确
     Modal.confirm({
       title: '操作提示',
-      content: `确定${type === 1 ? '停用' : '删除'}标签组吗？`,
+      content: `${
+        res.isUsed === 1
+          ? '该数据已被使用，如果停用的话，则所有的历史标签数据不做修改，但是未来此标签则不会展示。确定停用标签组吗？'
+          : `确定${type === 1 ? '停用' : '删除'}标签组吗？`
+      }`,
       async onOk () {
         const res = await requestManageChannelGroup({ type, groupIdList: [value.groupId] });
         if (res) {
@@ -113,16 +120,22 @@ const ChannelTag: React.FC = () => {
   const batchManageHandle = async (type: number) => {
     const batchIsUse = selectedRowKeys.map((key) => requestEditChannelGroupIsUse({ groupId: key }));
     const res = await Promise.all(batchIsUse);
-    if (res.some((item) => item.isUsed === 1)) {
+    if (type === 2 && res.some((item) => item.isUsed === 1)) {
       return Modal.warn({
         title: '操作提醒',
         centered: true,
-        content: `有已被使用的标签组，无法${type === 1 ? '停用' : '删除'}`
+        content: '有已被使用的标签组，无法删除'
       });
     } else {
       Modal.confirm({
         title: '操作提示',
-        content: `确定批量${type === 1 ? '停用' : '删除'}标签组吗？`,
+        content: `
+        ${
+          res.some((item) => item.isUsed === 1)
+            ? '有已被使用的标签组，如果停用的话，则所有的历史标签数据不做修改，但是未来此标签则不会展示。确定停用标签组吗？'
+            : `确定批量${type === 1 ? '停用' : '删除'}标签组吗？`
+        }
+        `,
         async onOk () {
           setBtnLoading(true);
           const res = await requestManageChannelGroup({ type, groupIdList: selectedRowKeys });
