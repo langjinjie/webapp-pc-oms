@@ -147,9 +147,11 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
             <Popconfirm
               title="确认删除该活码吗?"
               onConfirm={() => manageGroupLive(2, value)}
-              disabled={value.status === 1}
+              disabled={value.status === 1 || value.status === 0}
             >
-              <span className={style.del}>删除</span>
+              <span className={classNames(style.del, { disabled: value.status === 0 || value.status === 1 })}>
+                删除
+              </span>
             </Popconfirm>
           </>
         );

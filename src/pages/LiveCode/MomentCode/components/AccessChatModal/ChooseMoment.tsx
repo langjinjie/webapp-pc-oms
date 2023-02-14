@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, /* Image, */ Input, Modal, Pagination, Radio, Spin } from 'antd';
+import { Button, Form, /* Image, */ Input, message, Modal, Pagination, Radio, Spin } from 'antd';
 import { requestSyncGroupChat, requestGetGroupChatList } from 'src/apis/liveCode';
 import style from './style.module.less';
 import { Icon } from 'src/components';
@@ -40,14 +40,23 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
   // 获取群聊列表
   const getGroupChatList = async (value?: any) => {
     setLoading(true);
-    const res = await requestSyncGroupChat();
-    if (res) {
-      const { list, total } = await requestGetGroupChatList({ ...value });
-      list && setGroupChatList(list);
-      setPagination((pagination) => ({ ...pagination, total }));
-    }
+    const { list, total } = await requestGetGroupChatList({ ...value });
+    list && setGroupChatList(list);
+    setPagination((pagination) => ({ ...pagination, total }));
     setLoading(false);
   };
+
+  // 更新列表
+  const updateListHandle = async () => {
+    const res = await requestSyncGroupChat();
+    if (res) {
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
+      setName('');
+      await getGroupChatList();
+      message.success('数据更新成功');
+    }
+  };
+
   // 搜索
   const searchHandle = async () => {
     await getGroupChatList({ name, pageNum: 1 });
@@ -59,7 +68,10 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
     getGroupChatList({ pageNum: page, name });
   };
   useEffect(() => {
-    if (groupChatListVisible) {
+    // 每次进入弹窗都在第一页并且搜索条件为空
+    if (groupChatListVisible && (groupChatList.length === 0 || name || pagination.current !== 1)) {
+      setPagination((pagination) => ({ ...pagination, current: 1 }));
+      setName('');
       getGroupChatList();
     }
   }, [groupChatListVisible]);
@@ -72,7 +84,15 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
         </Button>
       </div>
       <Modal
-        title="群聊列表"
+        title={
+          <>
+            群聊列表
+            <span className="ml10 text-primary font14 pointer " onClick={updateListHandle}>
+              <Icon className="font16" name="tongbu" />
+              更新数据
+            </span>
+          </>
+        }
         centered
         width={480}
         visible={groupChatListVisible}

@@ -6,6 +6,7 @@ import classNames from 'classnames';
 export interface IGroupLive {
   name: string; // 是
   word: string; // 是
+  customerWord: string; //
   codeList: {
     chatName: string; // 是
     chatCode: string; // 是
@@ -41,7 +42,9 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
             <div className={classNames(style.chatName, 'ellipsis')}>{value?.codeList?.[0]?.chatName}</div>
             <img className={style.chatCode} src={value?.codeList?.[0]?.chatCode} alt="群二维码" />
             <div className={style.scanTip}>长按识别二维码</div>
-            <div className={style.customerTip}>若无法扫码进群，请联系客服</div>
+            <div className={classNames(style.customerTip, 'two-line-ellipsis')} title={value?.customerWord}>
+              {value?.customerWord || '若无法扫码进群，请联系客服'}
+            </div>
           </div>
         </div>
         <div className={style.footerLine} />

@@ -44,7 +44,7 @@ const AddCode: React.FC = () => {
     if (liveId) {
       const res = await requestGetGroupLiveCodeDetail({ liveId });
       form.setFieldsValue({ ...res, channelTagList: res.channelTagList[0]?.tagId || '' });
-      setPreviewValue({ name: res.name, word: res.word, codeList: res.codeList });
+      setPreviewValue({ name: res.name, word: res.word, codeList: res.codeList, customerWord: res.customerWord });
     }
   };
 
@@ -68,7 +68,7 @@ const AddCode: React.FC = () => {
   //
   const onValuesChangeHandle = (changedValues: any, values: any) => {
     const key = Object.keys(changedValues)?.[0];
-    const changedValuesList = ['name', 'word', 'codeList'];
+    const changedValuesList = ['name', 'word', 'codeList', 'customerWord'];
     if (changedValuesList.includes(key)) {
       // @ts-ignore
       setPreviewValue((previewValue) => ({ ...previewValue, [key]: values[key] }));
