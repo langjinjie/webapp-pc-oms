@@ -5,6 +5,10 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { SelectStaff, TagModal } from 'src/pages/StaffManage/components';
 import { UserOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
+import classNames from 'classnames';
+import style from './style.module.less';
+import { TagItem } from 'src/utils/interface';
+import { UNKNOWN } from 'src/utils/base';
 
 export const searchCols: SearchCol[] = [
   { type: 'input', label: '客户名称', placeholder: '请输入', name: 'customerName' },
@@ -101,7 +105,35 @@ export const TableColumnsFun = (): ColumnsType<CustomerColumn> => {
     },
     {
       title: '客户标签',
-      dataIndex: 'key5'
+      dataIndex: 'key5',
+      render: (tagList: TagItem[]) => {
+        return (
+          <span
+            className={'ellipsis'}
+            title={tagList
+              ?.map((tagItem) =>
+                tagItem.displayType ? tagItem.groupName?.replace(/兴趣|意愿/g, '') + tagItem.tagName : tagItem.tagName
+              )
+              .toString()
+              .replace(/,/g, '，')}
+          >
+            {tagList?.slice(0, 2).map((mapItem) => (
+              <span
+                key={mapItem.tagId}
+                className={classNames(style.tagItem, {
+                  [style.yellow]: mapItem.modified === 1,
+                  [style.blue]: mapItem.modified === 0
+                })}
+              >
+                {mapItem.displayType === 1 ? mapItem.groupName!.replace(/兴趣|意愿/g, '') : ''}
+                {mapItem.tagName}
+              </span>
+            ))}
+            {tagList?.length > 2 && '...'}
+            {!tagList && UNKNOWN}
+          </span>
+        );
+      }
     },
     {
       title: '添加时间',

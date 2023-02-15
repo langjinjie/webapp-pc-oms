@@ -20,7 +20,7 @@ const CustomerList: React.FC = () => {
       url: require('src/assets/images/avater.jpg'),
       key3: '测试1组',
       key4: '微信',
-      key5: '有车',
+      key5: [],
       key6: '2022-10-23 21:21:03'
     },
     {
@@ -29,7 +29,7 @@ const CustomerList: React.FC = () => {
       url: require('src/assets/images/avater.jpg'),
       key3: '测试1组',
       key4: '活动投放',
-      key5: '客户忠诚度中，保障意识分低，双11线上活动',
+      key5: [],
       key6: '2022-11-23 09:21:45'
     }
   ]);
