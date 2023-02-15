@@ -86,7 +86,18 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
   // 查看用户信息
   const viewClientDetail = (row: IDelStaffList) => {
     history.push(
-      '/deletionReminder/clientDetail?externalUserid=' + row.externalUserid + '&followStaffId=' + row.staffId
+      '/deletionReminder/clientDetail?externalUserid=' + row.externalUserid + '&followStaffId=' + row.staffId,
+      {
+        navList: [
+          {
+            name: '删人提醒',
+            path: '/deletionReminder'
+          },
+          {
+            name: '客户详情'
+          }
+        ]
+      }
     );
   };
   // 查看聊天记录
