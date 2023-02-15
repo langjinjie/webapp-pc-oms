@@ -67,6 +67,16 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
     }
     return isMp4 && isLt100M;
   };
+
+  const beforeUploadImg = (file: any) => {
+    const isJpgPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgPng) {
+      message.error('只能上传 JPG和PNG  格式的图片!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) message.error('图片大小不能超过2MB!');
+    return isJpgPng && isLt2M;
+  };
   return (
     <div className="container">
       <BreadCrumbs navList={[{ name: '视频库', path: '/marketingVideo' }, { name: '新增视频' }]} />
@@ -112,7 +122,7 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
           label="视频封面"
           extra="建议尺寸：400px*400px,图片比例1:1，大小不超过2MB"
         >
-          <NgUpload />
+          <NgUpload beforeUpload={beforeUploadImg} />
         </Form.Item>
         <Form.Item label="视频时长" name="videoTime" rules={[{ required: true }]}>
           <Input className="width240" placeholder="请输入时长，格式如08:58"></Input>
