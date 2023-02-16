@@ -9,9 +9,10 @@ interface ISelectStaffProps {
   onChange?: (value?: any) => void;
   type?: 'staff' | 'dept';
   className?: string;
+  singleChoice?: boolean;
 }
 
-const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'staff', className }) => {
+const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'staff', className, singleChoice }) => {
   const [orgParam, setOrgParam] = useState<{ visible: boolean; add: boolean }>({ visible: false, add: true });
 
   // 取消选择
@@ -49,10 +50,11 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'sta
         selectedDept={type === 'dept'}
         value={value}
         params={orgParam}
-        title="选择客户经理"
+        title={type === 'staff' ? '选择客户经理' : '选择部门'}
         okText={'确认'}
         onChange={onChange}
         checkStrictly={type === 'dept'}
+        singleChoice={singleChoice}
       />
     </>
   );

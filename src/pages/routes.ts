@@ -428,6 +428,15 @@ export const routes: RouteProps[] = [
   /**
    * 渠道活码
    */
+  // 员工活码
+  {
+    path: '/staffCode',
+    component: lazy(() => import('src/pages/LiveCode/StaffCode/StaffCode'))
+  },
+  {
+    path: '/staffCode/addCode',
+    component: lazy(() => import('src/pages/LiveCode/StaffCode/AddCode/AddCode'))
+  },
   // 群活码
   {
     path: '/momentCode',

@@ -19,6 +19,7 @@ interface IAddLotteryListProps extends ModalProps {
   onOk?: (value: any) => void;
   isDeleted?: 0 | 1; // 0：在职 1：离职
   checkStrictly?: boolean; // checkable 状态下节点选择完全受控（父子节点选中状态不再关联）
+  singleChoice?: boolean;
 }
 
 interface ItreeProps {
@@ -43,6 +44,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   onCancel: onClose,
   isDeleted,
   checkStrictly,
+  singleChoice,
   ...props
 }) => {
   const { currentCorpId: corpId } = useContext<{ currentCorpId: string }>(Context);
@@ -100,9 +102,16 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
             (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId, isDeleted })).list.length
           ) {
             // deptId是number类型，需要统一转成跟staffId一样的string类型
-            return { ...item, parentId, name: item.deptName, id: item.deptId.toString(), isLeaf: false };
+            return {
+              ...item,
+              parentId,
+              name: item.deptName,
+              id: item.deptId.toString(),
+              checkable: selectedDept,
+              isLeaf: false
+            };
           } else {
-            return { ...item, parentId, name: item.deptName, id: item.deptId.toString() };
+            return { ...item, parentId, name: item.deptName, checkable: selectedDept, id: item.deptId.toString() };
           }
         })
       );
@@ -157,7 +166,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     } else {
       checked = checke as Key[];
     }
-    setCheckedKeys(checked);
+    setCheckedKeys(singleChoice ? [checked[checked.length - 1]] : checked);
     let newSelectedList = [...selectedList];
 
     if (showStaff) {
@@ -210,7 +219,9 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
         newSelectedList = [...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))];
       }
     }
-    setSelectedList(newSelectedList);
+    setSelectedList(
+      singleChoice ? [newSelectedList.find((findItem) => findItem.id === checked[checked.length - 1])] : newSelectedList
+    );
   };
   // 树列表搜索
   const treeSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -412,6 +423,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
             loadData={onLoadDataHandle}
             // @ts-ignore
             treeData={treeData}
+            multiple={false}
             onExpand={onExpandHandle}
             checkedKeys={checkedKeys}
             onCheck={onCheckHandle}
