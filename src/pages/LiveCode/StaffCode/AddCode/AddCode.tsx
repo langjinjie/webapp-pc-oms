@@ -1,8 +1,8 @@
-import { Button, DatePicker, Form, Input, Radio, RadioChangeEvent, Select } from 'antd';
+import { Button, DatePicker, Form, Input, Radio, RadioChangeEvent, Select, Table } from 'antd';
 import classNames from 'classnames';
 import React, { /* Key, */ useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { BreadCrumbs, Icon, NgTable } from 'src/components';
+import { BreadCrumbs, Icon } from 'src/components';
 import { SelectStaff } from 'src/pages/StaffManage/components';
 import CustomTextArea from 'src/pages/SalesCollection/SpeechManage/Components/CustomTextArea';
 import style from './style.module.less';
@@ -33,7 +33,8 @@ const AddCode: React.FC = () => {
   const [liveType, setLiveType] = useState<number>(); // 活码类型
   const [assignType, setAssignType] = useState<number>(); // 分配方式
   const [selectStaffList, setSelectStaffList] = useState<any[]>();
-  // const [staffListSelectKeys, setStaffListSelectKeys] = useState<Key[]>([]);
+  // const [tableDataSource, setTableDataSource] = useState<any[]>([]);
+  const [pageNum, setPageNum] = useState(1);
 
   const [form] = Form.useForm();
   const { Item } = Form;
@@ -51,6 +52,20 @@ const AddCode: React.FC = () => {
   // 活码类型切换
   const liveTypeOnChange = (e: RadioChangeEvent) => {
     setLiveType(e.target.value);
+  };
+
+  // 选择员工
+  const selectStaffOnChange = (value: any) => {
+    setSelectStaffList(value.map((mapItem: any, index: number) => ({ ...mapItem, sort: index + 1 })));
+    // setTableDataSource(value.slice(0, 10));
+    setPageNum(1);
+  };
+
+  // 搜索员工列表
+  const searchStaffList = () => {
+    const { staffName, dept } = form.getFieldsValue();
+    console.log('staffName', staffName);
+    console.log('dept', dept);
   };
 
   useEffect(() => {
@@ -117,7 +132,7 @@ const AddCode: React.FC = () => {
             <Item label="使用成员" name="staffs">
               <SelectStaff
                 value={selectStaffList}
-                onChange={(value) => setSelectStaffList(value)}
+                onChange={selectStaffOnChange}
                 className={style.select}
                 singleChoice={liveType === 1}
               />
@@ -143,20 +158,49 @@ const AddCode: React.FC = () => {
                     <Item label="选择部门" name="dept">
                       <SelectStaff type="dept" className={style.staffListSelect} singleChoice />
                     </Item>
-                    <Button className={style.staffListSearch} type="primary">
+                    <Button className={style.staffListSearch} type="primary" onClick={searchStaffList}>
                       搜索
                     </Button>
                   </div>
 
-                  <NgTable
+                  <Table
+                    rowKey={'id'}
                     className={style.staffList}
                     scroll={{ x: 760 }}
-                    columns={[{ title: '序号' }, { title: '员工姓名' }, { title: '部门' }, { title: '操作' }]}
-                    rowSelection={{
-                      onChange () {
-                        console.log(11);
+                    dataSource={(selectStaffList || []).slice(pageNum * 10 - 10, pageNum * 10)}
+                    pagination={{
+                      current: pageNum,
+                      simple: true,
+                      total: selectStaffList?.length,
+                      onChange (page: number) {
+                        setPageNum(page);
                       }
                     }}
+                    columns={[
+                      {
+                        title: '序号',
+                        render (value: any) {
+                          return <>{value.sort}</>;
+                        }
+                      },
+                      { title: '员工姓名', dataIndex: 'staffName' },
+                      { title: '部门', dataIndex: 'deptName' },
+                      {
+                        title: '操作',
+                        render () {
+                          return (
+                            <>
+                              <span>删除</span>
+                            </>
+                          );
+                        }
+                      }
+                    ]}
+                    // rowSelection={{
+                    //   onChange () {
+                    //     console.log(11);
+                    //   }
+                    // }}
                   />
                   <span>已选中 0/10 个员工</span>
                   <Button className={style.batchDel}>批量删除</Button>

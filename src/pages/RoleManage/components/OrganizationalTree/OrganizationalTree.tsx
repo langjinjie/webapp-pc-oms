@@ -107,11 +107,19 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
               parentId,
               name: item.deptName,
               id: item.deptId.toString(),
-              checkable: selectedDept,
+              // checkable: selectedDept,
+              checkable: !singleChoice,
               isLeaf: false
             };
           } else {
-            return { ...item, parentId, name: item.deptName, checkable: selectedDept, id: item.deptId.toString() };
+            return {
+              ...item,
+              parentId,
+              name: item.deptName,
+              // checkable: selectedDept,
+              checkable: !singleChoice,
+              id: item.deptId.toString()
+            };
           }
         })
       );
