@@ -64,6 +64,14 @@ const AddCode: React.FC = () => {
   // 搜索员工列表
   const searchStaffList = () => {
     const { staffName, dept } = form.getFieldsValue();
+    console.log(selectStaffList?.filter((filterItem) => filterItem.staffName === staffName));
+    setSelectStaffList((selectStaffList) =>
+      selectStaffList?.filter(
+        (filterItem) =>
+          (!staffName || filterItem.staffName === staffName) &&
+          (!dept || filterItem.fullDeptId.split(',').includes(dept.toString()))
+      )
+    );
     console.log('staffName', staffName);
     console.log('dept', dept);
   };
@@ -156,7 +164,7 @@ const AddCode: React.FC = () => {
                       <Input className={style.staffListInput} placeholder="待输入" />
                     </Item>
                     <Item label="选择部门" name="dept">
-                      <SelectStaff type="dept" className={style.staffListSelect} singleChoice />
+                      <SelectStaff type="dept" className={style.staffListSelect} />
                     </Item>
                     <Button className={style.staffListSearch} type="primary" onClick={searchStaffList}>
                       搜索
