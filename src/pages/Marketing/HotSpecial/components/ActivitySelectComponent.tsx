@@ -8,9 +8,14 @@ import style from './style.module.less';
 interface ProductSelectComponentProps {
   selectedRowKeys: React.Key[];
   onChange: (keys: React.Key[], rows: any[]) => void;
+  selectedLength?: number | 'infinity';
 }
 
-export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
+export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
+  onChange,
+  selectedRowKeys,
+  selectedLength = 5
+}) => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [formValues, setFormValues] = useState({
     activityName: ''
@@ -116,7 +121,9 @@ export const ActivitySelectComponent: React.FC<ProductSelectComponentProps> = ({
             },
             getCheckboxProps: (record: any) => {
               return {
-                disabled: selectedRowKeys.length >= 5 && !selectedRowKeys.includes(record.activityId),
+                disabled:
+                  (selectedLength === 'infinity' ? false : selectedRowKeys.length >= selectedLength) &&
+                  !selectedRowKeys.includes(record.activityId),
                 name: record.activityName
               };
             }

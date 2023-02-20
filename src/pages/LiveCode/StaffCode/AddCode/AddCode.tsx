@@ -1,11 +1,15 @@
-import { Button, DatePicker, Form, Input, Radio, RadioChangeEvent, Select, Table } from 'antd';
+import { Button, DatePicker, Form, Input, message, Popconfirm, Radio, RadioChangeEvent, Select, Table } from 'antd';
 import classNames from 'classnames';
-import React, { /* Key, */ useEffect, useState } from 'react';
+import React, { Key, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { BreadCrumbs, Icon } from 'src/components';
+import { BreadCrumbs, Icon, ImageUpload } from 'src/components';
 import { SelectStaff } from 'src/pages/StaffManage/components';
+import { AddMarket } from 'src/pages/LiveCode/StaffCode/components';
 import CustomTextArea from 'src/pages/SalesCollection/SpeechManage/Components/CustomTextArea';
 import style from './style.module.less';
+import FilterChannelTag from '../../MomentCode/components/FilterChannelTag/FilterChannelTag';
+import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
+import { requestGetChannelGroupList } from 'src/apis/channelTag';
 
 export const expireDayList = [
   { value: 0, label: '永久' },
@@ -23,8 +27,8 @@ export const liveTypeList = [
 
 export const assignTypeList = [
   { value: 1, label: '随机分配' },
-  { value: 2, label: '依次分配' },
-  { value: 3, label: '定量分配' }
+  { value: 2, label: '依次分配' }
+  // { value: 3, label: '定量分配' }
 ];
 
 const AddCode: React.FC = () => {
@@ -33,8 +37,11 @@ const AddCode: React.FC = () => {
   const [liveType, setLiveType] = useState<number>(); // 活码类型
   const [assignType, setAssignType] = useState<number>(); // 分配方式
   const [selectStaffList, setSelectStaffList] = useState<any[]>();
-  // const [tableDataSource, setTableDataSource] = useState<any[]>([]);
+  const [staffSearchValues, setStaffSearchValues] = useState<{ [key: string]: any }>({});
+  const [staffRowKeys, setStaffRowKeys] = useState<Key[]>([]);
+  const [isWelcomeMsg, setIsWelcomeMsg] = useState<number>();
   const [pageNum, setPageNum] = useState(1);
+  const [channelTagList, setChannelTagList] = useState<IChannelTagList[]>([]);
 
   const [form] = Form.useForm();
   const { Item } = Form;
@@ -43,6 +50,14 @@ const AddCode: React.FC = () => {
 
   const history = useHistory();
   const location = useLocation();
+
+  // 获取投放渠道标签
+  const getChannelGroupList = async () => {
+    const res = await requestGetChannelGroupList({ groupName: '投放渠道' });
+    if (res) {
+      setChannelTagList(res.list?.[0]?.tagList || []);
+    }
+  };
 
   // 有效期切换
   const expireDayOnChange = (e: RadioChangeEvent) => {
@@ -57,27 +72,63 @@ const AddCode: React.FC = () => {
   // 选择员工
   const selectStaffOnChange = (value: any) => {
     setSelectStaffList(value.map((mapItem: any, index: number) => ({ ...mapItem, sort: index + 1 })));
-    // setTableDataSource(value.slice(0, 10));
     setPageNum(1);
+  };
+
+  // 批量删除员工
+  const batchDelStaff = (keys: Key[]) => {
+    // 删除及重新排序
+    const filterStaffList = (selectStaffList || [])
+      .filter((filterItem) => !keys.includes(filterItem.id))
+      .map((mapItem, index) => ({ ...mapItem, sort: index + 1 }));
+    setSelectStaffList(filterStaffList);
+    form.setFieldsValue({ staffs: selectStaffList });
+    setStaffRowKeys([]);
   };
 
   // 搜索员工列表
   const searchStaffList = () => {
     const { staffName, dept } = form.getFieldsValue();
-    console.log(selectStaffList?.filter((filterItem) => filterItem.staffName === staffName));
-    setSelectStaffList((selectStaffList) =>
-      selectStaffList?.filter(
-        (filterItem) =>
-          (!staffName || filterItem.staffName === staffName) &&
-          (!dept || filterItem.fullDeptId.split(',').includes(dept.toString()))
-      )
-    );
-    console.log('staffName', staffName);
-    console.log('dept', dept);
+    setStaffSearchValues({ staffName, dept });
   };
+
+  // 上移/下移/置顶 -1 上移 1 下移 0 置顶
+  const sortHandle = (type: -1 | 1 | 0, currentSort: number) => {
+    let newSelectStaffList = [...(selectStaffList || [])];
+    if (type === -1) {
+      // 与前一个更换sort
+      newSelectStaffList[currentSort - 1].sort = currentSort - 1;
+      newSelectStaffList[currentSort - 2].sort = currentSort;
+      newSelectStaffList = newSelectStaffList?.sort((now, next) => now.sort - next.sort);
+    } else if (type === 1) {
+      // 与后一个一个更换sort
+      newSelectStaffList[currentSort - 1].sort = currentSort + 1;
+      newSelectStaffList[currentSort].sort = currentSort;
+      newSelectStaffList = newSelectStaffList?.sort((now, next) => now.sort - next.sort);
+    } else {
+      newSelectStaffList[currentSort - 1].sort = 0;
+      newSelectStaffList = newSelectStaffList
+        ?.sort((now, next) => now.sort - next.sort)
+        .map((mapItem, index) => ({ ...mapItem, sort: index + 1 }));
+    }
+    setSelectStaffList(newSelectStaffList);
+    form.setFieldsValue({ staffs: newSelectStaffList });
+    message.success(`${type === -1 ? '上移' : '下移'}成功`);
+  };
+
+  const tableDataSource = useMemo(() => {
+    const { staffName, dept } = staffSearchValues;
+    const depts = (dept || []).map((mapItem: any) => mapItem.deptId.toString());
+    return (selectStaffList || []).filter(
+      (fliterItem) =>
+        (!staffName || fliterItem.staffName.includes(staffName)) &&
+        (!dept || fliterItem.fullDeptId.split(',').some((deptId: string) => depts.includes(deptId)))
+    );
+  }, [staffSearchValues, selectStaffList]);
 
   useEffect(() => {
     setReadOnly(false);
+    getChannelGroupList();
   }, []);
   return (
     <div className={style.wrap}>
@@ -172,16 +223,17 @@ const AddCode: React.FC = () => {
                   </div>
 
                   <Table
-                    rowKey={'id'}
+                    rowKey={(record: any) => record.id + record.sort}
                     className={style.staffList}
                     scroll={{ x: 760 }}
-                    dataSource={(selectStaffList || []).slice(pageNum * 10 - 10, pageNum * 10)}
+                    dataSource={tableDataSource.slice(pageNum * 10 - 10, pageNum * 10)}
                     pagination={{
                       current: pageNum,
                       simple: true,
-                      total: selectStaffList?.length,
+                      total: tableDataSource.length,
                       onChange (page: number) {
                         setPageNum(page);
+                        setStaffRowKeys([]);
                       }
                     }}
                     columns={[
@@ -195,23 +247,58 @@ const AddCode: React.FC = () => {
                       { title: '部门', dataIndex: 'deptName' },
                       {
                         title: '操作',
-                        render () {
+                        render (value: any) {
                           return (
                             <>
-                              <span>删除</span>
+                              {assignType === 2 && value.sort !== 1 && (
+                                <span
+                                  className={classNames('text-primary mr5 pointer')}
+                                  onClick={() => sortHandle(-1, value.sort)}
+                                >
+                                  上移
+                                </span>
+                              )}
+                              {assignType === 2 && value.sort !== tableDataSource.length && (
+                                <span
+                                  className={classNames('text-primary mr5 pointer')}
+                                  onClick={() => sortHandle(1, value.sort)}
+                                >
+                                  下移
+                                </span>
+                              )}
+                              <Popconfirm title="确定删除该员工吗？" onConfirm={() => batchDelStaff([value.id])}>
+                                <span className={classNames('text-primary mr5 pointer')}>删除</span>
+                              </Popconfirm>
+                              {assignType === 2 && value.sort !== 1 && (
+                                <span
+                                  className={classNames('text-primary mr5 pointer')}
+                                  onClick={() => sortHandle(0, value.sort)}
+                                >
+                                  置顶
+                                </span>
+                              )}
                             </>
                           );
                         }
                       }
                     ]}
-                    // rowSelection={{
-                    //   onChange () {
-                    //     console.log(11);
-                    //   }
-                    // }}
+                    rowSelection={{
+                      selectedRowKeys: staffRowKeys,
+                      onChange (keys: Key[]) {
+                        setStaffRowKeys(keys);
+                      }
+                    }}
                   />
-                  <span>已选中 0/10 个员工</span>
-                  <Button className={style.batchDel}>批量删除</Button>
+                  <span>
+                    已选中 {staffRowKeys.length}/{tableDataSource.length} 个员工
+                  </span>
+                  <Button
+                    className={style.batchDel}
+                    disabled={staffRowKeys.length === 0}
+                    onClick={() => batchDelStaff(staffRowKeys)}
+                  >
+                    批量删除
+                  </Button>
                 </div>
               </>
             )}
@@ -220,11 +307,14 @@ const AddCode: React.FC = () => {
         <div className={style.panel}>
           <div className={style.title}>个性设置</div>
           <div className={style.content}>
-            <Item label="添加好友无需验证">
+            <Item label="添加好友无需验证" name="isOpenVerify">
               <Group>
                 <Radio value={1}>开启</Radio>
                 <Radio value={2}>关闭</Radio>
               </Group>
+            </Item>
+            <Item label="备用人员">
+              <SelectStaff type="staff" className="width320" />
             </Item>
           </div>
         </div>
@@ -240,17 +330,58 @@ const AddCode: React.FC = () => {
                 添加渠道
               </span>
             </Item>
-            <Item label="活码备注">
-              <TextArea className={style.textArea} placeholder="选填，如不填则默认抓取选定任务推荐话术" />
+            <Item label="活码备注" name="remark">
+              <TextArea
+                className={style.textArea}
+                placeholder="选填，如不填则默认抓取选定任务推荐话术"
+                maxLength={50}
+                showCount
+              />
             </Item>
-            <Form.Item label="欢迎语配置" name="contentObj.content" rules={[{ required: true }]}>
-              <CustomTextArea maxLength={1200} />
+            <Form.Item label="欢迎语配置" name="isWelcomeMsg" rules={[{ required: true }]}>
+              <Group onChange={(e) => setIsWelcomeMsg(e.target.value)}>
+                <Radio value={0}>不发送</Radio>
+                <Radio value={1}>渠道欢迎语</Radio>
+              </Group>
             </Form.Item>
-            <Item noStyle>
-              <span className={style.chooseStaff}>
-                <Icon className={style.addIcon} name="tianjiabiaoqian1" />
-                添加图片/链接/文章/海报/活动/产品
-              </span>
+            {isWelcomeMsg === 1 && (
+              <>
+                <Form.Item name="welcomeWord" rules={[{ required: true }]}>
+                  <CustomTextArea maxLength={1200} />
+                </Form.Item>
+                <Item noStyle name="welcomes">
+                  <AddMarket />
+                </Item>
+              </>
+            )}
+            <Item
+              label="客服二维码"
+              name="customerCode"
+              // extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
+            >
+              <ImageUpload disabled={readOnly} />
+              {/* <Input placeholder="请输入链接" className={style.input} /> */}
+            </Item>
+            <Item label="渠道标签">
+              <div className={style.channelTag}>
+                <Item
+                  name="channelTagList"
+                  label="投放渠道标签"
+                  rules={[{ required: true, message: '请选择投放渠道' }]}
+                  extra="*未找到适合的渠道，请联系管理员进行新增"
+                >
+                  <Radio.Group disabled={readOnly}>
+                    {channelTagList.map((tagItem) => (
+                      <Radio key={tagItem.tagId} value={tagItem.tagId}>
+                        {tagItem.tagName}
+                      </Radio>
+                    ))}
+                  </Radio.Group>
+                </Item>
+                <Item label="其他渠道标签" name="otherTagList">
+                  <FilterChannelTag disabled={readOnly} />
+                </Item>
+              </div>
             </Item>
             <div className={style.btnWrap}>
               <Button className={style.submitBtn} type="primary" htmlType="submit">
