@@ -8,6 +8,8 @@ import { lazy } from 'react';
 import { CacheRouteProps } from 'react-router-cache-route';
 import { RouteProps } from 'react-router-dom';
 
+import { knowledgeRoutes } from 'src/routes/knowledge';
+
 export interface Menu {
   name: string;
   icon?: string;
@@ -444,7 +446,9 @@ export const routes: RouteProps[] = [
   {
     path: '/channelTag',
     component: lazy(() => import('src/pages/Operation/ChannelTag/ChannelTag'))
-  }
+  },
+
+  ...knowledgeRoutes
 ];
 
 // 缓存路由
