@@ -96,7 +96,9 @@ export const requestEditStaffLive: HttpFunction = (param) => {
  * @param param
  */
 export const requestDownloadStaffLiveCode: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/live/staff/download', param);
+  return http.post('/tenacity-admin/api/live/staff/download', param, {
+    responseType: 'blob'
+  });
 };
 
 /**

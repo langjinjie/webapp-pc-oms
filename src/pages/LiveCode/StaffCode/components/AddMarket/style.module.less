@@ -1,6 +1,18 @@
 .wrap {
+  position: relative;
   margin-bottom: 24px;
 }
+
+// 预览
+.preview {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  margin: auto;
+}
+
+// 选择素材按钮
 .addWrap {
   display: flex;
   width: 571px;
@@ -43,12 +55,13 @@
 .addProduct {
   background-image: url('src/assets/images/liveCode/icon_product.png');
 }
-.form {
-  padding: 20px;
-  .input {
-    border-radius: 18px;
-  }
+
+// 已选素材列表
+.value {
+  margin-top: 20px;
 }
+
+// 选择素材弹框
 .modalWrap {
   :global {
     .ant-modal-body {
@@ -60,6 +73,48 @@
     }
     .ant-select {
       width: 100px !important;
+    }
+  }
+}
+.form {
+  padding: 20px;
+  .input {
+    border-radius: 18px;
+  }
+}
+.panelWrap {
+  background: #f7f8fc;
+  border-radius: 8px;
+  padding: 20px;
+}
+.tagWrap {
+  padding-top: 10px;
+  padding-left: 10px;
+}
+.customTag {
+  display: inline-block;
+  height: 24px;
+  line-height: 24px;
+  background: #eaf3fe;
+  border-radius: 8px;
+  padding: 0 8px;
+  color: #318cf5;
+  font-size: 14px;
+  margin-top: 10px;
+  margin-left: 10px;
+  .itemName {
+    display: inline-block;
+    max-width: 90%;
+  }
+
+  .closeIcon {
+    float: right;
+    font-size: 10px;
+    color: #666;
+    margin-left: 8px;
+    margin-top: 7px;
+    &:hover {
+      color: #333;
     }
   }
 }

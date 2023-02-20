@@ -2,7 +2,7 @@ import React, { Key, useEffect, useState } from 'react';
 import { Button, DatePicker, Form, Input, message, Modal, Row, Select } from 'antd';
 import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 import { NgTable } from 'src/components';
-import { tableColumnsFun, IStaffLiveCode } from './Config';
+import { tableColumnsFun, IStaffLiveCode, liveTypeList } from './Config';
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import { statusList } from 'src/pages/LiveCode/MomentCode/Config';
@@ -49,25 +49,32 @@ const StaffCode: React.FC = () => {
   };
 
   const onFinishHandle = (values?: any) => {
-    const { expireDay, createTime, updateTime } = values;
-    let createStartTime;
-    let createEndTime;
-    let updateStartTime;
-    let updateEndTime;
+    const { expireDay, createTime, updateTime, staffId } = values;
+    let beginCreateTime;
+    let endCreateTime;
+    let beginUpdateTime;
+    let endUpdateTime;
     if (createTime) {
-      createStartTime = createTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      createEndTime = createTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+      beginCreateTime = createTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      endCreateTime = createTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
     if (updateTime) {
-      updateStartTime = updateTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      updateEndTime = updateTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+      beginUpdateTime = updateTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      endUpdateTime = updateTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
     if (expireDay) {
-      values.expireDay = expireDay.format('YYYY-MM-DD HH:mm:ss');
+      values.expireDay = expireDay.endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
     delete values.createTime;
     delete values.updateTime;
-    const param = { ...values, createStartTime, createEndTime, updateStartTime, updateEndTime };
+    const param = {
+      ...values,
+      beginCreateTime,
+      endCreateTime,
+      beginUpdateTime,
+      endUpdateTime,
+      staffId: staffId?.[0]?.staffId
+    };
     console.log('param', param);
     getList(param);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
@@ -100,7 +107,7 @@ const StaffCode: React.FC = () => {
     },
     getCheckboxProps: (record: IStaffLiveCode) => {
       return {
-        disabled: recordItem?.status && record.status !== recordItem?.status
+        disabled: recordItem && record.status !== recordItem?.status
       };
     }
   };
@@ -109,6 +116,7 @@ const StaffCode: React.FC = () => {
   const batchDownLoadHandle = async () => {
     Modal.confirm({
       title: '批量下载提醒',
+      centered: true,
       content: `此次操作共下载：${selectedRowKeys.length}个活码。请您确认`,
       async onOk () {
         const res = await requestDownloadStaffLiveCode({ liveIdList: selectedRowKeys });
@@ -116,6 +124,7 @@ const StaffCode: React.FC = () => {
           const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
           exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
           setSelectedRowKeys([]);
+          setRecordItem(undefined);
         }
       }
     });
@@ -124,6 +133,7 @@ const StaffCode: React.FC = () => {
   const batchManageGroupLive = async (option: number) => {
     Modal.confirm({
       title: `批量${option === 1 ? '删除' : '作废'}提醒`,
+      centered: true,
       content: `此次操作共${option === 1 ? '删除' : '作废'}：${selectedRowKeys.length}个活码。请您确认`,
       async onOk () {
         const res = await requestManageGroupLiveCode({ option, liveIdList: selectedRowKeys });
@@ -161,16 +171,16 @@ const StaffCode: React.FC = () => {
           <Item label="投放渠道" name="tagName">
             <Select
               options={channelTagList}
-              fieldNames={{ label: 'tagName', value: 'tagId' }}
+              fieldNames={{ label: 'tagName', value: 'tagName' }}
               placeholder="请选择"
               allowClear
             />
           </Item>
           <Item label="使用员工" name="staffId">
-            <SelectStaff type="staff" />
+            <SelectStaff type="staff" singleChoice />
           </Item>
           <Item label="活码类型" name="liveType">
-            <Select options={statusList} placeholder="请选择" />
+            <Select options={liveTypeList} placeholder="请选择" />
           </Item>
           <Item label="活码状态" name="status">
             <Select options={statusList} placeholder="请选择" />
@@ -209,7 +219,7 @@ const StaffCode: React.FC = () => {
       <div className={style.batch}>
         <Button
           className={style.batchVoid}
-          disabled={selectedRowKeys.length === 0 || ![0, 1].includes(recordItem?.status || 3)}
+          disabled={selectedRowKeys.length === 0 || ![0, 1].includes(recordItem?.status as number)}
           onClick={() => batchManageGroupLive(2)}
         >
           批量作废
