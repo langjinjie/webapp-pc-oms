@@ -10,7 +10,7 @@ import SpeechItemChild from './Components/SpeechTypeItemChild/SpeechItem';
 import { RouteComponentProps } from 'react-router';
 import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
 import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
-import InputShowLength from './Components/InputShowLength/InputShowLength';
+import InputShowLength from '../../../components/InputShowLength/InputShowLength';
 import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
 
 const scenesStates = [

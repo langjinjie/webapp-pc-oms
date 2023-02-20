@@ -3,7 +3,7 @@ import { Form, Input, message } from 'antd';
 import NgUpload from 'src/pages/Marketing/Components/Upload/Upload';
 
 import styles from './styles.module.less';
-import InputShowLength from '../InputShowLength/InputShowLength';
+import InputShowLength from '../../../../../components/InputShowLength/InputShowLength';
 import { RcFile } from 'antd/lib/upload';
 import NgUploadFile from 'src/pages/Marketing/Components/UploadFile/UploadFile';
 

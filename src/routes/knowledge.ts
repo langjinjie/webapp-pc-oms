@@ -7,6 +7,10 @@ export const knowledgeRoutes: RouteProps[] = [
     component: lazy(() => import('src/pages/knowledge/List/List'))
   },
   {
+    path: '/knowledge/edit',
+    component: lazy(() => import('src/pages/knowledge/List/Edit'))
+  },
+  {
     path: '/knowledge/approval'
   },
   {
