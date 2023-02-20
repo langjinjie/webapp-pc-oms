@@ -3,8 +3,9 @@ import { ColumnsType } from 'antd/es/table';
 import { useHistory } from 'react-router-dom';
 import { Button, message, Popconfirm } from 'antd';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
-import { downloadImage } from 'src/utils/base';
+import { exportFile, UNKNOWN } from 'src/utils/base';
 import { requestDownloadStaffLiveCode, requestManageStaffLiveCode } from 'src/apis/liveCode';
+import { statusList } from 'src/pages/LiveCode/MomentCode/Config';
 import classNames from 'classnames';
 import style from './style.module.less';
 
@@ -49,10 +50,10 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
   const history = useHistory();
   const [downLoad, setDownLoad] = useState('');
 
-  const editHandle = (value: IStaffLiveCode) => {
-    if (value.status === 2) return;
-    history.push('/momentCode/addCode?liveId=' + value.liveId);
-  };
+  // const editHandle = (value: IStaffLiveCode) => {
+  //   if (value.status === 2) return;
+  //   history.push('/momentCode/addCode?liveId=' + value.liveId);
+  // };
 
   // 下载
   const downLoadHandle = async (value: IStaffLiveCode) => {
@@ -62,8 +63,7 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
       const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);
-      downloadImage(url, fileName);
-      updateHandle?.();
+      exportFile(url, fileName.split('.')[0], fileName.split('.')[1]);
     }
     setDownLoad('');
   };
@@ -76,14 +76,56 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
     }
   };
   return [
-    { title: '活码ID', dataIndex: 'codeId' },
-    { title: '活码名称', dataIndex: 'codeName' },
-    { title: '使用员工', dataIndex: 'userStaff' },
-    { title: '有效期', dataIndex: 'timeEnd' },
+    { title: '活码ID', dataIndex: 'liveId' },
+    {
+      title: '活码名称',
+      dataIndex: 'name',
+      render (name: string) {
+        return (
+          <span className={classNames(style.maxW300, 'ellipsis')} title={name}>
+            {name}
+          </span>
+        );
+      }
+    },
+    {
+      title: '使用员工',
+      dataIndex: 'staffs',
+      render (staffs: IStaffList[]) {
+        return (
+          <span
+            className={classNames(style.maxW300, 'ellipsis')}
+            title={staffs?.map(({ staffName }) => staffName).toString()}
+          >
+            {staffs?.map(({ staffName }) => staffName).toString() || UNKNOWN}
+          </span>
+        );
+      }
+    },
+    { title: '有效期', dataIndex: 'expireDate' },
     { title: '投放渠道', dataIndex: 'channel' },
-    { title: '活码状态', dataIndex: 'codeStatus' },
-    { title: '创建人', dataIndex: 'createrBy' },
-    { title: '创建时间', dataIndex: 'createTime' },
+    {
+      title: '活码状态',
+      dataIndex: 'status',
+      render (status: number) {
+        return (
+          <span>
+            <i
+              className={classNames(
+                'status-point',
+                { 'status-point-red': status === 1 },
+                { 'status-point-gray': status === 2 },
+                { 'status-point-green': status === 3 }
+              )}
+            />
+            {statusList.find((findItem) => findItem.value === status)?.label}
+          </span>
+        );
+      }
+    },
+    { title: '创建人', dataIndex: 'createBy' },
+    { title: '创建时间', dataIndex: 'dateCreated' },
+    { title: '更新时间', dataIndex: 'lastUpdated' },
     {
       title: '操作',
       fixed: 'right',
@@ -96,12 +138,12 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
             >
               查看
             </span>
-            <span
+            {/* <span
               className={classNames(style.edit, { disabled: value.status === 2 })}
               onClick={() => editHandle(value)}
             >
               编辑
-            </span>
+            </span> */}
             <Button
               className={style.downLoad}
               disabled={value.status === 2 || value.status === 1}

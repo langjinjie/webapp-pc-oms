@@ -1,22 +1,23 @@
-import { Button, DatePicker, Form, Input, message, Popconfirm, Radio, RadioChangeEvent, Select, Table } from 'antd';
+import { Button, DatePicker, Form, Input, message, Popconfirm, Radio, RadioChangeEvent, Table } from 'antd';
 import classNames from 'classnames';
 import React, { Key, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { BreadCrumbs, Icon, ImageUpload } from 'src/components';
+import { BreadCrumbs, ImageUpload } from 'src/components';
 import { SelectStaff } from 'src/pages/StaffManage/components';
 import { AddMarket } from 'src/pages/LiveCode/StaffCode/components';
+import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
+import { requestGetChannelGroupList } from 'src/apis/channelTag';
+import { requestEditStaffLive } from 'src/apis/liveCode';
 import CustomTextArea from 'src/pages/SalesCollection/SpeechManage/Components/CustomTextArea';
 import style from './style.module.less';
 import FilterChannelTag from '../../MomentCode/components/FilterChannelTag/FilterChannelTag';
-import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
-import { requestGetChannelGroupList } from 'src/apis/channelTag';
 
 export const expireDayList = [
-  { value: 0, label: '永久' },
-  { value: 1, label: '7天' },
-  { value: 2, label: '15天' },
-  { value: 3, label: '30天' },
-  { value: 4, label: '自定义' }
+  { value: 1, label: '永久' },
+  // { value: 2, label: '7天' },
+  // { value: 3, label: '15天' },
+  // { value: 4, label: '30天' },
+  { value: 5, label: '自定义' }
 ];
 
 export const liveTypeList = [
@@ -33,7 +34,7 @@ export const assignTypeList = [
 
 const AddCode: React.FC = () => {
   const [readOnly, setReadOnly] = useState(false);
-  const [endTime, setEndTime] = useState<number>(); // 有效期
+  const [expireDay, setExpireDay] = useState<number>(); // 有效期
   const [liveType, setLiveType] = useState<number>(); // 活码类型
   const [assignType, setAssignType] = useState<number>(); // 分配方式
   const [selectStaffList, setSelectStaffList] = useState<any[]>();
@@ -61,7 +62,7 @@ const AddCode: React.FC = () => {
 
   // 有效期切换
   const expireDayOnChange = (e: RadioChangeEvent) => {
-    setEndTime(e.target.value);
+    setExpireDay(e.target.value);
   };
 
   // 活码类型切换
@@ -116,6 +117,25 @@ const AddCode: React.FC = () => {
     message.success(`${type === -1 ? '上移' : '下移'}成功`);
   };
 
+  // 创建员工活码
+  const onFinishHandle = async (values?: any) => {
+    console.log('values', values);
+    // 处理有效期
+    if (expireDay === 5) {
+      values.expireData = values.expireData?.format('YYYY-MM-DD');
+      values.expireDay = undefined;
+    }
+    values.channelTagList = channelTagList.filter((filterItem) => filterItem.tagId === values.channelTagList);
+    values.staffs = values.staffs.map(({ staffId }: { staffId: string }) => ({ staffId }));
+    const param = { ...values };
+    console.log('param', param);
+    const res = await requestEditStaffLive(param);
+    if (res) {
+      message.success('员工活码新增成功');
+      history.push('/staffCode');
+    }
+  };
+
   const tableDataSource = useMemo(() => {
     const { staffName, dept } = staffSearchValues;
     const depts = (dept || []).map((mapItem: any) => mapItem.deptId.toString());
@@ -145,7 +165,7 @@ const AddCode: React.FC = () => {
         form={form}
         className={style.form}
         // onFinish={() => history.push('/staffCode')}
-        onFinish={(values) => console.log('values1', values)}
+        onFinish={onFinishHandle}
         // @ts-ignore
         initialValues={location.state?.row || {}}
       >
@@ -162,8 +182,8 @@ const AddCode: React.FC = () => {
                 maxLength={50}
               />
             </Item>
-            <Item label="有效期" name="expireDay">
-              <Group value={endTime} onChange={expireDayOnChange}>
+            <Item label="有效期" name="expireDay" rules={[{ required: true, message: '请选择有效期' }]}>
+              <Group value={expireDay} onChange={expireDayOnChange}>
                 {expireDayList.map((mapItem) => (
                   <Radio key={mapItem.value} value={mapItem.value}>
                     {mapItem.label}
@@ -171,15 +191,15 @@ const AddCode: React.FC = () => {
                 ))}
               </Group>
             </Item>
-            {endTime === 4 && (
+            {expireDay === 5 && (
               <div className={style.expireDayData}>
-                <Item noStyle name="expireDayData">
+                <Item name="expireDate" rules={[{ required: true, message: '请选择失效日期' }]}>
                   <DatePicker />
                 </Item>
                 <div className={style.remarks}>备注：活码有效期后到</div>
               </div>
             )}
-            <Item label="活码类型" name="liveType">
+            <Item label="活码类型" name="liveType" rules={[{ required: true, message: '请选择活码类型' }]}>
               <Group value={liveType} onChange={liveTypeOnChange}>
                 {liveTypeList.map((mapItem) => (
                   <Radio key={mapItem.value} value={mapItem.value}>
@@ -188,7 +208,7 @@ const AddCode: React.FC = () => {
                 ))}
               </Group>
             </Item>
-            <Item label="使用成员" name="staffs">
+            <Item label="使用成员" name="staffs" rules={[{ required: true, message: '请选择使用成员' }]}>
               <SelectStaff
                 value={selectStaffList}
                 onChange={selectStaffOnChange}
@@ -307,29 +327,23 @@ const AddCode: React.FC = () => {
         <div className={style.panel}>
           <div className={style.title}>个性设置</div>
           <div className={style.content}>
+            <Item label="是否开启只能添加同一客户" name="isExclusive" initialValue={0}>
+              <Group>
+                <Radio value={1}>开启</Radio>
+                <Radio value={0}>关闭</Radio>
+              </Group>
+            </Item>
             <Item label="添加好友无需验证" name="isOpenVerify">
               <Group>
                 <Radio value={1}>开启</Radio>
-                <Radio value={2}>关闭</Radio>
+                <Radio value={0}>关闭</Radio>
               </Group>
-            </Item>
-            <Item label="备用人员">
-              <SelectStaff type="staff" className="width320" />
             </Item>
           </div>
         </div>
         <div className={style.panel}>
           <div className={style.title}>渠道设置</div>
           <div className={classNames(style.content, style.previewContent)}>
-            <Item label="投放渠道" required>
-              <Item noStyle>
-                <Select className={style.select} placeholder="默认渠道" />
-              </Item>
-              <span className={style.chooseStaff}>
-                <Icon className={style.addIcon} name="tianjiabiaoqian1" />
-                添加渠道
-              </span>
-            </Item>
             <Item label="活码备注" name="remark">
               <TextArea
                 className={style.textArea}
@@ -355,8 +369,8 @@ const AddCode: React.FC = () => {
               </>
             )}
             <Item
-              label="客服二维码"
-              name="customerCode"
+              label="活码头像"
+              name="qrLogo"
               // extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
             >
               <ImageUpload disabled={readOnly} />
