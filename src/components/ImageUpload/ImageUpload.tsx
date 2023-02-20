@@ -16,7 +16,6 @@ interface ImageUploadProps {
   value?: string;
   onChange?: (val: string) => void;
   disabled?: boolean;
-  onRemove?: () => void;
   beforeUpload?: (file: any) => void;
 }
 

@@ -430,6 +430,15 @@ export const routes: RouteProps[] = [
   /**
    * 渠道活码
    */
+  // 员工活码
+  {
+    path: '/staffCode',
+    component: lazy(() => import('src/pages/LiveCode/StaffCode/StaffCode'))
+  },
+  {
+    path: '/staffCode/addCode',
+    component: lazy(() => import('src/pages/LiveCode/StaffCode/AddCode/AddCode'))
+  },
   // 群活码
   {
     path: '/momentCode',
@@ -448,7 +457,18 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Operation/ChannelTag/ChannelTag'))
   },
 
-  ...knowledgeRoutes
+  ...knowledgeRoutes,
+  /* * 客户管理
+   */
+  {
+    path: '/customerManage',
+    component: lazy(() => import('src/pages/CustomerManage/CustomerList/CustomerList'))
+  },
+  // 客户管理->客户信息
+  {
+    path: '/customerManage/clientDetail',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
+  }
 ];
 
 // 缓存路由

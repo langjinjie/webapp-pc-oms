@@ -9,8 +9,13 @@ import style from './style.module.less';
 interface PosterSelectComponentProps {
   onChange: (keys: React.Key[], rows: any[]) => void;
   selectedRowKeys: any[];
+  selectedLength?: number | 'infinity';
 }
-export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
+export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({
+  onChange,
+  selectedRowKeys,
+  selectedLength = 5
+}) => {
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [formValues, setFormValues] = useState<{
@@ -170,7 +175,9 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
             },
             getCheckboxProps: (record: Poster) => {
               return {
-                disabled: selectedRowKeys.length >= 5 && !selectedRowKeys.includes(record.posterId),
+                disabled:
+                  (selectedLength === 'infinity' ? false : selectedRowKeys.length >= selectedLength) &&
+                  !selectedRowKeys.includes(record.posterId),
                 name: record.name
               };
             }

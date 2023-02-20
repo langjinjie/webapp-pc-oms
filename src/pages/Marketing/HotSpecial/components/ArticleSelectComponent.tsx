@@ -13,9 +13,14 @@ interface RowProps extends Article {
 interface ArticleSelectComponentProps {
   selectedRowKeys: React.Key[];
   onChange: (keys: React.Key[], rows: RowProps[]) => void;
+  selectedLength?: number | 'infinity';
 }
 
-export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
+export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({
+  onChange,
+  selectedRowKeys,
+  selectedLength = 5
+}) => {
   const { articleCategoryList, setArticleCategoryList } = useContext(Context);
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [formValues, setFormValues] = useState({
@@ -157,7 +162,9 @@ export const ArticleSelectComponent: React.FC<ArticleSelectComponentProps> = ({ 
             },
             getCheckboxProps: (record: any) => {
               return {
-                disabled: selectedRowKeys.length >= 5 && !selectedRowKeys.includes(record.newsId),
+                disabled:
+                  (selectedLength === 'infinity' ? false : selectedRowKeys.length >= selectedLength) &&
+                  !selectedRowKeys.includes(record.newsId),
                 name: record.title
               };
             }
