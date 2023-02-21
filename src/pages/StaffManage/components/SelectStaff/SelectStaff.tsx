@@ -57,6 +57,7 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({
         onCancel={() => setOrgParam((orgParam) => ({ ...orgParam, visible: false }))}
         showStaff={type === 'staff'}
         selectedDept={type === 'dept'}
+        isDeleted={0}
         value={value}
         params={orgParam}
         title={type === 'staff' ? '选择客户经理' : '选择部门'}

@@ -267,7 +267,8 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     const res = await searchStaffList({
       keyWords: treeSearchValue,
       searchType, // 1-搜索部门 2-搜索员工 不传则搜索全部
-      isFull: searchType === 1 ? undefined : true
+      isFull: searchType === 1 ? undefined : true,
+      isDeleted
     });
     if (res) {
       const list = [...(res.staffList || []), ...(res.deptList || [])];
@@ -281,10 +282,14 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   // 点击搜索出来的列表
   const clickSearchList = (item: any, checked: boolean) => {
     let selected: any[] = [];
-    if (!checked) {
-      selected = [...selectedList, { ...item, id: item.id.toString() }];
+    if (checked) {
+      selected = singleChoice
+        ? [{ ...item, id: item.id.toString() }]
+        : [...selectedList, { ...item, id: item.id.toString() }];
       if (flatTreeData.some((someItem) => someItem.id === item.id.toString())) {
-        setCheckedKeys((keys) => [...(keys as React.Key[]), item.id.toString()]);
+        setCheckedKeys((keys) =>
+          singleChoice ? [item.id.toString()] : [...(keys as React.Key[]), item.id.toString()]
+        );
       }
       // onChange?.([...selectedList, item]);
     } else {
@@ -406,10 +411,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
                       [style.active]: selectedList.some((selectItem) => item.id.toString() === selectItem.id)
                     })}
                     onClick={() =>
-                      clickSearchList(
-                        item,
-                        selectedList.some((selectItem) => item.id.toString() === selectItem.id)
-                      )
+                      clickSearchList(item, !selectedList.some((selectItem) => item.id.toString() === selectItem.id))
                     }
                   >
                     <div className={style.name}>{item.name}</div>

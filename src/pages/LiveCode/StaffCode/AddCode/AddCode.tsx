@@ -79,7 +79,6 @@ const AddCode: React.FC = () => {
         // 全部请求，前端分页
         requestGetLiveStaffList({ liveId, pageSize: 9999 })
       ]);
-      console.log('liveDetail', liveDetail);
       const { welcomeWord, welcomes, isWelcomeMsg, expireDate, liveType, assignType } = liveDetail;
       const expireDay = [-1, 7, 15, 30].includes(liveDetail?.expireDay) ? liveDetail?.expireDay : 0;
       setExpireDay(expireDay);
