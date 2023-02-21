@@ -124,7 +124,8 @@ export const tableColumnsFun = (
       key: 'level2Name',
       dataIndex: 'level2Name',
       title: '二级目录',
-      width: 200
+      width: 200,
+      render: (level2Name) => level2Name || UNKNOWN
     },
     {
       key: 'wikiStatus',
@@ -211,7 +212,7 @@ export const tableColumnsFun = (
             <Button type="link" onClick={() => onOperate('edit', record)}>
               编辑
             </Button>
-            {record.status === 2
+            {record.wikiStatus === 2
               ? (
               <Popconfirm title="确定下架？" onConfirm={() => onOperate('outline', record, index)}>
                 <Button type="link">下架</Button>

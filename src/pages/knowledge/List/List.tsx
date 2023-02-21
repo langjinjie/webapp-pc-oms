@@ -1,10 +1,11 @@
-import { Button, Col, Input, Row, Space } from 'antd';
+import { Button, Col, Input, message, Row, Space } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import { Moment } from 'moment';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { createCategory, getWikiList } from 'src/apis/knowledge';
+import { createCategory, deleteChange, getWikiList, offlineChange, onlineChange } from 'src/apis/knowledge';
 import { NgFormSearch, NgTable } from 'src/components';
+import { OperateType } from 'src/utils/interface';
 import { searchColsFun, tableColumnsFun, WikiColumn } from './config';
 
 const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
@@ -65,6 +66,43 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     console.log(res);
   };
 
+  // 上架/批量上架
+  const putAway = async (data: any) => {
+    const res = await onlineChange(data);
+    if (res) {
+      message.success('上架成功');
+    }
+    getList({ pageNum: 1 });
+  };
+
+  const offline = async (data: any) => {
+    const res = await offlineChange(data);
+    if (res) {
+      message.success('下架成功');
+    }
+    getList({ pageNum: 1 });
+  };
+  const deleleWiki = async (data: any) => {
+    const res = await deleteChange(data);
+    if (res) {
+      message.success('删除成功');
+    }
+    getList({ pageNum: 1 });
+  };
+
+  const onOperation = (type: OperateType, record: WikiColumn) => {
+    // 执行上架操作
+    const list = [{ wikiId: record.wikiId }];
+    if (type === 'putAway') {
+      putAway({ list });
+    } else if (type === 'outline') {
+      // 执行下架操作
+      offline({ list });
+    } else if (type === 'delete') {
+      deleleWiki({ list });
+    }
+  };
+
   return (
     <div className="container">
       <Row>
@@ -81,7 +119,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
 
           <NgTable
             rowKey={'wikiId'}
-            columns={tableColumnsFun()}
+            columns={tableColumnsFun(onOperation)}
             dataSource={dataSource}
             pagination={pagination}
           ></NgTable>

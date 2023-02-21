@@ -104,11 +104,7 @@ const AuditDetail: React.FC<RouteComponentProps> = ({ history, location }) => {
       getDetail();
     }
   };
-  // const changeRemark = (index: number, value: string) => {
-  //   const copyData = { ...detail };
-  //   copyData.nodeList[index].auditRemark = value;
-  //   setDetail(copyData);
-  // };
+
   const DescriptionNode = ({ data, status }: { data: NoteProps; index: number; status?: number }) => {
     return (
       <div>

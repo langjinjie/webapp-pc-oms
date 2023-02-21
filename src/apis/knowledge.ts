@@ -59,19 +59,3 @@ export const getApprovalDetail: HttpFC = (param, config) => {
 export const auditApply: HttpFC = (param, config) => {
   return http.post('/tenacity-admin/api/train/wiki/apply/audit', param, config);
 };
-// 1.15、获取审批链模板下载地址（移植大地代码）
-export const downloadTpl: HttpFC = (param, config) => {
-  return http.post('/tenacity-admin/api/org/approval/chain/tpl', param, config);
-};
-// // 1.16、导入审批链数据（移植大地代码进行修改）
-// export const importApprovalData: HttpFC = (param, config) => {
-//   return http.post('/tenacity-admin/api/org/approval/chain/tpl', param, config);
-// };
-// // 1.17、查询审批链导入记录（移植大地代码）
-// export const importApprovalData: HttpFC = (param, config) => {
-//   return http.post('/tenacity-admin/api/org/approval/chain/tpl', param, config);
-// };
-
-// export const importApprovalData: HttpFC = (param, config) => {
-//   return http.post('/tenacity-admin/api/org/approval/chain/tpl', param, config);
-// };
