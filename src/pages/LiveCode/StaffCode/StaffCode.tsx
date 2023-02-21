@@ -44,6 +44,7 @@ const StaffCode: React.FC = () => {
       setList(res.list);
       setSelectedRowKeys([]);
       setRecordItem(undefined);
+      setPagination((pagination) => ({ ...pagination, total: res.total }));
     }
     setTableLoading(false);
   };
