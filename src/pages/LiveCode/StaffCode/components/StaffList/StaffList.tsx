@@ -93,7 +93,7 @@ const StaffList: React.FC<IStaffListProps> = ({
             }
           }
         ]}
-        rowSelection={disabled || rowSelection}
+        rowSelection={!disabled && rowSelection}
       />
       <span>
         已选中 {staffRowKeys.length}/{pagination.total || 0} 个员工
