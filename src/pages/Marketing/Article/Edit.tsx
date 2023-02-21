@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PageHeader, Divider, Form, Radio, RadioChangeEvent } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
-import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { urlSearchParams, useDocumentTitle } from 'src/utils/base';
 
 import TabView1 from './Components/TabView1';
 import TabView2 from './Components/TabView2';
@@ -45,7 +45,7 @@ const AddInternal: React.FC<RouteComponentProps> = ({ location }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [newsId, setNewsId] = useState('');
   useEffect(() => {
-    const params = URLSearchParams(location.search);
+    const params = urlSearchParams(location.search);
     const newsId = params && params.id;
     if (typeof newsId === 'string') {
       setIsEdit(true);

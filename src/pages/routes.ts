@@ -9,6 +9,7 @@ import { CacheRouteProps } from 'react-router-cache-route';
 import { RouteProps } from 'react-router-dom';
 
 import { knowledgeRoutes } from 'src/routes/knowledge';
+import { auditRoutes } from 'src/routes/audit';
 
 export interface Menu {
   name: string;
@@ -457,7 +458,10 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Operation/ChannelTag/ChannelTag'))
   },
 
+  // 知识库
   ...knowledgeRoutes,
+  // 审批链
+  ...auditRoutes,
   /* * 客户管理
    */
   {

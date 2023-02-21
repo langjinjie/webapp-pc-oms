@@ -9,7 +9,7 @@ import {
 import { ICatalogItem, IFirmModalParam, IEditOrAddCatalogParam } from 'src/utils/interface';
 import { getCategoryList } from 'src/apis/salesCollection';
 import { Context } from 'src/store';
-import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { urlSearchParams, useDocumentTitle } from 'src/utils/base';
 import { useDidRecover } from 'react-router-cache-route';
 // import { AuthBtn, Icon } from 'src/components';
 import style from './style.module.less';
@@ -43,7 +43,7 @@ const ContentsManage: React.FC = () => {
   }, []);
 
   useDidRecover(() => {
-    const { isCatch } = URLSearchParams(location.search);
+    const { isCatch } = urlSearchParams(location.search);
     // 判断页面是否需要更新
     if (!isCatch) {
       getCatalogList();

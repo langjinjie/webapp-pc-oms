@@ -11,7 +11,7 @@ import {
   searchRecommendGoodsList,
   updateMoment
 } from 'src/apis/marketing';
-import { debounce, URLSearchParams } from 'src/utils/base';
+import { debounce, urlSearchParams } from 'src/utils/base';
 import { RecommendMarketProps } from '../Article/Components/TabView3';
 import { PictureCard } from './components/PictureCard';
 import { tplTypeOptions } from './ListConfig';
@@ -29,7 +29,7 @@ const MomentEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
 
   const getDetail = async () => {
-    const { feedId } = URLSearchParams(location.search) as { feedId: string };
+    const { feedId } = urlSearchParams(location.search) as { feedId: string };
     if (feedId) {
       const res = await getMomentDetail({ feedId });
       if (res) {

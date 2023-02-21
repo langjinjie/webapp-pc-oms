@@ -3,7 +3,7 @@ import { Button, Cascader, Form, Input, message, Select } from 'antd';
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router';
-import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { urlSearchParams, useDocumentTitle } from 'src/utils/base';
 import { getPosterCategoryList, getPosterDetail, getPosterTagList, savePoster } from 'src/apis/marketing';
 import { Poster } from './Config';
 import { useForm } from 'antd/es/form/Form';
@@ -55,7 +55,7 @@ const PosterEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   useEffect(() => {
     getCategoryList();
     getTagList();
-    const { id, viewport } = URLSearchParams(location.search);
+    const { id, viewport } = urlSearchParams(location.search);
     if (id && viewport) {
       setIsView(true);
     }

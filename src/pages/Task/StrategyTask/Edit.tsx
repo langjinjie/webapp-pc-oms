@@ -5,7 +5,7 @@ import { getTaskStrategyTplDetail, saveScene } from 'src/apis/task';
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
-import { throttle, URLSearchParams } from 'src/utils/base';
+import { throttle, urlSearchParams } from 'src/utils/base';
 import moment from 'moment';
 import { FormBlockPreview } from './components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { isArray } from 'src/utils/tools';
@@ -19,7 +19,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
   };
 
   const getDetail = async () => {
-    const { tplId, view } = URLSearchParams(location.search) as { tplId: string; view: string };
+    const { tplId, view } = urlSearchParams(location.search) as { tplId: string; view: string };
     if (view) setIsReadonly(true);
     if (tplId) {
       const res = await getTaskStrategyTplDetail({ tplId });

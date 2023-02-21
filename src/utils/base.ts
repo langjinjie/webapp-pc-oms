@@ -58,7 +58,7 @@ export const setCookie: (name: string, value: string, time: number) => void = (
   document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + ';path=/';
 };
 
-export const URLSearchParams = (search: string): ParsedQs => {
+export const urlSearchParams = (search: string): ParsedQs => {
   return qs.parse(search, { ignoreQueryPrefix: true });
 };
 export const useDocumentTitle = (title: string, keepOnUumount = true): void => {
