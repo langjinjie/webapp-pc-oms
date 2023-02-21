@@ -1,13 +1,31 @@
-import { Button, Col, Input, message, Row, Space } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Col, Input, message, Row, Space, Tree } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import { Moment } from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { Key, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { createCategory, deleteChange, getWikiList, offlineChange, onlineChange } from 'src/apis/knowledge';
-import { NgFormSearch, NgTable } from 'src/components';
+import {
+  createCategory,
+  deleteChange,
+  getCategoryList,
+  getWikiList,
+  offlineChange,
+  onlineChange
+} from 'src/apis/knowledge';
+import { NgFormSearch, NgModal, NgTable } from 'src/components';
 import { OperateType } from 'src/utils/interface';
+import { Icon } from 'tenacity-ui';
 import { searchColsFun, tableColumnsFun, WikiColumn } from './config';
+import style from './style.module.less';
 
+interface ICategory {
+  categroyId: string;
+  lastLevel: number;
+  level: number;
+  name: string;
+  key: Key;
+  children: ICategory[];
+}
 const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -17,7 +35,12 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
       return `共 ${total} 条记录`;
     }
   });
+  const [visible, setVisible] = useState(false);
+  const [expandIds, setExpandIds] = useState<Key[]>([]);
   const [dataSource, setDataSource] = useState<WikiColumn[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [currentNode, setCurrentNode] = useState<ICategory | undefined>();
+  const [inputValue, setInputValue] = useState('');
 
   const getList = async (params?: any) => {
     const pageNum = params?.pageNum || pagination.current;
@@ -31,6 +54,14 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
       const { total, list } = res;
       setDataSource(list);
       setPagination((pagination) => ({ ...pagination, total, current: pageNum, pageSize }));
+    }
+  };
+
+  const getCategories = async () => {
+    const res = await getCategoryList({});
+    console.log(res);
+    if (res) {
+      setCategories(res.list || []);
     }
   };
   const onSearch = (values: any) => {
@@ -52,6 +83,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     getList();
+    getCategories();
   }, []);
 
   const createWiki = () => {
@@ -59,9 +91,17 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const addCategory = async () => {
+    // const res = await createCategory({
+    //   parentId: '',
+    //   name: '一级分类3'
+    // });
+    setVisible(true);
+  };
+
+  const confirmAddCategory = async () => {
     const res = await createCategory({
       parentId: '',
-      name: '一级分类3'
+      name: inputValue
     });
     console.log(res);
   };
@@ -103,12 +143,63 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  /**
+   * @description 异步加载分类数据
+   */
+  const onLoadData = async ({ key, children }: any): Promise<void> => {
+    if (!children || children?.length === 0) {
+      const res: any = await getCategoryList({ parentId: key });
+      if (res) {
+        // setCategories((data) => updateData(data, key, res));
+        console.log(res);
+        setCategories(res);
+      }
+    }
+  };
+
   return (
     <div className="container">
       <Row>
         <Col span={4}>
-          <Input></Input>
-          <Button onClick={addCategory}>添加一级分类</Button>
+          <div className="flex">
+            <Input className="cell"></Input>
+            <div className="flex fixed">
+              <Button onClick={addCategory} icon={<PlusOutlined />}></Button>
+            </div>
+
+            <Tree
+              className={style.treeWrap}
+              fieldNames={{ title: 'name', key: 'categroyId' }}
+              blockNode
+              expandedKeys={expandIds}
+              onExpand={(keys) => setExpandIds(keys)}
+              treeData={categories}
+              loadData={onLoadData}
+              titleRender={(node) => (
+                <div className={style.nodeItem}>
+                  {node.name}
+                  {
+                    <Icon
+                      className={style.dotIcon}
+                      name="diandian"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // handlePosition(e.clientX, e.clientY);
+                        // setShowDepart(true);
+                        setCurrentNode(node);
+                      }}
+                    />
+                  }
+                </div>
+              )}
+              selectedKeys={[currentNode?.categroyId || '']}
+              onSelect={(selectedKeys, { selectedNodes }) => {
+                if (selectedNodes.length > 0) {
+                  setCurrentNode(selectedNodes[0]);
+                }
+              }}
+            />
+          </div>
         </Col>
         <Col span={20}>
           <NgFormSearch searchCols={searchColsFun()} onSearch={onSearch} />
@@ -141,6 +232,18 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
           )}
         </Col>
       </Row>
+
+      <NgModal
+        title="添加一级目录"
+        width={400}
+        visible={visible}
+        onOk={confirmAddCategory}
+        onCancel={() => setVisible(false)}
+      >
+        <div className="ml40 mr40 mb40">
+          <Input placeholder="请输入目录名" value={inputValue} onChange={(e) => setInputValue(e.target.value)}></Input>
+        </div>
+      </NgModal>
     </div>
   );
 };
