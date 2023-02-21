@@ -1,23 +1,26 @@
-import { Button, DatePicker, Form, Input, message, Popconfirm, Radio, RadioChangeEvent, Table } from 'antd';
-import classNames from 'classnames';
 import React, { Key, useEffect, useMemo, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Button, DatePicker, Form, Input, message, Radio, RadioChangeEvent, Spin } from 'antd';
+import { useHistory /* , useLocation */ } from 'react-router-dom';
 import { BreadCrumbs, ImageUpload } from 'src/components';
 import { SelectStaff } from 'src/pages/StaffManage/components';
-import { AddMarket } from 'src/pages/LiveCode/StaffCode/components';
+import { AddMarket, Preview, StaffList } from 'src/pages/LiveCode/StaffCode/components';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
-import { requestEditStaffLive } from 'src/apis/liveCode';
+import { requestEditStaffLive, requestGetStaffLiveDetail, requestGetLiveStaffList } from 'src/apis/liveCode';
+import { IValue } from 'src/pages/LiveCode/StaffCode/components/Preview/Preview';
 import CustomTextArea from 'src/pages/SalesCollection/SpeechManage/Components/CustomTextArea';
-import style from './style.module.less';
 import FilterChannelTag from '../../MomentCode/components/FilterChannelTag/FilterChannelTag';
+import moment from 'moment';
+import qs from 'qs';
+import classNames from 'classnames';
+import style from './style.module.less';
 
 export const expireDayList = [
-  { value: 1, label: '永久' },
-  // { value: 2, label: '7天' },
-  // { value: 3, label: '15天' },
-  // { value: 4, label: '30天' },
-  { value: 5, label: '自定义' }
+  { value: -1, label: '永久' },
+  { value: 7, label: '7天' },
+  { value: 15, label: '15天' },
+  { value: 30, label: '30天' },
+  { value: 0, label: '自定义' }
 ];
 
 export const liveTypeList = [
@@ -43,6 +46,9 @@ const AddCode: React.FC = () => {
   const [isWelcomeMsg, setIsWelcomeMsg] = useState<number>();
   const [pageNum, setPageNum] = useState(1);
   const [channelTagList, setChannelTagList] = useState<IChannelTagList[]>([]);
+  const [previewValue, setPreviewValue] = useState<IValue>();
+  const [getDetailloading, setGetDetailLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const [form] = Form.useForm();
   const { Item } = Form;
@@ -50,13 +56,46 @@ const AddCode: React.FC = () => {
   const { TextArea } = Input;
 
   const history = useHistory();
-  const location = useLocation();
+  // const location = useLocation();
 
   // 获取投放渠道标签
   const getChannelGroupList = async () => {
     const res = await requestGetChannelGroupList({ groupName: '投放渠道' });
     if (res) {
       setChannelTagList(res.list?.[0]?.tagList || []);
+    }
+  };
+
+  // 获取群活码详情
+  const getLiveCodeDetail = async () => {
+    const { liveId, readOnly } = qs.parse(location.search, { ignoreQueryPrefix: true });
+    if (readOnly) {
+      setReadOnly(true);
+    }
+    if (liveId) {
+      setGetDetailLoading(true);
+      const [liveDetail, staffs] = await Promise.all([
+        requestGetStaffLiveDetail({ liveId }),
+        // 全部请求，前端分页
+        requestGetLiveStaffList({ liveId, pageSize: 9999 })
+      ]);
+      console.log('liveDetail', liveDetail);
+      const { welcomeWord, welcomes, isWelcomeMsg, expireDate, liveType, assignType } = liveDetail;
+      const expireDay = [-1, 7, 15, 30].includes(liveDetail?.expireDay) ? liveDetail?.expireDay : 0;
+      setExpireDay(expireDay);
+      setIsWelcomeMsg(isWelcomeMsg);
+      setPreviewValue({ welcomeWord, welcomes });
+      setLiveType(liveType);
+      setAssignType(assignType);
+      setSelectStaffList(staffs.list.map((staffItem: any) => ({ ...staffItem, deptName: staffItem.staffDeptName })));
+      form.setFieldsValue({
+        ...liveDetail,
+        expireDate: moment(expireDate),
+        expireDay,
+        channelTagList: liveDetail.channelTagList[0].tagId,
+        staffs: staffs.list
+      });
+      setGetDetailLoading(false);
     }
   };
 
@@ -72,12 +111,13 @@ const AddCode: React.FC = () => {
 
   // 选择员工
   const selectStaffOnChange = (value: any) => {
-    setSelectStaffList(value.map((mapItem: any, index: number) => ({ ...mapItem, sort: index + 1 })));
+    setSelectStaffList((value || []).map((mapItem: any, index: number) => ({ ...mapItem, sort: index + 1 })));
     setPageNum(1);
   };
 
   // 批量删除员工
   const batchDelStaff = (keys: Key[]) => {
+    if (readOnly) return;
     // 删除及重新排序
     const filterStaffList = (selectStaffList || [])
       .filter((filterItem) => !keys.includes(filterItem.id))
@@ -95,6 +135,7 @@ const AddCode: React.FC = () => {
 
   // 上移/下移/置顶 -1 上移 1 下移 0 置顶
   const sortHandle = (type: -1 | 1 | 0, currentSort: number) => {
+    if (readOnly) return;
     let newSelectStaffList = [...(selectStaffList || [])];
     if (type === -1) {
       // 与前一个更换sort
@@ -119,20 +160,31 @@ const AddCode: React.FC = () => {
 
   // 创建员工活码
   const onFinishHandle = async (values?: any) => {
-    console.log('values', values);
+    setSubmitLoading(true);
     // 处理有效期
-    if (expireDay === 5) {
-      values.expireData = values.expireData?.format('YYYY-MM-DD');
+    if (!expireDay) {
+      values.expireDate = values.expireDate?.format('YYYY-MM-DD');
       values.expireDay = undefined;
     }
     values.channelTagList = channelTagList.filter((filterItem) => filterItem.tagId === values.channelTagList);
     values.staffs = values.staffs.map(({ staffId }: { staffId: string }) => ({ staffId }));
     const param = { ...values };
-    console.log('param', param);
     const res = await requestEditStaffLive(param);
     if (res) {
       message.success('员工活码新增成功');
       history.push('/staffCode');
+    }
+    setSubmitLoading(false);
+  };
+
+  // 设置预览的值
+  const onValuesChangeHandle = (changedValues: any) => {
+    const { welcomeWord, welcomes } = changedValues as IValue;
+    if (welcomeWord) {
+      setPreviewValue((previewValue) => ({ ...previewValue, welcomeWord }));
+    }
+    if (welcomes) {
+      setPreviewValue((previewValue) => ({ ...previewValue, welcomes }));
     }
   };
 
@@ -146,269 +198,211 @@ const AddCode: React.FC = () => {
     );
   }, [staffSearchValues, selectStaffList]);
 
+  // staffList表格配置
+  const pagination = {
+    current: pageNum,
+    simple: true,
+    total: tableDataSource.length,
+    onChange (page: number) {
+      setPageNum(page);
+      setStaffRowKeys([]);
+    }
+  };
+
+  const rowSelection: any = {
+    selectedRowKeys: staffRowKeys,
+    onChange (keys: Key[]) {
+      setStaffRowKeys(keys);
+    }
+  };
+
   useEffect(() => {
-    setReadOnly(false);
     getChannelGroupList();
+    getLiveCodeDetail();
   }, []);
   return (
-    <div className={style.wrap}>
-      <BreadCrumbs
-        navList={[
-          {
-            path: '/staffCode',
-            name: '员工活码'
-          },
-          { name: '新增活码' }
-        ]}
-      />
-      <Form
-        form={form}
-        className={style.form}
-        // onFinish={() => history.push('/staffCode')}
-        onFinish={onFinishHandle}
-        // @ts-ignore
-        initialValues={location.state?.row || {}}
-      >
-        <div className={style.panel}>
-          <div className={style.title}>基本信息</div>
-          <div className={style.content}>
-            <Item label="活码名称" name="name" rules={[{ required: true, message: '请输入50个字以内的活码名称' }]}>
-              <Input
-                placeholder="待输入"
-                disabled={readOnly}
-                className={style.input}
-                readOnly={readOnly}
-                showCount
-                maxLength={50}
-              />
-            </Item>
-            <Item label="有效期" name="expireDay" rules={[{ required: true, message: '请选择有效期' }]}>
-              <Group value={expireDay} onChange={expireDayOnChange}>
-                {expireDayList.map((mapItem) => (
-                  <Radio key={mapItem.value} value={mapItem.value}>
-                    {mapItem.label}
-                  </Radio>
-                ))}
-              </Group>
-            </Item>
-            {expireDay === 5 && (
-              <div className={style.expireDayData}>
-                <Item name="expireDate" rules={[{ required: true, message: '请选择失效日期' }]}>
-                  <DatePicker />
-                </Item>
-                <div className={style.remarks}>备注：活码有效期后到</div>
-              </div>
-            )}
-            <Item label="活码类型" name="liveType" rules={[{ required: true, message: '请选择活码类型' }]}>
-              <Group value={liveType} onChange={liveTypeOnChange}>
-                {liveTypeList.map((mapItem) => (
-                  <Radio key={mapItem.value} value={mapItem.value}>
-                    {mapItem.label}
-                  </Radio>
-                ))}
-              </Group>
-            </Item>
-            <Item label="使用成员" name="staffs" rules={[{ required: true, message: '请选择使用成员' }]}>
-              <SelectStaff
-                value={selectStaffList}
-                onChange={selectStaffOnChange}
-                className={style.select}
-                singleChoice={liveType === 1}
-              />
-            </Item>
-            {[2, 3].includes(liveType as number) && (
-              <>
-                {liveType === 3 && (
-                  <Item label="配置详情" name="assignType">
-                    <Group value={assignType} onChange={(e) => setAssignType(e.target.value)}>
-                      {assignTypeList.map((mapItem) => (
-                        <Radio key={mapItem.value} value={mapItem.value}>
-                          {mapItem.label}
-                        </Radio>
-                      ))}
-                    </Group>
+    <Spin spinning={getDetailloading} tip="加载中...">
+      <div className={style.wrap}>
+        <BreadCrumbs
+          navList={[
+            {
+              path: '/staffCode',
+              name: '员工活码'
+            },
+            { name: '新增活码' }
+          ]}
+        />
+        <Form form={form} className={style.form} onFinish={onFinishHandle} onValuesChange={onValuesChangeHandle}>
+          <div className={style.panel}>
+            <div className={style.title}>基本信息</div>
+            <div className={style.content}>
+              <Item label="活码名称" name="name" rules={[{ required: true, message: '请输入50个字以内的活码名称' }]}>
+                <Input
+                  placeholder="待输入"
+                  disabled={readOnly}
+                  className={style.input}
+                  readOnly={readOnly}
+                  showCount
+                  maxLength={50}
+                />
+              </Item>
+              <Item label="有效期" name="expireDay" rules={[{ required: true, message: '请选择有效期' }]}>
+                <Group value={expireDay} onChange={expireDayOnChange} disabled={readOnly}>
+                  {expireDayList.map((mapItem) => (
+                    <Radio key={mapItem.value} value={mapItem.value}>
+                      {mapItem.label}
+                    </Radio>
+                  ))}
+                </Group>
+              </Item>
+              {expireDay === 0 && (
+                <div className={style.expireDayData}>
+                  <Item name="expireDate" rules={[{ required: true, message: '请选择失效日期' }]}>
+                    <DatePicker disabled={readOnly} />
                   </Item>
-                )}
-                <div className={style.tableWrap}>
-                  <div className={style.searchWrap}>
-                    <Item label="员工名称" name="staffName">
-                      <Input className={style.staffListInput} placeholder="待输入" />
-                    </Item>
-                    <Item label="选择部门" name="dept">
-                      <SelectStaff type="dept" className={style.staffListSelect} />
-                    </Item>
-                    <Button className={style.staffListSearch} type="primary" onClick={searchStaffList}>
-                      搜索
-                    </Button>
-                  </div>
-
-                  <Table
-                    rowKey={(record: any) => record.id + record.sort}
-                    className={style.staffList}
-                    scroll={{ x: 760 }}
-                    dataSource={tableDataSource.slice(pageNum * 10 - 10, pageNum * 10)}
-                    pagination={{
-                      current: pageNum,
-                      simple: true,
-                      total: tableDataSource.length,
-                      onChange (page: number) {
-                        setPageNum(page);
-                        setStaffRowKeys([]);
-                      }
-                    }}
-                    columns={[
-                      {
-                        title: '序号',
-                        render (value: any) {
-                          return <>{value.sort}</>;
-                        }
-                      },
-                      { title: '员工姓名', dataIndex: 'staffName' },
-                      { title: '部门', dataIndex: 'deptName' },
-                      {
-                        title: '操作',
-                        render (value: any) {
-                          return (
-                            <>
-                              {assignType === 2 && value.sort !== 1 && (
-                                <span
-                                  className={classNames('text-primary mr5 pointer')}
-                                  onClick={() => sortHandle(-1, value.sort)}
-                                >
-                                  上移
-                                </span>
-                              )}
-                              {assignType === 2 && value.sort !== tableDataSource.length && (
-                                <span
-                                  className={classNames('text-primary mr5 pointer')}
-                                  onClick={() => sortHandle(1, value.sort)}
-                                >
-                                  下移
-                                </span>
-                              )}
-                              <Popconfirm title="确定删除该员工吗？" onConfirm={() => batchDelStaff([value.id])}>
-                                <span className={classNames('text-primary mr5 pointer')}>删除</span>
-                              </Popconfirm>
-                              {assignType === 2 && value.sort !== 1 && (
-                                <span
-                                  className={classNames('text-primary mr5 pointer')}
-                                  onClick={() => sortHandle(0, value.sort)}
-                                >
-                                  置顶
-                                </span>
-                              )}
-                            </>
-                          );
-                        }
-                      }
-                    ]}
-                    rowSelection={{
-                      selectedRowKeys: staffRowKeys,
-                      onChange (keys: Key[]) {
-                        setStaffRowKeys(keys);
-                      }
-                    }}
-                  />
-                  <span>
-                    已选中 {staffRowKeys.length}/{tableDataSource.length} 个员工
-                  </span>
-                  <Button
-                    className={style.batchDel}
-                    disabled={staffRowKeys.length === 0}
-                    onClick={() => batchDelStaff(staffRowKeys)}
-                  >
-                    批量删除
-                  </Button>
+                  <div className={style.remarks}>备注：活码有效期后到</div>
                 </div>
-              </>
-            )}
-          </div>
-        </div>
-        <div className={style.panel}>
-          <div className={style.title}>个性设置</div>
-          <div className={style.content}>
-            <Item label="是否开启只能添加同一客户" name="isExclusive" initialValue={0}>
-              <Group>
-                <Radio value={1}>开启</Radio>
-                <Radio value={0}>关闭</Radio>
-              </Group>
-            </Item>
-            <Item label="添加好友无需验证" name="isOpenVerify">
-              <Group>
-                <Radio value={1}>开启</Radio>
-                <Radio value={0}>关闭</Radio>
-              </Group>
-            </Item>
-          </div>
-        </div>
-        <div className={style.panel}>
-          <div className={style.title}>渠道设置</div>
-          <div className={classNames(style.content, style.previewContent)}>
-            <Item label="活码备注" name="remark">
-              <TextArea
-                className={style.textArea}
-                placeholder="选填，如不填则默认抓取选定任务推荐话术"
-                maxLength={50}
-                showCount
-              />
-            </Item>
-            <Form.Item label="欢迎语配置" name="isWelcomeMsg" rules={[{ required: true }]}>
-              <Group onChange={(e) => setIsWelcomeMsg(e.target.value)}>
-                <Radio value={0}>不发送</Radio>
-                <Radio value={1}>渠道欢迎语</Radio>
-              </Group>
-            </Form.Item>
-            {isWelcomeMsg === 1 && (
-              <>
-                <Form.Item name="welcomeWord" rules={[{ required: true }]}>
-                  <CustomTextArea maxLength={1200} />
-                </Form.Item>
-                <Item noStyle name="welcomes">
-                  <AddMarket />
-                </Item>
-              </>
-            )}
-            <Item
-              label="活码头像"
-              name="qrLogo"
-              // extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
-            >
-              <ImageUpload disabled={readOnly} />
-              {/* <Input placeholder="请输入链接" className={style.input} /> */}
-            </Item>
-            <Item label="渠道标签">
-              <div className={style.channelTag}>
-                <Item
-                  name="channelTagList"
-                  label="投放渠道标签"
-                  rules={[{ required: true, message: '请选择投放渠道' }]}
-                  extra="*未找到适合的渠道，请联系管理员进行新增"
-                >
-                  <Radio.Group disabled={readOnly}>
-                    {channelTagList.map((tagItem) => (
-                      <Radio key={tagItem.tagId} value={tagItem.tagId}>
-                        {tagItem.tagName}
-                      </Radio>
-                    ))}
-                  </Radio.Group>
-                </Item>
-                <Item label="其他渠道标签" name="otherTagList">
-                  <FilterChannelTag disabled={readOnly} />
-                </Item>
-              </div>
-            </Item>
-            <div className={style.btnWrap}>
-              <Button className={style.submitBtn} type="primary" htmlType="submit">
-                确定
-              </Button>
-              <Button className={style.cancelBtn} onClick={() => history.goBack()}>
-                取消
-              </Button>
+              )}
+              <Item label="活码类型" name="liveType" rules={[{ required: true, message: '请选择活码类型' }]}>
+                <Group value={liveType} onChange={liveTypeOnChange} disabled={readOnly}>
+                  {liveTypeList.map((mapItem) => (
+                    <Radio key={mapItem.value} value={mapItem.value}>
+                      {mapItem.label}
+                    </Radio>
+                  ))}
+                </Group>
+              </Item>
+              <Item label="使用成员" name="staffs" rules={[{ required: true, message: '请选择使用成员' }]}>
+                <SelectStaff
+                  value={selectStaffList}
+                  onChange={selectStaffOnChange}
+                  className={style.select}
+                  singleChoice={liveType === 1}
+                  disabled={readOnly}
+                />
+              </Item>
+              {[2, 3].includes(liveType as number) && (
+                <>
+                  {liveType === 3 && (
+                    <Item label="配置详情" name="assignType" rules={[{ required: true, message: '请选择配置详情' }]}>
+                      <Group value={assignType} onChange={(e) => setAssignType(e.target.value)}>
+                        {assignTypeList.map((mapItem) => (
+                          <Radio key={mapItem.value} value={mapItem.value} disabled={readOnly}>
+                            {mapItem.label}
+                          </Radio>
+                        ))}
+                      </Group>
+                    </Item>
+                  )}
+                  <StaffList
+                    dataSource={tableDataSource.slice(pageNum * 10 - 10, pageNum * 10)}
+                    pagination={pagination}
+                    searchStaffList={searchStaffList}
+                    rowSelection={rowSelection}
+                    assignType={assignType as number}
+                    sortHandle={sortHandle}
+                    batchDelStaff={batchDelStaff}
+                    staffRowKeys={staffRowKeys}
+                    disabled={readOnly}
+                  />
+                </>
+              )}
             </div>
           </div>
-        </div>
-      </Form>
-    </div>
+          <div className={style.panel}>
+            <div className={style.title}>个性设置</div>
+            <div className={style.content}>
+              <Item label="是否开启只能添加同一客户" name="isExclusive" initialValue={0}>
+                <Group disabled={readOnly}>
+                  <Radio value={1}>开启</Radio>
+                  <Radio value={0}>关闭</Radio>
+                </Group>
+              </Item>
+              <Item label="添加好友无需验证" name="isOpenVerify">
+                <Group disabled={readOnly}>
+                  <Radio value={1}>开启</Radio>
+                  <Radio value={0}>关闭</Radio>
+                </Group>
+              </Item>
+            </div>
+          </div>
+          <div className={style.panel}>
+            <div className={style.title}>渠道设置</div>
+            <div className={classNames(style.content, style.previewContent)}>
+              <Item label="活码备注" name="remark">
+                <TextArea
+                  className={style.textArea}
+                  placeholder="选填，如不填则默认抓取选定任务推荐话术"
+                  maxLength={50}
+                  showCount
+                  disabled={readOnly}
+                />
+              </Item>
+              <Form.Item label="欢迎语配置" name="isWelcomeMsg" rules={[{ required: true }]}>
+                <Group onChange={(e) => setIsWelcomeMsg(e.target.value)} disabled={readOnly}>
+                  <Radio value={0}>不发送</Radio>
+                  <Radio value={1}>渠道欢迎语</Radio>
+                </Group>
+              </Form.Item>
+              {isWelcomeMsg === 1 && (
+                <>
+                  <Form.Item name="welcomeWord" rules={[{ required: true }]}>
+                    <CustomTextArea maxLength={1200} disabled={readOnly} />
+                  </Form.Item>
+                  <Item noStyle name="welcomes">
+                    <AddMarket disabled={readOnly} />
+                  </Item>
+                  <Preview className={style.preview} value={previewValue} />
+                </>
+              )}
+              <Item
+                label="活码头像"
+                name="qrLogo"
+                // extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
+              >
+                <ImageUpload disabled={readOnly} />
+                {/* <Input placeholder="请输入链接" className={style.input} /> */}
+              </Item>
+              <Item label="渠道标签">
+                <div className={style.channelTag}>
+                  <Item
+                    name="channelTagList"
+                    label="投放渠道标签"
+                    rules={[{ required: true, message: '请选择投放渠道' }]}
+                    extra="*未找到适合的渠道，请联系管理员进行新增"
+                  >
+                    <Radio.Group disabled={readOnly}>
+                      {channelTagList.map((tagItem) => (
+                        <Radio key={tagItem.tagId} value={tagItem.tagId}>
+                          {tagItem.tagName}
+                        </Radio>
+                      ))}
+                    </Radio.Group>
+                  </Item>
+                  <Item label="其他渠道标签" name="otherTagList">
+                    <FilterChannelTag disabled={readOnly} />
+                  </Item>
+                </div>
+              </Item>
+              <div className={style.btnWrap}>
+                <Button
+                  className={style.submitBtn}
+                  type="primary"
+                  htmlType="submit"
+                  disabled={readOnly}
+                  loading={submitLoading}
+                >
+                  确定
+                </Button>
+                <Button className={style.cancelBtn} onClick={() => history.goBack()}>
+                  {readOnly ? '返回' : '取消'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Form>
+      </div>
+    </Spin>
   );
 };
 export default AddCode;

@@ -7,7 +7,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import { statusList } from 'src/pages/LiveCode/MomentCode/Config';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
-import { requestGetStaffLiveList, requestDownloadStaffLiveCode, requestManageGroupLiveCode } from 'src/apis/liveCode';
+import { requestGetStaffLiveList, requestDownloadStaffLiveCode, requestManageStaffLiveCode } from 'src/apis/liveCode';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { IPagination } from 'src/utils/interface';
 import style from './style.module.less';
@@ -75,7 +75,6 @@ const StaffCode: React.FC = () => {
       endUpdateTime,
       staffId: staffId?.[0]?.staffId
     };
-    console.log('param', param);
     getList(param);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     setFormParam(param);
@@ -136,7 +135,7 @@ const StaffCode: React.FC = () => {
       centered: true,
       content: `此次操作共${option === 1 ? '删除' : '作废'}：${selectedRowKeys.length}个活码。请您确认`,
       async onOk () {
-        const res = await requestManageGroupLiveCode({ option, liveIdList: selectedRowKeys });
+        const res = await requestManageStaffLiveCode({ option, liveIdList: selectedRowKeys });
         if (res) {
           message.success(`群活码${option === 1 ? '作废' : '删除'}成功`);
           getList({ ...formParam, ...pagination });

@@ -7,13 +7,13 @@ import { ActivitySelectComponent } from 'src/pages/Marketing/HotSpecial/componen
 import { Icon, ImageUpload } from 'src/components';
 import { isArray } from 'src/utils/tools';
 import { activityDetail, getNewsDetail, productDetail } from 'src/apis/marketing';
-import { Preview } from 'src/pages/LiveCode/StaffCode/components';
 import classNames from 'classnames';
 import style from './style.module.less';
 
 interface IAddMarketProps {
   value?: any[];
   onChange?: (value?: any[]) => void;
+  disabled?: boolean;
 }
 
 const welcomeTypeList = [
@@ -25,7 +25,7 @@ const welcomeTypeList = [
   { value: 11, name: '链接' }
 ];
 
-const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange }) => {
+const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange, disabled }) => {
   const [visible, setVisible] = useState(false);
   /**
    *
@@ -78,6 +78,7 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange }) => {
    * @param welcomeType 1、文章库；2、海报库、3、活动库；4、产品库 ；10、图片；11、外链
    */
   const addMarketHandle = (welcomeType: number) => {
+    if (disabled) return;
     setVisible(true);
     const currentTypeRows = value?.filter((filterItem) => filterItem.welcomeType === welcomeType) || [];
     setSelectedRowKeys(currentTypeRows.map((mapItem) => mapItem.itemId));
@@ -121,13 +122,12 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange }) => {
       default:
         break;
     }
-    console.log('arr', arr);
     let newWVal = [
       ...(value || []).filter((filterItem) => filterItem.welcomeType !== welcomeType),
-      ...selectRows.map((mapItem, index: number) => ({ ...mapItem, welcomeType, ...arr[index] }))
+      ...selectRows.map(({ itemId, itemName }, index: number) => ({ itemId, itemName, welcomeType, ...arr[index] }))
     ];
     if ([10, 11].includes(welcomeType as number)) {
-      newWVal = [...newWVal, form.getFieldsValue()];
+      newWVal = [...newWVal, { ...form.getFieldsValue(), welcomeType }];
     }
     onChange?.(newWVal);
     onCancelHandle();
@@ -135,22 +135,40 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange }) => {
   return (
     <div className={style.wrap}>
       <div className={style.addWrap}>
-        <div className={classNames(style.addItem, style.addImg, 'pointer')} onClick={() => addMarketHandle(10)}>
+        <div
+          className={classNames(style.addItem, style.addImg, 'pointer', { disabled: disabled })}
+          onClick={() => addMarketHandle(10)}
+        >
           添加图片
         </div>
-        <div className={classNames(style.addItem, style.addLink, 'pointer')} onClick={() => addMarketHandle(11)}>
+        <div
+          className={classNames(style.addItem, style.addLink, 'pointer', { disabled: disabled })}
+          onClick={() => addMarketHandle(11)}
+        >
           添加链接
         </div>
-        <div className={classNames(style.addItem, style.addArticle, 'pointer')} onClick={() => addMarketHandle(1)}>
+        <div
+          className={classNames(style.addItem, style.addArticle, 'pointer', { disabled: disabled })}
+          onClick={() => addMarketHandle(1)}
+        >
           添加文章
         </div>
-        <div className={classNames(style.addItem, style.addPoster, 'pointer')} onClick={() => addMarketHandle(2)}>
+        <div
+          className={classNames(style.addItem, style.addPoster, 'pointer', { disabled: disabled })}
+          onClick={() => addMarketHandle(2)}
+        >
           添加海报
         </div>
-        <div className={classNames(style.addItem, style.addActivity, 'pointer')} onClick={() => addMarketHandle(3)}>
+        <div
+          className={classNames(style.addItem, style.addActivity, 'pointer', { disabled: disabled })}
+          onClick={() => addMarketHandle(3)}
+        >
           添加活动
         </div>
-        <div className={classNames(style.addItem, style.addProduct, 'pointer')} onClick={() => addMarketHandle(4)}>
+        <div
+          className={classNames(style.addItem, style.addProduct, 'pointer', { disabled: disabled })}
+          onClick={() => addMarketHandle(4)}
+        >
           添加产品
         </div>
       </div>
@@ -159,9 +177,9 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange }) => {
           <div className={classNames(style.customTag, 'block')} key={val.itemId || val.welcomeUrl}>
             <span className={classNames(style.itemName, 'ellipsis')}>
               {val.itemName || val.welcomeTitle || val.welcomeUrl}（
-              {welcomeTypeList.find((findItem) => findItem.value === welcomeType)?.name}）
+              {welcomeTypeList.find((findItem) => findItem.value === val.welcomeType)?.name}）
             </span>
-            <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeValue(val)}></Icon>
+            {disabled || <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeValue(val)} />}
           </div>
         ))}
       </div>
@@ -252,8 +270,8 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange }) => {
                 {isArray(selectRows) &&
                   (selectRows as any[])?.map((row: any) => (
                     <div className={classNames(style.customTag)} key={row.itemId}>
-                      <span>{row.itemName}</span>
-                      <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(row)}></Icon>
+                      <span>{row.itemName || row.welcomeTitle}</span>
+                      <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(row)} />
                     </div>
                   ))}
               </div>
@@ -261,7 +279,6 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange }) => {
           </div>
         )}
       </Modal>
-      <Preview className={style.preview} />
     </div>
   );
 };

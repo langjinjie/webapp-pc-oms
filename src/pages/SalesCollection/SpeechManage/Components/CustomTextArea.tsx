@@ -12,6 +12,7 @@ interface CustomTextAreaProps {
   visible?: boolean;
   sensitive?: number;
   sensitiveWord?: string;
+  disabled?: boolean;
 }
 const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   onChange,
@@ -19,7 +20,8 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   maxLength,
   visible,
   sensitive,
-  sensitiveWord
+  sensitiveWord,
+  disabled
 }) => {
   const textareaRef: React.LegacyRef<HTMLTextAreaElement> = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -119,6 +121,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
                 key={btnText}
                 color="primary"
                 onClick={() => handlePushName(btnText)}
+                disabled={disabled}
               >
                 [插入{btnText}]
               </Button>
@@ -134,6 +137,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
             value={value}
             maxLength={maxLength}
             onChange={handleTextareaChange}
+            disabled={disabled}
           />
         </div>
         <div className={classNames(style.count, 'flex justify-end')}>
