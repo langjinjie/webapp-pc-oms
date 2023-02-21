@@ -1,10 +1,10 @@
-import { Button, Card, Cascader, Form, Input, Space } from 'antd';
+import { Button, Card, Cascader, Form, Input, message, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import InputShowLength from 'src/components/InputShowLength/InputShowLength';
 import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
 import { NgEditor } from 'src/components';
-import { getCategoryList } from 'src/apis/knowledge';
+import { addWiki, getCategoryList } from 'src/apis/knowledge';
 
 const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
   const [editForm] = Form.useForm();
@@ -15,28 +15,32 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
   const getCategory = async () => {
     const res = await getCategoryList();
     if (res) {
-      setCategories(res.list || []);
+      const { list } = res;
+      setCategories(list.map((item: any) => ({ isLeaf: !!item.lastLevel, ...item })));
     }
-    console.log(res);
   };
   const loadData = async (selectedOptions: any) => {
-    console.log(selectedOptions);
-
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
 
+    console.log(targetOption);
+
     // 异步加载子类目
-    const res = await getCategoryList({ sceneId: targetOption.sceneId, catalogId: targetOption.catalogId });
+    const res = await getCategoryList({ parentId: targetOption.categroyId });
 
     targetOption.loading = false;
     if (res) {
-      res.forEach((item: any) => {
-        if (item.lastLevel === 0) {
-          item.isLeaf = false;
-        }
+      const { list } = res;
+      list.map((item: any) => {
+        item.isLeaf = !!item.lastLevel;
+        console.log(item);
+
+        return item;
       });
-      targetOption.children = res;
+      targetOption.children = list;
     }
+    console.log(categories);
+
     setCategories([...categories]);
   };
 
@@ -44,8 +48,19 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
     getCategory();
   }, []);
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     console.log(values);
+    const { categroyId, ...otherValues } = values;
+    const res = await addWiki({
+      categroyId: categroyId[categroyId.length - 1],
+      ...otherValues,
+      content: formData.contentChanged,
+      groupId: ''
+    });
+    if (res) {
+      message.success('创建成功');
+      history.goBack();
+    }
   };
 
   const editorChange = (content: string) => {
@@ -59,7 +74,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
             <Cascader
               placeholder="请选择"
               className="width420"
-              fieldNames={{ label: 'name', value: 'catalogId', children: 'children' }}
+              fieldNames={{ label: 'name', value: 'categroyId', children: 'children' }}
               options={categories}
               loadData={loadData}
             ></Cascader>

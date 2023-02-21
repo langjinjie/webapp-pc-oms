@@ -60,7 +60,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   const addCategory = async () => {
     const res = await createCategory({
       parentId: '',
-      name: '一级分类2'
+      name: '一级分类3'
     });
     console.log(res);
   };

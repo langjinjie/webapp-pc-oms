@@ -3,8 +3,8 @@ type HttpFC<T = { [key: string]: unknown }> = (param?: T, config?: any) => Promi
 // type HttpVoid = () => Promise<any>;
 
 // 1.1、获取知识库目录
-export const getCategoryList: HttpFC = (param, config) => {
-  return http.post('/tenacity-admin/api/train/wiki/category/list', param, config);
+export const getCategoryList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/train/wiki/category/list', param);
 };
 // 1.2、添加分类
 export const createCategory: HttpFC = (param, config) => {
