@@ -8,7 +8,7 @@ import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
 import { UploadFile } from 'src/components';
 import { SetUserRightFormItem } from '../Components/SetUserRight/SetUserRight';
-import { URLSearchParams } from 'src/utils/base';
+import { urlSearchParams } from 'src/utils/base';
 import { RouteComponentProps } from 'react-router-dom';
 
 interface ActivityPageProps extends RouteComponentProps {
@@ -105,7 +105,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
   };
 
   useEffect(() => {
-    const { activityId, isView, isCopy } = URLSearchParams(location.search) as {
+    const { activityId, isView, isCopy } = urlSearchParams(location.search) as {
       activityId: string;
       isView: string;
       isCopy: string;

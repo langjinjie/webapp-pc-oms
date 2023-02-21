@@ -8,9 +8,9 @@ import { speechContentTypes, SpeechProps } from './Config';
 import SpeechItem from './Components/SpeechTypeItem/SpeechItem';
 import SpeechItemChild from './Components/SpeechTypeItemChild/SpeechItem';
 import { RouteComponentProps } from 'react-router';
-import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { urlSearchParams, useDocumentTitle } from 'src/utils/base';
 import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
-import InputShowLength from './Components/InputShowLength/InputShowLength';
+import InputShowLength from '../../../components/InputShowLength/InputShowLength';
 import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
 
 const scenesStates = [
@@ -118,7 +118,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
   };
 
   const initSetFormQuery = async () => {
-    const { catalog, contentId, sceneId } = URLSearchParams(location.search) as { [key: string]: string };
+    const { catalog, contentId, sceneId } = urlSearchParams(location.search) as { [key: string]: string };
     if (catalog) {
       const catalogs = catalog.split(',');
       const tree = JSON.parse(localStorage.getItem('catalogTree') || '[]') as any[];
@@ -285,7 +285,7 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
 
   return (
     <Card
-      title={`${(URLSearchParams(location.search) as { [key: string]: string }).contentId ? '编辑' : '新增'}话术`}
+      title={`${(urlSearchParams(location.search) as { [key: string]: string }).contentId ? '编辑' : '新增'}话术`}
       bordered={false}
       className="edit"
     >

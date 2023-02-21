@@ -12,7 +12,7 @@ import {
   getCustomerFreeList
 } from 'src/apis/orgManage';
 import DeleteModal from '../StatisticsFree/Components/DeleteModal/DeleteModal';
-import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
+import ExportModal from 'src/components/ExportModal/ExportModal';
 import BatchAddResult from './Components/BatchAddResultModal';
 
 interface BatchAddResultProps {

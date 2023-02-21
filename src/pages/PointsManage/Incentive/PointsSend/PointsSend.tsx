@@ -11,7 +11,7 @@ import {
 } from 'src/apis/pointsMall';
 import { IConfirmModalParam } from 'src/utils/interface';
 import { Context } from 'src/store';
-import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
+import ExportModal from 'src/components/ExportModal/ExportModal';
 import style from './style.module.less';
 
 export interface IIncentivePointSend {

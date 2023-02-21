@@ -5,7 +5,7 @@ import { getTaskStrategyTplDetail, applyTpl, getCorpTplDetail } from 'src/apis/t
 
 import styles from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
-import { throttle, URLSearchParams } from 'src/utils/base';
+import { throttle, urlSearchParams } from 'src/utils/base';
 import moment from 'moment';
 import { FormBlockPreview } from '../StrategyTask/components/ManuallyAddSpeech/FormBlockPreview/FormBlockPreview';
 import { isArray } from 'src/utils/tools';
@@ -19,7 +19,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
   };
 
   const getDetail = async () => {
-    const { tplId, view, corpTplId } = URLSearchParams(location.search) as {
+    const { tplId, view, corpTplId } = urlSearchParams(location.search) as {
       tplId: string;
       view: string;
       corpTplId: string;

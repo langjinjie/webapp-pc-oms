@@ -17,14 +17,14 @@ import {
 } from 'src/apis/salesCollection';
 import { AuthBtn, Icon, NgFormSearch, NgTable } from 'src/components';
 import { PaginationProps } from 'src/components/TableComponent/TableComponent';
-import ExportModal from './Components/ExportModal/ExportModal';
+import ExportModal from '../../../components/ExportModal/ExportModal';
 import PreviewSpeech from './Components/PreviewSpeech/PreviewSpeech';
 import { columns, excelDemoUrl, setSearchCols, SpeechProps } from './Config';
 
 import style from './style.module.less';
 import { Context } from 'src/store';
 import ConfirmModal from './Components/ConfirmModal/ConfirmModal';
-import { URLSearchParams, useDocumentTitle } from 'src/utils/base';
+import { urlSearchParams, useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/SetUserRight';
 import { getQueryParam } from 'tenacity-tools';
 
@@ -250,7 +250,7 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     }
   };
   const initSetFormQuery = async () => {
-    const { catalog } = URLSearchParams(location.search) as { [key: string]: string };
+    const { catalog } = urlSearchParams(location.search) as { [key: string]: string };
     if (catalog) {
       const catalogs = catalog.split(',');
       setFormDefaultValue(() => ({ catalogIds: catalogs }));

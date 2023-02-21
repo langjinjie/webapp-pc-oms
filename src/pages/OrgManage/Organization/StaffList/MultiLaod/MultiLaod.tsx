@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { Context } from 'src/store';
 import { requestGetHistoryLoad, requestImportStaffList, requestDownStaffList } from 'src/apis/orgManage';
 import { IStaffImpList } from 'src/utils/interface';
-import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
+import ExportModal from 'src/components/ExportModal/ExportModal';
 import style from './style.module.less';
 
 interface ISearchParam {

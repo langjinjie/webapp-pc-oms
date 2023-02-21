@@ -12,7 +12,7 @@ import {
 } from 'src/apis/orgManage';
 import { Context } from 'src/store';
 import { sensitiveStatusList } from 'src/utils/commonData';
-import ExportModal from 'src/pages/SalesCollection/SpeechManage/Components/ExportModal/ExportModal';
+import ExportModal from 'src/components/ExportModal/ExportModal';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { useDocumentTitle } from 'src/utils/base';
