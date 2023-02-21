@@ -10,9 +10,17 @@ interface ISelectStaffProps {
   type?: 'staff' | 'dept';
   className?: string;
   singleChoice?: boolean;
+  disabled?: boolean;
 }
 
-const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'staff', className, singleChoice }) => {
+const SelectStaff: React.FC<ISelectStaffProps> = ({
+  value,
+  onChange,
+  type = 'staff',
+  className,
+  singleChoice,
+  disabled
+}) => {
   const [orgParam, setOrgParam] = useState<{ visible: boolean; add: boolean }>({ visible: false, add: true });
 
   // 取消选择
@@ -37,17 +45,19 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({ value, onChange, type = 'sta
     <>
       <Input
         readOnly
-        suffix={value ? <Icon name="guanbi" onClick={delAll} /> : <DownOutlined />}
+        suffix={!disabled && value ? <Icon name="guanbi" onClick={delAll} /> : <DownOutlined />}
         className={className}
         value={inputValue}
         style={{ color: '#E1E2E6' }}
         onClick={() => setOrgParam((orgParam) => ({ ...orgParam, visible: true }))}
         placeholder="请选择"
+        disabled={disabled}
       />
       <OrganizationalTree
         onCancel={() => setOrgParam((orgParam) => ({ ...orgParam, visible: false }))}
         showStaff={type === 'staff'}
         selectedDept={type === 'dept'}
+        isDeleted={0}
         value={value}
         params={orgParam}
         title={type === 'staff' ? '选择客户经理' : '选择部门'}

@@ -61,17 +61,15 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
     const res = await requestDownloadStaffLiveCode({ liveIdList: [value.liveId] });
     if (res) {
       const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
-      const blob = new Blob([res.data]);
-      const url = window.URL.createObjectURL(blob);
-      exportFile(url, fileName.split('.')[0], fileName.split('.')[1]);
+      exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
     }
     setDownLoad('');
   };
-  // 作废/删除 1-作废 2-删除
-  const manageGroupLive = async (type: number, value: IStaffLiveCode) => {
-    const res = await requestManageStaffLiveCode({ type, liveIdList: [value.liveId] });
+  // 作废/删除 1-删除 2-作废
+  const manageGroupLive = async (option: number, value: IStaffLiveCode) => {
+    const res = await requestManageStaffLiveCode({ option, liveIdList: [value.liveId] });
     if (res) {
-      message.success(`群活码${type === 1 ? '作废' : '删除'}成功`);
+      message.success(`群活码${option === 1 ? '删除' : '作废'}成功`);
       updateHandle?.();
     }
   };
@@ -134,7 +132,7 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
           <>
             <span
               className={style.check}
-              onClick={() => history.push('/staffLive/addCode?liveId=' + value.liveId + '&readOnly=true')}
+              onClick={() => history.push('/staffCode/addCode?liveId=' + value.liveId + '&readOnly=true')}
             >
               查看
             </span>
@@ -156,14 +154,14 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
             <Popconfirm
               title="确认作废该活码吗?"
               disabled={value.status === 2}
-              onConfirm={() => manageGroupLive(1, value)}
+              onConfirm={() => manageGroupLive(2, value)}
             >
               <span className={classNames(style.void, { disabled: value.status === 2 })}>作废</span>
             </Popconfirm>
 
             <Popconfirm
               title="确认删除该活码吗?"
-              onConfirm={() => manageGroupLive(2, value)}
+              onConfirm={() => manageGroupLive(1, value)}
               disabled={value.status === 1 || value.status === 0}
             >
               <span className={classNames(style.del, { disabled: value.status === 0 || value.status === 1 })}>
