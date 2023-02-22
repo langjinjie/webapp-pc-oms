@@ -165,7 +165,13 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
         <Form.Item label="配置可见范围" name={'groupId'}>
           <SetUserRightFormItem form={editForm} />
         </Form.Item>
-        <Form.Item label="知识库分词结果">{detail.segWords}</Form.Item>
+        <Form.Item label="知识库分词结果">
+          {detail.segWords?.split(',').map((item: string) => (
+            <span className="tag" key={item}>
+              {item}
+            </span>
+          ))}
+        </Form.Item>
 
         <div className={styles.panelTitle}>审批状态</div>
         <div className="ml25 mt20">

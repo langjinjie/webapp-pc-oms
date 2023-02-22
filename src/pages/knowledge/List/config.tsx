@@ -194,42 +194,45 @@ export const tableColumnsFun = (
       key: 'operate',
       title: '操作',
       fixed: 'right',
-      width: 320,
+      width: 260,
       render: (operate, record, index) => {
         return (
           <div>
-            {record.isTop
-              ? (
-              <Button type="link" onClick={() => onOperate('unTop', record)}>
-                取消置顶
-              </Button>
-                )
-              : (
-              <Button type="link" onClick={() => onOperate('top', record)}>
-                置顶
-              </Button>
-                )}
-            <Button type="link" onClick={() => onOperate('edit', record)}>
-              编辑
+            <Button type="link" onClick={() => onOperate('view', record)}>
+              查看
             </Button>
-            {record.wikiStatus === 2
-              ? (
+            {record.auditStatus !== 0 && (
+              <Button type="link" onClick={() => onOperate('edit', record)}>
+                编辑
+              </Button>
+            )}
+
+            {record.wikiStatus === 2 && record.auditStatus !== 0 && record.auditStatus !== 2 && (
               <Popconfirm title="确定下架？" onConfirm={() => onOperate('outline', record, index)}>
                 <Button type="link">下架</Button>
               </Popconfirm>
-                )
-              : (
+            )}
+            {record.wikiStatus !== 2 && record.auditStatus !== 0 && record.auditStatus !== 2 && (
               <Popconfirm title="确定上架？" onConfirm={() => onOperate('putAway', record, index)}>
                 <Button type="link">上架</Button>
               </Popconfirm>
-                )}
-            <Popconfirm title="确定要删除当前视频?" onConfirm={() => onOperate('delete', record, index)}>
-              <Button type="link">删除</Button>
-            </Popconfirm>
+            )}
 
-            <Button type="link" onClick={() => onOperate('other', record)}>
-              配置可见范围
-            </Button>
+            {record.auditStatus !== 0 && record.wikiStatus === 3 && (
+              <Popconfirm title="确定要删除?" onConfirm={() => onOperate('delete', record, index)}>
+                <Button type="link">删除</Button>
+              </Popconfirm>
+            )}
+            {record.auditStatus === 2 && (
+              <Popconfirm title="确定要重新发起申请?" onConfirm={() => onOperate('other', record, index)}>
+                <Button type="link">重新发起申请</Button>
+              </Popconfirm>
+            )}
+            {record.auditStatus !== 0 && (
+              <Button type="link" onClick={() => onOperate('scope', record)}>
+                配置可见范围
+              </Button>
+            )}
           </div>
         );
       }

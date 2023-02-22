@@ -51,3 +51,54 @@
     }
   }
 }
+
+.inputWrap {
+  flex: none;
+  width: 100%;
+  padding: 10px 20px;
+
+  :global {
+    .ant-input-search-button {
+      position: absolute;
+      left: -50px;
+      top: 2px;
+      background: none;
+      border: none;
+      box-shadow: none;
+      outline: none;
+      z-index: 999;
+    }
+
+    .ant-input-group-addon {
+      left: 0;
+    }
+  }
+
+  .searchIcon {
+    margin-right: 2px;
+    color: #a9aab0;
+    font-size: 16px;
+  }
+}
+
+.searchList {
+  padding: 10px 20px;
+
+  .searchItem {
+    padding: 0 16px;
+    width: 100%;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 36px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+
+    &.active {
+      background: rgba(48, 120, 219, 0.2);
+      color: #318cf5;
+    }
+  }
+}
