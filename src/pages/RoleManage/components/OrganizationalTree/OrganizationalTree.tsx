@@ -174,7 +174,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     } else {
       checked = checke as Key[];
     }
-    setCheckedKeys(singleChoice ? [checked[checked.length - 1]] : checked);
+    setCheckedKeys(singleChoice && checked.length ? [checked[checked.length - 1]] : checked);
     let newSelectedList = [...selectedList];
 
     if (showStaff) {
@@ -220,7 +220,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       }
     } else {
       // 判断已选列表是否需要显示部门
-      newSelectedList = [...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))];
       if (checkStrictly) {
         newSelectedList = flatTreeData.filter((filterItem) => checked.includes(filterItem.id));
       } else {
@@ -228,7 +227,9 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       }
     }
     setSelectedList(
-      singleChoice ? [newSelectedList.find((findItem) => findItem.id === checked[checked.length - 1])] : newSelectedList
+      singleChoice && checked.length
+        ? [newSelectedList.find((findItem) => findItem.id === checked[checked.length - 1])]
+        : newSelectedList
     );
   };
   // 树列表搜索

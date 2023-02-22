@@ -40,7 +40,7 @@ const AddCode: React.FC = () => {
   const [expireDay, setExpireDay] = useState<number>(); // 有效期
   const [liveType, setLiveType] = useState<number>(); // 活码类型
   const [assignType, setAssignType] = useState<number>(); // 分配方式
-  const [selectStaffList, setSelectStaffList] = useState<any[]>();
+  const [selectStaffList, setSelectStaffList] = useState<any[]>([]);
   const [staffSearchValues, setStaffSearchValues] = useState<{ [key: string]: any }>({});
   const [staffRowKeys, setStaffRowKeys] = useState<Key[]>([]);
   const [isWelcomeMsg, setIsWelcomeMsg] = useState<number>();
@@ -108,7 +108,7 @@ const AddCode: React.FC = () => {
     setLiveType(e.target.value);
     // 切换活码类型处理使用成员
     if (e.target.value === 1) {
-      form.setFieldsValue({ staffs: [selectStaffList?.[0]] });
+      selectStaffList?.length && form.setFieldsValue({ staffs: [selectStaffList?.[0]] });
     } else {
       form.setFieldsValue({ staffs: selectStaffList });
     }
