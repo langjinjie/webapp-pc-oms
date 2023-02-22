@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import { ChooseTags, StaffList, ViewStaffModal } from '../index';
 import { requestGetFilterGroup, requestAddGroup, requestGetGroupDetail } from 'src/apis/orgManage';
-import { URLSearchParams } from 'src/utils/base';
+import { urlSearchParams } from 'src/utils/base';
 import style from './style.module.less';
 
 const AddGroup: React.FC = () => {
@@ -35,7 +35,7 @@ const AddGroup: React.FC = () => {
   };
   // 提交新增
   const onFinish = async (values: any) => {
-    const groupId = URLSearchParams(location.search).groupId;
+    const groupId = urlSearchParams(location.search).groupId;
     const param = { ...values, filterId: modalParam.add ? modalParam.filterId : undefined, groupId };
     const res = await requestAddGroup(param);
     if (res) {
@@ -50,7 +50,7 @@ const AddGroup: React.FC = () => {
   };
   // 获取员工组详情
   const getGroupDetail = async () => {
-    const urlSearch = URLSearchParams(location.search);
+    const urlSearch = urlSearchParams(location.search);
     if (urlSearch.groupId) {
       const res = await requestGetGroupDetail({ groupId: urlSearch.groupId });
       if (res) {
@@ -75,8 +75,8 @@ const AddGroup: React.FC = () => {
         </span>
         <span className={style.line}>/</span>
         <span className={style.current}>
-          {URLSearchParams(location.search).type
-            ? URLSearchParams(location.search).type === 'view'
+          {urlSearchParams(location.search).type
+            ? urlSearchParams(location.search).type === 'view'
               ? '查看'
               : '修改'
             : '新增'}
@@ -84,8 +84,8 @@ const AddGroup: React.FC = () => {
         </span>
       </div>
       <div className={style.title}>
-        {URLSearchParams(location.search).type
-          ? URLSearchParams(location.search).type === 'view'
+        {urlSearchParams(location.search).type
+          ? urlSearchParams(location.search).type === 'view'
             ? '查看'
             : '修改'
           : '新增'}

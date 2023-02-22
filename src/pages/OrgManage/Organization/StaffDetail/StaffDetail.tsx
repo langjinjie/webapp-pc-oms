@@ -7,7 +7,7 @@ import { getStaffDetail, saveStaffDetail } from 'src/apis/orgManage';
 import { EditText } from './Components/EditTextProps';
 import styles from './style.module.less';
 import { isPhoneNo } from 'src/utils/tools';
-import { URLSearchParams } from 'src/utils/base';
+import { urlSearchParams } from 'src/utils/base';
 
 interface StaffDetailProps {
   staffId: string;
@@ -34,7 +34,7 @@ const StaffDetail: React.FC<StaffDetailProps> = ({ staffId }) => {
   const getDetail = async () => {
     setIsReadOnly(true);
     if (!staffId) {
-      const { staffId: currentStaffId } = URLSearchParams(routerLocation.search) as { [key: string]: string };
+      const { staffId: currentStaffId } = urlSearchParams(routerLocation.search) as { [key: string]: string };
       staffId = currentStaffId;
     }
     const res = await getStaffDetail({ staffId });

@@ -1,0 +1,93 @@
+.wrap {
+  padding: 20px 24px;
+}
+.form {
+  margin-top: 20px;
+}
+.panel {
+  .title {
+    padding: 0 20px;
+    height: 44px;
+    background: rgba(107, 151, 255, 0.08);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #111111;
+    line-height: 44px;
+  }
+  .content {
+    position: relative;
+    padding: 20px;
+    &.previewContent {
+      min-height: 600px;
+    }
+  }
+  // 手机预览
+  .preview {
+    position: absolute;
+    bottom: 400px;
+    right: 0;
+    transform: scale(0.83);
+    z-index: 9;
+  }
+  // 表单输入
+  .input,
+  .select,
+  .rangePicker {
+    width: 320px;
+    margin-right: 6px;
+  }
+  .input {
+    border-radius: 18px;
+    border: 1px solid #d9d9d9;
+    padding: 6px 11px;
+    outline: none;
+  }
+
+  .textArea {
+    width: 400px;
+  }
+  // 自定义有效期
+  .expireDayData {
+    margin: 0 0 20px 55px;
+    padding: 20px;
+    background: #f7f8fc;
+    border-radius: 8px;
+    .remarks {
+      margin-top: 12px;
+      font-size: 12px;
+      font-weight: 400;
+      color: #f25555;
+      line-height: 18px;
+    }
+  }
+  // 选择人员
+  .chooseStaff {
+    font-size: 14px;
+    font-weight: 400;
+    color: #318cf5;
+    line-height: 20px;
+    cursor: pointer;
+    .addIcon {
+      margin-right: 6px;
+      font-size: 16px;
+      color: #318cf5 !important;
+    }
+  }
+  // 定量分配
+  .configType {
+    margin: 0 0 24px 80px;
+  }
+}
+.btnWrap {
+  margin-top: 60px;
+  .submitBtn,
+  .cancelBtn {
+    width: 112px;
+    height: 40px;
+    border-radius: 20px;
+  }
+  .submitBtn {
+    margin-right: 46px;
+  }
+}

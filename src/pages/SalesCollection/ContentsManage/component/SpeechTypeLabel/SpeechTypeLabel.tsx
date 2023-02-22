@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Input, FormInstance } from 'antd';
 import { UploadImg, UploadFile } from 'src/pages/SalesCollection/ContentsManage/component';
 import { IContentParam } from 'src/utils/interface';
-import InputShowLength from 'src/pages/SalesCollection/SpeechManage/Components/InputShowLength/InputShowLength';
+import InputShowLength from 'src/components/InputShowLength/InputShowLength';
 import style from './style.module.less';
 
 interface ISpeechTypeLabelProps {

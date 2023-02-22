@@ -11,7 +11,8 @@ import { AuthBtn } from 'src/components';
 export const statusList = [
   { value: 0, label: '正常' },
   { value: 1, label: '异常' },
-  { value: 2, label: '作废' }
+  { value: 2, label: '作废' },
+  { value: 3, label: '生成中' }
 ];
 
 export interface IGroupChatLiveCode {

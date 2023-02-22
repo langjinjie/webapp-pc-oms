@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getActionRuleDetail, getSceneDetail } from 'src/apis/task';
 import { NgTable } from 'src/components';
-import { URLSearchParams } from 'src/utils/base';
+import { urlSearchParams } from 'src/utils/base';
 import NodePreview from '../../StrategyTask/components/NodePreview/NodePreview';
 import { tableColumnsFun, TaskNodeColumns } from './DetailConfig';
 
@@ -15,7 +15,7 @@ const TaskSceneDetail: React.FC<RouteComponentProps> = ({ location, history }) =
     history.goBack();
   };
   const getDetail = async () => {
-    const { sceneId } = URLSearchParams(location.search);
+    const { sceneId } = urlSearchParams(location.search);
     const res = await getSceneDetail({ sceneId });
     setDetail(res || {});
   };

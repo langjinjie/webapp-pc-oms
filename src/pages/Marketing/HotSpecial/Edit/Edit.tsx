@@ -6,7 +6,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import styles from './style.module.less';
 import { MeatComponent } from '../components/MateComponent';
 import { PlusOutlined } from '@ant-design/icons';
-import { URLSearchParams } from 'src/utils/base';
+import { urlSearchParams } from 'src/utils/base';
 import { getHotContentDetail, setHotContent } from 'src/apis/marketing';
 
 const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
@@ -24,7 +24,7 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
     topicId: ''
   });
   const getDetail = async () => {
-    const { topicId } = URLSearchParams(location.search) as { topicId: string };
+    const { topicId } = urlSearchParams(location.search) as { topicId: string };
     const res = await getHotContentDetail({ topicId });
     if (res) {
       const { contentList } = res;

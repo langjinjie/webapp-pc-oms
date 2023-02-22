@@ -7,9 +7,14 @@ import styles from './style.module.less';
 interface ProductSelectComponentProps {
   onChange: (keys: React.Key[], rows: any[]) => void;
   selectedRowKeys: React.Key[];
+  selectedLength?: number | 'infinity';
 }
 
-export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ onChange, selectedRowKeys }) => {
+export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({
+  onChange,
+  selectedRowKeys,
+  selectedLength = 5
+}) => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [options, setOptions] = useState<any[]>([]);
   const [formValues, setFormValues] = useState<{ productName: string; category: string | undefined }>();
@@ -149,7 +154,9 @@ export const ProductSelectComponent: React.FC<ProductSelectComponentProps> = ({ 
             },
             getCheckboxProps: (record: any) => {
               return {
-                disabled: selectedRowKeys.length >= 5 && !selectedRowKeys.includes(record.productId),
+                disabled:
+                  (selectedLength === 'infinity' ? false : selectedRowKeys.length >= selectedLength) &&
+                  !selectedRowKeys.includes(record.productId),
                 name: record.productName
               };
             }

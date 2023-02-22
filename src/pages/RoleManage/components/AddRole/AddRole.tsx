@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import { ChoosePrivilege, DataRangeModal } from 'src/pages/RoleManage/components';
 import { requestGetRoleDetail, requestAddOrEditRole, requestAddDefaultMenuList } from 'src/apis/roleMange';
-import { URLSearchParams, tree2Arry } from 'src/utils/base';
+import { urlSearchParams, tree2Arry } from 'src/utils/base';
 import { roleTypeRouteList } from 'src/utils/commonData';
 
 import style from './style.module.less';
@@ -31,7 +31,7 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
   };
   // 获取角色详情
   const getRoleDetail = async () => {
-    const { type, roleId } = URLSearchParams(location.search);
+    const { type, roleId } = urlSearchParams(location.search);
     setReadOnly(type === 'view');
     if (roleId) {
       const res = await requestGetRoleDetail({ roleType, roleId });
@@ -71,10 +71,10 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
       roleType,
       defaultDataScope: rangeParam.defaultDataScope,
       dataScopeGroup: rangeParam.groupId || '',
-      roleId: URLSearchParams(location.search).roleId
+      roleId: urlSearchParams(location.search).roleId
     });
     if (res) {
-      message.success(URLSearchParams(location.search).roleId ? '角色修改成功' : '角色新增成功');
+      message.success(urlSearchParams(location.search).roleId ? '角色修改成功' : '角色新增成功');
       history.push(roleTypeRouteList[roleType - 1].replace('/add', ''));
     }
   };
@@ -93,8 +93,8 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
         </span>
         <span className={style.line}>/</span>
         <span className={style.current}>
-          {URLSearchParams(location.search).type
-            ? URLSearchParams(location.search).type === 'view'
+          {urlSearchParams(location.search).type
+            ? urlSearchParams(location.search).type === 'view'
               ? '查看'
               : '编辑'
             : '新增'}
@@ -103,8 +103,8 @@ const AddRole: React.FC<IRoleType> = ({ roleType }) => {
       </div>
       <div className={style.add}>
         <div className={style.title}>
-          {URLSearchParams(location.search).type
-            ? URLSearchParams(location.search).type === 'view'
+          {urlSearchParams(location.search).type
+            ? urlSearchParams(location.search).type === 'view'
               ? '查看'
               : '编辑'
             : '新增'}

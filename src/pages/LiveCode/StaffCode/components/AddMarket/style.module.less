@@ -1,0 +1,112 @@
+.wrap {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+// 选择素材按钮
+.addWrap {
+  display: flex;
+  width: 571px;
+  height: 122px;
+  padding: 20px;
+  background: #ffffff;
+  box-shadow: 2px 0px 16px 0px rgba(129, 141, 168, 0.2);
+  border-radius: 20px;
+}
+.addItem {
+  width: 82px;
+  height: 82px;
+  padding-top: 50px;
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-size: 28px 28px;
+  background-position: center 16px;
+  border-radius: 6px;
+  border: 1px solid #e1e2e6;
+  text-align: center;
+  &:not(:first-child) {
+    margin-left: 8px;
+  }
+}
+.addImg {
+  background-image: url('src/assets/images/liveCode/icon_img.png');
+}
+.addLink {
+  background-image: url('src/assets/images/liveCode/icon_ link.png');
+}
+.addArticle {
+  background-image: url('src/assets/images/liveCode//icon_article.png');
+}
+.addPoster {
+  background-image: url('src/assets/images/liveCode/icon_poster.png');
+}
+.addActivity {
+  background-image: url('src/assets/images/liveCode/icon_activety.png');
+}
+.addProduct {
+  background-image: url('src/assets/images/liveCode/icon_product.png');
+}
+
+// 已选素材列表
+.value {
+  margin-top: 20px;
+  width: calc(100% - 400px);
+}
+
+// 选择素材弹框
+.modalWrap {
+  :global {
+    .ant-modal-body {
+      padding: 0;
+    }
+    .ant-input-affix-wrapper {
+      width: 180px !important;
+      border-radius: 18px;
+    }
+    .ant-select {
+      width: 100px !important;
+    }
+  }
+}
+.form {
+  padding: 20px;
+  .input {
+    border-radius: 18px;
+  }
+}
+.panelWrap {
+  background: #f7f8fc;
+  border-radius: 8px;
+  padding: 20px;
+}
+.tagWrap {
+  padding-top: 10px;
+  padding-left: 10px;
+}
+.customTag {
+  display: inline-block;
+  height: 24px;
+  line-height: 24px;
+  background: #eaf3fe;
+  border-radius: 8px;
+  padding: 0 8px;
+  color: #318cf5;
+  font-size: 14px;
+  margin-top: 10px;
+  margin-left: 10px;
+  .itemName {
+    display: inline-block;
+    max-width: 90%;
+  }
+
+  .closeIcon {
+    float: right;
+    font-size: 10px;
+    color: #666;
+    margin-left: 8px;
+    margin-top: 7px;
+    &:hover {
+      color: #333;
+    }
+  }
+}

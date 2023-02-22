@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { editVideo, getVideoDetail, getVideoTypeList } from 'src/apis/marketing';
 import { BreadCrumbs, UploadVideo } from 'src/components';
-import { URLSearchParams } from 'src/utils/base';
+import { urlSearchParams } from 'src/utils/base';
 import { SetUserRightFormItem } from '../../Components/SetUserRight/SetUserRight';
 import NgUpload from '../../Components/Upload/Upload';
 import { WechatShare } from '../../Components/WechatShare/WechatShare';
@@ -15,7 +15,7 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [typeList, setTypeList] = useState<any[]>([]);
   const [video, setVideo] = useState<VideoColumn>();
   const getDetail = async () => {
-    const { videoId } = URLSearchParams(location.search);
+    const { videoId } = urlSearchParams(location.search);
     if (videoId) {
       const res = await getVideoDetail({ videoId });
       console.log(res, video);

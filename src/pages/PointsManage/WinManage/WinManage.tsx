@@ -7,7 +7,7 @@ import { IConfirmModalParam } from 'src/utils/interface';
 import { requestGetLotteryManageList, requestExportLotteryManage, requestSendLotteryManage } from 'src/apis/pointsMall';
 import style from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
-import { URLSearchParams } from 'src/utils/base';
+import { urlSearchParams } from 'src/utils/base';
 
 const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
   const { setConfirmModalParam } = useContext<{ setConfirmModalParam: Dispatch<SetStateAction<IConfirmModalParam>> }>(
@@ -54,7 +54,7 @@ const WinManage: React.FC<RouteComponentProps> = ({ location }) => {
   // 获取列表
   const getList = async () => {
     setLoading(true);
-    const { activityName } = URLSearchParams(location.search) as { activityName: string };
+    const { activityName } = urlSearchParams(location.search) as { activityName: string };
     const param: { [key: string]: any } = { ...searchParam, ...paginationParam };
     if (firstRequest && activityName) {
       param.activityName = activityName;

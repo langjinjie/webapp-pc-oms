@@ -8,6 +8,9 @@ import { lazy } from 'react';
 import { CacheRouteProps } from 'react-router-cache-route';
 import { RouteProps } from 'react-router-dom';
 
+import { knowledgeRoutes } from 'src/routes/knowledge';
+import { auditRoutes } from 'src/routes/audit';
+
 export interface Menu {
   name: string;
   icon?: string;
@@ -428,6 +431,15 @@ export const routes: RouteProps[] = [
   /**
    * 渠道活码
    */
+  // 员工活码
+  {
+    path: '/staffCode',
+    component: lazy(() => import('src/pages/LiveCode/StaffCode/StaffCode'))
+  },
+  {
+    path: '/staffCode/addCode',
+    component: lazy(() => import('src/pages/LiveCode/StaffCode/AddCode/AddCode'))
+  },
   // 群活码
   {
     path: '/momentCode',
@@ -444,6 +456,22 @@ export const routes: RouteProps[] = [
   {
     path: '/channelTag',
     component: lazy(() => import('src/pages/Operation/ChannelTag/ChannelTag'))
+  },
+
+  // 知识库
+  ...knowledgeRoutes,
+  // 审批链
+  ...auditRoutes,
+  /* * 客户管理
+   */
+  {
+    path: '/customerManage',
+    component: lazy(() => import('src/pages/CustomerManage/CustomerList/CustomerList'))
+  },
+  // 客户管理->客户信息
+  {
+    path: '/customerManage/clientDetail',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
   }
 ];
 

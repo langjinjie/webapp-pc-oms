@@ -1,0 +1,166 @@
+// 预览外壳
+.phoneWrap {
+  margin: 0 auto;
+  width: 341px;
+  height: 637px;
+  background: url('src/assets/images/phone.png') no-repeat;
+  background-size: 100% 100%;
+  overflow: hidden;
+}
+
+// 预览内容
+.inner {
+  margin: 26px auto 0;
+  width: 278px;
+  height: 584px;
+  background: #ededed;
+  border-radius: 29px;
+  // border: 1px solid #eaeaea;
+  overflow: hidden;
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 278px;
+    height: 38px;
+    padding: 0 12px;
+    border-bottom: 1px solid #dddcdc;
+    .back {
+      font-size: 12px;
+    }
+    .staffName {
+      height: 17px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #111111;
+      line-height: 17px;
+    }
+    .more {
+      transform: rotateZ(90deg);
+    }
+  }
+  // 聊天框
+  .content {
+    width: 278px;
+    height: 486px;
+    padding: 8px;
+    overflow-y: auto;
+    // transform: scale(0.57);
+    // transform-origin: 0 0;
+    &::-webkit-scrollbar {
+      width: 2px;
+    }
+  }
+  .footer {
+    margin-top: 0px;
+    width: 280px;
+    height: 60px;
+    background: url('src/assets/images/footer_wechat.png') no-repeat;
+    background-size: 100% 100%;
+  }
+}
+
+// 消息
+.newsItem {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  .avatar {
+    margin-right: 15px;
+    width: 32px;
+    height: 32px;
+    font-size: 0;
+    .avatarImg {
+      width: 100%;
+      height: 100%;
+      border-radius: 5px;
+    }
+  }
+}
+
+// 小三角
+.news,
+.cardMessage {
+  position: relative;
+  &::before {
+    position: absolute;
+    top: 12px;
+    left: -10px;
+    content: ' ';
+    display: block;
+    border: 5px solid rgba(0, 0, 0, 0);
+    border-right-color: #fff;
+  }
+}
+
+// 纯文本内容
+.news {
+  max-width: 193px;
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+// 文章/产品/活动 卡片式内容
+.cardMessage {
+  width: 180px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  .title {
+    font-weight: bold;
+    line-height: 16px;
+    font-size: 13px;
+    width: 100%;
+  }
+  .imgAndDesc {
+    margin-top: 5px;
+    display: flex;
+    .desc {
+      margin-right: 5px;
+      line-height: 16px;
+      font-size: 12px;
+    }
+    .img {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      font-size: 0;
+      > img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+// 图片
+.posterWrap {
+  width: 72px;
+  font-size: 0;
+  .poster {
+    width: 100%;
+  }
+}
+
+// 文章/产品/活动 卡片式内容
+.card {
+  margin-top: 6px;
+  display: flex;
+  background-color: #f7f7f7;
+  .shareImg {
+    flex-shrink: 0;
+    margin-right: 4px;
+    align-items: center;
+    width: 46px;
+    height: 46px;
+  }
+  .shareTitle {
+    display: flex;
+    align-items: center;
+    flex-grow: 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: #191919;
+  }
+}
