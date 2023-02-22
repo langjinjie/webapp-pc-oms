@@ -2,13 +2,30 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { Avatar, Button, Form } from 'antd';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { SelectStaff, TagModal } from 'src/pages/StaffManage/components';
+import { TagModal } from 'src/pages/StaffManage/components';
+import { SelectOrg } from 'src/pages/CustomerManage/components';
 import { UserOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
+import { UNKNOWN } from 'src/utils/base';
+import { TagItem } from 'src/utils/interface';
 import classNames from 'classnames';
 import style from './style.module.less';
-import { TagItem } from 'src/utils/interface';
-import { UNKNOWN } from 'src/utils/base';
+
+export interface IList {
+  externalUserid: string;
+  avatar: string;
+  nickName: string;
+  staffId: string;
+  staffName: string;
+  staffStatus: number;
+  tagList: TagItem[];
+  transferStatus?: number;
+  takeoverTime?: string;
+  addTime?: string;
+  reasonName?: string;
+  fullDeptName?: string;
+  channleTagName?: string;
+}
 
 export const searchCols: SearchCol[] = [
   { type: 'input', label: '客户名称', placeholder: '请输入', name: 'customerName' },
@@ -35,7 +52,7 @@ export const searchCols: SearchCol[] = [
     placeholder: '请输入',
     customNode: (
       <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-        <SelectStaff key={1} />
+        <SelectOrg key={1} />
       </Form.Item>
     )
   },
@@ -45,8 +62,8 @@ export const searchCols: SearchCol[] = [
     label: '',
     placeholder: '请输入',
     customNode: (
-      <Form.Item key={'staffList1'} name="staffList" label="所属客户经理组织架构">
-        <SelectStaff key={2} type="dept" />
+      <Form.Item key={'staffList1'} name="staffList1" label="所属客户经理组织架构">
+        <SelectOrg key={2} type="dept" checkabledDTypeKeys={[2, 3, 4, 5]} />
       </Form.Item>
     )
   }
