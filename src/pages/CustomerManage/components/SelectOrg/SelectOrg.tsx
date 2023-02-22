@@ -14,6 +14,7 @@ interface ISelectStaffProps {
   singleChoice?: boolean;
   disabled?: boolean;
   checkabledDTypeKeys?: Key[];
+  isDeleted?: 0 | 1; // 0不包含离职 1-包含离职
 }
 
 const SelectStaff: React.FC<ISelectStaffProps> = ({
@@ -23,7 +24,8 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({
   className,
   singleChoice,
   disabled,
-  checkabledDTypeKeys
+  checkabledDTypeKeys,
+  isDeleted = 0
 }) => {
   const [visible, setVisible] = useState(false);
 
@@ -69,6 +71,7 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({
         checkStrictly={type === 'dept'}
         singleChoice={singleChoice}
         checkabledDTypeKeys={checkabledDTypeKeys}
+        isDeleted={isDeleted}
       />
     </>
   );

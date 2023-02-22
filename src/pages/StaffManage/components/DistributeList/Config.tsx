@@ -47,7 +47,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 1 | 2) => Se
       placeholder: '请输入',
       customNode: (
         <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-          <SelectStaff key={1} />
+          <SelectStaff key={1} isDeleted={distributeLisType === 1 ? 0 : 1} />
         </Form.Item>
       )
     },

@@ -106,6 +106,12 @@ const AddCode: React.FC = () => {
   // 活码类型切换
   const liveTypeOnChange = (e: RadioChangeEvent) => {
     setLiveType(e.target.value);
+    // 切换活码类型处理使用成员
+    if (e.target.value === 1) {
+      form.setFieldsValue({ staffs: [selectStaffList?.[0]] });
+    } else {
+      form.setFieldsValue({ staffs: selectStaffList });
+    }
   };
 
   // 选择员工
@@ -122,12 +128,13 @@ const AddCode: React.FC = () => {
       .filter((filterItem) => !keys.includes(filterItem.id))
       .map((mapItem, index) => ({ ...mapItem, sort: index + 1 }));
     setSelectStaffList(filterStaffList);
-    form.setFieldsValue({ staffs: selectStaffList });
+    form.setFieldsValue({ staffs: filterStaffList });
     setStaffRowKeys([]);
   };
 
   // 搜索员工列表
   const searchStaffList = () => {
+    setPageNum(1);
     const { staffName, dept } = form.getFieldsValue();
     setStaffSearchValues({ staffName, dept });
   };
@@ -259,7 +266,7 @@ const AddCode: React.FC = () => {
                   <Item name="expireDate" rules={[{ required: true, message: '请选择失效日期' }]}>
                     <DatePicker disabled={readOnly} />
                   </Item>
-                  <div className={style.remarks}>备注：活码有效期后到</div>
+                  <div className={style.remarks}>备注：有效日期到</div>
                 </div>
               )}
               <Item label="活码类型" name="liveType" rules={[{ required: true, message: '请选择活码类型' }]}>

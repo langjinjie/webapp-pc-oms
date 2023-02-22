@@ -3,7 +3,7 @@ import { ColumnsType } from 'antd/es/table';
 import { useHistory } from 'react-router-dom';
 import { Button, message, Popconfirm } from 'antd';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
-import { exportFile, UNKNOWN } from 'src/utils/base';
+import { exportFile } from 'src/utils/base';
 import { requestDownloadStaffLiveCode, requestManageStaffLiveCode } from 'src/apis/liveCode';
 import { statusList } from 'src/pages/LiveCode/MomentCode/Config';
 import classNames from 'classnames';
@@ -95,7 +95,7 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
             className={classNames(style.maxW300, 'ellipsis')}
             title={staffs?.map(({ staffName }) => staffName).toString()}
           >
-            {staffs?.map(({ staffName }) => staffName).toString() || UNKNOWN}
+            {staffs?.map(({ staffName }) => staffName).toString() || '多人'}
           </span>
         );
       }

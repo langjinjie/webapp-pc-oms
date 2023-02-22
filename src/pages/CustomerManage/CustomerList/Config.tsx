@@ -11,9 +11,24 @@ import { TagItem } from 'src/utils/interface';
 import classNames from 'classnames';
 import style from './style.module.less';
 
+/**
+ * 部门类型id及名称对照
+ * 团队部门id,dtype:5
+ * 区域部门id,dtype:4
+ * 大区部门id,dtype:3
+ * 中心部门id,dtype:2
+ */
+export const orgDeptType2Name: { [key: string]: number } = {
+  leaderDeptIds: 5,
+  bossDeptIds: 4,
+  areaDeptIds: 3,
+  centerDepId: 2
+};
+
 export interface IList {
-  externalUserid: string;
   avatar: string;
+  detailId: string;
+  externalUserid: string;
   nickName: string;
   staffId: string;
   staffName: string;
@@ -28,7 +43,7 @@ export interface IList {
 }
 
 export const searchCols: SearchCol[] = [
-  { type: 'input', label: '客户名称', placeholder: '请输入', name: 'customerName' },
+  { type: 'input', label: '客户名称', placeholder: '请输入', name: 'clientName' },
   {
     name: 'filterTag',
     type: 'custom',
@@ -42,7 +57,7 @@ export const searchCols: SearchCol[] = [
   },
   {
     type: 'rangePicker',
-    name: 'date',
+    name: 'addTime',
     label: '加好友时间'
   },
   {
@@ -62,17 +77,14 @@ export const searchCols: SearchCol[] = [
     label: '',
     placeholder: '请输入',
     customNode: (
-      <Form.Item key={'staffList1'} name="staffList1" label="所属客户经理组织架构">
+      <Form.Item key={'orgDept'} name="orgDept" label="所属客户经理组织架构">
         <SelectOrg key={2} type="dept" checkabledDTypeKeys={[2, 3, 4, 5]} />
       </Form.Item>
     )
   }
 ];
 
-interface CustomerColumn {
-  [prop: string]: string;
-}
-export const TableColumnsFun = (): ColumnsType<CustomerColumn> => {
+export const TableColumnsFun = (): ColumnsType<IList> => {
   const history = useHistory();
   // 查看客户信息
   const viewDetail = (record: any) => {
@@ -99,30 +111,40 @@ export const TableColumnsFun = (): ColumnsType<CustomerColumn> => {
   return [
     {
       title: '客户名称',
-      dataIndex: 'key1',
-      render: (text, record) => {
+      dataIndex: 'nickName',
+      render: (nickName, record) => {
         return (
           <div>
-            <Avatar size={36} src={record.url} icon={<UserOutlined />} /> {text}
+            <Avatar size={36} src={record.avatar} icon={<UserOutlined />} /> {nickName}
           </div>
         );
       }
     },
     {
       title: '所属客户经理',
-      dataIndex: 'key2'
+      dataIndex: 'staffName'
     },
     {
       title: '组织架构',
-      dataIndex: 'key3'
+      dataIndex: 'fullDeptName',
+      render (fullDeptName: string) {
+        return (
+          <span className={classNames(style.fullDeptName, 'ellipsis')} title={fullDeptName}>
+            {fullDeptName}
+          </span>
+        );
+      }
     },
     {
       title: '渠道来源',
-      dataIndex: 'key4'
+      dataIndex: 'channleTagName',
+      render (channleTagName: string) {
+        return <>{channleTagName || UNKNOWN}</>;
+      }
     },
     {
       title: '客户标签',
-      dataIndex: 'key5',
+      dataIndex: 'tagList',
       render: (tagList: TagItem[]) => {
         return (
           <span
@@ -154,7 +176,7 @@ export const TableColumnsFun = (): ColumnsType<CustomerColumn> => {
     },
     {
       title: '添加时间',
-      dataIndex: 'key6'
+      dataIndex: 'addTime'
     },
     {
       title: '操作',

@@ -11,6 +11,7 @@ interface ISelectStaffProps {
   className?: string;
   singleChoice?: boolean;
   disabled?: boolean;
+  isDeleted?: 0 | 1; // 0-在职 1-包含离职
 }
 
 const SelectStaff: React.FC<ISelectStaffProps> = ({
@@ -19,7 +20,8 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({
   type = 'staff',
   className,
   singleChoice,
-  disabled
+  disabled,
+  isDeleted = 0
 }) => {
   const [orgParam, setOrgParam] = useState<{ visible: boolean; add: boolean }>({ visible: false, add: true });
 
@@ -57,7 +59,7 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({
         onCancel={() => setOrgParam((orgParam) => ({ ...orgParam, visible: false }))}
         showStaff={type === 'staff'}
         selectedDept={type === 'dept'}
-        isDeleted={0}
+        isDeleted={isDeleted}
         value={value}
         params={orgParam}
         title={type === 'staff' ? '选择客户经理' : '选择部门'}

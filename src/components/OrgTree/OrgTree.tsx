@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Key, /*  useContext, */ useMemo } from 'react';
+import React, { useState, useEffect, Key, useMemo } from 'react';
 import { Modal, Tree, Input, ModalProps } from 'antd';
 import { Icon, Empty } from 'src/components';
 import { requestGetDeptList, requestGetDepStaffList, searchStaffList } from 'src/apis/orgManage';
@@ -117,7 +117,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
               id: item.deptId.toString(),
               isLeaf: false,
               checkable: !singleChoice,
-              disableCheckbox: checkabledDTypeKeys ? !checkabledDTypeKeys?.includes(item.dType) : false
+              disableCheckbox: checkabledDTypeKeys && !checkabledDTypeKeys?.includes(item.dType)
             };
           } else {
             return {
@@ -126,7 +126,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
               name: item.deptName,
               id: item.deptId.toString(),
               checkable: !singleChoice,
-              disableCheckbox: checkabledDTypeKeys ? !checkabledDTypeKeys?.includes(item.dType) : false
+              disableCheckbox: checkabledDTypeKeys && !checkabledDTypeKeys?.includes(item.dType)
             };
           }
         })
@@ -188,7 +188,6 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
 
     if (showStaff) {
       if (selectedDept) {
-        console.log('newSelectedList', newSelectedList);
         if (info.checked) {
           newSelectedList = [...newSelectedList, { ...info.node }];
         } else {
@@ -261,17 +260,14 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
   const clickDelStaffHandle = (item: any) => {
     setSelectedList((param) => [...param.filter((filterItem) => filterItem.id !== item.id)]);
     if (checkStrictly) {
-      setCheckedKeys((keys) => ({
-        checked: (
-          keys as {
-            checked: Key[];
-            halfChecked: Key[];
-          }
-        ).checked.filter((keysItem) => keysItem !== item.id),
-        halfChecked: []
-      }));
+      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => !(keysItem === item.id))]);
     } else {
-      setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id)]);
+      // 当删除员工得时候,如果该员工所在的部门id也被选中,则所在部门也要移除checkedKeys列表
+      setCheckedKeys((keys) => [
+        ...(keys as React.Key[]).filter(
+          (keysItem) => !item.fullDeptId.split(',').includes(keysItem) && keysItem !== item.id
+        )
+      ]);
     }
   };
 
@@ -294,6 +290,9 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
 
   // 点击搜索出来的列表
   const clickSearchList = (item: any, checked: boolean) => {
+    if (!item.staffId && checkabledDTypeKeys && !checkabledDTypeKeys?.includes(item.dType)) {
+      return Modal.warning({ title: '操作提示', content: '不能选择该部门', centered: true });
+    }
     let selected: any[] = [];
     if (!checked) {
       selected = singleChoice ? [item] : [...selectedList, item];
@@ -345,15 +344,12 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
   // 展开回写
   useEffect(() => {
     if (flatTreeData.length) {
-      console.log('selectedList', selectedList);
-      console.log('flatTreeData', flatTreeData);
       const valueKeys = selectedList.map((mapItem) => mapItem.id);
-      const flatTreeDataKeys = flatTreeData.map((mapItem) => mapItem.id);
-      const newCheckedKeys = flatTreeDataKeys.filter((item: string) => valueKeys.includes(item));
+      const flatTreeDataKeys: Key[] = flatTreeData.map((mapItem) => mapItem.id);
+      const newCheckedKeys = flatTreeDataKeys.filter((item: Key) => valueKeys.includes(item));
       const noCheckedValue = selectedList?.filter((filterItem) =>
         valueKeys.filter((filterKeys) => !newCheckedKeys.includes(filterKeys)).includes(filterItem.id)
       );
-      console.log('newCheckedKeys', newCheckedKeys);
       setCheckedKeys(newCheckedKeys);
       // 更新已选择成员信息
       setSelectedList([

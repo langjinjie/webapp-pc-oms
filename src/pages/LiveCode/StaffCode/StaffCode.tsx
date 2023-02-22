@@ -90,8 +90,9 @@ const StaffCode: React.FC = () => {
 
   // 切换分页
   const paginationChange = (current: number, pageSize?: number) => {
-    setPagination((pagination) => ({ ...pagination, current, pageSize: pageSize as number }));
-    getList({ ...formParam, pageNum: current, pageSize: pageSize as number });
+    const pageNum = pageSize !== pagination.pageSize ? 1 : current;
+    setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize: pageSize as number }));
+    getList({ ...formParam, pageNum, pageSize: pageSize as number });
   };
 
   const onSelectChange = (selectedRowKeys: Key[]) => {
