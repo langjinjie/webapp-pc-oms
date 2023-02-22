@@ -100,6 +100,12 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
         );
       }
     },
+    {
+      title: '活码类型',
+      render ({ liveType, assignType }: IStaffLiveCode) {
+        return <>{liveType === 1 ? '单人活码' : assignType === 1 ? '随机分配' : '依次分配'}</>;
+      }
+    },
     { title: '有效期', dataIndex: 'expireDate' },
     { title: '投放渠道', dataIndex: 'channel' },
     {
