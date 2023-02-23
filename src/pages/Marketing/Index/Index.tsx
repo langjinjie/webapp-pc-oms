@@ -169,8 +169,8 @@ const MarketIndex: React.FC = () => {
         videoList = await Promise.all(
           videoList.map(async (video: any) => {
             const res = await queryMarketArea({
-              itemId: video.activityId,
-              type: 1
+              itemId: video.videoId,
+              type: 5
             });
             video.otherData = res;
             return video;
