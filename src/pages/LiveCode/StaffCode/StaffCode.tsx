@@ -131,18 +131,24 @@ const StaffCode: React.FC = () => {
     });
   };
   // 作废/删除 2-作废 1-删除
-  const batchManageGroupLive = async (option: number) => {
+  const batchManageGroupLive = async (option: number, keys: Key[]) => {
+    const onOk = async () => {
+      const res = await requestManageStaffLiveCode({ option, liveIdList: keys });
+      if (res) {
+        const { current, pageSize } = pagination;
+        let pageNum = current;
+        message.success(`员工活码${option === 1 ? '删除' : '作废'}成功`);
+        if (option === 1 && list.length <= keys.length && current !== 1) {
+          pageNum -= 1;
+        }
+        getList({ ...formParam, pageNum, pageSize });
+      }
+    };
     Modal.confirm({
       title: `批量${option === 1 ? '删除' : '作废'}提醒`,
       centered: true,
-      content: `此次操作共${option === 1 ? '删除' : '作废'}：${selectedRowKeys.length}个活码。请您确认`,
-      async onOk () {
-        const res = await requestManageStaffLiveCode({ option, liveIdList: selectedRowKeys });
-        if (res) {
-          message.success(`群活码${option === 1 ? '作废' : '删除'}成功`);
-          getList({ ...formParam, ...pagination });
-        }
-      }
+      content: `此次操作共${option === 1 ? '删除' : '作废'}：${keys.length}个活码。请您确认`,
+      onOk
     });
   };
 
@@ -156,10 +162,10 @@ const StaffCode: React.FC = () => {
       <Form className={style.form} form={form} onFinish={onFinishHandle} onReset={onResetHandle}>
         <Row>
           <Item label="活码ID" name="liveId">
-            <Input placeholder="请输入" />
+            <Input placeholder="请输入" allowClear />
           </Item>
           <Item label="活码名称" name="name">
-            <Input placeholder="请输入" />
+            <Input placeholder="请输入" allowClear />
           </Item>
           <Item label="创建时间" name="createTime">
             <RangePicker allowClear />
@@ -181,13 +187,13 @@ const StaffCode: React.FC = () => {
             <SelectStaff type="staff" singleChoice />
           </Item>
           <Item label="活码类型" name="liveType">
-            <Select options={liveTypeList} placeholder="请选择" />
+            <Select options={liveTypeList} placeholder="请选择" allowClear />
           </Item>
           <Item label="活码状态" name="status">
-            <Select options={statusList} placeholder="请选择" />
+            <Select options={statusList} placeholder="请选择" allowClear />
           </Item>
           <Item label="有效期" name="expireDay">
-            <DatePicker />
+            <DatePicker allowClear />
           </Item>
           <Button className={style.submitBtn} type="primary" htmlType="submit">
             查询
@@ -202,7 +208,7 @@ const StaffCode: React.FC = () => {
           className={style.addCodeBtn}
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => history.push('/staffCode/addCode')}
+          onClick={() => history.push('/staffCode/addCode?add=true')}
         >
           新增活码
         </Button>
@@ -210,7 +216,7 @@ const StaffCode: React.FC = () => {
       <NgTable
         rowKey="liveId"
         loading={tableLoading}
-        columns={tableColumnsFun({ updateHandle: () => getList({ ...formParam, ...pagination }) })}
+        columns={tableColumnsFun(batchManageGroupLive)}
         scroll={{ x: 'max-content' }}
         dataSource={list}
         rowSelection={rowSelection}
@@ -221,14 +227,14 @@ const StaffCode: React.FC = () => {
         <Button
           className={style.batchVoid}
           disabled={selectedRowKeys.length === 0 || ![0, 1].includes(recordItem?.status as number)}
-          onClick={() => batchManageGroupLive(2)}
+          onClick={() => batchManageGroupLive(2, selectedRowKeys)}
         >
           批量作废
         </Button>
         <Button
           className={style.batchDel}
           disabled={selectedRowKeys.length === 0 || recordItem?.status !== 2}
-          onClick={() => batchManageGroupLive(1)}
+          onClick={() => batchManageGroupLive(1, selectedRowKeys)}
         >
           批量删除
         </Button>

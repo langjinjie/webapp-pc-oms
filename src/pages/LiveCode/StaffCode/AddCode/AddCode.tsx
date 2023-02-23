@@ -66,7 +66,7 @@ const AddCode: React.FC = () => {
     }
   };
 
-  // 获取群活码详情
+  // 获取员工活码详情
   const getLiveCodeDetail = async () => {
     const { liveId, readOnly } = qs.parse(location.search, { ignoreQueryPrefix: true });
     if (readOnly) {
@@ -187,10 +187,10 @@ const AddCode: React.FC = () => {
   const onValuesChangeHandle = (changedValues: any) => {
     const { welcomeWord, welcomes } = changedValues as IValue;
     if (welcomeWord) {
-      setPreviewValue((previewValue) => ({ ...previewValue, welcomeWord }));
+      setPreviewValue((previewValue: IValue) => ({ ...previewValue, welcomeWord }));
     }
     if (welcomes) {
-      setPreviewValue((previewValue) => ({ ...previewValue, welcomes }));
+      setPreviewValue((previewValue: IValue) => ({ ...previewValue, welcomes }));
     }
   };
 
@@ -338,7 +338,7 @@ const AddCode: React.FC = () => {
               <Item label="活码备注" name="remark">
                 <TextArea
                   className={style.textArea}
-                  placeholder="选填，如不填则默认抓取选定任务推荐话术"
+                  placeholder="请输入活码备注"
                   maxLength={50}
                   showCount
                   disabled={readOnly}
@@ -352,8 +352,8 @@ const AddCode: React.FC = () => {
               </Form.Item>
               {isWelcomeMsg === 1 && (
                 <>
-                  <Form.Item name="welcomeWord" rules={[{ required: true }]}>
-                    <CustomTextArea maxLength={1200} disabled={readOnly} />
+                  <Form.Item name="welcomeWord">
+                    <CustomTextArea maxLength={100} disabled={readOnly} />
                   </Form.Item>
                   <Item noStyle name="welcomes">
                     <AddMarket disabled={readOnly} />

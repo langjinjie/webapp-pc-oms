@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { useHistory } from 'react-router-dom';
-import { Button, message, Popconfirm } from 'antd';
+import { Button } from 'antd';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { exportFile } from 'src/utils/base';
-import { requestDownloadStaffLiveCode, requestManageStaffLiveCode } from 'src/apis/liveCode';
+import { requestDownloadStaffLiveCode } from 'src/apis/liveCode';
 import { statusList } from 'src/pages/LiveCode/MomentCode/Config';
 import classNames from 'classnames';
 import style from './style.module.less';
@@ -44,9 +44,9 @@ export interface IStaffList {
   staffName: string; // 是
 }
 
-export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) => ColumnsType<any> = ({
-  updateHandle
-}) => {
+export const tableColumnsFun: (batchManageGroupLive: (option: number, keys: Key[]) => void) => ColumnsType<any> = (
+  batchManageGroupLive
+) => {
   const history = useHistory();
   const [downLoad, setDownLoad] = useState('');
 
@@ -65,14 +65,7 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
     }
     setDownLoad('');
   };
-  // 作废/删除 1-删除 2-作废
-  const manageGroupLive = async (option: number, value: IStaffLiveCode) => {
-    const res = await requestManageStaffLiveCode({ option, liveIdList: [value.liveId] });
-    if (res) {
-      message.success(`群活码${option === 1 ? '删除' : '作废'}成功`);
-      updateHandle?.();
-    }
-  };
+
   return [
     { title: '活码ID', dataIndex: 'liveId' },
     {
@@ -157,23 +150,18 @@ export const tableColumnsFun: ({ updateHandle }: { updateHandle: () => void }) =
               下载
             </Button>
 
-            <Popconfirm
-              title="确认作废该活码吗?"
-              disabled={value.status === 2}
-              onConfirm={() => manageGroupLive(2, value)}
+            <span
+              className={classNames(style.void, { disabled: value.status === 2 })}
+              onClick={() => batchManageGroupLive(2, [value.liveId])}
             >
-              <span className={classNames(style.void, { disabled: value.status === 2 })}>作废</span>
-            </Popconfirm>
-
-            <Popconfirm
-              title="确认删除该活码吗?"
-              onConfirm={() => manageGroupLive(1, value)}
-              disabled={value.status === 1 || value.status === 0}
+              作废
+            </span>
+            <span
+              className={classNames(style.del, { disabled: value.status === 0 || value.status === 1 })}
+              onClick={() => batchManageGroupLive(1, [value.liveId])}
             >
-              <span className={classNames(style.del, { disabled: value.status === 0 || value.status === 1 })}>
-                删除
-              </span>
-            </Popconfirm>
+              删除
+            </span>
           </>
         );
       }

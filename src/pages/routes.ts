@@ -10,6 +10,7 @@ import { RouteProps } from 'react-router-dom';
 
 import { knowledgeRoutes } from 'src/routes/knowledge';
 import { auditRoutes } from 'src/routes/audit';
+import { migrationRoters } from 'src/routes/migration';
 
 export interface Menu {
   name: string;
@@ -472,7 +473,9 @@ export const routes: RouteProps[] = [
   {
     path: '/customerManage/clientDetail',
     component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
-  }
+  },
+  // 欢迎语
+  ...migrationRoters
 ];
 
 // 缓存路由
