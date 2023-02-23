@@ -4,11 +4,13 @@ import { RouteComponentProps } from 'react-router-dom';
 import InputShowLength from 'src/components/InputShowLength/InputShowLength';
 import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
 import { NgEditor } from 'src/components';
-import { addWiki, getCategoryList } from 'src/apis/knowledge';
+import { addWiki, editWiki, getCategoryList, getWikiDetail } from 'src/apis/knowledge';
+import { urlSearchParams } from 'src/utils/base';
 
-const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
+const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [editForm] = Form.useForm();
   const [isSubmitting] = useState(false);
+  const [isView, setIsView] = useState(0);
   const [formData, setFormData] = useState<any>({ content: '', contentChanged: '' });
   const [categories, setCategories] = useState<any[]>([]);
 
@@ -17,6 +19,41 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
     if (res) {
       const { list } = res;
       setCategories(list.map((item: any) => ({ isLeaf: !!item.lastLevel, ...item })));
+      return list.map((item: any) => ({ isLeaf: !!item.lastLevel, ...item }));
+    }
+  };
+
+  const getDetail = async () => {
+    const { id, isView } = urlSearchParams(location.search);
+    setIsView(Number(isView) || 0);
+    if (id) {
+      const res = await getWikiDetail({ wikiId: id });
+      console.log(res);
+      const { descrition, title, content, level1CategroyId, level2CategroyId, level2Name, groupId } = res;
+      setFormData((formData: any) => ({ ...formData, ...res }));
+      editForm.setFieldsValue({
+        categroyId: level2CategroyId ? [level1CategroyId, level2CategroyId] : [level1CategroyId],
+        desc: descrition,
+        title,
+        groupId,
+        content
+      });
+      const categoryList = await getCategory();
+
+      categoryList.map((item: any) => {
+        if (item.categroyId === level1CategroyId) {
+          item.children = [
+            {
+              categroyId: level2CategroyId,
+              name: level2Name
+            }
+          ];
+        }
+        return item;
+      });
+      setCategories(categoryList);
+    } else {
+      getCategory();
     }
   };
   const loadData = async (selectedOptions: any) => {
@@ -39,27 +76,40 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
       });
       targetOption.children = list;
     }
-    console.log(categories);
-
     setCategories([...categories]);
   };
 
   useEffect(() => {
-    getCategory();
+    getDetail();
   }, []);
 
   const onFinish = async (values: any) => {
     console.log(values);
-    const { categroyId, ...otherValues } = values;
-    const res = await addWiki({
-      categroyId: categroyId[categroyId.length - 1],
-      ...otherValues,
-      content: formData.contentChanged,
-      groupId: ''
-    });
-    if (res) {
-      message.success('创建成功');
-      history.goBack();
+    const { categroyId, group1, ...otherValues } = values;
+    const wikiId = formData.wikiId;
+    if (wikiId) {
+      const res = await editWiki({
+        categroyId: categroyId[categroyId.length - 1],
+        ...otherValues,
+        wikiId,
+        content: formData.contentChanged || formData.content,
+        groupId: group1?.groupId || ''
+      });
+      if (res) {
+        message.success('编辑成功');
+        history.goBack();
+      }
+    } else {
+      const res = await addWiki({
+        categroyId: categroyId[categroyId.length - 1],
+        ...otherValues,
+        content: formData.contentChanged || formData.content,
+        groupId: group1?.groupId || ''
+      });
+      if (res) {
+        message.success('创建成功');
+        history.goBack();
+      }
     }
   };
 
@@ -68,7 +118,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
   };
   return (
     <div className="container edit">
-      <Card bordered={false} title="新建知识库内容">
+      <Card bordered={false} title={`${isView ? '查看' : '编辑'}知识库内容`}>
         <Form form={editForm} onFinish={onFinish}>
           <Form.Item label="目录信息" name={'categroyId'}>
             <Cascader
@@ -91,8 +141,14 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
           <Form.Item label="配置可见范围" name={'groupId'}>
             <SetUserRightFormItem form={editForm} />
           </Form.Item>
-          <Form.Item label="知识库分词结果"></Form.Item>
-          <Form.Item label="客户经理有用点击数"></Form.Item>
+          <Form.Item label="知识库分词结果">
+            {formData?.segWords?.split(',').map((item: string) => (
+              <span className="tag" key={item}>
+                {item}
+              </span>
+            ))}
+          </Form.Item>
+          <Form.Item label="有用点击数">{formData.openCount}</Form.Item>
           <Form.Item className="formFooter mt40">
             <Space size={36} style={{ marginLeft: '140px' }}>
               <Button
@@ -103,11 +159,13 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history }) => {
                   history.goBack();
                 }}
               >
-                取消
+                {isView ? '返回' : '取消'}
               </Button>
-              <Button shape="round" type="primary" htmlType="submit" loading={isSubmitting}>
-                确定
-              </Button>
+              {!isView && (
+                <Button shape="round" type="primary" htmlType="submit" loading={isSubmitting}>
+                  确定
+                </Button>
+              )}
             </Space>
           </Form.Item>
         </Form>

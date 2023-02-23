@@ -6,6 +6,27 @@
   "description": "tenacity-pc A B端",
   "glyphs": [
     {
+      "icon_id": "34242643",
+      "name": "icon_导航_28_知识库",
+      "font_class": "icon_daohang_28_zhishiku1",
+      "unicode": "e693",
+      "unicode_decimal": 59027
+    },
+    {
+      "icon_id": "29180054",
+      "name": "icon_C端_36_点赞 nor",
+      "font_class": "a-icon_Cduan_36_dianzannor-copy",
+      "unicode": "e702",
+      "unicode_decimal": 59138
+    },
+    {
+      "icon_id": "29180055",
+      "name": "icon_C端_36_点赞 sel",
+      "font_class": "a-icon_Cduan_36_dianzansel-copy",
+      "unicode": "e703",
+      "unicode_decimal": 59139
+    },
+    {
       "icon_id": "33663922",
       "name": "置顶",
       "font_class": "zhiding",

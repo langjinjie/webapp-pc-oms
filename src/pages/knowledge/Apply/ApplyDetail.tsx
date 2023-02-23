@@ -1,10 +1,10 @@
-import { Button, Form, Input, Space, Steps } from 'antd';
+import { Button, Form, Input, message, Space, Steps } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import InputShowLength from 'src/components/InputShowLength/InputShowLength';
 import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
 import { BreadCrumbs, NgEditor } from 'src/components';
-import { getApplyDetail } from 'src/apis/knowledge';
+import { auditApply, getApplyDetail, getApprovalDetail } from 'src/apis/knowledge';
 
 import styles from 'src/pages/Audit/AuditList/style.module.less';
 import classNames from 'classnames';
@@ -31,9 +31,15 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
   const [detail, setDetail] = useState<any>({});
   const ref = useRef<string>();
   const getDetail = async () => {
-    const { id } = urlSearchParams(location.search);
-    const res = await getApplyDetail({ approvalNo: id });
-    console.log(res);
+    const { id, isApproval } = urlSearchParams(location.search);
+    let res: any;
+    if (isApproval) {
+      res = await getApprovalDetail({
+        approvalNo: id
+      });
+    } else {
+      res = await getApplyDetail({ approvalNo: id });
+    }
     if (res) {
       const { groupId, desc, content, title, level1Name, level2Name } = res;
       setDetail(res);
@@ -51,8 +57,16 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
     getDetail();
   }, []);
 
-  const onApply = (openType: any) => {
-    console.log(openType);
+  const onApply = async (applyType: any) => {
+    const res = await auditApply({
+      status: applyType,
+      auditRemark: ref.current,
+      approvalNo: detail.approvalNo
+    });
+    if (res) {
+      message.success('审批成功');
+      getDetail();
+    }
   };
 
   const DescriptionNode = ({ data, status }: { data: NoteProps; index: number; status?: number }) => {
@@ -151,7 +165,13 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
         <Form.Item label="配置可见范围" name={'groupId'}>
           <SetUserRightFormItem form={editForm} />
         </Form.Item>
-        <Form.Item label="知识库分词结果">{detail.segWords}</Form.Item>
+        <Form.Item label="知识库分词结果">
+          {detail.segWords?.split(',').map((item: string) => (
+            <span className="tag" key={item}>
+              {item}
+            </span>
+          ))}
+        </Form.Item>
 
         <div className={styles.panelTitle}>审批状态</div>
         <div className="ml25 mt20">
