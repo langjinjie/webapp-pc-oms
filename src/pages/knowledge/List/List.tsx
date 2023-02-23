@@ -1,4 +1,3 @@
-import { PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Input, message, Row, Space, Tree } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import classNames from 'classnames';
@@ -319,19 +318,20 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <div className="container">
       <Row>
-        <Col span={4}>
-          <div>
-            <div className="flex">
+        <Col span={5}>
+          <div className={style.leftWrap}>
+            <div className={classNames(style.searchWrap, 'flex')}>
               <Input.Search
+                placeholder="搜索分类"
                 className={classNames('cell', style.inputWrap)}
                 enterButton={<Icon className={style.searchIcon} name="icon_common_16_seach" />}
                 onSearch={onSearchCategory}
               ></Input.Search>
-              <div className="flex fixed">
-                <Button onClick={() => addCategory(1)} icon={<PlusOutlined />}></Button>
+              <div className="flex fixed" title="添加分类">
+                <Icon className={style.addIcon} name="icon_daohang_28_jiahaoyou" onClick={() => addCategory(1)}></Icon>
               </div>
             </div>
-            <div>
+            <div className={style.categoryWrap}>
               {displayType === 0 && (
                 <Tree
                   className={style.treeWrap}
@@ -345,7 +345,11 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
                     <div className={style.nodeItem}>
                       {node.name}
                       {node.level === 1 && currentNode?.categroyId === node.categroyId && (
-                        <PlusOutlined title="添加二级分类" className="mr5" onClick={() => addCategory(2, node)} />
+                        <Icon
+                          name="icon_daohang_28_jiahaoyou"
+                          className="mr5 f20 color-text-secondary"
+                          onClick={() => addCategory(2, node)}
+                        />
                       )}
                     </div>
                   )}
@@ -379,7 +383,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
             </div>
           </div>
         </Col>
-        <Col span={20}>
+        <Col span={19}>
           <NgFormSearch searchCols={searchColsFun()} onSearch={onSearch} />
 
           <Button type="primary" shape="round" className="mt20 mb20" onClick={createWiki}>
