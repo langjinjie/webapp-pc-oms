@@ -387,6 +387,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
           <NgFormSearch searchCols={searchColsFun()} onSearch={onSearch} />
 
           <Button type="primary" shape="round" className="mt20 mb20" onClick={createWiki}>
+            <Icon className="f16" name="icon_daohang_28_jiahaoyou" />
             新建知识内容
           </Button>
 
