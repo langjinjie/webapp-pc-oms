@@ -56,6 +56,14 @@ export const getApprovalDetail: HttpFC = (param, config) => {
   return http.post('/tenacity-admin/api/train/wiki/approval/detail', param, config);
 };
 // 1.14、审批接口
-export const auditApply: HttpFC = (param, config) => {
-  return http.post('/tenacity-admin/api/train/wiki/apply/audit', param, config);
+export const auditApply: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/train/wiki/apply/audit', param);
+};
+// 1.1A、搜索知识库目录（新增）
+export const getCategoryWithKeyword: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/train/wiki/category/search', param);
+};
+// 1.14、审批接口
+export const setScope: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/train/wiki/scope/set', param);
 };

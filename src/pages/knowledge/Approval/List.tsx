@@ -50,7 +50,7 @@ const KnowledgeApprovalList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const onOperation = (record: WikiColumn) => {
     // 执行上架操作
-    history.push('/?id=' + record.approvalNo);
+    history.push('/knowledge/apply/detail?id=' + record.approvalNo + '&isApproval=1');
   };
 
   return (
