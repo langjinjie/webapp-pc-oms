@@ -88,7 +88,6 @@ export const TableColumnsFun = (): ColumnsType<IList> => {
   const history = useHistory();
   // 查看客户信息
   const viewDetail = (record: any) => {
-    console.log(record);
     history.push(
       '/customerManage/clientDetail?externalUserid=' + record.externalUserid + '&followStaffId=' + record.staffId,
       {
@@ -175,7 +174,7 @@ export const TableColumnsFun = (): ColumnsType<IList> => {
       }
     },
     {
-      title: '添加时间',
+      title: '加好友时间',
       dataIndex: 'addTime'
     },
     {

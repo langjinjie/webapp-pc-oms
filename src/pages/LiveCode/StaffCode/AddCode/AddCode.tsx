@@ -14,6 +14,7 @@ import moment from 'moment';
 import qs from 'qs';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { useDidCache, useDidRecover } from 'react-router-cache-route';
 
 export const expireDayList = [
   { value: -1, label: '永久' },
@@ -66,12 +67,23 @@ const AddCode: React.FC = () => {
     }
   };
 
-  // 获取群活码详情
+  const onResetHandle = () => {
+    if (readOnly) {
+      form.resetFields();
+      setExpireDay(undefined);
+      setIsWelcomeMsg(undefined);
+      setPreviewValue(undefined);
+      setLiveType(undefined);
+      setAssignType(undefined);
+      setSelectStaffList([]);
+      setReadOnly(false);
+    }
+  };
+
+  // 获取员工活码详情
   const getLiveCodeDetail = async () => {
     const { liveId, readOnly } = qs.parse(location.search, { ignoreQueryPrefix: true });
-    if (readOnly) {
-      setReadOnly(true);
-    }
+    setReadOnly(!!readOnly);
     if (liveId) {
       setGetDetailLoading(true);
       const [liveDetail, staffs] = await Promise.all([
@@ -92,7 +104,8 @@ const AddCode: React.FC = () => {
         expireDate: moment(expireDate),
         expireDay,
         channelTagList: liveDetail.channelTagList[0].tagId,
-        staffs: staffs.list
+        staffs: staffs.list,
+        welcomeWord: welcomeWord || ''
       });
       setGetDetailLoading(false);
     }
@@ -184,13 +197,13 @@ const AddCode: React.FC = () => {
   };
 
   // 设置预览的值
-  const onValuesChangeHandle = (changedValues: any) => {
-    const { welcomeWord, welcomes } = changedValues as IValue;
-    if (welcomeWord) {
-      setPreviewValue((previewValue) => ({ ...previewValue, welcomeWord }));
+  const onValuesChangeHandle = (changedValues: IValue) => {
+    const { welcomeWord, welcomes } = changedValues;
+    if (welcomeWord as string) {
+      setPreviewValue((previewValue: any) => ({ ...previewValue, welcomeWord }));
     }
     if (welcomes) {
-      setPreviewValue((previewValue) => ({ ...previewValue, welcomes }));
+      setPreviewValue((previewValue: any) => ({ ...previewValue, welcomes }));
     }
   };
 
@@ -225,6 +238,13 @@ const AddCode: React.FC = () => {
   useEffect(() => {
     getChannelGroupList();
     getLiveCodeDetail();
+  }, []);
+  useDidRecover(() => {
+    getLiveCodeDetail();
+  }, []);
+  useDidCache(() => {
+    // 当前只读时，离开页面重置
+    onResetHandle();
   }, []);
   return (
     <Spin spinning={getDetailloading} tip="加载中...">
@@ -338,7 +358,7 @@ const AddCode: React.FC = () => {
               <Item label="活码备注" name="remark">
                 <TextArea
                   className={style.textArea}
-                  placeholder="选填，如不填则默认抓取选定任务推荐话术"
+                  placeholder="请输入活码备注"
                   maxLength={50}
                   showCount
                   disabled={readOnly}
@@ -352,8 +372,8 @@ const AddCode: React.FC = () => {
               </Form.Item>
               {isWelcomeMsg === 1 && (
                 <>
-                  <Form.Item name="welcomeWord" rules={[{ required: true }]}>
-                    <CustomTextArea maxLength={1200} disabled={readOnly} />
+                  <Form.Item name="welcomeWord">
+                    <CustomTextArea maxLength={100} disabled={readOnly} />
                   </Form.Item>
                   <Item noStyle name="welcomes">
                     <AddMarket disabled={readOnly} />

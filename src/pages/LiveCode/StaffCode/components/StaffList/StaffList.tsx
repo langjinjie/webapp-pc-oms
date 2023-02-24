@@ -1,5 +1,5 @@
 import React, { Key } from 'react';
-import { Button, Table, Form, Input, Popconfirm } from 'antd';
+import { Button, Table, Form, Input, Popconfirm, Modal } from 'antd';
 import { SelectStaff } from 'src/pages/StaffManage/components';
 import style from './style.module.less';
 import classNames from 'classnames';
@@ -28,11 +28,22 @@ const StaffList: React.FC<IStaffListProps> = ({
   disabled
 }) => {
   const { Item } = Form;
+  // 批量删除
+  const batchDelHandle = () => {
+    Modal.confirm({
+      title: '删除提醒',
+      centered: true,
+      content: `确定删除${staffRowKeys.length}个员工吗？`,
+      onOk () {
+        batchDelStaff(staffRowKeys);
+      }
+    });
+  };
   return (
     <div className={style.tableWrap}>
       <div className={style.searchWrap}>
         <Item label="员工名称" name="staffName">
-          <Input className={style.staffListInput} placeholder="待输入" />
+          <Input className={style.staffListInput} placeholder="待输入" allowClear />
         </Item>
         <Item label="选择部门" name="dept">
           <SelectStaff type="dept" className={style.staffListSelect} />
@@ -42,7 +53,7 @@ const StaffList: React.FC<IStaffListProps> = ({
         </Button>
       </div>
       <Table
-        rowKey={(record: any) => record.staffId + record.sort}
+        rowKey={(record: any) => record.staffId}
         className={style.staffList}
         scroll={{ x: 760 }}
         dataSource={dataSource}
@@ -98,11 +109,7 @@ const StaffList: React.FC<IStaffListProps> = ({
       <span>
         已选中 {staffRowKeys.length}/{pagination.total || 0} 个员工
       </span>
-      <Button
-        className={style.batchDel}
-        disabled={disabled || staffRowKeys.length === 0}
-        onClick={() => batchDelStaff(staffRowKeys)}
-      >
+      <Button className={style.batchDel} disabled={disabled || staffRowKeys.length === 0} onClick={batchDelHandle}>
         批量删除
       </Button>
     </div>

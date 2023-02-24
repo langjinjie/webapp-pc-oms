@@ -10,6 +10,7 @@ import { RouteProps } from 'react-router-dom';
 
 import { knowledgeRoutes } from 'src/routes/knowledge';
 import { auditRoutes } from 'src/routes/audit';
+import { migrationRoters } from 'src/routes/migration';
 
 export interface Menu {
   name: string;
@@ -436,10 +437,10 @@ export const routes: RouteProps[] = [
     path: '/staffCode',
     component: lazy(() => import('src/pages/LiveCode/StaffCode/StaffCode'))
   },
-  {
-    path: '/staffCode/addCode',
-    component: lazy(() => import('src/pages/LiveCode/StaffCode/AddCode/AddCode'))
-  },
+  // {
+  //   path: '/staffCode/addCode',
+  //   component: lazy(() => import('src/pages/LiveCode/StaffCode/AddCode/AddCode'))
+  // },
   // 群活码
   {
     path: '/momentCode',
@@ -472,7 +473,9 @@ export const routes: RouteProps[] = [
   {
     path: '/customerManage/clientDetail',
     component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
-  }
+  },
+  // 欢迎语
+  ...migrationRoters
 ];
 
 // 缓存路由
@@ -555,5 +558,9 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/deletionReminder',
     component: lazy(() => import('src/pages/Exception/DeletionReminder/List'))
+  },
+  {
+    path: '/staffCode/addCode',
+    component: lazy(() => import('src/pages/LiveCode/StaffCode/AddCode/AddCode'))
   }
 ];

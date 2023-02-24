@@ -113,3 +113,45 @@ export const requestCreateWechatTransferTask: HttpFC = (param) => {
 export const requestGetWechatTransferStaffScope: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/wechat/transfer/staff/scope', param);
 };
+
+/* -------------------- 欢迎语 -------------------- */
+
+/**
+ * @description 1.欢迎语列表接口
+ * @param param
+ */
+export const requestGetWelcomeStaffList: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/welcome/staff/list', param);
+};
+
+/**
+ * @description 2.欢迎语编辑和创建接口
+ * @param param
+ */
+export const requestEditWelcomeStaff: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/welcome/staff/edit', param);
+};
+
+/**
+ * @description 3.欢迎语详情接口
+ * @param param
+ */
+export const requestGetWelcomeStaffDetail: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/welcome/staff/detail', param);
+};
+
+/**
+ * @description 4.欢迎语修改可见范围
+ * @param param
+ */
+export const requestSetscopeWelcomeStaff: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/welcome/staff/setscope', param);
+};
+
+/**
+ * @description 5.删除欢迎语
+ * @param param
+ */
+export const requestDelWelcomeStaff: HttpFC = (param) => {
+  return http.post('/tenacity-admin/api/welcome/staff/del', param);
+};

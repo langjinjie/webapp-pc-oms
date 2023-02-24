@@ -41,10 +41,8 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange, disabled }) => 
     // 针对海报选中未加载的数据进行过滤重组处理
     const res = rows.filter((row) => row.itemId !== undefined);
     const filterKeys = keys.filter((key) => !res.map((item) => item.itemId).includes(key));
-
     const filterRows = selectRows.filter((item) => filterKeys.includes(item.itemId!));
     setSelectRows([...res, ...filterRows]);
-    // onChange?.([...res, ...filterRows]);
     setSelectedRowKeys(keys);
   };
 
@@ -80,6 +78,7 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange, disabled }) => 
   const addMarketHandle = (welcomeType: number) => {
     if (disabled) return;
     setVisible(true);
+    // 将本类型素材筛选出来带到添加素材中共同处理
     const currentTypeRows = value?.filter((filterItem) => filterItem.welcomeType === welcomeType) || [];
     setSelectedRowKeys(currentTypeRows.map((mapItem) => mapItem.itemId));
     setSelectRows(currentTypeRows);
@@ -92,42 +91,54 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange, disabled }) => 
     switch (welcomeType) {
       case 1:
         arr = await Promise.all(selectedRowKeys.map((itemId) => getNewsDetail({ newsId: itemId })));
-        arr = arr.map(({ title, summary, defaultImg }: any) => ({
+        arr = arr.map(({ newsId, title, summary, defaultImg }: any) => ({
+          itemId: newsId,
           welcomeTitle: title,
           welcomeDesc: summary,
-          welcomeLogo: defaultImg
+          welcomeLogo: defaultImg,
+          welcomeType
         }));
 
         break;
       case 2:
         // 使海报与图片的字段相同
-        arr = selectRows.map(({ imgUrl }) => ({ welcomeUrl: imgUrl }));
+        arr = selectRows.map(({ itemId, welcomeTitle, welcomeUrl, imgUrl, name }) => ({
+          itemId,
+          welcomeUrl: welcomeUrl || imgUrl,
+          welcomeTitle: welcomeTitle || name,
+          welcomeType
+        }));
         break;
       case 3:
         arr = await Promise.all(selectedRowKeys.map((itemId) => activityDetail({ activityId: itemId })));
-        arr = arr.map(({ activityName, shareTitle, shareCoverImgUrl }: any) => ({
+        arr = arr.map(({ activityId, activityName, shareTitle, shareCoverImgUrl }: any) => ({
+          itemId: activityId,
           welcomeTitle: activityName,
           welcomeDesc: shareTitle,
-          welcomeLogo: shareCoverImgUrl
+          welcomeLogo: shareCoverImgUrl,
+          welcomeType
         }));
         break;
       case 4:
         arr = await Promise.all(selectedRowKeys.map((itemId) => productDetail({ productId: itemId })));
-        arr = arr.map(({ productName, shareTitle, shareCoverImgUrl }: any) => ({
+        arr = arr.map(({ productId, productName, shareTitle, shareCoverImgUrl }: any) => ({
+          itemId: productId,
           welcomeTitle: productName,
           welcomeDesc: shareTitle,
-          welcomeLogo: shareCoverImgUrl
+          welcomeLogo: shareCoverImgUrl,
+          welcomeType
         }));
         break;
       default:
         break;
     }
-    let newWVal = [
-      ...(value || []).filter((filterItem) => filterItem.welcomeType !== welcomeType),
-      ...selectRows.map(({ itemId, itemName }, index: number) => ({ itemId, itemName, welcomeType, ...arr[index] }))
-    ];
+    let newWVal = [...(value || [])];
     if ([10, 11].includes(welcomeType as number)) {
+      // 图片和链接直接追加
       newWVal = [...newWVal, { ...form.getFieldsValue(), welcomeType }];
+    } else {
+      // 文章/海报/活动/产品 对本类型重新处理
+      newWVal = [...newWVal.filter((filterItem) => filterItem.welcomeType !== welcomeType), ...arr];
     }
     onChange?.(newWVal);
     onCancelHandle();
@@ -184,7 +195,7 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange, disabled }) => 
         ))}
       </div>
       <Modal
-        title={'添加素材'}
+        title={`添加${welcomeTypeList.find((findItem) => findItem.value === welcomeType)?.name}`}
         className={style.modalWrap}
         visible={visible}
         width={720}
@@ -213,34 +224,34 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange, disabled }) => 
                 <Form.Item
                   className={style.formItem}
                   name="welcomeTitle"
-                  label="图文标题:"
-                  // rules={[{ required: true, message: '请输入图文标题' }]}
+                  label="链接标题:"
+                  // rules={[{ required: true, message: '请输入链接标题' }]}
                 >
                   <Input
                     className={classNames(style.input, 'width320')}
-                    placeholder={'请输入图文摘要'}
+                    placeholder={'请输入链接标题'}
                     maxLength={30}
                   />
                 </Form.Item>
                 <Form.Item
                   className={style.formItem}
                   name="welcomeDesc"
-                  label="图文摘要:"
-                  // rules={[{ required: true, message: '请输入图文摘要' }]}
+                  label="链接摘要:"
+                  // rules={[{ required: true, message: '请输入链接摘要' }]}
                 >
                   <Input
                     className={classNames(style.input, 'width320')}
-                    placeholder={'请输入图文摘要'}
+                    placeholder={'请输入链接摘要'}
                     maxLength={30}
                   />
                 </Form.Item>
                 <Form.Item
                   className={style.formItem}
                   name="welcomeUrl"
-                  label="图文链接:"
-                  rules={[{ required: true, message: '请输入图文链接' }]}
+                  label="链接地址:"
+                  rules={[{ required: true, message: '请输入链接地址' }]}
                 >
-                  <Input className={classNames(style.input, 'width320')} placeholder={'请输入图文链接'} />
+                  <Input className={classNames(style.input, 'width320')} placeholder={'请输入链接地址'} />
                 </Form.Item>
               </>
             )}
