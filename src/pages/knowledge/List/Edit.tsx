@@ -23,13 +23,11 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
     }
   };
 
-  const getDetail = async () => {
-    const { id, isView } = urlSearchParams(location.search);
-    setIsView(Number(isView) || 0);
-    if (id) {
-      const res = await getWikiDetail({ wikiId: id });
+  const getDetail = async (wikiId?: string) => {
+    if (wikiId) {
+      const res = await getWikiDetail({ wikiId: wikiId });
       console.log(res);
-      const { descrition, title, content, level1CategroyId, level2CategroyId, level2Name, groupId } = res;
+      const { descrition, title, content, level1CategroyId, level2CategroyId, groupId } = res;
       setFormData((formData: any) => ({ ...formData, ...res }));
       editForm.setFieldsValue({
         categroyId: level2CategroyId ? [level1CategroyId, level2CategroyId] : [level1CategroyId],
@@ -38,22 +36,38 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
         groupId,
         content
       });
-      const categoryList = await getCategory();
-
-      categoryList.map((item: any) => {
-        if (item.categroyId === level1CategroyId) {
-          item.children = [
-            {
-              categroyId: level2CategroyId,
-              name: level2Name
-            }
-          ];
-        }
-        return item;
-      });
-      setCategories(categoryList);
     } else {
-      getCategory();
+      const { id, isView } = urlSearchParams(location.search);
+      setIsView(Number(isView) || 0);
+      if (id) {
+        const res = await getWikiDetail({ wikiId: id });
+        console.log(res);
+        const { descrition, title, content, level1CategroyId, level2CategroyId, level2Name, groupId } = res;
+        setFormData((formData: any) => ({ ...formData, ...res }));
+        editForm.setFieldsValue({
+          categroyId: level2CategroyId ? [level1CategroyId, level2CategroyId] : [level1CategroyId],
+          desc: descrition,
+          title,
+          groupId,
+          content
+        });
+        const categoryList = await getCategory();
+
+        categoryList.map((item: any) => {
+          if (item.categroyId === level1CategroyId) {
+            item.children = [
+              {
+                categroyId: level2CategroyId,
+                name: level2Name
+              }
+            ];
+          }
+          return item;
+        });
+        setCategories(categoryList);
+      } else {
+        getCategory();
+      }
     }
   };
   const loadData = async (selectedOptions: any) => {
@@ -84,7 +98,6 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
   }, []);
 
   const onFinish = async (values: any) => {
-    console.log(values);
     const { categroyId, group1, ...otherValues } = values;
     const wikiId = formData.wikiId;
     if (wikiId) {
@@ -97,7 +110,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
       });
       if (res) {
         message.success('编辑成功');
-        history.goBack();
+        getDetail();
       }
     } else {
       const res = await addWiki({
@@ -108,7 +121,9 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
       });
       if (res) {
         message.success('创建成功');
-        history.goBack();
+        // history.goBack();
+        history.replace('/knowledge/edit?id=' + res.wikiId);
+        getDetail(res.wikiId);
       }
     }
   };
