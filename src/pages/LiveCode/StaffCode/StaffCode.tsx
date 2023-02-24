@@ -10,8 +10,8 @@ import { requestGetChannelGroupList } from 'src/apis/channelTag';
 import { requestGetStaffLiveList, requestDownloadStaffLiveCode, requestManageStaffLiveCode } from 'src/apis/liveCode';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { IPagination } from 'src/utils/interface';
-import style from './style.module.less';
 import { exportFile } from 'src/utils/base';
+import style from './style.module.less';
 
 const StaffCode: React.FC = () => {
   const [list, setList] = useState<IStaffLiveCode[]>([]);
@@ -208,7 +208,7 @@ const StaffCode: React.FC = () => {
           className={style.addCodeBtn}
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => history.push('/staffCode/addCode?add=true')}
+          onClick={() => history.push('/staffCode/addCode')}
         >
           新增活码
         </Button>

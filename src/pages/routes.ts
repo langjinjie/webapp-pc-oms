@@ -437,10 +437,10 @@ export const routes: RouteProps[] = [
     path: '/staffCode',
     component: lazy(() => import('src/pages/LiveCode/StaffCode/StaffCode'))
   },
-  {
-    path: '/staffCode/addCode',
-    component: lazy(() => import('src/pages/LiveCode/StaffCode/AddCode/AddCode'))
-  },
+  // {
+  //   path: '/staffCode/addCode',
+  //   component: lazy(() => import('src/pages/LiveCode/StaffCode/AddCode/AddCode'))
+  // },
   // 群活码
   {
     path: '/momentCode',
@@ -558,5 +558,9 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/deletionReminder',
     component: lazy(() => import('src/pages/Exception/DeletionReminder/List'))
+  },
+  {
+    path: '/staffCode/addCode',
+    component: lazy(() => import('src/pages/LiveCode/StaffCode/AddCode/AddCode'))
   }
 ];

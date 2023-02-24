@@ -248,10 +248,10 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange, disabled }) => 
                 <Form.Item
                   className={style.formItem}
                   name="welcomeUrl"
-                  label="链接链接:"
-                  rules={[{ required: true, message: '请输入链接链接' }]}
+                  label="链接地址:"
+                  rules={[{ required: true, message: '请输入链接地址' }]}
                 >
-                  <Input className={classNames(style.input, 'width320')} placeholder={'请输入链接链接'} />
+                  <Input className={classNames(style.input, 'width320')} placeholder={'请输入链接地址'} />
                 </Form.Item>
               </>
             )}
