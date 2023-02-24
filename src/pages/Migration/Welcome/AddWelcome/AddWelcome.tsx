@@ -55,7 +55,7 @@ const AddWelcome: React.FC = () => {
     const param = { ...values };
     const res = await requestEditWelcomeStaff({ ...param, welcomeCode });
     if (res) {
-      message.success('欢迎语新增成功');
+      message.success(`欢迎语${welcomeCode ? '编辑' : '新增'}成功`);
       history.push('/welcome');
     }
     setSubmitLoading(false);
@@ -83,14 +83,14 @@ const AddWelcome: React.FC = () => {
           2、一个成员如果被设置了多个欢迎语，将会使用最新设置或修改的欢迎语。
         </div>
         <Form className="mt24" form={form} onValuesChange={onValuesChangeHandle} onFinish={onFinishHandle}>
-          <Item label="选择使用成员" name="groupId" rules={[{ required: true, message: '选择使用成员' }]}>
+          <Item label="选择使用成员" name="groupId" rules={[{ required: true, message: '请选择使用成员' }]}>
             <SetUserGroup form={form} />
           </Item>
           <Item label="发送欢迎语">
             <Form.Item name="welcomeWord">
               <CustomTextArea maxLength={100} disabled={readOnly} />
             </Form.Item>
-            <Item noStyle name="welcomes" rules={[{ required: true, message: '请配置' }]}>
+            <Item noStyle name="welcomes" rules={[{ required: true, message: '请配置欢迎语' }]}>
               <AddMarket disabled={readOnly} />
             </Item>
             <Preview className={style.preview} value={previewValue} />

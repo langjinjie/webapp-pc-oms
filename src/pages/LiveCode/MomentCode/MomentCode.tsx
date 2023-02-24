@@ -88,11 +88,21 @@ const MomentCode: React.FC = () => {
   };
 
   const rowSelection: any = {
-    hideSelectAll: true,
+    hideSelectAll: false,
     selectedRowKeys: selectedRowKeys,
     onChange: (selectedRowKeys: Key[], records: IGroupChatLiveCode[]) => {
-      onSelectChange(selectedRowKeys);
-      setRecordItem(records[0]);
+      let newSelectedRowKeys: Key[] = selectedRowKeys;
+      let newRecordItem = records[0];
+      // 首次全选处理
+      if (!recordItem && selectedRowKeys.length > 1) {
+        const newRecords = records.filter(
+          (filterItem) => filterItem.status === +formParam.status || filterItem.status === 0
+        );
+        newSelectedRowKeys = newRecords.map(({ liveId }) => liveId);
+        newRecordItem = newRecords[0];
+      }
+      onSelectChange(newSelectedRowKeys);
+      setRecordItem(newRecordItem);
     },
     getCheckboxProps: (record: IGroupChatLiveCode) => {
       return {

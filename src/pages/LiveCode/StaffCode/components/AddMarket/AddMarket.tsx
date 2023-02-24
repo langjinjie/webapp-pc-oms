@@ -186,9 +186,15 @@ const AddMarket: React.FC<IAddMarketProps> = ({ value, onChange, disabled }) => 
       <div className={style.value}>
         {(value || []).map((val) => (
           <div className={classNames(style.customTag, 'block')} key={val.itemId || val.welcomeUrl}>
-            <span className={classNames(style.itemName, 'ellipsis')}>
-              {val.itemName || val.welcomeTitle || val.welcomeUrl}（
-              {welcomeTypeList.find((findItem) => findItem.value === val.welcomeType)?.name}）
+            <span
+              className={classNames(style.itemName, 'ellipsis')}
+              title={`${val.itemName || val.welcomeTitle || val.welcomeUrl}（${
+                welcomeTypeList.find((findItem) => findItem.value === val.welcomeType)?.name
+              }）`}
+            >
+              {`${val.itemName || val.welcomeTitle || val.welcomeUrl}（${
+                welcomeTypeList.find((findItem) => findItem.value === val.welcomeType)?.name
+              }）`}
             </span>
             {disabled || <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeValue(val)} />}
           </div>

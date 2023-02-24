@@ -10,6 +10,7 @@ import { UNKNOWN } from 'src/utils/base';
 import { TagItem } from 'src/utils/interface';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { AuthBtn } from 'src/components';
 
 /**
  * 部门类型id及名称对照
@@ -129,7 +130,7 @@ export const TableColumnsFun = (): ColumnsType<IList> => {
       render (fullDeptName: string) {
         return (
           <span className={classNames(style.fullDeptName, 'ellipsis')} title={fullDeptName}>
-            {fullDeptName}
+            {fullDeptName || UNKNOWN}
           </span>
         );
       }
@@ -184,12 +185,16 @@ export const TableColumnsFun = (): ColumnsType<IList> => {
       render: (text, record) => {
         return (
           <>
-            <Button type="link" onClick={() => viewDetail(record)}>
-              查看客户详情
-            </Button>
-            <Button type="link" onClick={transferCustomer}>
-              去转接好友
-            </Button>
+            <AuthBtn path="/view">
+              <Button type="link" onClick={() => viewDetail(record)}>
+                查看客户详情
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/edit">
+              <Button type="link" onClick={transferCustomer}>
+                去转接好友
+              </Button>
+            </AuthBtn>
           </>
         );
       }
