@@ -1,3 +1,4 @@
+import { PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Input, message, Row, Space, Tree } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import classNames from 'classnames';
@@ -15,7 +16,7 @@ import {
   readuitWiki,
   setScope
 } from 'src/apis/knowledge';
-import { Empty, NgFormSearch, NgModal, NgTable } from 'src/components';
+import { AuthBtn, Empty, NgFormSearch, NgModal, NgTable } from 'src/components';
 import { SetUserRight } from 'src/pages/Marketing/Components/ModalSetUserRight/SetUserRight';
 import { OperateType } from 'src/utils/interface';
 import { Icon } from 'tenacity-ui';
@@ -51,7 +52,10 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   const [currentList, setCurrentList] = useState<WikiColumn[]>([]);
   const [operateType, setOperateType] = useState<OperateType>();
   const [inputValue, setInputValue] = useState('');
-  const [addTitle, setAddTitle] = useState('添加一级分类');
+  const [addTitle, setAddTitle] = useState({
+    type: 1,
+    content: '添加一级分类'
+  });
   const [displayType, setDisplayType] = useState<number>(0);
   const [batchInfo, setBatchInfo] = useState({
     title: '',
@@ -121,9 +125,12 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   const addCategory = async (level: number, node?: ICategory) => {
     if (level === 2) {
       console.log(node);
-      setAddTitle(`添加${node?.name}的二级目录`);
+      setAddTitle({
+        type: 2,
+        content: `添加${node?.name}的二级目录`
+      });
     } else {
-      setAddTitle('添加一级目录');
+      setAddTitle({ type: 1, content: '添加一级目录' });
     }
     setVisible(true);
   };
@@ -151,14 +158,14 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   const confirmAddCategory = async () => {
     if (!inputValue) return message.warning('目录名称不可以为空');
     const res = await createCategory({
-      parentId: currentNode?.categroyId,
+      parentId: addTitle.type === 1 ? '' : currentNode?.categroyId,
       name: inputValue
     });
     if (res) {
       setInputValue('');
       message.success('添加目录成功');
       setVisible(false);
-      if (currentNode?.categroyId) {
+      if (currentNode?.categroyId && addTitle.type === 2) {
         onLoadData({ key: currentNode?.categroyId, children: [] });
       } else {
         getCategories();
@@ -291,7 +298,6 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     setIsSearch(true);
     if (value) {
       setDisplayType(1);
-      console.log('search', value);
       const res = await getCategoryWithKeyword({ name: value });
       setSearchList(res.list || []);
       setIsSearch(false);
@@ -389,12 +395,21 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
           </div>
         </Col>
         <Col span={19}>
-          <NgFormSearch searchCols={searchColsFun()} onSearch={onSearch} />
-
-          <Button type="primary" shape="round" className="mt20 mb20" onClick={createWiki}>
-            <Icon className="f16" name="icon_daohang_28_jiahaoyou" />
-            新建知识内容
-          </Button>
+          <AuthBtn path="/query">
+            <NgFormSearch searchCols={searchColsFun()} onSearch={onSearch} />
+          </AuthBtn>
+          <AuthBtn path="/create">
+            <Button
+              type="primary"
+              shape="round"
+              size="large"
+              className="mt20 mb20"
+              icon={<PlusOutlined />}
+              onClick={createWiki}
+            >
+              新建知识内容
+            </Button>
+          </AuthBtn>
 
           <NgTable
             rowKey={'wikiId'}
@@ -412,33 +427,39 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
           {dataSource.length > 0 && (
             <div className={'operationWrap'}>
               <Space>
-                <Button
-                  type="primary"
-                  shape={'round'}
-                  ghost
-                  disabled={selectedRows.length === 0}
-                  onClick={() => batchOperate('putAway')}
-                >
-                  批量上架
-                </Button>
-                <Button
-                  type="primary"
-                  shape={'round'}
-                  ghost
-                  disabled={selectedRows.length === 0}
-                  onClick={() => batchOperate('outline')}
-                >
-                  批量下架
-                </Button>
-                <Button
-                  type="primary"
-                  shape={'round'}
-                  ghost
-                  disabled={selectedRows.length === 0}
-                  onClick={() => batchOperate('delete')}
-                >
-                  批量删除
-                </Button>
+                <AuthBtn path="/operate">
+                  <Button
+                    type="primary"
+                    shape={'round'}
+                    ghost
+                    disabled={selectedRows.length === 0}
+                    onClick={() => batchOperate('putAway')}
+                  >
+                    批量上架
+                  </Button>
+                </AuthBtn>
+                <AuthBtn path="/operate">
+                  <Button
+                    type="primary"
+                    shape={'round'}
+                    ghost
+                    disabled={selectedRows.length === 0}
+                    onClick={() => batchOperate('outline')}
+                  >
+                    批量下架
+                  </Button>
+                </AuthBtn>
+                <AuthBtn path="/delete">
+                  <Button
+                    type="primary"
+                    shape={'round'}
+                    ghost
+                    disabled={selectedRows.length === 0}
+                    onClick={() => batchOperate('delete')}
+                  >
+                    批量删除
+                  </Button>
+                </AuthBtn>
               </Space>
             </div>
           )}
@@ -446,7 +467,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
       </Row>
 
       <NgModal
-        title={addTitle}
+        title={addTitle.content}
         width={400}
         visible={visible}
         onOk={confirmAddCategory}

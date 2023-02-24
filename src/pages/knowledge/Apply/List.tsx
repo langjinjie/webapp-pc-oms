@@ -32,13 +32,13 @@ const KnowledgeApplyList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const onSearch = (values: any) => {
-    const { updateTime, createTime, ...otherValues } = values;
+    const { createTime, ...otherValues } = values;
     let createTimeBegin;
     let createTimeEnd;
 
     if (createTime) {
-      createTimeBegin = (updateTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      createTimeEnd = (updateTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+      createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
 
     getList({ createTimeBegin, createTimeEnd, ...otherValues });
@@ -55,7 +55,7 @@ const KnowledgeApplyList: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className="container">
-      <NgFormSearch searchCols={searchColsFun()} onSearch={onSearch} />
+      <NgFormSearch searchCols={searchColsFun()} isInline={false} firstRowChildCount={3} onSearch={onSearch} />
 
       <NgTable
         rowKey={'wikiId'}
