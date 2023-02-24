@@ -52,6 +52,8 @@ const AuditList: React.FC<RouteComponentProps> = ({ history }) => {
     const res = await uploadAuditFlows(formData);
     if (res) {
       message.success('导入成功！');
+      setVisible(false);
+      getList({ pageNum: 1 });
     }
   };
 

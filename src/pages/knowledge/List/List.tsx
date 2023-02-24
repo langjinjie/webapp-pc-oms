@@ -84,7 +84,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
           categroyId: '',
           lastLevel: 1,
           level: 0,
-          name: '所有分类',
+          name: '所有类别',
           key: '1',
           isLeaf: true
         },
@@ -99,8 +99,8 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     let updateTimeBegin;
     let updateTimeEnd;
     if (createTime) {
-      createTimeBegin = (updateTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      createTimeEnd = (updateTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+      createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
     if (updateTime) {
       updateTimeBegin = (updateTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
@@ -128,14 +128,41 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     setVisible(true);
   };
 
+  /**
+   * @description 异步加载分类数据
+   */
+  const onLoadData = async ({ key, children }: any): Promise<void> => {
+    if (!children || children?.length === 0) {
+      const res: any = await getCategoryList({ parentId: key });
+      if (res) {
+        const { list } = res;
+        const copyData = [...categories];
+        copyData.map((item) => {
+          if (item.categroyId === key) {
+            item.children = list.map((child: ICategory) => ({ ...child, isLeaf: child.lastLevel }));
+          }
+          return item;
+        });
+        setCategories(copyData);
+      }
+    }
+  };
+
   const confirmAddCategory = async () => {
+    if (!inputValue) return message.warning('目录名称不可以为空');
     const res = await createCategory({
       parentId: currentNode?.categroyId,
       name: inputValue
     });
     if (res) {
+      setInputValue('');
       message.success('添加目录成功');
       setVisible(false);
+      if (currentNode?.categroyId) {
+        onLoadData({ key: currentNode?.categroyId, children: [] });
+      } else {
+        getCategories();
+      }
     }
   };
 
@@ -218,7 +245,6 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const confirmBatchOperate = () => {
-    console.log('a', currentList, operateType);
     const list = currentList.map((item) => ({ wikiId: item.wikiId }));
     if (operateType === 'putAway') {
       putAway({ list });
@@ -261,26 +287,6 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  /**
-   * @description 异步加载分类数据
-   */
-  const onLoadData = async ({ key, children }: ICategory): Promise<void> => {
-    if (!children || children?.length === 0) {
-      const res: any = await getCategoryList({ parentId: key });
-      if (res) {
-        const { list } = res;
-        const copyData = [...categories];
-        copyData.map((item) => {
-          if (item.categroyId === key) {
-            item.children = list.map((child: ICategory) => ({ ...child, isLeaf: child.lastLevel }));
-          }
-          return item;
-        });
-        setCategories(copyData);
-      }
-    }
-  };
-
   const onSearchCategory = async (value: string) => {
     setIsSearch(true);
     if (value) {
@@ -295,7 +301,6 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const getListWithCategory = (categoryId: string) => {
-    console.log(categoryId);
     getList({
       categoryId: categoryId,
       pageNum: 1
@@ -448,7 +453,12 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
         onCancel={() => setVisible(false)}
       >
         <div className="ml40 mr40 mb40">
-          <Input placeholder="请输入目录名" value={inputValue} onChange={(e) => setInputValue(e.target.value)}></Input>
+          <Input
+            placeholder="请输入目录名"
+            maxLength={20}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+          ></Input>
         </div>
       </NgModal>
       <NgModal
