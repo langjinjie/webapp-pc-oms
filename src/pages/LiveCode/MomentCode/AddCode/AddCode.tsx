@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Radio } from 'antd';
+import { Button, Form, Input, message, Radio } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { BreadCrumbs, ImageUpload } from 'src/components';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
@@ -60,6 +60,7 @@ const AddCode: React.FC = () => {
       notifyUsers: undefined
     });
     if (res) {
+      message.success(`群活码${liveId ? '编辑' : '新增'}成功`);
       history.push('/momentCode');
     }
     setLoading(false);

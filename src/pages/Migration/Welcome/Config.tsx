@@ -2,6 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { Button, Popconfirm } from 'antd';
 import { useHistory } from 'react-router';
+import { AuthBtn } from 'src/components';
 
 export interface IWelcomeStaffList {
   welcomeCode: string; // 否 欢迎语ID
@@ -26,7 +27,7 @@ export const tableColumnsFun: (
     {
       title: '序号',
       render (_: any, __: any, index: number) {
-        return <>{index}</>;
+        return <>{index + 1}</>;
       }
     },
     {
@@ -62,12 +63,16 @@ export const tableColumnsFun: (
       render ({ welcomeCode }: IWelcomeStaffList) {
         return (
           <>
-            <Popconfirm title="确认删除该欢迎语吗？" onConfirm={() => delWelcomeHandle(welcomeCode)}>
-              <Button type="link">删除</Button>
-            </Popconfirm>
-            <Button type="link" onClick={() => editHandle(welcomeCode)}>
-              编辑
-            </Button>
+            <AuthBtn path="/delete">
+              <Popconfirm title="确认删除该欢迎语吗？" onConfirm={() => delWelcomeHandle(welcomeCode)}>
+                <Button type="link">删除</Button>
+              </Popconfirm>
+            </AuthBtn>
+            <AuthBtn path="/edit">
+              <Button type="link" onClick={() => editHandle(welcomeCode)}>
+                编辑
+              </Button>
+            </AuthBtn>
           </>
         );
       }

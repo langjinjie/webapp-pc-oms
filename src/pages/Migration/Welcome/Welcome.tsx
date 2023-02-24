@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, message } from 'antd';
 import { requestGetWelcomeStaffList, requestGetWelcomeStaffDetail, requestDelWelcomeStaff } from 'src/apis/migration';
-import { NgModal, NgTable } from 'src/components';
+import { AuthBtn, NgModal, NgTable } from 'src/components';
 import { tableColumnsFun, IWelcomeStaffList } from 'src/pages/Migration/Welcome/Config';
 import { useHistory } from 'react-router';
 import { IPagination } from 'src/utils/interface';
@@ -92,9 +92,11 @@ const Welcome: React.FC = () => {
   }, []);
   return (
     <div className={style.wrap}>
-      <Button type="primary" className={style.addBtn} onClick={addWelcomeHandle}>
-        新建欢迎语
-      </Button>
+      <AuthBtn path="/add">
+        <Button type="primary" className={style.addBtn} onClick={addWelcomeHandle}>
+          新建欢迎语
+        </Button>
+      </AuthBtn>
       <NgTable
         rowKey={'welcomeCode'}
         dataSource={list}

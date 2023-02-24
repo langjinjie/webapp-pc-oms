@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PaginationProps } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, TableColumnsFun, IList, orgDeptType2Name } from './Config';
 import { requestGetClientList } from 'src/apis/customerManage';
 
@@ -71,7 +71,9 @@ const CustomerList: React.FC = () => {
   }, []);
   return (
     <div className="container">
-      <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
+      <AuthBtn path="/query">
+        <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
+      </AuthBtn>
       <div className="color-text-regular mb10 mt10">
         筛选：共计好友<span className="text-primary">{pagination.total}</span>人
       </div>
