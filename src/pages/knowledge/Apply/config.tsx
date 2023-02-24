@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
@@ -18,10 +18,10 @@ const auditStatus = [
     id: 2,
     name: '审批不通过'
   },
-  {
-    id: 3,
-    name: '撤回'
-  },
+  // {
+  //   id: 3,
+  //   name: '撤回'
+  // },
   {
     id: 4,
     name: '自动审批通过'
@@ -96,13 +96,15 @@ export const tableColumnsFun = (onOperate: (record: WikiColumn) => void): Column
       dataIndex: 'level1Name',
       title: '一级目录',
       ellipsis: true,
-      width: 200
+      render: (level1Name) => level1Name || UNKNOWN,
+      width: 150
     },
     {
       key: 'level2Name',
       dataIndex: 'level2Name',
       title: '二级目录',
-      width: 200,
+      width: 150,
+      ellipsis: true,
       render: (level2Name) => level2Name || UNKNOWN
     },
     {
@@ -117,8 +119,11 @@ export const tableColumnsFun = (onOperate: (record: WikiColumn) => void): Column
       key: 'title',
       dataIndex: 'title',
       title: '知识库标题',
-      render: (onlineTime) => onlineTime || UNKNOWN,
-      width: 160
+      width: 200,
+      render: (title) => <Tooltip title={title || UNKNOWN}>{title || UNKNOWN}</Tooltip>,
+      ellipsis: {
+        showTitle: false
+      }
     },
     {
       key: 'curHandler',
@@ -146,13 +151,13 @@ export const tableColumnsFun = (onOperate: (record: WikiColumn) => void): Column
       dataIndex: 'auditTime',
       title: '审核时间',
       render: (auditTime) => auditTime || UNKNOWN,
-      width: 160
+      width: 220
     },
     {
       key: 'createTime',
       dataIndex: 'createTime',
       title: '创建时间',
-      width: 160
+      width: 220
     },
 
     {

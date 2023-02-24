@@ -1,4 +1,4 @@
-import { Button, Popconfirm } from 'antd';
+import { Button, Popconfirm, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import React from 'react';
@@ -21,10 +21,10 @@ const auditStatus = [
     id: 2,
     name: '审批不通过'
   },
-  {
-    id: 3,
-    name: '撤回'
-  },
+  // {
+  //   id: 3,
+  //   name: '撤回'
+  // },
   {
     id: 4,
     name: '自动审批通过'
@@ -119,20 +119,21 @@ export const tableColumnsFun = (
       dataIndex: 'level1Name',
       title: '一级目录',
       ellipsis: true,
-      width: 200
+      width: 160
     },
     {
       key: 'level2Name',
       dataIndex: 'level2Name',
       title: '二级目录',
-      width: 200,
+      ellipsis: true,
+      width: 160,
       render: (level2Name) => level2Name || UNKNOWN
     },
     {
       key: 'wikiStatus',
       dataIndex: 'wikiStatus',
       title: '知识库状态',
-      width: 120,
+      width: 110,
       render: (status) => {
         return (
           <div>
@@ -154,14 +155,19 @@ export const tableColumnsFun = (
       key: 'title',
       dataIndex: 'title',
       title: '知识库标题',
-      render: (onlineTime) => onlineTime || UNKNOWN,
+      render: (title) => <Tooltip title={title || UNKNOWN}>{title || UNKNOWN}</Tooltip>,
+      ellipsis: {
+        showTitle: false
+      },
+
       width: 160
     },
     {
       key: 'auditStatus',
       dataIndex: 'auditStatus',
-      title: '知识库状态',
+      title: '审批状态',
       width: 120,
+
       render: (status) => {
         return (
           <div>
@@ -181,21 +187,21 @@ export const tableColumnsFun = (
       key: 'createTime',
       dataIndex: 'createTime',
       title: '创建时间',
-      width: 160
+      width: 220
     },
     {
       key: 'updateTime',
       dataIndex: 'updateTime',
       title: '更新时间',
       render: (updateTime) => updateTime || UNKNOWN,
-      width: 160
+      width: 220
     },
 
     {
       key: 'operate',
       title: '操作',
       fixed: 'right',
-      width: 260,
+      width: 290,
       render: (operate, record, index) => {
         return (
           <div>

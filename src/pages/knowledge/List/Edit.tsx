@@ -26,7 +26,6 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
   const getDetail = async (wikiId?: string) => {
     if (wikiId) {
       const res = await getWikiDetail({ wikiId: wikiId });
-      console.log(res);
       const { descrition, title, content, level1CategroyId, level2CategroyId, groupId } = res;
       setFormData((formData: any) => ({ ...formData, ...res }));
       editForm.setFieldsValue({
@@ -41,9 +40,8 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
       setIsView(Number(isView) || 0);
       if (id) {
         const res = await getWikiDetail({ wikiId: id });
-        console.log(res);
         const { descrition, title, content, level1CategroyId, level2CategroyId, level2Name, groupId } = res;
-        setFormData((formData: any) => ({ ...formData, ...res }));
+        setFormData((formData: any) => ({ ...formData, ...res, contentChanged: content }));
         editForm.setFieldsValue({
           categroyId: level2CategroyId ? [level1CategroyId, level2CategroyId] : [level1CategroyId],
           desc: descrition,
@@ -74,8 +72,6 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
 
-    console.log(targetOption);
-
     // 异步加载子类目
     const res = await getCategoryList({ parentId: targetOption.categroyId });
 
@@ -84,7 +80,6 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
       const { list } = res;
       list.map((item: any) => {
         item.isLeaf = !!item.lastLevel;
-        console.log(item);
 
         return item;
       });
@@ -100,6 +95,8 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
   const onFinish = async (values: any) => {
     const { categroyId, group1, ...otherValues } = values;
     const wikiId = formData.wikiId;
+    // 内容必填检验
+    if (!formData.contentChanged) return false;
     if (wikiId) {
       const res = await editWiki({
         categroyId: categroyId[categroyId.length - 1],
@@ -135,7 +132,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
     <div className="container edit">
       <Card bordered={false} title={`${isView ? '查看' : '编辑'}知识库内容`}>
         <Form form={editForm} onFinish={onFinish}>
-          <Form.Item label="目录信息" name={'categroyId'}>
+          <Form.Item label="目录信息" name={'categroyId'} rules={[{ required: true, message: '请选择目录信息' }]}>
             <Cascader
               placeholder="请选择"
               className="width420"
@@ -144,13 +141,18 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
               loadData={loadData}
             ></Cascader>
           </Form.Item>
-          <Form.Item label="知识库标题" name="title">
-            <InputShowLength maxLength={30} className="width320" />
+          <Form.Item label="知识库标题" name="title" rules={[{ required: true, message: '请输入知识库标题' }]}>
+            <InputShowLength maxLength={50} className="width320" />
           </Form.Item>
           <Form.Item label="知识库描述" name="desc">
             <Input.TextArea className="width400" maxLength={100} showCount></Input.TextArea>
           </Form.Item>
-          <Form.Item label="知识库正文">
+          <Form.Item
+            label="知识库正文"
+            required
+            validateStatus="error"
+            help={!formData.contentChanged ? '请输入文章内容' : ''}
+          >
             <NgEditor value={formData.content} onChange={editorChange} />
           </Form.Item>
           <Form.Item label="配置可见范围" name={'groupId'}>

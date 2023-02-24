@@ -167,9 +167,9 @@ const AuditDetail: React.FC<RouteComponentProps> = ({ history, location }) => {
       return <Icon name="icon_shenpi_20_proposer" />;
     } else {
       if (status === 1 || status === 2) {
-        <Icon className="color-success" name="icon_shenpi_20_succeed" />;
+        return <Icon className="color-success" name="icon_shenpi_20_succeed" />;
       } else if (status === 3) {
-        <Icon className="color-danger" name="icon_shenpi_20_fail" />;
+        return <Icon className="color-danger" name="icon_shenpi_20_fail" />;
       }
       return <Icon name="a-icon_shenpi_20_inreview" />;
     }

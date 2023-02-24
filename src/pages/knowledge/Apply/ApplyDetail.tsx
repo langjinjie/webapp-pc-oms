@@ -11,7 +11,7 @@ import classNames from 'classnames';
 import { Icon } from 'tenacity-ui';
 import { urlSearchParams } from 'src/utils/base';
 enum AuditStatus {
-  '审核中',
+  '审批中',
   '审批通过',
   '自动审批通过',
   '审批不通过'
@@ -103,7 +103,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
                   }}
                   className={styles.auditPass}
                 >
-                  审核通过
+                  审批通过
                 </a>
                 <a
                   href=""
@@ -113,7 +113,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
                   }}
                   className={styles.auditNoPass}
                 >
-                  审核不通过
+                  审批不通过
                 </a>
               </div>
             )}
@@ -131,9 +131,9 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
       return <Icon name="icon_shenpi_20_proposer" />;
     } else {
       if (status === 1 || status === 2) {
-        <Icon className="color-success" name="icon_shenpi_20_succeed" />;
+        return <Icon className="color-success" name="icon_shenpi_20_succeed" />;
       } else if (status === 3) {
-        <Icon className="color-danger" name="icon_shenpi_20_fail" />;
+        return <Icon className="color-danger" name="icon_shenpi_20_fail" />;
       }
       return <Icon name="a-icon_shenpi_20_inreview" />;
     }
@@ -148,7 +148,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
           { name: '审批详情' }
         ]}
       />
-      <div className={classNames(styles.panelTitle, 'mt20 mb20')}>审核详情</div>
+      <div className={classNames(styles.panelTitle, 'mt20 mb20')}>审批详情</div>
       <Form form={editForm}>
         <Form.Item label="目录信息" name={'categoryName'}>
           <Input disabled className="width320"></Input>

@@ -422,6 +422,9 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
                 setSelectedRows(selectedRows);
               }
             }}
+            paginationChange={(pageNum, pageSize) => {
+              getList({ pageNum, pageSize });
+            }}
           ></NgTable>
 
           {dataSource.length > 0 && (
