@@ -62,6 +62,9 @@ const KnowledgeApplyList: React.FC<RouteComponentProps> = ({ history }) => {
         columns={tableColumnsFun(onOperation)}
         dataSource={dataSource}
         pagination={pagination}
+        paginationChange={(pageNum, pageSize) => {
+          getList({ pageNum, pageSize });
+        }}
       ></NgTable>
     </div>
   );

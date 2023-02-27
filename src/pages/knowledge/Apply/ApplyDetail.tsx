@@ -120,7 +120,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
           </>
             )
           : (
-          <div className={styles.remark}>{data.auditRemark}</div>
+          <>{data.auditRemark && <div className={styles.remark}>{data.auditRemark}</div>}</>
             )}
       </div>
     );

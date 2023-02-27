@@ -93,7 +93,11 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
   }, []);
 
   const onFinish = async (values: any) => {
-    const { categroyId, group1, ...otherValues } = values;
+    delete values.group1;
+    delete values.isSet;
+    delete values.group2;
+    delete values.groupType;
+    const { categroyId, groupId, ...otherValues } = values;
     const wikiId = formData.wikiId;
     // 内容必填检验
     if (!formData.contentChanged) return false;
@@ -103,7 +107,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
         ...otherValues,
         wikiId,
         content: formData.contentChanged || formData.content,
-        groupId: group1?.groupId || ''
+        groupId: groupId || ''
       });
       if (res) {
         message.success('编辑成功');
@@ -114,7 +118,7 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
         categroyId: categroyId[categroyId.length - 1],
         ...otherValues,
         content: formData.contentChanged || formData.content,
-        groupId: group1?.groupId || ''
+        groupId: groupId || ''
       });
       if (res) {
         message.success('创建成功');
