@@ -226,13 +226,14 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     let currentList: WikiColumn[] = [];
     if (type === 'putAway') {
       currentList = selectedRows.filter((item) => item.auditStatus !== 0 && item.wikiStatus !== 2);
-      console.log(currentList);
     } else if (type === 'outline') {
       currentList = selectedRows.filter(
         (item) => item.wikiStatus === 2 && item.auditStatus !== 0 && item.auditStatus !== 2
       );
     } else if (type === 'delete') {
-      currentList = selectedRows.filter((item) => item.auditStatus !== 0 && item.wikiStatus === 3);
+      currentList = selectedRows.filter(
+        (item) => (item.auditStatus !== 0 && item.wikiStatus === 3) || item.auditStatus === 2
+      );
     }
     count = currentList.length;
     setCurrentList(currentList);
