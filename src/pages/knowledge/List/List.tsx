@@ -146,10 +146,14 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
         const copyData = [...categories];
         copyData.map((item) => {
           if (item.categroyId === key) {
+            item.isLeaf = false;
             item.children = list.map((child: ICategory) => ({ ...child, isLeaf: child.lastLevel }));
           }
           return item;
         });
+        if (!expandIds.includes(key)) {
+          setExpandIds((expandIds) => [...expandIds, key]);
+        }
         setCategories(copyData);
       }
     }
