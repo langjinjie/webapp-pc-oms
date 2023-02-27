@@ -42,6 +42,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   });
   const [selectedRows, setSelectedRows] = useState<WikiColumn[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [queryParams, setQueryParams] = useState<any>({});
   const [visible, setVisible] = useState(false);
   const [visible2, setVisible2] = useState(false);
@@ -217,13 +218,15 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
       message.success('上架成功');
     }
     getList({ pageNum: 1 });
+    return res;
   };
 
   const filterSelectedRow = (type: OperateType) => {
     let count = 0;
     let currentList: WikiColumn[] = [];
     if (type === 'putAway') {
-      currentList = selectedRows.filter((item) => item.auditStatus !== 0 && item.wikiStatus !== 1);
+      currentList = selectedRows.filter((item) => item.auditStatus !== 0 && item.wikiStatus !== 2);
+      console.log(currentList);
     } else if (type === 'outline') {
       currentList = selectedRows.filter(
         (item) => item.wikiStatus === 2 && item.auditStatus !== 0 && item.auditStatus !== 2
@@ -278,24 +281,38 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
       message.success('下架成功');
     }
     getList({ pageNum: 1 });
+    return res;
   };
 
   const deleteWiki = async (data: any) => {
     const res = await deleteChange(data);
     if (res) {
       message.success('删除成功');
+      getList({ pageNum: 1 });
     }
-    getList({ pageNum: 1 });
+    return res;
   };
 
-  const confirmBatchOperate = () => {
+  const confirmBatchOperate = async () => {
     const list = currentList.map((item) => ({ wikiId: item.wikiId }));
     if (operateType === 'putAway') {
-      putAway({ list });
+      const res = await putAway({ list });
+      if (res) {
+        setSelectedRowKeys([]);
+        setSelectedRows([]);
+      }
     } else if (operateType === 'outline') {
-      offline({ list });
+      const res = await offline({ list });
+      if (res) {
+        setSelectedRowKeys([]);
+        setSelectedRows([]);
+      }
     } else if (operateType === 'delete') {
-      deleteWiki({ list });
+      const res = await deleteWiki({ list });
+      if (res) {
+        setSelectedRowKeys([]);
+        setSelectedRows([]);
+      }
     }
 
     setVisible2(false);
@@ -459,8 +476,9 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
             dataSource={dataSource}
             pagination={pagination}
             rowSelection={{
+              selectedRowKeys: selectedRowKeys,
               onChange: (selectedRowKeys: React.Key[], selectedRows: WikiColumn[]) => {
-                console.log(selectedRowKeys, selectedRows);
+                setSelectedRowKeys(selectedRowKeys);
                 setSelectedRows(selectedRows);
               }
             }}
