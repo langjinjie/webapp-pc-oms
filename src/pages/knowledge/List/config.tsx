@@ -233,7 +233,7 @@ export const tableColumnsFun = (
               </AuthBtn>
             )}
 
-            {record.auditStatus !== 0 && record.wikiStatus === 3 && (
+            {((record.auditStatus !== 0 && record.wikiStatus === 3) || record.auditStatus === 2) && (
               <AuthBtn path="/delete">
                 <Popconfirm title="确定要删除?" onConfirm={() => onOperate('delete', record, index)}>
                   <Button type="link">删除</Button>

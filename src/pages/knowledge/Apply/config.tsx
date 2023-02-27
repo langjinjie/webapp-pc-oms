@@ -118,7 +118,7 @@ export const tableColumnsFun = (onOperate: (record: WikiColumn) => void): Column
     {
       key: 'title',
       dataIndex: 'title',
-      title: '知识库标题',
+      title: '审批内容标题',
       width: 200,
       render: (title) => <Tooltip title={title || UNKNOWN}>{title || UNKNOWN}</Tooltip>,
       ellipsis: {

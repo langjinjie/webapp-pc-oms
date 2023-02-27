@@ -16,11 +16,13 @@ const KnowledgeApplyList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   });
   const [dataSource, setDataSource] = useState<WikiColumn[]>([]);
+  const [queryParams, setQueryParams] = useState<any>({});
 
   const getList = async (params?: any) => {
     const pageNum = params?.pageNum || pagination.current;
     const pageSize = params?.pageSize || pagination.pageSize;
     const res = await getApplyList({
+      ...queryParams,
       ...params,
       pageNum,
       pageSize
@@ -40,8 +42,20 @@ const KnowledgeApplyList: React.FC<RouteComponentProps> = ({ history }) => {
       createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
+    setQueryParams({ createTimeBegin, createTimeEnd, ...otherValues });
+    getList({ createTimeBegin, createTimeEnd, ...otherValues, pageNum: 1 });
+  };
 
-    getList({ createTimeBegin, createTimeEnd, ...otherValues });
+  const onValuesChange = (values: any) => {
+    const { createTime, ...otherValues } = values;
+    let createTimeBegin;
+    let createTimeEnd;
+
+    if (createTime) {
+      createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+    }
+    setQueryParams({ createTimeBegin, createTimeEnd, ...otherValues });
   };
 
   useEffect(() => {
@@ -55,7 +69,13 @@ const KnowledgeApplyList: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className="container">
-      <NgFormSearch searchCols={searchColsFun()} isInline={false} firstRowChildCount={3} onSearch={onSearch} />
+      <NgFormSearch
+        searchCols={searchColsFun()}
+        isInline={false}
+        onValuesChange={(_, values) => onValuesChange(values)}
+        firstRowChildCount={3}
+        onSearch={onSearch}
+      />
 
       <NgTable
         rowKey={'wikiId'}

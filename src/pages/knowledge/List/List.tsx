@@ -42,6 +42,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   });
   const [selectedRows, setSelectedRows] = useState<WikiColumn[]>([]);
+  const [queryParams, setQueryParams] = useState<any>({});
   const [visible, setVisible] = useState(false);
   const [visible2, setVisible2] = useState(false);
   const [visible3, setVisible3] = useState(false);
@@ -69,6 +70,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     const pageNum = params?.pageNum || pagination.current;
     const pageSize = params?.pageSize || pagination.pageSize;
     const res = await getWikiList({
+      ...queryParams,
       ...params,
       pageNum,
       pageSize
@@ -98,10 +100,10 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   const onSearch = (values: any) => {
     const { updateTime, createTime, ...otherValues } = values;
-    let createTimeBegin;
-    let createTimeEnd;
-    let updateTimeBegin;
-    let updateTimeEnd;
+    let createTimeBegin = '';
+    let createTimeEnd = '';
+    let updateTimeBegin = '';
+    let updateTimeEnd = '';
     if (createTime) {
       createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
@@ -110,7 +112,39 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
       updateTimeBegin = (updateTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
       updateTimeEnd = (updateTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-    getList({ createTimeBegin, createTimeEnd, updateTimeBegin, updateTimeEnd, ...otherValues });
+    setQueryParams((queryParams: any) => ({
+      ...queryParams,
+      createTimeBegin,
+      createTimeEnd,
+      updateTimeBegin,
+      updateTimeEnd,
+      ...otherValues
+    }));
+    getList({ createTimeBegin, createTimeEnd, updateTimeBegin, updateTimeEnd, ...otherValues, pageNum: 1 });
+  };
+
+  const onValuesChange = (values: any) => {
+    const { updateTime, createTime, ...otherValues } = values;
+    let createTimeBegin = '';
+    let createTimeEnd = '';
+    let updateTimeBegin = '';
+    let updateTimeEnd = '';
+    if (createTime) {
+      createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+    }
+    if (updateTime) {
+      updateTimeBegin = (updateTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      updateTimeEnd = (updateTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+    }
+    setQueryParams((queryParams: any) => ({
+      ...queryParams,
+      createTimeBegin,
+      createTimeEnd,
+      updateTimeBegin,
+      updateTimeEnd,
+      ...otherValues
+    }));
   };
 
   useEffect(() => {
@@ -124,7 +158,6 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
 
   const addCategory = async (level: number, node?: ICategory) => {
     if (level === 2) {
-      console.log(node);
       setAddTitle({
         type: 2,
         content: `添加${node?.name}的二级目录`
@@ -315,6 +348,7 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
       categoryId: categoryId,
       pageNum: 1
     });
+    setQueryParams((queryParams: any) => ({ ...queryParams, categoryId }));
   };
 
   const confirmSetRight = async (values: any) => {
@@ -400,7 +434,11 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
         </Col>
         <Col span={19}>
           <AuthBtn path="/query">
-            <NgFormSearch searchCols={searchColsFun()} onSearch={onSearch} />
+            <NgFormSearch
+              searchCols={searchColsFun()}
+              onSearch={onSearch}
+              onValuesChange={(_, values) => onValuesChange(values)}
+            />
           </AuthBtn>
           <AuthBtn path="/create">
             <Button
