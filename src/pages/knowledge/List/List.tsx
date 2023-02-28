@@ -200,14 +200,25 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
       name: inputValue
     });
     if (res) {
-      setInputValue('');
       message.success('添加目录成功');
       setVisible(false);
       if (currentNode?.categroyId && addTitle.type === 2) {
         onLoadData({ key: currentNode?.categroyId, children: [] });
       } else {
-        getCategories();
+        const newCategories = [
+          ...categories,
+          {
+            categroyId: res.categoryId,
+            lastLevel: 1,
+            level: 1,
+            name: inputValue,
+            key: res.traceId,
+            isLeaf: true
+          }
+        ];
+        setCategories(newCategories as ICategory[]);
       }
+      setInputValue('');
     }
   };
 
@@ -404,20 +415,25 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
                   className={style.treeWrap}
                   fieldNames={{ title: 'name', key: 'categroyId' }}
                   blockNode
+                  height={650}
                   expandedKeys={expandIds}
                   onExpand={(keys) => setExpandIds(keys)}
                   treeData={categories}
                   loadData={onLoadData}
                   titleRender={(node) => (
                     <div className={style.nodeItem}>
-                      {node.name}
-                      {node.level === 1 && currentNode?.categroyId === node.categroyId && (
-                        <Icon
-                          name="icon_daohang_28_jiahaoyou"
-                          className="mr5 f20 color-text-secondary"
-                          onClick={() => addCategory(2, node)}
-                        />
-                      )}
+                      <div className="flex">
+                        <div className="cell flex">
+                          <div className={classNames(style.title, 'ellipsis')}>{node.name}</div>
+                        </div>
+                        {node.level === 1 && currentNode?.categroyId === node.categroyId && (
+                          <Icon
+                            name="icon_daohang_28_jiahaoyou"
+                            className="mr5 f20 color-text-secondary"
+                            onClick={() => addCategory(2, node)}
+                          />
+                        )}
+                      </div>
                     </div>
                   )}
                   selectedKeys={[currentNode?.categroyId || '']}
