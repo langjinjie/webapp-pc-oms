@@ -14,7 +14,6 @@ interface IPreviewProps {
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
   const [itemIds, setItemIds] = useState<any[]>([]);
-  console.log(value, isMoment);
 
   const getMomentDetailByFeedId = async () => {
     // 如果是今日朋友圈
@@ -71,7 +70,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                         />
                       </div>
                     )}
-                    {[1, 3, 4].includes(value?.actionRule.contentType as number) && (
+                    {[1, 3, 4].includes(value?.actionRule?.contentType as number) && (
                       <div className={classNames(style.cardMessage, 'flex')}>
                         <div className={'flex vertical cell'}>
                           <div className={classNames(style.title, 'ellipsis')}>{mapItem.itemName}</div>
@@ -132,9 +131,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
                   {/* 话术 */}
 
                   <div className={style.momentItemFooter}>
-                    <div className={style.footerTime}>
-                      {moment(JSON.parse(JSON.stringify(value.pushTime)), 'HH:mm').format('HH:mm')}
-                    </div>
+                    <div className={style.footerTime}>{moment(value.pushTime, 'HH:mm').format('HH:mm')}</div>
                     <div className={style.footerOp}>
                       <div className={style.dot} />
                       <div className={style.dot} />

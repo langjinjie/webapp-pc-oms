@@ -105,7 +105,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
 
   useEffect(() => {
     initFormData(value);
-    console.log('value', value);
   }, [value]);
   useEffect(() => {
     getTouchWayOptions();
@@ -234,7 +233,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     });
     if (res) {
       message.success('添加成功');
-      console.log(nodeOptions);
       const copyData = [...nodeOptions];
       copyData[index].push(res.list[0]);
       setNodeName('');
