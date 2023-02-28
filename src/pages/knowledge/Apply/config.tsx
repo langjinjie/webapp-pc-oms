@@ -50,14 +50,14 @@ export const searchColsFun = (): SearchCol[] => [
 
   {
     type: 'input',
-    label: '审核人',
+    label: '审批人',
     name: 'curHandler',
     placeholder: '请输入'
   },
 
   {
     type: 'select',
-    label: '审核状态',
+    label: '审批状态',
     name: 'auditStatus',
     width: '120px',
     options: auditStatus,
@@ -129,14 +129,14 @@ export const tableColumnsFun = (onOperate: (record: WikiColumn) => void): Column
     {
       key: 'curHandler',
       dataIndex: 'curHandler',
-      title: '当前审核人',
+      title: '当前审批人',
       render: (onlineTime) => onlineTime || UNKNOWN,
       width: 160
     },
     {
       key: 'auditStatus',
       dataIndex: 'auditStatus',
-      title: '审核状态',
+      title: '审批状态',
       width: 120,
       render: (status) => {
         return (
@@ -150,7 +150,7 @@ export const tableColumnsFun = (onOperate: (record: WikiColumn) => void): Column
     {
       key: 'auditTime',
       dataIndex: 'auditTime',
-      title: '审核时间',
+      title: '审批时间',
       render: (auditTime) => auditTime || UNKNOWN,
       width: 220
     },
