@@ -1,6 +1,7 @@
 import { Button, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
+import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 
@@ -167,9 +168,11 @@ export const tableColumnsFun = (onOperate: (record: WikiColumn) => void): Column
       width: 100,
       render: (operate, record) => {
         return (
-          <Button type="link" onClick={() => onOperate(record)}>
-            查看详情
-          </Button>
+          <AuthBtn path="/preview">
+            <Button type="link" onClick={() => onOperate(record)}>
+              查看详情
+            </Button>
+          </AuthBtn>
         );
       }
     }

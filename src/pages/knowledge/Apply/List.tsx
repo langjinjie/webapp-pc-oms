@@ -3,7 +3,7 @@ import { Moment } from 'moment';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getApplyList } from 'src/apis/knowledge';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchColsFun, tableColumnsFun, WikiColumn } from './config';
 
 const KnowledgeApplyList: React.FC<RouteComponentProps> = ({ history }) => {
@@ -69,13 +69,15 @@ const KnowledgeApplyList: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className="container">
-      <NgFormSearch
-        searchCols={searchColsFun()}
-        isInline={false}
-        onValuesChange={(_, values) => onValuesChange(values)}
-        firstRowChildCount={3}
-        onSearch={onSearch}
-      />
+      <AuthBtn path="/query">
+        <NgFormSearch
+          searchCols={searchColsFun()}
+          isInline={false}
+          onValuesChange={(_, values) => onValuesChange(values)}
+          firstRowChildCount={3}
+          onSearch={onSearch}
+        />
+      </AuthBtn>
 
       <NgTable
         rowKey={'wikiId'}

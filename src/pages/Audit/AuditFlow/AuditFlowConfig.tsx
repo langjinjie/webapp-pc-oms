@@ -48,7 +48,7 @@ export const TableColsFun = ({ preView }: TableColsFunParams): ColumnsType<Faile
     fixed: 'right',
     render: (text, record) => {
       return (
-        <>
+        <AuthBtn path="/preview">
           <Button
             type="link"
             onClick={() => {
@@ -57,7 +57,7 @@ export const TableColsFun = ({ preView }: TableColsFunParams): ColumnsType<Faile
           >
             查看审核链
           </Button>
-        </>
+        </AuthBtn>
       );
     }
   }

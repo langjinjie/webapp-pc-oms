@@ -20,7 +20,7 @@ export const FormBlockPreview: React.FC<FormBlockPreviewProps> = ({ value }) => 
             <div className="flex">
               {item.nodeRuleList?.map((rule: any, index: number) => {
                 // 处理moment数据污染bug
-                rule = JSON.parse(JSON.stringify(rule));
+                // rule = JSON.parse(JSON.stringify(rule));
                 return (
                   <div className={styles.nodeItem} key={rule.actionRuleId + index}>
                     <div className={classNames(styles.nodeTitle, 'ellipsis')} title={rule.nodeRuleName}>
