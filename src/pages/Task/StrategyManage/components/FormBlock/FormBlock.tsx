@@ -166,7 +166,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
     copyData[index] = { node };
 
     // 获取节点规则列表
-    const res = await getNodeRuleList({ nodeId: nodeId, nodeTypeCode: nodeTypeCode });
+    const res = await getNodeRuleList({ nodeId: nodeId, nodeTypeCode: nodeTypeCode, pageSize: 100 });
     if (res) {
       copyData[index].options = res.list || [];
     }
@@ -182,7 +182,11 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
       const copyData = [...nodeDetails];
 
       // 获取节点规则列表
-      const res = await getNodeRuleList({ nodeId: currentItem.nodeId, nodeTypeCode: currentItem.nodeTypeCode });
+      const res = await getNodeRuleList({
+        nodeId: currentItem.nodeId,
+        nodeTypeCode: currentItem.nodeTypeCode,
+        pageSize: 100
+      });
       if (res) {
         copyData[index].options = res.list || [];
       }
