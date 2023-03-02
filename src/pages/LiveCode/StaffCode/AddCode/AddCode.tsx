@@ -8,13 +8,13 @@ import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
 import { requestEditStaffLive, requestGetStaffLiveDetail, requestGetLiveStaffList } from 'src/apis/liveCode';
 import { IValue } from 'src/pages/LiveCode/StaffCode/components/Preview/Preview';
+import { useDidCache, useDidRecover } from 'react-router-cache-route';
 import CustomTextArea from 'src/pages/SalesCollection/SpeechManage/Components/CustomTextArea';
 import FilterChannelTag from '../../MomentCode/components/FilterChannelTag/FilterChannelTag';
 import moment from 'moment';
 import qs from 'qs';
 import classNames from 'classnames';
 import style from './style.module.less';
-import { useDidCache, useDidRecover } from 'react-router-cache-route';
 
 export const expireDayList = [
   { value: -1, label: '永久' },
@@ -68,16 +68,14 @@ const AddCode: React.FC = () => {
   };
 
   const onResetHandle = () => {
-    if (readOnly) {
-      form.resetFields();
-      setExpireDay(undefined);
-      setIsWelcomeMsg(undefined);
-      setPreviewValue(undefined);
-      setLiveType(undefined);
-      setAssignType(undefined);
-      setSelectStaffList([]);
-      setReadOnly(false);
-    }
+    form.resetFields();
+    setExpireDay(undefined);
+    setIsWelcomeMsg(undefined);
+    setPreviewValue(undefined);
+    setLiveType(undefined);
+    setAssignType(undefined);
+    setSelectStaffList([]);
+    setReadOnly(false);
   };
 
   // 获取员工活码详情
@@ -192,6 +190,7 @@ const AddCode: React.FC = () => {
     if (res) {
       message.success('员工活码新增成功');
       history.push('/staffCode');
+      onResetHandle();
     }
     setSubmitLoading(false);
   };
@@ -243,8 +242,7 @@ const AddCode: React.FC = () => {
     getLiveCodeDetail();
   }, []);
   useDidCache(() => {
-    // 当前只读时，离开页面重置
-    onResetHandle();
+    if (readOnly) onResetHandle();
   }, []);
   return (
     <Spin spinning={getDetailloading} tip="加载中...">
@@ -420,7 +418,13 @@ const AddCode: React.FC = () => {
                 >
                   确定
                 </Button>
-                <Button className={style.cancelBtn} onClick={() => history.goBack()}>
+                <Button
+                  className={style.cancelBtn}
+                  onClick={() => {
+                    history.goBack();
+                    onResetHandle();
+                  }}
+                >
                   {readOnly ? '返回' : '取消'}
                 </Button>
               </div>
