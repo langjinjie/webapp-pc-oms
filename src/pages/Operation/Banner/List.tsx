@@ -1,48 +1,32 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Image } from 'antd';
-import { PaginationProps } from 'antd/es/pagination';
 import React, { useEffect, useState } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
-import { changeHotStatus, getHotList, sortTopHot } from 'src/apis/marketing';
+import { getBannerList, changeStatus, setTop } from 'src/apis/marquee';
 import { NgTable } from 'src/components';
 import { OperateType } from 'src/utils/interface';
 import { Icon } from 'tenacity-ui';
 import CreateModal from './components/CreateModal';
-import { HotColumns, tableColumnsFun } from './ListConfig';
+import { IBanner, tableColumnsFun } from './ListConfig';
 import style from './style.module.less';
 
 type QueryParamsType = Partial<{
   name: string;
   status: string;
 }>;
-const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
+const BannerList: React.FC = () => {
   const [queryParams, setQueryParams] = useState<QueryParamsType>({});
-  const [tableSource, setTableSource] = useState<HotColumns[]>([]);
-  const [pagination, setPagination] = useState<PaginationProps>({
-    current: 1,
-    pageSize: 10,
-    total: 100,
-    showTotal: (total) => {
-      return `共 ${total} 条记录`;
-    }
-  });
+  const [tableSource, setTableSource] = useState<IBanner[]>([]);
 
   const [visible, setVisible] = useState(false);
-  const [currentItem, setCurrentItem] = useState<HotColumns>();
+  const [currentItem, setCurrentItem] = useState<IBanner>();
   const [visibleImg, setVisibleImg] = useState(false);
   const getList = async (params?: any) => {
-    const pageNum = params?.pageNum || pagination.current;
-    const pageSize = params?.pageSize || pagination.pageSize;
-    const res = await getHotList({
+    const res = await getBannerList({
       ...queryParams,
-      ...params,
-      pageNum,
-      pageSize
+      ...params
     });
     if (res) {
-      const { list, total } = res;
-      setTableSource(list);
-      setPagination((pagination) => ({ ...pagination, total, pageSize, current: pageNum }));
+      setTableSource(res || []);
     }
   };
 
@@ -55,33 +39,26 @@ const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
     getList({ ...values, pageNum: 1 });
   };
 
-  const paginationChange = (pageNum: number, pageSize?: number) => {
-    getList({ pageNum, pageSize });
-  };
-
-  const changeItemStatus = async (record: HotColumns, index: number) => {
-    if (record.contentNum === 0) return message.warning('请配置内容信息');
-    const res = await changeHotStatus({ topicId: record.topicId, status: record.status === 0 ? 1 : 0 });
+  const changeItemStatus = async (record: IBanner, index: number) => {
+    const res = await changeStatus({ bannerId: record.bannerId, opType: record.status === '1' ? 2 : 1 });
     if (res) {
-      const recordRes = { ...record, status: record.status === 0 ? 1 : 0 };
+      const recordRes = { ...record, status: record.status === '1' ? '2' : '1' };
       const copyData = [...tableSource];
       copyData.splice(index, 1, recordRes);
       setTableSource(copyData);
-      message.success(record.status === 1 ? '下架成功' : '上架成功');
+      message.success(record.status === '1' ? '上架成功' : '下架成功');
     }
   };
 
-  const operateItem = async (operateType: OperateType, record: HotColumns, index: number) => {
-    if (operateType === 'add') {
-      history.push('/marketingHot/edit?topicId=' + record.topicId);
-    } else if (operateType === 'edit') {
+  const operateItem = async (operateType: OperateType, record: IBanner, index: number) => {
+    if (operateType === 'edit') {
       setVisible(true);
       setCurrentItem(record);
     } else if (operateType === 'putAway' || operateType === 'outline') {
       changeItemStatus(record, index);
     } else if (operateType === 'other') {
       // 置顶操作
-      const res = await sortTopHot({ topicId: record.topicId });
+      const res = await setTop({ bannerId: record.bannerId });
       if (res) {
         message.success('置顶成功');
         getList({ pageNum: 1 });
@@ -122,10 +99,8 @@ const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
             onOperate: operateItem
           })}
           dataSource={tableSource}
-          pagination={pagination}
-          paginationChange={paginationChange}
-          setRowKey={(record: HotColumns) => {
-            return record.topicId;
+          setRowKey={(record: IBanner) => {
+            return record.bannerId;
           }}
         />
       </div>
@@ -140,6 +115,7 @@ const BannerList: React.FC<RouteComponentProps> = ({ history }) => {
         visible={visible}
         value={currentItem}
         onClose={() => {
+          setCurrentItem(undefined);
           setVisible(false);
         }}
       />

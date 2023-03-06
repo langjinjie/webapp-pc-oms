@@ -4,21 +4,33 @@ import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import { OperateType } from 'src/utils/interface';
 
-export interface HotColumns {
-  topicId: string;
-  topicImg: string;
-  topicName: string;
-  desc: string;
-  createBy: string;
-  contentNum: number;
-  createTime: string;
-  [prop: string]: any;
-}
-
 interface OperateProps {
-  onOperate: (operateType: OperateType, record: HotColumns, index: number) => void;
+  onOperate: (operateType: OperateType, record: IBanner, index: number) => void;
 }
-export const tableColumnsFun = (args: OperateProps): ColumnsType<HotColumns> => {
+// 0=文章; 1=活动;2=产品3=海报 4=视频
+
+export const bannerTypeOptions = [
+  { id: 1, name: '文章', recommendType: 0 },
+  { id: 2, name: '周报' },
+  { id: 3, name: '专题' },
+  { id: 4, name: '活动', recommendType: 1 },
+  { id: 5, name: '其他' }
+];
+
+export interface IBanner {
+  bannerId: string;
+  type: string;
+  content: string;
+  itemId: string;
+  imgUrl: string;
+  linkUrl: string;
+  showTime: string;
+  status: string;
+  sortId: string;
+  startTime: string;
+  endTime: string;
+}
+export const tableColumnsFun = (args: OperateProps): ColumnsType<IBanner> => {
   return [
     {
       title: '排序',
@@ -27,26 +39,34 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<HotColumns> => 
       },
       width: 60
     },
-    { title: '类型', dataIndex: 'topicName', key: 'topicName', width: 200 },
+    {
+      title: '类型',
+      dataIndex: 'type',
+      key: 'type',
+      width: 100,
+      render: (text) => bannerTypeOptions.filter((option) => option.id === +text)[0]?.name
+    },
 
     {
       title: '内容',
-      dataIndex: 'contentNum',
+      dataIndex: 'content',
       width: 180,
-      key: 'contentNum',
-      ellipsis: true
+      key: 'content',
+      render (value, record) {
+        return value || (record.type === '2' && '系统自动取每周最新的周报内容');
+      }
     },
     {
       title: '图片',
-      dataIndex: 'topicImg',
+      dataIndex: 'imgUrl',
       width: 180,
-      key: 'topicImg',
+      key: 'imgUrl',
       ellipsis: true,
-      render: (topicImg: string) => <Image src={topicImg} style={{ maxHeight: '70px' }} />
+      render: (imgUrl: string) => <Image src={imgUrl} style={{ maxHeight: '70px' }} />
     },
     {
       title: '展示时间',
-      dataIndex: 'createTime',
+      dataIndex: 'showTime',
       width: 260
     },
     {
@@ -59,12 +79,12 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<HotColumns> => 
             <i
               className={classNames('status-point', [
                 {
-                  'status-point-gray': status === 0,
-                  'status-point-green': status === 1
+                  'status-point-gray': +status === 1,
+                  'status-point-green': +status === 2
                 }
               ])}
             ></i>
-            {status === 1 ? '已上架' : '已下架'}
+            {status === '2' ? '已上架' : '已下架'}
           </span>
         );
       }
@@ -81,7 +101,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<HotColumns> => 
             <Button type="link" onClick={() => args.onOperate('edit', record, index)}>
               编辑
             </Button>
-            {status === 0
+            {status === '1'
               ? (
               <Popconfirm title="是否确认上架?" onConfirm={() => args.onOperate('putAway', record, index)}>
                 <Button type="link">上架</Button>

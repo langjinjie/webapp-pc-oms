@@ -368,8 +368,18 @@ export const batchOperateProduct: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/product/batch/manage', param);
 };
 
-// 查询推荐内容（文章，活动，产品），
-export const searchRecommendGoodsList: HttpFunction = (param) => {
+/**
+ * @desc 查询推荐内容（文章，活动，产品）
+ * @param {{
+ * recommendType:
+ * }} param
+ */
+export const searchRecommendGoodsList: HttpFunction<{
+  title: string;
+  specType: number; // 0 = 普通; 1=个性化
+  recommendType: number; // 推荐类型：0=文章; 1=活动;2=产品3=海报 4=视频
+  type: number | undefined; // type= 0; 查询自己创建的文章， type = 1 查询自己创建的和拉取公有的
+}> = (param) => {
   return http.post('/tenacity-admin/api/market/query', param);
 };
 // 查询用户分组，

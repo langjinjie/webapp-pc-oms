@@ -1,63 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, message, Modal, Space, Select, DatePicker } from 'antd';
+import { Button, Form, Input, message, Modal, Space, Select, DatePicker, Spin } from 'antd';
 import NgUpload from './Upload/Upload';
-import { setHotConfig } from 'src/apis/marketing';
-import { HotColumns } from '../ListConfig';
+import { getHotList, searchRecommendGoodsList } from 'src/apis/marketing';
+import { bannerTypeOptions, IBanner } from '../ListConfig';
 import styles from './style.module.less';
-import { tplTypeOptions } from './config';
-import moment from 'moment';
+import { debounce } from 'src/utils/base';
+import { editBanner } from 'src/apis/marquee';
+import moment, { Moment } from 'moment';
+import { useResetFormOnCloseModal } from 'src/utils/use-ResetFormOnCloseModal';
 interface CreateModalProps {
   visible: boolean;
   onClose: () => void;
-  value?: HotColumns;
+  value?: IBanner;
   onSuccess: () => void;
 }
 const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSuccess }) => {
-  console.log(visible);
+  const [fetching, setFetching] = useState(false);
 
-  const [topForm] = Form.useForm();
-  const [formValues, setFormValues] = useState<Partial<HotColumns>>({
-    topicName: '',
-    topicImg: '',
-    topicDesc: '',
-    descChanged: '',
-    createTime: ''
-  });
-  const [tplType, setTplType] = useState(0);
+  const [bannerForm] = Form.useForm();
+  const [formValues, setFormValues] = useState<Partial<IBanner>>({});
+  const [tplType, setTplType] = useState<number>();
   const [bannerId, setBannerId] = useState('');
-  useEffect(() => {
-    if (visible && value) {
-      console.log(value.createTime);
-      const createTime = moment(value.createTime);
-      console.log(createTime, '111111111111');
+  const [recommendList, setRecommendList] = useState<any[]>([]);
 
-      setBannerId(value.topicId);
-      topForm.setFieldsValue({
-        ...value,
-        createTime
-      });
-      setFormValues({ ...value });
-    } else {
-      setFormValues({
-        topicName: '',
-        topicImg: '',
-        topicDesc: '',
-        descChanged: '',
-        createTime: ''
-      });
-      topForm.resetFields();
-    }
-  }, [visible]);
+  useResetFormOnCloseModal({ form: bannerForm, visible });
 
   // 获取数据发送请求
   const onConfirm = () => {
-    topForm.validateFields().then(async (values) => {
+    bannerForm.validateFields().then(async (values) => {
       // 格式化时间
-      const createTime = values.createTime.format('YYYY-MM-DD hh:mm:ss');
-      const res = await setHotConfig({ ...values, topicId: formValues.topicId, createTime });
+      const rangeTime: [Moment, Moment] = values.rangeTime;
+
+      const res = await editBanner({
+        content: values.content || formValues.content || '',
+        itemId: values.itemId || '',
+        linkUrl: values.linkUrl,
+        imgUrl: values.imgUrl,
+        type: values.type,
+        bannerId: formValues.bannerId || '',
+        startTime: rangeTime[0].format('YYYY-MM-DD HH:mm:ss'),
+        endTime: rangeTime[1].format('YYYY-MM-DD HH:mm:ss')
+      });
       if (res) {
         setBannerId('');
         message.success(value ? '编辑成功' : '新增成功');
+        bannerForm.resetFields();
         onSuccess();
         onClose();
       }
@@ -69,25 +56,80 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
    */
   const tplTypeChange = (value: number) => {
     setTplType(+value);
-    // 多图朋友圈不需要查询
-    if (value < 5) {
-      // onRecommendSearch('', value);
-      topForm.setFieldsValue({
-        itemId: undefined,
-        speechcraft: '',
-        tplType
-      });
-    } else {
-      topForm.setFieldsValue({
-        itemList: new Array(9).fill(''),
-        name: ''
-      });
-    }
+    console.log(value);
+
+    setRecommendList([]);
+    bannerForm.setFieldsValue({
+      itemId: undefined,
+      content: undefined,
+      imgUrl: undefined,
+      linkUrl: undefined
+    });
   };
+
+  useEffect(() => {
+    if (value) {
+      bannerForm.setFieldsValue({
+        ...value,
+        rangeTime: [moment(value.startTime), moment(value.endTime)]
+      });
+      setFormValues(value);
+      const type = +value.type;
+      setTplType(type);
+      if (type !== 5) {
+        setRecommendList([
+          {
+            id: value.itemId,
+            name: value.content
+          }
+        ]);
+      }
+    } else {
+      setRecommendList([]);
+      setFormValues({});
+      setTplType(undefined);
+    }
+  }, [value]);
   const onCloseBtn = () => {
     onClose();
-    setBannerId('');
   };
+
+  // 当选中select素材时处理的东西
+  const onRecommendSelected = async (value: string) => {
+    const currentTitle = recommendList.filter((item) => item.id === value)[0].name;
+    setFormValues((formValues) => ({ ...formValues, content: currentTitle }));
+  };
+  const onRecommendSearch = async (value: string) => {
+    setFetching(true);
+    const type = +formValues.type!;
+    let res = [];
+    if (type === 1 || type === 4) {
+      res = await searchRecommendGoodsList({
+        title: value,
+        specType: 0,
+        type: 1,
+        recommendType: bannerTypeOptions.filter((item) => item.id === type)[0].recommendType!
+      });
+      res = res.map((item: any) => ({
+        id: item.marketId,
+        name: item.title
+      }));
+    } else if (type === 3) {
+      const { list } = await getHotList({ status: 1, name: value });
+      res = list.map((item: any) => ({
+        id: item.topicId,
+        name: item.topicName
+      }));
+    }
+
+    setRecommendList(res);
+    setFetching(false);
+  };
+
+  // 防抖处理
+  const debounceFetcher = debounce<string>(async (value: string) => {
+    await onRecommendSearch(value);
+  }, 800);
   return (
     <Modal
       title={bannerId ? '编辑' : '新增'}
@@ -108,57 +150,85 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
         </div>
       }
     >
-      <Form form={topForm} initialValues={formValues}>
-        <Form.Item name="tplType1" label="选择类型：" rules={[{ required: true }]}>
+      <Form
+        form={bannerForm}
+        onValuesChange={(_, values) => setFormValues((formValues) => ({ ...formValues, ...values }))}
+      >
+        <Form.Item name="type" label="选择类型：" rules={[{ required: true }]}>
           <Select placeholder="请选择" className={styles.typeSelect1} onChange={tplTypeChange}>
-            {tplTypeOptions.map((option) => (
-              <Select.Option key={option.id} value={option.id}>
+            {bannerTypeOptions.map((option) => (
+              <Select.Option key={option.id} value={option.id + ''}>
                 {option.name}
               </Select.Option>
             ))}
           </Select>
         </Form.Item>
-        {!bannerId
+        {tplType === 2
           ? (
-              tplType === 2
-                ? (
-            <Form.Item name="tplType2" label="选择内容：" rules={[{ required: true }]}>
-              <Input defaultValue={'系统自动取每周最新的周报内容'} disabled className={styles.typeSelect2}></Input>
-            </Form.Item>
-                  )
-                : (
-            <Form.Item name="tplType2" label="选择内容：" rules={[{ required: true }]}>
-              <Select placeholder="请选择" className={styles.typeSelect2} onChange={tplTypeChange}>
-                {tplTypeOptions.map((option) => (
-                  <Select.Option key={option.id} value={option.id}>
-                    {option.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-                  )
+          <Form.Item label="选择内容：" rules={[{ required: true }]}>
+            <Input defaultValue={'系统自动取每周最新的周报内容'} disabled className={styles.typeSelect2}></Input>
+          </Form.Item>
             )
-          : (
+          : tplType === 5
+            ? (
           <>
-            <Form.Item label="内容标题" required name={'topicName'}>
+            <Form.Item
+              label="内容标题"
+              rules={[
+                {
+                  required: true
+                }
+              ]}
+              name={'content'}
+            >
               <Input type="text" placeholder="请输入" className={styles.typeSelect2} />
             </Form.Item>
-            <Form.Item label="链接地址" required name={'topicLink'}>
+            <Form.Item
+              label="链接地址"
+              rules={[{ type: 'url', message: '请输入正确的链接地址', required: true }]}
+              name={'linkUrl'}
+            >
               <Input type="text" placeholder="请输入链接地址" className={styles.typeSelect2} />
             </Form.Item>
           </>
-            )}
+              )
+            : (
+                !!tplType && (
+            <Form.Item name="itemId" label="选择内容：" rules={[{ required: true }]}>
+              <Select
+                placeholder="搜索对应素材标题在下拉框进行选择"
+                allowClear
+                showSearch={true}
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                filterOption={false}
+                notFoundContent={fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>}
+                onChange={(value) => onRecommendSelected(value)}
+                onSearch={(value) => debounceFetcher(value)}
+                className={styles.typeSelect2}
+              >
+                {recommendList.map((item) => {
+                  return (
+                    <Select.Option value={item.id} key={item.id}>
+                      {item.name}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+                )
+              )}
 
         <Form.Item
-          name="topicImg"
+          name="imgUrl"
           label="上传图片"
           rules={[{ required: true, message: '请上传专题图片' }]}
           extra="banner710*180像素高清图片,仅支持.jpg格式"
         >
           <NgUpload />
         </Form.Item>
-        <Form.Item label="展示时间" required name="createTime">
-          <DatePicker className={styles.typeSelect2} showTime placeholder="请选择" allowClear />
+        <Form.Item label="展示时间" required name="rangeTime">
+          <DatePicker.RangePicker className={styles.typeSelect2} showTime allowClear />
         </Form.Item>
       </Form>
     </Modal>
