@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Image, Popconfirm, Space } from 'antd';
+import { Button, Image, Popconfirm, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import { OperateType } from 'src/utils/interface';
@@ -13,7 +13,7 @@ export const bannerTypeOptions = [
   { id: 1, name: '文章', recommendType: 0 },
   { id: 2, name: '周报' },
   { id: 3, name: '专题' },
-  { id: 4, name: '活动', recommendType: 1 },
+  // { id: 4, name: '活动', recommendType: 1 },
   { id: 5, name: '其他' }
 ];
 
@@ -52,8 +52,13 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IBanner> => {
       dataIndex: 'content',
       width: 180,
       key: 'content',
+      ellipsis: { showTitle: false },
       render (value, record) {
-        return value || (record.type === '2' && '系统自动取每周最新的周报内容');
+        return (
+          <Tooltip title={value || (record.type === '2' && '系统自动取每周最新的周报内容')}>
+            {value || (record.type === '2' && '系统自动取每周最新的周报内容')}
+          </Tooltip>
+        );
       }
     },
     {
@@ -62,7 +67,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IBanner> => {
       width: 180,
       key: 'imgUrl',
       ellipsis: true,
-      render: (imgUrl: string) => <Image src={imgUrl} style={{ maxHeight: '70px' }} />
+      render: (imgUrl: string) => <Image src={imgUrl} style={{ maxHeight: '60px', maxWidth: '100px' }} />
     },
     {
       title: '展示时间',
@@ -91,13 +96,16 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IBanner> => {
     },
     {
       title: '操作',
-      width: 180,
+      width: 160,
       align: 'center',
       dataIndex: 'status',
       fixed: 'right',
       render: (status, record, index) => {
         return (
           <Space>
+            <Popconfirm title="是否确定置顶?" onConfirm={() => args.onOperate('other', record, index)}>
+              <Button type="link">置顶</Button>
+            </Popconfirm>
             <Button type="link" onClick={() => args.onOperate('edit', record, index)}>
               编辑
             </Button>
@@ -112,14 +120,6 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IBanner> => {
                 <Button type="link">下架</Button>
               </Popconfirm>
                 )}
-            {/* <Button type="link" onClick={() => args.onOperate('add', record, index)}>
-              配置内容
-            </Button> */}
-            {status === 1 && (
-              <Popconfirm title="是否确定置顶?" onConfirm={() => args.onOperate('other', record, index)}>
-                <Button type="link">置顶</Button>
-              </Popconfirm>
-            )}
           </Space>
         );
       }
