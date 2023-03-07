@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, message, Modal, Space, Select, DatePicker, Spin } from 'antd';
-import NgUpload from './Upload/Upload';
+import NgUpload from 'src/pages/Marketing/Components/Upload/Upload';
 import { getHotList, searchRecommendGoodsList } from 'src/apis/marketing';
 import { bannerTypeOptions, IBanner } from '../ListConfig';
 import styles from './style.module.less';
@@ -8,6 +8,7 @@ import { debounce } from 'src/utils/base';
 import { editBanner } from 'src/apis/marquee';
 import moment, { Moment } from 'moment';
 import { useResetFormOnCloseModal } from 'src/utils/use-ResetFormOnCloseModal';
+import { RcFile } from 'antd/lib/upload';
 interface CreateModalProps {
   visible: boolean;
   onClose: () => void;
@@ -130,6 +131,44 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
   const debounceFetcher = debounce<string>(async (value: string) => {
     await onRecommendSearch(value);
   }, 800);
+
+  const beforeUpload = (file: RcFile): Promise<boolean> => {
+    const isJpg = file.type === 'image/jpeg';
+
+    if (!isJpg) {
+      message.error('你只可以上传 JPG 文件!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('图片大小不能超过 2MB!');
+    }
+    let isW750 = false;
+    let isH180 = false;
+    // 读取图片数据
+
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // @ts-ignore
+        const data = e.target.result;
+        // 加载图片获取图片真实宽度和高度
+        const image = new Image();
+        // @ts-ignore
+        image.src = data;
+        image.onload = function () {
+          const width = image.width;
+          const height = image.height;
+          isH180 = height === 180;
+          isW750 = width === 710;
+          if (!isW750 || !isH180) {
+            message.error('上传失败，请上传规定尺寸的图片');
+          }
+          resolve(isJpg && isLt2M && isW750 && !isH180);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
   return (
     <Modal
       title={bannerId ? '编辑' : '新增'}
@@ -225,7 +264,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
           rules={[{ required: true, message: '请上传专题图片' }]}
           extra="banner710*180像素高清图片,仅支持.jpg格式"
         >
-          <NgUpload />
+          <NgUpload beforeUpload={beforeUpload} />
         </Form.Item>
         <Form.Item label="展示时间" required name="rangeTime">
           <DatePicker.RangePicker className={styles.typeSelect2} showTime allowClear />

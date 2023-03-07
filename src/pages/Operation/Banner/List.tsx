@@ -1,10 +1,9 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Image } from 'antd';
+import { Button, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getBannerList, changeStatus, setTop } from 'src/apis/marquee';
-import { NgTable } from 'src/components';
+import { AuthBtn, NgTable } from 'src/components';
 import { OperateType } from 'src/utils/interface';
-import { Icon } from 'tenacity-ui';
 import CreateModal from './components/CreateModal';
 import { IBanner, tableColumnsFun } from './ListConfig';
 import style from './style.module.less';
@@ -19,7 +18,6 @@ const BannerList: React.FC = () => {
 
   const [visible, setVisible] = useState(false);
   const [currentItem, setCurrentItem] = useState<IBanner>();
-  const [visibleImg, setVisibleImg] = useState(false);
   const getList = async (params?: any) => {
     const res = await getBannerList({
       ...queryParams,
@@ -69,29 +67,20 @@ const BannerList: React.FC = () => {
   return (
     <div className="container">
       <div className={style.warpBtn}>
-        <Button
-          type="primary"
-          shape="round"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            setVisible(true);
-            setCurrentItem(undefined);
-          }}
-          size="large"
-        >
-          新增
-        </Button>
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => {
-            setVisibleImg(true);
-          }}
-          size="large"
-        >
-          <Icon name="yulan" />
-          &nbsp; 预览
-        </Button>
+        <AuthBtn path="/add">
+          <Button
+            type="primary"
+            shape="round"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setVisible(true);
+              setCurrentItem(undefined);
+            }}
+            size="large"
+          >
+            新增
+          </Button>
+        </AuthBtn>
       </div>
       <div className="mt20">
         <NgTable
@@ -117,18 +106,6 @@ const BannerList: React.FC = () => {
         onClose={() => {
           setCurrentItem(undefined);
           setVisible(false);
-        }}
-      />
-      <Image
-        width={200}
-        style={{ display: 'none' }}
-        src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Flmg.jj20.com%2Fup%2Fallimg%2F1114%2F041621122252%2F210416122252-1-1200.jpg&refer=http%3A%2F%2Flmg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1668837016&t=1dbd430a4bb76c73975152fe1be2bc12"
-        preview={{
-          visible: visibleImg,
-          src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Flmg.jj20.com%2Fup%2Fallimg%2F1114%2F041621122252%2F210416122252-1-1200.jpg&refer=http%3A%2F%2Flmg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1668837016&t=1dbd430a4bb76c73975152fe1be2bc12',
-          onVisibleChange: (value) => {
-            setVisibleImg(value);
-          }
         }}
       />
     </div>

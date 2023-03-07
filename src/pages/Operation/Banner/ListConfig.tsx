@@ -3,6 +3,7 @@ import { Button, Image, Popconfirm, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import { OperateType } from 'src/utils/interface';
+import { AuthBtn } from 'src/components';
 
 interface OperateProps {
   onOperate: (operateType: OperateType, record: IBanner, index: number) => void;
@@ -103,23 +104,29 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IBanner> => {
       render: (status, record, index) => {
         return (
           <Space>
-            <Popconfirm title="是否确定置顶?" onConfirm={() => args.onOperate('other', record, index)}>
-              <Button type="link">置顶</Button>
-            </Popconfirm>
-            <Button type="link" onClick={() => args.onOperate('edit', record, index)}>
-              编辑
-            </Button>
-            {status === '1'
-              ? (
-              <Popconfirm title="是否确认上架?" onConfirm={() => args.onOperate('putAway', record, index)}>
-                <Button type="link">上架</Button>
+            <AuthBtn path="/setTop">
+              <Popconfirm title="是否确定置顶?" onConfirm={() => args.onOperate('other', record, index)}>
+                <Button type="link">置顶</Button>
               </Popconfirm>
-                )
-              : (
-              <Popconfirm title="是否确定下架?" onConfirm={() => args.onOperate('outline', record, index)}>
-                <Button type="link">下架</Button>
-              </Popconfirm>
-                )}
+            </AuthBtn>
+            <AuthBtn path="/edit">
+              <Button type="link" onClick={() => args.onOperate('edit', record, index)}>
+                编辑
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/changeStatus">
+              {status === '1'
+                ? (
+                <Popconfirm title="是否确认上架?" onConfirm={() => args.onOperate('putAway', record, index)}>
+                  <Button type="link">上架</Button>
+                </Popconfirm>
+                  )
+                : (
+                <Popconfirm title="是否确定下架?" onConfirm={() => args.onOperate('outline', record, index)}>
+                  <Button type="link">下架</Button>
+                </Popconfirm>
+                  )}
+            </AuthBtn>
           </Space>
         );
       }
