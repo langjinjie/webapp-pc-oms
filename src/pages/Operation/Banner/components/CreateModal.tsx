@@ -220,14 +220,14 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
               ]}
               name={'content'}
             >
-              <Input type="text" placeholder="请输入" className={styles.typeSelect2} />
+              <Input type="text" placeholder="请输入" maxLength={100} className={styles.typeSelect2} />
             </Form.Item>
             <Form.Item
               label="链接地址"
               rules={[{ type: 'url', message: '请输入正确的链接地址', required: true }]}
               name={'linkUrl'}
             >
-              <Input type="text" placeholder="请输入链接地址" className={styles.typeSelect2} />
+              <Input type="text" maxLength={200} placeholder="请输入链接地址" className={styles.typeSelect2} />
             </Form.Item>
           </>
               )
@@ -261,12 +261,12 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
         <Form.Item
           name="imgUrl"
           label="上传图片"
-          rules={[{ required: true, message: '请上传专题图片' }]}
+          rules={[{ required: true, message: '请上传图片' }]}
           extra="banner710*180像素高清图片,仅支持.jpg格式"
         >
           <NgUpload beforeUpload={beforeUpload} />
         </Form.Item>
-        <Form.Item label="展示时间" required name="rangeTime">
+        <Form.Item label="展示时间" rules={[{ required: true, message: '请设置展示时间' }]} name="rangeTime">
           <DatePicker.RangePicker className={styles.typeSelect2} showTime allowClear />
         </Form.Item>
       </Form>
