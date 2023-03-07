@@ -475,7 +475,12 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
   },
   // 欢迎语
-  ...migrationRoters
+  ...migrationRoters,
+  // Banner位管理
+  {
+    path: '/banner',
+    component: lazy(() => import('src/pages/Operation/Banner/List'))
+  }
 ];
 
 // 缓存路由
