@@ -163,7 +163,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
           if (!isW750 || !isH180) {
             message.error('上传失败，请上传规定尺寸的图片');
           }
-          resolve(isJpg && isLt2M && isW750 && !isH180);
+          resolve(isJpg && isLt2M && isW750 && isH180);
         };
       };
       reader.readAsDataURL(file);

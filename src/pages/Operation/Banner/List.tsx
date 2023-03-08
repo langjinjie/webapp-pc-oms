@@ -1,9 +1,10 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { Button, Carousel, message, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getBannerList, changeStatus, setTop } from 'src/apis/marquee';
 import { AuthBtn, NgTable } from 'src/components';
 import { OperateType } from 'src/utils/interface';
+import { Icon } from 'tenacity-ui';
 import CreateModal from './components/CreateModal';
 import { IBanner, tableColumnsFun } from './ListConfig';
 import style from './style.module.less';
@@ -14,6 +15,7 @@ type QueryParamsType = Partial<{
 }>;
 const BannerList: React.FC = () => {
   const [queryParams, setQueryParams] = useState<QueryParamsType>({});
+  const [visibleCarousel, setVisibleCarousel] = useState(false);
   const [tableSource, setTableSource] = useState<IBanner[]>([]);
 
   const [visible, setVisible] = useState(false);
@@ -81,6 +83,17 @@ const BannerList: React.FC = () => {
             新增
           </Button>
         </AuthBtn>
+        <Button
+          type="primary"
+          shape="round"
+          onClick={() => {
+            setVisibleCarousel(true);
+          }}
+          size="large"
+        >
+          <Icon name="yulan" />
+          &nbsp; 预览
+        </Button>
       </div>
       <div className="mt20">
         <NgTable
@@ -108,6 +121,26 @@ const BannerList: React.FC = () => {
           setVisible(false);
         }}
       />
+
+      <Modal
+        title="轮播预览"
+        width={720}
+        footer={null}
+        visible={visibleCarousel}
+        onCancel={() => setVisibleCarousel(false)}
+      >
+        <Carousel autoplay className="mb20">
+          {tableSource
+            .filter((item) => item.status === '2')
+            .map((item) => {
+              return (
+                <div className={style.carouselItem} key={item.bannerId}>
+                  <img src={item.imgUrl} alt="" />;
+                </div>
+              );
+            })}
+        </Carousel>
+      </Modal>
     </div>
   );
 };
