@@ -127,6 +127,12 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
     setFetching(false);
   };
 
+  const onFocusWithSelect = () => {
+    if (recommendList.length <= 1) {
+      onRecommendSearch('');
+    }
+  };
+
   // 防抖处理
   const debounceFetcher = debounce<string>(async (value: string) => {
     await onRecommendSearch(value);
@@ -243,6 +249,9 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
                 filterOption={false}
                 notFoundContent={fetching ? <Spin size="small" /> : <span>暂无相关素材，请试试其他内容</span>}
                 onChange={(value) => onRecommendSelected(value)}
+                onFocus={() => {
+                  onFocusWithSelect();
+                }}
                 onSearch={(value) => debounceFetcher(value)}
                 className={styles.typeSelect2}
               >
