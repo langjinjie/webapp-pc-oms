@@ -98,17 +98,19 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IBanner> => {
     {
       title: '操作',
       width: 160,
-      align: 'center',
+      align: 'right',
       dataIndex: 'status',
       fixed: 'right',
       render: (status, record, index) => {
         return (
           <Space>
-            <AuthBtn path="/setTop">
-              <Popconfirm title="是否确定置顶?" onConfirm={() => args.onOperate('other', record, index)}>
-                <Button type="link">置顶</Button>
-              </Popconfirm>
-            </AuthBtn>
+            {status === '2' && (
+              <AuthBtn path="/setTop">
+                <Popconfirm title="是否确定置顶?" onConfirm={() => args.onOperate('other', record, index)}>
+                  <Button type="link">置顶</Button>
+                </Popconfirm>
+              </AuthBtn>
+            )}
             <AuthBtn path="/edit">
               <Button type="link" onClick={() => args.onOperate('edit', record, index)}>
                 编辑
