@@ -29,7 +29,6 @@ const Welcome: React.FC = () => {
   // 获取欢迎语详情
   const getWelcomeStaffList = async (values?: any) => {
     const res = await requestGetWelcomeStaffList({ ...values });
-    console.log('res', res);
     if (res) {
       const { total, list } = res;
       setPagination((pagination) => ({ ...pagination, total }));
@@ -40,7 +39,6 @@ const Welcome: React.FC = () => {
   // 查看预览
   const viewPreviewHandle = async (welcomeCode: string) => {
     const res = await requestGetWelcomeStaffDetail({ welcomeCode });
-    console.log('res', res);
     if (res) {
       setPreviewValue(res);
       setPreviewVisible(true);
@@ -51,7 +49,6 @@ const Welcome: React.FC = () => {
 
   // 查看使用成员
   const viewUserGroupHandle = (groupId: string) => {
-    console.log('groupId', groupId);
     form.setFieldsValue({ groupId });
     setUserGroupVisible(true);
   };
@@ -123,10 +120,11 @@ const Welcome: React.FC = () => {
         maskClosable={false}
         onCancel={userGroupCancel}
         footer={null}
+        destroyOnClose
       >
         <Form form={form}>
           <Item name="groupId">
-            <SetUserGroup form={form} />
+            <SetUserGroup form={form} disabled />
           </Item>
         </Form>
       </NgModal>

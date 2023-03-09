@@ -6,8 +6,9 @@ import UserGroup from 'src/pages/OrgManage/UserGroup/UserGroup';
 interface UserGroupModalProps extends Omit<React.ComponentProps<typeof NgModal>, 'onOk'> {
   onChange?: (item: any) => void;
   value?: { groupType: number; [prop: string]: any };
+  disabled?: boolean;
 }
-const UserGroupModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValue }) => {
+const UserGroupModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValue, disabled }) => {
   const [value, setValue] = useState<any>();
   const [visibleUserGroup, setVisibleUserGroup] = useState(false);
 
@@ -35,7 +36,7 @@ const UserGroupModal: React.FC<UserGroupModalProps> = ({ onChange, value: propVa
         <UserGroup selectedKey={propValue?.groupId} readonly={true} change={handleChange}></UserGroup>
       </NgModal>
 
-      <Button shape="round" onClick={handleShowSelectModal}>
+      <Button shape="round" onClick={handleShowSelectModal} disabled={disabled}>
         修改可见范围
       </Button>
     </>

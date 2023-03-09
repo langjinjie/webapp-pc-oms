@@ -7,8 +7,9 @@ import styles from './style.module.less';
 interface UserGroupModalProps extends Omit<React.ComponentProps<typeof NgModal>, 'onOk'> {
   onChange?: (item: any) => void;
   value?: { groupType: number; [prop: string]: any };
+  disabled?: boolean;
 }
-const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValue }) => {
+const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValue, disabled }) => {
   const [visibleUserGroup, setVisibleUserGroup] = useState(false);
   const handleOnOK = async (values?: any[]) => {
     if (values) {
@@ -67,7 +68,7 @@ const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValu
         onOk={handleOnOK}
       />
 
-      <Button shape="round" onClick={handleShowSelectModal}>
+      <Button shape="round" onClick={handleShowSelectModal} disabled={disabled}>
         修改可见范围
       </Button>
     </>

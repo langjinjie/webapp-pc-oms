@@ -9,9 +9,10 @@ interface SetUserRightProps {
   onChange?: (groupId: string | undefined) => void;
   value?: string;
   form: FormInstance<any>;
+  disabled?: boolean;
 }
 
-const SetUserGroup: React.FC<SetUserRightProps> = ({ onChange, value, form }) => {
+const SetUserGroup: React.FC<SetUserRightProps> = ({ onChange, value, form, disabled }) => {
   const [originValues, setOriginValues] = useState<any>();
   const [visibleStaffList, setVisibleStaffList] = useState({
     visible: false,
@@ -77,7 +78,7 @@ const SetUserGroup: React.FC<SetUserRightProps> = ({ onChange, value, form }) =>
   return (
     <>
       <Form.Item name={'groupType'}>
-        <Radio.Group onChange={(e) => onChangeWithGroupType(e.target.value)}>
+        <Radio.Group onChange={(e) => onChangeWithGroupType(e.target.value)} disabled={disabled}>
           <Radio value={1}>按照员工组选择</Radio>
           <Radio value={2}>按照组织架构选择</Radio>
         </Radio.Group>
@@ -85,12 +86,12 @@ const SetUserGroup: React.FC<SetUserRightProps> = ({ onChange, value, form }) =>
       {formValues.groupType === 1
         ? (
         <Form.Item name={'group1'} key="groupModal">
-          <UserGroupModal onChange={handleModalChange} />
+          <UserGroupModal onChange={handleModalChange} disabled={disabled} />
         </Form.Item>
           )
         : (
         <Form.Item name={'group2'} key="orgModal">
-          <UserOrgModal onChange={handleModalChange} />
+          <UserOrgModal onChange={handleModalChange} disabled={disabled} />
         </Form.Item>
           )}
       <Form.Item>
