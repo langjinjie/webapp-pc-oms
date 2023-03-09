@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import { RouteProps } from 'react-router-dom';
 
-export const migrationRoters: RouteProps[] = [
+export const migrationRouters: RouteProps[] = [
   // 欢迎语
   {
     path: '/welcome',

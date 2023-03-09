@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Tooltip } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import React from 'react';
@@ -44,17 +44,75 @@ const wikiStatus = [
     name: '已下架'
   }
 ];
+
+const sendTypeOptions = [
+  {
+    id: '',
+    name: '全部'
+  },
+  {
+    id: '1',
+    name: '群发朋友圈'
+  },
+  {
+    id: '2',
+    name: '群发消息'
+  }
+];
+const sendStatusOptions = [
+  {
+    id: '',
+    name: '全部'
+  },
+  {
+    id: '1',
+    name: '正常'
+  },
+  {
+    id: '2',
+    name: '停用'
+  }
+];
+const stopTypeOptions = [
+  {
+    id: '',
+    name: '全部'
+  },
+  {
+    id: '1',
+    name: '手工停用'
+  },
+  {
+    id: '2',
+    name: '系统停用'
+  }
+];
 export const searchColsFun = (): SearchCol[] => [
   {
     type: 'input',
-    label: '关键词搜索',
+    label: '群发编码',
     name: 'keywords',
     placeholder: '请输入'
   },
   {
-    type: 'input',
-    label: '创建人',
+    type: 'select',
+    label: '群发类型',
     name: 'createBy',
+    options: sendTypeOptions,
+    placeholder: '请输入'
+  },
+  {
+    type: 'select',
+    label: '群发状态',
+    name: 'createBy',
+    options: sendStatusOptions,
+    placeholder: '请输入'
+  },
+  {
+    type: 'select',
+    label: '停用类型',
+    name: 'createBy',
+    options: stopTypeOptions,
     placeholder: '请输入'
   },
   {
@@ -64,12 +122,12 @@ export const searchColsFun = (): SearchCol[] => [
   },
   {
     type: 'rangePicker',
-    label: '更新时间',
+    label: '功能来源',
     name: 'updateTime'
   },
   {
     type: 'select',
-    label: '审批状态',
+    label: '功能编码',
     name: 'auditStatus',
     width: '120px',
     options: auditStatus,
@@ -77,15 +135,22 @@ export const searchColsFun = (): SearchCol[] => [
   },
   {
     type: 'select',
-    label: '知识库状态',
+    label: '任务日期',
     name: 'wikiStatus',
     width: '120px',
     options: wikiStatus,
     placeholder: '请选择'
+  },
+  {
+    type: 'input',
+    label: '客户经理',
+    name: 'wikiStatus',
+    width: '120px',
+    placeholder: '请输入'
   }
 ];
 
-export interface WikiColumn {
+export interface MessageStopColumn {
   wikiId: string;
   level1CategroyId: string;
   level1Name: string;
@@ -102,37 +167,35 @@ export interface WikiColumn {
 }
 
 export const tableColumnsFun = (
-  onOperate: (type: OperateType, record: WikiColumn, index?: number) => void
-): ColumnsType<WikiColumn> => {
+  onOperate: (type: OperateType, record: MessageStopColumn, index?: number) => void
+): ColumnsType<MessageStopColumn> => {
   return [
     {
       key: 'videoId',
       dataIndex: 'videoId',
-      title: '序号',
-      render: (text, record, index) => {
-        return index + 1;
-      },
-      width: 80
+      title: '群发编号',
+
+      width: 100
     },
     {
       key: 'level1Name',
       dataIndex: 'level1Name',
-      title: '一级目录',
+      title: '群发类型',
       ellipsis: true,
-      width: 160
+      width: 100
     },
     {
       key: 'level2Name',
       dataIndex: 'level2Name',
-      title: '二级目录',
+      title: '群发状态',
       ellipsis: true,
-      width: 160,
+      width: 100,
       render: (level2Name) => level2Name || UNKNOWN
     },
     {
       key: 'wikiStatus',
       dataIndex: 'wikiStatus',
-      title: '知识库状态',
+      title: '停用类型',
       width: 110,
       render: (status) => {
         return (
@@ -154,7 +217,7 @@ export const tableColumnsFun = (
     {
       key: 'title',
       dataIndex: 'title',
-      title: '知识库标题',
+      title: '群发创建时间',
       render: (title) => (
         <Tooltip placement="topLeft" title={title || UNKNOWN}>
           {title || UNKNOWN}
@@ -169,7 +232,7 @@ export const tableColumnsFun = (
     {
       key: 'auditStatus',
       dataIndex: 'auditStatus',
-      title: '审批状态',
+      title: '功能来源',
       width: 120,
 
       render: (status) => {
@@ -183,20 +246,27 @@ export const tableColumnsFun = (
     {
       key: 'createBy',
       dataIndex: 'createBy',
-      title: '创建人',
+      title: '功能编码',
       width: 100,
       render: (createBy) => createBy || UNKNOWN
     },
     {
       key: 'createTime',
       dataIndex: 'createTime',
-      title: '创建时间',
+      title: '任务日期',
       width: 220
     },
     {
       key: 'updateTime',
       dataIndex: 'updateTime',
-      title: '更新时间',
+      title: '客户经理数量',
+      render: (updateTime) => updateTime || UNKNOWN,
+      width: 220
+    },
+    {
+      key: 'updateTime',
+      dataIndex: 'updateTime',
+      title: '客户经理名称',
       render: (updateTime) => updateTime || UNKNOWN,
       width: 220
     },
@@ -211,53 +281,14 @@ export const tableColumnsFun = (
           <div>
             <AuthBtn path="/view">
               <Button type="link" onClick={() => onOperate('view', record)}>
-                查看
+                查看群发详情
               </Button>
             </AuthBtn>
-            {record.auditStatus !== 0 && (
-              <AuthBtn path="/operate">
-                <Button type="link" onClick={() => onOperate('edit', record)}>
-                  编辑
-                </Button>
-              </AuthBtn>
-            )}
-
-            {record.wikiStatus === 2 && record.auditStatus !== 0 && record.auditStatus !== 2 && (
-              <AuthBtn path="/operate">
-                <Popconfirm title="确定下架？" onConfirm={() => onOperate('outline', record, index)}>
-                  <Button type="link">下架</Button>
-                </Popconfirm>
-              </AuthBtn>
-            )}
-            {record.wikiStatus !== 2 && record.auditStatus !== 0 && record.auditStatus !== 2 && (
-              <AuthBtn path="/operate">
-                <Popconfirm title="确定上架？" onConfirm={() => onOperate('putAway', record, index)}>
-                  <Button type="link">上架</Button>
-                </Popconfirm>
-              </AuthBtn>
-            )}
-
-            {((record.auditStatus !== 0 && record.wikiStatus === 3) || record.auditStatus === 2) && (
-              <AuthBtn path="/delete">
-                <Popconfirm title="确定要删除?" onConfirm={() => onOperate('delete', record, index)}>
-                  <Button type="link">删除</Button>
-                </Popconfirm>
-              </AuthBtn>
-            )}
-            {record.auditStatus === 2 && (
-              <AuthBtn path="/operate">
-                <Popconfirm title="确定要重新发起申请?" onConfirm={() => onOperate('other', record, index)}>
-                  <Button type="link">重新发起申请</Button>
-                </Popconfirm>
-              </AuthBtn>
-            )}
-            {record.auditStatus !== 0 && (
-              <AuthBtn path="/operate">
-                <Button type="link" onClick={() => onOperate('scope', record)}>
-                  配置可见范围
-                </Button>
-              </AuthBtn>
-            )}
+            <AuthBtn path="/operate">
+              <Button type="link" onClick={() => onOperate('edit', record, index)}>
+                停用群发
+              </Button>
+            </AuthBtn>
           </div>
         );
       }

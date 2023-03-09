@@ -1,4 +1,4 @@
-import React, { useEffect, MutableRefObject, useImperativeHandle } from 'react';
+import React, { useEffect, MutableRefObject, useImperativeHandle, Key } from 'react';
 
 import { Form, DatePicker, Button, Input, Space, Select, Row, Cascader, InputNumber } from 'antd';
 import style from './style.module.less';
@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import { Moment } from 'moment';
 
 export interface OptionProps {
-  id: string | number;
+  id: Key;
   name: string;
   [prop: string]: any;
 }
