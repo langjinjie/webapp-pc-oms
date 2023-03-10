@@ -11,6 +11,7 @@ import { RouteProps } from 'react-router-dom';
 import { knowledgeRoutes } from 'src/routes/knowledge';
 import { auditRoutes } from 'src/routes/audit';
 import { migrationRoters } from 'src/routes/migration';
+import { crowdsManage } from 'src/routes/crowds';
 
 export interface Menu {
   name: string;
@@ -412,7 +413,6 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/PointsManage/Incentive/Incentive'))
   },
   // 新人任务
-  // 新人任务
   {
     path: '/newerPoints',
     component: lazy(() => import('src/pages/PointsManage/NewerPoints/List/NewerPoints'))
@@ -475,7 +475,9 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
   },
   // 欢迎语
-  ...migrationRoters
+  ...migrationRoters,
+  // 分群管理
+  ...crowdsManage
 ];
 
 // 缓存路由

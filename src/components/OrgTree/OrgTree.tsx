@@ -42,7 +42,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
   onOk,
   onCancel: onClose,
   showStaff,
-  selectedDept = true,
+  selectedDept,
   isDeleted,
   checkStrictly,
   singleChoice,

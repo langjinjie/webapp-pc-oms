@@ -1,0 +1,42 @@
+.panel {
+  background: #f7f8fc;
+  border-radius: 8px;
+  padding: 20px;
+  margin-left: 20px;
+  max-width: 980px;
+
+  .panelTitle {
+    font-size: 14px;
+    color: #111;
+    padding-bottom: 20px;
+  }
+}
+.panelContent {
+  padding: 14px 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e1e2e6;
+
+  :global {
+    .ant-radio-button-wrapper:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+    .ant-radio-button-wrapper:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+  }
+
+  .addTagGroup {
+    width: 134px;
+    height: 32px;
+    border-radius: 16px;
+  }
+
+  .selectedWrap {
+    width: 630px;
+    height: 72px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e1e2e6;
+  }
+}

@@ -1,0 +1,140 @@
+import React, { useMemo, useState } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Space, Tag } from 'antd';
+import { OrgTree } from 'src/components';
+import { ClientListModal } from 'src/pages/CrowdsManage/TagCrowds/component';
+import classNames from 'classnames';
+import style from './style.module.less';
+
+interface IAddUser {
+  userId: string;
+  userName: string;
+  userType: number;
+}
+
+interface ISelectStaffProps {
+  value?: IAddUser[];
+  onChange?: (value?: IAddUser[]) => void;
+  readOnly?: boolean;
+}
+
+const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly }) => {
+  const [staffVisible, setStaffVisible] = useState(false); // 客户经理
+  const [clientVisible, setClientVisible] = useState(false); // 客户经理
+  const [userType, setUserType] = useState<number>(); // 用户类型（1-客户id；2-坐席）
+  // 添加客户经理
+  const addStaffHandle = () => {
+    setStaffVisible(true);
+    setUserType(2);
+  };
+  const addClientHandle = () => {
+    setClientVisible(true);
+    setUserType(1);
+  };
+  // onChange
+  const staffOnChangeHandle = (staffValue?: any) => {
+    onChange?.([
+      ...(value?.filter(({ userType: valueUserType }) => userType !== valueUserType) || []),
+      ...staffValue?.map(({ staffId, staffName }: { staffId: string; staffName: string }) => ({
+        userId: staffId,
+        userName: staffName,
+        userType
+      }))
+    ]);
+  };
+  const clientOnChangeHandle = (clientValue?: any) => {
+    onChange?.([
+      ...(value?.filter(({ userType: valueUserType }) => userType !== valueUserType) || []),
+      ...clientValue?.map(
+        ({ detailId, externalUserid, nickName }: { detailId: string; externalUserid: string; nickName: string }) => ({
+          userId: externalUserid,
+          userName: nickName,
+          userType,
+          detailId
+        })
+      )
+    ]);
+  };
+  const formatValue = useMemo(() => {
+    let newValue: any[] | undefined;
+    if (userType === 2) {
+      newValue = value
+        ?.filter((filterItem) => filterItem.userType === userType)
+        .map(({ userId, userName }) => ({ staffId: userId, staffName: userName }));
+    } else {
+      newValue = value
+        ?.filter((filterItem) => filterItem.userType === userType)
+        .map(({ userId, userName }) => ({ externalUserid: userId, nickName: userName }));
+    }
+    return newValue;
+  }, [value, userType]);
+  return (
+    <div className={style.wrap}>
+      <Space size={10}>
+        {/* <Button
+          ghost
+          type="primary"
+          shape="round"
+          style={{ height: '32px' }}
+          icon={<PlusOutlined />}
+          // onClick={addHandle}
+        >
+          添加人群包
+        </Button> */}
+        <Button
+          ghost
+          type="primary"
+          shape="round"
+          style={{ height: '32px' }}
+          icon={<PlusOutlined />}
+          onClick={addStaffHandle}
+        >
+          添加客户经理
+        </Button>
+        <Button
+          ghost
+          type="primary"
+          shape="round"
+          style={{ height: '32px' }}
+          icon={<PlusOutlined />}
+          onClick={addClientHandle}
+        >
+          新增客户
+        </Button>
+      </Space>
+
+      <div className={classNames(style.selectedWrap, 'mt8')}>
+        {value?.map((mapItem) => (
+          <Tag
+            className={style.tag}
+            key={mapItem.userId}
+            visible
+            {...(readOnly ? { closable: false } : { closable: true })}
+            // onClose={() => onCloseHandle(tagItem)}
+          >
+            {mapItem.userName}
+          </Tag>
+        ))}
+      </div>
+      {/* 人群包列表 */}
+
+      {/* 客户经理选择框 */}
+      <OrgTree
+        value={formatValue}
+        visible={staffVisible}
+        onCancel={() => setStaffVisible(false)}
+        onChange={staffOnChangeHandle}
+        showStaff
+        isDeleted={0}
+      />
+      {/* 客户列表选择框 */}
+      <ClientListModal
+        value={formatValue}
+        visible={clientVisible}
+        onCancel={() => setClientVisible(false)}
+        onChange={clientOnChangeHandle}
+      />
+    </div>
+  );
+};
+export default AddUserList;

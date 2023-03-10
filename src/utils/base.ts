@@ -323,3 +323,24 @@ export const replaceEnter = (str: string): string => {
 export const fix = (num: number, length: number): string => {
   return ('' + num).length < length ? (new Array(length + 1).join('0') + num).slice(-length) : '' + num;
 };
+
+/**
+ * @description 阿拉伯数字转换汉字 1-99
+ * @param number
+ */
+export const changeNumber = (num: number): string | undefined => {
+  const numberArray = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+  // 个位数
+  if (num.toString().length === 1) {
+    return numberArray[num];
+  }
+  // 十位数
+  if (num.toString().length === 2) {
+    // 十位数是1
+    if (num < 20) {
+      return '十' + numberArray[+num.toString()[1] - 1];
+    } else {
+      return numberArray[+num.toString()[0] - 1] + '十' + numberArray[+num.toString()[1] - 1];
+    }
+  }
+};
