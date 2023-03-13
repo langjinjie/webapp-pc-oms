@@ -289,6 +289,7 @@ const TableDownLoad: React.FC = () => {
               {/* 销售中心: 分中心部门 */}
               <Form.Item label="销售中心" name="centerDeptIds">
                 <Select
+                  showSearch={false}
                   fieldNames={{ label: 'deptName', value: 'deptId' }}
                   allowClear
                   mode="multiple"
@@ -301,6 +302,7 @@ const TableDownLoad: React.FC = () => {
               {/* 销售大区: 营业区 */}
               <Form.Item label="销售大区" name="areaDeptIds">
                 <Select
+                  showSearch={false}
                   fieldNames={{ label: 'deptName', value: 'deptId' }}
                   allowClear
                   mode="multiple"
@@ -313,6 +315,7 @@ const TableDownLoad: React.FC = () => {
               {/* 销售区域: 营业部门 */}
               <Form.Item label="销售区域" name="bossDeptIds">
                 <Select
+                  showSearch={false}
                   fieldNames={{ label: 'deptName', value: 'deptId' }}
                   allowClear
                   mode="multiple"
@@ -325,6 +328,7 @@ const TableDownLoad: React.FC = () => {
               {/* 销售团队: 团队部门 */}
               <Form.Item label="销售团队" name="leaderDeptIds">
                 <Select
+                  showSearch={false}
                   fieldNames={{ label: 'deptName', value: 'deptId' }}
                   allowClear
                   mode="multiple"
