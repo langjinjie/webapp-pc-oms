@@ -433,7 +433,7 @@ const MarketIndex: React.FC = () => {
   return (
     <Card>
       <Form className={classNames(style.formWrap, 'edit')} form={form} onFinish={onSubmit} {...formLayout}>
-        <Collapse defaultActiveKey={['activity', 'product', 'article', 'poster']}>
+        <Collapse defaultActiveKey={['activity', 'product', 'article', 'poster', 'video']}>
           <Panel key="product" header="精选产品">
             <Form.List name={'productTypeList'} key="productTypeList">
               {(fields) => (

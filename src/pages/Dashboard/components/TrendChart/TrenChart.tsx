@@ -11,6 +11,7 @@ interface toolTipSourceProps {
   name: string;
   seriesName: string;
   value: string;
+  dataIndex: number;
 }
 export function tooltipCustom (
   toolTipSource: toolTipSourceProps,
@@ -21,7 +22,7 @@ export function tooltipCustom (
   if (!toolTipSource) {
     return '';
   }
-  const item = data.filter((item: any) => item.dataX === toolTipSource.name)[0];
+  const item = data[toolTipSource.dataIndex];
 
   return `<div class="tooltip">
     <div>${item.dateStr}</div>
@@ -37,6 +38,8 @@ interface TrendChartProps {
   isTime?: boolean;
 }
 export const TrendChart: React.FC<TrendChartProps> = ({ data, legend, percentage, isTime }) => {
+  console.log(data);
+
   const options: ECOption = {
     legend: {
       data: legend
