@@ -56,8 +56,8 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IBanner> => {
       ellipsis: { showTitle: false },
       render (value, record) {
         return (
-          <Tooltip title={value || (record.type === '2' && '系统自动取每周最新的周报内容')}>
-            {value || (record.type === '2' && '系统自动取每周最新的周报内容')}
+          <Tooltip title={record.type === '2' ? '系统自动取每周最新的周报内容' : value}>
+            {record.type === '2' ? '系统自动取每周最新的周报内容' : value}
           </Tooltip>
         );
       }

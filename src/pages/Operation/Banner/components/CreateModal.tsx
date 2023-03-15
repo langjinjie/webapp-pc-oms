@@ -33,7 +33,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
       const rangeTime: [Moment, Moment] = values.rangeTime;
 
       const res = await editBanner({
-        content: values.content || formValues.content || '',
+        content: tplType !== 2 ? values.content || formValues.content || '' : '',
         itemId: values.itemId || '',
         linkUrl: values.linkUrl,
         imgUrl: values.imgUrl,
