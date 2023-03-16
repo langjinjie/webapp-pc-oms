@@ -1,6 +1,5 @@
-import { Button, Tooltip } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import classNames from 'classnames';
 import React from 'react';
 import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
@@ -30,20 +29,6 @@ const auditStatus = [
     name: '自动审批通过'
   }
 ];
-const wikiStatus = [
-  {
-    id: 1,
-    name: '未上架'
-  },
-  {
-    id: 2,
-    name: '已上架'
-  },
-  {
-    id: 3,
-    name: '已下架'
-  }
-];
 
 const sendTypeOptions = [
   {
@@ -51,11 +36,11 @@ const sendTypeOptions = [
     name: '全部'
   },
   {
-    id: '1',
+    id: 1,
     name: '群发朋友圈'
   },
   {
-    id: '2',
+    id: 2,
     name: '群发消息'
   }
 ];
@@ -65,12 +50,16 @@ const sendStatusOptions = [
     name: '全部'
   },
   {
-    id: '1',
+    id: 1,
     name: '正常'
   },
   {
-    id: '2',
+    id: 2,
     name: '停用'
+  },
+  {
+    id: 3,
+    name: '已执行'
   }
 ];
 const stopTypeOptions = [
@@ -79,11 +68,11 @@ const stopTypeOptions = [
     name: '全部'
   },
   {
-    id: '1',
+    id: 2,
     name: '手工停用'
   },
   {
-    id: '2',
+    id: 1,
     name: '系统停用'
   }
 ];
@@ -91,13 +80,13 @@ export const searchColsFun = (): SearchCol[] => [
   {
     type: 'input',
     label: '群发编码',
-    name: 'keywords',
+    name: 'batchNo',
     placeholder: '请输入'
   },
   {
     type: 'select',
     label: '群发类型',
-    name: 'createBy',
+    name: 'batchType',
     options: sendTypeOptions,
     placeholder: '请输入'
   },
@@ -111,7 +100,7 @@ export const searchColsFun = (): SearchCol[] => [
   {
     type: 'select',
     label: '停用类型',
-    name: 'createBy',
+    name: 'stopType',
     options: stopTypeOptions,
     placeholder: '请输入'
   },
@@ -121,48 +110,47 @@ export const searchColsFun = (): SearchCol[] => [
     name: 'createTime'
   },
   {
-    type: 'rangePicker',
+    type: 'input',
     label: '功能来源',
-    name: 'updateTime'
+    name: 'taskCode',
+    placeholder: '请输入'
   },
   {
     type: 'select',
     label: '功能编码',
-    name: 'auditStatus',
+    name: 'taskCode',
     width: '120px',
     options: auditStatus,
     placeholder: '请选择'
   },
   {
-    type: 'select',
+    type: 'date',
     label: '任务日期',
-    name: 'wikiStatus',
+    name: 'taskDate',
     width: '120px',
-    options: wikiStatus,
     placeholder: '请选择'
   },
   {
     type: 'input',
     label: '客户经理',
-    name: 'wikiStatus',
+    name: 'staffName',
     width: '120px',
     placeholder: '请输入'
   }
 ];
 
 export interface MessageStopColumn {
-  wikiId: string;
-  level1CategroyId: string;
-  level1Name: string;
-  level2CategroyId: string;
-  level2Name: string;
-  wikiStatus: number;
-  title: string;
-  auditStatus: number;
-  createBy: string;
+  batchId: string;
+  batchNo: string;
+  batchType: number;
+  status: number;
+  stopType: number;
   createTime: string;
-  updateTime: string;
-  openCount: number;
+  soruce: number;
+  taskCode: string;
+  taskDate: string;
+  staffNum: string;
+  staffNames: string;
   [prop: string]: any;
 }
 
@@ -171,103 +159,85 @@ export const tableColumnsFun = (
 ): ColumnsType<MessageStopColumn> => {
   return [
     {
-      key: 'videoId',
-      dataIndex: 'videoId',
+      key: 'batchNo',
+      dataIndex: 'batchNo',
       title: '群发编号',
-
       width: 100
     },
     {
-      key: 'level1Name',
-      dataIndex: 'level1Name',
+      key: 'batchType',
+      dataIndex: 'batchType',
       title: '群发类型',
-      ellipsis: true,
-      width: 100
+      width: 100,
+      render: (batchType) => sendTypeOptions.filter((item) => item.id === batchType)[0]?.name
     },
     {
-      key: 'level2Name',
-      dataIndex: 'level2Name',
+      key: 'status',
+      dataIndex: 'status',
       title: '群发状态',
       ellipsis: true,
       width: 100,
-      render: (level2Name) => level2Name || UNKNOWN
+      render: (status) => sendStatusOptions.filter((item) => item.id === status)[0].name || UNKNOWN
     },
     {
-      key: 'wikiStatus',
-      dataIndex: 'wikiStatus',
+      key: 'stopType',
+      dataIndex: 'stopType',
       title: '停用类型',
       width: 110,
       render: (status) => {
         return (
           <div>
-            <i
-              className={classNames('status-point', [
-                {
-                  'status-point-gray': status === 1,
-                  'status-point-green': status === 2,
-                  'status-point-red': status === 3
-                }
-              ])}
-            ></i>
-            <span>{wikiStatus.filter((item) => item.id === status)[0]?.name}</span>
+            <span>{stopTypeOptions.filter((item) => item.id === status)[0]?.name}</span>
           </div>
         );
       }
-    },
-    {
-      key: 'title',
-      dataIndex: 'title',
-      title: '群发创建时间',
-      render: (title) => (
-        <Tooltip placement="topLeft" title={title || UNKNOWN}>
-          {title || UNKNOWN}
-        </Tooltip>
-      ),
-      ellipsis: {
-        showTitle: false
-      },
-
-      width: 160
-    },
-    {
-      key: 'auditStatus',
-      dataIndex: 'auditStatus',
-      title: '功能来源',
-      width: 120,
-
-      render: (status) => {
-        return (
-          <div>
-            <span>{auditStatus.filter((item) => item.id === status)[0]?.name}</span>
-          </div>
-        );
-      }
-    },
-    {
-      key: 'createBy',
-      dataIndex: 'createBy',
-      title: '功能编码',
-      width: 100,
-      render: (createBy) => createBy || UNKNOWN
     },
     {
       key: 'createTime',
       dataIndex: 'createTime',
+      title: '群发创建时间',
+      render: (createTime) => createTime || UNKNOWN,
+      width: 160
+    },
+    {
+      key: 'soruce',
+      dataIndex: 'soruce',
+      title: '功能来源',
+      width: 120,
+
+      render: (soruce) => {
+        return (
+          <div>
+            <span>{auditStatus.filter((item) => item.id === soruce)[0]?.name}</span>
+          </div>
+        );
+      }
+    },
+    {
+      key: 'taskCode',
+      dataIndex: 'taskCode',
+      title: '功能编码',
+      width: 100,
+      render: (taskCode) => taskCode || UNKNOWN
+    },
+    {
+      key: 'taskDate',
+      dataIndex: 'taskDate',
       title: '任务日期',
       width: 220
     },
     {
-      key: 'updateTime',
-      dataIndex: 'updateTime',
+      key: 'staffNum',
+      dataIndex: 'staffNum',
       title: '客户经理数量',
-      render: (updateTime) => updateTime || UNKNOWN,
+      render: (staffNum) => staffNum || 0,
       width: 220
     },
     {
-      key: 'updateTime',
-      dataIndex: 'updateTime',
+      key: 'staffNames',
+      dataIndex: 'staffNames',
       title: '客户经理名称',
-      render: (updateTime) => updateTime || UNKNOWN,
+      render: (staffNames) => staffNames || UNKNOWN,
       width: 220
     },
 
@@ -284,11 +254,13 @@ export const tableColumnsFun = (
                 查看群发详情
               </Button>
             </AuthBtn>
-            <AuthBtn path="/operate">
-              <Button type="link" onClick={() => onOperate('edit', record, index)}>
-                停用群发
-              </Button>
-            </AuthBtn>
+            {record.status === 1 && (
+              <AuthBtn path="/operate">
+                <Popconfirm title="确定要停用？" onConfirm={() => onOperate('edit', record, index)}>
+                  <Button type="link">停用群发</Button>
+                </Popconfirm>
+              </AuthBtn>
+            )}
           </div>
         );
       }

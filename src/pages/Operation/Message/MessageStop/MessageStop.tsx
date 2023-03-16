@@ -41,11 +41,18 @@ const MessageStop: React.FC = () => {
           loading={loading}
           loadData={getList}
           dataSource={dataSource}
+          rowKey={'batchId'}
           rowSelection={{
             selectedRowKeys: selectedRowKeys,
             onChange: (selectedRowKeys, selectedRows) => {
               setSelectedRowKeys(selectedRowKeys);
               setSelectedRows(selectedRows);
+            },
+            getCheckboxProps: (record) => {
+              return {
+                disabled: record.status !== 1,
+                name: record.batchNo!
+              };
             }
           }}
           columns={tableColumnsFun(onOperate)}
