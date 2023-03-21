@@ -1,11 +1,12 @@
 import { Button } from 'antd';
 import React, { Key, useState } from 'react';
-import { NgFormSearch } from 'src/components';
+import { NgFormSearch, NgModal } from 'src/components';
 import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
 import { tableColumnsFun, searchColsFun, MessageStopColumn } from './ListConfig';
 
 const MessageStop: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Partial<MessageStopColumn>[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [dataSource, setDataSource] = useState<Partial<MessageStopColumn>[]>([]);
@@ -65,7 +66,7 @@ const MessageStop: React.FC = () => {
               ghost
               disabled={selectedRows.length === 0}
               onClick={() => {
-                console.log('批量停用');
+                setVisible(true);
               }}
             >
               批量停用
@@ -73,6 +74,10 @@ const MessageStop: React.FC = () => {
           </div>
         )}
       </div>
+
+      <NgModal title="批量停用" visible={visible} onCancel={() => setVisible(false)}>
+        <p className="pa20">确定停用选中的群发任务？</p>
+      </NgModal>
     </div>
   );
 };
