@@ -58,12 +58,13 @@ const CustomerList: React.FC = () => {
 
   const onPaginationChange = (pageNum: number, pageSize?: number) => {
     const newPageNum = pageSize !== pagination.pageSize ? 1 : pageNum;
+    const newResultId = newPageNum === 1 ? undefined : resultId;
     setPagination((pagination) => ({
       ...pagination,
       current: newPageNum,
       pageSize: pageSize as number
     }));
-    getList({ ...formValues, pageNum: newPageNum, pageSize: pageSize as number, resultId });
+    getList({ ...formValues, pageNum: newPageNum, pageSize: pageSize as number, resultId: newResultId });
   };
 
   useEffect(() => {
