@@ -131,7 +131,7 @@ const StaffCode: React.FC = () => {
       content: `此次操作共下载：${selectedRowKeys.length}个活码。请您确认`,
       async onOk () {
         const res = await requestDownloadStaffLiveCode({ liveIdList: selectedRowKeys });
-        if (res) {
+        if (res && res.headers['content-disposition']) {
           const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
           exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
           setSelectedRowKeys([]);

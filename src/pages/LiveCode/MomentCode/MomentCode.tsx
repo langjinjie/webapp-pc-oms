@@ -119,7 +119,7 @@ const MomentCode: React.FC = () => {
       content: `此次下载${selectedRowKeys.length}条数据，确定要下载吗？`,
       async onOk () {
         const res = await requestDownloadGroupLiveCode({ liveIdList: selectedRowKeys });
-        if (res) {
+        if (res && res.headers['content-disposition']) {
           const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
           exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
           setSelectedRowKeys([]);

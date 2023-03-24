@@ -43,7 +43,7 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
   const downLoadHandle = async (value: IGroupChatLiveCode) => {
     setDownLoad(value.liveId);
     const res = await requestDownloadGroupLiveCode({ liveIdList: [value.liveId] });
-    if (res) {
+    if (res && res.headers['content-disposition']) {
       const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
       const blob = new Blob([res.data]);
       const url = window.URL.createObjectURL(blob);

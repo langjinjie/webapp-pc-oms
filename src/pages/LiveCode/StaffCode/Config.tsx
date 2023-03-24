@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { Key, useState } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { useHistory } from 'react-router-dom';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { exportFile } from 'src/utils/base';
 import { requestDownloadStaffLiveCode } from 'src/apis/liveCode';
@@ -59,9 +59,12 @@ export const tableColumnsFun: (batchManageGroupLive: (option: number, keys: Key[
   const downLoadHandle = async (value: IStaffLiveCode) => {
     setDownLoad(value.liveId);
     const res = await requestDownloadStaffLiveCode({ liveIdList: [value.liveId] });
-    if (res) {
-      const fileName = decodeURI(res.headers['content-disposition'].split('=')[1]);
+    // res.headers['content-disposition']不存在,则说明文件流异常 正常情况下res.headers['content-disposition']会返回文件名称
+    if (res && res.headers['content-disposition']) {
+      const fileName = decodeURI(res.headers['content-disposition'].split('=')[1] || '员工活码.xlsx');
       exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
+    } else {
+      message.error('文件下载异常');
     }
     setDownLoad('');
   };
