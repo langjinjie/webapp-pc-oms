@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { TagCategory, TagItem, TagGroup } from 'src/utils/interface';
+import { TagCategory, TagItem, IFilterTagsItem } from 'src/utils/interface';
 import Panel from './Panel';
 
 export const predictTagCategory: { key: number; label: string }[] = [
@@ -55,10 +55,11 @@ const CategoryList: any[] = [
 interface PanelListProps {
   dataSource: TagCategory[];
   onTagClick: (tagItem: TagItem) => void;
-  chooseTags: TagGroup[];
+  chooseTags: IFilterTagsItem[];
   tagType: number;
   defaultActiveIndex: number;
   type?: number; // 标签类型，1-属性标签；2-预测标签；3-车标签；4-二级兴趣标签
+  isTagFlat?: boolean; // 标签是否平铺展示
 }
 
 const PanelList: React.FC<PanelListProps> = ({
@@ -67,7 +68,8 @@ const PanelList: React.FC<PanelListProps> = ({
   chooseTags,
   tagType,
   defaultActiveIndex,
-  type
+  type,
+  isTagFlat
 }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(-1);
   useMemo(() => {
@@ -94,6 +96,7 @@ const PanelList: React.FC<PanelListProps> = ({
             }
           }}
           type={type}
+          isTagFlat={isTagFlat}
         />
       ))}
     </>

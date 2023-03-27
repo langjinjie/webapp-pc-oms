@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Divider, Form, Input, Radio, Space } from 'antd';
+import { Button, Divider, Form, Input, message, Radio, Space } from 'antd';
 import { BreadCrumbs } from 'src/components';
 import { PlusOutlined } from '@ant-design/icons';
 import { RouteComponentProps } from 'react-router-dom';
-import { changeNumber } from 'src/utils/base';
 import { SelectOrg } from 'src/pages/CustomerManage/components';
-import { FilterTags } from '../component';
-import SelectStaff from 'src/pages/CrowdsManage/TagCrowds/component/AddUserList/AddUserList';
+import { FilterTags, AddUserList } from 'src/pages/CrowdsManage/TagCrowds/component';
+import { requestCreatePackageRule } from 'src/apis/CrowdsManage';
 import classNames from 'classnames';
 import styles from './style.module.less';
 
@@ -20,7 +19,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   // };
   // 添加规则
   const addRuleHandle = (add: (defaultValue?: any, insertIndex?: number | undefined) => void) => {
-    add({ taskRuleName: '规则' + changeNumber(1) });
+    add({});
     // setRuleIndex((param) => ++param);
   };
   // 自定义校验
@@ -32,6 +31,53 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  const onFinishHandle = async (values?: any) => {
+    // 格式化提交的数据
+    const { addUserList, excludeUserList, ruleList } = values;
+    const params = {
+      ...values,
+      addUserList: addUserList?.map(
+        ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
+          userId,
+          userName,
+          userType
+        })
+      ),
+      excludeUserList: excludeUserList?.map(
+        ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
+          userId,
+          userName,
+          userType
+        })
+      ),
+      /*
+      ruleList的结构
+      [{tagList:[{ type: number; tagId: string; tagName: string; groupId: string; groupName: string }, ...]}, ...]
+      */
+      ruleList: ruleList?.map(
+        ({
+          tagList
+        }: {
+          tagList: { type: number; tagId: string; tagName: string; groupId: string; groupName: string }[];
+        }) => ({
+          tagList: tagList?.map(({ type, tagId, tagName, groupId, groupName }) => ({
+            type,
+            tagId,
+            tagName,
+            tagGroupId: groupId,
+            tagGroupName: groupName
+          }))
+        })
+      )
+    };
+    console.log('params', params);
+    const res = await requestCreatePackageRule(values);
+    if (res) {
+      message.success('人群包闯进成功');
+      history.push('/tagCrowds');
+    }
+  };
+
   useEffect(() => {
     setReadOnly(false);
   }, []);
@@ -39,30 +85,31 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <div className="container">
       <BreadCrumbs navList={[{ name: '标签分群', path: '/tagCrowds' }, { name: '创建分群' }]} />
-      <Form form={addForm} className="mt20 edit">
+      <Form form={addForm} className="mt20 edit" onFinish={onFinishHandle}>
         <div className="sectionTitle">基本信息</div>
-        <Item label="分群名称">
+        <Item label="分群名称" name="packageName">
           <Input className="width320" placeholder="请输入" maxLength={30} showCount />
         </Item>
-        <Item label="分群备注">
+        <Item label="分群备注" name="remark">
           <Input.TextArea className="width420" placeholder="请输入" maxLength={200} showCount />
         </Item>
-
         <div className="sectionTitle">分群规则</div>
-
         <div className={styles.panel}>
           <div className={styles.panelTitle}>
             创建规则 <span className="color-danger ml20">备注：标签组内为交集，标签组与标签组之间为并集逻辑。</span>
           </div>
-
           <div className={styles.panelContent}>
-            <List name="taskRuleList" initialValue={[{}]} rules={[{ validator, message: '请添加任务推送规则' }]}>
+            <List
+              name="ruleList"
+              initialValue={[{ tagList: [] }]}
+              rules={[{ validator, message: '请添加任务推送规则' }]}
+            >
               {(fields, { add, remove }, { errors }) => (
                 <>
                   {fields.map((field: any, index) => (
                     <div key={field.key + index}>
-                      <Item name="filterTags" noStyle>
-                        <FilterTags removeHandle={remove} fieldIndex={index} />
+                      <Item name={[field.name, 'tagList']} noStyle>
+                        <FilterTags removeHandle={remove} fieldIndex={index} isTagFlat />
                       </Item>
                     </div>
                   ))}
@@ -84,6 +131,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             <Form.Item
               label="更新方式"
               style={{ marginBottom: '0' }}
+              name="refreshType"
               extra={
                 <div className="color-danger flex">
                   <div>备注：</div>
@@ -94,9 +142,9 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                 </div>
               }
             >
-              <Radio.Group defaultValue={'e'}>
-                <Radio value={'e'}>手动更新</Radio>
-                <Radio value={'f'}>每日更新</Radio>
+              <Radio.Group>
+                <Radio value={2}>手动更新</Radio>
+                <Radio value={1}>每日更新</Radio>
               </Radio.Group>
             </Form.Item>
           </div>
@@ -110,7 +158,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
           </div>
           <Divider style={{ margin: '14px 0' }}></Divider>
           <Item name="addUserList">
-            <SelectStaff />
+            <AddUserList />
           </Item>
         </div>
         <div className={classNames(styles.panelContent, 'ml20 mt20')} style={{ width: '980px' }}>
@@ -119,7 +167,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
           </div>
           <Divider style={{ margin: '14px 0' }}></Divider>
           <Item name="excludeUserList">
-            <SelectStaff />
+            <AddUserList />
           </Item>
         </div>
         <div className={classNames(styles.panelContent, 'ml20 mt20')} style={{ width: '980px' }}>
@@ -129,9 +177,9 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             name="fakeClientComputed"
             extra={<div className="color-danger ml20">备注：选择“是”，则会将假客户模型的客户进行排除计算。</div>}
           >
-            <Radio.Group style={{ marginLeft: '20px' }} defaultValue={'a'}>
-              <Radio value={'a'}>是</Radio>
-              <Radio value={'b'}>否</Radio>
+            <Radio.Group style={{ marginLeft: '20px' }}>
+              <Radio value={1}>是</Radio>
+              <Radio value={0}>否</Radio>
             </Radio.Group>
           </Form.Item>
           <Divider style={{ margin: 0 }} />
@@ -145,23 +193,23 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
               </div>
             }
           >
-            <Radio.Group style={{ marginLeft: '20px' }} defaultValue={'a'}>
-              <Radio value={'a'}>是</Radio>
-              <Radio value={'b'}>否</Radio>
+            <Radio.Group style={{ marginLeft: '20px' }}>
+              <Radio value={1}>是</Radio>
+              <Radio value={0}>否</Radio>
             </Radio.Group>
           </Form.Item>
           <Divider style={{ margin: 0 }} />
           <Form.Item label="人群包是否计算领导（上级领导计算在内）：" name="leaderComputed" labelCol={{ span: 24 }}>
-            <Radio.Group style={{ marginLeft: '20px' }} defaultValue={'a'}>
-              <Radio value={'a'}>是</Radio>
-              <Radio value={'b'}>否，仅计算客户经理</Radio>
+            <Radio.Group style={{ marginLeft: '20px' }}>
+              <Radio value={1}>是</Radio>
+              <Radio value={0}>否，仅计算客户经理</Radio>
             </Radio.Group>
           </Form.Item>
         </div>
 
         <Form.Item className="formFooter mt40">
           <Space size={36} style={{ marginLeft: '20px' }}>
-            <Button shape="round" type="primary">
+            <Button shape="round" type="primary" htmlType="submit">
               保存运行
             </Button>
             <Button

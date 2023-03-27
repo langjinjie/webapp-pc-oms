@@ -7,37 +7,47 @@
 import React, { useEffect, useState } from 'react';
 import { Modal as AntdModal, Input, Drawer, Button, Space, Tabs } from 'antd';
 import { Icon } from 'src/components';
-import { queryTagList, searchTagList } from 'src/apis/task';
-import { TagCategory, TagGroup, TagItem } from 'src/utils/interface';
+import { queryTagList, searchTagByTagName } from 'src/apis/task';
+import { TagCategory, IFilterTagsItem } from 'src/utils/interface';
 import EmptyTag from './EmptyTag';
 import PanelList from './PanelList';
 import style from './style.module.less';
+import classNames from 'classnames';
 
 const { Search } = Input;
 
 interface TagFilterProps {
-  chooseTag: (tags: TagGroup[]) => any;
-  chooseTagList: TagGroup[];
+  chooseTag: (tags: IFilterTagsItem[]) => any;
+  chooseTagList: IFilterTagsItem[];
   visible: boolean;
   className?: string;
   onClose: () => void;
+  isTagFlat?: boolean; // 标签是否平铺展示
 }
 
-const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList, onClose, ...props }) => {
+const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList, onClose, isTagFlat, ...props }) => {
   const [tabIndex, setTabIndex] = useState<number>(0);
   // 属性标签
-  const [attrTagList, setAttrTagList] = useState<TagCategory[]>([]);
-  const [allAttrTagList, setAllAttrTagList] = useState<TagCategory[]>([]);
+  const [attrTagList, setAttrTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
+  const [allAttrTagList, setAllAttrTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
   // 预测标签
-  const [predictTagList, setPredictTagList] = useState<TagCategory[]>([]);
-  const [allPredictTagList, setAllPredictTagList] = useState<TagCategory[]>([]);
+  const [predictTagList, setPredictTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
+  const [allPredictTagList, setAllPredictTagList] = useState<{ type: number; list: TagCategory[] }>({
+    type: 0,
+    list: []
+  });
   // 车标签
-  const [carTagList, setCarTagList] = useState<TagCategory[]>([]);
-  const [allCarList, setAllCarTagList] = useState<TagCategory[]>([]);
-  const [chooseTags, setChooseTags] = useState<TagGroup[]>([]);
+  const [carTagList, setCarTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
+  const [allCarList, setAllCarTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
+
   // 兴趣标签
-  const [interestTagList, setinterestTagList] = useState<TagCategory[]>([]);
-  const [allInterestList, setAllinterestTagList] = useState<TagCategory[]>([]);
+  const [interestTagList, setinterestTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
+  const [allInterestList, setAllinterestTagList] = useState<{ type: number; list: TagCategory[] }>({
+    type: 0,
+    list: []
+  });
+
+  const [chooseTags, setChooseTags] = useState<IFilterTagsItem[]>([]);
 
   const tabList: string[] = ['属性标签', '兴趣标签', '车标签'];
 
@@ -61,14 +71,14 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
   const getTagList = async () => {
     const res: any = await queryTagList();
     const resList = Array.isArray(res.list) ? res.list : [];
-    setAllAttrTagList(resList[0].list);
-    setAttrTagList(resList[0].list);
-    setAllPredictTagList(resList[1].list);
-    setPredictTagList(resList[1].list);
-    setAllCarTagList(resList[2].list);
-    setCarTagList(resList[2].list);
-    setAllinterestTagList(resList[3].list);
-    setinterestTagList(resList[3].list);
+    setAllAttrTagList(resList[0]);
+    setAttrTagList(resList[0]);
+    setAllPredictTagList(resList[1]);
+    setPredictTagList(resList[1]);
+    setAllCarTagList(resList[2]);
+    setCarTagList(resList[2]);
+    setAllinterestTagList(resList[3]);
+    setinterestTagList(resList[3]);
   };
 
   /**
@@ -78,36 +88,45 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
   const searchTag = async (tagName: string) => {
     if (tagName) {
       if (tabIndex === 0) {
-        const res1 = await searchTagList({ queryType: 1, tagName });
-        const res2 = await searchTagList({ queryType: 2, tagName });
+        const res1 = await searchTagByTagName({ queryType: 1, tagName });
+        const res2 = await searchTagByTagName({ queryType: 2, tagName });
         if (res1.groupList) {
-          setAttrTagList([
-            {
-              category: 0,
-              groupList: res1.groupList
-            }
-          ]);
+          setAttrTagList({
+            type: attrTagList.type,
+            list: [
+              {
+                category: 0,
+                groupList: res1.groupList
+              }
+            ]
+          });
         } else {
-          setAttrTagList([]);
+          setAttrTagList((attrTagList) => ({ ...attrTagList, list: [] }));
         }
         if (res2.groupList) {
-          setPredictTagList([
-            {
-              category: 0,
-              groupList: res2.groupList
-            }
-          ]);
+          setPredictTagList((predictTagList) => ({
+            ...predictTagList,
+            list: [
+              {
+                category: 0,
+                groupList: res2.groupList
+              }
+            ]
+          }));
         } else {
-          setPredictTagList([]);
+          setPredictTagList((attrTagList) => ({ ...attrTagList, list: [] }));
         }
       } else {
-        const res3 = await searchTagList({ queryType: 3, tagName });
-        setinterestTagList([
-          {
-            category: 0,
-            groupList: res3.groupList || []
-          }
-        ]);
+        const res3 = await searchTagByTagName({ queryType: 3, tagName });
+        setinterestTagList((interestTagList) => ({
+          ...interestTagList,
+          list: [
+            {
+              category: 0,
+              groupList: res3.groupList || []
+            }
+          ]
+        }));
       }
     } else {
       if (tabIndex === 0) {
@@ -121,59 +140,122 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
     }
   };
 
-  // 选择标签
-  const onTagClick = (tagItem: TagItem & { type?: number }) => {
+  // 选择标签, 标签值平铺
+  const onTagClick: (tagItem: any) => void = (tagItem) => {
     let newChooseTags = [...chooseTags];
-    // 判断该标签组是否有标签被选中
-    const curGroupItem = newChooseTags.find((findItem) => findItem.groupId === tagItem.groupId);
-    if (curGroupItem) {
-      // 判断该标签组中的标签是否被选中
-      if (curGroupItem.tagList.some((tag) => tag.tagId === tagItem.tagId)) {
-        curGroupItem.tagList = curGroupItem.tagList.filter((filterItem) => filterItem.tagId !== tagItem.tagId);
+    // 判断标签值需要平铺还是分组
+    if (isTagFlat) {
+      // 判断是否
+      if (newChooseTags.some((item) => item.tagId === tagItem.tagId)) {
+        newChooseTags = newChooseTags.filter((item) => item.tagId !== tagItem.tagId);
       } else {
-        curGroupItem.tagList = [...curGroupItem.tagList, { tagId: tagItem.tagId, tagName: tagItem.tagName }];
-      }
-    } else {
-      const newGroupItem: TagGroup & { type?: number } = {
-        displayType: tagItem.displayType || 0,
-        groupId: tagItem.groupId || '',
-        groupName: tagItem.groupName || '',
-        type: tagItem.type,
-        tagList: [
+        newChooseTags = [
+          ...newChooseTags,
           {
+            displayType: tagItem.displayType || 0,
+            groupId: tagItem.groupId || '',
+            groupName: tagItem.groupName || '',
+            type: tagItem.type,
             tagId: tagItem.tagId,
             tagName: tagItem.tagName
           }
-        ]
-      };
-      newChooseTags = [...newChooseTags, newGroupItem];
+        ];
+      }
+    } else {
+      // 判断该标签组是否有标签被选中
+      const curGroupItem = newChooseTags.find((findItem) => findItem.groupId === tagItem.groupId);
+      if (curGroupItem) {
+        // 判断该标签组中的标签是否被选中
+        if (curGroupItem.tagList || [].some((tag: any) => tag.tagId === tagItem.tagId)) {
+          curGroupItem.tagList = (curGroupItem.tagList || []).filter(
+            (filterItem: any) => filterItem.tagId !== tagItem.tagId
+          );
+        } else {
+          curGroupItem.tagList = [...(curGroupItem.tagList || []), { tagId: tagItem.tagId, tagName: tagItem.tagName }];
+        }
+      } else {
+        const newGroupItem: IFilterTagsItem = {
+          displayType: tagItem.displayType || 0,
+          groupId: tagItem.groupId || '',
+          groupName: tagItem.groupName || '',
+          type: tagItem.type,
+          tagList: [
+            {
+              tagId: tagItem.tagId,
+              tagName: tagItem.tagName
+            }
+          ]
+        };
+        newChooseTags = [...newChooseTags, newGroupItem];
+      }
+      // 过滤掉tagList为空数组的
+      newChooseTags = newChooseTags.filter((newItem) => newItem.tagList && newItem.tagList.length);
     }
-    // 过滤掉tagList为空数组的
-    newChooseTags = newChooseTags.filter((newItem) => newItem.tagList && newItem.tagList.length);
+
     setChooseTags(newChooseTags);
   };
 
   // 取消选择
   const cancelChooseHandle = (tagItem: any) => {
-    const newChooseTags = chooseTags.filter((groupItem) => {
-      const newTagList = groupItem.tagList.filter((filterTagItem) => filterTagItem.tagId !== tagItem.tagId);
-      groupItem.tagList = newTagList;
-      if (newTagList.length) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    let newChooseTags: IFilterTagsItem[] = [];
+    // 判断标签是否扁平(不分组)
+    if (isTagFlat) {
+      newChooseTags = chooseTags.filter((filterTag) => tagItem.tagId !== filterTag.tagId);
+    } else {
+      newChooseTags = chooseTags.filter((groupItem) => {
+        const newTagList = (groupItem?.tagList || []).filter((filterTagItem) => filterTagItem.tagId !== tagItem.tagId);
+        groupItem.tagList = newTagList;
+        if (newTagList.length) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+    }
     setChooseTags(newChooseTags);
   };
+
+  // 渲染已选中的标签
+  const renderChoosedTag = () => {
+    if (isTagFlat) {
+      return chooseTags.map((item: any) => (
+        <span key={item.tagId} className={style.chooseTagItem}>
+          {`${
+            item.displayType === 2 || item.displayType === 1 || item.displayType === 3
+              ? item.groupName
+              : item.groupName.slice(0, item.groupName.length - 2)
+          } ` + item.tagName}
+
+          <span className={style.close} onClick={() => cancelChooseHandle({ groupId: item.groupId, ...item })}>
+            <Icon className={style.closeIcon} name="icon_common_Line_Close" />
+          </span>
+        </span>
+      ));
+    } else {
+      return chooseTags.map((item: IFilterTagsItem) => (
+        <span key={item.groupId}>
+          {(item?.tagList || []).map((tagItem) => (
+            <span key={tagItem.tagId} className={style.chooseTagItem}>
+              {`${
+                item.displayType === 2 || item.displayType === 1 || item.displayType === 3
+                  ? item.groupName
+                  : item.groupName.slice(0, item.groupName.length - 2)
+              } ` + tagItem.tagName}
+
+              <span className={style.close} onClick={() => cancelChooseHandle({ groupId: item.groupId, ...tagItem })}>
+                <Icon className={style.closeIcon} name="icon_common_Line_Close" />
+              </span>
+            </span>
+          ))}
+        </span>
+      ));
+    }
+  };
+
   useEffect(() => {
     if (visible) {
       setChooseTags(chooseTagList);
       getTagList();
-      // getTagList(1);
-      // getTagList(2);
-      // getTagList(3);
-      // getTagList(4);
     }
   }, [visible]);
 
@@ -207,26 +289,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
       <div className={style.chooseTagWrap}>
         <span className={style.tagDesc}>已筛选的标签:</span>
         <div className={style.chooseTagList}>
-          {chooseTags.map((item: TagGroup) => (
-            <span key={item.groupId}>
-              {(item?.tagList || []).map((tagItem) => (
-                <span key={tagItem.tagId} className={style.chooseTagItem}>
-                  {`${
-                    item.displayType === 2 || item.displayType === 1 || item.displayType === 3
-                      ? item.groupName
-                      : item.groupName.slice(0, item.groupName.length - 2)
-                  } ` + tagItem.tagName}
-
-                  <span
-                    className={style.close}
-                    onClick={() => cancelChooseHandle({ groupId: item.groupId, ...tagItem })}
-                  >
-                    <Icon className={style.closeIcon} name="icon_common_Line_Close" />
-                  </span>
-                </span>
-              ))}
-            </span>
-          ))}
+          {renderChoosedTag()}
           {chooseTags.length > 0 && (
             <li className={style.delItem} onClick={() => deleteAll()}>
               <Icon className={style.delIcon} name="cangpeitubiao_shanchu" />
@@ -242,66 +305,70 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
       >
         {tabList.map((val: string, index: number) => (
           <Tabs.TabPane key={index} tab={val}>
-            {tabIndex === 0 && (
-              <>
-                <div className={style.searchWrap}>
-                  <Search placeholder="可输入标签名称查询" allowClear onSearch={(val) => searchTag(val)} />
-                </div>
-                <div className={style.tagContent}>
-                  <PanelList
-                    defaultActiveIndex={0}
-                    tagType={2}
-                    dataSource={attrTagList}
-                    chooseTags={chooseTags}
-                    onTagClick={onTagClick}
-                    type={1}
-                  />
-                </div>
-                {/* 预测标签 */}
-                {predictTagList.length === 0 && attrTagList.length === 0 && <EmptyTag />}
-                <div className={style.tagContent}>
-                  <PanelList
-                    defaultActiveIndex={-1}
-                    tagType={1}
-                    dataSource={predictTagList}
-                    chooseTags={chooseTags}
-                    onTagClick={onTagClick}
-                    type={2}
-                  />
-                </div>
-              </>
-            )}
-            {tabIndex === 1 && (
-              <>
-                <div className={style.searchWrap}>
-                  <Search placeholder="可输入标签名称查询" allowClear onSearch={(val) => searchTag(val)} />
-                </div>
-                {interestTagList.length === 0 && <EmptyTag />}
-                <div className={style.tagContent}>
-                  {/* 兴趣标签 */}
-                  <PanelList
-                    defaultActiveIndex={0}
-                    tagType={4}
-                    dataSource={interestTagList}
-                    chooseTags={chooseTags}
-                    onTagClick={onTagClick}
-                    type={3}
-                  />
-                </div>
-              </>
-            )}
+            {/* {tabIndex === 0 && ( */}
+            <div className={classNames(style.tabTagWrap, { block: tabIndex === 0 })}>
+              <div className={style.searchWrap}>
+                <Search placeholder="可输入标签组名称查询" allowClear onSearch={(val) => searchTag(val)} />
+              </div>
+              <div className={style.tagContent}>
+                <PanelList
+                  defaultActiveIndex={0}
+                  tagType={2}
+                  dataSource={attrTagList.list}
+                  chooseTags={chooseTags}
+                  onTagClick={onTagClick}
+                  type={1}
+                  isTagFlat={isTagFlat}
+                />
+              </div>
+              {/* 预测标签 */}
+              {predictTagList.list.length === 0 && attrTagList.list.length === 0 && <EmptyTag />}
+              <div className={style.tagContent}>
+                <PanelList
+                  defaultActiveIndex={-1}
+                  tagType={1}
+                  dataSource={predictTagList.list}
+                  chooseTags={chooseTags}
+                  onTagClick={onTagClick}
+                  type={predictTagList.type}
+                  isTagFlat={isTagFlat}
+                />
+              </div>
+            </div>
+            {/* )} */}
+            {/* {tabIndex === 1 && ( */}
+            <div className={classNames(style.tabTagWrap, { block: tabIndex === 1 })}>
+              <div className={style.searchWrap}>
+                <Search placeholder="可输入标签名称查询" allowClear onSearch={(val) => searchTag(val)} />
+              </div>
+              {interestTagList.list.length === 0 && <EmptyTag />}
+              <div className={style.tagContent}>
+                {/* 兴趣标签 */}
+                <PanelList
+                  defaultActiveIndex={0}
+                  tagType={4}
+                  dataSource={interestTagList.list}
+                  chooseTags={chooseTags}
+                  onTagClick={onTagClick}
+                  type={interestTagList.type}
+                  isTagFlat={isTagFlat}
+                />
+              </div>
+            </div>
+            {/* )} */}
             {tabIndex === 2 && (
               <>
-                {(carTagList.length === 0 || (carTagList[0].groupList || []).length === 0) && <EmptyTag />}
+                {carTagList.list.length === 0 && <EmptyTag />}
                 <div className={style.tagContent}>
                   {/* 车标签 */}
                   <PanelList
                     defaultActiveIndex={0}
                     tagType={3}
-                    dataSource={carTagList}
+                    dataSource={carTagList.list}
                     chooseTags={chooseTags}
                     onTagClick={onTagClick}
-                    type={4}
+                    type={carTagList.type}
+                    isTagFlat={isTagFlat}
                   />
                 </div>
               </>

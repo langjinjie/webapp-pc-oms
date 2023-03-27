@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button, Tabs, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { IFilterTagsItem } from 'src/utils/interface';
+import { numberToChinese } from 'src/utils/base';
 import TagFilter from './TagFilter';
-import { TagGroup } from 'src/utils/interface';
 import style from './style.module.less';
 
 interface IFilterTagsProps {
-  value?: (TagGroup & { type?: number })[];
-  onChange?: (value: (TagGroup & { type?: number })[]) => void;
+  value?: IFilterTagsItem[];
+  onChange?: (value: IFilterTagsItem[]) => void;
   readOnly?: boolean;
   removeHandle?: (index: number | number[]) => void;
   fieldIndex?: number;
+  isTagFlat?: boolean;
 }
 
 const tabKey2TypeList = [[1, 2], [3], [4]];
@@ -19,17 +21,18 @@ const tabKey2TypeList = [[1, 2], [3], [4]];
  * @desc 选择客户标签
  */
 const FilterTags: React.FC<IFilterTagsProps> = (props) => {
-  const { value, onChange, readOnly, removeHandle, fieldIndex } = props;
-  const [tag, setTag] = useState<(TagGroup & { type?: number })[]>([]);
+  const { value, onChange, readOnly, removeHandle, fieldIndex, isTagFlat } = props;
+  // const [tag, setTag] = useState<IFilterTagsItem[]>([]);
   const [visible, setVisible] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
-  const filterClients = (tag: (TagGroup & { type?: number })[]) => {
-    setTag(tag as TagGroup[]);
+
+  const filterClients = (tag: IFilterTagsItem[]) => {
+    // setTag(tag as IFilterTagsItem[]);
     setVisible(false);
     onChange && onChange(tag);
   };
   useEffect(() => {
-    setTag(value || []);
+    // setTag(value || []);
     if (value) {
       filterClients(value);
     }
@@ -45,16 +48,22 @@ const FilterTags: React.FC<IFilterTagsProps> = (props) => {
   const { TabPane } = Tabs;
 
   // 关闭
-  const onCloseHandle = (tagItem: any) => {
-    const newChooseTags = (value || []).filter((groupItem) => {
-      const newTagList = groupItem.tagList.filter((filterTagItem) => filterTagItem.tagId !== tagItem.tagId);
-      groupItem.tagList = newTagList;
-      if (newTagList.length) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+  const onCloseHandle = (tagItem: IFilterTagsItem) => {
+    let newChooseTags: IFilterTagsItem[] = [];
+    // 判断标签是否扁平(不分组)
+    if (isTagFlat) {
+      newChooseTags = (value as IFilterTagsItem[]).filter((filterTag) => tagItem.tagId !== filterTag.tagId);
+    } else {
+      newChooseTags = (value as IFilterTagsItem[]).filter((groupItem) => {
+        const newTagList = (groupItem?.tagList || []).filter((filterTagItem) => filterTagItem.tagId !== tagItem.tagId);
+        groupItem.tagList = newTagList;
+        if (newTagList.length) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+    }
     onChange?.(newChooseTags);
   };
 
@@ -69,15 +78,57 @@ const FilterTags: React.FC<IFilterTagsProps> = (props) => {
     },
     [value]
   );
-  const curTagList = useMemo(() => {
-    return (tag || []).filter((filterItem) => tabKey2TypeList[tabIndex].includes(filterItem.type || 1));
-  }, [tabIndex, tag]);
+
+  const curTagList: any[] = useMemo(() => {
+    return (value || []).filter((filterItem) => tabKey2TypeList[tabIndex].includes(filterItem.type || 1));
+  }, [tabIndex, value]);
+
+  // 定义渲染选中的标签
+  const renderTagItem = () => {
+    if (isTagFlat) {
+      return curTagList.map((tagItem) => (
+        <Tag
+          className={style.tag}
+          key={tagItem.tagId}
+          visible
+          {...(readOnly ? { closable: false } : { closable: true })}
+          onClose={() => onCloseHandle(tagItem)}
+        >
+          {`${
+            tagItem.displayType === 2 || tagItem.displayType === 1 || tagItem.displayType === 3
+              ? tagItem.groupName
+              : tagItem.groupName.slice(0, tagItem.groupName.length - 2)
+          } ` + tagItem.tagName}
+        </Tag>
+      ));
+    } else {
+      return curTagList.map((mapItem) => (
+        <span key={mapItem.groupId}>
+          {(mapItem.tagList || []).map((tagItem: any) => (
+            <Tag
+              className={style.tag}
+              key={tagItem.tagId}
+              visible
+              {...(readOnly ? { closable: false } : { closable: true })}
+              onClose={() => onCloseHandle(tagItem)}
+            >
+              {`${
+                mapItem.displayType === 2 || mapItem.displayType === 1 || mapItem.displayType === 3
+                  ? mapItem.groupName
+                  : mapItem.groupName.slice(0, mapItem.groupName.length - 2)
+              } ` + tagItem.tagName}
+            </Tag>
+          ))}
+        </span>
+      ));
+    }
+  };
   return (
     <div className={style.wrap}>
       <div className={style.header}>按照标签筛选</div>
       <div className={style.tagFilter}>
         <div className={style.tagFilterTitle}>
-          <span>按照标签筛选</span>
+          <span>标签组{numberToChinese((fieldIndex || 0) + 1)}</span>
           <div>
             <Button disabled={readOnly} className={style.addTagBtn} icon={<PlusOutlined />} onClick={addTag}>
               添加标签
@@ -93,44 +144,22 @@ const FilterTags: React.FC<IFilterTagsProps> = (props) => {
           <Tabs className={style.tabs} defaultActiveKey="0" type="card" onChange={(e) => setTabIndex(+e)}>
             {tabsList.map((tabItem) => (
               <TabPane key={tabItem.value} tab={tabItem.label + '（' + tagLength(tabItem.value) + '）'}>
-                {tagLength(tabItem.value) === 0 || (
-                  <div className={style.tagWrap}>
-                    {curTagList.map((mapItem) => (
-                      <span key={mapItem.groupId}>
-                        {(mapItem.tagList || mapItem.tags || []).map((tagItem) => (
-                          <Tag
-                            className={style.tag}
-                            key={tagItem.tagId}
-                            visible
-                            {...(readOnly ? { closable: false } : { closable: true })}
-                            onClose={() => onCloseHandle(tagItem)}
-                          >
-                            {`${
-                              mapItem.displayType === 2 || mapItem.displayType === 1 || mapItem.displayType === 3
-                                ? mapItem.groupName
-                                : mapItem.groupName.slice(0, mapItem.groupName.length - 2)
-                            } ` + tagItem.tagName}
-                          </Tag>
-                        ))}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                {tagLength(tabItem.value) === 0 || <div className={style.tagWrap}>{renderTagItem()}</div>}
               </TabPane>
             ))}
           </Tabs>
         </div>
       </div>
       <TagFilter
-        chooseTag={(tags: TagGroup[]) => {
-          console.log('tags', tags);
+        chooseTag={(tags: IFilterTagsItem[]) => {
           filterClients(tags);
         }}
-        chooseTagList={tag as TagGroup[]}
+        chooseTagList={value || []}
         visible={visible}
         onClose={() => {
           onClose();
         }}
+        isTagFlat={isTagFlat}
       />
     </div>
   );

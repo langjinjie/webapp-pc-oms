@@ -1,9 +1,9 @@
-import { Button, PaginationProps, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { Button, PaginationProps, Space } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
-import { OperateType } from 'src/utils/interface';
 import { searchCols, tableColumnsFun } from './Config';
+import { requestGetPackageList } from 'src/apis/CrowdsManage';
 
 const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
   const [list, setList] = useState<any[]>([]);
@@ -19,113 +19,114 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
   const getList = async (values?: any) => {
     console.log('values', values);
     setTableLoading(true);
-    // const res = await requestGetStaffLiveList({ ...values });
-    const res = {
+    const res = await requestGetPackageList({ ...values });
+    console.log('res', res);
+    const res1 = {
       total: 134,
       list: [
         {
-          key1: '00001',
-          key2: '关注慢性病',
-          key3: 1,
-          key4: 1,
-          key5: '2022-10-20 16:11:12',
-          key6: '孙思瑶',
-          key7: 1,
-          key8: 450,
-          key9: 10,
-          key10: '2022-10-20 16:15:31'
+          packageId: '00001',
+          packageName: '关注慢性病',
+          refreshType: 1,
+          computeStatus: 1,
+          createTime: '2022-10-20 16:11:12',
+          opName: '孙思瑶',
+          runStatus: 1,
+          clientNum: 450,
+          staffNum: 10,
+          updateTime: '2022-10-20 16:15:31'
         },
         {
-          key1: '00002',
-          key2: '有老人',
-          key3: 2,
-          key4: 2,
-          key5: '2022-10-20 14:31:12',
-          key6: '吴桐',
-          key7: 1,
-          key8: 450,
-          key9: 10,
-          key10: '2022-10-20 14:31:12'
+          packageId: '00002',
+          packageName: '有老人',
+          refreshType: 2,
+          computeStatus: 2,
+          createTime: '2022-10-20 14:31:12',
+          opName: '吴桐',
+          runStatus: 1,
+          clientNum: 450,
+          staffNum: 10,
+          updateTime: '2022-10-20 14:31:12'
         },
         {
-          key1: '00003',
-          key2: '有子女',
-          key3: 1,
-          key4: 3,
-          key5: '2022-10-20 14:11:45',
-          key6: '吴桐',
-          key7: 1,
-          key8: 450,
-          key9: 10,
-          key10: '2022-10-01 10:01:20'
+          packageId: '00003',
+          packageName: '有子女',
+          refreshType: 1,
+          computeStatus: 3,
+          createTime: '2022-10-20 14:11:45',
+          opName: '吴桐',
+          runStatus: 1,
+          clientNum: 450,
+          staffNum: 10,
+          updateTime: '2022-10-01 10:01:20'
         },
         {
-          key1: '00004',
-          key2: '女性防癌',
-          key3: 1,
-          key4: 1,
-          key5: '2022-10-19 09:40:46',
-          key6: '吴桐',
-          key7: 1,
-          key8: 450,
-          key9: 10,
-          key10: '2022-10-19 09:40:46'
+          packageId: '00004',
+          packageName: '女性防癌',
+          refreshType: 1,
+          computeStatus: 1,
+          createTime: '2022-10-19 09:40:46',
+          opName: '吴桐',
+          runStatus: 1,
+          clientNum: 450,
+          staffNum: 10,
+          updateTime: '2022-10-19 09:40:46'
         },
         {
-          key1: '00005',
-          key2: '年金收益',
-          key3: 1,
-          key4: 1,
-          key5: '2022-10-18 16:40:46',
-          key6: '吴桐',
-          key7: 1,
-          key8: 450,
-          key9: 10,
-          key10: '2022-10-18 16:40:46'
+          packageId: '00005',
+          packageName: '年金收益',
+          refreshType: 1,
+          computeStatus: 1,
+          createTime: '2022-10-18 16:40:46',
+          opName: '吴桐',
+          runStatus: 1,
+          clientNum: 450,
+          staffNum: 10,
+          updateTime: '2022-10-18 16:40:46'
         },
         {
-          key1: '00006',
-          key2: '续保犹豫',
-          key3: 1,
-          key4: 1,
-          key5: '2022-10-17 13:40:22',
-          key6: '吴桐',
-          key7: 1,
-          key8: 450,
-          key9: 10,
-          key10: '2022-10-17 13:40:22'
+          packageId: '00006',
+          packageName: '续保犹豫',
+          refreshType: 1,
+          computeStatus: 1,
+          createTime: '2022-10-17 13:40:22',
+          opName: '吴桐',
+          runStatus: 1,
+          clientNum: 450,
+          staffNum: 10,
+          updateTime: '2022-10-17 13:40:22'
         },
         {
-          key1: '00007',
-          key2: '转保风险高',
-          key3: 1,
-          key4: 1,
-          key5: '2022-10-17 10:40:00',
-          key6: '吴桐',
-          key7: 1,
-          key8: 450,
-          key9: 10,
-          key10: '2022-10-17 10:40:00'
+          packageId: '00007',
+          packageName: '转保风险高',
+          refreshType: 1,
+          computeStatus: 1,
+          createTime: '2022-10-17 10:40:00',
+          opName: '吴桐',
+          runStatus: 1,
+          clientNum: 450,
+          staffNum: 10,
+          updateTime: '2022-10-17 10:40:00'
         },
         {
-          key1: '00008',
-          key2: '出险理赔群',
-          key3: 1,
-          key4: 1,
-          key5: '2022-10-17 09:42:03',
-          key6: '吴桐',
-          key7: 1,
-          key8: 450,
-          key9: 10,
-          key10: '2022-10-17 09:44:37'
+          packageId: '00008',
+          packageName: '出险理赔群',
+          refreshType: 1,
+          computeStatus: 1,
+          createTime: '2022-10-17 09:42:03',
+          opName: '吴桐',
+          runStatus: 1,
+          clientNum: 450,
+          staffNum: 10,
+          updateTime: '2022-10-17 09:44:37'
         }
       ]
     };
-    if (res) {
-      setList(res.list);
+    if (res1) {
+      setList(res1.list);
       setSelectedRowKeys([]);
       // setRecordItem(undefined);
-      setPagination((pagination) => ({ ...pagination, total: res.total }));
+      setPagination((pagination) => ({ ...pagination, total: res1.total }));
     }
     setTableLoading(false);
   };
@@ -136,31 +137,28 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
     setFormParam({});
   };
   const onFinishHandle = (values?: any) => {
-    const { expireDay, createTime, updateTime, staffId } = values;
-    let beginCreateTime;
-    let endCreateTime;
-    let beginUpdateTime;
-    let endUpdateTime;
+    console.log('values', values);
+    const { createTime, updateTime } = values;
+    let createTimeBegin;
+    let createTimeEnd;
+    let updateTimeBegin;
+    let updateTimeEnd;
     if (createTime) {
-      beginCreateTime = createTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      endCreateTime = createTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+      createTimeBegin = createTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      createTimeEnd = createTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
     if (updateTime) {
-      beginUpdateTime = updateTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      endUpdateTime = updateTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    if (expireDay) {
-      values.expireDay = expireDay.endOf('day').format('YYYY-MM-DD HH:mm:ss');
+      updateTimeBegin = updateTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      updateTimeEnd = updateTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
     delete values.createTime;
     delete values.updateTime;
     const param = {
       ...values,
-      beginCreateTime,
-      endCreateTime,
-      beginUpdateTime,
-      endUpdateTime,
-      staffId: staffId?.[0]?.staffId
+      createTimeBegin,
+      createTimeEnd,
+      updateTimeBegin,
+      updateTimeEnd
     };
     getList(param);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
@@ -183,8 +181,7 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
   const rowSelection = {
     hideSelectAll: false,
     selectedRowKeys: selectedRowKeys,
-    onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-      console.log(selectedRowKeys, selectedRows);
+    onChange: (selectedRowKeys: React.Key[]) => {
       setSelectedRowKeys(selectedRowKeys);
     },
     getCheckboxProps: (record: any) => {
@@ -195,15 +192,15 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  // 批量删除
+  const batchDelHandle = () => {
+    console.log('selectedRowKeys', selectedRowKeys);
+  };
+
   const navigatorToDownload = () => {
     history.push('/tagCrowds/download');
   };
 
-  const onOperation = (type: OperateType) => {
-    if (type === 'view') {
-      history.push('/tagCrowds/detail');
-    }
-  };
   useEffect(() => {
     getList();
   }, []);
@@ -225,8 +222,10 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
         </Button>
       </Space>
       <NgTable
-        rowKey={'key1'}
-        columns={tableColumnsFun(onOperation)}
+        rowKey={'packageId'}
+        columns={tableColumnsFun({
+          getList: () => getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize })
+        })}
         dataSource={list}
         pagination={pagination}
         paginationChange={paginationChange}
@@ -234,7 +233,7 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
         rowSelection={rowSelection}
       />
       <div className={'operationWrap'}>
-        <Button type="primary" ghost shape="round" disabled={selectedRowKeys.length === 0}>
+        <Button type="primary" ghost shape="round" disabled={selectedRowKeys.length === 0} onClick={batchDelHandle}>
           批量删除
         </Button>
       </div>

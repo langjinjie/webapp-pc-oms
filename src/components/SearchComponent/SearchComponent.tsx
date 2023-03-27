@@ -218,7 +218,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           form={searchForm}
           onFinish={handleFinish}
           onReset={handleReset}
-          className={style.customLayout}
+          className={classNames(style.customLayout, props.className)}
           onValuesChange={onValuesChange}
         >
           <Row>

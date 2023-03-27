@@ -508,3 +508,14 @@ export interface IPagination {
   total: number;
   showTotal?: (total: any) => string;
 }
+
+// 标签筛选的groupItem
+export interface IFilterTagsItem {
+  groupId: string;
+  groupName: string;
+  displayType?: number;
+  type: number;
+  tagId?: string;
+  tagName?: string;
+  tagList?: { tagId: string; tagName: string }[];
+}

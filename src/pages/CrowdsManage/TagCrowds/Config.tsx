@@ -1,10 +1,16 @@
-import { Button } from 'antd';
+import React, { useState } from 'react';
+import { Button, message, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import React from 'react';
-import classNames from 'classnames';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { OperateType } from 'src/utils/interface';
 import { Toast } from 'tenacity-tools';
+import { useHistory } from 'react-router';
+import {
+  requestManagePackageRun,
+  requestExportPackage,
+  requestGetDelPackage,
+  requestGetPackageCompute
+} from 'src/apis/CrowdsManage';
+import classNames from 'classnames';
 
 interface ICrowdsPackageRow {
   packageId: string; // 是 分群ID
@@ -94,11 +100,62 @@ interface VideoColumn {
   [prop: string]: any;
 }
 
-export const tableColumnsFun = (onOperation: (type: OperateType) => void): ColumnsType<VideoColumn> => {
+export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsType<VideoColumn> => {
+  const [btnLoadingPackageId, setBtnLoadingPackageId] = useState<{
+    manage: string; // 暂停/开启按钮
+    export: string; // 导出按钮
+    compute: string; // 计算按钮
+  }>({ manage: '', export: '', compute: '' });
+
+  const history = useHistory();
+
   // 导出人群包
-  const exportGroup = () => {
-    Toast.info('去查看下载人群包进行查看');
-    console.log('导出人群包');
+  const exportGroup = async (row: ICrowdsPackageRow) => {
+    setBtnLoadingPackageId((param) => ({ ...param, export: row.packageId }));
+    const { packageId, computeRecordId } = row;
+    const res = await requestExportPackage({ packageId, computeRecordId });
+    if (res) {
+      Toast.info('去查看下载人群包进行查看');
+    }
+    setBtnLoadingPackageId((param) => ({ ...param, export: '' }));
+  };
+  // 查看分群详情
+  const viewDetail = () => {
+    history.push('/tagCrowds/detail');
+  };
+  // 开启/暂停 status： 1-开启；2-暂停
+  const manageHandle = async (row: ICrowdsPackageRow) => {
+    setBtnLoadingPackageId((param) => ({ ...param, manage: row.packageId }));
+    const { packageId, runStatus } = row;
+    const res = await requestManagePackageRun({ packageId, status: runStatus === 1 ? 2 : 1 });
+    if (res) {
+      message.error(`人群包${runStatus === 1 ? '暂停' : '开启'}成功`);
+      getList();
+    } else {
+      message.error(`人群包${runStatus === 1 ? '暂停' : '开启'}失败`);
+    }
+    setBtnLoadingPackageId((param) => ({ ...param, manage: '' }));
+  };
+  // 删除人群包
+  const deleteHandle = async (row: ICrowdsPackageRow) => {
+    const { packageId } = row;
+    const res = await requestGetDelPackage({ list: [packageId] });
+    if (res) {
+      message.success('人群包删除成功');
+      getList();
+    } else {
+      message.error('人群包删除失败');
+    }
+  };
+  // 计算人群包
+  const computeHandle = async (row: ICrowdsPackageRow) => {
+    setBtnLoadingPackageId((param) => ({ ...param, compute: row.packageId }));
+    const { packageId } = row;
+    const res = await requestGetPackageCompute({ packageId });
+    if (res) {
+      message.success('计算成功');
+    }
+    setBtnLoadingPackageId((param) => ({ ...param, compute: '' }));
   };
   return [
     {
@@ -130,10 +187,10 @@ export const tableColumnsFun = (onOperation: (type: OperateType) => void): Colum
           <i
             className={classNames('status-point', {
               'status-point-green': text === 1,
-              'status-point-red': text === 2,
-              'status-point-gray': text === 3
+              // 'status-point-gray': text === 2,
+              'status-point-red': text === 3
             })}
-          ></i>
+          />
           {computedOptions.find((item) => item.id === text)?.name}
         </span>
       )
@@ -151,51 +208,90 @@ export const tableColumnsFun = (onOperation: (type: OperateType) => void): Colum
       title: '创建人'
     },
     {
-      key: 'key7',
-      dataIndex: 'key7',
+      dataIndex: 'runStatus',
       title: '运行状态',
       width: 100,
-      render: (text) => statusOptions.filter((item) => item.id === text)[0]?.name
+      render: (text) => (
+        <span>
+          <i
+            className={classNames('status-point', {
+              'status-point-red': text === 3
+            })}
+          />
+          {statusOptions.filter((item) => item.id === text)[0]?.name}
+        </span>
+      )
     },
     {
-      key: 'runStatus',
-      dataIndex: 'runStatus',
+      dataIndex: 'clientNum',
       width: 100,
       title: '客户数量'
     },
     {
-      key: 'key9',
-      dataIndex: 'key9',
+      dataIndex: 'staffNum',
       width: 120,
       title: '对应坐席数量'
     },
     {
-      key: 'staffNum',
-      dataIndex: 'staffNum',
+      dataIndex: 'updateTime',
       width: 180,
       title: '更新时间'
     },
     {
-      key: 'key7',
       title: '操作',
       fixed: 'right',
-      width: 330,
+      width: 320,
       render: (record: ICrowdsPackageRow) => {
         return (
           <div>
-            <Button type="link" onClick={() => onOperation('view')}>
+            <Button type="link" onClick={viewDetail}>
               分群详情
             </Button>
-            {record.computeStatus === 1 ? <Button type="link">开启</Button> : <Button type="link">暂停</Button>}
-            <Button type="link" onClick={exportGroup}>
+            {/* 每日更新方式对应的是：开启/暂停 */}
+            {record.refreshType === 1 && (
+              <>
+                {record.runStatus === 2
+                  ? (
+                  <Button
+                    type="link"
+                    loading={btnLoadingPackageId.manage === record.packageId}
+                    onClick={() => manageHandle(record)}
+                  >
+                    开启
+                  </Button>
+                    )
+                  : (
+                  <Button
+                    type="link"
+                    loading={btnLoadingPackageId.manage === record.packageId}
+                    onClick={() => manageHandle(record)}
+                  >
+                    暂停
+                  </Button>
+                    )}
+              </>
+            )}
+            <Button
+              type="link"
+              loading={btnLoadingPackageId.export === record.packageId}
+              onClick={() => exportGroup(record)}
+            >
               导出人群包
             </Button>
-            {record.computeStatus !== 1 && (
-              <Button type="link" disabled={record.computeStatus === 3}>
+            {/* 手工更新方式对应的是：点击计算/点击计算（置灰） */}
+            {record.refreshType === 2 && (
+              <Button
+                type="link"
+                loading={btnLoadingPackageId.compute === record.packageId}
+                disabled={record.computeStatus === 1}
+                onClick={() => computeHandle(record)}
+              >
                 点击计算
               </Button>
             )}
-            <Button type="link">删除</Button>
+            <Popconfirm title="确定要删除?" onConfirm={() => deleteHandle(record)}>
+              <Button type="link">删除</Button>
+            </Popconfirm>
           </div>
         );
       }

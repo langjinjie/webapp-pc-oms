@@ -10,6 +10,7 @@ interface IAddUser {
   userId: string;
   userName: string;
   userType: number;
+  deptName?: string;
 }
 
 interface ISelectStaffProps {
@@ -27,19 +28,26 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
     setStaffVisible(true);
     setUserType(2);
   };
-  const addClientHandle = () => {
-    setClientVisible(true);
-    setUserType(1);
-  };
+
+  // 添加客户
+  // const addClientHandle = () => {
+  //   setClientVisible(true);
+  //   setUserType(1);
+  // };
+
   // onChange
   const staffOnChangeHandle = (staffValue?: any) => {
     onChange?.([
       ...(value?.filter(({ userType: valueUserType }) => userType !== valueUserType) || []),
-      ...staffValue?.map(({ staffId, staffName }: { staffId: string; staffName: string }) => ({
-        userId: staffId,
-        userName: staffName,
-        userType
-      }))
+      ...staffValue?.map(
+        ({ staffId, staffName, deptName }: { staffId: string; staffName: string; deptName?: string }) => ({
+          userId: staffId,
+          userName: staffName,
+          // deptName 方便查找该员工所在部门
+          deptName,
+          userType
+        })
+      )
     ]);
   };
   const clientOnChangeHandle = (clientValue?: any) => {
@@ -56,11 +64,13 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
     ]);
   };
   const formatValue = useMemo(() => {
+    console.log('value', value);
     let newValue: any[] | undefined;
+    // userType: 2-客户经理 1-客户
     if (userType === 2) {
       newValue = value
         ?.filter((filterItem) => filterItem.userType === userType)
-        .map(({ userId, userName }) => ({ staffId: userId, staffName: userName }));
+        .map(({ userId, userName, deptName }) => ({ staffId: userId, staffName: userName, deptName }));
     } else {
       newValue = value
         ?.filter((filterItem) => filterItem.userType === userType)
@@ -91,7 +101,7 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
         >
           添加客户经理
         </Button>
-        <Button
+        {/* <Button
           ghost
           type="primary"
           shape="round"
@@ -100,7 +110,7 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
           onClick={addClientHandle}
         >
           新增客户
-        </Button>
+        </Button> */}
       </Space>
 
       <div className={classNames(style.selectedWrap, 'mt8')}>

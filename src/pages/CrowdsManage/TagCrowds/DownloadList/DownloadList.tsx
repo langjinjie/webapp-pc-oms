@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { BreadCrumbs, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, tableColumnsFun } from './Config';
+import { requestGetPackageDownloadList } from 'src/apis/CrowdsManage';
 
 const DownloadList: React.FC<RouteComponentProps> = () => {
   const [list, setList] = useState<any[]>([]);
@@ -11,68 +12,13 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
-    total: 0,
-    showTotal: (total) => {
-      return `共 ${total} 条记录`;
-    }
+    total: 0
   });
   // 获取列表
   const getList = async (values?: any) => {
-    console.log('values', values);
+    console.log('getList', values);
     setTableLoading(true);
-    // const res = await requestGetStaffLiveList({ ...values });
-    const res = {
-      total: 4,
-      list: [
-        {
-          key1: 'D00000021',
-          key2: 'G000001',
-          key3: '关注慢性病',
-          key4: 199,
-          key5: 10,
-          key6: '2022-10-01 10:01:20',
-          key7: 1,
-          key8: '2022-09-01 10:01:20',
-          key9: '爱德华'
-        },
-        {
-          key1: 'D00000031',
-          key2: 'G000002',
-          key3: '女性防癌',
-          key4: 20,
-          key5: '4',
-          key6: '2022-10-02 14:01:12',
-          key7: 1,
-          key8: '2022-10-01 10:01:20',
-          key9: '吴向前',
-          key10: '2022-10-01 10:01:20'
-        },
-        {
-          key1: 'D00000022',
-          key2: 'G000003',
-          key3: '年金收益',
-          key4: 321,
-          key5: '31',
-          key6: '2022-09-21 16:32:23',
-          key7: 1,
-          key8: '2022-08-21 13:01:20',
-          key9: '李爱珍',
-          key10: '2022-10-01 10:01:20'
-        },
-        {
-          key1: 'D00000003',
-          key2: 'G001003',
-          key3: '续保犹豫',
-          key4: 108,
-          key5: 9,
-          key6: '2022-09-11 12:32:03',
-          key7: 1,
-          key8: '2022-08-01 10:00:20',
-          key9: '王振',
-          key10: '2022-10-01 10:01:20'
-        }
-      ]
-    };
+    const res = await requestGetPackageDownloadList({ ...values });
     if (res) {
       setList(res.list);
       // setRecordItem(undefined);
@@ -82,31 +28,30 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
   };
 
   const onFinishHandle = (values?: any) => {
-    const { expireDay, createTime, updateTime, staffId } = values;
-    let beginCreateTime;
-    let endCreateTime;
-    let beginUpdateTime;
-    let endUpdateTime;
-    if (createTime) {
-      beginCreateTime = createTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      endCreateTime = createTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+    console.log('onFinishHandle', values);
+    const { runTime, updateTime } = values;
+    let updateTimeBegin;
+    let updateTimeEnd;
+    let runTimeBegin;
+    let runTimeEnd;
+    // 生成时间
+    if (runTime) {
+      runTimeBegin = runTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      runTimeEnd = runTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
+    // 更新时间
     if (updateTime) {
-      beginUpdateTime = updateTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      endUpdateTime = updateTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+      updateTimeBegin = updateTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+      updateTimeEnd = updateTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
     }
-    if (expireDay) {
-      values.expireDay = expireDay.endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    delete values.createTime;
+    delete values.runTime;
     delete values.updateTime;
     const param = {
       ...values,
-      beginCreateTime,
-      endCreateTime,
-      beginUpdateTime,
-      endUpdateTime,
-      staffId: staffId?.[0]?.staffId
+      runTimeBegin,
+      runTimeEnd,
+      updateTimeBegin,
+      updateTimeEnd
     };
     getList(param);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
@@ -142,7 +87,7 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
 
       <NgTable
         className="mt20"
-        rowKey={'key1'}
+        rowKey="dlId"
         loading={tableLoading}
         columns={tableColumnsFun()}
         dataSource={list}
