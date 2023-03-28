@@ -1,13 +1,27 @@
+import React, { useState } from 'react';
 import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { UNKNOWN, downloadImage } from 'src/utils/base';
+import { requestDownloadPackageFile } from 'src/apis/CrowdsPackage';
 
 const statusOptions = [
   { id: 0, name: '生成中' },
   { id: 1, name: '生成成功' },
   { id: 2, name: '生成失败' }
 ];
+
+export interface IPackageDownLoadRow {
+  dlId: string; // 是 下载ID
+  packageId: string; // 否 分群ID
+  packageName: string; // 否 分群名称
+  opName: string; // 否 处理人
+  runStatus: number; // 否 生成状态(0-生成中，1-生成成功，2-生成失败)
+  clientNum: number; // 否 客户数量
+  staffNum: number; // 否 对应坐席数量
+  updateTime: string; // 否 人群包更新时间
+  runTime: string; // 否 生成时间
+}
 
 export const searchCols: SearchCol[] = [
   {
@@ -51,75 +65,79 @@ export const searchCols: SearchCol[] = [
   }
 ];
 
-interface VideoColumn {
-  [prop: string]: any;
-}
+export const tableColumnsFun = (): ColumnsType<IPackageDownLoadRow> => {
+  const [dowLoadDlId, setDowLoadDlId] = useState('');
 
-export const tableColumnsFun = (): ColumnsType<VideoColumn> => {
+  // 下载文件
+  const downLoadHandle = async (row: IPackageDownLoadRow) => {
+    const { dlId, packageId } = row;
+    setDowLoadDlId(dlId);
+    const res = await requestDownloadPackageFile({ dlId, packageId });
+    if (res) {
+      console.log('res', res);
+      downloadImage(res.url);
+    }
+    setDowLoadDlId('');
+  };
   return [
-    // {
-    //   key: 'key1',
-    //   dataIndex: 'key1',
-    //   title: '下载ID',
-    //   width: 100
-    // },
     {
-      key: 'packageId',
+      dataIndex: 'dlId',
+      title: '下载ID',
+      width: 240
+    },
+    {
       dataIndex: 'packageId',
       title: '分群ID',
       width: 140
     },
     {
-      key: 'packageName',
       dataIndex: 'packageName',
       title: '分群名称',
-      width: 100
+      width: 300,
+      ellipsis: true
     },
-
     {
-      key: 'clientNum',
       dataIndex: 'clientNum',
       width: 100,
       title: '客户数量'
     },
     {
-      key: 'staffNum',
       dataIndex: 'staffNum',
       width: 120,
       title: '对应坐席数量'
     },
     {
-      key: 'updateTime',
       dataIndex: 'updateTime',
-      width: 180,
+      width: 200,
       title: '更新时间'
     },
     {
-      key: 'runStatus',
       dataIndex: 'runStatus',
       title: '生成状态',
       width: 140,
       render: (text) => statusOptions.find((status) => status.id === text)?.name
     },
     {
-      key: 'runTime',
       dataIndex: 'runTime',
       title: '生成时间',
-      width: 140
+      width: 200
     },
     {
-      key: 'opName',
       dataIndex: 'opName',
       title: '处理人',
-      width: 140
+      width: 100,
+      render: (opName: string) => <span>{opName || UNKNOWN}</span>
     },
     {
-      key: 'key7',
       title: '操作',
       fixed: 'right',
       width: 100,
-      render: () => {
-        return <Button type="link">下载文件</Button>;
+      render: (row: IPackageDownLoadRow) => {
+        return (
+          <Button type="link" loading={dowLoadDlId === row.dlId} onClick={() => downLoadHandle(row)}>
+            下载文件
+          </Button>
+        );
       }
     }
   ];

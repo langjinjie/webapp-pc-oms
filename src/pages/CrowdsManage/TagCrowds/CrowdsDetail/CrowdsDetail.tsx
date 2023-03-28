@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Button, DatePicker, Space } from 'antd';
+import { Button, Space, Empty } from 'antd';
 import BarChart from './components/BarChart';
 import { BreadCrumbs, NgTable } from 'src/components';
 import { useHistory } from 'react-router-dom';
 import { updateOptions, computedOptions } from 'src/pages/CrowdsManage/TagCrowds/Config';
+import { requestGetPackageDetail } from 'src/apis/CrowdsPackage';
+import qs from 'qs';
 import classNames from 'classnames';
 import styles from './style.module.less';
 
@@ -29,94 +31,18 @@ interface ICrowdsLastTenItem {
   computeRecordId: string; // 是 人群包计算记录ID
 }
 
-interface ICrowdsHistory {
-  date: string; // 是 日期
-  updateTime: string; //  是  更新时间
-  clientNum: number; //  否  客户数量
-  staffNum: number; //  否  对应坐席数量
-  computeRecordId: string; //  是  人群包计算记录ID
-}
-
 const GroupDetail: React.FC = () => {
   const [crowdsDetail, setCrowdsDetail] = useState<ICrowdsDetail>();
-  const [crowdsHistory, setCrowdsHistory] = useState<ICrowdsHistory[]>([]);
   const history = useHistory();
 
   // 获取人群包详情
-  const getDetail = () => {
-    const crowdsDetail = {
-      packageId: '1',
-      packageName: '分群名称',
-      computeStatus: 1,
-      refreshType: 2,
-      createTime: '2022-05-02 21:00',
-      opName: '王小二',
-      runStatus: 1,
-      clientNum: 5000,
-      staffNum: 500,
-      updateTime: '2022-05-02 21:00',
-      list: [
-        {
-          updateTime: '2022-05-02 21:00',
-          refreshType: 1,
-          clientNum: 680,
-          staffNum: 68,
-          computeStatus: 1,
-          computeRecordId: '1'
-        }
-      ]
-    };
-    setCrowdsDetail(crowdsDetail);
-  };
-
-  // 获取分群历史
-  const getCrowdsHistory = (value?: any) => {
-    console.log('value', value);
-    const crowdsHistory: ICrowdsHistory[] = [
-      {
-        date: '05-25',
-        updateTime: '2022-05-02 21:00',
-        clientNum: 23,
-        staffNum: 10,
-        computeRecordId: '1'
-      },
-      {
-        date: '05-27',
-        updateTime: '2022-05-02 21:00',
-        clientNum: 1021,
-        staffNum: 660,
-        computeRecordId: '2'
-      },
-      {
-        date: '05-28',
-        updateTime: '2022-05-02 21:00',
-        clientNum: 941,
-        staffNum: 743,
-        computeRecordId: '3'
-      },
-      {
-        date: '05-29',
-        updateTime: '2022-05-02 21:00',
-        clientNum: 1294,
-        staffNum: 499,
-        computeRecordId: '4'
-      },
-      {
-        date: '05-30',
-        updateTime: '2022-05-02 21:00',
-        clientNum: 1544,
-        staffNum: 910,
-        computeRecordId: '5'
-      },
-      {
-        date: '05-31',
-        updateTime: '2022-05-02 21:00',
-        clientNum: 624,
-        staffNum: 348,
-        computeRecordId: '6'
-      }
-    ];
-    setCrowdsHistory(crowdsHistory);
+  const getDetail = async () => {
+    const { packageId } = qs.parse(location.search, { ignoreQueryPrefix: true });
+    const res = await requestGetPackageDetail({ packageId });
+    console.log('res', res);
+    if (res) {
+      setCrowdsDetail(res);
+    }
   };
 
   // 查看详情
@@ -125,8 +51,6 @@ const GroupDetail: React.FC = () => {
   };
   useEffect(() => {
     getDetail();
-    getCrowdsHistory();
-    console.log(crowdsHistory, setCrowdsHistory);
   }, []);
   return (
     <div className="container">
@@ -137,11 +61,11 @@ const GroupDetail: React.FC = () => {
           <div className="color-text-white">
             <Space size={36}>
               <span className="f18">
-                客户 <span className={classNames('f30 bold')}>{crowdsDetail?.clientNum}</span>人
+                客户 <span className={classNames('f30 bold')}>{crowdsDetail?.clientNum || 0}</span>人
               </span>
               <span className="f18">
-                对应坐席 <span className="f30 bold">{crowdsDetail?.staffNum}</span>人
-                <span className="f12 ml35">更新时间 {crowdsDetail?.updateTime}</span>
+                对应坐席 <span className="f30 bold">{crowdsDetail?.staffNum || 0}</span>人
+                <span className="f12 ml35">更新时间 {crowdsDetail?.updateTime || '--'}</span>
               </span>
             </Space>
           </div>
@@ -157,21 +81,29 @@ const GroupDetail: React.FC = () => {
           </div>
         </div>
         <div className={classNames(styles.bannerFooter, 'color-white f12')}>
-          <span>更新方式：{updateOptions.find((findItem) => findItem.id === crowdsDetail?.refreshType)?.name}</span>
-          <span className="ml20">创建人：{crowdsDetail?.opName}</span>
-          <span className="ml20">创建时间：{crowdsDetail?.createTime}</span>
+          <span>
+            更新方式：{updateOptions.find((findItem) => findItem.id === crowdsDetail?.refreshType)?.name || '--'}
+          </span>
+          <span className="ml20">创建人：{crowdsDetail?.opName || '--'}</span>
+          <span className="ml20">创建时间：{crowdsDetail?.createTime || '--'}</span>
         </div>
       </div>
 
       <div className={styles.chartWrap}>
         <div className={classNames(styles.chartTitle, 'flex justify-between align-center')}>
           <span className="f18">分群历史详情</span>
-          <div>
+          {/* <div>
             <span>筛选添加: </span>
             <DatePicker.RangePicker />
-          </div>
+          </div> */}
         </div>
-        <BarChart data={crowdsHistory} />
+        {(crowdsDetail?.list || []).length !== 0
+          ? (
+          <BarChart data={crowdsDetail?.list || []} />
+            )
+          : (
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
       </div>
       <NgTable
         className="mt20"
@@ -204,6 +136,7 @@ const GroupDetail: React.FC = () => {
           },
           {
             title: '操作',
+            fixed: 'right',
             render: () => <Button type="link">导出人群包</Button>
           }
         ]}

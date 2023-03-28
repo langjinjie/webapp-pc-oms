@@ -55,11 +55,10 @@ export const requestGetPackageDownloadList: HttpFunction = (param) => {
 /**
  * @description 7、获取人群包下载文件
  * @param param
+ * @returns fileUrl
  */
 export const requestDownloadPackageFile: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/tag/package/download/file', param, {
-    responseType: 'blob'
-  });
+  return http.post('/tenacity-admin/api/tag/package/download/file', param);
 };
 
 /**
@@ -67,7 +66,7 @@ export const requestDownloadPackageFile: HttpFunction = (param) => {
  * @param param
  */
 export const requestGetPackageDetail: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/tag/package/rule', param);
+  return http.post('/tenacity-admin/api/tag/package/detail', param);
 };
 
 /**

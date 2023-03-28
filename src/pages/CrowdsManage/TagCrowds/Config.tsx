@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Button, message, Popconfirm } from 'antd';
+import { Button, message, Modal, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { Toast } from 'tenacity-tools';
 import { useHistory } from 'react-router';
 import {
   requestManagePackageRun,
   requestExportPackage,
   requestGetDelPackage,
   requestGetPackageCompute
-} from 'src/apis/CrowdsManage';
+} from 'src/apis/CrowdsPackage';
 import classNames from 'classnames';
+import { UNKNOWN } from 'src/utils/base';
 
 interface ICrowdsPackageRow {
   packageId: string; // 是 分群ID
@@ -115,13 +115,20 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
     const { packageId, computeRecordId } = row;
     const res = await requestExportPackage({ packageId, computeRecordId });
     if (res) {
-      Toast.info('去查看下载人群包进行查看');
+      Modal.confirm({
+        title: '操作提示',
+        centered: true,
+        content: '人群包导出成功，是否跳转到人群包下载列表？',
+        onOk () {
+          history.push('/tagCrowds/download');
+        }
+      });
     }
     setBtnLoadingPackageId((param) => ({ ...param, export: '' }));
   };
   // 查看分群详情
-  const viewDetail = () => {
-    history.push('/tagCrowds/detail');
+  const viewDetail = (row: ICrowdsPackageRow) => {
+    history.push('/tagCrowds/detail?packageId=' + row.packageId);
   };
   // 开启/暂停 status： 1-开启；2-暂停
   const manageHandle = async (row: ICrowdsPackageRow) => {
@@ -168,7 +175,8 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
       key: 'packageName',
       dataIndex: 'packageName',
       title: '分群名称',
-      width: 140
+      width: 300,
+      ellipsis: true
     },
     {
       key: 'refreshType',
@@ -205,7 +213,8 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
       key: 'opName',
       dataIndex: 'opName',
       width: 100,
-      title: '创建人'
+      title: '创建人',
+      render: (opName: string) => <span>{opName || UNKNOWN}</span>
     },
     {
       dataIndex: 'runStatus',
@@ -234,7 +243,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
     },
     {
       dataIndex: 'updateTime',
-      width: 180,
+      width: 200,
       title: '更新时间'
     },
     {
@@ -244,31 +253,19 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
       render: (record: ICrowdsPackageRow) => {
         return (
           <div>
-            <Button type="link" onClick={viewDetail}>
+            <Button type="link" onClick={() => viewDetail(record)}>
               分群详情
             </Button>
             {/* 每日更新方式对应的是：开启/暂停 */}
             {record.refreshType === 1 && (
               <>
-                {record.runStatus === 2
-                  ? (
-                  <Button
-                    type="link"
-                    loading={btnLoadingPackageId.manage === record.packageId}
-                    onClick={() => manageHandle(record)}
-                  >
-                    开启
-                  </Button>
-                    )
-                  : (
-                  <Button
-                    type="link"
-                    loading={btnLoadingPackageId.manage === record.packageId}
-                    onClick={() => manageHandle(record)}
-                  >
-                    暂停
-                  </Button>
-                    )}
+                <Button
+                  type="link"
+                  loading={btnLoadingPackageId.manage === record.packageId}
+                  onClick={() => manageHandle(record)}
+                >
+                  {record.runStatus === 2 ? '开启' : '暂停'}
+                </Button>
               </>
             )}
             <Button
@@ -283,7 +280,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
               <Button
                 type="link"
                 loading={btnLoadingPackageId.compute === record.packageId}
-                disabled={record.computeStatus === 1}
+                disabled={record.computeStatus === 2}
                 onClick={() => computeHandle(record)}
               >
                 点击计算

@@ -130,7 +130,6 @@ export const throttle = (fn: { apply: (arg0: any, arg1: any) => void }, interval
  * @param fileName
  */
 export const exportFile = (data: BlobPart, fileName: string, suffix = 'xlsx'): void => {
-  console.log('suffix', suffix);
   const blob = new Blob([data]);
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -385,3 +384,14 @@ export function numberToChinese (num: number, isUpper?: boolean): string {
   }
   return result;
 }
+
+/**
+ * @description 时间格式化
+ * @param date
+ * @returns [begin, end]
+ */
+export const formatDate = (date?: moment.Moment[]): string[] => {
+  if (!date) return [];
+  const [start, end] = date;
+  return [start?.startOf('day').format('YYYY-MM-DD HH:mm:ss'), end?.endOf('day').format('YYYY-MM-DD HH:mm:ss')];
+};

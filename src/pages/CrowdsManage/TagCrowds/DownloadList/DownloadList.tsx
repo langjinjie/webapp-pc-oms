@@ -2,11 +2,12 @@ import { PaginationProps } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { BreadCrumbs, NgFormSearch, NgTable } from 'src/components';
-import { searchCols, tableColumnsFun } from './Config';
-import { requestGetPackageDownloadList } from 'src/apis/CrowdsManage';
+import { searchCols, tableColumnsFun, IPackageDownLoadRow } from './Config';
+import { requestGetPackageDownloadList } from 'src/apis/CrowdsPackage';
+import { formatDate } from 'src/utils/base';
 
 const DownloadList: React.FC<RouteComponentProps> = () => {
-  const [list, setList] = useState<any[]>([]);
+  const [list, setList] = useState<IPackageDownLoadRow[]>([]);
   const [tableLoading, setTableLoading] = useState(true);
   const [formParam, setFormParam] = useState<{ [key: string]: any }>({});
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -29,21 +30,11 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
 
   const onFinishHandle = (values?: any) => {
     console.log('onFinishHandle', values);
-    const { runTime, updateTime } = values;
-    let updateTimeBegin;
-    let updateTimeEnd;
-    let runTimeBegin;
-    let runTimeEnd;
+    const { updateTime, runTime } = values;
     // 生成时间
-    if (runTime) {
-      runTimeBegin = runTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      runTimeEnd = runTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
+    const [runTimeBegin, runTimeEnd] = formatDate(runTime);
     // 更新时间
-    if (updateTime) {
-      updateTimeBegin = updateTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      updateTimeEnd = updateTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
+    const [updateTimeBegin, updateTimeEnd] = formatDate(updateTime);
     delete values.runTime;
     delete values.updateTime;
     const param = {

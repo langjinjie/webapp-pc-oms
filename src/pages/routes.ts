@@ -11,7 +11,7 @@ import { RouteProps } from 'react-router-dom';
 import { knowledgeRoutes } from 'src/routes/knowledge';
 import { auditRoutes } from 'src/routes/audit';
 import { migrationRoters } from 'src/routes/migration';
-import { crowdsManage } from 'src/routes/crowds';
+import { crowdsManage } from 'src/routes/crowdsPackage';
 
 export interface Menu {
   name: string;

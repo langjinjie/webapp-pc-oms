@@ -20,13 +20,14 @@ export function tooltipCustom (toolTipSource: toolTipSourceProps): string {
 }
 
 const BarChart: React.FC<{ data: any[] }> = ({ data }) => {
+  // @ts-ignore
   const options = useMemo<ECOption>(() => {
     return {
       legend: {
         data: ['客户数量', '坐席数量']
       },
       xAxis: {
-        data: data.map((item) => item.date)
+        data: data.map((item) => item.updateTime)
       },
       yAxis: {
         type: 'value'

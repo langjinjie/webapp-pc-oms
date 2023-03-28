@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, PaginationProps, Space } from 'antd';
+import { Button, message, Modal, PaginationProps, Space } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, tableColumnsFun } from './Config';
-import { requestGetPackageList } from 'src/apis/CrowdsManage';
+import { requestGetPackageList, requestGetDelPackage } from 'src/apis/CrowdsPackage';
+import { formatDate } from 'src/utils/base';
 
 const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
   const [list, setList] = useState<any[]>([]);
@@ -21,112 +22,11 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
     setTableLoading(true);
     const res = await requestGetPackageList({ ...values });
     console.log('res', res);
-    const res1 = {
-      total: 134,
-      list: [
-        {
-          packageId: '00001',
-          packageName: '关注慢性病',
-          refreshType: 1,
-          computeStatus: 1,
-          createTime: '2022-10-20 16:11:12',
-          opName: '孙思瑶',
-          runStatus: 1,
-          clientNum: 450,
-          staffNum: 10,
-          updateTime: '2022-10-20 16:15:31'
-        },
-        {
-          packageId: '00002',
-          packageName: '有老人',
-          refreshType: 2,
-          computeStatus: 2,
-          createTime: '2022-10-20 14:31:12',
-          opName: '吴桐',
-          runStatus: 1,
-          clientNum: 450,
-          staffNum: 10,
-          updateTime: '2022-10-20 14:31:12'
-        },
-        {
-          packageId: '00003',
-          packageName: '有子女',
-          refreshType: 1,
-          computeStatus: 3,
-          createTime: '2022-10-20 14:11:45',
-          opName: '吴桐',
-          runStatus: 1,
-          clientNum: 450,
-          staffNum: 10,
-          updateTime: '2022-10-01 10:01:20'
-        },
-        {
-          packageId: '00004',
-          packageName: '女性防癌',
-          refreshType: 1,
-          computeStatus: 1,
-          createTime: '2022-10-19 09:40:46',
-          opName: '吴桐',
-          runStatus: 1,
-          clientNum: 450,
-          staffNum: 10,
-          updateTime: '2022-10-19 09:40:46'
-        },
-        {
-          packageId: '00005',
-          packageName: '年金收益',
-          refreshType: 1,
-          computeStatus: 1,
-          createTime: '2022-10-18 16:40:46',
-          opName: '吴桐',
-          runStatus: 1,
-          clientNum: 450,
-          staffNum: 10,
-          updateTime: '2022-10-18 16:40:46'
-        },
-        {
-          packageId: '00006',
-          packageName: '续保犹豫',
-          refreshType: 1,
-          computeStatus: 1,
-          createTime: '2022-10-17 13:40:22',
-          opName: '吴桐',
-          runStatus: 1,
-          clientNum: 450,
-          staffNum: 10,
-          updateTime: '2022-10-17 13:40:22'
-        },
-        {
-          packageId: '00007',
-          packageName: '转保风险高',
-          refreshType: 1,
-          computeStatus: 1,
-          createTime: '2022-10-17 10:40:00',
-          opName: '吴桐',
-          runStatus: 1,
-          clientNum: 450,
-          staffNum: 10,
-          updateTime: '2022-10-17 10:40:00'
-        },
-        {
-          packageId: '00008',
-          packageName: '出险理赔群',
-          refreshType: 1,
-          computeStatus: 1,
-          createTime: '2022-10-17 09:42:03',
-          opName: '吴桐',
-          runStatus: 1,
-          clientNum: 450,
-          staffNum: 10,
-          updateTime: '2022-10-17 09:44:37'
-        }
-      ]
-    };
-    if (res1) {
-      setList(res1.list);
+    if (res) {
+      setList(res.list);
       setSelectedRowKeys([]);
       // setRecordItem(undefined);
-      setPagination((pagination) => ({ ...pagination, total: res1.total }));
+      setPagination((pagination) => ({ ...pagination, total: res.total }));
     }
     setTableLoading(false);
   };
@@ -138,21 +38,13 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   const onFinishHandle = (values?: any) => {
     console.log('values', values);
-    const { createTime, updateTime } = values;
-    let createTimeBegin;
-    let createTimeEnd;
-    let updateTimeBegin;
-    let updateTimeEnd;
-    if (createTime) {
-      createTimeBegin = createTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      createTimeEnd = createTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    if (updateTime) {
-      updateTimeBegin = updateTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      updateTimeEnd = updateTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
+    // createTime已经在组件内被格式化，可以直接用 updateTime 需要自己格式化
+    const { beginTime: createTimeBegin, endTime: createTimeEnd, updateTime } = values;
+    const [updateTimeBegin, updateTimeEnd] = formatDate(updateTime);
     delete values.createTime;
     delete values.updateTime;
+    delete values.beginTime;
+    delete values.endTime;
     const param = {
       ...values,
       createTimeBegin,
@@ -194,6 +86,21 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 批量删除
   const batchDelHandle = () => {
+    Modal.confirm({
+      title: '操作提示',
+      centered: true,
+      content: `确定删除选中的${selectedRowKeys.length}个人群包`,
+      async onOk () {
+        const list = selectedRowKeys.map((packageId) => ({ packageId }));
+        const res = await requestGetDelPackage({ list });
+        console.log('res', res);
+        if (res) {
+          message.success('人群包批量删除成功');
+          const { current: pageNum, pageSize } = pagination;
+          getList({ ...formParam, pageNum, pageSize });
+        }
+      }
+    });
     console.log('selectedRowKeys', selectedRowKeys);
   };
 
@@ -232,11 +139,13 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
         loading={tableLoading}
         rowSelection={rowSelection}
       />
-      <div className={'operationWrap'}>
-        <Button type="primary" ghost shape="round" disabled={selectedRowKeys.length === 0} onClick={batchDelHandle}>
-          批量删除
-        </Button>
-      </div>
+      {list.length !== 0 && (
+        <div className={'operationWrap'}>
+          <Button type="primary" ghost shape="round" disabled={selectedRowKeys.length === 0} onClick={batchDelHandle}>
+            批量删除
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
