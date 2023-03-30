@@ -41,6 +41,7 @@ export type FetchDataRecordType = {
   createBy: string;
   dateCreated: string;
   lastUpdated: string;
+  recordId: string;
   [prop: string]: any;
 };
 export const TableColumnFun = (): TableColumnProps<FetchDataRecordType>[] => {
@@ -95,13 +96,19 @@ export const TableColumnFun = (): TableColumnProps<FetchDataRecordType>[] => {
     }
   ];
 };
+
+const executeStatus = [
+  { id: 0, name: '执行中' },
+  { id: 1, name: '执行成功' },
+  { id: 2, name: '执行失败' }
+];
 export const downloadTableColumnFun = (): TableColumnProps<FetchDataRecordType>[] => {
   return [
-    { key: 'sqlId', dataIndex: '', title: 'ID' },
-    { key: 'name', dataIndex: '', title: '模板名称' },
+    { key: 'sqlId', dataIndex: 'sqlId', title: 'ID' },
+    { key: 'sqlId', dataIndex: 'sqlId', title: '模板名称' },
     {
       key: 'des',
-      dataIndex: '',
+      dataIndex: 'des',
       title: '模板描述',
       ellipsis: { showTitle: false },
       render: (text) => (
@@ -112,7 +119,7 @@ export const downloadTableColumnFun = (): TableColumnProps<FetchDataRecordType>[
     },
     {
       key: 'execSql',
-      dataIndex: '',
+      dataIndex: 'execSql',
       title: '执行SQL',
       ellipsis: { showTitle: false },
       render: (text) => (
@@ -122,19 +129,15 @@ export const downloadTableColumnFun = (): TableColumnProps<FetchDataRecordType>[
       )
     },
     {
-      key: 'key4',
-      dataIndex: '',
+      key: 'status',
+      dataIndex: 'status',
       title: '生成状态',
       ellipsis: { showTitle: false },
-      render: (text) => (
-        <Tooltip placement="top" title={text}>
-          {text}
-        </Tooltip>
-      )
+      render: (text) => executeStatus.filter((item) => item.id === text)[0]?.name
     },
-    { key: 'key5', dataIndex: '', title: '生成时间' },
-    { key: 'usedTime', dataIndex: '', title: '执行时间' },
-    { key: 'createBy', dataIndex: '', title: '操作人' },
+    { key: 'lastUpdated', dataIndex: 'lastUpdated', title: '生成时间' },
+    { key: 'usedTime', dataIndex: 'usedTime', title: '执行时间' },
+    { key: 'createBy', dataIndex: 'createBy', title: '操作人' },
     {
       title: '操作',
       render: () => (

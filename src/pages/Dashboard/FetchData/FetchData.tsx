@@ -26,7 +26,7 @@ const FetchData: React.FC<RouteComponentProps> = ({ history }) => {
         创建模板
       </Button>
       <NgFormSearch className="mt30" onSearch={onSearch} searchCols={searchCols} />
-      <NgTable className="mt20" columns={TableColumnFun()}></NgTable>
+      <NgTable className="mt20" rowKey={'sqlId'} columns={TableColumnFun()}></NgTable>
     </div>
   );
 };
