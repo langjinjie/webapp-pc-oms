@@ -11,6 +11,7 @@ import { RouteProps } from 'react-router-dom';
 import { knowledgeRoutes } from 'src/routes/knowledge';
 import { auditRoutes } from 'src/routes/audit';
 import { migrationRoters } from 'src/routes/migration';
+import { dataRoutes } from 'src/routes/data';
 
 export interface Menu {
   name: string;
@@ -463,6 +464,8 @@ export const routes: RouteProps[] = [
   ...knowledgeRoutes,
   // 审批链
   ...auditRoutes,
+  // 数据管理
+  ...dataRoutes,
   /* * 客户管理
    */
   {
