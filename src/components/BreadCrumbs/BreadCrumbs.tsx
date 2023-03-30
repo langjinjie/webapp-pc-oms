@@ -4,19 +4,24 @@
  * @date 2021-07-01 15:14
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import classNames from 'classnames';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Nav } from 'src/utils/interface';
 import style from './style.module.less';
 
 interface BreadCrumbsProps {
   navClick?: (index: number) => void;
-  navList: Nav[];
+  navList?: Nav[];
 }
 
 const BreadCrumbs: React.FC<BreadCrumbsProps> = ({ navList, navClick }) => {
   const history = useHistory();
+  const location = useLocation();
+
+  const newNavList = useMemo(() => {
+    return navList || (location.state as { navList?: Nav[] })?.navList || [];
+  }, [location]);
   // 点击Nav
   const clickNavListHandle = (path: string) => {
     history.push(path!);
@@ -25,11 +30,11 @@ const BreadCrumbs: React.FC<BreadCrumbsProps> = ({ navList, navClick }) => {
   return (
     <ul className={style.breadList}>
       <li className={style.currentItem}>当前位置：</li>
-      {navList.map((item, index: number) => (
+      {newNavList.map((item, index: number) => (
         <li
           key={item.name}
           className={classNames(style.breadItem, {
-            [style.link]: index < navList.length - 1
+            [style.link]: index < newNavList.length - 1
           })}
         >
           <span
@@ -38,7 +43,7 @@ const BreadCrumbs: React.FC<BreadCrumbsProps> = ({ navList, navClick }) => {
               if (navClick) {
                 navClick(index);
               } else {
-                if (index < navList.length - 1) {
+                if (index < newNavList.length - 1) {
                   if (item.path) {
                     clickNavListHandle(item.path!);
                   } else {
@@ -50,7 +55,7 @@ const BreadCrumbs: React.FC<BreadCrumbsProps> = ({ navList, navClick }) => {
           >
             {item.name}
           </span>
-          {index < navList.length - 1 && <span className={style.splitSign}>/</span>}
+          {index < newNavList.length - 1 && <span className={style.splitSign}>/</span>}
         </li>
       ))}
     </ul>

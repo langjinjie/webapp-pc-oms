@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { UNKNOWN, downloadImage } from 'src/utils/base';
+import { UNKNOWN, exportFile } from 'src/utils/base';
 import { requestDownloadPackageFile } from 'src/apis/CrowdsPackage';
+import classNames from 'classnames';
 
 const statusOptions = [
   { id: 0, name: '生成中' },
@@ -70,12 +71,17 @@ export const tableColumnsFun = (): ColumnsType<IPackageDownLoadRow> => {
 
   // 下载文件
   const downLoadHandle = async (row: IPackageDownLoadRow) => {
+    if (row.runStatus !== 1) {
+      return message.warning(`人群包${statusOptions.find((findItem) => findItem.id === row.runStatus)?.name}`);
+    }
     const { dlId, packageId } = row;
     setDowLoadDlId(dlId);
     const res = await requestDownloadPackageFile({ dlId, packageId });
-    if (res) {
-      console.log('res', res);
-      downloadImage(res.url);
+    if (res && res.headers['content-disposition']?.split('=')[1]) {
+      const fileName = decodeURI(res.headers['content-disposition']?.split('=')[1]);
+      exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
+    } else {
+      message.warning('下载文件异常');
     }
     setDowLoadDlId('');
   };
@@ -83,12 +89,12 @@ export const tableColumnsFun = (): ColumnsType<IPackageDownLoadRow> => {
     {
       dataIndex: 'dlId',
       title: '下载ID',
-      width: 240
+      width: 200
     },
     {
       dataIndex: 'packageId',
       title: '分群ID',
-      width: 140
+      width: 200
     },
     {
       dataIndex: 'packageName',
@@ -115,7 +121,18 @@ export const tableColumnsFun = (): ColumnsType<IPackageDownLoadRow> => {
       dataIndex: 'runStatus',
       title: '生成状态',
       width: 140,
-      render: (text) => statusOptions.find((status) => status.id === text)?.name
+      render: (text) => (
+        <span>
+          <i
+            className={classNames('status-point', {
+              'status-point-green': text === 0,
+              // 'status-point-gray': text === 2,
+              'status-point-red': text === 2
+            })}
+          />
+          {statusOptions.find((item) => item.id === text)?.name}
+        </span>
+      )
     },
     {
       dataIndex: 'runTime',
@@ -134,7 +151,12 @@ export const tableColumnsFun = (): ColumnsType<IPackageDownLoadRow> => {
       width: 100,
       render: (row: IPackageDownLoadRow) => {
         return (
-          <Button type="link" loading={dowLoadDlId === row.dlId} onClick={() => downLoadHandle(row)}>
+          <Button
+            type="link"
+            className={classNames({ disabled: row.runStatus !== 1 })}
+            loading={dowLoadDlId === row.dlId}
+            onClick={() => downLoadHandle(row)}
+          >
             下载文件
           </Button>
         );

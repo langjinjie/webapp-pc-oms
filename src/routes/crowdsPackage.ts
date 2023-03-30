@@ -8,19 +8,19 @@ import { RouteProps } from 'react-router-dom';
  */
 export const crowdsManage: RouteProps[] = [
   {
-    path: '/tagCrowds',
-    component: lazy(() => import('src/pages/CrowdsManage/TagCrowds/TagCrowdsList'))
+    path: '/tagPackage',
+    component: lazy(() => import('src/pages/CrowdsPackage/TagPackage/PackageList'))
   },
   {
-    path: '/tagCrowds/detail',
-    component: lazy(() => import('src/pages/CrowdsManage/TagCrowds/CrowdsDetail/CrowdsDetail'))
+    path: '/tagPackage/detail',
+    component: lazy(() => import('src/pages/CrowdsPackage/TagPackage/PackageDetail/PackageDetail'))
   },
   {
-    path: '/tagCrowds/create',
-    component: lazy(() => import('src/pages/CrowdsManage/TagCrowds/CreateCrowds/CreateCrowds'))
+    path: '/tagPackage/create',
+    component: lazy(() => import('src/pages/CrowdsPackage/TagPackage/CreatePackage/CreatePackage'))
   },
   {
-    path: '/tagCrowds/download',
-    component: lazy(() => import('src/pages/CrowdsManage/TagCrowds/DownloadList/DownloadList'))
+    path: '/tagPackage/download',
+    component: lazy(() => import('src/pages/CrowdsPackage/TagPackage/DownloadList/DownloadList'))
   }
 ];

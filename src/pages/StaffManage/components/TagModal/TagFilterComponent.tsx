@@ -27,7 +27,6 @@ const TagFilterComponents: React.FC<ComponentsProps> = (props) => {
   };
 
   useEffect(() => {
-    console.log('value', value);
     value && filterClients(value);
   }, [value]);
   const onClose = () => {

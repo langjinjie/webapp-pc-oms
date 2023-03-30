@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Space, Tag } from 'antd';
 import { OrgTree } from 'src/components';
-import { ClientListModal } from 'src/pages/CrowdsManage/TagCrowds/component';
+import { ClientListModal } from 'src/pages/CrowdsPackage/TagPackage/component';
 import classNames from 'classnames';
 import style from './style.module.less';
 
@@ -30,10 +30,10 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
   };
 
   // 添加客户
-  // const addClientHandle = () => {
-  //   setClientVisible(true);
-  //   setUserType(1);
-  // };
+  /* const addClientHandle = () => {
+    setClientVisible(true);
+    setUserType(1);
+  }; */
 
   // onChange
   const staffOnChangeHandle = (staffValue?: any) => {
@@ -63,8 +63,12 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
       )
     ]);
   };
+
+  const onCloseHandle = (user: IAddUser) => {
+    onChange?.(value?.filter((valueItem) => valueItem.userId !== user.userId));
+  };
+
   const formatValue = useMemo(() => {
-    console.log('value', value);
     let newValue: any[] | undefined;
     // userType: 2-客户经理 1-客户
     if (userType === 2) {
@@ -95,6 +99,7 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
           ghost
           type="primary"
           shape="round"
+          disabled={readOnly}
           style={{ height: '32px' }}
           icon={<PlusOutlined />}
           onClick={addStaffHandle}
@@ -105,6 +110,7 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
           ghost
           type="primary"
           shape="round"
+          disabled={readOnly}
           style={{ height: '32px' }}
           icon={<PlusOutlined />}
           onClick={addClientHandle}
@@ -120,7 +126,7 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
             key={mapItem.userId}
             visible
             {...(readOnly ? { closable: false } : { closable: true })}
-            // onClose={() => onCloseHandle(tagItem)}
+            onClose={() => onCloseHandle(mapItem)}
           >
             {mapItem.userName}
           </Tag>

@@ -158,8 +158,6 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
       sessionStorage.removeItem('backRoute');
       history.replace(`${backRoutePath}?isCatch=1${refresh ? '&refresh=true' : ''}`);
     } else {
-      // history.goBack(); 会触发缓存组件更新
-      console.log('返回/确认');
       history.push(`/speechManage?${refresh ? 'refresh=true' : ''}`);
     }
   };

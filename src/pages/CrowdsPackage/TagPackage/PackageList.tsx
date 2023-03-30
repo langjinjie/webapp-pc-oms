@@ -18,14 +18,11 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
   });
   // 获取列表
   const getList = async (values?: any) => {
-    console.log('values', values);
     setTableLoading(true);
     const res = await requestGetPackageList({ ...values });
-    console.log('res', res);
     if (res) {
       setList(res.list);
       setSelectedRowKeys([]);
-      // setRecordItem(undefined);
       setPagination((pagination) => ({ ...pagination, total: res.total }));
     }
     setTableLoading(false);
@@ -37,7 +34,6 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
     setFormParam({});
   };
   const onFinishHandle = (values?: any) => {
-    console.log('values', values);
     // createTime已经在组件内被格式化，可以直接用 updateTime 需要自己格式化
     const { beginTime: createTimeBegin, endTime: createTimeEnd, updateTime } = values;
     const [updateTimeBegin, updateTimeEnd] = formatDate(updateTime);
@@ -59,7 +55,9 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 创建分群
   const createGroup = () => {
-    history.push('/tagCrowds/create');
+    history.push('/tagPackage/create', {
+      navList: [{ name: '标签分群', path: '/tagPackage' }, { name: '创建分群' }]
+    });
   };
 
   // 切换分页
@@ -89,11 +87,10 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
     Modal.confirm({
       title: '操作提示',
       centered: true,
-      content: `确定删除选中的${selectedRowKeys.length}个人群包`,
+      content: `确定删除选中的${selectedRowKeys.length}个人群包吗？`,
       async onOk () {
         const list = selectedRowKeys.map((packageId) => ({ packageId }));
         const res = await requestGetDelPackage({ list });
-        console.log('res', res);
         if (res) {
           message.success('人群包批量删除成功');
           const { current: pageNum, pageSize } = pagination;
@@ -101,11 +98,10 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
         }
       }
     });
-    console.log('selectedRowKeys', selectedRowKeys);
   };
 
   const navigatorToDownload = () => {
-    history.push('/tagCrowds/download');
+    history.push('/tagPackage/download');
   };
 
   useEffect(() => {

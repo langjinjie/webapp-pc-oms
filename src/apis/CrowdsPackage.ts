@@ -58,7 +58,9 @@ export const requestGetPackageDownloadList: HttpFunction = (param) => {
  * @returns fileUrl
  */
 export const requestDownloadPackageFile: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/tag/package/download/file', param);
+  return http.post('/tenacity-admin/api/tag/package/download/file', param, {
+    responseType: 'blob'
+  });
 };
 
 /**

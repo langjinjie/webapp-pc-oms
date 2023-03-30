@@ -102,10 +102,9 @@ interface VideoColumn {
 
 export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsType<VideoColumn> => {
   const [btnLoadingPackageId, setBtnLoadingPackageId] = useState<{
-    manage: string; // 暂停/开启按钮
     export: string; // 导出按钮
     compute: string; // 计算按钮
-  }>({ manage: '', export: '', compute: '' });
+  }>({ export: '', compute: '' });
 
   const history = useHistory();
 
@@ -120,7 +119,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
         centered: true,
         content: '人群包导出成功，是否跳转到人群包下载列表？',
         onOk () {
-          history.push('/tagCrowds/download');
+          history.push('/tagPackage/download');
         }
       });
     }
@@ -128,7 +127,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
   };
   // 查看分群详情
   const viewDetail = (row: ICrowdsPackageRow) => {
-    history.push('/tagCrowds/detail?packageId=' + row.packageId);
+    history.push('/tagPackage/detail?packageId=' + row.packageId);
   };
   // 开启/暂停 status： 1-开启；2-暂停
   const manageHandle = async (row: ICrowdsPackageRow) => {
@@ -146,7 +145,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
   // 删除人群包
   const deleteHandle = async (row: ICrowdsPackageRow) => {
     const { packageId } = row;
-    const res = await requestGetDelPackage({ list: [packageId] });
+    const res = await requestGetDelPackage({ list: [{ packageId }] });
     if (res) {
       message.success('人群包删除成功');
       getList();
@@ -169,7 +168,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
       key: 'packageId',
       dataIndex: 'packageId',
       title: '分群ID',
-      width: 100
+      width: 200
     },
     {
       key: 'packageName',
@@ -258,15 +257,12 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
             </Button>
             {/* 每日更新方式对应的是：开启/暂停 */}
             {record.refreshType === 1 && (
-              <>
-                <Button
-                  type="link"
-                  loading={btnLoadingPackageId.manage === record.packageId}
-                  onClick={() => manageHandle(record)}
-                >
-                  {record.runStatus === 2 ? '开启' : '暂停'}
-                </Button>
-              </>
+              <Popconfirm
+                title={`确定要${record.runStatus === 2 ? '开启' : '暂停'}该人群包吗？`}
+                onConfirm={() => manageHandle(record)}
+              >
+                <Button type="link">{record.runStatus === 2 ? '开启' : '暂停'}</Button>
+              </Popconfirm>
             )}
             <Button
               type="link"
@@ -286,7 +282,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
                 点击计算
               </Button>
             )}
-            <Popconfirm title="确定要删除?" onConfirm={() => deleteHandle(record)}>
+            <Popconfirm title="确定要删除该人群包吗？" onConfirm={() => deleteHandle(record)}>
               <Button type="link">删除</Button>
             </Popconfirm>
           </div>

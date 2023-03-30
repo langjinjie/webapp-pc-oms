@@ -17,7 +17,6 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
   });
   // 获取列表
   const getList = async (values?: any) => {
-    console.log('getList', values);
     setTableLoading(true);
     const res = await requestGetPackageDownloadList({ ...values });
     if (res) {
@@ -29,7 +28,6 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
   };
 
   const onFinishHandle = (values?: any) => {
-    console.log('onFinishHandle', values);
     const { updateTime, runTime } = values;
     // 生成时间
     const [runTimeBegin, runTimeEnd] = formatDate(runTime);
@@ -66,7 +64,7 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
 
   return (
     <div className="container">
-      <BreadCrumbs navList={[{ name: '标签分群', path: '/tagCrowds' }, { name: '查看人群包下载列表' }]} />
+      <BreadCrumbs navList={[{ name: '标签分群', path: '/tagPackage' }, { name: '查看人群包下载列表' }]} />
       <NgFormSearch
         className="mt20"
         isInline={false}

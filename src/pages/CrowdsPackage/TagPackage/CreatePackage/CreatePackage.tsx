@@ -3,15 +3,43 @@ import { Button, Divider, Form, Input, message, Radio, Space, Spin } from 'antd'
 import { BreadCrumbs } from 'src/components';
 import { PlusOutlined } from '@ant-design/icons';
 import { RouteComponentProps } from 'react-router-dom';
-import { FilterTags, AddUserList } from 'src/pages/CrowdsManage/TagCrowds/component';
+import { FilterTags, AddUserList } from 'src/pages/CrowdsPackage/TagPackage/component';
 import { requestCreatePackageRule, requestGetPackageRule } from 'src/apis/CrowdsPackage';
 import qs from 'qs';
 import classNames from 'classnames';
 import styles from './style.module.less';
 
+interface IReqRuleItem {
+  tagList: IReqTagListItem[];
+}
+
+interface IResRuleItem {
+  groupId: string;
+  factTagList: IResTagListItem[];
+  interestTagList: IResTagListItem[];
+  carTagList: IResTagListItem[];
+}
+
+interface IReqTagListItem {
+  type: number;
+  tagId: string;
+  tagName: string;
+  groupId: string;
+  groupName: string;
+}
+
+interface IResTagListItem {
+  type: number;
+  tagId: string;
+  tagName: string;
+  tagGroupId: string;
+  tagGroupName: string;
+}
+
 const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   const [readOnly, setReadOnly] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const [addForm] = Form.useForm();
   const { List, Item } = Form;
@@ -21,7 +49,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     add({});
   };
 
-  // 自定义校验
+  // List自定义校验
   const validator = (_: any, value: any) => {
     if (value && value.length) {
       return Promise.resolve();
@@ -31,6 +59,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onFinishHandle = async (values?: any) => {
+    setSubmitLoading(true);
     // 格式化提交的数据
     const { addUserList, excludeUserList, ruleList } = values;
     const params = {
@@ -53,60 +82,62 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
       ruleList的结构
       [{tagList:[{ type: number; tagId: string; tagName: string; groupId: string; groupName: string }, ...]}, ...]
       */
-      ruleList: ruleList?.map(
-        ({
-          tagList
-        }: {
-          tagList: { type: number; tagId: string; tagName: string; groupId: string; groupName: string }[];
-        }) => ({
-          tagList: tagList?.map(({ type, tagId, tagName, groupId, groupName }) => ({
-            type,
-            tagId,
-            tagName,
-            tagGroupId: groupId,
-            tagGroupName: groupName
-          }))
-        })
-      )
+      ruleList: ruleList?.map(({ tagList }: IReqRuleItem) => ({
+        tagList: tagList?.map(({ type, tagId, tagName, groupId, groupName }) => ({
+          type,
+          tagId,
+          tagName,
+          tagGroupId: groupId,
+          tagGroupName: groupName
+        }))
+      }))
     };
-    console.log('params', params);
-    const res = await requestCreatePackageRule(values);
+    const res = await requestCreatePackageRule(params);
     if (res) {
       message.success('人群包创建成功');
-      history.push('/tagCrowds');
+      history.push('/tagPackage');
     }
+    setSubmitLoading(false);
   };
 
   // 获取详情
-  const getDetial = async () => {
-    console.log('获取详情');
+  const getDetail = async () => {
     const { packageId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     if (!packageId) return;
     setLoading(true);
     const res = await requestGetPackageRule({ packageId });
     if (res) {
-      addForm.setFieldsValue(res);
+      // 处理ruleList
+      const ruleList = res.ruleList.map((tagList: IResRuleItem) => ({
+        tagList: [...tagList.interestTagList, ...tagList.factTagList, ...tagList.carTagList].map(
+          (tagItem: IResTagListItem) => ({
+            ...tagItem,
+            groupId: tagItem.tagGroupId,
+            groupName: tagItem.tagGroupName
+          })
+        )
+      }));
+      addForm.setFieldsValue({ ...res, ruleList });
     }
     setLoading(false);
     setReadOnly(true);
   };
 
   useEffect(() => {
-    setReadOnly(false);
-    getDetial();
+    getDetail();
   }, []);
 
   return (
     <Spin spinning={loading} tip="加载中...">
       <div className="container">
-        <BreadCrumbs navList={[{ name: '标签分群', path: '/tagCrowds' }, { name: '创建分群' }]} />
+        <BreadCrumbs />
         <Form form={addForm} className="mt20 edit" onFinish={onFinishHandle}>
           <div className="sectionTitle">基本信息</div>
-          <Item label="分群名称" name="packageName">
-            <Input className="width320" placeholder="请输入" maxLength={30} showCount />
+          <Item label="分群名称" name="packageName" rules={[{ required: true, message: '请输入分群名称' }]}>
+            <Input className="width320" placeholder="请输入" maxLength={30} showCount readOnly={readOnly} />
           </Item>
           <Item label="分群备注" name="remark">
-            <Input.TextArea className="width420" placeholder="请输入" maxLength={200} showCount />
+            <Input.TextArea className="width420" placeholder="请输入" maxLength={200} showCount readOnly={readOnly} />
           </Item>
           <div className="sectionTitle">分群规则</div>
           <div className={styles.panel}>
@@ -123,21 +154,20 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                   <>
                     {fields.map((field: any, index) => (
                       <div key={field.key + index}>
-                        <Item name={[field.name, 'tagList']} noStyle>
-                          <FilterTags removeHandle={remove} fieldIndex={index} isTagFlat />
+                        <Item name={[field.name, 'tagList']} rules={[{ validator, message: '请添加筛选标签' }]}>
+                          <FilterTags removeHandle={remove} fieldIndex={index} isTagFlat readOnly={readOnly} />
                         </Item>
                       </div>
                     ))}
                     <Button
                       className={classNames(styles.addTagGroup, 'mt20')}
                       onClick={() => addRuleHandle(add)}
+                      disabled={readOnly}
                       icon={<PlusOutlined />}
                     >
                       新增标签组
                     </Button>
-                    <div className={styles.errers}>
-                      <Form.ErrorList errors={errors} />
-                    </div>
+                    <Form.ErrorList errors={errors} />
                   </>
                 )}
               </List>
@@ -147,6 +177,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                 label="更新方式"
                 style={{ marginBottom: '0' }}
                 name="refreshType"
+                rules={[{ required: true, message: '请选择更新方式' }]}
                 extra={
                   <div className="color-danger flex">
                     <div>备注：</div>
@@ -157,7 +188,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                   </div>
                 }
               >
-                <Radio.Group>
+                <Radio.Group disabled={readOnly}>
                   <Radio value={2}>手动更新</Radio>
                   <Radio value={1}>每日更新</Radio>
                 </Radio.Group>
@@ -173,7 +204,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             </div>
             <Divider style={{ margin: '14px 0' }}></Divider>
             <Item name="addUserList">
-              <AddUserList />
+              <AddUserList readOnly={readOnly} />
             </Item>
           </div>
           <div className={classNames(styles.panelContent, 'ml20 mt20')} style={{ width: '980px' }}>
@@ -182,7 +213,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             </div>
             <Divider style={{ margin: '14px 0' }}></Divider>
             <Item name="excludeUserList">
-              <AddUserList />
+              <AddUserList readOnly={readOnly} />
             </Item>
           </div>
           <div className={classNames(styles.panelContent, 'ml20 mt20')} style={{ width: '980px' }}>
@@ -190,9 +221,10 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
               label="假客户模型是否参与计算"
               labelCol={{ span: 24 }}
               name="fakeClientComputed"
+              rules={[{ required: true, message: '请选择假客户模型是否参与计算' }]}
               extra={<div className="color-danger ml20">备注：选择“是”，则会将假客户模型的客户进行排除计算。</div>}
             >
-              <Radio.Group style={{ marginLeft: '20px' }}>
+              <Radio.Group style={{ marginLeft: '20px' }} disabled={readOnly}>
                 <Radio value={1}>是</Radio>
                 <Radio value={0}>否</Radio>
               </Radio.Group>
@@ -202,20 +234,26 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
               label="是否去重客户，一个客户仅给一个客户经理处理 "
               name="distinctClient"
               labelCol={{ span: 24 }}
+              rules={[{ required: true, message: '请选择是否去重客户' }]}
               extra={
                 <div className="color-danger ml20">
                   备注：选择“是”，如果有多个客户经理对应一个客户，会通过规则留下一个客户对应一个客户经理，不会正对一个客户生成多个客户经理的任务
                 </div>
               }
             >
-              <Radio.Group style={{ marginLeft: '20px' }}>
+              <Radio.Group style={{ marginLeft: '20px' }} disabled={readOnly}>
                 <Radio value={1}>是</Radio>
                 <Radio value={0}>否</Radio>
               </Radio.Group>
             </Form.Item>
             <Divider style={{ margin: 0 }} />
-            <Form.Item label="人群包是否计算领导（上级领导计算在内）：" name="leaderComputed" labelCol={{ span: 24 }}>
-              <Radio.Group style={{ marginLeft: '20px' }}>
+            <Form.Item
+              label="人群包是否计算领导（上级领导计算在内）："
+              name="leaderComputed"
+              labelCol={{ span: 24 }}
+              rules={[{ required: true, message: '请选择是否计算领导' }]}
+            >
+              <Radio.Group style={{ marginLeft: '20px' }} disabled={readOnly}>
                 <Radio value={1}>是</Radio>
                 <Radio value={0}>否，仅计算客户经理</Radio>
               </Radio.Group>
@@ -224,7 +262,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
 
           <Form.Item className="formFooter mt40">
             <Space size={36} style={{ marginLeft: '20px' }}>
-              <Button shape="round" type="primary" htmlType="submit">
+              <Button shape="round" type="primary" htmlType="submit" loading={submitLoading} disabled={readOnly}>
                 保存运行
               </Button>
               <Button

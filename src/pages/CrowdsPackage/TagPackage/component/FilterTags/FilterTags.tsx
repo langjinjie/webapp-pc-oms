@@ -134,7 +134,11 @@ const FilterTags: React.FC<IFilterTagsProps> = (props) => {
               添加标签
             </Button>
             {!!fieldIndex && (
-              <Button className={style.removeTags} onClick={() => removeHandle?.(fieldIndex as number)}>
+              <Button
+                className={style.removeTags}
+                disabled={readOnly}
+                onClick={() => removeHandle?.(fieldIndex as number)}
+              >
                 删除
               </Button>
             )}

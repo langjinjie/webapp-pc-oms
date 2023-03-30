@@ -64,7 +64,6 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
 
   // 下一步/确认
   const onOkHandle = async () => {
-    console.log('distributionParam', distributionParam);
     // 判断是否满足提交
     if (stepIndex < titleNameList.length - 1) {
       setStepIndex((stepIndex) => stepIndex + 1);
@@ -114,7 +113,6 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
     // 获取对应的子节点
     const res: any = await getCorpOrg(key);
     if (res) {
-      console.log('res', res);
       setTreeData((treeData) => updateTreeData(treeData, key, res));
     }
   };
@@ -194,7 +192,6 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
 
   // 编辑迁移默认话术
   const editAssignSpeech = () => {
-    console.log('textAreaRef', textAreaRef);
     setTextReadOnly((param) => !param);
     textAreaRef.current.focus();
   };
