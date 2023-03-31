@@ -221,6 +221,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
               label="假客户模型是否参与计算"
               labelCol={{ span: 24 }}
               name="fakeClientComputed"
+              initialValue={1}
               rules={[{ required: true, message: '请选择假客户模型是否参与计算' }]}
               extra={<div className="color-danger ml20">备注：选择“是”，则会将假客户模型的客户进行排除计算。</div>}
             >
@@ -233,6 +234,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             <Form.Item
               label="是否去重客户，一个客户仅给一个客户经理处理 "
               name="distinctClient"
+              initialValue={1}
               labelCol={{ span: 24 }}
               rules={[{ required: true, message: '请选择是否去重客户' }]}
               extra={
@@ -250,6 +252,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             <Form.Item
               label="人群包是否计算领导（上级领导计算在内）："
               name="leaderComputed"
+              initialValue={0}
               labelCol={{ span: 24 }}
               rules={[{ required: true, message: '请选择是否计算领导' }]}
             >
