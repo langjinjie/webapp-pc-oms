@@ -107,12 +107,12 @@ export const searchColsFun = (): SearchCol[] => [
   {
     type: 'rangePicker',
     label: '创建时间',
-    name: 'createTime'
+    name: 'createTimeBegin-createTimeEnd'
   },
   {
     type: 'input',
     label: '功能来源',
-    name: 'taskCode',
+    name: 'source',
     placeholder: '请输入'
   },
   {
@@ -162,13 +162,13 @@ export const tableColumnsFun = (
       key: 'batchNo',
       dataIndex: 'batchNo',
       title: '群发编号',
-      width: 100
+      width: 225
     },
     {
       key: 'batchType',
       dataIndex: 'batchType',
       title: '群发类型',
-      width: 100,
+      width: 120,
       render: (batchType) => sendTypeOptions.filter((item) => item.id === batchType)[0]?.name
     },
     {
@@ -187,7 +187,7 @@ export const tableColumnsFun = (
       render: (status) => {
         return (
           <div>
-            <span>{stopTypeOptions.filter((item) => item.id === status)[0]?.name}</span>
+            <span>{stopTypeOptions.filter((item) => item.id === status)[0]?.name || UNKNOWN}</span>
           </div>
         );
       }
@@ -197,7 +197,7 @@ export const tableColumnsFun = (
       dataIndex: 'createTime',
       title: '群发创建时间',
       render: (createTime) => createTime || UNKNOWN,
-      width: 160
+      width: 200
     },
     {
       key: 'soruce',
@@ -208,7 +208,7 @@ export const tableColumnsFun = (
       render: (soruce) => {
         return (
           <div>
-            <span>{auditStatus.filter((item) => item.id === soruce)[0]?.name}</span>
+            <span>{auditStatus.filter((item) => item.id === soruce)[0]?.name || UNKNOWN}</span>
           </div>
         );
       }
@@ -217,35 +217,35 @@ export const tableColumnsFun = (
       key: 'taskCode',
       dataIndex: 'taskCode',
       title: '功能编码',
-      width: 100,
+      width: 200,
       render: (taskCode) => taskCode || UNKNOWN
     },
     {
       key: 'taskDate',
       dataIndex: 'taskDate',
       title: '任务日期',
-      width: 220
+      width: 160
     },
     {
       key: 'staffNum',
       dataIndex: 'staffNum',
       title: '客户经理数量',
       render: (staffNum) => staffNum || 0,
-      width: 220
+      width: 180
     },
     {
       key: 'staffNames',
       dataIndex: 'staffNames',
       title: '客户经理名称',
       render: (staffNames) => staffNames || UNKNOWN,
-      width: 220
+      width: 150
     },
 
     {
       key: 'operate',
       title: '操作',
       fixed: 'right',
-      width: 290,
+      width: 200,
       render: (operate, record, index) => {
         return (
           <div>
@@ -256,7 +256,7 @@ export const tableColumnsFun = (
             </AuthBtn>
             {record.status === 1 && (
               <AuthBtn path="/operate">
-                <Popconfirm title="确定要停用？" onConfirm={() => onOperate('edit', record, index)}>
+                <Popconfirm title="确定要停用？" onConfirm={() => onOperate('outline', record, index)}>
                   <Button type="link">停用群发</Button>
                 </Popconfirm>
               </AuthBtn>

@@ -30,6 +30,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
   useEffect(() => {
     getMomentDetailByFeedId();
   }, [value]);
+  console.log(value);
 
   return (
     <div className={classNames(style.phoneWrap, className)}>

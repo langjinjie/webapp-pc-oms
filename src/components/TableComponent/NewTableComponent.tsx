@@ -6,6 +6,7 @@ export interface MyPaginationProps {
   pageNum?: number;
   pageSize?: number;
   total?: number;
+  simple?: boolean;
   showTotal?: (total: any) => string;
 }
 interface TableComponentProps<T> extends TableProps<T> {
@@ -48,6 +49,7 @@ const NewTableComponent = <T extends object>(props: TableComponentProps<T>): JSX
     total: pagination?.total || 0,
     current: pagination?.pageNum || 1,
     pageSize: pagination?.pageSize || 10,
+
     showTotal: (total) => {
       return `共 ${total} 条记录`;
     }

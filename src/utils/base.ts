@@ -4,7 +4,7 @@
  * @date 2021-05-29 17:29
  */
 import { getQueryParam } from 'tenacity-tools';
-import qs, { ParsedQs } from 'qs';
+import qs from 'qs';
 import { useEffect, useRef } from 'react';
 type commonFC = (...args: any) => any;
 
@@ -58,8 +58,8 @@ export const setCookie: (name: string, value: string, time: number) => void = (
   document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + ';path=/';
 };
 
-export const urlSearchParams = (search: string): ParsedQs => {
-  return qs.parse(search, { ignoreQueryPrefix: true });
+export const urlSearchParams = <T = any>(search: string): T => {
+  return qs.parse(search, { ignoreQueryPrefix: true }) as T;
 };
 export const useDocumentTitle = (title: string, keepOnUumount = true): void => {
   const oldTitle = useRef(document.title).current;

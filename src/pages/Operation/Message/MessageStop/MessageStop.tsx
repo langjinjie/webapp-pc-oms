@@ -1,10 +1,13 @@
-import { Button } from 'antd';
-import React, { Key, useState } from 'react';
+import { Button, message } from 'antd';
+import React, { Key, useEffect, useState } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import { getMassList, stopMass } from 'src/apis/marquee';
 import { NgFormSearch, NgModal } from 'src/components';
 import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
+import { OperateType } from 'src/utils/interface';
 import { tableColumnsFun, searchColsFun, MessageStopColumn } from './ListConfig';
 
-const MessageStop: React.FC = () => {
+const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Partial<MessageStopColumn>[]>([]);
@@ -14,25 +17,46 @@ const MessageStop: React.FC = () => {
     total: 0,
     pageNum: 1
   });
-  const onOperate = () => {
-    console.log('onOperate');
-  };
-  const getList = (params: any) => {
+  const getList = async (params?: any) => {
     console.log(params);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        setDataSource([{}]);
-        resolve(1000);
-      }, 3000);
+    const res = await getMassList({});
+    console.log(res);
+    if (res) {
+      const { list, total } = res;
+      setDataSource(list);
+      setPagination((pagination) => ({ ...pagination, total }));
+    }
+  };
+  const onConfirmStop = async (list?: { batchId: string }[]) => {
+    console.log(list);
+    const res = await stopMass({
+      list: list || selectedRowKeys.map((item) => ({ batchId: item }))
     });
+    if (res) {
+      setSelectedRowKeys([]);
+      setSelectedRows([]);
+      message.success('操作成功');
+      getList({ pageNum: 1 });
+    }
   };
+  const onOperate = (operateType: OperateType, record: MessageStopColumn) => {
+    console.log('onOperate', operateType);
+    if (operateType === 'view') {
+      history.push('/messagestop/detail?id=' + record.batchId);
+    } else if (operateType === 'outline') {
+      onConfirmStop([{ batchId: record.batchId }]);
+    }
+  };
+
+  useEffect(() => {
+    getList();
+  }, []);
   const onSearch = async (values: any) => {
-    console.log(values);
     setLoading(true);
-    await getList({ pageNum: 1 });
+    await getList({ pageNum: 1, ...values });
     setLoading(false);
-    setPagination((pagination) => ({ ...pagination, total: 1000, pageNum: 1 }));
   };
+
   return (
     <div className="container">
       <NgFormSearch searchCols={searchColsFun()} onSearch={onSearch} />
@@ -58,7 +82,7 @@ const MessageStop: React.FC = () => {
           }}
           columns={tableColumnsFun(onOperate)}
         ></NewTableComponent>
-        {selectedRowKeys.length > 0 && (
+        {dataSource.length > 0 && (
           <div className={'operationWrap'}>
             <Button
               type="primary"
@@ -75,7 +99,7 @@ const MessageStop: React.FC = () => {
         )}
       </div>
 
-      <NgModal title="批量停用" visible={visible} onCancel={() => setVisible(false)}>
+      <NgModal title="批量停用" visible={visible} onCancel={() => setVisible(false)} onOk={() => onConfirmStop}>
         <p className="pa20">确定停用选中的群发任务？</p>
       </NgModal>
     </div>
