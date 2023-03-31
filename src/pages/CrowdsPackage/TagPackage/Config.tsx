@@ -135,7 +135,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
     const { packageId, runStatus } = row;
     const res = await requestManagePackageRun({ packageId, status: runStatus === 1 ? 2 : 1 });
     if (res) {
-      message.error(`人群包${runStatus === 1 ? '暂停' : '开启'}成功`);
+      message.success(`人群包${runStatus === 1 ? '暂停' : '开启'}成功`);
       getList();
     } else {
       message.error(`人群包${runStatus === 1 ? '暂停' : '开启'}失败`);
