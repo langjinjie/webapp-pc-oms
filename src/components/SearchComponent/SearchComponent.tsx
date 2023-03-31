@@ -103,15 +103,24 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
   }, [props.defaultValues]);
   const handleFinish = (values: any) => {
     // const {} = values;
-    const rangePickerName = searchCols.filter((col) => col.type === 'rangePicker')[0]?.name;
-    if (rangePickerName) {
-      const rangePickerData: [Moment, Moment] = values[rangePickerName];
-      if (rangePickerData?.length > 0) {
-        const beginTime = rangePickerData[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-        const endTime = rangePickerData[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-        values.beginTime = beginTime;
-        values.endTime = endTime;
-      }
+    const rangePickers = searchCols.filter((col) => col.type === 'rangePicker');
+    if (rangePickers.length > 0) {
+      rangePickers.forEach((rangePicker) => {
+        const rangePickerName = rangePicker.name;
+        if (rangePickerName) {
+          const rangePickerData: [Moment, Moment] = values[rangePickerName];
+          if (rangePickerData?.length > 0) {
+            const beginTime = rangePickerData[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            const endTime = rangePickerData[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            const rangePickerNames = rangePickerName.split('-');
+            if (rangePickerNames.length > 1) {
+              values[rangePickerNames[0]] = beginTime;
+              values[rangePickerNames[1]] = endTime;
+            }
+          }
+        }
+        delete values[rangePickerName];
+      });
     }
 
     onSearch(values);
