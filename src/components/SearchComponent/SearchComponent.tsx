@@ -104,6 +104,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
   const handleFinish = (values: any) => {
     // const {} = values;
     const rangePickers = searchCols.filter((col) => col.type === 'rangePicker');
+    const dates = searchCols.filter((col) => col.type === 'date');
     if (rangePickers.length > 0) {
       rangePickers.forEach((rangePicker) => {
         const rangePickerName = rangePicker.name;
@@ -120,6 +121,16 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           }
         }
         delete values[rangePickerName];
+      });
+    }
+
+    if (dates.length > 0) {
+      dates.forEach((date) => {
+        const dateName = date.name;
+        if (dateName) {
+          const dateMoment: Moment = values[dateName];
+          values[dateName] = dateMoment.format('YYYY-MM-DD');
+        }
       });
     }
 

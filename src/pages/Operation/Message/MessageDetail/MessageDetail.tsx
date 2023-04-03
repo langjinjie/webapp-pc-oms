@@ -11,10 +11,9 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
   const [massDetail, setMassDetail] = useState<{ batchId: string; batchNo: string; [prop: string]: any }>();
   const [pageInfo, setPageInfo] = useState({
     clientAll: false,
-    name: '',
     queryType: 1
   });
-
+  const [inputValue, setInputValue] = useState<string>();
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [pagination, setPagination] = useState<MyPaginationProps>({
     total: 0,
@@ -35,7 +34,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
     const res = await getMassWithMember({
       batchId: id,
       queryType: pageInfo.queryType,
-      name: pageInfo.name,
+      name: inputValue || '',
       pageNum: pagination.pageNum,
       pageSize: pagination.pageSize,
       ...params
@@ -53,12 +52,14 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
 
   const onTabsChange = async (activeKey: string) => {
     setDataSource([]);
+    setInputValue('');
     setPageInfo((pageInfo) => ({ ...pageInfo, queryType: +activeKey }));
-    await getMemberList({ queryType: +activeKey, pageNum: 1 });
+    await getMemberList({ queryType: +activeKey, pageNum: 1, name: '' });
   };
 
   const onPressEnter = (target: any) => {
     const inputVal = target.value;
+    setInputValue(inputVal);
     setPageInfo((pageInfo) => ({ ...pageInfo, name: inputVal }));
     getMemberList({ name: inputVal, pageNum: 1 });
   };
@@ -93,8 +94,10 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                   <div className="mb20">
                     客户经理：
                     <Input
+                      value={inputValue}
                       className="width160"
                       placeholder="请输入"
+                      onChange={(e) => setInputValue(e.target.value)}
                       allowClear
                       onPressEnter={(e) => onPressEnter(e.target)}
                     />
@@ -126,6 +129,8 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                       className="width160"
                       placeholder="请输入"
                       allowClear
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
                       onPressEnter={(e) => onPressEnter(e.target)}
                     />
                   </div>
@@ -135,7 +140,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                     rowKey={'memberId'}
                     columns={[
                       { title: '外部联系人ID', key: 'memberId', dataIndex: 'memberId' },
-                      { title: 'memberName', key: 'key2', dataIndex: 'memberName' }
+                      { title: '客户昵称', key: 'key2', dataIndex: 'memberName' }
                     ]}
                   ></NgTable>
                 </>

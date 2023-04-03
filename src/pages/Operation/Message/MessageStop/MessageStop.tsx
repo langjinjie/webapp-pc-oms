@@ -11,6 +11,7 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Partial<MessageStopColumn>[]>([]);
+  const [formValues, setFormValues] = useState({});
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [dataSource, setDataSource] = useState<Partial<MessageStopColumn>[]>([]);
   const [pagination, setPagination] = useState<MyPaginationProps>({
@@ -18,8 +19,12 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
     pageNum: 1
   });
   const getList = async (params?: any) => {
-    console.log(params);
-    const res = await getMassList({});
+    const res = await getMassList({
+      ...formValues,
+      pageNum: pagination.pageNum,
+      pageSize: pagination.pageSize,
+      ...params
+    });
     console.log(res);
     if (res) {
       const { list, total } = res;
@@ -27,10 +32,10 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
       setPagination((pagination) => ({ ...pagination, total }));
     }
   };
-  const onConfirmStop = async (list?: { batchId: string }[]) => {
+  const onConfirmStop = async (list?: string[]) => {
     console.log(list);
     const res = await stopMass({
-      list: list || selectedRowKeys.map((item) => ({ batchId: item }))
+      list: list || selectedRowKeys
     });
     if (res) {
       setSelectedRowKeys([]);
@@ -44,7 +49,7 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
     if (operateType === 'view') {
       history.push('/messagestop/detail?id=' + record.batchId);
     } else if (operateType === 'outline') {
-      onConfirmStop([{ batchId: record.batchId }]);
+      onConfirmStop([record.batchId]);
     }
   };
 
@@ -53,6 +58,7 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
   const onSearch = async (values: any) => {
     setLoading(true);
+    setFormValues(values);
     await getList({ pageNum: 1, ...values });
     setLoading(false);
   };
