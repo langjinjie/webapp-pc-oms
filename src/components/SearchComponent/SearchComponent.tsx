@@ -65,15 +65,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     searchRef
   } = props;
   const [searchForm] = Form.useForm();
-  const handleReset = () => {
-    const values = searchForm.getFieldsValue();
-    if (onReset) {
-      onReset();
-    } else {
-      onChangeOfCascader?.([''], []);
-      onSearch(values);
-    }
-  };
+
   // 对数据进行处理
   const onChange = (value: SingleValueType, selectedOptions?: DefaultOptionType[] | undefined) => {
     if (selectedOptions) {
@@ -101,40 +93,64 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
       searchForm.setFieldsValue({ catalogIds: props.defaultValues.catalogIds, ...props.defaultValues });
     }
   }, [props.defaultValues]);
-  const handleFinish = (values: any) => {
-    // const {} = values;
+
+  /**
+   * 日期格式化
+   */
+  const dateValueFormat = (values: any) => {
     const rangePickers = searchCols.filter((col) => col.type === 'rangePicker');
-    const dates = searchCols.filter((col) => col.type === 'date');
     if (rangePickers.length > 0) {
       rangePickers.forEach((rangePicker) => {
         const rangePickerName = rangePicker.name;
         if (rangePickerName) {
+          const rangePickerNames = rangePickerName.split('-');
           const rangePickerData: [Moment, Moment] = values[rangePickerName];
           if (rangePickerData?.length > 0) {
             const beginTime = rangePickerData[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
             const endTime = rangePickerData[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-            const rangePickerNames = rangePickerName.split('-');
+
             if (rangePickerNames.length > 1) {
               values[rangePickerNames[0]] = beginTime;
               values[rangePickerNames[1]] = endTime;
             }
+          } else {
+            values[rangePickerNames[0]] = undefined;
+            values[rangePickerNames[1]] = undefined;
           }
         }
         delete values[rangePickerName];
       });
     }
 
+    const dates = searchCols.filter((col) => col.type === 'date');
     if (dates.length > 0) {
       dates.forEach((date) => {
         const dateName = date.name;
         if (dateName) {
           const dateMoment: Moment = values[dateName];
-          values[dateName] = dateMoment.format('YYYY-MM-DD');
+          values[dateName] = dateMoment?.format('YYYY-MM-DD') || undefined;
         }
       });
     }
 
-    onSearch(values);
+    return values;
+  };
+  const handleFinish = (values: any) => {
+    onSearch(dateValueFormat(values));
+  };
+
+  const handleReset = () => {
+    const values = searchForm.getFieldsValue();
+    if (onReset) {
+      onReset();
+    } else {
+      onChangeOfCascader?.([''], []);
+      onSearch(dateValueFormat(values));
+    }
+  };
+
+  const handleValuesChange = (changedValues: any, values: any) => {
+    onValuesChange?.(changedValues, dateValueFormat(values));
   };
   return (
     <>
@@ -146,7 +162,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           onFinish={handleFinish}
           onReset={handleReset}
           className={classNames(style['search-wrap'], [props.className])}
-          onValuesChange={onValuesChange}
+          onValuesChange={handleValuesChange}
         >
           {searchCols?.map((col) => {
             return (
@@ -239,7 +255,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           onFinish={handleFinish}
           onReset={handleReset}
           className={style.customLayout}
-          onValuesChange={onValuesChange}
+          onValuesChange={handleValuesChange}
         >
           <Row>
             {searchCols?.slice(0, firstRowChildCount || 2).map((col) => {

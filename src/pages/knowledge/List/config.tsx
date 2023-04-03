@@ -60,12 +60,12 @@ export const searchColsFun = (): SearchCol[] => [
   {
     type: 'rangePicker',
     label: '创建时间',
-    name: 'createTime'
+    name: 'createTimeBegin-createTimeEnd'
   },
   {
     type: 'rangePicker',
     label: '更新时间',
-    name: 'updateTime'
+    name: 'updateTimeBegin-updateTimeEnd'
   },
   {
     type: 'select',

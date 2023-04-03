@@ -58,16 +58,11 @@ const ChatRecordList: React.FC<RouteComponentProps> = () => {
   }, []);
 
   const onSearch = (values: any) => {
-    const { carNumber, externalName, staffList, rangePicker } = values;
+    const { staffList, ...otherValues } = values;
     const staffIds = staffList?.map((mapItem: { staffId: string }) => mapItem.staffId);
-    let startTime: string | undefined;
-    let endTime: string | undefined;
-    if (rangePicker && rangePicker.length > 0) {
-      startTime = rangePicker[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      endTime = rangePicker[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
-    }
-    getList({ carNumber, externalName, staffIds, startTime, endTime, pageNum: 1 });
-    setQueryParams((queryParams) => ({ ...queryParams, carNumber, externalName, staffIds, startTime, endTime }));
+
+    getList({ staffIds, ...otherValues, pageNum: 1 });
+    setQueryParams((queryParams) => ({ ...queryParams, staffIds, ...otherValues }));
   };
 
   const paginationChange = (pageNum: number, pageSize?: number) => {

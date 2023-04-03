@@ -69,7 +69,7 @@ const setSearchCols = (options: any[]): SearchCol[] => {
       width: '268px',
       placeholder: '请输入'
     },
-    { name: 'rangePicker', width: '268px', type: 'rangePicker', label: '创建时间' },
+    { name: 'minTime-maxTime', width: '268px', type: 'rangePicker', label: '创建时间' },
     {
       name: 'syncBank',
       type: 'select',

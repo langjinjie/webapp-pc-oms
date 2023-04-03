@@ -9,10 +9,10 @@ import { Button as AntdBtn, Card, message, Modal, PaginationProps, Table, TableC
 import { setTitle } from 'tenacity-tools';
 import { Icon, Button } from 'tenacity-ui';
 import classNames from 'classnames';
-import { Form, AuthBtn } from 'src/components';
-import { ItemProps } from 'src/utils/interface';
+import { NgFormSearch, AuthBtn } from 'src/components';
 import { delNotice, queryNoticeList } from 'src/apis/notice';
 import style from './style.module.less';
+import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 
 interface SearchParam {
   startTime?: string;
@@ -41,17 +41,18 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
   const [searchParam, setSearchParam] = useState<SearchParam>({});
   const [noticeIds, setNoticeIds] = useState<string[]>([]);
 
-  const formItemData: ItemProps[] = [
+  const formItemData: SearchCol[] = [
     {
       name: 'title',
       label: '标题',
-      type: 'input'
+      type: 'input',
+      placeholder: '请输入'
     },
     {
       name: 'status',
       label: '状态',
       type: 'select',
-      dataSource: [
+      options: [
         {
           id: '2',
           name: '待生效'
@@ -63,7 +64,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
       ]
     },
     {
-      name: 'time',
+      name: 'startTime-endTime',
       label: '生效时间',
       type: 'rangePicker'
     }
@@ -178,16 +179,11 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSubmit = (values: any) => {
-    const { time, status, title } = values;
     const params: any = {
-      title,
-      status,
+      ...values,
       pageNum: 1
     };
-    if (time && time.length > 0) {
-      params.startTime = time[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      params.endTime = time[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
+
     setSearchParam({
       ...params,
       pageNum: pagination.current
@@ -216,7 +212,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
         </div>
       </AuthBtn>
       <AuthBtn path="/query">
-        <Form itemData={formItemData} onSubmit={onSubmit} />
+        <NgFormSearch searchCols={formItemData} onSearch={onSubmit} />
       </AuthBtn>
       <Table
         style={{ marginTop: 20 }}

@@ -16,7 +16,7 @@ import style from './style.module.less';
 import { Context } from 'src/store';
 
 import { NgFormSearch, NgTable, AuthBtn } from 'src/components';
-import { setSearchCols, SearchParamsProps, columns, Article, PaginationProps } from './Config';
+import { setSearchCols, columns, Article, PaginationProps } from './Config';
 import classNames from 'classnames';
 import { PlusOutlined } from '@ant-design/icons';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
@@ -62,6 +62,10 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   const getList = async (args: any | null) => {
     try {
       setLoading(true);
+      console.log(args);
+
+      console.log({ ...queryForm, ...args });
+
       const res = await getNewsList({
         pageNum: pagination.current,
         pageSize: pagination.pageSize,
@@ -97,37 +101,15 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   // 获取列表数据
-  const onSearch = (values: SearchParamsProps) => {
-    const { title, categoryId, fromSource, rangePicker, syncBank, corpId, recommendType } = values;
-    let minTime = '';
-    let maxTime = '';
-    if (rangePicker && rangePicker.length > 0) {
-      minTime = rangePicker[0].format('YYYY-MM-DD');
-      maxTime = rangePicker[1].format('YYYY-MM-DD');
-    }
-    setQueryForm((queryForm) => ({
-      ...queryForm,
-      title,
-      categoryId,
-      fromSource,
-      minTime,
-      maxTime,
-      syncBank,
-      corpId,
-      recommendType
-    }));
+  const onSearch = (values: any) => {
+    setQueryForm(() => values);
+    console.log({ values });
+
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    getList({ title, categoryId, fromSource, minTime, maxTime, syncBank, pageNum: 1, corpId, recommendType });
+    getList({ ...values, pageNum: 1 });
   };
-  const onValuesChange = (changeVals: any, values: SearchParamsProps) => {
-    const { title, categoryId, fromSource, rangePicker, syncBank, corpId } = values;
-    let minTime = '';
-    let maxTime = '';
-    if (rangePicker && rangePicker.length > 0) {
-      minTime = rangePicker[0].format('YYYY-MM-DD');
-      maxTime = rangePicker[1].format('YYYY-MM-DD');
-    }
-    setQueryForm((queryForm) => ({ ...queryForm, title, categoryId, fromSource, minTime, maxTime, syncBank, corpId }));
+  const onValuesChange = (changeVals: any, values: any) => {
+    setQueryForm(values);
   };
 
   const handlePreview = () => {

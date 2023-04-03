@@ -58,7 +58,7 @@ export const searchCols: SearchCol[] = [
   },
   {
     type: 'rangePicker',
-    name: 'addTime',
+    name: 'addBeginTime-addEndTime',
     label: '加好友时间'
   },
   {

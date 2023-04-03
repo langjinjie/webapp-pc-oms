@@ -45,7 +45,7 @@ export const searchColsFun = (): SearchCol[] => [
   {
     type: 'rangePicker',
     label: '创建时间',
-    name: 'createTime'
+    name: 'createTimeBegin-createTimeEnd'
   },
 
   {

@@ -32,17 +32,9 @@ const Record: React.FC = () => {
     setLoading(false);
   };
   const onSearchHandle = async (values: any) => {
-    const { taskName, taskType, taskTime } = values;
-    let beginTime = '';
-    let endTime = '';
-    // 处理时间参数
-    if (taskTime) {
-      beginTime = taskTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      endTime = taskTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
-    }
     setPagination((param) => ({ ...param, current: 1 }));
-    getList({ taskName, taskType, beginTime, endTime });
-    setFormValue({ taskName, taskType, beginTime, endTime });
+    getList(values);
+    setFormValue(values);
   };
   // 分页修改
   const paginationOnChange = (current: number, pageSize?: number) => {

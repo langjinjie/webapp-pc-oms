@@ -39,7 +39,7 @@ export const searchCols: () => SearchCol[] = () => {
       placeholder: '请输入'
     },
     {
-      name: 'time',
+      name: 'beginTime-endTime',
       type: 'rangePicker',
       label: '选择删除时间'
       // width: '140px',

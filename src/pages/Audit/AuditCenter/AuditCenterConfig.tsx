@@ -47,7 +47,7 @@ export const searchCols: SearchCol[] = [
     width: '280'
   },
   {
-    name: 'date',
+    name: 'applyBeginTime-applyEndTime',
     type: 'rangePicker',
     label: '申请时间',
     placeholder: '请输入',

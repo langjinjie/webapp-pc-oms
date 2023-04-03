@@ -41,7 +41,7 @@ export const searchCols: SearchCol[] = [
     placeholder: '请输入'
   },
   {
-    name: 'taskTime',
+    name: 'beginTime-endTime',
     label: '操作时间',
     width: '230px',
     type: 'rangePicker'

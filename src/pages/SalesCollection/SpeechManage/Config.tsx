@@ -87,7 +87,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       options: sensitiveOptions
     },
     {
-      name: 'times',
+      name: 'updateBeginTime-updateEndTime',
       type: 'rangePicker',
       width: 160,
       label: '更新时间'

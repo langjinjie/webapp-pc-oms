@@ -7,7 +7,6 @@ import { getWaitDeductPointsList } from 'src/apis/integral';
 import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './style.module.less';
-import { Moment } from 'moment';
 
 const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('积分管理-积分扣减');
@@ -48,16 +47,10 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const handleSearch = ({ staffName = '', time }: { staffName: string; time: [Moment, Moment] }) => {
-    let beginTime!: string;
-    let endTime!: string;
-    if (time) {
-      beginTime = time[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      endTime = time[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    setFormParams((formParams) => ({ ...formParams, staffName, beginTime, endTime }));
+  const handleSearch = (values: any) => {
+    setFormParams((formParams) => ({ ...formParams, ...values }));
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    getList({ pageNum: 1, staffName, beginTime, endTime });
+    getList({ pageNum: 1, ...values });
   };
 
   useEffect(() => {

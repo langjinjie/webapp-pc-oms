@@ -105,20 +105,10 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     setIsNew(false);
     const {
       catalogIds,
-      content = '',
-      contentType = '',
-      sensitive = '',
-      status = '',
-      times = undefined,
-      tip = '',
-      contenSource
+
+      ...otherValues
     } = values;
-    let updateBeginTime = '';
-    let updateEndTime = '';
-    if (times) {
-      updateBeginTime = times[0].startOf('day').valueOf();
-      updateEndTime = times[1].endOf('day')?.valueOf();
-    }
+
     let catalogId = '';
     if (catalogIds) {
       catalogId = catalogIds[catalogIds.length - 1];
@@ -128,37 +118,17 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     setFormParams((formParams) => ({
       ...formParams,
       catalogId,
-      content,
-      contentType,
-      sensitive,
-      status,
-      tip,
-      updateBeginTime,
-      updateEndTime,
-      contenSource
+      ...otherValues
     }));
   };
   // 点击查询按钮
   const onSearch = async (values: any) => {
     // 将页面重置为第一页
+    console.log(values);
+
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    const {
-      catalogIds,
-      content = '',
-      contentType = '',
-      sensitive = '',
-      status = '',
-      times = undefined,
-      tip = '',
-      contentId = '',
-      contenSource
-    } = values;
-    let updateBeginTime = '';
-    let updateEndTime = '';
-    if (times) {
-      updateBeginTime = times[0].startOf('day').valueOf();
-      updateEndTime = times[1].endOf('day')?.valueOf();
-    }
+    const { catalogIds, ...otherValues } = values;
+
     let catalogId = '';
     let sceneId = '';
     if (catalogIds && catalogIds.length > 0) {
@@ -170,29 +140,13 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
     setFormParams((formParams) => ({
       ...formParams,
       catalogId,
-      content,
-      contentType,
-      sensitive,
-      status,
-      tip,
-      updateBeginTime,
-      updateEndTime,
-      contentId,
-      contenSource
+      ...otherValues
     }));
     await getList({
       pageNum: 1,
       catalogId,
-      content,
-      contentType,
-      sensitive,
-      status,
-      tip,
-      updateBeginTime,
-      updateEndTime,
       sceneId,
-      contentId,
-      contenSource
+      ...otherValues
     });
   };
 
