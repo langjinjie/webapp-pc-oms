@@ -115,6 +115,7 @@ export const tableColumnsFun = (): ColumnsType<IPackageDownLoadRow> => {
     {
       dataIndex: 'updateTime',
       width: 200,
+      // title: '人群包更新时间'
       title: '更新时间'
     },
     {
@@ -139,10 +140,15 @@ export const tableColumnsFun = (): ColumnsType<IPackageDownLoadRow> => {
       title: '生成时间',
       width: 200
     },
+    // {
+    //   dataIndex: 'updateTime',
+    //   width: 200,
+    //   title: '更新时间'
+    // },
     {
       dataIndex: 'opName',
       title: '处理人',
-      width: 100,
+      width: 150,
       render: (opName: string) => <span>{opName || UNKNOWN}</span>
     },
     {

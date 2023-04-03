@@ -160,6 +160,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
     const res = await requestGetPackageCompute({ packageId });
     if (res) {
       message.success('计算成功');
+      getList();
     }
     setBtnLoadingPackageId((param) => ({ ...param, compute: '' }));
   };
@@ -211,7 +212,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
     {
       key: 'opName',
       dataIndex: 'opName',
-      width: 100,
+      width: 150,
       title: '创建人',
       render: (opName: string) => <span>{opName || UNKNOWN}</span>
     },
@@ -276,7 +277,7 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
               <Button
                 type="link"
                 loading={btnLoadingPackageId.compute === record.packageId}
-                disabled={record.computeStatus === 2}
+                disabled={record.computeStatus === 1}
                 onClick={() => computeHandle(record)}
               >
                 点击计算
