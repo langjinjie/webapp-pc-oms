@@ -53,6 +53,7 @@ const GroupDetail: React.FC = () => {
   const viewPackageDetail = () => {
     history.push('/tagPackage/create?packageId=' + crowdsDetail?.packageId, {
       navList: [
+        { name: '标签分群', path: '/tagPackage' },
         { name: '分群详情', path: '/tagPackage/detail?packageId=' + crowdsDetail?.packageId },
         { name: '分群规则' }
       ]
@@ -87,7 +88,13 @@ const GroupDetail: React.FC = () => {
         centered: true,
         content: '人群包导出成功，是否跳转到人群包下载列表？',
         onOk () {
-          history.push('/tagPackage/download');
+          history.push('/tagPackage/download', {
+            navList: [
+              { name: '标签分群', path: '/tagPackage' },
+              { name: '分群详情', path: '/tagPackage/detail?packageId=' + crowdsDetail?.packageId },
+              { name: '查看人群包下载列表' }
+            ]
+          });
         }
       });
     }

@@ -64,7 +64,7 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
 
   return (
     <div className="container">
-      <BreadCrumbs navList={[{ name: '标签分群', path: '/tagPackage' }, { name: '查看人群包下载列表' }]} />
+      <BreadCrumbs />
       <NgFormSearch
         className="mt20"
         isInline={false}

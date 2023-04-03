@@ -119,7 +119,9 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
         centered: true,
         content: '人群包导出成功，是否跳转到人群包下载列表？',
         onOk () {
-          history.push('/tagPackage/download');
+          history.push('/tagPackage/download', {
+            navList: [{ name: '标签分群', path: '/tagPackage' }, { name: '查看人群包下载列表' }]
+          });
         }
       });
     }
