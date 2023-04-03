@@ -2,7 +2,7 @@ import { Button, message } from 'antd';
 import React, { Key, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getMassList, stopMass } from 'src/apis/marquee';
-import { NgFormSearch, NgModal } from 'src/components';
+import { AuthBtn, NgFormSearch, NgModal } from 'src/components';
 import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
 import { OperateType } from 'src/utils/interface';
 import { tableColumnsFun, searchColsFun, MessageStopColumn } from './ListConfig';
@@ -65,7 +65,13 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className="container">
-      <NgFormSearch searchCols={searchColsFun()} onSearch={onSearch} />
+      <AuthBtn path={'/query'}>
+        <NgFormSearch
+          searchCols={searchColsFun()}
+          onSearch={onSearch}
+          onValuesChange={(_, values) => setFormValues(values)}
+        />
+      </AuthBtn>
       <div className="pt15">
         <NewTableComponent<Partial<MessageStopColumn>>
           pagination={pagination}
