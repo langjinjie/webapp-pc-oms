@@ -36,9 +36,6 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
     type: 0,
     list: []
   });
-  // 车标签
-  const [carTagList, setCarTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
-  const [allCarList, setAllCarTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
 
   // 兴趣标签
   const [interestTagList, setinterestTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
@@ -46,6 +43,10 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
     type: 0,
     list: []
   });
+
+  // 车标签
+  const [carTagList, setCarTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
+  // const [allCarList, setAllCarTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
 
   const [chooseTags, setChooseTags] = useState<IFilterTagsItem[]>([]);
 
@@ -71,11 +72,12 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
   const getTagList = async () => {
     const res: any = await queryTagList();
     const resList = Array.isArray(res.list) ? res.list : [];
+    console.log('resList', resList);
     setAllAttrTagList(resList[0]);
     setAttrTagList(resList[0]);
     setAllPredictTagList(resList[1]);
     setPredictTagList(resList[1]);
-    setAllCarTagList(resList[2]);
+    // setAllCarTagList(resList[2]);
     setCarTagList(resList[2]);
     setAllinterestTagList(resList[3]);
     setinterestTagList(resList[3]);
@@ -132,8 +134,6 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
       if (tabIndex === 0) {
         setAttrTagList(allAttrTagList);
         setPredictTagList(allPredictTagList);
-      } else if (tabIndex === 2) {
-        setCarTagList(allCarList);
       } else {
         setinterestTagList(allInterestList);
       }
@@ -269,6 +269,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
       {...props}
       bodyStyle={{ paddingBottom: 80 }}
       onClose={onClose}
+      destroyOnClose
       footer={
         <div
           style={{
@@ -317,7 +318,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
                   dataSource={attrTagList.list}
                   chooseTags={chooseTags}
                   onTagClick={onTagClick}
-                  type={1}
+                  type={attrTagList.type}
                   isTagFlat={isTagFlat}
                 />
               </div>

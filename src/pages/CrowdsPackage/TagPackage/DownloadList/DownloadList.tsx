@@ -28,7 +28,9 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
   };
 
   const onFinishHandle = (values?: any) => {
-    const { updateTime, runTime } = values;
+    const { computeUpdateTime, updateTime, runTime } = values;
+    // 人群包更新时间
+    const [computeUpdateTimeBegin, computeUpdateTimeEnd] = formatDate(computeUpdateTime);
     // 生成时间
     const [runTimeBegin, runTimeEnd] = formatDate(runTime);
     // 更新时间
@@ -37,6 +39,8 @@ const DownloadList: React.FC<RouteComponentProps> = () => {
     delete values.updateTime;
     const param = {
       ...values,
+      computeUpdateTimeBegin,
+      computeUpdateTimeEnd,
       runTimeBegin,
       runTimeEnd,
       updateTimeBegin,

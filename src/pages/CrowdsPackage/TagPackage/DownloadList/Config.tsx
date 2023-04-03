@@ -54,6 +54,13 @@ export const searchCols: SearchCol[] = [
   },
   {
     type: 'rangePicker',
+    label: '人群包更新时间',
+    width: '140px',
+    name: 'computeUpdateTime',
+    placeholder: '请选择'
+  },
+  {
+    type: 'rangePicker',
     label: '更新时间',
     width: '140px',
     name: 'updateTime',
@@ -113,10 +120,9 @@ export const tableColumnsFun = (): ColumnsType<IPackageDownLoadRow> => {
       title: '对应坐席数量'
     },
     {
-      dataIndex: 'updateTime',
+      dataIndex: 'computeUpdateTime',
       width: 200,
-      // title: '人群包更新时间'
-      title: '更新时间'
+      title: '人群包更新时间'
     },
     {
       dataIndex: 'runStatus',
@@ -136,15 +142,15 @@ export const tableColumnsFun = (): ColumnsType<IPackageDownLoadRow> => {
       )
     },
     {
+      dataIndex: 'updateTime',
+      width: 200,
+      title: '更新时间'
+    },
+    {
       dataIndex: 'runTime',
       title: '生成时间',
       width: 200
     },
-    // {
-    //   dataIndex: 'updateTime',
-    //   width: 200,
-    //   title: '更新时间'
-    // },
     {
       dataIndex: 'opName',
       title: '处理人',

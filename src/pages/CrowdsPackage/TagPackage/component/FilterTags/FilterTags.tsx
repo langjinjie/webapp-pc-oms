@@ -15,7 +15,7 @@ interface IFilterTagsProps {
   isTagFlat?: boolean;
 }
 
-const tabKey2TypeList = [[1, 2], [3], [4]];
+const tabKey2TypeList = [[1, 2], [3], [4]]; // 1-属性标签 2-预测标签 3-车标签 4-兴趣标签,其中1,2合并显示位属性标签
 
 /**
  * @desc 选择客户标签
@@ -42,8 +42,8 @@ const FilterTags: React.FC<IFilterTagsProps> = (props) => {
   };
   const tabsList = [
     { value: 0, label: '属性标签' },
-    { value: 1, label: '兴趣标签' },
-    { value: 2, label: '车标签' }
+    { value: 2, label: '兴趣标签' },
+    { value: 1, label: '车标签' }
   ];
   const { TabPane } = Tabs;
 
