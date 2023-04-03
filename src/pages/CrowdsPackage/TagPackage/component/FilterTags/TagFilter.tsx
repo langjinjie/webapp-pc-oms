@@ -38,8 +38,8 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
   });
 
   // 兴趣标签
-  const [interestTagList, setinterestTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
-  const [allInterestList, setAllinterestTagList] = useState<{ type: number; list: TagCategory[] }>({
+  const [interestTagList, setInterestTagList] = useState<{ type: number; list: TagCategory[] }>({ type: 0, list: [] });
+  const [allInterestList, setAllInterestTagList] = useState<{ type: number; list: TagCategory[] }>({
     type: 0,
     list: []
   });
@@ -65,22 +65,38 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
     });
   };
 
+  // 重置
+  const onResetHandle = () => {
+    setTabIndex(0);
+    setAttrTagList(allAttrTagList);
+    setPredictTagList(allPredictTagList);
+    setInterestTagList(allInterestList);
+  };
+
   /**
    * 获取全部标签列表
    *  @param queryType
    */
   const getTagList = async () => {
+    // 不重复请求
+    if (
+      allAttrTagList.list.length &&
+      allPredictTagList.list.length &&
+      allInterestList.list.length &&
+      carTagList.list.length
+    ) {
+      return;
+    }
     const res: any = await queryTagList();
     const resList = Array.isArray(res.list) ? res.list : [];
-    console.log('resList', resList);
     setAllAttrTagList(resList[0]);
     setAttrTagList(resList[0]);
     setAllPredictTagList(resList[1]);
     setPredictTagList(resList[1]);
     // setAllCarTagList(resList[2]);
     setCarTagList(resList[2]);
-    setAllinterestTagList(resList[3]);
-    setinterestTagList(resList[3]);
+    setAllInterestTagList(resList[3]);
+    setInterestTagList(resList[3]);
   };
 
   /**
@@ -92,7 +108,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
       if (tabIndex === 0) {
         const res1 = await searchTagByTagName({ queryType: 1, tagName });
         const res2 = await searchTagByTagName({ queryType: 2, tagName });
-        if (res1.groupList) {
+        if (res1?.groupList) {
           setAttrTagList({
             type: attrTagList.type,
             list: [
@@ -105,7 +121,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
         } else {
           setAttrTagList((attrTagList) => ({ ...attrTagList, list: [] }));
         }
-        if (res2.groupList) {
+        if (res2?.groupList) {
           setPredictTagList((predictTagList) => ({
             ...predictTagList,
             list: [
@@ -120,7 +136,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
         }
       } else {
         const res3 = await searchTagByTagName({ queryType: 3, tagName });
-        setinterestTagList((interestTagList) => ({
+        setInterestTagList((interestTagList) => ({
           ...interestTagList,
           list: [
             {
@@ -135,7 +151,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
         setAttrTagList(allAttrTagList);
         setPredictTagList(allPredictTagList);
       } else {
-        setinterestTagList(allInterestList);
+        setInterestTagList(allInterestList);
       }
     }
   };
@@ -256,6 +272,8 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
     if (visible) {
       setChooseTags(chooseTagList);
       getTagList();
+    } else {
+      onResetHandle();
     }
   }, [visible]);
 
@@ -299,14 +317,13 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
         </div>
       </div>
       <Tabs
-        defaultActiveKey={'0'}
+        activeKey={tabIndex.toString()}
         onChange={(activeKey: string) => {
           setTabIndex(+activeKey);
         }}
       >
         {tabList.map((val: string, index: number) => (
           <Tabs.TabPane key={index} tab={val}>
-            {/* {tabIndex === 0 && ( */}
             <div className={classNames(style.tabTagWrap, { block: tabIndex === 0 })}>
               <div className={style.searchWrap}>
                 <Search placeholder="可输入标签组名称查询" allowClear onSearch={(val) => searchTag(val)} />
