@@ -5,13 +5,15 @@ import { TagItem } from 'src/utils/interface';
 import { DownOutlined } from '@ant-design/icons';
 import { Icon } from 'src/components';
 import styles from './tag.module.less';
+import classNames from 'classnames';
 
 interface ComponentsProps {
   onChange?: (value?: { logicType: 1 | 2; tagList: TagItem[] }) => void;
   value?: { logicType: 1 | 2; tagList: TagItem[] };
+  className?: string;
 }
 const TagFilterComponents: React.FC<ComponentsProps> = (props) => {
-  const { value, onChange } = props;
+  const { value, onChange, className } = props;
   const [visible, setVisible] = useState(false);
   const filterClients = (tag: { logicType: 1 | 2; tagList: TagItem[] }) => {
     // setTag(tag);
@@ -36,8 +38,8 @@ const TagFilterComponents: React.FC<ComponentsProps> = (props) => {
       <Input
         readOnly
         suffix={value ? <Icon name="guanbi" onClick={delAll} /> : <DownOutlined />}
-        className={styles.viewInput}
-        value={value?.tagList
+        className={classNames(styles.viewInput, className)}
+        value={(value?.tagList || [])
           .map((tagItem) => (tagItem.displayType ? tagItem.groupName + ':' + tagItem.tagName : tagItem.tagName))
           .toString()
           .replace(/,/g, '；')}

@@ -254,8 +254,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
           form={searchForm}
           onFinish={handleFinish}
           onReset={handleReset}
-          className={style.customLayout}
           onValuesChange={handleValuesChange}
+          className={classNames(style.customLayout, props.className)}
         >
           <Row>
             {searchCols?.slice(0, firstRowChildCount || 2).map((col) => {

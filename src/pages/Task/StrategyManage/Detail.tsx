@@ -167,7 +167,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               <Form.Item label="客户筛选" name={'clientScope'} className={styles.interiorItem}>
                 <Radio.Group disabled>
                   <Radio value={1}>全部客户</Radio>
-                  <Radio value={2}>部分客户</Radio>
+                  <Radio value={2}>选择人群包</Radio>
                 </Radio.Group>
               </Form.Item>
             </Form.Item>

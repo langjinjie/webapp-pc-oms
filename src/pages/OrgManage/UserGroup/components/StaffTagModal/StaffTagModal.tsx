@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NgModal, Icon } from 'src/components';
 import { Radio, RadioChangeEvent } from 'antd';
 import { requestGetStaffTagList } from 'src/apis/orgManage';
+import { numberToChinese } from 'src/utils/base';
 import style from './style.module.less';
 import classNames from 'classnames';
 
@@ -17,23 +18,7 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
   >([]);
   const [selectedList, setSelectedList] = useState<{ ruleType: number; tagValues: string; tagName: string }[]>([]);
   const [radioVal, setRadioVal] = useState(0);
-  // 阿拉伯数字转换汉字 1-99
-  const changeNumber = (num: number) => {
-    const numberArray = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
-    // 个位数
-    if (num.toString().length === 1) {
-      return numberArray[num];
-    }
-    // 十位数
-    if (num.toString().length === 2) {
-      // 十位数是1
-      if (num < 20) {
-        return '十' + numberArray[+num.toString()[1] - 1];
-      } else {
-        return numberArray[+num.toString()[0] - 1] + '十' + numberArray[+num.toString()[1] - 1];
-      }
-    }
-  };
+
   const onReset = () => {
     setSelectedList([]);
     setRadioVal(0);
@@ -152,7 +137,7 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
             {staffTagList.map((item, index: number) => (
               <div className={style.tagItem} key={item.sortId}>
                 <div className={style.tagName}>
-                  标签{changeNumber(index)}：{item.tagName}
+                  标签{numberToChinese(index + 1)}：{item.tagName}
                 </div>
                 <div className={style.tagValWrap}>
                   {(item.tagValues || '')
