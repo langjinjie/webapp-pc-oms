@@ -1,5 +1,4 @@
 import { PaginationProps } from 'antd/es/pagination';
-import { Moment } from 'moment';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getApplyList } from 'src/apis/knowledge';
@@ -33,28 +32,12 @@ const KnowledgeApprovalList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const onSearch = (values: any) => {
-    const { createTime, ...otherValues } = values;
-    let createTimeBegin;
-    let createTimeEnd;
-
-    if (createTime) {
-      createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    setQueryParams({ createTimeBegin, createTimeEnd, ...otherValues });
-    getList({ createTimeBegin, createTimeEnd, ...otherValues, pageNum: 1 });
+    setQueryParams({ values });
+    getList({ ...values, pageNum: 1 });
   };
 
   const onValuesChange = (values: any) => {
-    const { createTime, ...otherValues } = values;
-    let createTimeBegin;
-    let createTimeEnd;
-
-    if (createTime) {
-      createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    setQueryParams({ createTimeBegin, createTimeEnd, ...otherValues });
+    setQueryParams({ values });
   };
 
   useEffect(() => {

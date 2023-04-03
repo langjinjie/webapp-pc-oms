@@ -5,7 +5,6 @@ import { AuthBtn, Icon, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, DeductProps, tableColumns } from './Config';
 import { RouteComponentProps } from 'react-router-dom';
 import { batchDeductIntegral, getWaitDeductPointsList } from 'src/apis/integral';
-import { Moment } from 'moment';
 import classNames from 'classnames';
 import styles from './style.module.less';
 import { NgModal } from 'src/components/NgModal/NgModal';
@@ -53,16 +52,10 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
-  const handleSearch = ({ staffName = '', time }: { staffName: string; time: [Moment, Moment] }) => {
-    let beginTime!: string;
-    let endTime!: string;
-    if (time) {
-      beginTime = time[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      endTime = time[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    setFormParams((formParams) => ({ ...formParams, staffName, beginTime, endTime }));
+  const handleSearch = (values: any) => {
+    setFormParams((formParams) => ({ ...formParams, ...values }));
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    getList({ pageNum: 1, staffName, beginTime, endTime });
+    getList({ pageNum: 1, ...values });
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: DeductProps[]) => {

@@ -116,21 +116,13 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSearch = async (fieldsValue: any) => {
-    const { category, productName, status, rangePicker } = fieldsValue;
-
-    let onlineTimeBegin = '';
-    let onlineTimeEnd = '';
-    if (rangePicker && rangePicker.length > 0) {
-      onlineTimeBegin = rangePicker[0].format('YYYY-MM-DD');
-      onlineTimeEnd = rangePicker[1].format('YYYY-MM-DD');
-    }
-    setParams((params) => ({ ...params, category, productName, status, onlineTimeBegin, onlineTimeEnd }));
+    setParams(fieldsValue);
 
     setPagination({
       ...pagination,
       current: 1
     });
-    getList({ pageNum: 1, category, productName, status, onlineTimeBegin, onlineTimeEnd });
+    getList({ pageNum: 1, ...fieldsValue });
   };
   const handleSort = async (record: ProductProps) => {
     let res: any;
@@ -189,15 +181,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   const onValuesChange = (changeValues: any, values: any) => {
-    const { category, productName, status, rangePicker } = values;
-
-    let onlineTimeBegin = '';
-    let onlineTimeEnd = '';
-    if (rangePicker && rangePicker.length > 0) {
-      onlineTimeBegin = rangePicker[0].format('YYYY-MM-DD');
-      onlineTimeEnd = rangePicker[1].format('YYYY-MM-DD');
-    }
-    setParams((params) => ({ ...params, category, productName, status, onlineTimeBegin, onlineTimeEnd }));
+    setParams(values);
   };
   const isDisabled = (operationType: number | null, status: number) => {
     let _isDisabled = false;

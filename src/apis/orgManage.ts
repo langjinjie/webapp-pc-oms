@@ -300,3 +300,5 @@ export const getChatDetail: HttpFC = (params) => {
 export const getChatSearchList: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/proposal/getDynamicList', params);
 };
+
+//

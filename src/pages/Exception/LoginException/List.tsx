@@ -45,22 +45,23 @@ const List: React.FC = () => {
   const onSearch = (value?: any) => {
     setPagination((param) => ({ ...param, current: 1 }));
     const { staffNames, leaderName, unloginCountWeek, deptIds, date } = value;
-    const fromDate = date?.format('YYYY-MM-DD HH:mm:ss');
-    const isShoe = date ? date.format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') : true;
+
+    const isShoe = date ? date === moment().format('YYYY-MM-DD') : true;
     setIsShow(isShoe);
     setFormValue({
       leaderName,
       staffNames: staffNames?.map(({ staffName }: { staffName: string }) => staffName),
       unloginCountWeek,
       deptIds: deptIds?.map(({ deptId }: { deptId: string }) => deptId),
-      date: fromDate
+      date: moment(date).format('YYYY-MM-DD HH:mm:ss')
     });
+
     getList({
       leaderName,
       staffNames: staffNames?.map(({ staffName }: { staffName: string }) => staffName),
       deptIds: deptIds?.map(({ deptId }: { deptId: string }) => deptId),
       unloginCountWeek,
-      date: fromDate
+      date: moment(date).format('YYYY-MM-DD HH:mm:ss')
     });
   };
 

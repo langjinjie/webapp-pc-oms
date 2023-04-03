@@ -63,26 +63,12 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   };
 
   const onSearch = (values?: { [key: string]: any }) => {
-    delete values?.beginTime;
-    delete values?.endTime;
     setPagination((pagination) => ({ ...pagination, current: 1 }));
-    const { staffList, filterTag, addTime, takeoverTime } = values || {};
-    let addBeginTime = '';
-    let addEndTime = '';
-    if (addTime) {
-      addBeginTime = addTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      addEndTime = addTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
-      delete values?.addTime;
-    }
-    let takeoverBeginTime = '';
-    let takeoverEndTime = '';
-    if (takeoverTime) {
-      takeoverBeginTime = takeoverTime[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      takeoverEndTime = takeoverTime[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
-      delete values?.takeoverTime;
-    }
+    const { staffList, filterTag, ...otherValues } = values || {};
+    console.log(values);
+
     setFormValue({
-      ...values,
+      ...otherValues,
       staffList: staffList?.map(({ staffId }: { staffId: string }) => ({ staffId })),
       filterTag:
         filterTag && filterTag.tagList.length
@@ -93,11 +79,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
                 groupId
               }))
             }
-          : undefined,
-      addBeginTime,
-      addEndTime,
-      takeoverBeginTime,
-      takeoverEndTime
+          : undefined
     });
     getList({
       pageNum: 1,
@@ -112,11 +94,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
                 groupId
               }))
             }
-          : undefined,
-      addBeginTime,
-      addEndTime,
-      takeoverBeginTime,
-      takeoverEndTime
+          : undefined
     });
   };
 

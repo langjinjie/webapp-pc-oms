@@ -30,6 +30,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
   useEffect(() => {
     getMomentDetailByFeedId();
   }, [value]);
+  console.log(value);
 
   return (
     <div className={classNames(style.phoneWrap, className)}>
@@ -55,18 +56,18 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
               {/* 营销素材列表 */}
               {itemIds.length > 0 &&
                 itemIds.map((mapItem) => (
-                  <div className={style.newsItem} key={'0' + mapItem.itemId}>
+                  <div className={style.newsItem} key={'0' + mapItem?.itemId}>
                     <div className={style.avatar}>
                       <img className={style.avatarImg} src={require('src/assets/images/avater.jpg')} />
                     </div>
                     {/* 话术 */}
-                    {value?.actionRule?.contentType === 5 && <div className={style.news}>{mapItem.itemName}</div>}
+                    {value?.actionRule?.contentType === 5 && <div className={style.news}>{mapItem?.itemName}</div>}
                     {/* 海报 */}
                     {value?.actionRule?.contentType === 2 && (
                       <div className={style.posterWrap}>
                         <img
                           className={style.poster}
-                          src={mapItem.itemShareImgUrl || mapItem.imgUrl || mapItem.itemUrl}
+                          src={mapItem?.itemShareImgUrl || mapItem?.imgUrl || mapItem?.itemUrl}
                         />
                       </div>
                     )}

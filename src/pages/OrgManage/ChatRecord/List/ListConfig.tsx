@@ -22,7 +22,7 @@ export const searchCols: SearchCol[] = [
     width: '160px'
   },
   {
-    name: 'rangePicker',
+    name: 'startTime-endTime',
     type: 'rangePicker',
     label: '创建时间',
     width: '160px'

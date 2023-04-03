@@ -15,7 +15,7 @@ export const searchCols: SearchCol[] = [
     width: 320
   },
   {
-    name: 'time',
+    name: 'beginTime-endTime',
     type: 'rangePicker',
     label: '日期',
     placeholder: ['开始时间', '结束时间']

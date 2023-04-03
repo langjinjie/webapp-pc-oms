@@ -193,94 +193,29 @@ const SyncSpeech: React.FC<ISyncSpeechProps> = ({ visible, value, onClose, onOk,
 
   // 点击查询按钮
   const onSearch = async (values: any) => {
-    const {
-      catalogIds,
-      content = '',
-      contentType = '',
-      sensitive = '',
-      status = '',
-      contentId = '',
-      times = undefined,
-      tip = ''
-    } = values;
+    const { catalogIds, ...otherValues } = values;
     let catalogId = '';
     let sceneId = '';
     if (catalogIds && catalogIds.length) {
       catalogId = catalogIds[catalogIds.length - 1];
       sceneId = categories.find((findItem) => findItem.catalogId === catalogIds[0]).sceneId;
     }
-    let updateBeginTime = '';
-    let updateEndTime = '';
-    if (times) {
-      updateBeginTime = times[0].startOf('day').valueOf();
-      updateEndTime = times[1].endOf('day')?.valueOf();
-    }
+
     setFormParams((formParams) => ({
       ...formParams,
       catalogId,
-      content,
-      contentType,
-      sensitive,
-      status,
-      tip,
-      contentId,
-      updateBeginTime,
-      updateEndTime,
-      sceneId
+      sceneId,
+      ...otherValues
     }));
     // 将页面重置为第一页
     setPagination((pagination: any) => ({ ...pagination, current: 1 }));
     await getList({
       pageNum: 1,
       catalogId,
-      content,
-      contentType,
-      sensitive,
-      status,
-      tip,
-      contentId,
-      updateBeginTime,
-      updateEndTime,
-      sceneId
+      sceneId,
+      ...otherValues
     });
   };
-
-  // const onCascaderChange = (/* _: any, selectedOptions: any */) => {
-  //   setPagination((pagination: any) => ({ ...pagination, current: 1 }));
-  // };
-
-  // const onValuesChange = (_: any, values: any) => {
-  //   const {
-  //     catalogIds,
-  //     content = '',
-  //     contentType = '',
-  //     sensitive = '',
-  //     status = '',
-  //     times = undefined,
-  //     tip = ''
-  //   } = values;
-  //   let catalogId = '';
-  //   if (catalogIds) {
-  //     catalogId = catalogIds[catalogIds.length - 1];
-  //   }
-  //   let updateBeginTime = '';
-  //   let updateEndTime = '';
-  //   if (times) {
-  //     updateBeginTime = times[0].startOf('day').valueOf();
-  //     updateEndTime = times[1].endOf('day')?.valueOf();
-  //   }
-  //   setFormParams((formParams) => ({
-  //     ...formParams,
-  //     catalogId,
-  //     content,
-  //     contentType,
-  //     sensitive,
-  //     status,
-  //     tip,
-  //     updateBeginTime,
-  //     updateEndTime
-  //   }));
-  // };
 
   const onSelectChange = (_: React.Key[], newSelectedRows: SpeechProps[]) => {
     // 把不在本页的数据找出来
