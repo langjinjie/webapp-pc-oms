@@ -66,7 +66,7 @@ const GroupDetail: React.FC = () => {
     const { packageId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     const res = await requestGetPackageCompute({ packageId });
     if (res) {
-      message.success('计算成功');
+      message.success('计算成功，可以稍后手动刷新获取最新数据');
       getDetail();
     } else {
       message.warning('计算异常');
