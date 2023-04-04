@@ -146,8 +146,6 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
     if (res) {
       message.success('人群包删除成功');
       getList();
-    } else {
-      message.error('人群包删除失败');
     }
   };
   // 计算人群包
