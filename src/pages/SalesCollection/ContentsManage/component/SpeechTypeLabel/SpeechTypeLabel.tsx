@@ -68,7 +68,7 @@ const SpeechTypeLabel: React.FC<ISpeechTypeLabelProps> = ({
             label="图文标题:"
             // rules={[{ required: true, message: '请输入图文标题' }]}
           >
-            <InputShowLength className={style.input} placeholder={'请输入图文摘要'} maxLength={30} />
+            <InputShowLength className={style.input} placeholder={'请输入图文标题'} maxLength={30} />
           </Form.Item>
           <Form.Item
             className={style.formItem}
