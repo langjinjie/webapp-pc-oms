@@ -87,7 +87,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
             <Tabs.TabPane tab="客户经理" key="1">
               {pageInfo.clientAll
                 ? (
-                <div className="color-danger">次群发消息选择的为全部员工，可到组织架构查看所有人员</div>
+                <div className="color-danger">此群发消息选择的为全部员工，可到组织架构查看所有人员</div>
                   )
                 : (
                 <>
@@ -119,7 +119,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
             <Tabs.TabPane tab="客户" key="2">
               {pageInfo.clientAll
                 ? (
-                <div className="color-danger">次群发消息选择的为所有客户，可到客户信息功能内查看所有人员</div>
+                <div className="color-danger">此群发消息选择的为所有客户，可到客户信息功能内查看所有人员</div>
                   )
                 : (
                 <>
