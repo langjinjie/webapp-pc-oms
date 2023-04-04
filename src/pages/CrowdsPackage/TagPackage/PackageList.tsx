@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message, Modal, PaginationProps, Space } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, tableColumnsFun } from './Config';
 import { requestGetPackageList, requestGetDelPackage } from 'src/apis/CrowdsPackage';
 
@@ -96,20 +96,26 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
   return (
     <div className="container">
-      <NgFormSearch
-        isInline={false}
-        firstRowChildCount={4}
-        searchCols={searchCols}
-        onSearch={onFinishHandle}
-        onReset={onResetHandle}
-      />
+      <AuthBtn path="/query">
+        <NgFormSearch
+          isInline={false}
+          firstRowChildCount={4}
+          searchCols={searchCols}
+          onSearch={onFinishHandle}
+          onReset={onResetHandle}
+        />
+      </AuthBtn>
       <Space size={20}>
-        <Button className="mt10 mb20" type="primary" shape="round" onClick={createGroup}>
-          创建分群
-        </Button>
-        <Button className="mt10 mb20" type="primary" shape="round" onClick={navigatorToDownload}>
-          查看人群包下载列表
-        </Button>
+        <AuthBtn path="/add">
+          <Button className="mt10 mb20" type="primary" shape="round" onClick={createGroup}>
+            创建分群
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/viewDownloadList">
+          <Button className="mt10 mb20" type="primary" shape="round" onClick={navigatorToDownload}>
+            查看人群包下载列表
+          </Button>
+        </AuthBtn>
       </Space>
       <NgTable
         rowKey={'packageId'}
@@ -122,13 +128,15 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
         loading={tableLoading}
         rowSelection={rowSelection}
       />
-      {list.length !== 0 && (
-        <div className={'operationWrap'}>
-          <Button type="primary" ghost shape="round" disabled={selectedRowKeys.length === 0} onClick={batchDelHandle}>
-            批量删除
-          </Button>
-        </div>
-      )}
+      <AuthBtn path="/batchDel">
+        {list.length !== 0 && (
+          <div className={'operationWrap'}>
+            <Button type="primary" ghost shape="round" disabled={selectedRowKeys.length === 0} onClick={batchDelHandle}>
+              批量删除
+            </Button>
+          </div>
+        )}
+      </AuthBtn>
     </div>
   );
 };

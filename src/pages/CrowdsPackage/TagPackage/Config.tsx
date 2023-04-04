@@ -11,6 +11,7 @@ import {
 } from 'src/apis/CrowdsPackage';
 import classNames from 'classnames';
 import { UNKNOWN } from 'src/utils/base';
+import { AuthBtn } from 'src/components';
 
 interface ICrowdsPackageRow {
   packageId: string; // 是 分群ID
@@ -145,8 +146,6 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
     if (res) {
       message.success('人群包删除成功');
       getList();
-    } else {
-      message.error('人群包删除失败');
     }
   };
   // 计算人群包
@@ -249,39 +248,49 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
       render: (record: ICrowdsPackageRow) => {
         return (
           <div>
-            <Button type="link" onClick={() => viewDetail(record)}>
-              分群详情
-            </Button>
-            {/* 每日更新方式对应的是：开启/暂停 */}
-            {record.refreshType === 1 && (
-              <Popconfirm
-                title={`确定要${record.runStatus === 2 ? '开启' : '暂停'}该人群包吗？`}
-                onConfirm={() => manageHandle(record)}
-              >
-                <Button type="link">{record.runStatus === 2 ? '开启' : '暂停'}</Button>
-              </Popconfirm>
-            )}
-            <Button
-              type="link"
-              loading={btnLoadingPackageId.export === record.packageId}
-              onClick={() => exportGroup(record)}
-            >
-              导出人群包
-            </Button>
-            {/* 手工更新方式对应的是：点击计算/点击计算（置灰） */}
-            {record.refreshType === 2 && (
+            <AuthBtn path="/viewPackageDetail">
+              <Button type="link" onClick={() => viewDetail(record)}>
+                分群详情
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/manage">
+              {/* 每日更新方式对应的是：开启/暂停 */}
+              {record.refreshType === 1 && (
+                <Popconfirm
+                  title={`确定要${record.runStatus === 2 ? '开启' : '暂停'}该人群包吗？`}
+                  onConfirm={() => manageHandle(record)}
+                >
+                  <Button type="link">{record.runStatus === 2 ? '开启' : '暂停'}</Button>
+                </Popconfirm>
+              )}
+            </AuthBtn>
+            <AuthBtn path="/export">
               <Button
                 type="link"
-                loading={btnLoadingPackageId.compute === record.packageId}
-                disabled={record.computeStatus === 1}
-                onClick={() => computeHandle(record)}
+                loading={btnLoadingPackageId.export === record.packageId}
+                onClick={() => exportGroup(record)}
               >
-                点击计算
+                导出人群包
               </Button>
-            )}
-            <Popconfirm title="确定要删除该人群包吗？" onConfirm={() => deleteHandle(record)}>
-              <Button type="link">删除</Button>
-            </Popconfirm>
+            </AuthBtn>
+            {/* 手工更新方式对应的是：点击计算/点击计算（置灰） */}
+            <AuthBtn path="/computed">
+              {record.refreshType === 2 && (
+                <Button
+                  type="link"
+                  loading={btnLoadingPackageId.compute === record.packageId}
+                  disabled={record.computeStatus === 1}
+                  onClick={() => computeHandle(record)}
+                >
+                  点击计算
+                </Button>
+              )}
+            </AuthBtn>
+            <AuthBtn path="/delete">
+              <Popconfirm title="确定要删除该人群包吗？" onConfirm={() => deleteHandle(record)}>
+                <Button type="link">删除</Button>
+              </Popconfirm>
+            </AuthBtn>
           </div>
         );
       }
