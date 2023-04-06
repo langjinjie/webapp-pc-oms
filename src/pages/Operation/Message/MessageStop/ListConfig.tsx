@@ -166,8 +166,8 @@ export const tableColumnsFun = (
 ): ColumnsType<MessageStopColumn> => {
   return [
     {
-      key: 'taskCode',
-      dataIndex: 'taskCode',
+      key: 'batchNo',
+      dataIndex: 'batchNo',
       title: '群发编号',
       width: 225
     },

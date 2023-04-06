@@ -56,7 +56,8 @@ const NewTableComponent = <T extends object>(props: TableComponentProps<T>): JSX
   });
 
   useMemo(() => {
-    setPagination((myPagination) => ({ ...myPagination, ...pagination }));
+    const current = pagination?.pageNum || myPagination.current;
+    setPagination((myPagination) => ({ ...myPagination, ...pagination, current }));
   }, [pagination]);
   const onPaginationChange = async (page: number, pageSize: number) => {
     setLoading(true);
