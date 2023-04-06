@@ -87,13 +87,15 @@ export const searchColsFun = (): SearchCol[] => [
     type: 'select',
     label: '群发类型',
     name: 'batchType',
+    width: '120px',
     options: sendTypeOptions,
     placeholder: '请输入'
   },
   {
     type: 'select',
     label: '群发状态',
-    name: 'createBy',
+    width: '120px',
+    name: 'status',
     options: sendStatusOptions,
     placeholder: '请输入'
   },
@@ -101,6 +103,7 @@ export const searchColsFun = (): SearchCol[] => [
     type: 'select',
     label: '停用类型',
     name: 'stopType',
+    width: '120px',
     options: stopTypeOptions,
     placeholder: '请输入'
   },
@@ -110,18 +113,22 @@ export const searchColsFun = (): SearchCol[] => [
     name: 'createTimeBegin-createTimeEnd'
   },
   {
-    type: 'input',
+    type: 'select',
     label: '功能来源',
     name: 'source',
-    placeholder: '请输入'
+    placeholder: '请选择',
+    width: '120px',
+    options: [
+      { id: '', name: '全部' },
+      { id: 1, name: '任务系统' }
+    ]
   },
   {
-    type: 'select',
+    type: 'input',
     label: '功能编码',
     name: 'taskCode',
     width: '120px',
-    options: auditStatus,
-    placeholder: '请选择'
+    placeholder: '请输入'
   },
   {
     type: 'date',
@@ -159,8 +166,8 @@ export const tableColumnsFun = (
 ): ColumnsType<MessageStopColumn> => {
   return [
     {
-      key: 'batchNo',
-      dataIndex: 'batchNo',
+      key: 'taskCode',
+      dataIndex: 'taskCode',
       title: '群发编号',
       width: 225
     },
