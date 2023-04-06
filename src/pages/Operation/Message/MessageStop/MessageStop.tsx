@@ -16,7 +16,8 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
   const [dataSource, setDataSource] = useState<Partial<MessageStopColumn>[]>([]);
   const [pagination, setPagination] = useState<MyPaginationProps>({
     total: 0,
-    pageNum: 1
+    pageNum: 1,
+    pageSize: 10
   });
   const getList = async (params?: any) => {
     const res = await getMassList({
@@ -33,11 +34,11 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const onConfirmStop = async (list?: string[]) => {
-    console.log(list);
     const res = await stopMass({
       list: list || selectedRowKeys
     });
     if (res) {
+      setVisible(false);
       setSelectedRowKeys([]);
       setSelectedRows([]);
       message.success('操作成功');
@@ -111,7 +112,7 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
         )}
       </div>
 
-      <NgModal title="批量停用" visible={visible} onCancel={() => setVisible(false)} onOk={() => onConfirmStop}>
+      <NgModal title="批量停用" visible={visible} onCancel={() => setVisible(false)} onOk={() => onConfirmStop()}>
         <p className="pa20">确定停用选中的群发任务？</p>
       </NgModal>
     </div>
