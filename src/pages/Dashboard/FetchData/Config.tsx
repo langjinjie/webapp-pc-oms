@@ -1,6 +1,7 @@
 import { Button, Space, TableColumnProps, Tooltip } from 'antd';
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { OperateType } from 'src/utils/interface';
 
 export const searchCols: SearchCol[] = [
   {
@@ -44,7 +45,9 @@ export type FetchDataRecordType = {
   recordId: string;
   [prop: string]: any;
 };
-export const TableColumnFun = (): TableColumnProps<FetchDataRecordType>[] => {
+export const TableColumnFun = (
+  operate: (type: OperateType, record: FetchDataRecordType) => void
+): TableColumnProps<FetchDataRecordType>[] => {
   return [
     { key: 'name', dataIndex: 'name', title: '取数模板名称' },
     {
@@ -64,7 +67,7 @@ export const TableColumnFun = (): TableColumnProps<FetchDataRecordType>[] => {
       title: '模板内容',
       ellipsis: { showTitle: false },
       render: (text) => (
-        <Tooltip placement="top" title={text}>
+        <Tooltip placement="topLeft" title={text}>
           {text}
         </Tooltip>
       )
@@ -74,9 +77,22 @@ export const TableColumnFun = (): TableColumnProps<FetchDataRecordType>[] => {
       dataIndex: 'params',
       title: '模板参数',
       ellipsis: { showTitle: false },
-      render: (text) => (
-        <Tooltip placement="top" title={text}>
-          {text}
+      render: (params) => (
+        <Tooltip
+          placement="topLeft"
+          title={params?.map((param: any, index: number) => (
+            <>
+              <span key={param.paramId}>{param.paramName}</span>
+              {index < params.length - 1 && <span>,</span>}
+            </>
+          ))}
+        >
+          {params?.map((param: any, index: number) => (
+            <>
+              <span key={param.paramId}>{param.paramName}</span>
+              {index < params.length - 1 && <span>,</span>}
+            </>
+          ))}
         </Tooltip>
       )
     },
@@ -85,9 +101,12 @@ export const TableColumnFun = (): TableColumnProps<FetchDataRecordType>[] => {
     { key: 'createBy', dataIndex: 'createBy', title: '创建人' },
     {
       title: '操作',
-      render: () => (
+      key: 'operate',
+      render: (_, record) => (
         <Space>
-          <Button type="link">编辑</Button>
+          <Button type="link" onClick={() => operate('edit', record)}>
+            编辑
+          </Button>
           <Button type="link">删除</Button>
           <Button type="link">执行</Button>
           <Button type="link">下载</Button>
@@ -105,7 +124,7 @@ const executeStatus = [
 export const downloadTableColumnFun = (): TableColumnProps<FetchDataRecordType>[] => {
   return [
     { key: 'sqlId', dataIndex: 'sqlId', title: 'ID' },
-    { key: 'sqlId', dataIndex: 'sqlId', title: '模板名称' },
+    { key: 'name', dataIndex: 'name', title: '模板名称' },
     {
       key: 'des',
       dataIndex: 'des',

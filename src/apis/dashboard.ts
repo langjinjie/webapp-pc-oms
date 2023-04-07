@@ -152,11 +152,15 @@ export const getSqlConfigList: HttpFC<{
 export const getSqlConfigDetail: HttpFC<{
   sqlId: string;
 }> = (param) => {
-  return http.post('/tenacity-admin/api/sqlConfig/list', param);
+  return http.post('/tenacity-admin/api/sqlConfig/detail', param);
 };
 // 1.3、新增和修改sql模板接口
 export const editSqlConfig: HttpFC<{
   sqlId: string;
+  name: string;
+  des: string;
+  content: string;
+  params?: { paramName: string; paramDesc: string; paramId?: string }[];
 }> = (param) => {
   return http.post('/tenacity-admin/api/sqlConfig/edit', param);
 };

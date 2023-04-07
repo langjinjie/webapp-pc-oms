@@ -1,33 +1,62 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Space } from 'antd';
+import { Button, Form, Input, message, Space } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import { editSqlConfig, getSqlConfigDetail } from 'src/apis/dashboard';
 import { BreadCrumbs } from 'src/components';
+import { urlSearchParams } from 'src/utils/base';
 
 import styles from './add.module.less';
 
-const FetchDataAdd: React.FC = () => {
+const FetchDataAdd: React.FC<RouteComponentProps> = ({ history, location }) => {
   const [addForm] = Form.useForm();
 
+  const getDetail = async () => {
+    const { id } = urlSearchParams<{ id: string }>(location.search);
+    if (id) {
+      const res = await getSqlConfigDetail({ sqlId: id });
+
+      res &&
+        addForm.setFieldsValue({
+          ...res
+        });
+    } else {
+      addForm.setFieldsValue({
+        params: [{}]
+      });
+    }
+  };
+
   useEffect(() => {
-    addForm.setFieldsValue({
-      params: [{}]
-    });
+    getDetail();
   }, []);
 
+  const onFinish = async (values: any) => {
+    console.log(values);
+    const res = await editSqlConfig(values);
+    if (res) {
+      message.success('保存成功');
+      history.goBack();
+    }
+    console.log(res);
+  };
   return (
     <div className="container">
       <BreadCrumbs navList={[{ name: '通用取数', path: '/fetchData' }, { name: '创建' }]} />
 
-      <Form className="mt20 edit" form={addForm}>
+      <Form className="mt20 edit" form={addForm} onFinish={onFinish}>
         <div className="sectionTitle">基本配置</div>
         <Form.Item label="模板名称" name={'name'} rules={[{ required: true }]}>
           <Input placeholder="请输入" className="width400"></Input>
         </Form.Item>
-        <Form.Item label="模板描述" name={'name'} rules={[{ required: true }]}>
+        <Form.Item label="模板ID" hidden name={'sqlId'}>
           <Input placeholder="请输入" className="width400"></Input>
         </Form.Item>
-        <Form.Item label="模板内容" name={'name'} rules={[{ required: true }]}>
+        <Form.Item label="模板描述" name={'des'} rules={[{ required: true }]}>
+          <Input placeholder="请输入" className="width400"></Input>
+        </Form.Item>
+        <Form.Item label="模板内容" name={'content'} rules={[{ required: true }]}>
           <Input.TextArea placeholder="请输入" className={styles.width650} rows={8}></Input.TextArea>
         </Form.Item>
 
@@ -45,10 +74,13 @@ const FetchDataAdd: React.FC = () => {
                     </Button>
                   </div>
                   <div className={styles.itemContent}>
-                    <Form.Item label="参数名称" name={[name, 'name']} {...restFiled}>
+                    <Form.Item label="参数名称" name={[name, 'paramName']} {...restFiled}>
                       <Input className="width400" placeholder="请输入" />
                     </Form.Item>
-                    <Form.Item label="参数描述" name={[name, 'desc']} {...restFiled}>
+                    <Form.Item label="参数id" hidden name={[name, 'paramId']} {...restFiled}>
+                      <Input className="width400" placeholder="请输入" />
+                    </Form.Item>
+                    <Form.Item label="参数描述" name={[name, 'paramDesc']} {...restFiled}>
                       <Input className={styles.width650} placeholder="请输入" />
                     </Form.Item>
                   </div>
@@ -71,7 +103,14 @@ const FetchDataAdd: React.FC = () => {
 
         <Form.Item className="formFooter mt40" style={{ marginLeft: '240px' }}>
           <Space size={36}>
-            <Button shape="round" type="primary" ghost>
+            <Button
+              shape="round"
+              type="primary"
+              ghost
+              onClick={() => {
+                history.goBack();
+              }}
+            >
               取消
             </Button>
             <Button shape="round" type="primary" htmlType="submit">
