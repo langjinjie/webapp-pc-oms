@@ -6,30 +6,6 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { OperateType } from 'src/utils/interface';
 
-const auditStatus = [
-  // 0-审核中；1-审批通过；2-审批不通过；3-撤回；4-自动审批通过
-  {
-    id: 0,
-    name: '审批中'
-  },
-  {
-    id: 1,
-    name: '审批通过'
-  },
-  {
-    id: 2,
-    name: '审批不通过'
-  },
-  // {
-  //   id: 3,
-  //   name: '撤回'
-  // },
-  {
-    id: 4,
-    name: '自动审批通过'
-  }
-];
-
 const sendTypeOptions = [
   {
     id: '',
@@ -215,7 +191,7 @@ export const tableColumnsFun = (
       render: (soruce) => {
         return (
           <div>
-            <span>{auditStatus.filter((item) => item.id === soruce)[0]?.name || UNKNOWN}</span>
+            <span>{[{ id: 1, name: '任务系统' }].filter((item) => item.id === soruce)[0]?.name || UNKNOWN}</span>
           </div>
         );
       }
