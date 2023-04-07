@@ -42,7 +42,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
     if (res) {
       setPageInfo((pageInfo) => ({ ...pageInfo, clientAll: res.clientAll }));
       setDataSource(res.list);
-      setPagination((pagination) => ({ ...pagination, total: res.total }));
+      setPagination((pagination) => ({ ...pagination, total: res.total, pageNum: params.pageNum || 1 }));
     }
   };
   useEffect(() => {
