@@ -139,6 +139,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                     scroll={{ x: 'auto' }}
                     dataSource={dataSource}
                     rowKey={'memberId'}
+                    pagination={pagination}
                     loadData={getMemberList}
                     columns={[
                       { title: '外部联系人ID', key: 'memberId', dataIndex: 'memberId' },

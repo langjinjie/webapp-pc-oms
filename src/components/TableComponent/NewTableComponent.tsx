@@ -45,29 +45,30 @@ const NewTableComponent = <T extends object>(props: TableComponentProps<T>): JSX
     setLoading(propLoading);
   }, [propLoading]);
 
-  const [myPagination, setPagination] = useState<PaginationProps>({
-    total: pagination?.total || 0,
-    current: pagination?.pageNum || 1,
-    pageSize: pagination?.pageSize || 10,
-
-    showTotal: (total) => {
-      return `共 ${total} 条记录`;
-    }
+  const [myPagination, setPagination] = useState<PaginationProps>(() => {
+    return {
+      total: pagination?.total || 0,
+      current: pagination?.pageNum || 1,
+      pageSize: pagination?.pageSize || 10,
+      showTotal: (total) => {
+        return `共 ${total} 条记录`;
+      }
+    };
   });
 
   useMemo(() => {
     const current = pagination?.pageNum || myPagination.current;
-    console.log(pagination);
-
-    setPagination((myPagination) => ({ ...myPagination, ...pagination, current }));
+    if (pagination) {
+      setPagination((myPagination) => ({ ...myPagination, ...pagination, current }));
+    }
   }, [pagination]);
+
   const onPaginationChange = async (page: number, pageSize: number) => {
     setLoading(true);
 
     setPagination((pagination) => ({ ...pagination, current: page, pageSize }));
-    const res = await loadData?.({ pageNum: page, pageSize: pageSize });
+    await loadData?.({ pageNum: page, pageSize: pageSize });
     setLoading(false);
-    console.log(res);
   };
   return (
     <Table
@@ -86,11 +87,16 @@ const NewTableComponent = <T extends object>(props: TableComponentProps<T>): JSX
           : undefined
       }
       pagination={
-        myPagination
+        pagination
           ? {
-              ...myPagination,
-              showQuickJumper: true,
-              showSizeChanger: true,
+              ...(myPagination.simple
+                ? {
+                    ...myPagination,
+                    showQuickJumper: true,
+                    showSizeChanger: true
+                  }
+                : myPagination),
+
               onChange: onPaginationChange
             }
           : false
