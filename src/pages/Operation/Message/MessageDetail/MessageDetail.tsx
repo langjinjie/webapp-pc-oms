@@ -2,8 +2,8 @@ import { Button, Divider, Input, Tabs } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getMassDetail, getMassWithMember } from 'src/apis/marquee';
-import { BreadCrumbs, NgTable, Preview } from 'src/components';
-import { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
+import { BreadCrumbs, Preview } from 'src/components';
+import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
 import { urlSearchParams } from 'src/utils/base';
 import style from './style.module.less';
 
@@ -102,7 +102,8 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                       onPressEnter={(e) => onPressEnter(e.target)}
                     />
                   </div>
-                  <NgTable
+                  <NewTableComponent
+                    loadData={getMemberList}
                     scroll={{ x: 'auto' }}
                     dataSource={dataSource}
                     rowKey={'memberId'}
@@ -112,7 +113,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                       { title: '客户经理', key: 'memberName', dataIndex: 'memberName' },
                       { title: '组织架构', key: 'deptFullName', dataIndex: 'deptFullName' }
                     ]}
-                  ></NgTable>
+                  ></NewTableComponent>
                 </>
                   )}
             </Tabs.TabPane>
@@ -134,15 +135,16 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                       onPressEnter={(e) => onPressEnter(e.target)}
                     />
                   </div>
-                  <NgTable
+                  <NewTableComponent
                     scroll={{ x: 'auto' }}
                     dataSource={dataSource}
                     rowKey={'memberId'}
+                    loadData={getMemberList}
                     columns={[
                       { title: '外部联系人ID', key: 'memberId', dataIndex: 'memberId' },
                       { title: '客户昵称', key: 'key2', dataIndex: 'memberName' }
                     ]}
-                  ></NgTable>
+                  />
                 </>
                   )}
             </Tabs.TabPane>
