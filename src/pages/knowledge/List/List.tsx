@@ -2,7 +2,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Input, message, Row, Space, Tree } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
 import classNames from 'classnames';
-import { Moment } from 'moment';
 import React, { Key, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import {
@@ -100,52 +99,12 @@ const KnowledgeList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const onSearch = (values: any) => {
-    const { updateTime, createTime, ...otherValues } = values;
-    let createTimeBegin = '';
-    let createTimeEnd = '';
-    let updateTimeBegin = '';
-    let updateTimeEnd = '';
-    if (createTime) {
-      createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    if (updateTime) {
-      updateTimeBegin = (updateTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      updateTimeEnd = (updateTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    setQueryParams((queryParams: any) => ({
-      ...queryParams,
-      createTimeBegin,
-      createTimeEnd,
-      updateTimeBegin,
-      updateTimeEnd,
-      ...otherValues
-    }));
-    getList({ createTimeBegin, createTimeEnd, updateTimeBegin, updateTimeEnd, ...otherValues, pageNum: 1 });
+    setQueryParams(values);
+    getList({ ...values, pageNum: 1 });
   };
 
   const onValuesChange = (values: any) => {
-    const { updateTime, createTime, ...otherValues } = values;
-    let createTimeBegin = '';
-    let createTimeEnd = '';
-    let updateTimeBegin = '';
-    let updateTimeEnd = '';
-    if (createTime) {
-      createTimeBegin = (createTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      createTimeEnd = (createTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    if (updateTime) {
-      updateTimeBegin = (updateTime as [Moment, Moment])[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      updateTimeEnd = (updateTime as [Moment, Moment])[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
-    setQueryParams((queryParams: any) => ({
-      ...queryParams,
-      createTimeBegin,
-      createTimeEnd,
-      updateTimeBegin,
-      updateTimeEnd,
-      ...otherValues
-    }));
+    setQueryParams(values);
   };
 
   useEffect(() => {

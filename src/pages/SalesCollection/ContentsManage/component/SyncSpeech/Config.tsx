@@ -61,7 +61,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       placeholder: '请输入'
     },
     {
-      name: 'times',
+      name: 'updateBeginTime-updateEndTime',
       type: 'rangePicker',
       width: 160,
       label: '更新时间'

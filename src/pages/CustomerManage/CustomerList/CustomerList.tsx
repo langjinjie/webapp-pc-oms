@@ -31,7 +31,7 @@ const CustomerList: React.FC = () => {
   };
 
   const onSearch = (values: any) => {
-    const { clientName, staffList: staffs, filterTag, beginTime: addBeginTime, endTime: addEndTime } = values;
+    const { clientName, staffList: staffs, filterTag, addBeginTime, addEndTime } = values;
     let orgDept: { [key: string]: string } | undefined;
     if ((values?.orgDept || []).length) {
       orgDept = {};

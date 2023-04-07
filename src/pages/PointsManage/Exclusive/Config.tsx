@@ -18,7 +18,7 @@ export const setSearchCols = (options: OptionProps[]): SearchCol[] => [
     width: 200
   },
   {
-    name: 'dateList',
+    name: 'startTime-endTime',
     type: 'rangePicker',
     label: '案例提交时间',
     placeholder: '请输入',

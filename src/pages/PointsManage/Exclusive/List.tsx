@@ -65,9 +65,8 @@ const ExclusiveList: React.FC = () => {
     }
   };
   const onSearch = (values: any) => {
-    const { likeStaffName, spconfId, sendStatus, beginTime: startTime = '', endTime = '' } = values;
-    getList({ likeStaffName, pageNum: 1, spconfId, sendStatus, startTime, endTime });
-    setQueryParams({ likeStaffName, spconfId, sendStatus, startTime, endTime });
+    getList({ ...values, pageNum: 1 });
+    setQueryParams(values);
   };
 
   const getTaskTypeList = async () => {
@@ -145,7 +144,12 @@ const ExclusiveList: React.FC = () => {
   return (
     <div className="container">
       <AuthBtn path="/query">
-        <NgFormSearch isInline={false} searchCols={setSearchCols(exclusiveList)} onSearch={onSearch} />
+        <NgFormSearch
+          isInline={false}
+          searchCols={setSearchCols(exclusiveList)}
+          onSearch={onSearch}
+          onValuesChange={(_, values) => setQueryParams(values)}
+        />
       </AuthBtn>
       <NgTable
         loading={isLoading}

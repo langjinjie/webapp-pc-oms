@@ -10,8 +10,10 @@ import { RouteProps } from 'react-router-dom';
 
 import { knowledgeRoutes } from 'src/routes/knowledge';
 import { auditRoutes } from 'src/routes/audit';
-import { migrationRoters } from 'src/routes/migration';
 import { dataRoutes } from 'src/routes/data';
+import { operationRoutes } from 'src/routes/operation';
+import { migrationRouters } from 'src/routes/migration';
+import { crowdsManage } from 'src/routes/crowdsPackage';
 
 export interface Menu {
   name: string;
@@ -413,7 +415,6 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/PointsManage/Incentive/Incentive'))
   },
   // 新人任务
-  // 新人任务
   {
     path: '/newerPoints',
     component: lazy(() => import('src/pages/PointsManage/NewerPoints/List/NewerPoints'))
@@ -466,6 +467,10 @@ export const routes: RouteProps[] = [
   ...auditRoutes,
   // 数据管理
   ...dataRoutes,
+  // 资源管理
+  ...operationRoutes,
+  // 欢迎语
+  ...migrationRouters,
   /* * 客户管理
    */
   {
@@ -477,13 +482,15 @@ export const routes: RouteProps[] = [
     path: '/customerManage/clientDetail',
     component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
   },
-  // 欢迎语
-  ...migrationRoters,
   // Banner位管理
   {
     path: '/banner',
     component: lazy(() => import('src/pages/Operation/Banner/List'))
-  }
+  },
+  // 欢迎语
+  ...migrationRouters,
+  // 分群管理
+  ...crowdsManage
 ];
 
 // 缓存路由

@@ -68,14 +68,7 @@ const AuditList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSearch = (values: any) => {
-    const {
-      beginTime: applyBeginTime,
-      endTime: applyEndTime,
-      applyList,
-      curHandlerList,
-      applyType,
-      approvalNo
-    } = values;
+    const { applyBeginTime, applyEndTime, applyList, curHandlerList, applyType, approvalNo } = values;
     const params = {
       applyBeginTime,
       applyEndTime,

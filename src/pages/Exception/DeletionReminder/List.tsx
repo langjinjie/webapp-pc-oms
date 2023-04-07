@@ -30,15 +30,10 @@ const List: React.FC = () => {
   const onSearch = (value?: any) => {
     // 重置分页
     setPagination((param) => ({ ...param, current: 1 }));
-    const { staffList, clientName, time, deptList, leaderName } = value;
+    const { staffList, clientName, beginTime, endTime, deptList, leaderName } = value;
     const staffName = staffList?.map((mapItem: { staffName: string }) => mapItem.staffName);
     const deptIds = deptList?.map(({ deptId }: { deptId: string }) => ({ deptId }));
-    let beginTime: any;
-    let endTime: any;
-    if (time) {
-      beginTime = time[0].startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      endTime = time[1].endOf('days').format('YYYY-MM-DD HH:mm:ss');
-    }
+
     setFormValue({
       staffName,
       clientName,

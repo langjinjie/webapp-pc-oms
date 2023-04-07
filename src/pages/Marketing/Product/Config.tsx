@@ -52,7 +52,7 @@ export const setSearchCols = (options: any[]): SearchCol[] => {
       width: 160,
       options: options
     },
-    { name: 'rangePicker', width: '268px', type: 'rangePicker', label: '上架时间' },
+    { name: 'onlineTimeBegin-onlineTimeEnd', width: '268px', type: 'rangePicker', label: '上架时间' },
     {
       name: 'status',
       type: 'select',

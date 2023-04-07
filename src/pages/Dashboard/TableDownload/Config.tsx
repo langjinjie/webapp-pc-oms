@@ -4,27 +4,27 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { AuthBtn } from 'src/components';
 // import { AuthBtn } from 'src/components';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+// import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 
-export const SearchCols: SearchCol[] = [
-  {
-    name: 'activityName',
-    type: 'select',
-    label: '报表类别',
-    width: '268px',
-    options: [
-      { id: 1, name: '每日战报数据' },
-      { id: 2, name: '战报黑名单数据' }
-    ]
-  },
-  {
-    name: '日期',
-    type: 'rangePicker',
-    width: 160,
-    label: '状态'
-  }
-];
+// export const SearchCols: SearchCol[] = [
+//   {
+//     name: 'activityName',
+//     type: 'select',
+//     label: '报表类别',
+//     width: '268px',
+//     options: [
+//       { id: 1, name: '每日战报数据' },
+//       { id: 2, name: '战报黑名单数据' }
+//     ]
+//   },
+//   {
+//     name: '日期',
+//     type: 'rangePicker',
+//     width: 160,
+//     label: '状态'
+//   }
+// ];
 
 export interface fileProps {
   id: number;

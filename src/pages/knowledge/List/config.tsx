@@ -60,12 +60,12 @@ export const searchColsFun = (): SearchCol[] => [
   {
     type: 'rangePicker',
     label: '创建时间',
-    name: 'createTime'
+    name: 'createTimeBegin-createTimeEnd'
   },
   {
     type: 'rangePicker',
     label: '更新时间',
-    name: 'updateTime'
+    name: 'updateTimeBegin-updateTimeEnd'
   },
   {
     type: 'select',
@@ -155,7 +155,11 @@ export const tableColumnsFun = (
       key: 'title',
       dataIndex: 'title',
       title: '知识库标题',
-      render: (title) => <Tooltip title={title || UNKNOWN}>{title || UNKNOWN}</Tooltip>,
+      render: (title) => (
+        <Tooltip placement="topLeft" title={title || UNKNOWN}>
+          {title || UNKNOWN}
+        </Tooltip>
+      ),
       ellipsis: {
         showTitle: false
       },

@@ -9,10 +9,10 @@ import { Card, Table, PaginationProps, TableColumnType, Button, Modal, message }
 import qs from 'qs';
 import classNames from 'classnames';
 import { setTitle } from 'tenacity-tools';
-import { AuthBtn, Form, Icon } from 'src/components';
-import { ItemProps } from 'src/utils/interface';
+import { AuthBtn, Icon, NgFormSearch } from 'src/components';
 import { queryWeeklyList, publishConfig, deleteConfig } from 'src/apis/weekly';
 import style from './style.module.less';
+import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 
 interface SearchParam {
   startTime?: string;
@@ -40,9 +40,9 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   });
   const [searchParam, setSearchParam] = useState<SearchParam>({});
 
-  const formItemData: ItemProps[] = [
+  const formItemData: SearchCol[] = [
     {
-      name: 'sendTime',
+      name: 'startTime-endTime',
       label: '发布时间',
       type: 'rangePicker'
     },
@@ -50,7 +50,7 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
       name: 'status',
       label: '发布状态',
       type: 'select',
-      dataSource: [
+      options: [
         {
           id: '1',
           name: '未发布'
@@ -212,15 +212,11 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSubmit = (values: any) => {
-    const { sendTime, status } = values;
     const params: any = {
-      status,
+      ...values,
       pageNum: 1
     };
-    if (sendTime && sendTime.length > 0) {
-      params.startTime = sendTime[0].startOf('day').format('YYYY-MM-DD HH:mm:ss');
-      params.endTime = sendTime[1].endOf('day').format('YYYY-MM-DD HH:mm:ss');
-    }
+
     setSearchParam({
       ...params,
       pageNum: pagination.current
@@ -242,7 +238,7 @@ const WeeklyConfig: React.FC<RouteComponentProps> = ({ history }) => {
         </div>
       </AuthBtn>
       <AuthBtn path="/query">
-        <Form itemData={formItemData} onSubmit={onSubmit} />
+        <NgFormSearch searchCols={formItemData} onSearch={onSubmit} />
       </AuthBtn>
       <Table
         style={{ marginTop: 20 }}

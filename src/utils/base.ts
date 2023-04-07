@@ -4,7 +4,7 @@
  * @date 2021-05-29 17:29
  */
 import { getQueryParam } from 'tenacity-tools';
-import qs, { ParsedQs } from 'qs';
+import qs from 'qs';
 import { useEffect, useRef } from 'react';
 type commonFC = (...args: any) => any;
 
@@ -58,8 +58,8 @@ export const setCookie: (name: string, value: string, time: number) => void = (
   document.cookie = name + '=' + value + ';expires=' + exp.toUTCString() + ';path=/';
 };
 
-export const urlSearchParams = (search: string): ParsedQs => {
-  return qs.parse(search, { ignoreQueryPrefix: true });
+export const urlSearchParams = <T = any>(search: string): T => {
+  return qs.parse(search, { ignoreQueryPrefix: true }) as T;
 };
 export const useDocumentTitle = (title: string, keepOnUumount = true): void => {
   const oldTitle = useRef(document.title).current;
@@ -130,7 +130,6 @@ export const throttle = (fn: { apply: (arg0: any, arg1: any) => void }, interval
  * @param fileName
  */
 export const exportFile = (data: BlobPart, fileName: string, suffix = 'xlsx'): void => {
-  console.log('suffix', suffix);
   const blob = new Blob([data]);
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -322,4 +321,77 @@ export const replaceEnter = (str: string): string => {
  */
 export const fix = (num: number, length: number): string => {
   return ('' + num).length < length ? (new Array(length + 1).join('0') + num).slice(-length) : '' + num;
+};
+
+/**
+ * @description 阿拉伯数字转换汉字 1-99
+ * @param number
+ */
+export const changeNumber = (num: number): string | undefined => {
+  const numberArray = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+  // 个位数
+  if (num.toString().length === 1) {
+    return numberArray[num];
+  }
+  // 十位数
+  if (num.toString().length === 2) {
+    // 十位数是1
+    if (num < 20) {
+      return '十' + numberArray[+num.toString()[1] - 1];
+    } else {
+      return numberArray[+num.toString()[0] - 1] + '十' + numberArray[+num.toString()[1] - 1];
+    }
+  }
+};
+
+/**
+ * @description 十亿以下的阿拉伯数字转中文数字
+ * @num 需要转换的阿拉伯数字
+ * @isUpper 是否转成大写
+ * @returns string
+ */
+export function numberToChinese (num: number, isUpper?: boolean): string {
+  const chineseNums = isUpper
+    ? ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']
+    : ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  const chineseUnits = isUpper
+    ? ['', '拾', '佰', '仟', '万', '拾万', '佰万', '仟万', '亿']
+    : ['', '十', '百', '千', '万', '十万', '百万', '千万', '亿'];
+  let result = '';
+  let unitIndex = 0;
+  // 前一位默认为零
+  let lastNumIsZero = true;
+  // 从个位数依次获取
+  while (num > 0) {
+    const currentNum = num % 10;
+    if (currentNum === 0) {
+      // 当前位是0，如果前一位也是0，则不处理，如果前一位不是0，则加上 ‘零’
+      if (!lastNumIsZero) {
+        result = chineseNums[currentNum] + result;
+      }
+      lastNumIsZero = true;
+    } else {
+      // 当前位不是0，则正常处理
+      result = chineseNums[currentNum] + chineseUnits[unitIndex] + result;
+      lastNumIsZero = false;
+    }
+    unitIndex++;
+    num = Math.floor(num / 10);
+  }
+  // 针对 10 - 19 中文阅读逻辑进行处理
+  if (result.startsWith(isUpper ? '壹拾' : '一十')) {
+    result = result.slice(1);
+  }
+  return result;
+}
+
+/**
+ * @description 时间格式化
+ * @param date
+ * @returns [begin, end]
+ */
+export const formatDate = (date?: moment.Moment[]): string[] => {
+  if (!date) return [];
+  const [start, end] = date;
+  return [start?.startOf('day').format('YYYY-MM-DD HH:mm:ss'), end?.endOf('day').format('YYYY-MM-DD HH:mm:ss')];
 };

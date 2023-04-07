@@ -64,7 +64,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 1 | 2) => Se
       )
     },
     {
-      name: 'addTime',
+      name: 'addBeginTime-addEndTime',
       type: 'rangePicker',
       width: '140px',
       label: '添加时间'
@@ -88,7 +88,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 1 | 2) => Se
       options: distributeLisType === 1 ? onJobTransferStatusList : resignTransferStatusList
     },
     {
-      name: 'takeoverTime',
+      name: 'takeoverBeginTime-takeoverEndTime',
       type: 'rangePicker',
       width: '140px',
       label: '转接时间'
