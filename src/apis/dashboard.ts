@@ -137,3 +137,68 @@ export const requestGetBicontrolTagslist: HttpFC = (param) => {
 export const requestGetDepttypeList: HttpFC = (param) => {
   return http.post('/tenacity-admin/api/data/bicontrol/depttype', param);
 };
+
+// 取数模块接口
+// 1.1、sql模板列表接口
+export const getSqlConfigList: HttpFC<{
+  pageNum: number;
+  pageSize: number;
+  name?: string;
+  content?: string;
+}> = (param) => {
+  return http.post('/tenacity-admin/api/sqlConfig/list', param);
+};
+// 1.2 sql模板详情接口
+export const getSqlConfigDetail: HttpFC<{
+  sqlId: string;
+}> = (param) => {
+  return http.post('/tenacity-admin/api/sqlConfig/detail', param);
+};
+// 1.3、新增和修改sql模板接口
+export const editSqlConfig: HttpFC<{
+  sqlId: string;
+  name: string;
+  des: string;
+  content: string;
+  params?: { paramName: string; paramDesc: string; paramId?: string }[];
+}> = (param) => {
+  return http.post('/tenacity-admin/api/sqlConfig/edit', param);
+};
+
+// 1.4、sql执行接口
+export const execSqlConfig: HttpFC<{
+  sqlId: string;
+  params?: { paramValue: string; paramId: string }[];
+}> = (param) => {
+  return http.post('/tenacity-admin/api/sqlConfig/exec', param);
+};
+
+// 1.5、下载执行记录sql执行接口
+export const downloadExecSqlRecord: HttpFC<{
+  recordId: string;
+}> = (param) => {
+  return http.post('/tenacity-admin/api/sqlRecord/download', param, {
+    responseType: 'blob',
+    timeout: 120000
+  });
+};
+// 1.6 重新执行Sql接口
+export const retryExecSqlRecord: HttpFC<{
+  recordId: string;
+}> = (param) => {
+  return http.post('/tenacity-admin/api/sqlRecord/reExec', param);
+};
+// 1.7、sql执行列表
+export const getExecSqlList: HttpFC<{
+  name: string;
+  pageNum: number;
+  pageSize: number;
+}> = (param) => {
+  return http.post('/tenacity-admin/api/sqlRecord/list', param);
+};
+// 1.8、sql模板删除
+export const delSqlConfig: HttpFC<{
+  sqlId: string;
+}> = (param) => {
+  return http.post('/tenacity-admin/api/sqlConfig/delete', param);
+};

@@ -10,6 +10,7 @@ import { RouteProps } from 'react-router-dom';
 
 import { knowledgeRoutes } from 'src/routes/knowledge';
 import { auditRoutes } from 'src/routes/audit';
+import { dataRoutes } from 'src/routes/data';
 import { operationRoutes } from 'src/routes/operation';
 import { migrationRouters } from 'src/routes/migration';
 import { crowdsManage } from 'src/routes/crowdsPackage';
@@ -464,6 +465,8 @@ export const routes: RouteProps[] = [
   ...knowledgeRoutes,
   // 审批链
   ...auditRoutes,
+  // 数据管理
+  ...dataRoutes,
   // 资源管理
   ...operationRoutes,
   // 欢迎语
