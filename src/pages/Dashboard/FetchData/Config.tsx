@@ -90,7 +90,7 @@ export const TableColumnFun = (
         >
           {params?.map((param: any, index: number) => (
             <>
-              <span key={param.paramId}>{param.paramName}</span>
+              <span key={param.paramId + index}>{param.paramName}</span>
               {index < params.length - 1 && <span>,</span>}
             </>
           ))}

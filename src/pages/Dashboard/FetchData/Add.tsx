@@ -23,7 +23,7 @@ const FetchDataAdd: React.FC<RouteComponentProps> = ({ history, location }) => {
         });
     } else {
       addForm.setFieldsValue({
-        params: [{}]
+        params: []
       });
     }
   };
@@ -33,8 +33,12 @@ const FetchDataAdd: React.FC<RouteComponentProps> = ({ history, location }) => {
   }, []);
 
   const onFinish = async (values: any) => {
-    console.log(values);
-    const res = await editSqlConfig(values);
+    const { params, ...otherValues } = values;
+    const paramsFilter = params.filter((item: any) => item.paramName) || [];
+    const res = await editSqlConfig({
+      ...otherValues,
+      params: paramsFilter.length > 0 ? paramsFilter : undefined
+    });
     if (res) {
       message.success('保存成功');
       history.goBack();
@@ -74,13 +78,13 @@ const FetchDataAdd: React.FC<RouteComponentProps> = ({ history, location }) => {
                     </Button>
                   </div>
                   <div className={styles.itemContent}>
-                    <Form.Item label="参数名称" name={[name, 'paramName']} {...restFiled}>
+                    <Form.Item label="参数名称" rules={[{ required: true }]} name={[name, 'paramName']} {...restFiled}>
                       <Input className="width400" placeholder="请输入" />
                     </Form.Item>
                     <Form.Item label="参数id" hidden name={[name, 'paramId']} {...restFiled}>
                       <Input className="width400" placeholder="请输入" />
                     </Form.Item>
-                    <Form.Item label="参数描述" name={[name, 'paramDesc']} {...restFiled}>
+                    <Form.Item label="参数描述" rules={[{ required: true }]} name={[name, 'paramDesc']} {...restFiled}>
                       <Input className={styles.width650} placeholder="请输入" />
                     </Form.Item>
                   </div>
