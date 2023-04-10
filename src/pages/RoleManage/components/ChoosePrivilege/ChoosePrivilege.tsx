@@ -61,7 +61,7 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
     corpId && getAllMenuList();
   }, [corpId]);
   useEffect(() => {
-    if (addMenu) {
+    if (addMenu && list.length) {
       tree2Arry(list).forEach((item) => {
         if (value?.map((mapItem) => mapItem.menuId).includes(item.menuId)) {
           item.disabled = true;
@@ -69,7 +69,7 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
       });
       setList((list: any) => [...list]);
     }
-  }, [addMenu]);
+  }, [addMenu, list]);
   return (
     <div className={style.wrap}>
       <div className={style.titleWrap}>
