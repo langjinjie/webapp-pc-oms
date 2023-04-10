@@ -7,12 +7,12 @@
 import { lazy } from 'react';
 import { CacheRouteProps } from 'react-router-cache-route';
 import { RouteProps } from 'react-router-dom';
-
 import { knowledgeRoutes } from 'src/routes/knowledge';
 import { auditRoutes } from 'src/routes/audit';
 import { operationRoutes } from 'src/routes/operation';
 import { migrationRouters } from 'src/routes/migration';
 import { crowdsManage } from 'src/routes/crowdsPackage';
+import { market } from 'src/routes/market';
 
 export interface Menu {
   name: string;
@@ -487,7 +487,9 @@ export const routes: RouteProps[] = [
   // 欢迎语
   ...migrationRouters,
   // 分群管理
-  ...crowdsManage
+  ...crowdsManage,
+  // -内容管理-进入朋友圈
+  ...market
 ];
 
 // 缓存路由

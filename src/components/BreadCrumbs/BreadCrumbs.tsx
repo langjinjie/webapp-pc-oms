@@ -13,9 +13,10 @@ import style from './style.module.less';
 interface BreadCrumbsProps {
   navClick?: (index: number) => void;
   navList?: Nav[];
+  className?: string;
 }
 
-const BreadCrumbs: React.FC<BreadCrumbsProps> = ({ navList, navClick }) => {
+const BreadCrumbs: React.FC<BreadCrumbsProps> = ({ navList, navClick, className }) => {
   const history = useHistory();
   const location = useLocation();
 
@@ -28,7 +29,7 @@ const BreadCrumbs: React.FC<BreadCrumbsProps> = ({ navList, navClick }) => {
   };
 
   return (
-    <ul className={style.breadList}>
+    <ul className={classNames(style.breadList, className)}>
       <li className={style.currentItem}>当前位置：</li>
       {newNavList.map((item, index: number) => (
         <li
