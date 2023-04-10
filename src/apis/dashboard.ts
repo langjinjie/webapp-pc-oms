@@ -175,10 +175,12 @@ export const execSqlConfig: HttpFC<{
 
 // 1.5、下载执行记录sql执行接口
 export const downloadExecSqlRecord: HttpFC<{
-  sqlId: string;
-  params?: { paramValue: string; paramId: string }[];
+  recordId: string;
 }> = (param) => {
-  return http.post('/tenacity-admin/api/sqlRecord/download', param);
+  return http.post('/tenacity-admin/api/sqlRecord/download', param, {
+    responseType: 'blob',
+    timeout: 120000
+  });
 };
 // 1.6 重新执行Sql接口
 export const retryExecSqlRecord: HttpFC<{
@@ -188,13 +190,15 @@ export const retryExecSqlRecord: HttpFC<{
 };
 // 1.7、sql执行列表
 export const getExecSqlList: HttpFC<{
-  recordId: string;
+  name: string;
+  pageNum: number;
+  pageSize: number;
 }> = (param) => {
   return http.post('/tenacity-admin/api/sqlRecord/list', param);
 };
 // 1.8、sql模板删除
 export const delSqlConfig: HttpFC<{
-  recordId: string;
+  sqlId: string;
 }> = (param) => {
   return http.post('/tenacity-admin/api/sqlConfig/delete', param);
 };

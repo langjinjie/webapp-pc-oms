@@ -86,6 +86,9 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
   useImperativeHandle(searchRef, () => ({
     handleReset: () => {
       searchForm.resetFields();
+    },
+    setFieldsValue: (values: any) => {
+      searchForm.setFieldsValue(values);
     }
   }));
   useEffect(() => {
@@ -157,6 +160,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
       {isInline
         ? (
         <Form
+          ref={searchRef}
           form={searchForm}
           layout="inline"
           onFinish={handleFinish}

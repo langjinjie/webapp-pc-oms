@@ -1,4 +1,4 @@
-import { Button, Space, TableColumnProps, Tooltip } from 'antd';
+import { Button, Popconfirm, Space, TableColumnProps, Tooltip } from 'antd';
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { OperateType } from 'src/utils/interface';
@@ -21,7 +21,7 @@ export const searchCols: SearchCol[] = [
 ];
 export const downloadSearchCols: SearchCol[] = [
   {
-    name: 'sceneCode',
+    name: 'name',
     type: 'input',
     label: '模板名称',
     width: '180px',
@@ -35,7 +35,7 @@ export type FetchDataRecordType = {
   name: string;
   des: string;
   content: string;
-  params: string;
+  params: { paramId: string; paramDesc: string; paramName: string }[];
   paramName: string;
   paramDesc: string;
   paramId: string;
@@ -46,7 +46,7 @@ export type FetchDataRecordType = {
   [prop: string]: any;
 };
 export const TableColumnFun = (
-  operate: (type: OperateType, record: FetchDataRecordType) => void
+  operate: (type: OperateType, record: FetchDataRecordType, index?: number) => void
 ): TableColumnProps<FetchDataRecordType>[] => {
   return [
     { key: 'name', dataIndex: 'name', title: '取数模板名称' },
@@ -102,14 +102,22 @@ export const TableColumnFun = (
     {
       title: '操作',
       key: 'operate',
-      render: (_, record) => (
+      fixed: 'right',
+      width: 220,
+      render: (_, record, index) => (
         <Space>
           <Button type="link" onClick={() => operate('edit', record)}>
             编辑
           </Button>
-          <Button type="link">删除</Button>
-          <Button type="link">执行</Button>
-          <Button type="link">下载</Button>
+          <Popconfirm title={'确定删除？'} onConfirm={() => operate('delete', record, index)}>
+            <Button type="link">删除</Button>
+          </Popconfirm>
+          <Button type="link" onClick={() => operate('other', record)}>
+            执行
+          </Button>
+          <Button type="link" onClick={() => operate('view', record)}>
+            下载
+          </Button>
         </Space>
       )
     }
@@ -121,9 +129,11 @@ const executeStatus = [
   { id: 1, name: '执行成功' },
   { id: 2, name: '执行失败' }
 ];
-export const downloadTableColumnFun = (): TableColumnProps<FetchDataRecordType>[] => {
+export const downloadTableColumnFun = (
+  operate: (type: OperateType, record: FetchDataRecordType) => void
+): TableColumnProps<FetchDataRecordType>[] => {
   return [
-    { key: 'sqlId', dataIndex: 'sqlId', title: 'ID' },
+    { key: 'sqlId', dataIndex: 'sqlId', title: 'ID', width: 190 },
     { key: 'name', dataIndex: 'name', title: '模板名称' },
     {
       key: 'des',
@@ -140,9 +150,10 @@ export const downloadTableColumnFun = (): TableColumnProps<FetchDataRecordType>[
       key: 'execSql',
       dataIndex: 'execSql',
       title: '执行SQL',
+      width: 200,
       ellipsis: { showTitle: false },
       render: (text) => (
-        <Tooltip placement="top" title={text}>
+        <Tooltip placement="topLeft" title={text}>
           {text}
         </Tooltip>
       )
@@ -154,16 +165,44 @@ export const downloadTableColumnFun = (): TableColumnProps<FetchDataRecordType>[
       ellipsis: { showTitle: false },
       render: (text) => executeStatus.filter((item) => item.id === text)[0]?.name
     },
-    { key: 'lastUpdated', dataIndex: 'lastUpdated', title: '生成时间' },
-    { key: 'usedTime', dataIndex: 'usedTime', title: '执行时间' },
+    {
+      key: 'lastUpdated',
+      dataIndex: 'lastUpdated',
+      title: '生成时间',
+      width: 180
+    },
+    { key: 'usedTime', dataIndex: 'usedTime', title: '执行时间', render: (usedTime) => usedTime || 0 },
     { key: 'createBy', dataIndex: 'createBy', title: '操作人' },
     {
       title: '操作',
-      render: () => (
+      width: 180,
+      render: (_, record) => (
         <Space>
-          <Button type="link">下载数据</Button>
-          <Button type="link">重新执行</Button>
-          <Button type="link">失败原因</Button>
+          {record.status === 1 && (
+            <Popconfirm
+              title="确定下载数据"
+              onConfirm={() => {
+                operate('view', record);
+              }}
+            >
+              <Button type="link">下载数据</Button>
+            </Popconfirm>
+          )}
+          {record.status === 2 && (
+            <Tooltip title={record.errMsg} placement="topLeft" trigger={'hover'}>
+              <Button type="link">失败原因</Button>
+            </Tooltip>
+          )}
+          {record.status !== 0 && (
+            <Popconfirm
+              title="确定重新执行"
+              onConfirm={() => {
+                operate('other', record);
+              }}
+            >
+              <Button type="link">重新执行</Button>
+            </Popconfirm>
+          )}
         </Space>
       )
     }
