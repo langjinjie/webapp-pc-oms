@@ -6,30 +6,6 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { OperateType } from 'src/utils/interface';
 
-const auditStatus = [
-  // 0-审核中；1-审批通过；2-审批不通过；3-撤回；4-自动审批通过
-  {
-    id: 0,
-    name: '审批中'
-  },
-  {
-    id: 1,
-    name: '审批通过'
-  },
-  {
-    id: 2,
-    name: '审批不通过'
-  },
-  // {
-  //   id: 3,
-  //   name: '撤回'
-  // },
-  {
-    id: 4,
-    name: '自动审批通过'
-  }
-];
-
 const sendTypeOptions = [
   {
     id: '',
@@ -87,13 +63,15 @@ export const searchColsFun = (): SearchCol[] => [
     type: 'select',
     label: '群发类型',
     name: 'batchType',
+    width: '120px',
     options: sendTypeOptions,
     placeholder: '请输入'
   },
   {
     type: 'select',
     label: '群发状态',
-    name: 'createBy',
+    width: '120px',
+    name: 'status',
     options: sendStatusOptions,
     placeholder: '请输入'
   },
@@ -101,6 +79,7 @@ export const searchColsFun = (): SearchCol[] => [
     type: 'select',
     label: '停用类型',
     name: 'stopType',
+    width: '120px',
     options: stopTypeOptions,
     placeholder: '请输入'
   },
@@ -110,18 +89,22 @@ export const searchColsFun = (): SearchCol[] => [
     name: 'createTimeBegin-createTimeEnd'
   },
   {
-    type: 'input',
+    type: 'select',
     label: '功能来源',
     name: 'source',
-    placeholder: '请输入'
+    placeholder: '请选择',
+    width: '120px',
+    options: [
+      { id: '', name: '全部' },
+      { id: 1, name: '任务系统' }
+    ]
   },
   {
-    type: 'select',
+    type: 'input',
     label: '功能编码',
     name: 'taskCode',
     width: '120px',
-    options: auditStatus,
-    placeholder: '请选择'
+    placeholder: '请输入'
   },
   {
     type: 'date',
@@ -208,7 +191,7 @@ export const tableColumnsFun = (
       render: (soruce) => {
         return (
           <div>
-            <span>{auditStatus.filter((item) => item.id === soruce)[0]?.name || UNKNOWN}</span>
+            <span>{[{ id: 1, name: '任务系统' }].filter((item) => item.id === soruce)[0]?.name || UNKNOWN}</span>
           </div>
         );
       }
