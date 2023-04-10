@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { downloadExecSqlRecord, getExecSqlList, retryExecSqlRecord } from 'src/apis/dashboard';
-import { BreadCrumbs, NgFormSearch } from 'src/components';
+import { AuthBtn, BreadCrumbs, NgFormSearch } from 'src/components';
 import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
 import { exportFile, urlSearchParams } from 'src/utils/base';
 import { OperateType } from 'src/utils/interface';
@@ -59,7 +59,9 @@ const FetchDataDownLoad: React.FC<RouteComponentProps> = ({ location }) => {
   return (
     <div className="container">
       <BreadCrumbs navList={[{ name: '通用取数', path: '/fetchData' }, { name: '下载' }]} />
-      <NgFormSearch searchRef={fromRef} className="mt30" onSearch={onSearch} searchCols={downloadSearchCols} />
+      <AuthBtn path="/download/query">
+        <NgFormSearch searchRef={fromRef} className="mt30" onSearch={onSearch} searchCols={downloadSearchCols} />
+      </AuthBtn>
       <NewTableComponent
         dataSource={dataSource}
         pagination={pagination}

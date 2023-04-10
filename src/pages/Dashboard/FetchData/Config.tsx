@@ -1,5 +1,6 @@
 import { Button, Popconfirm, Space, TableColumnProps, Tooltip } from 'antd';
 import React from 'react';
+import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { OperateType } from 'src/utils/interface';
 
@@ -106,18 +107,26 @@ export const TableColumnFun = (
       width: 220,
       render: (_, record, index) => (
         <Space>
-          <Button type="link" onClick={() => operate('edit', record)}>
-            编辑
-          </Button>
-          <Popconfirm title={'确定删除？'} onConfirm={() => operate('delete', record, index)}>
-            <Button type="link">删除</Button>
-          </Popconfirm>
-          <Button type="link" onClick={() => operate('other', record)}>
-            执行
-          </Button>
-          <Button type="link" onClick={() => operate('view', record)}>
-            下载
-          </Button>
+          <AuthBtn path="/edit">
+            <Button type="link" onClick={() => operate('edit', record)}>
+              编辑
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/delete">
+            <Popconfirm title={'确定删除？'} onConfirm={() => operate('delete', record, index)}>
+              <Button type="link">删除</Button>
+            </Popconfirm>
+          </AuthBtn>
+          <AuthBtn path="/operate">
+            <Button type="link" onClick={() => operate('other', record)}>
+              执行
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/export">
+            <Button type="link" onClick={() => operate('view', record)}>
+              下载
+            </Button>
+          </AuthBtn>
         </Space>
       )
     }
@@ -179,29 +188,35 @@ export const downloadTableColumnFun = (
       render: (_, record) => (
         <Space>
           {record.status === 1 && (
-            <Popconfirm
-              title="确定下载数据"
-              onConfirm={() => {
-                operate('view', record);
-              }}
-            >
-              <Button type="link">下载数据</Button>
-            </Popconfirm>
+            <AuthBtn path="/download/download">
+              <Popconfirm
+                title="确定下载数据"
+                onConfirm={() => {
+                  operate('view', record);
+                }}
+              >
+                <Button type="link">下载数据</Button>
+              </Popconfirm>
+            </AuthBtn>
           )}
           {record.status === 2 && (
-            <Tooltip title={record.errMsg} placement="topLeft" trigger={'hover'}>
-              <Button type="link">失败原因</Button>
-            </Tooltip>
+            <AuthBtn path="/download/view">
+              <Tooltip title={record.errMsg} placement="topLeft" trigger={'hover'}>
+                <Button type="link">失败原因</Button>
+              </Tooltip>
+            </AuthBtn>
           )}
           {record.status !== 0 && (
-            <Popconfirm
-              title="确定重新执行"
-              onConfirm={() => {
-                operate('other', record);
-              }}
-            >
-              <Button type="link">重新执行</Button>
-            </Popconfirm>
+            <AuthBtn path="/download/retry">
+              <Popconfirm
+                title="确定重新执行"
+                onConfirm={() => {
+                  operate('other', record);
+                }}
+              >
+                <Button type="link">重新执行</Button>
+              </Popconfirm>
+            </AuthBtn>
           )}
         </Space>
       )

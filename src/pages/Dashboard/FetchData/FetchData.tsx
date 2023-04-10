@@ -3,7 +3,7 @@ import { Button, Form, Input, message, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getSqlConfigList, execSqlConfig, delSqlConfig } from 'src/apis/dashboard';
-import { NgFormSearch, NgModal } from 'src/components';
+import { AuthBtn, NgFormSearch, NgModal } from 'src/components';
 import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
 import { OperateType } from 'src/utils/interface';
 import { FetchDataRecordType, searchCols, TableColumnFun } from './Config';
@@ -88,18 +88,22 @@ const FetchData: React.FC<RouteComponentProps> = ({ history }) => {
   };
   return (
     <div className="container">
-      <Button
-        type="primary"
-        shape="round"
-        icon={<PlusOutlined />}
-        onClick={() => {
-          onAdd();
-        }}
-        size="large"
-      >
-        创建模板
-      </Button>
-      <NgFormSearch className="mt30" onSearch={onSearch} searchCols={searchCols} />
+      <AuthBtn path="/add">
+        <Button
+          type="primary"
+          shape="round"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            onAdd();
+          }}
+          size="large"
+        >
+          创建模板
+        </Button>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <NgFormSearch className="mt30" onSearch={onSearch} searchCols={searchCols} />
+      </AuthBtn>
       <NewTableComponent
         className="mt20"
         dataSource={dataSource}
