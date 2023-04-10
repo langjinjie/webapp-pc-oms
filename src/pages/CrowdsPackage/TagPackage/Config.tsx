@@ -38,7 +38,7 @@ export const updateOptions = [
 ];
 export const computedOptions = [
   { id: 1, name: '计算中' },
-  { id: 2, name: '计算完成' },
+  { id: 2, name: '计算成功' },
   { id: 3, name: '计算失败' }
   // { id: 4, name: '新创建' }
 ];
@@ -189,8 +189,8 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
         <span>
           <i
             className={classNames('status-point', {
-              'status-point-green': text === 1,
-              // 'status-point-gray': text === 2,
+              'status-point-gray': text === 1,
+              'status-point-green': text === 2,
               'status-point-red': text === 3
             })}
           />

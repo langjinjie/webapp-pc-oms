@@ -188,8 +188,8 @@ const GroupDetail: React.FC = () => {
                 <span>
                   <i
                     className={classNames('status-point', {
-                      'status-point-green': computeStatus === 1,
-                      // 'status-point-gray': text === 2,
+                      'status-point-gray': computeStatus === 1,
+                      'status-point-green': computeStatus === 2,
                       'status-point-red': computeStatus === 3
                     })}
                   />
