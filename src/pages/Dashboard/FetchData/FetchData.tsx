@@ -26,7 +26,7 @@ const FetchData: React.FC<RouteComponentProps> = ({ history }) => {
     });
     if (res) {
       setDataSource(res.list);
-      setPagination(pagination);
+      setPagination((pagination) => ({ ...pagination, pageNum: params?.pageNum || 1, total: res.total }));
     }
   };
   const onSearch = (values: any) => {

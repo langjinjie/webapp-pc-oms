@@ -74,7 +74,7 @@ export const TableColumnFun = (
       )
     },
     {
-      key: 'params1',
+      key: 'params',
       dataIndex: 'params',
       title: '模板参数',
       ellipsis: { showTitle: false },
@@ -97,8 +97,18 @@ export const TableColumnFun = (
         </Tooltip>
       )
     },
-    { key: 'dateCreated', dataIndex: 'dateCreated', title: '模板更新时间' },
-    { key: 'lastUpdated', dataIndex: 'lastUpdated', title: '更新时间' },
+    {
+      key: 'dateCreated',
+      width: 180,
+      dataIndex: 'dateCreated',
+      title: '模板更新时间'
+    },
+    {
+      key: 'lastUpdated',
+      width: 180,
+      dataIndex: 'lastUpdated',
+      title: '更新时间'
+    },
     { key: 'createBy', dataIndex: 'createBy', title: '创建人' },
     {
       title: '操作',
