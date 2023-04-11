@@ -28,7 +28,14 @@ export const tableColumnsFun: ({ onlineHandle }: ITableColumnsFunProps) => Colum
 }) => {
   return [
     { title: '今日朋友圈ID', dataIndex: '' },
-    { title: '今日朋友圈名称', dataIndex: '' },
+    {
+      title: '今日朋友圈名称',
+      dataIndex: '',
+      ellipsis: true,
+      render (name: string) {
+        return <>{name.slice(0, 20) + '...'}</>;
+      }
+    },
     { title: '创建时间', dataIndex: '' },
     { title: '修改时间', dataIndex: '' },
     { title: '修改人', dataIndex: '' },
@@ -37,6 +44,7 @@ export const tableColumnsFun: ({ onlineHandle }: ITableColumnsFunProps) => Colum
     {
       title: '操作',
       fixed: 'right',
+      width: 220,
       render (row: any) {
         return (
           <>
