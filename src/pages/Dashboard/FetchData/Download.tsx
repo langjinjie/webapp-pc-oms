@@ -40,7 +40,7 @@ const FetchDataDownLoad: React.FC<RouteComponentProps> = ({ location }) => {
 
   const onSearch = (values: any) => {
     setFormValue(values);
-    getList(values);
+    getList({ ...values, pageNum: 1 });
   };
 
   const onOperate = async (type: OperateType, record: FetchDataRecordType) => {
