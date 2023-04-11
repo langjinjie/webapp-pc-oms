@@ -38,8 +38,6 @@ interface TrendChartProps {
   isTime?: boolean;
 }
 export const TrendChart: React.FC<TrendChartProps> = ({ data, legend, percentage, isTime }) => {
-  console.log(data);
-
   const options: ECOption = {
     legend: {
       data: legend

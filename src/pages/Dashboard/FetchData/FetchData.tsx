@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getSqlConfigList, execSqlConfig, delSqlConfig } from 'src/apis/dashboard';
 import { AuthBtn, NgFormSearch, NgModal } from 'src/components';
-import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
+import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/TableComponent';
 import { OperateType } from 'src/utils/interface';
 import { FetchDataRecordType, searchCols, TableColumnFun } from './Config';
 

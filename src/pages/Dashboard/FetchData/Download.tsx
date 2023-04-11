@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { downloadExecSqlRecord, getExecSqlList, retryExecSqlRecord } from 'src/apis/dashboard';
-import { AuthBtn, BreadCrumbs, NgFormSearch } from 'src/components';
-import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
+import { AuthBtn, BreadCrumbs, NgFormSearch, NgTable } from 'src/components';
+import { MyPaginationProps } from 'src/components/TableComponent/TableComponent';
 import { exportFile, urlSearchParams } from 'src/utils/base';
 import { OperateType } from 'src/utils/interface';
 import { downloadSearchCols, downloadTableColumnFun, FetchDataRecordType } from './Config';
@@ -62,7 +62,7 @@ const FetchDataDownLoad: React.FC<RouteComponentProps> = ({ location }) => {
       <AuthBtn path="/download/query">
         <NgFormSearch searchRef={fromRef} className="mt30" onSearch={onSearch} searchCols={downloadSearchCols} />
       </AuthBtn>
-      <NewTableComponent
+      <NgTable
         dataSource={dataSource}
         pagination={pagination}
         loadData={getList}

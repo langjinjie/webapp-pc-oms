@@ -2,8 +2,8 @@ import { Button, message } from 'antd';
 import React, { Key, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getMassList, stopMass } from 'src/apis/marquee';
-import { AuthBtn, NgFormSearch, NgModal } from 'src/components';
-import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
+import { AuthBtn, NgFormSearch, NgModal, NgTable } from 'src/components';
+import { MyPaginationProps } from 'src/components/TableComponent/TableComponent';
 import { OperateType } from 'src/utils/interface';
 import { tableColumnsFun, searchColsFun, MessageStopColumn } from './ListConfig';
 
@@ -72,7 +72,7 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
         />
       </AuthBtn>
       <div className="pt15">
-        <NewTableComponent<Partial<MessageStopColumn>>
+        <NgTable<Partial<MessageStopColumn>>
           pagination={pagination}
           loading={loading}
           loadData={getList}
@@ -92,7 +92,7 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
             }
           }}
           columns={tableColumnsFun(onOperate)}
-        ></NewTableComponent>
+        />
         {dataSource.length > 0 && (
           <div className={'operationWrap'}>
             <Button

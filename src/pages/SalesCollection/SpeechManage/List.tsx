@@ -16,7 +16,7 @@ import {
   setUserRightWithSpeech
 } from 'src/apis/salesCollection';
 import { AuthBtn, Icon, NgFormSearch, NgTable } from 'src/components';
-import { PaginationProps } from 'src/components/TableComponent/TableComponent';
+import { MyPaginationProps as PaginationProps } from 'src/components/TableComponent/TableComponent';
 import ExportModal from '../../../components/ExportModal/ExportModal';
 import PreviewSpeech from './Components/PreviewSpeech/PreviewSpeech';
 import { columns, excelDemoUrl, setSearchCols, SpeechProps } from './Config';

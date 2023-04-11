@@ -2,8 +2,8 @@ import { Button, Divider, Input, Tabs } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { getMassDetail, getMassWithMember } from 'src/apis/marquee';
-import { BreadCrumbs, Preview } from 'src/components';
-import NewTableComponent, { MyPaginationProps } from 'src/components/TableComponent/NewTableComponent';
+import { BreadCrumbs, Preview, NgTable } from 'src/components';
+import { MyPaginationProps } from 'src/components/TableComponent/TableComponent';
 import { urlSearchParams } from 'src/utils/base';
 import style from './style.module.less';
 
@@ -102,7 +102,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                       onPressEnter={(e) => onPressEnter(e.target)}
                     />
                   </div>
-                  <NewTableComponent
+                  <NgTable
                     loadData={getMemberList}
                     scroll={{ x: 'auto' }}
                     dataSource={dataSource}
@@ -113,7 +113,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                       { title: '客户经理', key: 'memberName', dataIndex: 'memberName' },
                       { title: '组织架构', key: 'deptFullName', dataIndex: 'deptFullName' }
                     ]}
-                  ></NewTableComponent>
+                  ></NgTable>
                 </>
                   )}
             </Tabs.TabPane>
@@ -135,7 +135,7 @@ const MessageDetail: React.FC<RouteComponentProps> = ({ location }) => {
                       onPressEnter={(e) => onPressEnter(e.target)}
                     />
                   </div>
-                  <NewTableComponent
+                  <NgTable
                     scroll={{ x: 'auto' }}
                     dataSource={dataSource}
                     rowKey={'memberId'}

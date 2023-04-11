@@ -16,7 +16,7 @@ import {
   sortCancelTopAtProduct,
   sortTopAtProduct
 } from 'src/apis/marketing';
-import { PaginationProps } from 'src/components/TableComponent/TableComponent';
+import { MyPaginationProps as PaginationProps } from 'src/components/TableComponent/TableComponent';
 import moment from 'moment';
 import { useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';

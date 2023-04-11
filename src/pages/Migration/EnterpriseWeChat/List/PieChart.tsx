@@ -32,7 +32,6 @@ interface pieChartProps {
 const MyPieChart: React.FC<pieChartProps> = ({ data }) => {
   const chartRef: React.LegacyRef<HTMLDivElement> = useRef(null);
   useEffect(() => {
-    console.log(data);
     echarts.use([
       TitleComponent,
       TooltipComponent,

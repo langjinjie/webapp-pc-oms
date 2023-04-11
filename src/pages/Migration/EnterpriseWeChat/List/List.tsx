@@ -67,7 +67,6 @@ const EnterPriseWechatList: React.FC<RouteComponentProps> = ({ history }) => {
     });
     setTableSource(list || []);
     setPagination((pagination) => ({ ...pagination, total }));
-    console.log('查询列表', list);
     setLoading(false);
   };
 

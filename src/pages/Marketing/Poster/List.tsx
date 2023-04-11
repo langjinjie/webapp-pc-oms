@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import style from './style.module.less';
 
 import FormSearch from 'src/components/SearchComponent/SearchComponent';
-import NgTable from 'src/components/TableComponent/TableComponent';
+import NgTable from 'src/components/TableComponent/OldTableComponent';
 import { setSearchCols, columns, Poster } from './Config';
 import { Button, message, Modal, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';

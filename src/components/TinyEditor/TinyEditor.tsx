@@ -52,7 +52,6 @@ function filePickerCallback (callback, value, meta) {
         formData.append('bizKey', 'media');
         uploadImage2(formData, {}).then((data) => {
           if (data) {
-            console.log(data);
             callback(data.filePath);
           }
         });
@@ -76,7 +75,6 @@ function filePickerCallback (callback, value, meta) {
         formData.append('bizKey', 'news');
         uploadImage2(formData, {}).then((data) => {
           if (data) {
-            console.log(data);
             callback(data.filePath);
           }
         });
