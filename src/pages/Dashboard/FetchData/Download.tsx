@@ -65,6 +65,7 @@ const FetchDataDownLoad: React.FC<RouteComponentProps> = ({ location }) => {
       <NewTableComponent
         dataSource={dataSource}
         pagination={pagination}
+        loadData={getList}
         className="mt20"
         rowKey={'recordId'}
         columns={downloadTableColumnFun(onOperate)}

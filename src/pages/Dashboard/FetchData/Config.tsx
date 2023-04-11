@@ -36,7 +36,7 @@ export type FetchDataRecordType = {
   name: string;
   des: string;
   content: string;
-  params: { paramId: string; paramDesc: string; paramName: string }[];
+  params: { paramId: string; paramDesc: string; paramName: string; paramValue?: string }[];
   paramName: string;
   paramDesc: string;
   paramId: string;
@@ -74,7 +74,7 @@ export const TableColumnFun = (
       )
     },
     {
-      key: 'params',
+      key: 'params1',
       dataIndex: 'params',
       title: '模板参数',
       ellipsis: { showTitle: false },
@@ -82,18 +82,18 @@ export const TableColumnFun = (
         <Tooltip
           placement="topLeft"
           title={params?.map((param: any, index: number) => (
-            <>
-              <span key={param.paramId}>{param.paramName}</span>
+            <span key={param.paramId + index}>
+              <span>{param.paramName}</span>
               {index < params.length - 1 && <span>,</span>}
-            </>
+            </span>
           ))}
         >
           {params?.map((param: any, index: number) => (
-            <>
-              <span key={param.paramId + index}>{param.paramName}</span>
+            <span key={param.paramId + index}>
+              <span>{param.paramName}</span>
               {index < params.length - 1 && <span>,</span>}
-            </>
-          ))}
+            </span>
+          )) || '无'}
         </Tooltip>
       )
     },

@@ -72,18 +72,23 @@ const FetchData: React.FC<RouteComponentProps> = ({ history }) => {
 
   const confirmExecute = () => {
     //
-    Modal.confirm({
-      title: '是否确定执行该取数模版',
-      onOk: async () => {
-        setVisible(false);
-        const res = await execSqlConfig({
-          sqlId: currentSql?.sqlId as string,
-          params: currentSql?.params?.map((item) => ({ paramValue: item.paramName, paramId: item.paramId }))
-        });
-        if (res) {
-          message.success('模版已执行，可前往下载');
+    sqlFrom.validateFields().then((values) => {
+      Modal.confirm({
+        title: '是否确定执行该取数模版',
+        onOk: async () => {
+          setVisible(false);
+          const res = await execSqlConfig({
+            sqlId: currentSql?.sqlId as string,
+            params: values.params?.map((item: any) => ({
+              paramValue: item.paramValue,
+              paramId: item.paramId
+            }))
+          });
+          if (res) {
+            message.success('模版已执行，可前往下载');
+          }
         }
-      }
+      });
     });
   };
   return (
@@ -104,11 +109,12 @@ const FetchData: React.FC<RouteComponentProps> = ({ history }) => {
       <AuthBtn path="/query">
         <NgFormSearch className="mt30" onSearch={onSearch} searchCols={searchCols} />
       </AuthBtn>
-      <NewTableComponent
+      <NewTableComponent<FetchDataRecordType>
         className="mt20"
+        loadData={getList}
         dataSource={dataSource}
         pagination={pagination}
-        rowKey={'sqlId'}
+        rowKey={(record) => record.sqlId.slice(0, 8)}
         columns={TableColumnFun(onOperate)}
       />
       <NgModal width={600} visible={visible} onCancel={() => setVisible(false)} title="执行" onOk={confirmExecute}>
@@ -121,10 +127,11 @@ const FetchData: React.FC<RouteComponentProps> = ({ history }) => {
                     <div key={key}>
                       <Form.Item
                         label={'参数' + (index + 1)}
-                        name={[name, 'paramName']}
-                        extra={currentSql?.params[index]?.paramDesc}
+                        rules={[{ required: true }]}
+                        name={[name, 'paramValue']}
+                        extra={'参数描述：' + currentSql?.params[index]?.paramDesc}
                       >
-                        <Input disabled></Input>
+                        <Input />
                       </Form.Item>
                     </div>
                   );
