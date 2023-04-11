@@ -180,8 +180,14 @@ export const downloadTableColumnFun = (
       title: '生成时间',
       width: 180
     },
-    { key: 'usedTime', dataIndex: 'usedTime', title: '执行时间（S）', render: (usedTime) => usedTime || 0 },
-    { key: 'createBy', dataIndex: 'createBy', title: '操作人' },
+    {
+      key: 'usedTime',
+      width: 140,
+      dataIndex: 'usedTime',
+      title: '执行时间（S）',
+      render: (usedTime) => usedTime || 0
+    },
+    { key: 'createBy', width: 120, dataIndex: 'createBy', title: '操作人' },
     {
       title: '操作',
       width: 180,
