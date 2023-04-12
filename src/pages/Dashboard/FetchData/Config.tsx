@@ -101,7 +101,7 @@ export const TableColumnFun = (
       key: 'dateCreated',
       width: 180,
       dataIndex: 'dateCreated',
-      title: '模板更新时间'
+      title: '创建时间'
     },
     {
       key: 'lastUpdated',
