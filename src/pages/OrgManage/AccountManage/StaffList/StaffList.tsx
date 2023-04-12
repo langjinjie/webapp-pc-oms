@@ -17,8 +17,9 @@ import { Context } from 'src/store';
 import { useDocumentTitle } from 'src/utils/base';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { RouteComponentProps } from 'react-router-dom';
 
-const StaffList: React.FC = () => {
+const StaffList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('机构管理-账号管理');
   const { currentCorpId: corpId } = useContext(Context);
   const [form] = Form.useForm();
@@ -358,6 +359,14 @@ const StaffList: React.FC = () => {
               手动同步通讯录
             </span>
           </AuthBtn>
+          <Button
+            className="ml10"
+            onClick={() => history.push('/orgManage/detail/upload')}
+            type="primary"
+            shape="round"
+          >
+            批量处理员工账号
+          </Button>
         </div>
         <Table
           rowKey="staffId"
