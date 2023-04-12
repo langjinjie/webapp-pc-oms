@@ -152,7 +152,7 @@ export const downloadTableColumnFun = (
   operate: (type: OperateType, record: FetchDataRecordType) => void
 ): TableColumnProps<FetchDataRecordType>[] => {
   return [
-    { key: 'sqlId', dataIndex: 'sqlId', title: 'ID', width: 190 },
+    { key: 'recordId', dataIndex: 'recordId', title: 'ID', width: 190 },
     { key: 'name', dataIndex: 'name', title: '模板名称' },
     {
       key: 'des',
