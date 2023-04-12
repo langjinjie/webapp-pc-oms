@@ -512,3 +512,52 @@ export const delVideoType: HttpFunction = (param: object) => {
 export const uploadVideo: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/video/upload', param);
 };
+
+/* ------------------------------ 今日朋友圈 ------------------------------ */
+/**
+ * @description 1.今日朋友圈列表
+ * @param param
+ */
+export const requestGetTodayMomentList: HttpFunction = (param) => {
+  return http.post('/tenacity-oms/api/today/moment/list', param);
+};
+
+/**
+ * @description 2.今日朋友圈新增和编辑
+ * @param param
+ */
+export const requestEditTodayMoment: HttpFunction = (param) => {
+  return http.post('/tenacity-oms/api/today/moment/edit', param);
+};
+
+/**
+ * @description 3.今日朋友圈详情
+ * @param param
+ */
+export const requestGetTodayMomentDetail: HttpFunction = (param) => {
+  return http.post('/tenacity-oms/api/today/moment/detail', param);
+};
+
+/**
+ * @description 4.今日朋友圈上架
+ * @param param
+ */
+export const requestUpTodayMoment: HttpFunction = (param) => {
+  return http.post('/tenacity-oms/api/today/moment/up', param);
+};
+
+/**
+ * @description 5.今日朋友圈下架
+ * @param param
+ */
+export const requestDownTodayMoment: HttpFunction = (param) => {
+  return http.post('', param);
+};
+
+/**
+ * @description 6.今日朋友圈可见范围修改
+ * @param param
+ */
+export const requestSetScopeTodayMoment: HttpFunction = (param) => {
+  return http.post('/tenacity-oms/api/today/moment/setscope', param);
+};

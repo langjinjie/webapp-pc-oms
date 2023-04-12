@@ -1,18 +1,27 @@
 import React from 'react';
-import { DatePicker, Form, Input, TimePicker, Button } from 'antd';
+import { DatePicker, Form, Input, TimePicker, Button, message } from 'antd';
 import { BreadCrumbs } from 'src/components';
 import { SetMomentContent } from 'src/pages/Marketing/TodayMoment/components';
+import { requestEditTodayMoment } from 'src/apis/marketing';
 import moment from 'moment';
 import style from './style.module.less';
 import classNames from 'classnames';
+import { useHistory } from 'react-router-dom';
 
 const AddMoment: React.FC = () => {
   const { Item, List } = Form;
   const [form] = Form.useForm();
+  const history = useHistory();
 
   // 提交
-  const onFinishHandle = (values?: any) => {
+  const onFinishHandle = async (values?: any) => {
     console.log('values', values);
+    const res = await requestEditTodayMoment({ ...values });
+    if (res) {
+      console.log('res', res);
+      message.success('今日朋友圈新增成功');
+      history.push('/todayMoment');
+    }
   };
   return (
     <div className={style.wrap}>
@@ -20,19 +29,19 @@ const AddMoment: React.FC = () => {
       <Form form={form} onFinish={onFinishHandle}>
         <div className={style.panel}>名称配置</div>
         <div className={style.content}>
-          <Item name="name" label="今日朋友圈名称" rules={[{ required: true, message: '请填写今日朋友圈名称' }]}>
+          <Item name="momentName" label="今日朋友圈名称" rules={[{ required: true, message: '请填写今日朋友圈名称' }]}>
             <Input placeholder="请输入" className="width400" />
           </Item>
         </div>
         <div className={style.panel}>内容配置</div>
         <div className={style.content}>
-          <List name="marketContent">
+          <List name="dayItems" initialValue={[{}]}>
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ name, key }, index) => (
                   <div className={style.marketItem} key={key}>
                     <div className={style.marketDate}>
-                      <Item name="" label="选择日期" rules={[{ required: true, message: '请选择日期' }]}>
+                      <Item name="upDay" label="选择日期" rules={[{ required: true, message: '请选择日期' }]}>
                         <DatePicker />
                       </Item>
                       {fields.length === 1 || (
@@ -50,7 +59,7 @@ const AddMoment: React.FC = () => {
                       </ul>
                       <div className={style.nodeBody}>
                         <List
-                          name={[name, 'nodeRuleList']}
+                          name={[name, 'momentItems']}
                           initialValue={[
                             { pushTime: moment('08:00', 'HH:mm') },
                             { pushTime: moment('12:00', 'HH:mm') },
@@ -62,14 +71,17 @@ const AddMoment: React.FC = () => {
                               {childFields.map(({ name: childName, key: childKey }, childIndex) => (
                                 <Form.Item key={childKey}>
                                   <div className={classNames(style.momentItem, 'flex justify-between')}>
+                                    <Form.Item name="itemId" className={style.itemId}>
+                                      <Input />
+                                    </Form.Item>
                                     <Form.Item
                                       className={style.nodeCol}
-                                      name={[childName, 'nodeRuleId']}
-                                      rules={[{ required: true, message: '请选择节点规则' }]}
+                                      name={[childName, 'feeds']}
+                                      rules={[{ required: true, message: '请选择朋友圈内容库内容' }]}
                                     >
                                       <SetMomentContent />
                                     </Form.Item>
-                                    <Form.Item className={style.nodeCol} name={[childName, 'wayCode']}>
+                                    <Form.Item className={style.nodeCol} name={[childName, 'contentType']}>
                                       <Input className={style.input} placeholder="若不配置默认取朋友圈内容库的话术" />
                                     </Form.Item>
                                     <Form.Item
