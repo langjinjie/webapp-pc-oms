@@ -33,17 +33,17 @@ const FetchDataAdd: React.FC<RouteComponentProps> = ({ history, location }) => {
   }, []);
 
   const onFinish = async (values: any) => {
-    const { params, ...otherValues } = values;
+    const { params, content, ...otherValues } = values;
     const paramsFilter = params.filter((item: any) => item.paramName) || [];
     const res = await editSqlConfig({
       ...otherValues,
+      content: window.btoa(encodeURI(content)),
       params: paramsFilter.length > 0 ? paramsFilter : undefined
     });
     if (res) {
       message.success('保存成功');
       history.goBack();
     }
-    console.log(res);
   };
   return (
     <div className="container">
