@@ -14,7 +14,7 @@ import {
   staffStatus2Name
 } from 'src/utils/commonData';
 import { Context } from 'src/store';
-import { useDocumentTitle } from 'src/utils/base';
+import { UNKNOWN, useDocumentTitle } from 'src/utils/base';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { RouteComponentProps } from 'react-router-dom';
@@ -102,25 +102,22 @@ const StaffList: React.FC<RouteComponentProps> = ({ history }) => {
     },
     {
       title: '员工ID',
-      dataIndex: 'staffId',
-      align: 'center'
+      dataIndex: 'staffId'
     },
     {
       title: '企微账号',
-      dataIndex: 'userId',
-      align: 'center'
+      dataIndex: 'userId'
     },
     {
       title: '直属上级',
       dataIndex: 'mangerName',
-      align: 'center'
+      render: (mangerName: string) => mangerName || UNKNOWN
     },
     {
       title: '最后操作',
       render (row: IStaffList) {
-        return row.lastLoginTime || '--';
-      },
-      align: 'center'
+        return row.lastLoginTime || UNKNOWN;
+      }
     },
     {
       title: '数据录入',
