@@ -305,7 +305,9 @@ export const getChatSearchList: HttpFC = (params) => {
 export const exportErrorFile: HttpFC<{
   importId: string;
 }> = (params) => {
-  return http.post('/tenacity-admin/api/staff/op/fail/export', params);
+  return http.post('/tenacity-admin/api/staff/op/fail/export', params, {
+    responseType: 'blob'
+  });
 };
 // 1.2.1.2.批量导入激活停用员工账户（新增）append => fileName
 export const exportExcelWithScope: HttpFC<FormData> = (params) => {

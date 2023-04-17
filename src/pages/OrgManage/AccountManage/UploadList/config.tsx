@@ -61,13 +61,21 @@ export const tableColumnsUpload = (download: (record: UploadColumn) => void): Co
     {
       title: '操作',
       dataIndex: 'importId',
-      width: 140,
+      width: 80,
       fixed: 'right',
       render: (text, record) => {
         return (
-          <Popconfirm title="确定下载失败文件" onConfirm={() => download(record)}>
-            <Button type="link">下载失败文件</Button>
-          </Popconfirm>
+          <>
+            {record.processStatus === 0
+              ? (
+                  '/'
+                )
+              : (
+              <Popconfirm title="确定下载失败文件" onConfirm={() => download(record)}>
+                <Button type="link">下载失败文件</Button>
+              </Popconfirm>
+                )}
+          </>
         );
       }
     }

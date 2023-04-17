@@ -45,6 +45,7 @@ const UploadLog: React.FC = () => {
     const formData = new FormData();
     formData.append('fileName', file);
     const res = await exportExcelWithScope(formData);
+    setVisible(false);
     if (res) {
       message.success('导入成功！');
     }
@@ -53,8 +54,7 @@ const UploadLog: React.FC = () => {
   const handleDownload = async () => {
     const res = await getExcelDownloadUrl();
     if (res) {
-      //
-      window.location.href = res;
+      window.location.href = res.tplUrl;
     }
   };
 
