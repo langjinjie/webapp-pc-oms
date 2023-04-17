@@ -1,5 +1,5 @@
 import http from 'src/utils/http';
-type HttpFC<T = any> = (param: T, fn?: Function) => Promise<any>;
+type HttpFC<T = any> = (param?: T, fn?: Function) => Promise<any>;
 type HttpVoid = () => Promise<any>;
 /* 机构管理 */
 // 获取机构列表
@@ -301,4 +301,26 @@ export const getChatSearchList: HttpFC = (params) => {
   return http.post('/tenacity-admin/api/proposal/getDynamicList', params);
 };
 
-//
+// 1.2.1.4.下载导入名单失败文件（新增）
+export const exportErrorFile: HttpFC<{
+  importId: string;
+}> = (params) => {
+  return http.post('/tenacity-admin/api/staff/op/fail/export', params, {
+    responseType: 'blob'
+  });
+};
+// 1.2.1.2.批量导入激活停用员工账户（新增）append => fileName
+export const exportExcelWithScope: HttpFC<FormData> = (params) => {
+  return http.post('/tenacity-admin/api//staff/op/import', params);
+};
+// 1.2.1.1.获取名单批量模板下载地址（新增）
+export const getExcelDownloadUrl: HttpFC = () => {
+  return http.post('/tenacity-admin/api/staff/op/tpl');
+};
+// 1.2.1.3.查询名单批量处理记录（新增）
+export const getExportLog: HttpFC<{
+  pageNum: number;
+  pageSize: number;
+}> = (params) => {
+  return http.post('/tenacity-admin/api/staff/op/import/record', params);
+};

@@ -138,6 +138,11 @@ export const routes: RouteProps[] = [
     path: '/orgManage/detail',
     component: lazy(() => import('src/pages/OrgManage/AccountManage/StaffList/StaffList'))
   },
+  // 上传员工列表批处理
+  {
+    path: '/orgManage/detail/upload',
+    component: lazy(() => import('src/pages/OrgManage/AccountManage/UploadList/UploadList'))
+  },
   // 敏感词管理
   {
     path: '/sensitiveManage',

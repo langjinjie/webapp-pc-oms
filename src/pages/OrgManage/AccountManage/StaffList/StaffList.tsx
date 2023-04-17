@@ -14,11 +14,12 @@ import {
   staffStatus2Name
 } from 'src/utils/commonData';
 import { Context } from 'src/store';
-import { useDocumentTitle } from 'src/utils/base';
+import { UNKNOWN, useDocumentTitle } from 'src/utils/base';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { RouteComponentProps } from 'react-router-dom';
 
-const StaffList: React.FC = () => {
+const StaffList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('机构管理-账号管理');
   const { currentCorpId: corpId } = useContext(Context);
   const [form] = Form.useForm();
@@ -101,25 +102,22 @@ const StaffList: React.FC = () => {
     },
     {
       title: '员工ID',
-      dataIndex: 'staffId',
-      align: 'center'
+      dataIndex: 'staffId'
     },
     {
       title: '企微账号',
-      dataIndex: 'userId',
-      align: 'center'
+      dataIndex: 'userId'
     },
     {
       title: '直属上级',
       dataIndex: 'mangerName',
-      align: 'center'
+      render: (mangerName: string) => mangerName || UNKNOWN
     },
     {
       title: '最后操作',
       render (row: IStaffList) {
-        return row.lastLoginTime || '--';
-      },
-      align: 'center'
+        return row.lastLoginTime || UNKNOWN;
+      }
     },
     {
       title: '数据录入',
@@ -358,6 +356,14 @@ const StaffList: React.FC = () => {
               手动同步通讯录
             </span>
           </AuthBtn>
+          <Button
+            className="ml10"
+            onClick={() => history.push('/orgManage/detail/upload')}
+            type="primary"
+            shape="round"
+          >
+            批量处理员工账号
+          </Button>
         </div>
         <Table
           rowKey="staffId"
