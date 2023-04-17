@@ -356,14 +356,16 @@ const StaffList: React.FC<RouteComponentProps> = ({ history }) => {
               手动同步通讯录
             </span>
           </AuthBtn>
-          <Button
-            className="ml10"
-            onClick={() => history.push('/orgManage/detail/upload')}
-            type="primary"
-            shape="round"
-          >
-            批量处理员工账号
-          </Button>
+          <AuthBtn path="/batchAccount">
+            <Button
+              className="ml10"
+              onClick={() => history.push('/orgManage/detail/upload')}
+              type="primary"
+              shape="round"
+            >
+              批量处理员工账号
+            </Button>
+          </AuthBtn>
         </div>
         <Table
           rowKey="staffId"
