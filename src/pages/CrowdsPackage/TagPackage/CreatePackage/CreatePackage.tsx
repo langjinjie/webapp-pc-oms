@@ -131,7 +131,12 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     <Spin spinning={loading} tip="加载中...">
       <div className="container">
         <BreadCrumbs />
-        <Form form={addForm} className="mt20 edit" onFinish={onFinishHandle}>
+        <Form
+          form={addForm}
+          className="mt20 edit"
+          onFinish={onFinishHandle}
+          scrollToFirstError={{ block: 'center', behavior: 'smooth' }}
+        >
           <div className="sectionTitle">基本信息</div>
           <Item label="分群名称" name="packageName" rules={[{ required: true, message: '请输入分群名称' }]}>
             <Input className="width320" placeholder="请输入" maxLength={30} showCount readOnly={readOnly} />
@@ -179,7 +184,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                 name="refreshType"
                 rules={[{ required: true, message: '请选择更新方式' }]}
                 extra={
-                  <div className="color-danger flex">
+                  <div className="color-text-placeholder flex mt10">
                     <div>备注：</div>
                     <ul>
                       <li>1、手动更新 当人群包生效后，点击更新进行数据更新</li>

@@ -13,6 +13,7 @@ interface IFilterTagsProps {
   removeHandle?: (index: number | number[]) => void;
   fieldIndex?: number;
   isTagFlat?: boolean;
+  id?: string;
 }
 
 const tabKey2TypeList = [[1, 2], [3], [4]]; // 1-属性标签 2-预测标签 3-车标签 4-兴趣标签,其中1,2合并显示位属性标签
@@ -21,7 +22,7 @@ const tabKey2TypeList = [[1, 2], [3], [4]]; // 1-属性标签 2-预测标签 3-�
  * @desc 选择客户标签
  */
 const FilterTags: React.FC<IFilterTagsProps> = (props) => {
-  const { value, onChange, readOnly, removeHandle, fieldIndex, isTagFlat } = props;
+  const { value, onChange, readOnly, removeHandle, fieldIndex, isTagFlat, id } = props;
   // const [tag, setTag] = useState<IFilterTagsItem[]>([]);
   const [visible, setVisible] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
@@ -124,7 +125,7 @@ const FilterTags: React.FC<IFilterTagsProps> = (props) => {
     }
   };
   return (
-    <div className={style.wrap}>
+    <div className={style.wrap} id={id}>
       <div className={style.header}>按照标签筛选</div>
       <div className={style.tagFilter}>
         <div className={style.tagFilterTitle}>
