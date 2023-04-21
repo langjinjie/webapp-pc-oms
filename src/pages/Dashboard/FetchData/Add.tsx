@@ -37,7 +37,7 @@ const FetchDataAdd: React.FC<RouteComponentProps> = ({ history, location }) => {
     const paramsFilter = params.filter((item: any) => item.paramName) || [];
     const res = await editSqlConfig({
       ...otherValues,
-      content: window.btoa(encodeURI(content)),
+      content: window.btoa(encodeURIComponent(content)),
       params: paramsFilter.length > 0 ? paramsFilter : undefined
     });
     if (res) {
