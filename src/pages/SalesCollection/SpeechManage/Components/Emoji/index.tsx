@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { useState } from 'react';
 import { emojiData, emojiPanelData } from './emojiData';
 // import parser from './parseEmoji';
+import style from './index.module.less';
 const emojiSource = require('./emoji-sprite.b5bd1fe0.png');
 
 type EmotionType =
@@ -46,14 +47,14 @@ const Emoji: React.FC<{ insertEmoji: (params: any) => void }> = (props) => {
     extraPadding: 0,
     perLine: 0
   });
-  const getEmojiNames = () => {
-    const emotionNames: string[] = [];
-    emojiData.forEach(function (item) {
-      // emotionMap[item.id] = item;
-      emotionNames.push(item.cn);
-    });
-    return emotionNames;
-  };
+  // const getEmojiNames = () => {
+  //   const emotionNames: string[] = [];
+  //   emojiData.forEach(function (item) {
+  //     // emotionMap[item.id] = item;
+  //     emotionNames.push(item.cn);
+  //   });
+  //   return emotionNames;
+  // };
   const LRUCache = (arr: number[], limit: number, data: number) => {
     const idx = arr.indexOf(data);
     if (idx >= 0) {
@@ -75,12 +76,12 @@ const Emoji: React.FC<{ insertEmoji: (params: any) => void }> = (props) => {
   };
 
   return (
-    <div>
+    <div className={style.emotion}>
       {emotions.map((item, index) => {
         return (
-          <div onClick={() => insertEmoji(item, index)} key={item.id}>
+          <div className="weui-emotion_item" onClick={() => insertEmoji(item, index)} key={item.id}>
             <div
-              className={classNames('weui-icon_emotion ', item.style)}
+              className={classNames('weui-icon_emotion', item.style)}
               style={{ backgroundImage: `url(${emojiSource})` }}
             ></div>
           </div>
