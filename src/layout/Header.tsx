@@ -85,15 +85,17 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
         <span className="user-name">
           {userInfo.name} [{userInfo.corpName}]
         </span>
-        <span
-          className="change-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            setChangeVisible(true);
-          }}
-        >
-          切换机构
-        </span>
+        {!userInfo.desc && (
+          <span
+            className="change-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setChangeVisible(true);
+            }}
+          >
+            切换机构
+          </span>
+        )}
         <span className="logout-btn" onClick={() => logoutHandle()}>
           退出
         </span>

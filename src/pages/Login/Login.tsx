@@ -5,7 +5,7 @@ import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 // import { getQueryParam } from 'tenacity-tools';
 import md5 from 'js-md5';
 import { Context } from 'src/store';
-import { login, queryUserInfo, requestGetMstatus } from 'src/apis';
+import { chooseInst, login, queryUserInfo, requestGetMstatus } from 'src/apis';
 import style from './style.module.less';
 import { TOKEN_KEY } from 'src/utils/config';
 import Update from '../Update/Update';
@@ -25,11 +25,23 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
       window.localStorage.setItem(TOKEN_KEY, token);
       window.localStorage.setItem('envName', res.env);
 
-      history.push('/chooseInst');
-      const resInfo: any = (await queryUserInfo()) || {};
+      const resInfo = (await queryUserInfo()) || {};
       setUserInfo(resInfo);
-      setIsMainCorp(resInfo.isMainCorp === 1);
-      setCurrentCorpId(resInfo.corpId);
+      if (resInfo.desc) {
+        setUserInfo({ ...resInfo, isMainCorp: 0 });
+        const res: any = await chooseInst({ corpId: resInfo.desc });
+        if (res) {
+          localStorage.setItem(TOKEN_KEY, res);
+          sessionStorage.removeItem('tagOptions');
+          history.push('/index');
+        }
+      } else {
+        history.push('/chooseInst');
+        const resInfo: any = (await queryUserInfo()) || {};
+        setUserInfo(resInfo);
+        setIsMainCorp(resInfo.isMainCorp === 1);
+        setCurrentCorpId(resInfo.corpId);
+      }
     }
   };
 

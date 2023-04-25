@@ -98,7 +98,7 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
     const res = await queryUserInfo();
     if (res) {
       setUserInfo(res);
-      setIsMainCorp(res.isMainCorp === 1);
+      setIsMainCorp(!res.desc && res.isMainCorp === 1);
       setCurrentCorpId(res.corpId);
     }
   };
