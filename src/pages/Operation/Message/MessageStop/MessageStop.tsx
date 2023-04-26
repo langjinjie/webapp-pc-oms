@@ -16,19 +16,25 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
   const [dataSource, setDataSource] = useState<Partial<MessageStopColumn>[]>([]);
   const [pagination, setPagination] = useState<MyPaginationProps>({
     total: 0,
-    pageNum: 1
+    pageNum: 1,
+    pageSize: 10
   });
   const getList = async (params?: any) => {
     const res = await getMassList({
       ...formValues,
       pageNum: pagination.pageNum,
-      pageSize: 10,
+      pageSize: pagination.pageSize,
       ...params
     });
     if (res) {
       const { list, total } = res;
       setDataSource(list);
-      setPagination((pagination) => ({ ...pagination, total, pageNum: params?.pageNum || 1 }));
+      setPagination((pagination) => ({
+        ...pagination,
+        total,
+        pageNum: params?.pageNum || 1,
+        pageSize: params?.pageSize || pagination.pageSize
+      }));
     }
   };
   const onConfirmStop = async (list?: string[]) => {

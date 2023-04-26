@@ -13,18 +13,19 @@ const FetchDataDownLoad: React.FC<RouteComponentProps> = ({ location }) => {
   const [formValue, setFormValue] = useState({
     name: ''
   });
-  const [pagination, setPagination] = useState<MyPaginationProps>({ total: 0, pageNum: 1 });
+  const [pagination, setPagination] = useState<MyPaginationProps>({ total: 0, pageNum: 1, pageSize: 10 });
   const getList = async (params?: any) => {
+    const pageSize = params?.pageSize || pagination.pageSize;
     const res = await getExecSqlList({
       ...formValue,
       pageNum: pagination.pageNum!,
-      pageSize: 10,
+      pageSize,
       ...params
     });
 
     if (res) {
       const { list, total } = res;
-      setPagination((pagination) => ({ ...pagination, pageNum: params?.pageNum || 1, total }));
+      setPagination((pagination) => ({ ...pagination, pageNum: params?.pageNum || 1, total, pageSize }));
       setDataSource(list || []);
     }
   };
