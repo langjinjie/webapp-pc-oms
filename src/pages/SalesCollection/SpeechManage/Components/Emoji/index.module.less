@@ -743,10 +743,24 @@
     background-color: #04c160;
     color: rgba(255, 255, 255, 0.9);
   }
-}
 
-.emotion {
-  width: 430px;
-  height: 300px;
-  overflow: auto;
+  .emotion {
+    width: 330px;
+    height: 300px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      width: 5px !important;
+    }
+    &::-webkit-scrollbar {
+      width: 5px;
+      border-radius: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #999;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 8;
+      background: #666;
+    }
+  }
 }

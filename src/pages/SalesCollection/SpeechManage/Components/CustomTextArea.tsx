@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { Icon } from 'src/components';
-import { Button, message } from 'antd';
+import { Button, message, Tooltip } from 'antd';
 import { getAutoParams } from 'src/apis/salesCollection';
+import Emoji from './Emoji';
 
 interface CustomTextAreaProps {
   value?: string | undefined;
@@ -71,14 +72,18 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
     ctrl.focus();
     ctrl.setSelectionRange(pos, pos);
   };
-  const handlePushName = (param: string) => {
+  const handlePushName = (param: string, isEmoji = false) => {
     const len = param.length + 2;
     if (textareaRef.current) {
       const textareaEle = textareaRef.current;
       const pos = getPositionForTextArea(textareaEle);
       const inputValue = textareaEle.value;
       const b = inputValue.split('');
-      b.splice(pos.start, 0, `[${param}]`).join('');
+      if (isEmoji) {
+        b.splice(pos.start, 0, param);
+      } else {
+        b.splice(pos.start, 0, `[${param}]`).join('');
+      }
       const formatVal = b.join('');
       if (formatVal.length > 300) {
         return message.warning('话术最多300字，已超过最大限度无法插入');
@@ -95,11 +100,25 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
     onChange?.(content);
     setCount(content.length);
   };
+  const insertEmoji = (param: any) => {
+    console.log(param);
+    handlePushName(param.emotionName, true);
+  };
 
   return (
     <div>
       <div className={classNames(style.textAreaWrap, 'isError')}>
         <div className={classNames(style.btnGroup, { [style.open]: isOpen })}>
+          <Tooltip
+            overlayInnerStyle={{ width: '334px' }}
+            title={<Emoji insertEmoji={insertEmoji} />}
+            color={'#fff'}
+            arrowPointAtCenter
+            trigger={'click'}
+          >
+            <span className="mr20 f20">☺</span>
+          </Tooltip>
+
           <div className={classNames(style.btnArrow)} onClick={() => setIsOpen(!isOpen)}>
             {isOpen
               ? (

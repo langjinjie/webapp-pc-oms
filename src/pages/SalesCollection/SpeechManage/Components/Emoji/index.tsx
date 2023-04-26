@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { useState } from 'react';
 import { emojiData, emojiPanelData } from './emojiData';
 // import parser from './parseEmoji';
-import style from './index.module.less';
+import './index.module.less';
 const emojiSource = require('./emoji-sprite.b5bd1fe0.png');
 
 type EmotionType =
@@ -75,7 +75,7 @@ const Emoji: React.FC<{ insertEmoji: (params: any) => void }> = (props) => {
   };
 
   return (
-    <div className={style.emotion}>
+    <div className={'emotion'}>
       {emotions.map((item, index) => {
         return (
           <div className="weui-emotion_item" onClick={() => insertEmoji(item, index)} key={item.id}>

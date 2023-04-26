@@ -6,7 +6,6 @@ const EmojiTest: React.FC = () => {
   };
   return (
     <div>
-      <h3>Emoji测试</h3>
       <Emoji insertEmoji={insertEmoji}></Emoji>
     </div>
   );
