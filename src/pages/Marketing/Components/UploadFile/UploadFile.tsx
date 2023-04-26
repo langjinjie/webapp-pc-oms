@@ -48,7 +48,6 @@ const NgUploadFile: React.FC<NgUploadProps> = ({ onChange, value, beforeUpload, 
       const res = await beforeUpload?.(file);
       return res;
     }
-    console.log(file.type);
     const isPdf = file.type === 'application/pdf';
     if (!isPdf) {
       message.error('你只可以上传 PDF 文件!');

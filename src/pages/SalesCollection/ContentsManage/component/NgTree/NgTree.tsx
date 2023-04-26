@@ -13,13 +13,7 @@ const NgTree: React.FC<NgTreeProps> = ({ dataSource, parentDatas }) => {
   const NgTreeItem: React.FC<NgTreeItemProps> = (props: any) => {
     return (
       <div>
-        <button
-          onClick={() => {
-            console.log(props.dataLevel);
-          }}
-        >
-          {props.label}
-        </button>
+        <button>{props.label}</button>
         {props.children?.length > 0 && <NgTree dataSource={props.children} parentDatas={props.dataLevel} />}
       </div>
     );

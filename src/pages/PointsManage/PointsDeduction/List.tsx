@@ -58,9 +58,8 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
     getList({ pageNum: 1, ...values });
   };
 
-  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: DeductProps[]) => {
+  const onSelectChange = (selectedRowKeys: React.Key[]) => {
     setSelectRowKeys(selectedRowKeys);
-    console.log(selectedRows);
   };
   // 表格RowSelection配置项
   const rowSelection = {

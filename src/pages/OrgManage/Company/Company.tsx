@@ -152,7 +152,6 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   const rowSelection = {
     selectedRowKeys: selectIds,
     onChange: (keys: Key[]) => {
-      console.log(keys);
       setSelectIds(keys);
     }
   };

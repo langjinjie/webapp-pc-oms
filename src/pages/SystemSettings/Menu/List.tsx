@@ -37,8 +37,6 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
   // 搜索菜单
   const onSearch = async (values: any) => {
     if ((values.menuName === undefined || values.menuName === '') && values.status === undefined) {
-      console.log('reset');
-
       getList();
     } else {
       const res = await searchMenu({ sysType: currentTab, ...values });
@@ -48,7 +46,6 @@ const MenuConfigList: React.FC<RouteComponentProps> = ({ history }) => {
   };
   useDidRecover(async () => {
     const { menuId } = urlSearchParams(window.location.search) as { menuId: string };
-    console.log(menuId);
     if (menuId) {
       const res = await getMenuList({
         parentId: menuId,

@@ -65,7 +65,6 @@ function filePickerCallback (callback, value, meta) {
 
     input.onchange = function (e: any) {
       const fileInput = e.target;
-      console.log(fileInput.files);
       Array.from(fileInput.files).forEach((item: any) => {
         if (item.size > 1024 * 1024 * 10) {
           message.error('上传图片大小限制10M以内');

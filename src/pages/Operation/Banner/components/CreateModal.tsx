@@ -57,7 +57,6 @@ const CreateModal: React.FC<CreateModalProps> = ({ visible, onClose, value, onSu
    */
   const tplTypeChange = (value: number) => {
     setTplType(+value);
-    console.log(value);
 
     setRecommendList([]);
     bannerForm.setFieldsValue({

@@ -175,8 +175,6 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   // submenu keys of first level
   const onOpenChange = (keys: string[]) => {
-    console.log(keys);
-
     const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
 
     setOpenKeys(latestOpenKey ? [latestOpenKey] : []);

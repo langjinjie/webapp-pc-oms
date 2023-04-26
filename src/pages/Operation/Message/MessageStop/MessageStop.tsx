@@ -44,7 +44,6 @@ const MessageStop: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const onOperate = (operateType: OperateType, record: MessageStopColumn) => {
-    console.log('onOperate', operateType);
     if (operateType === 'view') {
       history.push('/messagestop/detail?id=' + record.batchId);
     } else if (operateType === 'outline') {

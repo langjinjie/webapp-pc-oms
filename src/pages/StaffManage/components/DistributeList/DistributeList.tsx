@@ -65,7 +65,6 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   const onSearch = (values?: { [key: string]: any }) => {
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     const { staffList, filterTag, ...otherValues } = values || {};
-    console.log(values);
 
     setFormValue({
       ...otherValues,

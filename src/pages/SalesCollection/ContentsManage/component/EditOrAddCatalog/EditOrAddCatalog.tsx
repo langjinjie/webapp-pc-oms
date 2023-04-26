@@ -118,7 +118,6 @@ const AddOrEditContent: React.FC<IAddOrEditContentProps> = ({
   useEffect(() => {
     if (editOrAddCatalogParam?.visible) {
       if (editOrAddCatalogParam.title === '编辑') {
-        console.log(editOrAddCatalogParam.catalog);
         const { name, logoUrl, groupId } = editOrAddCatalogParam.catalog;
         editForm.setFieldsValue({ name, logoUrl, groupId });
         // iconImg || setIconImg(editOrAddCatalogParam.catalog.logoUrl);

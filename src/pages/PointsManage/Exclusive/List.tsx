@@ -103,8 +103,7 @@ const ExclusiveList: React.FC = () => {
     sendForm
       .validateFields()
       .then((values) => {
-        const { spconfName, ...postData } = values;
-        console.log(spconfName);
+        const { ...postData } = values;
         Modal.confirm({
           title: '积分发放提醒',
           content: '是否确定发放积分？',

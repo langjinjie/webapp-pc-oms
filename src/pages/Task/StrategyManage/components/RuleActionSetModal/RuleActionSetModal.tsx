@@ -66,7 +66,6 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
           }));
         }
         // 私有库
-        console.log(copyData);
 
         onChange?.(copyData);
       }

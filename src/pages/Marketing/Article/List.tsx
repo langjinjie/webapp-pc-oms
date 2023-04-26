@@ -62,9 +62,6 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   const getList = async (args: any | null) => {
     try {
       setLoading(true);
-      console.log(args);
-
-      console.log({ ...queryForm, ...args });
 
       const res = await getNewsList({
         pageNum: pagination.current,
@@ -103,7 +100,6 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   // 获取列表数据
   const onSearch = (values: any) => {
     setQueryForm(() => values);
-    console.log({ values });
 
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     getList({ ...values, pageNum: 1 });

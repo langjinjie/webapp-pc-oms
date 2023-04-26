@@ -130,7 +130,6 @@ const LotteryConfig: React.FC<RouteComponentProps> = ({ history, location }) => 
     setActivityId(activityId);
     const res: any = await queryActivityConfig({ activityId });
     if (res) {
-      console.log(res);
       const { list, ...formParams } = res;
 
       setPrizeList(list || []);

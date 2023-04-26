@@ -71,7 +71,6 @@ const AuditDetail: React.FC<RouteComponentProps> = ({ history, location }) => {
     const { applyId, isApply } = urlSearchParams(location.search) as { applyId: string; isApply: string };
     const res = await getAuditDetailByApplyId({ applyId });
     setTitleType(+isApply);
-    console.log(res);
     if (res) {
       setDetail(res);
     }
@@ -90,7 +89,6 @@ const AuditDetail: React.FC<RouteComponentProps> = ({ history, location }) => {
   };
 
   const onApply = async (applyType: 1 | 2) => {
-    console.log(ref.current);
     if (!ref.current) {
       return message.warning('请输入审批备注');
     }

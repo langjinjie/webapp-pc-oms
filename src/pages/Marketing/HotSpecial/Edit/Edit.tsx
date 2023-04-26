@@ -81,7 +81,6 @@ const HotSpecialEdit: React.FC<RouteComponentProps> = ({ history, location }) =>
   };
 
   const tplTypeChange = (value: number, index: number) => {
-    console.log(value, index);
     const contentList = listForm.getFieldValue('contentList');
     contentList[index].itemlist = [];
     listForm.setFieldsValue({

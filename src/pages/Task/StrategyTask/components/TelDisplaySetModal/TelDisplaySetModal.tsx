@@ -21,7 +21,6 @@ export const TelDisplaySetModal: React.FC<TelDisplaySetModalProps> = ({ visible,
 
   const handleOk = () => {
     displayForm.validateFields().then((values) => {
-      console.log(values);
       onOk(values);
     });
   };

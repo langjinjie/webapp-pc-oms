@@ -127,7 +127,6 @@ const SeatReport: React.FC = () => {
       });
       const allSettledPromise = Promise.all(promiseList);
       const allRes: any = await allSettledPromise;
-      console.log(areaIndexes);
 
       allRes.forEach((item: any, index: number) => {
         if (item) {
@@ -139,7 +138,6 @@ const SeatReport: React.FC = () => {
         bodyList: moduleList
       });
 
-      console.log(moduleList);
       Array.from(document.getElementsByTagName('dt')).forEach((ele) => {
         ele.contentEditable = 'true';
       });

@@ -87,10 +87,7 @@ const StaffTagModal: React.FC<IUserTagModal> = ({ value, onChange }) => {
     } else {
       list = [...list, { ...item, tagValues: tagVal }];
     }
-    console.log(
-      'list',
-      list.filter((filterItem) => filterItem.tagValues)
-    );
+
     setSelectedList(list.filter((filterItem) => filterItem.tagValues));
   };
   // 清除单个标签选择

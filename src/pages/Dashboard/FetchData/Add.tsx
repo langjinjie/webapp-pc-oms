@@ -43,7 +43,6 @@ const FetchDataAdd: React.FC<RouteComponentProps> = ({ history, location }) => {
       message.success('保存成功');
       history.goBack();
     }
-    console.log(res);
   };
   return (
     <div className="container">

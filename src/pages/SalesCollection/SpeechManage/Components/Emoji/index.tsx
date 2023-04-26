@@ -68,7 +68,6 @@ const Emoji: React.FC<{ insertEmoji: (params: any) => void }> = (props) => {
   };
   const insertEmoji = (evt: EmotionType, idx: number) => {
     const emotionName = emotions[idx].cn;
-    console.log(emotionName);
 
     LRUCache(data.history, data.perLine, idx);
     setData((data) => ({ ...data, history: data.history }));

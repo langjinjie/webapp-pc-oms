@@ -71,7 +71,6 @@ const StaffList: React.FC = () => {
     const { taskId } = getQueryParam();
     const res = await requestGetTaskStaffExeclist({ taskId, ...param });
     if (res) {
-      console.log('res', res);
       setStaffList({ total: res.total, list: res.list });
     }
     setLoading(false);
@@ -88,8 +87,6 @@ const StaffList: React.FC = () => {
   };
   // 翻页
   const onPaginationChange = (pageNum: number, pageSize?: number) => {
-    console.log('pageNum', pageNum);
-    console.log('pageSize', pageSize);
     setPaginationParam({ pageNum, pageSize: pageSize as number });
     getStaffList({ ...(searchParam as IValues), pageNum, pageSize: pageSize as number });
   };

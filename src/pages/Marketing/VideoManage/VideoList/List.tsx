@@ -45,7 +45,6 @@ const VideoList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const onSearch = (values: any) => {
-    console.log('search');
     getList(values);
   };
   useEffect(() => {

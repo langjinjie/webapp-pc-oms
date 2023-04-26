@@ -76,15 +76,12 @@ const CategoryManage: React.FC = () => {
 
   // 新增/修改视频分类
   const saveVideoType = async (values: any) => {
-    console.log(values);
     const res = await addVideoType({ typeId: values.id, typeName: values.name });
     return res;
   };
 
   // 删除视频分类
   const deleteVideoType = async (values: any) => {
-    console.log(values);
-
     return await delVideoType({ typeId: values.id });
   };
   // 添加/修改分类名称
@@ -104,7 +101,6 @@ const CategoryManage: React.FC = () => {
     const [removed] = result.splice(startIndex, 1);
     // 将原来的元素添加进数组
     result.splice(endIndex, 0, removed);
-    console.log(result);
 
     return result;
   };

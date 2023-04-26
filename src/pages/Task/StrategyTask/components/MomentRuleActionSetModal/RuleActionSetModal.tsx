@@ -84,8 +84,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
     setSelectRowKeys(copyKeys);
   };
 
-  const onContentChange = (value: string) => {
-    console.log(value);
+  const onContentChange = () => {
     setSelectRows([]);
     setSelectRowKeys([]);
     actionForm.setFieldsValue({ categoryId: undefined });
@@ -94,7 +93,6 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
   useEffect(() => {
     if (value && (!!visible || !!props.visible)) {
       setValues(value);
-      console.log(value);
 
       if (value.contentSource === 1) {
         setSelectRows(
@@ -185,7 +183,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
             </Select>
           </Form.Item>
           <Form.Item label="动作类型" name={'contentType'} rules={[{ required: true }]}>
-            <Radio.Group onChange={(e) => onContentChange(e.target.value)} disabled={props.footer === null}>
+            <Radio.Group onChange={() => onContentChange()} disabled={props.footer === null}>
               <Radio value={11}>朋友圈Feed-文章</Radio>
               {values.contentSource === 2 && (
                 <>

@@ -31,7 +31,6 @@ const AuditList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const preViewDetail = (record: any) => {
-    console.log(record);
     history.push('/audit/flow/detail?type=' + record.type);
   };
 

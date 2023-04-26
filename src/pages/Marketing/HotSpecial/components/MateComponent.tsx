@@ -25,13 +25,11 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
   // 列表选择时数据处理
   const handleChange = (keys: React.Key[], rows: any[]) => {
     // 针对海报选中未加载的数据进行过滤重组处理
-    console.log(rows);
 
     const res = rows.filter((row) => row.itemId !== undefined);
     const filterKeys = keys.filter((key) => !res.map((item) => item.itemId).includes(key));
 
     const filterRows = selectRows.filter((item) => filterKeys.includes(item.itemId!));
-    console.log({ filterRows });
     setSelectRows([...res, ...filterRows]);
     onChange?.([...res, ...filterRows]);
     setSelectedRowKeys(keys);
@@ -44,7 +42,6 @@ export const MeatComponent: React.FC<MeatComponentProps> = ({ type, value, onCha
     const [removed] = result.splice(startIndex, 1);
     // 将原来的元素添加进数组
     result.splice(endIndex, 0, removed);
-    console.log('result', result);
     return result;
   };
 

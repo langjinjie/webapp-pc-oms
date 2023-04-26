@@ -103,7 +103,6 @@ export const uploadFile: HttpFunction2 = (param: Object, fn: Function) => {
     onUploadProgress: (progressEvent: any) => {
       const persent = ((progressEvent.loaded / progressEvent.total) * 100) | 0; // 上传进度百分比
       fn(persent);
-      console.log('persent', persent);
     }
   });
 };

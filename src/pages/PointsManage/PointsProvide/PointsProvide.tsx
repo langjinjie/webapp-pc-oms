@@ -342,16 +342,7 @@ const PointsProvide: React.FC = () => {
             name="weekChainRatio"
             rules={[{ required: true, message: '请设置周环比，必须大于0' }]}
           >
-            <InputNumber
-              width={80}
-              min={1}
-              max={10000}
-              controls={false}
-              addonAfter={<span>%</span>}
-              onChange={(value) => {
-                console.log(typeof value);
-              }}
-            />
+            <InputNumber width={80} min={1} max={10000} controls={false} addonAfter={<span>%</span>} />
           </Form.Item>
           <Form.Item label="自动发放" valuePropName="checked" name={'autoSend'}>
             <Switch checkedChildren="开" unCheckedChildren="关" />

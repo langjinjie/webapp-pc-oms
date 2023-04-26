@@ -181,7 +181,6 @@ export const batchAddFreeCustomer: HttpFC = (param, fn) => {
     onUploadProgress: (progressEvent: any) => {
       const persent = ((progressEvent.loaded / progressEvent.total) * 100) | 0; // 上传进度百分比
       fn?.(persent);
-      console.log('persent', persent);
     }
   });
 };

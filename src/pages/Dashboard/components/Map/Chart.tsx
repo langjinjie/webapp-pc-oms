@@ -48,8 +48,6 @@ const Chart: React.FC = () => {
             show: true,
             position: 'top',
             formatter: ({ value }) => {
-              console.log(value);
-
               return value + '%';
             }
           }

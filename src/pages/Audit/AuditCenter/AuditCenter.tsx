@@ -39,14 +39,12 @@ const AuditList: React.FC<RouteComponentProps> = ({ history }) => {
       setPagination((pagination) => ({ ...pagination, total, pageSize, current: pageNum }));
       setDataSource(list);
     }
-    console.log(res);
   };
   useEffect(() => {
     getList();
   }, []);
 
   const onOperation = (operateType: OperateType, record: AuditColumnsProp) => {
-    console.log(operateType);
     setCurrent(record);
     if (operateType === 'outline') {
       setVisible(true);

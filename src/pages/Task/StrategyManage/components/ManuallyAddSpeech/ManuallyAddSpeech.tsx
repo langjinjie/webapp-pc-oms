@@ -13,7 +13,6 @@ export const ManuallyAddSpeech: React.FC<ManuallyAddSpeechProps> = ({ value, onC
   const [speechVisible, setSpeechVisible] = useState(false);
   const [inputValue, setValue] = useState('');
   const onHandleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-    console.log(e.target.value);
     setValue(e.target.value);
   };
   useMemo(() => {

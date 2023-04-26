@@ -49,9 +49,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, be
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       getBase64(info.file.originFileObj, (imageUrl: string) => {
-        return setLoading(false);
-
         console.log(imageUrl);
+        return setLoading(false);
       });
     }
   };
