@@ -114,7 +114,7 @@ const FetchData: React.FC<RouteComponentProps> = ({ history }) => {
         loadData={getList}
         dataSource={dataSource}
         pagination={pagination}
-        rowKey={(record) => record.sqlId.slice(0, 8)}
+        rowKey={'sqlId'}
         columns={TableColumnFun(onOperate)}
       />
       <NgModal width={600} visible={visible} onCancel={() => setVisible(false)} title="执行" onOk={confirmExecute}>
