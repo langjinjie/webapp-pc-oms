@@ -133,9 +133,6 @@ const AddMoment: React.FC = () => {
                               {childFields.map(({ name: childName, key: childKey }, childIndex) => (
                                 <Form.Item key={childKey}>
                                   <div className={classNames(style.momentItem, 'flex justify-between')}>
-                                    <Form.Item name={[childName, 'itemId']} className={style.itemId}>
-                                      <Input />
-                                    </Form.Item>
                                     <Form.Item
                                       className={style.nodeCol}
                                       name={[childName, 'feed']}
