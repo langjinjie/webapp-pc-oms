@@ -46,20 +46,30 @@ const AddMoment: React.FC = () => {
 
   // 提交
   const onFinishHandle = async (values?: IAddMoment) => {
+    // 不能直接操作values
+    const { momentName, dayItems = [] } = { ...values };
     // 对upDay、pushTime和feed数据进行格式化
-    values?.dayItems.forEach((dayItem: any) => {
-      dayItem.upDay = moment(dayItem.upDay).format('yyyy-MM-DD');
-      dayItem.momentItems.forEach((momentItem: any) => {
-        momentItem.pushTime = moment(momentItem.pushTime).format('HH:mm');
-        const { feeds, contentType } = momentItem.feed;
-        momentItem.feeds = feeds.map(({ feedId, itemId }: { feedId: string; itemId: string }) => ({ feedId, itemId }));
-        momentItem.contentType = contentType;
-        delete momentItem.feed;
-      });
-    });
-    const res = await requestEditTodayMoment({ ...values });
+    const params = {
+      momentName,
+      dayItems: dayItems.map((dayItem: any) => {
+        const upDay = moment(dayItem.upDay).format('YYYY-MM-DD');
+        return {
+          momentItems: dayItem.momentItems.map((momentItem: any) => {
+            const pushTime = moment(momentItem.pushTime).format('HH:mm');
+            const { feeds, contentType } = momentItem.feed;
+            momentItem.feeds = feeds.map(({ feedId, itemId }: { feedId: string; itemId: string }) => ({
+              feedId,
+              itemId
+            }));
+            return { pushTime, feeds, contentType };
+          }),
+          upDay
+        };
+      })
+    };
+    const res = await requestEditTodayMoment({ ...params, momentId });
     if (res) {
-      message.success('今日朋友圈新增成功');
+      message.success(`今日朋友圈${momentId ? '编辑' : '新增'}成功`);
       history.push('/todayMoment');
     }
   };
