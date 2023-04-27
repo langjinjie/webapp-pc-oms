@@ -1,28 +1,90 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { DatePicker, Form, Input, TimePicker, Button, message } from 'antd';
 import { BreadCrumbs } from 'src/components';
 import { SetMomentContent } from 'src/pages/Marketing/TodayMoment/components';
-import { requestEditTodayMoment } from 'src/apis/marketing';
+import { requestEditTodayMoment, requestGetTodayMomentDetail } from 'src/apis/todayMoment';
+import { useHistory } from 'react-router-dom';
+import qs from 'qs';
 import moment from 'moment';
 import style from './style.module.less';
 import classNames from 'classnames';
-import { useHistory } from 'react-router-dom';
+
+interface IAddMoment {
+  momentId: string; // 否 朋友圈ID
+  momentName: string; // 是 朋友圈名称
+  dayItems: IDayItems[]; // 是 按天配置
+}
+
+interface IDayItems {
+  momentDayId: String; // 否 按天配置规则ID
+  upDay: String; // 是 按天配置日期
+  momentItems: IMomentItems[]; // 是 按天配置的内容
+}
+
+interface IMomentItems {
+  itemId: string; // 否 内容ID
+  speechcraft: String; // 否 营销话术
+  pushTime: String; // 是 推送时间（HH:mm）
+  contentType: number; // 是 内容类型，1-文章，2-产品，3-活动，4-单张海报，5-9宫格海报
+  feeds: IFeeds[]; //  配置的feeds
+}
+
+export interface IFeeds {
+  itemId: string; // 否 内容itemID
+  feedId: string; // 是 内容feedsId
+  feedName?: string; // feed名称
+}
 
 const AddMoment: React.FC = () => {
   const { Item, List } = Form;
   const [form] = Form.useForm();
   const history = useHistory();
 
+  const momentId = useMemo(() => {
+    return qs.parse(location.search, { ignoreQueryPrefix: true })?.momentId;
+  }, []);
+
   // 提交
-  const onFinishHandle = async (values?: any) => {
-    console.log('values', values);
+  const onFinishHandle = async (values?: IAddMoment) => {
+    // 对upDay、pushTime和feed数据进行格式化
+    values?.dayItems.forEach((dayItem: any) => {
+      dayItem.upDay = moment(dayItem.upDay).format('yyyy-MM-DD');
+      dayItem.momentItems.forEach((momentItem: any) => {
+        momentItem.pushTime = moment(momentItem.pushTime).format('HH:mm');
+        const { feeds, contentType } = momentItem.feed;
+        momentItem.feeds = feeds.map(({ feedId, itemId }: { feedId: string; itemId: string }) => ({ feedId, itemId }));
+        momentItem.contentType = contentType;
+        delete momentItem.feed;
+      });
+    });
     const res = await requestEditTodayMoment({ ...values });
     if (res) {
-      console.log('res', res);
       message.success('今日朋友圈新增成功');
       history.push('/todayMoment');
     }
   };
+
+  // 获取朋友圈详情
+  const getDetail = async () => {
+    const res = await requestGetTodayMomentDetail({ momentId });
+    if (res) {
+      // 对upDay、pushTime和feed数据进行格式化
+      res.dayItems.forEach((dayItem: any) => {
+        dayItem.upDay = moment(dayItem.upDay, 'yyyy-MM-DD');
+        dayItem.momentItems.forEach((momentItem: any) => {
+          momentItem.pushTime = moment(momentItem.pushTime, 'HH:mm');
+          const { feeds, contentType } = momentItem;
+          momentItem.feed = { feeds, contentType };
+        });
+      });
+      // 设置表单得值
+      form.setFieldsValue(res);
+    }
+  };
+
+  useEffect(() => {
+    momentId && getDetail();
+  }, []);
   return (
     <div className={style.wrap}>
       <BreadCrumbs className="mb30" />
@@ -41,7 +103,7 @@ const AddMoment: React.FC = () => {
                 {fields.map(({ name, key }, index) => (
                   <div className={style.marketItem} key={key}>
                     <div className={style.marketDate}>
-                      <Item name="upDay" label="选择日期" rules={[{ required: true, message: '请选择日期' }]}>
+                      <Item name={[name, 'upDay']} label="选择日期" rules={[{ required: true, message: '请选择日期' }]}>
                         <DatePicker />
                       </Item>
                       {fields.length === 1 || (
@@ -71,17 +133,17 @@ const AddMoment: React.FC = () => {
                               {childFields.map(({ name: childName, key: childKey }, childIndex) => (
                                 <Form.Item key={childKey}>
                                   <div className={classNames(style.momentItem, 'flex justify-between')}>
-                                    <Form.Item name="itemId" className={style.itemId}>
+                                    <Form.Item name={[childName, 'itemId']} className={style.itemId}>
                                       <Input />
                                     </Form.Item>
                                     <Form.Item
                                       className={style.nodeCol}
-                                      name={[childName, 'feeds']}
+                                      name={[childName, 'feed']}
                                       rules={[{ required: true, message: '请选择朋友圈内容库内容' }]}
                                     >
                                       <SetMomentContent />
                                     </Form.Item>
-                                    <Form.Item className={style.nodeCol} name={[childName, 'contentType']}>
+                                    <Form.Item className={style.nodeCol} name={[childName, 'speechcraft']}>
                                       <Input className={style.input} placeholder="若不配置默认取朋友圈内容库的话术" />
                                     </Form.Item>
                                     <Form.Item

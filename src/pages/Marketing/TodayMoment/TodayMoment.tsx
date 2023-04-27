@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Button, PaginationProps } from 'antd';
+import { Button, Modal, PaginationProps, message } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCol, tableColumnsFun, ITodayMomentRow } from './Config';
 import { OnlineModal } from 'src/pages/Marketing/Components/OnlineModal/OnlineModal';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
 import { useHistory } from 'react-router-dom';
-import { requestGetTodayMomentList } from 'src/apis/marketing';
+import {
+  requestGetTodayMomentList,
+  requestDownTodayMoment,
+  requestUpTodayMoment,
+  requestSetScopeTodayMoment
+} from 'src/apis/todayMoment';
 import style from './style.module.less';
 
 const TodayMoment: React.FC = () => {
   const [list, setList] = useState<ITodayMomentRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [onlineModalVisible, setOnlineModalVisible] = useState(false);
   const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
   const [groupId, setGroupIds] = useState<string>('');
   const [formParam, setFormParam] = useState<{ [key: string]: any }>({});
+  const [currentRow, setCurrentRow] = useState<ITodayMomentRow>();
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -25,12 +32,13 @@ const TodayMoment: React.FC = () => {
 
   // 获取列表
   const getList = async (values?: any) => {
-    console.log('values', values);
+    setLoading(true);
     const res = await requestGetTodayMomentList(values);
     if (res) {
       setList(res.list || []);
       setPagination((pagination) => ({ ...pagination, total: res.total || 0 }));
     }
+    setLoading(false);
   };
 
   // 搜索
@@ -51,26 +59,61 @@ const TodayMoment: React.FC = () => {
     history.push('/todayMoment/add', { navList: [{ path: '/todayMoment', name: '今日朋友圈' }, { name: '新增' }] });
   };
 
-  // 上架
-  const onlineHandle = (row: any) => {
-    console.log('row', row);
-    setOnlineModalVisible(true);
+  // 上下架
+  const onlineHandle = (row: ITodayMomentRow) => {
+    // 1-上架状态,需要进行下架处理
+    if (row.state === 1) {
+      Modal.confirm({
+        title: '下架提示',
+        content: '是否确定下架该今日朋友圈',
+        centered: true,
+        async onOk () {
+          const res = await requestDownTodayMoment({ momentIds: [row.momentId] });
+          if (res) {
+            getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
+            message.success('该今日朋友圈下架成功');
+          }
+        }
+      });
+    } else {
+      setCurrentRow(row);
+      setOnlineModalVisible(true);
+    }
   };
 
   // 提交上架
-  const onlineOnOkHandle = (corpIds: CheckboxValueType[]) => {
-    console.log('corpIds', corpIds);
-    setOnlineModalVisible(false);
+  const onlineOnOkHandle = async (corpIds: CheckboxValueType[]) => {
+    const res = await requestUpTodayMoment({ momentIds: [currentRow?.momentId], corpIds });
+    if (res) {
+      setOnlineModalVisible(false);
+      setCurrentRow(undefined);
+      getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
+      message.success('改今日朋友圈上架成功');
+    }
+  };
+  // 编辑今日朋友圈
+  const editHandle = (row: ITodayMomentRow) => {
+    history.push('/todayMoment/add?momentId=' + row.momentId, {
+      navList: [{ path: '/todayMoment', name: '今日朋友圈' }, { name: '编辑' }]
+    });
   };
 
   // 显示配置可见范围模块
-  const setRight = (record?: any) => {
-    setGroupIds(record.groupId || '');
+  const setRight = (row: ITodayMomentRow) => {
+    setCurrentRow(row);
+    setGroupIds(row.groupId || '');
     setVisibleSetUserRight(true);
   };
   // 提交配置可见范围
-  const setRightOnOkHandle = (values?: any) => {
-    console.log('values', values);
+  const setRightOnOkHandle = async (values?: any) => {
+    const res = await requestSetScopeTodayMoment({ momentIds: [currentRow?.momentId], groupId: values.groupId });
+    if (res) {
+      setCurrentRow(undefined);
+      setGroupIds('');
+      setVisibleSetUserRight(false);
+      message.success('可见范围配置成功');
+      getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
+    }
   };
 
   useEffect(() => {
@@ -83,10 +126,12 @@ const TodayMoment: React.FC = () => {
       </Button>
       <NgFormSearch searchCols={searchCol} onSearch={onSearchHandle} />
       <NgTable
-        id="momentId"
+        rowKey="momentId"
+        loading={loading}
         className="mt24"
-        columns={tableColumnsFun({ onlineHandle, setRight })}
+        columns={tableColumnsFun({ onlineHandle, editHandle, setRight })}
         dataSource={list}
+        scroll={{ x: 'max-content' }}
         pagination={pagination}
         paginationChange={paginationChange}
       />

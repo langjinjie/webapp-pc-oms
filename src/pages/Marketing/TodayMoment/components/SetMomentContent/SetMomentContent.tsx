@@ -1,60 +1,60 @@
-import { Form, message, Radio, Select } from 'antd';
-import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { Icon, NgModal } from 'src/components';
-import { MomentSelect } from 'src/pages/Marketing/TodayMoment/components';
-import { contentTypeList } from './config';
-
+import { Button, Form, Input, Radio, Tooltip, message } from 'antd';
+import { Icon, NgModal, NgTable } from 'src/components';
+import { IFeeds } from 'src/pages/Marketing/TodayMoment/AddMoment/AddMoment';
+import { getMomentList } from 'src/apis/marketing';
+import { tplTypeOptions } from 'src/pages/Marketing/Moment/ListConfig';
+import { PaginationProps } from 'antd/es/pagination';
+import { UNKNOWN } from 'src/utils/base';
+import classNames from 'classnames';
 import styles from './style.module.less';
 
 interface ActinRuleProps {
-  contentSource: number;
-  contentType: number;
-  contentCategory: number;
-  [prop: string]: any;
+  contentType: number; // 内容类型，1-文章，2-产品，3-活动，4-单张海报，5-9宫格海报
+  feeds: (IFeeds & { name?: string })[];
 }
 type RuleActionSetModalProps = React.ComponentProps<typeof NgModal> & {
   value?: ActinRuleProps;
   onChange?: (value: any) => void;
   isReadonly?: boolean;
-  hideBtn?: boolean;
 };
 
-const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
-  value,
-  onCancel,
-  onChange,
-  hideBtn,
-  isReadonly,
-  ...props
-}) => {
-  const [values, setValues] = useState<any>({
-    contentType: 11
-  });
-  const [actionForm] = Form.useForm();
+const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel, onChange, isReadonly }) => {
   const [visible, setVisible] = useState(false);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
-  const [selectRows, setSelectRows] = useState<any[]>([]);
+  const [selectRows, setSelectRows] = useState<(IFeeds & { name?: string })[]>([]);
+  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [formValues, setFormValues] = useState<{ [key: string]: any }>({});
+  const [pagination, setPagination] = useState<PaginationProps>({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+    simple: true
+  });
 
-  const handleOk = () => {
-    actionForm.validateFields().then((values) => {
-      // 对表单数据进行拷贝，防止污染表单渲染
-      const copyData = JSON.parse(JSON.stringify(values));
-      const { contentSource } = copyData;
-      // 回写营销素材名称
-      copyData.feedName = selectRows[0]?.itemName;
-      // 1. 判断来源
-      // 公有库
-      if (contentSource === 1) {
-        if (selectRows.length === 0) return message.warning('请选择营销素材');
-        copyData.feedId = selectRowKeys[0];
-        onChange?.(copyData);
-      } else {
-        // 私有库
-        onChange?.(values);
-      }
-      setVisible(false);
-    });
+  const [form] = Form.useForm();
+
+  const onResetHandle = () => {
+    setDataSource([]);
+    setFormValues({});
+    setSelectRows([]);
+    setSelectRowKeys([]);
+    form.setFieldsValue({ tplType: 1, name: undefined });
+    setFormValues({ tplType: 1 });
+  };
+
+  const getList = async (params?: any) => {
+    const res = await getMomentList(params);
+    if (res) {
+      const { total, list } = res;
+      setDataSource(list);
+      setPagination((pagination) => ({ ...pagination, total }));
+    }
+  };
+
+  const onFinishHandle = (values?: any) => {
+    getList(values);
+    setFormValues(values);
   };
 
   const handleCancel = (e: any) => {
@@ -62,183 +62,166 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
     onCancel?.(e);
   };
 
-  const onValuesChange = (changedValues: any, values: any) => {
-    if (changedValues.contentType === 4 || changedValues.contentType === 5) {
-      actionForm.setFieldsValue({
-        contentCategory: 1
-      });
+  const removeItem = (feedId: string) => {
+    setSelectRows(selectRows.filter(({ feedId: rowFeedId }) => rowFeedId !== feedId));
+    setSelectRowKeys(selectRowKeys.filter((key) => key !== feedId));
+  };
+
+  const onValuesChange = (value: any) => {
+    if (Object.keys(value).includes('tplType')) {
+      setSelectRows([]);
+      setSelectRowKeys([]);
+      form.setFieldsValue({ name: undefined });
+      setFormValues((formValues) => ({ ...formValues, tplType: value.tplType }));
+      getList(value);
     }
-
-    setValues({
-      ...values,
-      contentCategory: changedValues.contentType === 4 || changedValues.contentType === 5 ? 1 : values.contentCategory
-    });
   };
 
-  const removeItem = (index: number) => {
-    const copyRow = [...selectRows];
-    const copyKeys = [...selectRowKeys];
-    copyRow.splice(index, 1);
-    copyKeys.splice(index, 1);
-    setSelectRows(copyRow);
-    setSelectRowKeys(copyKeys);
+  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+    // 单张海报能多选
+    if (+formValues.tplType === 4) {
+      const curListKeys = dataSource.map(({ feedId }) => feedId);
+      const noCurPageSelectKeys = selectRowKeys.filter((key) => !curListKeys.includes(key));
+      const noCurPageSelectRows = selectRows.filter(({ feedId }) => !curListKeys.includes(feedId));
+      const newSelectRowKeys = [...noCurPageSelectKeys, ...selectedRowKeys];
+      if (newSelectRowKeys.length > 5) return message.warning('单张海报最多选择5张');
+      setSelectRowKeys(newSelectRowKeys);
+      setSelectRows([...noCurPageSelectRows, ...selectedRows]);
+    } else {
+      setSelectRowKeys(selectedRowKeys);
+      setSelectRows(selectedRows);
+    }
   };
 
-  const onContentChange = (value: string) => {
-    console.log(value);
-    setSelectRows([]);
-    setSelectRowKeys([]);
-    actionForm.setFieldsValue({ categoryId: undefined });
+  const paginationChange = (pageNum: number) => {
+    setPagination((pagination) => ({ ...pagination, current: pageNum }));
+    getList({ ...formValues, pageNum });
+  };
+
+  const handleOk = () => {
+    onChange?.({ contentType: +formValues.tplType, feeds: selectRows });
+    setVisible(false);
+    onResetHandle();
   };
 
   useEffect(() => {
-    if (value && (!!visible || !!props.visible)) {
-      setValues(value);
-      console.log(value);
-
-      if (value.contentSource === 1) {
-        setSelectRows(
-          value?.feedId
-            ? [
-                {
-                  itemId: value?.feedId,
-                  itemName: value?.feedName
-                }
-              ]
-            : []
-        );
-        setSelectRowKeys(value?.feedId ? [value?.feedId] : []);
-      }
-      if (value.contentSource === 2 && value.contentCategory === 2) {
-        value.categoryId =
-          typeof value?.categoryId === 'string' && value?.categoryId?.indexOf(';') > -1
-            ? value.categoryId?.split(';')
-            : value.categoryId;
-      }
-
-      actionForm.setFieldsValue({
-        ...value
-      });
+    if (visible) {
+      form.setFieldsValue({ tplType: value?.contentType || 1 });
+      setFormValues({ tplType: value?.contentType || 1 });
+      getList({ tplType: value?.contentType || 1 });
+      setSelectRowKeys((value?.feeds?.map(({ feedId }) => feedId) as string[]) || []);
+      setSelectRows(value?.feeds || []);
+    } else {
+      onResetHandle();
     }
-  }, [visible, value, props.visible]);
-
-  const contentSourceChange = (value: number) => {
-    console.log(value);
-  };
-
-  // 海报选中
-  const posterSelectChange = (keys: React.Key[], rows: any[]) => {
-    setSelectRowKeys(keys);
-    // 针对海报选中未加载的数据进行过滤重组处理
-    const res = rows.filter((row) => row !== undefined);
-    const filterKeys = keys.filter((key) => !res.map((item) => item.itemId).includes(key));
-
-    const filterRows = selectRows.filter((row) => filterKeys.includes(row.itemId!));
-    setSelectRows([...res, ...filterRows]);
-  };
+  }, [visible]);
 
   return (
     <>
-      {!hideBtn && (
-        <>
-          {value?.contentType
-            ? (
-            <div
-              className={classNames('text-primary ellipsis', { disabled: isReadonly })}
-              title={'发' + contentTypeList.filter((type) => type.value === value.contentType)?.[0]?.label}
-              onClick={() => {
-                if (isReadonly) return false;
-                setVisible(true);
-              }}
-            >
-              {'发' + contentTypeList.filter((type) => type.value === value.contentType)?.[0]?.label}
-            </div>
-              )
-            : (
-            <div className={styles.placeholder} onClick={() => setVisible(true)}>
-              点击选择朋友圈内容库内容
-            </div>
-              )}
-        </>
-      )}
+      {value?.contentType
+        ? (
+        <div
+          className={classNames(styles.momentValue, 'text-primary ellipsis', { disabled: isReadonly })}
+          title={'发' + tplTypeOptions.find((type) => type.id === value?.contentType)?.name}
+          onClick={() => {
+            if (isReadonly) return false;
+            setVisible(true);
+          }}
+        >
+          {'发' + tplTypeOptions.find((type) => type.id === value?.contentType)?.name}
+        </div>
+          )
+        : (
+        <div className={styles.placeholder} onClick={() => setVisible(true)}>
+          点击选择朋友圈内容库内容
+        </div>
+          )}
 
       <NgModal
-        width={808}
-        forceRender
-        {...props}
-        maskClosable={!!props.visible}
-        visible={visible || props.visible}
+        width={710}
+        maskClosable={visible}
+        visible={visible}
         title="内容选择"
         onOk={handleOk}
         onCancel={(e) => handleCancel(e)}
       >
-        <Form form={actionForm} onValuesChange={onValuesChange} labelCol={{ span: 3 }}>
-          <Form.Item label="内容来源" name={'contentSource'} rules={[{ required: true }]}>
-            <Select
-              className="width320"
-              onChange={contentSourceChange}
-              placeholder="请选择"
-              disabled={props.footer === null}
-            >
-              <Select.Option value={1}>公有库</Select.Option>
-              <Select.Option value={2}>机构库</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="动作类型" name={'contentType'} rules={[{ required: true }]}>
-            <Radio.Group onChange={(e) => onContentChange(e.target.value)} disabled={props.footer === null}>
-              <Radio value={11}>朋友圈Feed-文章</Radio>
-              {values.contentSource === 2 && (
-                <>
-                  {/* <Radio value={12}>朋友圈Feed-产品</Radio> */}
-                  <Radio value={12}>产品</Radio>
-                  {/* <Radio value={13}>朋友圈Feed-活动</Radio> */}
-                  <Radio value={13}>活动</Radio>
-                </>
-              )}
-
-              {/* <Radio value={14}>朋友圈Feed-单张海报</Radio> */}
-              <Radio value={14}>单张海报</Radio>
-              {/* <Radio value={15}>朋友圈Feed-9宫格海报</Radio> */}
-              <Radio value={15}>9宫格海报</Radio>
+        <Form form={form} onFinish={onFinishHandle} layout="inline" onValuesChange={onValuesChange}>
+          <Form.Item name="tplType" label="内容类型" initialValue={1}>
+            <Radio.Group>
+              {tplTypeOptions.map(({ id, name }) => (
+                <Radio key={id} value={id}>
+                  {name}
+                </Radio>
+              ))}
             </Radio.Group>
           </Form.Item>
-          {values.contentSource === 2 && (
-            <Form.Item label="选择内容" required>
-              <Form.Item name={'contentCategory'} rules={[{ required: true, message: '请选择内容' }]}>
-                <Radio.Group disabled={props.footer === null}>
-                  <Radio value={1}>机构自定义配置</Radio>
-                </Radio.Group>
+          <div className={styles.feedList}>
+            <div className="flex">
+              <Form.Item name="name" label="内容名称">
+                <Input className="width320" placeholder="请输入" />
               </Form.Item>
-            </Form.Item>
-          )}
+              <Button className={styles.searchBtn} type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button className={styles.resetBtn} htmlType="reset">
+                重置
+              </Button>
+            </div>
+            <NgTable
+              className="mt20"
+              size="small"
+              scroll={{ x: 600 }}
+              rowSelection={{
+                hideSelectAll: true,
+                type: +formValues.tplType === 4 ? 'checkbox' : 'radio',
+                preserveSelectedRowKeys: true,
+                selectedRowKeys: selectRowKeys,
+
+                onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+                  const rows = selectedRows.map((item) => ({
+                    ...item,
+                    itemId: item?.feedId,
+                    itemName: item?.name
+                  }));
+                  onSelectChange(selectedRowKeys, rows);
+                }
+              }}
+              columns={[
+                {
+                  title: '名称',
+                  dataIndex: 'name',
+                  align: 'left',
+                  width: 500,
+                  ellipsis: {
+                    showTitle: false
+                  },
+                  render: (name: string) => (
+                    <Tooltip placement="topLeft" title={name}>
+                      {name || UNKNOWN}
+                    </Tooltip>
+                  )
+                }
+              ]}
+              dataSource={dataSource}
+              pagination={pagination}
+              paginationChange={paginationChange}
+              rowKey="feedId"
+            />
+          </div>
         </Form>
-        {values.contentSource === 1 && values.contentType && props.footer !== null && (
-          <div>
-            <div className={classNames(styles.marketingWarp, 'container')}>
-              {
-                <MomentSelect
-                  selectedRowKeys={selectRowKeys}
-                  tplType={values.contentType}
-                  onChange={posterSelectChange}
-                />
-              }
-            </div>
-          </div>
-        )}
+
         {/* 已经选择的 */}
-        {values.contentSource === 1 && values.contentType && (
-          <div>
-            <div className="color-text-primary mt22">已选择</div>
-            <div className={classNames(styles.marketingWarp, 'mt12')}>
-              {selectRows.map((row, index) => (
-                <div className={classNames(styles.customTag)} key={(row.newsId || row.itemId || row.posterId) + index}>
-                  <span>{row.title || row.itemName || row.name}</span>
-                  <Icon className={styles.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(index)}></Icon>
-                </div>
-              ))}
-            </div>
+        <div>
+          <div className="color-text-primary mt22">已选择</div>
+          <div className={classNames(styles.marketingWarp, 'mt12')}>
+            {selectRows.map(({ feedId, feedName, name }) => (
+              <div className={classNames(styles.customTag)} key={feedId}>
+                <span>{feedName || name}</span>
+                <Icon className={styles.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(feedId)}></Icon>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </NgModal>
     </>
   );
