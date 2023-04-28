@@ -55,13 +55,14 @@ const AddMoment: React.FC = () => {
         const upDay = moment(dayItem.upDay).format('YYYY-MM-DD');
         return {
           momentItems: dayItem.momentItems.map((momentItem: any) => {
-            const pushTime = moment(momentItem.pushTime).format('HH:mm');
+            let { pushTime, speechcraft } = momentItem;
+            pushTime = moment(pushTime).format('HH:mm');
             let { feeds, contentType } = momentItem.feed;
             feeds = feeds.map(({ feedId, itemId }: { feedId: string; itemId: string }) => ({
               feedId,
               itemId
             }));
-            return { pushTime, feeds, contentType };
+            return { pushTime, feeds, contentType, speechcraft };
           }),
           upDay
         };

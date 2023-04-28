@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Form, Input, Radio, Tooltip, message } from 'antd';
 import { Icon, NgModal, NgTable } from 'src/components';
 import { IFeeds } from 'src/pages/Marketing/TodayMoment/AddMoment/AddMoment';
@@ -104,6 +104,13 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
     onResetHandle();
   };
 
+  const feedName = useMemo(() => {
+    return `${(value?.feeds || [])
+      .map(({ feedName }) => feedName)
+      .toString()
+      .replace(/,/g, '，')}(${tplTypeOptions.find((type) => type.id === value?.contentType)?.name})`;
+  }, [value]);
+
   useEffect(() => {
     if (visible) {
       form.setFieldsValue({ tplType: value?.contentType || 1 });
@@ -121,14 +128,14 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
       {(value?.feeds || []).length !== 0 && value?.contentType
         ? (
         <div
-          className={classNames(styles.momentValue, 'text-primary ellipsis', { disabled: isReadonly })}
-          title={'发' + tplTypeOptions.find((type) => type.id === value?.contentType)?.name}
+          className={classNames(styles.momentValue, 'text-primary pointer ellipsis', { disabled: isReadonly })}
+          title={feedName}
           onClick={() => {
             if (isReadonly) return false;
             setVisible(true);
           }}
         >
-          {'发' + tplTypeOptions.find((type) => type.id === value?.contentType)?.name}
+          {feedName}
         </div>
           )
         : (

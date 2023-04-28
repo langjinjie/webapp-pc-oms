@@ -146,7 +146,7 @@ export const columns = (args: OperateProps): ColumnsType<ActivityProps> => {
               复制
             </Button>
           </AuthBtn>
-          {status === 1 && (
+          {[1, 2].includes(status) && (
             <AuthBtn path="/edit">
               <Button type="link" onClick={() => handleOperate(0, record.activityId, index)}>
                 编辑
