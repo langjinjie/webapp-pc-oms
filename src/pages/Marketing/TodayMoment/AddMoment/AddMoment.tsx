@@ -56,8 +56,8 @@ const AddMoment: React.FC = () => {
         return {
           momentItems: dayItem.momentItems.map((momentItem: any) => {
             const pushTime = moment(momentItem.pushTime).format('HH:mm');
-            const { feeds, contentType } = momentItem.feed;
-            momentItem.feeds = feeds.map(({ feedId, itemId }: { feedId: string; itemId: string }) => ({
+            let { feeds, contentType } = momentItem.feed;
+            feeds = feeds.map(({ feedId, itemId }: { feedId: string; itemId: string }) => ({
               feedId,
               itemId
             }));

@@ -118,7 +118,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
 
   return (
     <>
-      {value?.contentType
+      {(value?.feeds || []).length !== 0 && value?.contentType
         ? (
         <div
           className={classNames(styles.momentValue, 'text-primary ellipsis', { disabled: isReadonly })}

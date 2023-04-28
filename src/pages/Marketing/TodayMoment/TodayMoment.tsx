@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Modal, PaginationProps, message } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCol, tableColumnsFun, ITodayMomentRow } from './Config';
@@ -13,8 +13,10 @@ import {
   requestSetScopeTodayMoment
 } from 'src/apis/todayMoment';
 import style from './style.module.less';
+import { Context } from 'src/store';
 
 const TodayMoment: React.FC = () => {
+  const { isMainCorp } = useContext(Context);
   const [list, setList] = useState<ITodayMomentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [onlineModalVisible, setOnlineModalVisible] = useState(false);
@@ -43,7 +45,8 @@ const TodayMoment: React.FC = () => {
 
   // 搜索
   const onSearchHandle = (values?: any) => {
-    getList(values);
+    getList({ ...values, pageSize: pagination.pageSize });
+    setPagination((pagination) => ({ ...pagination, current: 1 }));
     setFormParam(values);
   };
 
@@ -59,8 +62,24 @@ const TodayMoment: React.FC = () => {
     history.push('/todayMoment/add', { navList: [{ path: '/todayMoment', name: '今日朋友圈' }, { name: '新增' }] });
   };
 
+  // 提交上架
+  const onlineOnOkHandle = async ({ corpIds, momentId }: { corpIds?: CheckboxValueType[]; momentId?: string }) => {
+    const res = await requestUpTodayMoment({ momentIds: [momentId], corpIds });
+    if (res) {
+      setCurrentRow(undefined);
+      getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
+      message.success('该今日朋友圈上架成功');
+    }
+  };
+  // 编辑今日朋友圈
+  const editHandle = (row: ITodayMomentRow) => {
+    history.push('/todayMoment/add?momentId=' + row.momentId, {
+      navList: [{ path: '/todayMoment', name: '今日朋友圈' }, { name: '编辑' }]
+    });
+  };
+
   // 上下架
-  const onlineHandle = (row: ITodayMomentRow) => {
+  const onlineHandle = async (row: ITodayMomentRow) => {
     // 1-上架状态,需要进行下架处理
     if (row.state === 1) {
       Modal.confirm({
@@ -70,32 +89,27 @@ const TodayMoment: React.FC = () => {
         async onOk () {
           const res = await requestDownTodayMoment({ momentIds: [row.momentId] });
           if (res) {
-            getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
             message.success('该今日朋友圈下架成功');
+            getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
           }
         }
       });
     } else {
-      setCurrentRow(row);
-      setOnlineModalVisible(true);
+      // 主机构需要选择上架机构,分机构直接上架
+      if (isMainCorp) {
+        setCurrentRow(row);
+        setOnlineModalVisible(true);
+      } else {
+        Modal.confirm({
+          title: '上架提示',
+          content: '是否确定上架该今日朋友圈',
+          centered: true,
+          onOk () {
+            onlineOnOkHandle({ momentId: row.momentId });
+          }
+        });
+      }
     }
-  };
-
-  // 提交上架
-  const onlineOnOkHandle = async (corpIds: CheckboxValueType[]) => {
-    const res = await requestUpTodayMoment({ momentIds: [currentRow?.momentId], corpIds });
-    if (res) {
-      setOnlineModalVisible(false);
-      setCurrentRow(undefined);
-      getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
-      message.success('改今日朋友圈上架成功');
-    }
-  };
-  // 编辑今日朋友圈
-  const editHandle = (row: ITodayMomentRow) => {
-    history.push('/todayMoment/add?momentId=' + row.momentId, {
-      navList: [{ path: '/todayMoment', name: '今日朋友圈' }, { name: '编辑' }]
-    });
   };
 
   // 显示配置可见范围模块
@@ -139,7 +153,10 @@ const TodayMoment: React.FC = () => {
         isCheckAll
         visible={onlineModalVisible}
         onCancel={() => setOnlineModalVisible(false)}
-        onOk={onlineOnOkHandle}
+        onOk={(corpIds: CheckboxValueType[]) => {
+          onlineOnOkHandle({ corpIds, momentId: currentRow?.momentId });
+          setOnlineModalVisible(false);
+        }}
       />
       <SetUserRight
         visible={visibleSetUserRight}
