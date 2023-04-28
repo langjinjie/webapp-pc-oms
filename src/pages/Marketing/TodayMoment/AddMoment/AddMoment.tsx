@@ -93,6 +93,15 @@ const AddMoment: React.FC = () => {
     }
   };
 
+  // List自定义校验
+  const validator = (_: any, value: any) => {
+    if (value && value.length) {
+      return Promise.resolve();
+    } else {
+      return Promise.reject(new Error('Should accept agreement'));
+    }
+  };
+
   useEffect(() => {
     momentId && getDetail();
   }, []);
@@ -108,8 +117,8 @@ const AddMoment: React.FC = () => {
         </div>
         <div className={style.panel}>内容配置</div>
         <div className={style.content}>
-          <List name="dayItems" initialValue={[{}]}>
-            {(fields, { add, remove }) => (
+          <List name="dayItems" initialValue={[{}]} rules={[{ validator, message: '请添加朋友圈内容' }]}>
+            {(fields, { add, remove }, { errors }) => (
               <>
                 {fields.map(({ name, key }, index) => (
                   <div className={style.marketItem} key={key}>
@@ -138,8 +147,9 @@ const AddMoment: React.FC = () => {
                             { pushTime: moment('12:00', 'HH:mm') },
                             { pushTime: moment('18:00', 'HH:mm') }
                           ]}
+                          rules={[{ validator, message: '请添加朋友圈内容' }]}
                         >
-                          {(childFields, { add: childAdd, remove: childRemove }) => (
+                          {(childFields, { add: childAdd, remove: childRemove }, { errors: childrenErrors }) => (
                             <>
                               {childFields.map(({ name: childName, key: childKey }, childIndex) => (
                                 <Form.Item key={childKey}>
@@ -189,11 +199,13 @@ const AddMoment: React.FC = () => {
                                   新增
                                 </Button>
                               </div>
+                              <Form.ErrorList errors={childrenErrors} />
                             </>
                           )}
                         </List>
                       </div>
                     </div>
+                    <Form.ErrorList errors={errors} />
                   </div>
                 ))}
                 <Button

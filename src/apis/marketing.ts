@@ -463,6 +463,23 @@ export const getMomentDetail: HttpFunction = (param: object) => {
 export const batchDeleteMoment: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/market/moment/feed/del', param);
 };
+/**
+ * @description 朋友圈内容上架到分机构接口
+ * @param feedids array 是 feedId
+ * @param corpIds array 否 机构ID
+ */
+export const requestMarketMomentFeedUp: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/market/moment/feed/up', param);
+};
+
+/**
+ * @description 朋友圈内容下架接口
+ * @param feedids feedids array 是 feedId
+ */
+export const requestMarketMomentFeedDown: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/market/moment/feed/down', param);
+};
+
 // 1.12、链接转化
 export const connectionTransform: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/shorturl/create', param);

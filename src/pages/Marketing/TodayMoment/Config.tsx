@@ -90,7 +90,7 @@ export const tableColumnsFun: (props: ITableColumnsFunProps) => ColumnsType<any>
             .toString()
             .replace(/,/g, '，') || UNKNOWN;
         return (
-          <span className={style.upCorps} title={upCorpsName}>
+          <span className={classNames(style.upCorps, 'ellipsis')} title={upCorpsName}>
             {upCorpsName}
           </span>
         );

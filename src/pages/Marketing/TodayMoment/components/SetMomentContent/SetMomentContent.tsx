@@ -170,7 +170,15 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
               <Button className={styles.searchBtn} type="primary" htmlType="submit">
                 查询
               </Button>
-              <Button className={styles.resetBtn} htmlType="reset">
+              <Button
+                className={styles.resetBtn}
+                onClick={() => {
+                  form.setFieldsValue({ name: undefined });
+                  setFormValues((formValues) => ({ ...formValues, name: '' }));
+                  setPagination((pagination) => ({ ...pagination, current: 1 }));
+                  getList({ tplType: formValues.tplType });
+                }}
+              >
                 重置
               </Button>
             </div>
