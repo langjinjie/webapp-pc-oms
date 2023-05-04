@@ -6,6 +6,7 @@ import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
 
 const stateOptions = [
+  { id: 0, name: '未上架' },
   { id: 1, name: '已上架' },
   { id: 2, name: '已下架' }
 ];
@@ -56,8 +57,9 @@ export const searchColsFun = (): SearchCol[] => {
       placeholder: '请输入',
       width: 180,
       options: [
-        { id: 1, name: '上架' },
-        { id: 2, name: '下架' }
+        { id: 0, name: '未上架' },
+        { id: 1, name: '已上架' },
+        { id: 2, name: '已下架' }
       ]
     }
   ];
@@ -159,11 +161,9 @@ export const tableColumnsFun = ({ onOperate, manageItem }: OperateProps): Column
             <Button type="link" onClick={() => onOperate(value.feedId)}>
               编辑
             </Button>
-            {[1, 4, 5].includes(value.tplType) && (
-              <Button type="link" onClick={() => manageItem(value)}>
-                {`${value.state === 1 ? '下架' : '上架'}`}
-              </Button>
-            )}
+            <Button type="link" onClick={() => manageItem(value)}>
+              {`${value.state === 1 ? '下架' : '上架'}`}
+            </Button>
           </>
         );
       }
