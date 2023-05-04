@@ -180,20 +180,22 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
           }}
         />
       </div>
-      <div className={'operationWrap'}>
-        <Button
-          type="primary"
-          shape={'round'}
-          ghost
-          onClick={() => {
-            if (selectedRowKeys.length > 0) {
-              setVisibleOfflineModal(true);
-            }
-          }}
-        >
-          批量删除
-        </Button>
-      </div>
+      {tableSource.length === 0 || (
+        <div className={'operationWrap'}>
+          <Button
+            type="primary"
+            shape={'round'}
+            ghost
+            onClick={() => {
+              if (selectedRowKeys.length > 0) {
+                setVisibleOfflineModal(true);
+              }
+            }}
+          >
+            批量删除
+          </Button>
+        </div>
+      )}
 
       <OffLineModal
         content="确定删除选中的内容？"

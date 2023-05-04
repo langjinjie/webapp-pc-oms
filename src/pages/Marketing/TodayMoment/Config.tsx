@@ -5,6 +5,7 @@ import { Button } from 'antd';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { UNKNOWN } from 'src/utils/base';
+import { AuthBtn } from 'src/components';
 
 export interface ITodayMomentRow {
   momentId: string; // 是 朋友圈ID
@@ -50,7 +51,7 @@ export const tableColumnsFun: (props: ITableColumnsFunProps) => ColumnsType<any>
   editHandle,
   setRight
 }) => {
-  return [
+  const columnsList: ColumnsType<any> = [
     { title: '今日朋友圈ID', dataIndex: 'momentId' },
     {
       title: '今日朋友圈名称',
@@ -102,18 +103,26 @@ export const tableColumnsFun: (props: ITableColumnsFunProps) => ColumnsType<any>
       render (row: ITodayMomentRow) {
         return (
           <>
-            <Button type="link" onClick={() => onlineHandle(row)}>
-              {row.state === 1 ? '下架' : '上架'}
-            </Button>
-            <Button type="link" onClick={() => editHandle(row)}>
-              编辑
-            </Button>
-            <Button type="link" onClick={() => setRight(row)}>
-              配置可见范围
-            </Button>
+            <AuthBtn path="/operate">
+              <Button type="link" onClick={() => onlineHandle(row)}>
+                {row.state === 1 ? '下架' : '上架'}
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/edit">
+              <Button type="link" onClick={() => editHandle(row)}>
+                编辑
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/userGroup">
+              <Button type="link" onClick={() => setRight(row)}>
+                配置可见范围
+              </Button>
+            </AuthBtn>
           </>
         );
       }
     }
   ];
+
+  return columnsList;
 };

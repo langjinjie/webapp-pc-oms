@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Modal, PaginationProps, message } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCol, tableColumnsFun, ITodayMomentRow } from './Config';
 import { OnlineModal } from 'src/pages/Marketing/Components/OnlineModal/OnlineModal';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
@@ -135,10 +135,14 @@ const TodayMoment: React.FC = () => {
   }, []);
   return (
     <div className="container">
-      <Button className={style.addBtn} shape="round" type="primary" onClick={addMomentHandle}>
-        创建
-      </Button>
-      <NgFormSearch searchCols={searchCol} onSearch={onSearchHandle} />
+      <AuthBtn path="/add">
+        <Button className={style.addBtn} shape="round" type="primary" onClick={addMomentHandle}>
+          创建
+        </Button>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <NgFormSearch searchCols={searchCol} onSearch={onSearchHandle} />
+      </AuthBtn>
       <NgTable
         rowKey="momentId"
         loading={loading}

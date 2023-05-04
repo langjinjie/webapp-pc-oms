@@ -99,6 +99,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
   };
 
   const handleOk = () => {
+    console.log('selectRows', selectRows);
     onChange?.({ contentType: +formValues.tplType, feeds: selectRows });
     setVisible(false);
     onResetHandle();
@@ -106,9 +107,10 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
 
   const feedName = useMemo(() => {
     return `${(value?.feeds || [])
-      .map(({ feedName }) => feedName)
+      // 列表的内容名称为name字段，编辑时候后端返回的朋友圈内容名称字段为feedName
+      .map(({ feedName, name }) => feedName || name)
       .toString()
-      .replace(/,/g, '，')}(${tplTypeOptions.find((type) => type.id === value?.contentType)?.name})`;
+      .replace(/,/g, '，')}`;
   }, [value]);
 
   useEffect(() => {
@@ -135,6 +137,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
             setVisible(true);
           }}
         >
+          <span className={styles.titleTag}>{tplTypeOptions.find((type) => type.id === value?.contentType)?.name}</span>
           {feedName}
         </div>
           )
