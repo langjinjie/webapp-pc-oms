@@ -109,29 +109,6 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
     <div>
       <div className={classNames(style.textAreaWrap, 'isError')}>
         <div className={classNames(style.btnGroup, { [style.open]: isOpen })}>
-          <Tooltip
-            overlayInnerStyle={{ width: '334px' }}
-            title={<Emoji insertEmoji={insertEmoji} />}
-            color={'#fff'}
-            arrowPointAtCenter
-            trigger={'click'}
-          >
-            <span className="mr20 f20">☺</span>
-          </Tooltip>
-
-          <div className={classNames(style.btnArrow)} onClick={() => setIsOpen(!isOpen)}>
-            {isOpen
-              ? (
-              <span>
-                收起 <Icon name="shangjiantou" />
-              </span>
-                )
-              : (
-              <span>
-                展开 <Icon name="icon_common_16_Line_Down" />
-              </span>
-                )}
-          </div>
           <div className={style.btnsWrap}>
             {customBtns.map((btnText) => (
               <Button
@@ -145,6 +122,32 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
                 [插入{btnText}]
               </Button>
             ))}
+          </div>
+          <div className={style.rightBtns}>
+            <Tooltip
+              placement="topLeft"
+              overlayInnerStyle={{ width: '334px' }}
+              title={<Emoji showHistory insertEmoji={insertEmoji} />}
+              color={'#fff'}
+              arrowPointAtCenter
+              trigger={'click'}
+            >
+              <span className={style.emojiBtn}>☺</span>
+            </Tooltip>
+
+            <div className={classNames(style.btnArrow)} onClick={() => setIsOpen(!isOpen)}>
+              {isOpen
+                ? (
+                <span>
+                  收起 <Icon name="shangjiantou" />
+                </span>
+                  )
+                : (
+                <span>
+                  展开 <Icon name="icon_common_16_Line_Down" />
+                </span>
+                  )}
+            </div>
           </div>
         </div>
         <div className={style.textAreaBox}>

@@ -5,16 +5,9 @@
   overflow: hidden;
   border-bottom: 1px solid #e1e2e6;
   margin-right: 16px;
+  display: flex;
   &.open {
     height: auto;
-  }
-  .btnArrow {
-    position: absolute;
-    right: 0;
-    top: 0px;
-    color: #606366;
-    font-size: 12px;
-    cursor: pointer;
   }
 }
 
@@ -47,6 +40,9 @@
   }
 
   .btnsWrap {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
     :global {
       .ant-btn {
         padding: 0;
@@ -74,5 +70,29 @@
 
   .errorText {
     color: #f25555;
+  }
+}
+
+.rightBtns {
+  display: flex;
+  flex: none;
+  width: auto;
+
+  .btnArrow {
+    color: #606366;
+    font-size: 12px;
+    cursor: pointer;
+    &:hover {
+      color: #1890ff;
+    }
+  }
+  .emojiBtn {
+    margin-right: 8px;
+    margin-top: -5px;
+    font-size: 18px;
+    cursor: pointer;
+    &:hover {
+      color: #1890ff;
+    }
   }
 }
