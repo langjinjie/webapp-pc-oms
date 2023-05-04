@@ -9,6 +9,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { AuthBtn } from 'src/components';
 import { Context } from 'src/store';
 import { operateSpeechStatus } from 'src/apis/salesCollection';
+import ParseEmoji from './Components/Emoji/parseEmoji';
 
 export const sensitiveOptions = [
   { id: 0, name: '未知' },
@@ -225,7 +226,7 @@ export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
         showTitle: false
       },
       render: (content) => (
-        <Tooltip placement="topLeft" title={content}>
+        <Tooltip placement="topLeft" title={<ParseEmoji content={content} />}>
           {content || UNKNOWN}
         </Tooltip>
       )

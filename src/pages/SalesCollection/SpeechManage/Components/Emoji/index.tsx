@@ -72,7 +72,7 @@ const Emoji: React.FC<{ insertEmoji: (params: any) => void; showHistory: boolean
     }
     return arr;
   };
-  const insertEmoji = (evt: EmotionType, idx: number) => {
+  const insertEmoji = (evt: EmotionType | number, idx: number) => {
     const emotionName = emotions[idx].cn;
 
     const arr = LRUCache(data.history, data.perLine, idx);
@@ -82,7 +82,7 @@ const Emoji: React.FC<{ insertEmoji: (params: any) => void; showHistory: boolean
   };
 
   return (
-    <div className={'emotion'}>
+    <div className={classNames('emotion emojiList')}>
       {props.showHistory && data.history.length !== 0 && (
         <div>
           <div className="weui-emotion_head">最近使用</div>

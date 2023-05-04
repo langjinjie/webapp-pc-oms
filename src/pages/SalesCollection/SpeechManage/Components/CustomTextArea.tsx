@@ -14,6 +14,7 @@ interface CustomTextAreaProps {
   sensitive?: number;
   sensitiveWord?: string;
   disabled?: boolean;
+  emoji?: boolean; // 默认不开启
 }
 const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   onChange,
@@ -22,7 +23,8 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   visible,
   sensitive,
   sensitiveWord,
-  disabled
+  disabled,
+  emoji
 }) => {
   const textareaRef: React.LegacyRef<HTMLTextAreaElement> = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -101,7 +103,6 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
     setCount(content.length);
   };
   const insertEmoji = (param: any) => {
-    console.log(param);
     handlePushName(param.emotionName, true);
   };
 
@@ -124,16 +125,21 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
             ))}
           </div>
           <div className={style.rightBtns}>
-            <Tooltip
-              placement="topLeft"
-              overlayInnerStyle={{ width: '334px' }}
-              title={<Emoji showHistory insertEmoji={insertEmoji} />}
-              color={'#fff'}
-              arrowPointAtCenter
-              trigger={'click'}
-            >
-              <span className={style.emojiBtn}>☺</span>
-            </Tooltip>
+            {
+              // 是否开启emoji
+              emoji && (
+                <Tooltip
+                  placement="topLeft"
+                  overlayInnerStyle={{ width: '334px' }}
+                  title={<Emoji showHistory insertEmoji={insertEmoji} />}
+                  color={'#fff'}
+                  arrowPointAtCenter
+                  trigger={'click'}
+                >
+                  <span className={style.emojiBtn}>☺</span>
+                </Tooltip>
+              )
+            }
 
             <div className={classNames(style.btnArrow)} onClick={() => setIsOpen(!isOpen)}>
               {isOpen
