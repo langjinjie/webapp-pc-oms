@@ -56,9 +56,12 @@ export const tableColumnsFun: (props: ITableColumnsFunProps) => ColumnsType<any>
     {
       title: '今日朋友圈名称',
       dataIndex: 'momentName',
-      ellipsis: true,
       render (momentName) {
-        return <>{(momentName || '').length <= 20 ? momentName || '' : (momentName || '').slice(0, 20) + '...'}</>;
+        return (
+          <span title={momentName}>
+            {(momentName || '').length <= 20 ? momentName || '' : (momentName || '').slice(0, 20) + '...'}
+          </span>
+        );
       }
     },
     { title: '创建时间', dataIndex: 'dateCreated' },
