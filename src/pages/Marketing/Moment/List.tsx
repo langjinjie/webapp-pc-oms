@@ -106,8 +106,8 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
         }
       });
     } else {
-      // 主机构需要选择上架机构,分机构直接上架
-      if (isMainCorp) {
+      // 主机构和需要选择上架机构,分机构和活动和产品直接上架
+      if (isMainCorp && [1, 4, 5].includes(value.tplType)) {
         setCurrentRow(value);
         setOnlineModalVisible(true);
       } else {
