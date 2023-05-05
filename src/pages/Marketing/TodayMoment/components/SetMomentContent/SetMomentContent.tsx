@@ -44,7 +44,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
   };
 
   const getList = async (params?: any) => {
-    const res = await getMomentList(params);
+    const res = await getMomentList({ ...params, state: 1 });
     if (res) {
       const { total, list } = res;
       setDataSource(list);
@@ -99,7 +99,6 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
   };
 
   const handleOk = () => {
-    console.log('selectRows', selectRows);
     onChange?.({ contentType: +formValues.tplType, feeds: selectRows });
     setVisible(false);
     onResetHandle();
