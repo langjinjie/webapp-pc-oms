@@ -279,7 +279,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
             />
           </Form.Item>
           <Form.Item label="配置类型" name="displayType" required initialValue={1}>
-            <Group onChange={onChangeDisplayType}>
+            <Group onChange={onChangeDisplayType} disabled={isReadOnly}>
               {displayTypeList.map((item) => (
                 <Radio key={item.value + item.label} value={item.value}>
                   {item.label}
@@ -314,7 +314,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
                 rules={[{ required: true, message: '请上传图片' }]}
                 extra="为确保最佳展示效果，请上传宽度为750像素高清图片，仅支持.jpg格式"
               >
-                <NgUpload beforeUpload={beforeUploadImgHandle} />
+                <NgUpload beforeUpload={beforeUploadImgHandle} disabled={isReadOnly} />
               </Form.Item>
             </>
           )}
@@ -326,7 +326,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
                 rules={[{ required: true, message: '请上传视频' }]}
                 extra="仅支持.mp4格式, 最大100MB"
               >
-                <UploadFile bizKey="media" beforeUpload={beforeUploadMp4} />
+                <UploadFile bizKey="media" beforeUpload={beforeUploadMp4} readonly={isReadOnly} />
               </Form.Item>
             </>
           )}
@@ -363,10 +363,10 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
             />
           </Form.Item>
           <Form.Item label="可见范围设置" name={'groupId'}>
-            <SetUserRightFormItem form={form} />
+            <SetUserRightFormItem form={form} readonly={isReadOnly} />
           </Form.Item>
           <Form.Item label="年高活动" name="activityType" rules={[{ required: true, message: '请选择活动类型' }]}>
-            <Radio.Group onChange={activityTypeOnChange}>
+            <Radio.Group onChange={activityTypeOnChange} disabled={isReadOnly}>
               {activityTypeList.map((typeItem) => (
                 <Radio key={typeItem.value} value={typeItem.value}>
                   {typeItem.label}
@@ -376,7 +376,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
           </Form.Item>
           {activityType === 1 && (
             <Form.Item name="corpActivityId" label="年高活动ID" rules={[{ required: true, message: '请输入活动ID' }]}>
-              <Input placeholder="请输入" className="width320" />
+              <Input placeholder="请输入" className="width320" readOnly={isReadOnly} />
             </Form.Item>
           )}
           {/* </Form> */}
@@ -392,7 +392,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
                 rules={[{ required: true, message: '请上传分享封面图' }]}
                 extra="为确保最佳展示效果，请上传132*132像素高清图片，仅支持.jpg格式"
               >
-                <NgUpload beforeUpload={beforeUpload} />
+                <NgUpload beforeUpload={beforeUpload} disabled={isReadOnly} />
               </Form.Item>
               <Form.Item
                 label="小标题："
