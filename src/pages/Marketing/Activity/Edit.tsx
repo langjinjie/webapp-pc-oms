@@ -87,7 +87,8 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
         path,
         sourceUrl,
         groupId,
-        activityType
+        activityType,
+        corpActivityId
       } = res;
 
       setDisplayType(displayType);
@@ -105,7 +106,8 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
         username,
         path,
         sourceUrl,
-        activityType: activityType || 0
+        activityType: activityType || 0,
+        corpActivityId
       });
       setActivityType(activityType || 0);
     }
