@@ -153,7 +153,7 @@ const CreateDrawer: React.FC<CreateDrawerProps> = ({ visible, onClose, value, ch
                         </>
                       }
                       description={
-                        item.contentType === undefined
+                        item.contentType === 1
                           ? (
                           <Image
                             src={item.content}
