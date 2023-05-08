@@ -153,6 +153,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
         title="内容选择"
         onOk={handleOk}
         onCancel={(e) => handleCancel(e)}
+        okButtonProps={{ disabled: !selectRows.length }}
       >
         <Form form={form} onFinish={onFinishHandle} layout="inline" onValuesChange={onValuesChange}>
           <Form.Item name="tplType" label="内容类型" initialValue={1}>
