@@ -47,10 +47,10 @@ const Emoji: React.FC<{ insertEmoji: (params: any) => void; showHistory: boolean
     extraPadding: number;
     perLine: number;
   }>({
-    history: [],
+    history: JSON.parse(sessionStorage.getItem('emojiHistory') || '[]'),
     emotions: emotions,
     extraPadding: 0,
-    perLine: 6
+    perLine: 8
   });
   // const getEmojiNames = () => {
   //   const emotionNames: string[] = [];
@@ -76,7 +76,7 @@ const Emoji: React.FC<{ insertEmoji: (params: any) => void; showHistory: boolean
     const emotionName = emotions[idx].cn;
 
     const arr = LRUCache(data.history, data.perLine, idx);
-
+    sessionStorage.setItem('emojiHistory', JSON.stringify(arr));
     setData((data) => ({ ...data, history: arr }));
     props.insertEmoji({ emotionName });
   };
@@ -106,7 +106,12 @@ const Emoji: React.FC<{ insertEmoji: (params: any) => void; showHistory: boolean
       <h3 className="weui-emotion_head">所有表情</h3>
       {emotions.map((item, index) => {
         return (
-          <div className="weui-emotion_item" onClick={() => insertEmoji(item, index)} key={item.id}>
+          <div
+            className="weui-emotion_item"
+            title={item.cn.replace('[', '').replace(']', '')}
+            onClick={() => insertEmoji(item, index)}
+            key={item.id}
+          >
             <div
               className={classNames('weui-icon_emotion', item.style)}
               style={{ backgroundImage: `url(${emojiSource})` }}

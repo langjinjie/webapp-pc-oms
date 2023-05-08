@@ -75,9 +75,10 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
     ctrl.setSelectionRange(pos, pos);
   };
   const handlePushName = (param: string, isEmoji = false) => {
-    const len = param.length + 2;
-    if (textareaRef.current) {
-      const textareaEle = textareaRef.current;
+    const textareaEle = textareaRef.current;
+    if (textareaEle) {
+      let len = param.length;
+
       const pos = getPositionForTextArea(textareaEle);
       const inputValue = textareaEle.value;
       const b = inputValue.split('');
@@ -85,6 +86,8 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
         b.splice(pos.start, 0, param);
       } else {
         b.splice(pos.start, 0, `[${param}]`).join('');
+        // 自定义字段需要添加[]，所以len+2
+        len += 2;
       }
       const formatVal = b.join('');
       if (formatVal.length > 300) {
