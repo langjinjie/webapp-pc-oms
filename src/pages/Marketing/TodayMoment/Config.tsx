@@ -66,7 +66,7 @@ export const tableColumnsFun: (props: ITableColumnsFunProps) => ColumnsType<any>
     },
     { title: '创建时间', dataIndex: 'dateCreated' },
     { title: '修改时间', dataIndex: 'updateTime' },
-    { title: '修改人', dataIndex: 'updateBy' },
+    { title: '修改人', dataIndex: 'updateBy', render: (updateBy: string) => <>{updateBy || UNKNOWN}</> },
     {
       title: '状态',
       dataIndex: 'state',
