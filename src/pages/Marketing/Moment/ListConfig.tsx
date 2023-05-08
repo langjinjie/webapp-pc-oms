@@ -110,7 +110,10 @@ export const tableColumnsFun = ({ onOperate, manageItem }: OperateProps): Column
     {
       title: '创建人',
       dataIndex: 'createBy',
-      width: 100
+      width: 100,
+      render (createBy: string) {
+        return <>{createBy || UNKNOWN}</>;
+      }
     },
 
     {
