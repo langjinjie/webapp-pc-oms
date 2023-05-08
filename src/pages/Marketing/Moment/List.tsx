@@ -1,18 +1,29 @@
+import React, { useContext, useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { Button, Modal, message } from 'antd';
 import { PaginationProps } from 'antd/es/pagination';
-import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { batchDeleteMoment, getMomentList } from 'src/apis/marketing';
+import {
+  batchDeleteMoment,
+  getMomentList,
+  requestMarketMomentFeedDown,
+  requestMarketMomentFeedUp
+} from 'src/apis/marketing';
 import { NgFormSearch, NgTable } from 'src/components';
 import OffLineModal from 'src/pages/Task/StrategyTask/components/OffLineModal/OffLineModal';
 import { MomentColumns, searchColsFun, tableColumnsFun } from './ListConfig';
+import { Context } from 'src/store';
+import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 
 type QueryParamsType = Partial<{
   name: string;
   tplType: string;
 }>;
 const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
+  const { isMainCorp } = useContext(Context);
+  const [currentRow, setCurrentRow] = useState<MomentColumns>();
+  const [onlineModalVisible, setOnlineModalVisible] = useState(false);
   const [queryParams, setQueryParams] = useState<QueryParamsType>({});
   const [visibleOfflineModal, setVisibleOfflineModal] = useState(false);
   const [tableSource, setTableSource] = useState<MomentColumns[]>([]);
@@ -65,9 +76,51 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const editItem = (feedId: string) => {
-    console.log('editItem');
-
     navigatorToEdit(feedId);
+  };
+
+  // 提交上架
+  const onlineOnOkHandle = async ({ corpIds, feedId }: { corpIds?: CheckboxValueType[]; feedId?: string }) => {
+    const res = await requestMarketMomentFeedUp({ feedids: [feedId], corpIds });
+    if (res) {
+      setCurrentRow(undefined);
+      getList({ ...queryParams, pageNum: pagination.current, pageSize: pagination.pageSize });
+      message.success('该朋友圈内容上架成功');
+    }
+  };
+
+  // 上下架
+  const manageItem = (value: MomentColumns) => {
+    // 1-上架状态,需要进行下架处理
+    if (value.state === 1) {
+      Modal.confirm({
+        title: '下架提示',
+        content: '是否确定下架该朋友圈内容',
+        centered: true,
+        async onOk () {
+          const res = await requestMarketMomentFeedDown({ feedids: [value.feedId] });
+          if (res) {
+            message.success('该朋友圈内容下架成功');
+            getList({ ...queryParams, pageNum: pagination.current, pageSize: pagination.pageSize });
+          }
+        }
+      });
+    } else {
+      // 主机构和需要选择上架机构,分机构和活动和产品直接上架
+      if (isMainCorp && [1, 4, 5].includes(value.tplType)) {
+        setCurrentRow(value);
+        setOnlineModalVisible(true);
+      } else {
+        Modal.confirm({
+          title: '上架提示',
+          content: '是否确定上架该朋友圈内容',
+          centered: true,
+          onOk () {
+            onlineOnOkHandle({ feedId: value.feedId });
+          }
+        });
+      }
+    }
   };
 
   // 表格RowSelection配置项
@@ -116,7 +169,8 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
         <NgTable
           rowSelection={rowSelection}
           columns={tableColumnsFun({
-            onOperate: editItem
+            onOperate: editItem,
+            manageItem
           })}
           dataSource={tableSource}
           pagination={pagination}
@@ -126,26 +180,37 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
           }}
         />
       </div>
-      <div className={'operationWrap'}>
-        <Button
-          type="primary"
-          shape={'round'}
-          ghost
-          onClick={() => {
-            if (selectedRowKeys.length > 0) {
-              setVisibleOfflineModal(true);
-            }
-          }}
-        >
-          批量删除
-        </Button>
-      </div>
+      {tableSource.length === 0 || (
+        <div className={'operationWrap'}>
+          <Button
+            type="primary"
+            shape={'round'}
+            ghost
+            onClick={() => {
+              if (selectedRowKeys.length > 0) {
+                setVisibleOfflineModal(true);
+              }
+            }}
+          >
+            批量删除
+          </Button>
+        </div>
+      )}
 
       <OffLineModal
         content="确定删除选中的内容？"
         visible={visibleOfflineModal}
         onCancel={() => setVisibleOfflineModal(false)}
         onOK={batchDelete}
+      />
+      <OnlineModal
+        isCheckAll
+        visible={onlineModalVisible}
+        onCancel={() => setOnlineModalVisible(false)}
+        onOk={(corpIds: CheckboxValueType[]) => {
+          onlineOnOkHandle({ corpIds, feedId: currentRow?.feedId });
+          setOnlineModalVisible(false);
+        }}
       />
     </div>
   );

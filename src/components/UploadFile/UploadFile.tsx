@@ -10,9 +10,10 @@ interface IUploadFileProps {
   value?: string;
   beforeUpload?: (file: RcFile) => void;
   bizKey?: string;
+  readonly?: boolean;
 }
 
-const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload, bizKey = 'media' }) => {
+const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload, bizKey = 'media', readonly }) => {
   const [props, setProps] = useState<any>();
 
   const myToken = window.localStorage.getItem(TOKEN_KEY);
@@ -62,6 +63,7 @@ const UploadFile: React.FC<IUploadFileProps> = ({ onChange, value, beforeUpload,
         onChange={onChangeHandle}
         beforeUpload={beforeUploadFileHandle}
         onRemove={onRemoveHandle}
+        disabled={readonly}
       >
         {!value && (
           <Button className={style.uploadBtn}>

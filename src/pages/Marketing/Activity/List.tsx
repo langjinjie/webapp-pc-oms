@@ -91,11 +91,31 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 查看
   const viewItem = (activityId: string) => {
-    history.push('/marketingActivity/edit?activityId=' + activityId + '&isView=' + true);
+    history.push('/marketingActivity/edit?activityId=' + activityId + '&isView=' + true, {
+      navList: [
+        {
+          path: '/marketingActivity',
+          name: '活动库'
+        },
+        {
+          name: '查看活动'
+        }
+      ]
+    });
   };
   // 查看
   const copyItem = (activityId: string) => {
-    history.push('/marketingActivity/edit?activityId=' + activityId + '&isCopy=' + true);
+    history.push('/marketingActivity/edit?activityId=' + activityId + '&isCopy=' + true, {
+      navList: [
+        {
+          path: '/marketingActivity',
+          name: '活动库'
+        },
+        {
+          name: '复制活动'
+        }
+      ]
+    });
   };
 
   // 显示配置可见范围模块
@@ -119,7 +139,17 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
     const opreateTitle = OperateTypes[operateType];
     if (operateType === 0) {
       // 编辑
-      history.push('/marketingActivity/edit?activityId=' + activityId);
+      history.push('/marketingActivity/edit?activityId=' + activityId, {
+        navList: [
+          {
+            path: '/marketingActivity',
+            name: '活动库'
+          },
+          {
+            name: '编辑活动'
+          }
+        ]
+      });
     } else {
       const res = await activityManage({ activityId, type: operateType });
       if (res) {
@@ -146,7 +176,17 @@ const ActivityLibrary: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const addHandle = () => {
-    history.push('/marketingActivity/edit');
+    history.push('/marketingActivity/edit', {
+      navList: [
+        {
+          path: '/marketingActivity',
+          name: '活动库'
+        },
+        {
+          name: '新增活动'
+        }
+      ]
+    });
   };
 
   // 点击查询按钮
