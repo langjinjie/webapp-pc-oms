@@ -134,7 +134,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
                 <Tooltip
                   placement="topLeft"
                   overlayInnerStyle={{ width: '334px' }}
-                  title={<Emoji showHistory insertEmoji={insertEmoji} />}
+                  title={<Emoji showHistory={false} insertEmoji={insertEmoji} />}
                   color={'#fff'}
                   arrowPointAtCenter
                   trigger={'click'}
