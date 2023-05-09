@@ -365,7 +365,12 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
           <Form.Item label="可见范围设置" name={'groupId'}>
             <SetUserRightFormItem form={form} readonly={isReadOnly} />
           </Form.Item>
-          <Form.Item label="年高活动" name="activityType" rules={[{ required: true, message: '请选择活动类型' }]}>
+          <Form.Item
+            label="年高活动"
+            initialValue={0}
+            name="activityType"
+            rules={[{ required: true, message: '请选择活动类型' }]}
+          >
             <Radio.Group onChange={activityTypeOnChange} disabled={isReadOnly}>
               {activityTypeList.map((typeItem) => (
                 <Radio key={typeItem.value} value={typeItem.value}>
