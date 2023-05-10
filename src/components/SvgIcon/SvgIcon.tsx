@@ -22,7 +22,6 @@ const SvgIcon: React.FC<IndexProps> = ({ className, name, onClick }) => {
   if (name?.indexOf('local_') > -1) {
     const svgName = name.split('_')[1];
 
-    console.log(svgName);
     switch (svgName) {
       case 'IconTag':
         return <IconTag className={className} onClick={onClick} />;

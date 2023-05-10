@@ -61,7 +61,6 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({ on
   };
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-    console.log(selectedRows);
     onChange(selectedRowKeys, selectedRows);
   };
 

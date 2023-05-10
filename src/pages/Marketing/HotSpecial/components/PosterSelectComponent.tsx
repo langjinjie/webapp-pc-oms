@@ -164,8 +164,6 @@ export const PosterSelectComponent: React.FC<PosterSelectComponentProps> = ({
             preserveSelectedRowKeys: true,
             selectedRowKeys: selectedRowKeys,
             onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-              console.log(selectedRows);
-
               const rows = selectedRows.map((item) => ({
                 ...item,
                 itemId: item?.posterId,

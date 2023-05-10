@@ -12,6 +12,7 @@ import { urlSearchParams, useDocumentTitle } from 'src/utils/base';
 import { getSpeechDetail, editSpeech, getCategoryList, requestGetCatalogDetail } from 'src/apis/salesCollection';
 import InputShowLength from '../../../components/InputShowLength/InputShowLength';
 import { SetUserRightFormItem } from 'src/pages/Marketing/Components/SetUserRight/SetUserRight';
+import { EMOJI_OPEN } from 'src/utils/config';
 
 const scenesStates = [
   { sceneId: 1, name: '车险流程', needGenderType: 1, needAgeType: 0 },
@@ -353,7 +354,12 @@ const SpeechEdit: React.FC<RouteComponentProps> = ({ location, history }) => {
         )}
 
         <Form.Item label="话术内容" name="contentObj.content" rules={[{ required: true }]}>
-          <CustomTextArea sensitiveWord={speech?.sensitiveWord} sensitive={speech?.sensitive} maxLength={1200} />
+          <CustomTextArea
+            emoji={EMOJI_OPEN}
+            sensitiveWord={speech?.sensitiveWord}
+            sensitive={speech?.sensitive}
+            maxLength={1200}
+          />
         </Form.Item>
         {currentScenesState?.sceneId !== 3 && currentScenesState?.sceneId !== 5 && currentScenesState?.sceneId !== 0 && (
           <Form.Item label="客户分类" required={true} className={styles.formItem__selectGroup}>

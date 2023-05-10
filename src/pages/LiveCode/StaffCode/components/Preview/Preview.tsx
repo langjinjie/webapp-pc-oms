@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon } from 'src/components';
 import style from './style.module.less';
 import classNames from 'classnames';
+import ParseEmoji from 'src/pages/SalesCollection/SpeechManage/Components/Emoji/parseEmoji';
 
 export interface IValue {
   welcomeWord?: string;
@@ -38,7 +39,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className }) => {
               <div className={style.avatar}>
                 <img className={style.avatarImg} src={require('src/assets/images/avater.jpg')} />
               </div>
-              <div className={style.news}>{value?.welcomeWord}</div>
+              <div className={style.news}>{<ParseEmoji content={value?.welcomeWord} />}</div>
             </div>
           )}
           {/* 营销素材列表 */}

@@ -34,7 +34,6 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
     setGroupChatListVisible(false);
   };
   const onOkHandle = () => {
-    console.log('chooseChat', chooseChat);
     onChange?.(chooseChat);
     onCancelHandle();
   };

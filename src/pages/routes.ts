@@ -28,6 +28,10 @@ export const noVerRoutes: RouteProps[] = [
     component: lazy(() => import('src/pages/Index/Index'))
   },
   {
+    path: '/emoji',
+    component: lazy(() => import('src/pages/SalesCollection/SpeechManage/EmojiTest'))
+  },
+  {
     path: '/index',
     component: lazy(() => import('src/pages/Index/Index'))
   },

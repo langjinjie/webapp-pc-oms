@@ -98,7 +98,6 @@ export const debounce = <T = any>(
     }
     // 设立新定时器
     timer = setTimeout(() => {
-      console.log(args);
       fn.apply(this, args);
     }, delay);
   };

@@ -42,7 +42,6 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
     }));
     if (type === 'edit') {
       const currentItem = pathList?.slice(pathList.length - 1)[0];
-      console.log(currentItem);
       setFormParams((formParams) => ({ ...formParams!, ...currentItem }));
       menuForm.setFieldsValue({
         ...currentItem

@@ -151,10 +151,6 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
     setData(copyData);
   };
 
-  const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
-  };
-
   const submitForm = async () => {
     let isright = true;
     data.forEach((item, index): any => {
@@ -193,7 +189,7 @@ const ProductFeatureConfig: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <Card title="当月精选" bordered={false} className="edit">
-      <Form form={form} name="share_other" {...shareLayout} onFinish={onFinish}>
+      <Form form={form} name="share_other" {...shareLayout}>
         <DragDropContext onDragEnd={onDragEnd}>
           {/* direction代表拖拽方向  默认垂直方向  水平方向:horizontal */}
           <Droppable droppableId="droppable">

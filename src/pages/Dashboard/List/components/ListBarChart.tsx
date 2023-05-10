@@ -16,12 +16,10 @@ const ListBarChart: React.FC<{ currentItem: any }> = ({ currentItem }) => {
         { value: res.specTagRate, label: res.specTagRateName, color: '#83BAF9' }
       ]);
     }
-    console.log(res);
   };
   useEffect(() => {
     getTagData();
   }, []);
-  console.log(currentItem);
 
   return (
     <div className="container">

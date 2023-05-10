@@ -219,7 +219,6 @@ const ActivityList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onSubmit = ({ activityName = '' }: any) => {
-    console.log(activityName);
     const params: any = {
       activityName,
       pageNum: 1

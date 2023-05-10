@@ -126,9 +126,8 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
   // 表格RowSelection配置项
   const rowSelection = {
     selectedRowKeys: selectedRowKeys,
-    onChange: (selectedRowKeys: React.Key[], selectedRows: MomentColumns[]) => {
+    onChange: (selectedRowKeys: React.Key[]) => {
       setSelectRowKeys(selectedRowKeys);
-      console.log(selectedRows);
     },
     getCheckboxProps: (record: MomentColumns) => {
       return {
@@ -139,7 +138,6 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const batchDelete = async () => {
-    console.log('delete');
     const res = await batchDeleteMoment({ list: selectedRowKeys });
     if (res) {
       message.success('删除成功！');

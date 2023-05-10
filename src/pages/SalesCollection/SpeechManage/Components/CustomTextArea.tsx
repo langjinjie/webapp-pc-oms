@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { Icon } from 'src/components';
-import { Button, message } from 'antd';
+import { Button, message, Tooltip } from 'antd';
 import { getAutoParams } from 'src/apis/salesCollection';
+import Emoji from './Emoji';
 
 interface CustomTextAreaProps {
   value?: string | undefined;
@@ -13,6 +14,7 @@ interface CustomTextAreaProps {
   sensitive?: number;
   sensitiveWord?: string;
   disabled?: boolean;
+  emoji?: boolean; // 默认不开启
 }
 const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   onChange,
@@ -21,7 +23,8 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   visible,
   sensitive,
   sensitiveWord,
-  disabled
+  disabled,
+  emoji
 }) => {
   const textareaRef: React.LegacyRef<HTMLTextAreaElement> = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -71,14 +74,21 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
     ctrl.focus();
     ctrl.setSelectionRange(pos, pos);
   };
-  const handlePushName = (param: string) => {
-    const len = param.length + 2;
-    if (textareaRef.current) {
-      const textareaEle = textareaRef.current;
+  const handlePushName = (param: string, isEmoji = false) => {
+    const textareaEle = textareaRef.current;
+    if (textareaEle) {
+      let len = param.length;
+
       const pos = getPositionForTextArea(textareaEle);
       const inputValue = textareaEle.value;
       const b = inputValue.split('');
-      b.splice(pos.start, 0, `[${param}]`).join('');
+      if (isEmoji) {
+        b.splice(pos.start, 0, param);
+      } else {
+        b.splice(pos.start, 0, `[${param}]`).join('');
+        // 自定义字段需要添加[]，所以len+2
+        len += 2;
+      }
       const formatVal = b.join('');
       if (formatVal.length > 300) {
         return message.warning('话术最多300字，已超过最大限度无法插入');
@@ -95,24 +105,14 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
     onChange?.(content);
     setCount(content.length);
   };
+  const insertEmoji = (param: any) => {
+    handlePushName(param.emotionName, true);
+  };
 
   return (
     <div>
       <div className={classNames(style.textAreaWrap, 'isError')}>
         <div className={classNames(style.btnGroup, { [style.open]: isOpen })}>
-          <div className={classNames(style.btnArrow)} onClick={() => setIsOpen(!isOpen)}>
-            {isOpen
-              ? (
-              <span>
-                收起 <Icon name="shangjiantou" />
-              </span>
-                )
-              : (
-              <span>
-                展开 <Icon name="icon_common_16_Line_Down" />
-              </span>
-                )}
-          </div>
           <div className={style.btnsWrap}>
             {customBtns.map((btnText) => (
               <Button
@@ -126,6 +126,37 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
                 [插入{btnText}]
               </Button>
             ))}
+          </div>
+          <div className={style.rightBtns}>
+            {
+              // 是否开启emoji
+              emoji && (
+                <Tooltip
+                  placement="topLeft"
+                  overlayInnerStyle={{ width: '334px' }}
+                  title={<Emoji showHistory={false} insertEmoji={insertEmoji} />}
+                  color={'#fff'}
+                  arrowPointAtCenter
+                  trigger={'click'}
+                >
+                  <span className={style.emojiBtn}>☺</span>
+                </Tooltip>
+              )
+            }
+
+            <div className={classNames(style.btnArrow)} onClick={() => setIsOpen(!isOpen)}>
+              {isOpen
+                ? (
+                <span>
+                  收起 <Icon name="shangjiantou" />
+                </span>
+                  )
+                : (
+                <span>
+                  展开 <Icon name="icon_common_16_Line_Down" />
+                </span>
+                  )}
+            </div>
           </div>
         </div>
         <div className={style.textAreaBox}>

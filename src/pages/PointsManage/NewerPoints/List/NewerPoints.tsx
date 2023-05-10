@@ -60,7 +60,6 @@ const PointsConfig: React.FC = () => {
 
   // 修改新人规则
   const updateNewerRule = () => {
-    console.log('修改新人规则~');
     setVisible(true);
   };
 

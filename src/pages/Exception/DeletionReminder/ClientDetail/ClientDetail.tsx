@@ -211,7 +211,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   }, [loadCustomTag]);
 
   useEffect(() => {
-    console.log(location.state);
     const { externalUserid: externalUserId = '', followStaffId }: any = qs.parse(history.location.search, {
       ignoreQueryPrefix: true
     });

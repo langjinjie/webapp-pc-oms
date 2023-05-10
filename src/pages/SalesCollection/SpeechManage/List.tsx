@@ -124,7 +124,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
   // 点击查询按钮
   const onSearch = async (values: any) => {
     // 将页面重置为第一页
-    console.log(values);
 
     setPagination((pagination) => ({ ...pagination, current: 1 }));
     const { catalogIds, ...otherValues } = values;
@@ -522,7 +521,6 @@ const SpeechManage: React.FC<RouteComponentProps> = ({ history, location }) => {
       selectedRows?.forEach((item) => {
         mySet.add(item.groupId);
       });
-      console.log(Array.from(mySet));
       setCurrentGroupIds(Array.from(mySet));
       setIsBatchSetRight(true);
     }

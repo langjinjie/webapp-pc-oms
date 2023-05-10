@@ -254,7 +254,6 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
       selectRows?.forEach((item) => {
         mySet.add(item.groupId);
       });
-      console.log(Array.from(mySet));
       setCurrentGroupIds(Array.from(mySet));
       setIsBatchSetRight(true);
     }

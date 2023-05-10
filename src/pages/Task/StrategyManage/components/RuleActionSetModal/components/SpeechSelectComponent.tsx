@@ -134,7 +134,6 @@ export const SpeechSelectComponent: React.FC<ProductSelectComponentProps> = ({ o
         rowSelection={{
           type: 'radio',
           onChange: (selectedRowKeys: React.Key[], selectedRows: SpeechProps[]) => {
-            console.log(selectedRows);
             const rows = selectedRows.map((item) => ({ ...item, itemId: item.contentId, itemName: item.content }));
             onSelectChange(selectedRowKeys, rows);
           }

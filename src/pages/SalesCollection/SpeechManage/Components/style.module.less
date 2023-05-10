@@ -1,26 +1,19 @@
 .btnGroup {
-  height: 42px;
-  line-height: 42px;
-  overflow: hidden;
+  padding-top: 8px;
+  height: 38px;
   position: relative;
+  overflow: hidden;
   border-bottom: 1px solid #e1e2e6;
   margin-right: 16px;
+  display: flex;
   &.open {
     height: auto;
-  }
-  .btnArrow {
-    position: absolute;
-    right: 0;
-    top: 0px;
-    color: #606366;
-    font-size: 12px;
-    cursor: pointer;
   }
 }
 
 .textAreaWrap {
   margin: 0.2rem 0 0.2rem;
-  padding: 0px 0 10px 16px;
+  padding: 8px 0 10px 16px;
   width: 640px;
   height: auto;
   background: #fff;
@@ -47,11 +40,15 @@
   }
 
   .btnsWrap {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
     :global {
       .ant-btn {
         padding: 0;
         margin: 0;
         margin-right: 10px;
+        height: auto;
       }
     }
   }
@@ -73,5 +70,29 @@
 
   .errorText {
     color: #f25555;
+  }
+}
+
+.rightBtns {
+  display: flex;
+  flex: none;
+  width: auto;
+
+  .btnArrow {
+    color: #606366;
+    font-size: 12px;
+    cursor: pointer;
+    &:hover {
+      color: #1890ff;
+    }
+  }
+  .emojiBtn {
+    margin-right: 8px;
+    margin-top: -5px;
+    font-size: 18px;
+    cursor: pointer;
+    &:hover {
+      color: #1890ff;
+    }
   }
 }

@@ -321,7 +321,6 @@ const AddStationConfig: React.FC<RouteComponentProps> = ({ history }) => {
                             ({ getFieldValue }) => ({
                               validator (_, value) {
                                 const itemValue = getFieldValue('activityList')[index];
-                                console.log(itemValue);
                                 if (!value || +itemValue.status !== 3) {
                                   return Promise.resolve();
                                 }

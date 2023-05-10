@@ -87,8 +87,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
     setSelectRowKeys(copyKeys);
   };
 
-  const onContentChange = (value: string) => {
-    console.log(value);
+  const onContentChange = () => {
     setSelectRows([]);
     setSelectRowKeys([]);
     actionForm.setFieldsValue({ categoryId: undefined });
@@ -195,7 +194,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
           </Form.Item>
           <Form.Item label="动作类型" name={'contentType'} rules={[{ required: true }]}>
             <Radio.Group
-              onChange={(e) => onContentChange(e.target.value)}
+              onChange={() => onContentChange()}
               disabled={props.footer === null || values?.contentSource === 1}
             >
               <Radio value={11}>朋友圈Feed-文章</Radio>

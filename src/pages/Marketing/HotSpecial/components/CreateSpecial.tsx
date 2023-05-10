@@ -20,8 +20,6 @@ const CreateSpecial: React.FC<CreateSpecialProps> = ({ visible, onClose, value, 
   });
   useEffect(() => {
     if (visible && value) {
-      console.log(value);
-
       topForm.setFieldsValue({
         ...value
       });

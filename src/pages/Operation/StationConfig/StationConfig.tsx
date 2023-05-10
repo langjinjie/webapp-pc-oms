@@ -119,26 +119,6 @@ const StationConfig: React.FC<RouteComponentProps> = ({ history }) => {
     }
   ];
 
-  /* const onsubmit = (values: any) => {
-    console.log(values);
-    const { onlineTime } = values;
-    if (onlineTime && onlineTime.length > 1) {
-      console.log(onlineTime);
-      const param = {
-        startTime: onlineTime[0].startOf('day').valueOf(),
-        endTime: onlineTime[1].endOf('day').valueOf()
-      };
-      setQueryParam({ ...param });
-      getStationList({
-        pageNum: 1,
-        ...param
-      });
-    } else {
-      setQueryParam({});
-      getStationList({ pageNum: 1 });
-    }
-  }; */
-
   useEffect(() => {
     getStationList();
     setTitle('运营配置-小站配置');

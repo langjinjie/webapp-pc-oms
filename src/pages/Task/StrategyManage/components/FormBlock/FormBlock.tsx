@@ -116,7 +116,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
       res = await getNodeList({ pageNum: 1, pageSize: 20, ...params });
     } else {
       const date = formValues?.sceneList?.[index]?.date.format('MMDD');
-      console.log(date);
       res = await getDateNodeList({ type: 2, date, nodeDesc: params.nodeName });
     }
     if (res) {
@@ -216,16 +215,14 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   const addDateNode = async (index: number) => {
-    const res = await getDateNodeList({
+    await getDateNodeList({
       type: 1,
       date: formValues.sceneList?.[index].date.format('MMDD'),
       nodeDesc: nodeName
     });
-    console.log(res);
   };
 
   const wapCodeChange = (index: number, nodeIndex: number) => {
-    console.log(index, nodeIndex);
     const sceneList = blockForm.getFieldValue('sceneList');
     sceneList[index].nodeRuleList[nodeIndex].actionRule = [];
     blockForm.setFieldsValue({

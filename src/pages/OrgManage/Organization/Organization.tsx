@@ -270,7 +270,6 @@ const Organization: React.FC = () => {
    * 保存部门
    */
   const saveDepart = async (values: any) => {
-    console.log(values);
     const param: any = {
       ...values,
       parentId: isAddDepart ? currentNode.deptId : '',
@@ -690,7 +689,6 @@ const Organization: React.FC = () => {
           onClick={() => {
             if (currentNode.deptType === 0) {
               setTransferVisible(true);
-              console.log(currentNode);
             }
           }}
         >

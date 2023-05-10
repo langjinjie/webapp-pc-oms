@@ -5,7 +5,6 @@ const maymaps = {};
 mapjosn.forEach((item) => {
   maymaps[item.name] = item.cp;
 });
-console.log(maymaps);
 
 const data = JSON.stringify(mapjosn);
 fs.writeFileSync('./maps.json', data, 'utf-8', (err) => {

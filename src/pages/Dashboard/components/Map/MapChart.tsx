@@ -66,8 +66,6 @@ const NgMapChart: React.FC<NgBarChartProps> = ({ options, height, width }) => {
 
   useEffect(() => {
     if (options) {
-      console.log(options);
-
       initChart();
     }
   }, [options]);

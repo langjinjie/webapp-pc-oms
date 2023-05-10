@@ -269,7 +269,6 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
   };
 
   const wapCodeChange = (index: number, nodeIndex: number) => {
-    console.log(index, nodeIndex);
     const sceneList = blockForm.getFieldValue('sceneList');
     sceneList[index].nodeRuleList[nodeIndex].actionRule = [];
     blockForm.setFieldsValue({

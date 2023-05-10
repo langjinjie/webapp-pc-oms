@@ -35,7 +35,6 @@ export const AddStatisticsFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ 
     addForm
       .validateFields()
       .then((values) => {
-        console.log(values);
         const { userIds = [], freeType = [] } = values;
         onConfirm({
           staffIds: userIds.map((item: any) => item.value),

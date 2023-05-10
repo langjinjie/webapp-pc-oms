@@ -18,7 +18,6 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
     const { videoId } = urlSearchParams(location.search);
     if (videoId) {
       const res = await getVideoDetail({ videoId });
-      console.log(res, video);
       if (res) {
         setVideo(res);
         addForm.setFieldsValue(res);

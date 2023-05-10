@@ -77,9 +77,8 @@ const CustomerStatisticsFree: React.FC = () => {
     getList({ pageNum: 1, condition, staffName, addReason });
   };
 
-  const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: CustomerProps[]) => {
+  const onSelectChange = (selectedRowKeys: React.Key[]) => {
     setSelectRowKeys(selectedRowKeys);
-    console.log(selectedRows);
   };
   // 表格RowSelection配置项
   const rowSelection = {
@@ -132,7 +131,6 @@ const CustomerStatisticsFree: React.FC = () => {
 
   const batchAdd = async (file: any) => {
     setConfirmLoading(true);
-    console.log('批量新增');
     const formData = new FormData();
     formData.append('file', file);
     const res: BatchAddResultProps = await batchAddFreeCustomer(formData);

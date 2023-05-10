@@ -50,7 +50,6 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
       // 对表单数据进行拷贝，防止污染表单渲染
       const copyData = JSON.parse(JSON.stringify(values));
       const { contentSource } = copyData;
-      console.log(values);
       // 1. 判断来源
       // 公有库
       if (contentSource === 1) {
@@ -150,10 +149,6 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
     }
   }, [visible, value, props.visible]);
 
-  const contentSourceChange = (value: number) => {
-    console.log(value);
-  };
-
   const posterTypeChange = (values: any, selectedOptions: any) => {
     actionForm.setFieldsValue({
       category: selectedOptions ? selectedOptions.map((item: any) => item.name).join(';') : ''
@@ -212,12 +207,7 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({
       >
         <Form form={actionForm} onValuesChange={onValuesChange} labelCol={{ span: 3 }}>
           <Form.Item label="内容来源" name={'contentSource'} rules={[{ required: true }]}>
-            <Select
-              className="width320"
-              onChange={contentSourceChange}
-              placeholder="请选择"
-              disabled={props.footer === null}
-            >
+            <Select className="width320" placeholder="请选择" disabled={props.footer === null}>
               <Select.Option value={1}>公有库</Select.Option>
               <Select.Option value={2}>机构库</Select.Option>
             </Select>

@@ -65,9 +65,8 @@ const RuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, onCancel
             itemName: item.name || item.title || item.itemName
           }));
         }
-        // 私有库
-        console.log(copyData);
 
+        // 私有库
         onChange?.(copyData);
       }
       setVisible(false);

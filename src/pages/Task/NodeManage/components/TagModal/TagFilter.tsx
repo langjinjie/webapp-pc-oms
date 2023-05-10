@@ -41,7 +41,6 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, onChoose, currentTag, on
    */
   const getTagList = async () => {
     const res: any = await queryTagList();
-    console.log(res);
     if (res) {
       const { list } = res;
       list.forEach((item: any) => {
