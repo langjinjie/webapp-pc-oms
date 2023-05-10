@@ -84,7 +84,8 @@ const TodayMoment: React.FC = () => {
     if (row.state === 1) {
       Modal.confirm({
         title: '下架提示',
-        content: '是否确定下架该今日朋友圈',
+        // 在主机构下架都会影响分机构
+        content: isMainCorp ? '下架后会影响所有机构，确定要下架？' : '是否确定下架该今日朋友圈',
         centered: true,
         async onOk () {
           const res = await requestDownTodayMoment({ momentIds: [row.momentId] });

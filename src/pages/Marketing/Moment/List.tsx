@@ -95,7 +95,10 @@ const MomentList: React.FC<RouteComponentProps> = ({ history }) => {
     if (value.state === 1) {
       Modal.confirm({
         title: '下架提示',
-        content: '是否确定下架该朋友圈内容',
+        content:
+          isMainCorp && [1, 4, 5].includes(value.tplType)
+            ? '下架后会影响所有机构，确定要下架？'
+            : '是否确定下架该朋友圈内容？',
         centered: true,
         async onOk () {
           const res = await requestMarketMomentFeedDown({ feedids: [value.feedId] });
