@@ -359,7 +359,7 @@ const MarketIndex: React.FC = () => {
       recommendType: marketType
     });
     if (marketType === 0) {
-      const resList = [...formData.newsList?.filter((item: any) => item !== undefined), ...res];
+      const resList = [...formData.newsList?.filter((item: any) => item.marketId), ...res];
       const obj: any = {};
       const arr = resList.reduce((newArr: RecommendMarketProps[], next) => {
         if (obj[next.marketId || next.articleId]) {
