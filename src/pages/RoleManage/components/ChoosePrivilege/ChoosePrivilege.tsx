@@ -67,8 +67,8 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
           item.disabled = true;
         }
       });
-      return list;
     }
+    return list;
   }, [addMenu, list, value]);
   return (
     <div className={style.wrap}>
