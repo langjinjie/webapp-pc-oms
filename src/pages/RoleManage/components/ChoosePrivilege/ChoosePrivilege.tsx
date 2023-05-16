@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { Icon, NgModal } from 'src/components';
 import { PricilegeItem } from 'src/pages/RoleManage/components';
 import { queryCompanyFeature } from 'src/apis/company';
@@ -60,16 +60,16 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
   useEffect(() => {
     corpId && getAllMenuList();
   }, [corpId]);
-  useEffect(() => {
+  const resList = useMemo(() => {
     if (addMenu && list.length) {
       tree2Arry(list).forEach((item) => {
         if (value?.map((mapItem) => mapItem.menuId).includes(item.menuId)) {
           item.disabled = true;
         }
       });
-      setList((list: any) => [...list]);
+      return list;
     }
-  }, [addMenu, list]);
+  }, [addMenu, list, value]);
   return (
     <div className={style.wrap}>
       <div className={style.titleWrap}>
@@ -83,7 +83,7 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
       </div>
       <div className={style.privilege}>功能权限</div>
       <div className={style.menuList}>
-        {list.map((item: any) => (
+        {resList?.map((item: any) => (
           <PricilegeItem
             value={value}
             onChange={onChange}
@@ -112,4 +112,4 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
     </div>
   );
 };
-export default ChoosePrivilege;
+export default React.memo(ChoosePrivilege);

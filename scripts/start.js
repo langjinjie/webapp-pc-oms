@@ -22,7 +22,7 @@ const HOST = process.env.HOST || 'localhost';
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 
 const startConfig = {
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   target: 'web'
 };
 
