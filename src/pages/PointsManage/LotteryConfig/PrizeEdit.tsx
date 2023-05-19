@@ -56,7 +56,7 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
     }
   }, 500);
   const onGoodsTypeChange = async (value: number) => {
-    const currentDesc = exchangeDesc.filter((desc) => desc.goodsType === value)[0].exchangeDesc;
+    const currentDesc = exchangeDesc.filter((desc) => desc.goodsType === value)[0]?.exchangeDesc;
     editForm.setFieldsValue({
       exchangeDesc: currentDesc,
       winWeight: '',
