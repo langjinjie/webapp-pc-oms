@@ -84,3 +84,6 @@ export const queryCompanyFeature: HttpFunction = (param: Object) => {
 export const copyCompanyFeature: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/privilege/corp/menu/copy', param);
 };
+export const uploadCompanyMenu: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/privilege/role/menu/import', param);
+};

@@ -6,9 +6,16 @@
 import React, { useEffect, useState, Key } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { setTitle } from 'tenacity-tools';
-import { Table, TableColumnProps, Button, message, Popconfirm } from 'antd';
-import { Form, Icon, Modal, AuthBtn } from 'src/components';
-import { queryCompanyList, queryAuthUrl, queryAccountList, setAdminUser, copyCompanyFeature } from 'src/apis/company';
+import { Table, TableColumnProps, Button, message, Popconfirm, Modal as AntdModal } from 'antd';
+import { Form, Icon, Modal, AuthBtn, ExportModal } from 'src/components';
+import {
+  queryCompanyList,
+  queryAuthUrl,
+  queryAccountList,
+  setAdminUser,
+  copyCompanyFeature,
+  uploadCompanyMenu
+} from 'src/apis/company';
 import { ItemProps } from 'src/utils/interface';
 import style from './style.module.less';
 
@@ -32,6 +39,7 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   const [currentCorpId, setCurrentCorpId] = useState<string>('');
   const [accountList, setAccountList] = useState<AccountItem[]>([]);
   const [selectIds, setSelectIds] = useState<Key[]>([]);
+  const [visible, setVisible] = useState(false);
 
   const formData: ItemProps[] = [
     {
@@ -130,6 +138,17 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
               设置企业超级管理员
             </Button>
           </AuthBtn>
+          <AuthBtn path="/initMenu">
+            <Button
+              type="link"
+              onClick={() => {
+                setCurrentCorpId(record.corpId);
+                setVisible(true);
+              }}
+            >
+              菜单初始化
+            </Button>
+          </AuthBtn>
           <AuthBtn path="/copy">
             <Popconfirm title="确认要一键复制当前企业功能权限到此企业吗？" onConfirm={() => copyFeature(record.corpId)}>
               <Button type="link">一键复制功能权限</Button>
@@ -161,6 +180,24 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
     setTitle('企业管理');
   }, []);
 
+  const onUpload = async (file: File) => {
+    const fileData = new FormData();
+    fileData.append('file', file);
+    fileData.append('corpId', currentCorpId);
+    AntdModal.confirm({
+      content: '请确认该机构首次初始化菜单 ？',
+      cancelText: '否',
+      okText: '是',
+      onOk: async () => {
+        const res = await uploadCompanyMenu(fileData);
+        if (res) {
+          message.success('配置成功');
+          setVisible(false);
+        }
+      }
+    });
+  };
+
   return (
     <div className={style.wrap}>
       <AuthBtn path="/add">
@@ -189,6 +226,14 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
           scroll={{ y: 400 }}
         />
       </Modal>
+
+      <ExportModal
+        visible={visible}
+        title="菜单初始化"
+        onCancel={() => setVisible(false)}
+        onOK={onUpload}
+        isShowDownLoad={false}
+      />
     </div>
   );
 };
