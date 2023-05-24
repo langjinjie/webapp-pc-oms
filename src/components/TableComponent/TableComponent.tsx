@@ -61,7 +61,7 @@ const NewTableComponent = <T extends object>(props: TableComponentProps<T>): JSX
   });
 
   useMemo(() => {
-    const current = pagination?.pageNum || myPagination.current;
+    const current = pagination?.pageNum || pagination?.current || myPagination.current;
     if (pagination) {
       setPagination((myPagination) => ({ ...myPagination, ...pagination, current }));
     }
