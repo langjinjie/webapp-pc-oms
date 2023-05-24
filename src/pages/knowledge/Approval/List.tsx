@@ -32,12 +32,12 @@ const KnowledgeApprovalList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   const onSearch = (values: any) => {
-    setQueryParams({ values });
+    setQueryParams(values);
     getList({ ...values, pageNum: 1 });
   };
 
   const onValuesChange = (values: any) => {
-    setQueryParams({ values });
+    setQueryParams(values);
   };
 
   useEffect(() => {
