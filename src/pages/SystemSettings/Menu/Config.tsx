@@ -30,7 +30,7 @@ export const searchCols: SearchCol[] = [
 export const systemList = [
   {
     value: 1,
-    label: 'M端（年高后管端）'
+    label: 'M端（腾银后管端）'
   },
   {
     value: 2,

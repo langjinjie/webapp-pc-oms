@@ -86,7 +86,7 @@ const StepFour: React.FC<StepFourProps> = ({ nextStep, prevStep, corpId }) => {
   return (
     <Form form={form} {...formLayout} onFinish={(values: any) => onSave(values, true)}>
       <div className={style.desc}>·创建自建应用操作指引</div>
-      <div className={style.warn}>*请记录secret、Token和EncodingAESkey，保存至年高数据库，确保与企微后台信息一致</div>
+      <div className={style.warn}>*请记录secret、Token和EncodingAESkey，保存至腾银数据库，确保与企微后台信息一致</div>
       <div className={classNames(style.mainText, style.mb12)}>1.创建自建应用：</div>
       <div className={classNames(style.deputyText, style.mb30)}>应用管理-&gt; 自建-&gt; 创建自建应用</div>
       <div className={classNames(style.mainText, style.mb12)}>2.将Agentld、secret保存至后台</div>

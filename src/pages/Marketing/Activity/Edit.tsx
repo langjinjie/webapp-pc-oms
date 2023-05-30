@@ -242,7 +242,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
     setDisplayType(e.target.value);
   };
 
-  // 年高活动RadioOnChange
+  // 腾银活动RadioOnChange
   const activityTypeOnChange = (e: any) => {
     setActivityType(e.target.value);
   };
@@ -366,7 +366,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
             <SetUserRightFormItem form={form} readonly={isReadOnly} />
           </Form.Item>
           <Form.Item
-            label="年高活动"
+            label="腾银活动"
             initialValue={0}
             name="activityType"
             rules={[{ required: true, message: '请选择活动类型' }]}
@@ -380,7 +380,7 @@ const ActivityEdit: React.FC<ActivityPageProps> = ({ history, location }) => {
             </Radio.Group>
           </Form.Item>
           {activityType === 1 && (
-            <Form.Item name="corpActivityId" label="年高活动ID" rules={[{ required: true, message: '请输入活动ID' }]}>
+            <Form.Item name="corpActivityId" label="腾银活动ID" rules={[{ required: true, message: '请输入活动ID' }]}>
               <Input placeholder="请输入" className="width320" readOnly={isReadOnly} />
             </Form.Item>
           )}
