@@ -6,6 +6,8 @@ import { useHistory } from 'react-router-dom';
 import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 import style from './style.module.less';
 import { AuthBtn } from 'src/components';
+import { UNKNOWN } from 'src/utils/base';
+import classNames from 'classnames';
 
 export const takeoverTypeList: any[] = [
   { id: 1, name: '在职转接' },
@@ -119,8 +121,24 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
         );
       }
     },
-    { title: '所属客户经理', dataIndex: 'staffName' },
-    { title: '组织架构', dataIndex: 'deptName' },
+    {
+      title: '所属客户经理',
+      dataIndex: 'staffName',
+      render (staffName: string) {
+        return <>{staffName || UNKNOWN}</>;
+      }
+    },
+    {
+      title: '组织架构',
+      dataIndex: 'deptName',
+      render (deptName: string) {
+        return (
+          <span className={classNames(style.deptName, 'ellipsis')} title={deptName}>
+            {deptName || UNKNOWN}
+          </span>
+        );
+      }
+    },
     { title: '客户经理上级', dataIndex: 'leaderName' },
     { title: '删除时间', dataIndex: 'deleteTime' },
     { title: '添加时间', dataIndex: 'addTime' },
