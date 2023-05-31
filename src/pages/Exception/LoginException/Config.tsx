@@ -4,6 +4,9 @@ import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 import { AuthBtn } from 'src/components';
+import { UNKNOWN } from 'src/utils/base';
+import classNames from 'classnames';
+import style from './style.module.less';
 
 export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
   return [
@@ -64,7 +67,17 @@ export const tableColumnsFun = (isShow: boolean): ColumnsType<IUnLoginStaffList>
   return [
     { title: '客户经理', dataIndex: 'staffName' },
     { title: '所属团队长', dataIndex: 'leaderName' },
-    { title: '组织架构', dataIndex: 'deptName' },
+    {
+      title: '组织架构',
+      dataIndex: 'deptName',
+      render (deptName: string) {
+        return (
+          <span className={classNames(style.deptName, 'ellipsis')} title={deptName}>
+            {deptName || UNKNOWN}
+          </span>
+        );
+      }
+    },
     { title: '未登录日期', dataIndex: 'unloginDate' },
     { title: '上次登录时间', dataIndex: 'lastLoginTime' },
     { title: '本周内未登录天数', dataIndex: 'unloginCountWeek', align: 'center' },
