@@ -83,7 +83,7 @@ const StepSix: React.FC<StepSixProps> = ({ prevStep, corpId }) => {
       <Item name="licenseExpTime" rules={[{ required: true, message: '请选择' }]}>
         <DatePicker />
       </Item>
-      <div className={classNames(style.mainText, style.mb12)}>3.到期提醒接收人员（年高管理员）</div>
+      <div className={classNames(style.mainText, style.mb12)}>3.到期提醒接收人员（腾银管理员）</div>
       <Item
         name="notifyUser"
         rules={[

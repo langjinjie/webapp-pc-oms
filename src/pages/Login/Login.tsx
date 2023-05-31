@@ -84,9 +84,9 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
           </div>
           <footer className={style.footer}>
             <div className={style.copyright}>
-              本服务由年高提供。年高，面向金融领域提供产业应用方案。
+              本服务由腾银提供。腾银，面向金融领域提供产业应用方案。
               <br />
-              Copyright @ 2021 Niangao All Rights Reserved
+              Copyright @ 2021 Tencent-TengYin All Rights Reserved
             </div>
           </footer>
         </div>

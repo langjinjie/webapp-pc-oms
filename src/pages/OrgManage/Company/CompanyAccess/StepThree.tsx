@@ -62,7 +62,7 @@ const StepThree: React.FC<StepThreeProps> = ({ nextStep, prevStep, corpId }) => 
         <br />
         如果已经通过第三方应用同步通讯录，则需要先取消改同步方式，然后改成通过API接口进行同步
       </div>
-      <div className={style.warn}>*请记录secret、Token和EncodingAESkey，保存至年高数据库，确保与企微后台信息一致</div>
+      <div className={style.warn}>*请记录secret、Token和EncodingAESkey，保存至腾银数据库，确保与企微后台信息一致</div>
       <div className={classNames(style.mainText, style.mb12)}>1.将客户联系secret保存至后台</div>
       <Item name="secret" label="secret" rules={[{ required: true, message: '请输入' }]}>
         <Input placeholder="请输入" />

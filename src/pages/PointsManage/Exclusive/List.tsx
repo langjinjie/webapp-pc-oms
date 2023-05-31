@@ -18,7 +18,7 @@ const ExclusiveList: React.FC = () => {
   const [sendForm] = Form.useForm();
   const [formValues, setFormValues] = useState({
     pointsCount: null,
-    responseBy: '年高老师',
+    responseBy: '腾银老师',
     taskResponse: '真是非常棒的案例！希望再接再厉哦~',
     spconfName: ''
   });
