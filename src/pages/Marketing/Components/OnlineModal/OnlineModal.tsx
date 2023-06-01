@@ -17,7 +17,7 @@ interface OnlineModalProps {
   isCheckAll?: boolean;
 }
 
-export const OnlineModal: React.FC<OnlineModalProps> = ({ onOk, onCancel, visible, isCheckAll }) => {
+export const OnlineModal: React.FC<OnlineModalProps> = ({ onOk, onCancel, visible, isCheckAll = true }) => {
   const { instList: corpList, currentCorpId } = useContext(Context);
   const [corpIds, setCorpIds] = useState<CheckboxValueType[]>([]);
   const [indeterminate, setIndeterminate] = useState(false);
@@ -29,15 +29,15 @@ export const OnlineModal: React.FC<OnlineModalProps> = ({ onOk, onCancel, visibl
     setIndeterminate(!e.target.checked);
   };
 
+  const onOkHandle = () => {
+    onOk(corpIds);
+  };
+
   useEffect(() => {
-    if (visible && corpList) {
-      const corpIds = corpList.map((item: CorpProps) => item.corpId) || [];
-      setCorpIds(corpIds);
-      if (isCheckAll) {
-        setCheckAll(true);
-      }
+    if (visible) {
+      setCorpIds([currentCorpId]);
     }
-  }, [visible, corpList]);
+  }, [visible]);
 
   useEffect(() => {
     if (corpIds.length < corpList.length) {
@@ -57,7 +57,7 @@ export const OnlineModal: React.FC<OnlineModalProps> = ({ onOk, onCancel, visibl
       width={480}
       visible={visible}
       onCancel={onCancel}
-      onOk={() => onOk(corpIds)}
+      onOk={onOkHandle}
     >
       <div className="flex">
         {isCheckAll && (
