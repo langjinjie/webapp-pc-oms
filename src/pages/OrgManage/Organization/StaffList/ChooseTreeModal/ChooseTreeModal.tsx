@@ -410,7 +410,12 @@ const ChooseTreeModal: React.FC<IChooseTreeModalProps> = ({
                     })}
                     onClick={() => clickSearchList(item)}
                   >
-                    <div className={style.name}>{item.name}</div>
+                    <div
+                      className={classNames(style.name, 'ellipsis')}
+                      title={`${item.name}${item.staffId ? ' ' + item.staffId + ' ' + item.deptName : ''}`}
+                    >
+                      {`${item.name}${item.staffId ? ' ' + item.staffId + ' ' + item.deptName : ''}`}
+                    </div>
                   </div>
                     ))
                   )
