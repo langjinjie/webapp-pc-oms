@@ -80,11 +80,19 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
 
   const onSelectChange = (selectedRowKeys: React.Key[], selectedRows: any[]) => {
     // 单张海报能多选
-    if (+formValues.tplType === 4 && selectedRowKeys.length > 5) {
-      return message.warning('单张海报最多选择5张');
+    if (+formValues.tplType === 4) {
+      // 处理非本页选中的key的问题
+      const curListKeys = dataSource.map(({ feedId }) => feedId);
+      const noCurPageSelectKeys = selectRowKeys.filter((key) => !curListKeys.includes(key));
+      const noCurPageSelectRows = selectRows.filter(({ feedId }) => !curListKeys.includes(feedId));
+      const newSelectRowKeys = [...noCurPageSelectKeys, ...selectedRowKeys];
+      if (newSelectRowKeys.length > 5) return message.warning('单张海报最多选择5张');
+      setSelectRowKeys(newSelectRowKeys);
+      setSelectRows([...noCurPageSelectRows, ...selectedRows]);
+    } else {
+      setSelectRowKeys(selectedRowKeys);
+      setSelectRows(selectedRows);
     }
-    setSelectRowKeys(selectedRowKeys);
-    setSelectRows(selectedRows);
   };
 
   const paginationChange = (pageNum: number) => {
@@ -186,7 +194,7 @@ const MomentRuleActionSetModal: React.FC<RuleActionSetModalProps> = ({ value, on
               rowSelection={{
                 hideSelectAll: true,
                 type: +formValues.tplType === 4 ? 'checkbox' : 'radio',
-                preserveSelectedRowKeys: true, // 保留已选中的行的Key
+                // preserveSelectedRowKeys: true, // 保留已选中的行的Key
                 selectedRowKeys: selectRowKeys,
 
                 onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
