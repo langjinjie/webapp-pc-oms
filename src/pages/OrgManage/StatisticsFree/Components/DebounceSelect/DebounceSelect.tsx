@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Select, Spin } from 'antd';
+import React, { useMemo, useState } from 'react';
+import { Empty, Select, Spin } from 'antd';
 import { SelectProps } from 'antd/es/select';
 import { debounce } from 'src/utils/base';
 
@@ -15,11 +15,13 @@ const DebounceSelect = <ValueType extends { key?: string; label: React.ReactNode
 }: DebounceSelectProps): React.ReactElement => {
   const [fetching, setFetching] = React.useState(false);
   const [options, setOptions] = React.useState<ValueType[]>([]);
+  const [searchValue, setSearchValue] = useState('');
   const fetchRef = React.useRef(0);
 
   const debounceFetcher = useMemo(() => {
     const loadOptions = (value: string) => {
-      if (!value) return false;
+      setSearchValue(value);
+      if (!value) return setOptions([]);
       fetchRef.current += 1;
       const fetchId = fetchRef.current;
       setOptions([]);
@@ -42,11 +44,18 @@ const DebounceSelect = <ValueType extends { key?: string; label: React.ReactNode
   return (
     <Select<ValueType>
       labelInValue
+      value={searchValue}
       filterOption={false}
       onSearch={debounceFetcher}
-      notFoundContent={fetching ? <Spin size="small" /> : null}
+      notFoundContent={
+        fetching ? <Spin size="small" /> : searchValue ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} /> : null
+      }
       {...props}
       options={options}
+      onBlur={() => {
+        setSearchValue('');
+        setOptions([]);
+      }}
     />
   );
 };
