@@ -3,7 +3,7 @@
  * @author Lester
  * @date 2021-12-07 16:51
  */
-import React, { useEffect, useState } from 'react';
+import React, { Key, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Button as AntdBtn, Card, message, Modal, PaginationProps, Table, TableColumnType } from 'antd';
 import { setTitle } from 'tenacity-tools';
@@ -39,7 +39,7 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
     showTotal: (total: number) => `共 ${total} 条`
   });
   const [searchParam, setSearchParam] = useState<SearchParam>({});
-  const [noticeIds, setNoticeIds] = useState<string[]>([]);
+  const [noticeIds, setNoticeIds] = useState<Key[]>([]);
 
   const formItemData: SearchCol[] = [
     {
@@ -191,13 +191,6 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
     getNoticeList(params, true);
   };
 
-  const rowSelection = {
-    type: 'checkbox',
-    onChange: (selectedRowKeys: string[]) => {
-      setNoticeIds(selectedRowKeys);
-    }
-  };
-
   useEffect(() => {
     setTitle('公告配置');
     getNoticeList();
@@ -219,7 +212,12 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
         rowKey="noticeId"
         columns={columns}
         dataSource={noticeList}
-        rowSelection={rowSelection}
+        rowSelection={{
+          type: 'checkbox',
+          onChange: (selectedRowKeys: Key[]) => {
+            setNoticeIds(selectedRowKeys);
+          }
+        }}
         pagination={{
           ...pagination,
           showQuickJumper: true,

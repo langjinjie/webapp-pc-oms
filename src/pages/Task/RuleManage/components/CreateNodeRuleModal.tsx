@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { createNodeRule, getNodeList, searchTagList } from 'src/apis/task';
 import { NgModal } from 'src/components';
-import { debounce } from 'src/utils/base';
+import { debounce, throttle } from 'src/utils/base';
 import { NodeCodeType, NodeType, TagInterface } from 'src/utils/interface';
 import { useResetFormOnCloseModal } from 'src/utils/use-ResetFormOnCloseModal';
 import styles from './style.module.less';
@@ -150,8 +150,11 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
   const debounceFetchNodeOptions = debounce<{ value: string }>(({ value }: { value: string }) => {
     getNodeOptions({ nodeTypeCode: currentNodeType, nodeName: value });
   }, 300);
+
+  // 对点击时间进行节流
+  const throttleOnConfirm = throttle(onConfirm, 1000);
   return (
-    <NgModal {...props} width={780} title="新建节点规则" onOk={onConfirm}>
+    <NgModal {...props} width={780} title="新建节点规则" onOk={() => throttleOnConfirm()}>
       <Form
         form={ruleForm}
         initialValues={defaultFormValues}

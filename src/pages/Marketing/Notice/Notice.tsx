@@ -69,16 +69,12 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
   const getNoticeData = async () => {
     const res: any = await queryNotice({ noticeId });
     if (res) {
-      const { title, content, imageUrl, pushStatus, newNotice, startTime, jumpType, jumpFuncId } = res;
+      const { startTime, pushStatus, jumpType, ...others } = res;
       form.setFieldsValue({
-        title,
-        content,
-        imageUrl,
         pushStatus,
-        newNotice,
         time: startTime ? moment(startTime) : undefined,
         jumpType,
-        jumpFuncId
+        ...others
       });
       setIsPush(pushStatus);
       setJumpType(jumpType);
@@ -105,15 +101,37 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
     setTitle(`${typeName()}公告`);
   }, []);
 
+  const onJumpTypeChange = (val: number) => {
+    setJumpType(val);
+    if (jumpType === 3) {
+      setIsPush(1);
+      form.setFieldsValue({ pushStatus: 1 });
+    }
+  };
   return (
     <Card title={`${typeName()}公告`}>
       <Form className={style.formWrap} form={form} onFinish={onSubmit} {...formLayout}>
         <Item name="jumpType" label="跳转方式" initialValue={0} rules={[{ required: true, message: '请选择跳转方式' }]}>
-          <Group disabled={type === 1} onChange={(e) => setJumpType(e.target.value)}>
+          <Group disabled={type === 1} onChange={(e) => onJumpTypeChange(e.target.value)}>
             <Radio value={0}>无需跳转到功能模块</Radio>
             <Radio value={1}>需跳转到功能模块</Radio>
+            <Radio value={3}>外部链接</Radio>
           </Group>
         </Item>
+        {/* 跳转链接为外部链接时才显示 */}
+        {jumpType === 3 && (
+          <Item
+            label="URL"
+            name="linkUrl"
+            rules={[
+              { required: true, message: '请输入URL' },
+              { type: 'url', message: '请输入正确的外部链接' }
+            ]}
+          >
+            <Input disabled={type === 1} placeholder="请输入" maxLength={250} />
+          </Item>
+        )}
+
         <Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}>
           <Input disabled={type === 1} placeholder="请输入" maxLength={60} />
         </Item>
@@ -156,14 +174,14 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
           />
         </Item>
         <Item name="pushStatus" label="消息推送" initialValue={1}>
-          <Group disabled={type === 1} onChange={(e) => setIsPush(e.target.value)}>
+          <Group disabled={type === 1 || jumpType === 3} onChange={(e) => setIsPush(e.target.value)}>
             <Radio value={1}>是</Radio>
             <Radio value={0}>否</Radio>
           </Group>
         </Item>
         {isPush === 1 && (
-          <Item name="newNotice" label="消息类型" rules={[{ required: true, message: '请选择消息类型' }]}>
-            <MessageType disabled={type === 1} />
+          <Item name="newNotice" label="消息图片" rules={[{ required: true, message: '请选择消息图片' }]}>
+            <MessageType form={form} disabled={type === 1} />
           </Item>
         )}
         {type === 0 && (

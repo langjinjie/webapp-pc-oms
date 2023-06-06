@@ -54,34 +54,27 @@
   display: flex;
 
   .msgTypeItem {
+    padding: 0 20px 16px;
     position: relative;
     cursor: pointer;
+    box-shadow: 2px 0px 16px 0px rgba(129, 141, 168, 0.2);
+    border-radius: 8px;
+    box-sizing: border-box;
+    border: 2px solid transparent;
+
+    &.active {
+      border: 2px solid #318cf5;
+    }
 
     .msgImg {
-      width: 280px;
+      width: 270px;
     }
 
     .msgDesc {
-      margin-top: 8px;
-      text-align: center;
+      line-height: 32px;
+      font-size: 16px;
+      margin: 10px 0;
       font-weight: 500;
-    }
-
-    .checkMask {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      height: 118px;
-      background-color: rgba(0, 0, 0, 0.5);
-
-      .checkIcon {
-        color: white;
-        font-size: 30px;
-      }
     }
   }
 
@@ -100,5 +93,13 @@
 
   &.active {
     background-color: #52c41a;
+  }
+}
+
+.upload {
+  :global {
+    .ant-upload.ant-upload-select-picture-card {
+      width: 270px;
+    }
   }
 }
