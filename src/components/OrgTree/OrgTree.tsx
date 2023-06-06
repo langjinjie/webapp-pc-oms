@@ -401,9 +401,9 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
                   >
                     <div
                       className={classNames(style.name, 'ellipsis')}
-                      title={`${item.name}${item.staffId ? ' ' + item.staffId + ' ' + item.deptName : ''}`}
+                      title={`${item.name}${item.userId ? ' ' + item.userId + ' ' + item.deptName : ''}`}
                     >
-                      {`${item.name}${item.staffId ? ' ' + item.staffId + ' ' + item.deptName : ''}`}
+                      {`${item.name}${item.userId ? ' ' + item.userId + ' ' + item.deptName : ''}`}
                     </div>
                   </div>
                 ))}
