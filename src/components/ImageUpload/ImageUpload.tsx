@@ -17,9 +17,18 @@ interface ImageUploadProps {
   onChange?: (val: string) => void;
   disabled?: boolean;
   beforeUpload?: (file: any) => void;
+  className?: string;
+  uploadBtnStyle?: any;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, beforeUpload }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({
+  value,
+  onChange,
+  disabled,
+  beforeUpload,
+  className,
+  uploadBtnStyle
+}) => {
   const [loading, setLoading] = useState(false);
 
   const beforeUploadHandle = (file: any) => {
@@ -56,7 +65,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, be
   };
 
   const uploadButton = (
-    <div className={style.uploadBtn}>
+    <div className={style.uploadBtn} style={uploadBtnStyle}>
       {loading
         ? (
         <LoadingOutlined />
@@ -79,7 +88,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, be
     onChange?.('');
   };
   const uploadImg = (
-    <div className={style.imgWrap}>
+    <div className={style.imgWrap} style={uploadBtnStyle}>
       {loading
         ? (
         <LoadingOutlined />
@@ -87,7 +96,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, be
         : (
         <>
           <div className={classNames(style.iconWrap, { [style.disabled]: disabled })}>
-            <Icon className={style.delIcon} name="shanchu" onClick={onRemoveHandle} />
+            <span className={style.delIcon}>
+              <Icon name="shanchu" onClick={onRemoveHandle} />
+              <span>删除</span>
+            </span>
           </div>
           <img className={style.img} src={value} alt="缩略图" />
         </>
@@ -121,7 +133,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onChange, disabled, be
       data={{ bizKey: 'news' }}
       beforeUpload={beforeUploadHandle}
       onChange={fileChange}
-      className={style.imageUpload}
+      className={classNames(style.imageUpload, className)}
     >
       {value ? uploadImg : uploadButton}
     </Upload>
