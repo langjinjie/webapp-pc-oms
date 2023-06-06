@@ -2,6 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
+import { statisticsFreeList } from './Components/ExportStaff/AddStatisticsFreeModal';
 
 export const searchCols: SearchCol[] = [
   {
@@ -18,7 +19,7 @@ export interface StaffProps {
   seatsId: string; // 工号
   staffId: string;
   position: string; // 岗位名称
-  freeType: string; // 免统计模块 1、排行榜，2、战报 多个用,分开
+  freeType: string; // 免统计模块 1、排行榜，2、战报，3、积分黑名单，4、消息黑名单 多个用,分开
 }
 
 export const tableColumns = (): ColumnsType<StaffProps> => [
@@ -55,18 +56,14 @@ export const tableColumns = (): ColumnsType<StaffProps> => [
     dataIndex: 'freeType',
     width: 200,
     render: (value: string) => {
-      const freeType2Name = ['排行榜', '战报', '抽奖黑名单'];
       return value
         .split(',')
         .map((item) => {
-          return freeType2Name[Number(item) - 1];
+          return statisticsFreeList.find(({ value }) => value === +item)?.label;
         })
         .toString()
         .replace(/,/g, '、');
     }
-    // <span>
-    //   {value.indexOf('1') > -1 ? '排行榜 ' : null} {value.indexOf('2') > -1 ? ' 战报' : null}
-    // </span>
   },
   {
     title: '部门',

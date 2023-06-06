@@ -15,10 +15,17 @@ interface UserValue {
   value: string;
 }
 
+export const statisticsFreeList = [
+  { value: 1, label: '排行榜' },
+  { value: 2, label: '战报' },
+  { value: 3, label: '抽奖黑名单' },
+  { value: 4, label: '消息黑名单' }
+];
+
 export const AddStatisticsFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ visible, onConfirm, onCancel }) => {
   const [addForm] = Form.useForm();
   async function fetchUserList (username: string): Promise<UserValue[]> {
-    const res = await searchStaffList({ keyWords: username, searchType: 2, isDeleted: false });
+    const res = await searchStaffList({ keyWords: username, searchType: 2, isDeleted: 0 });
     if (res) {
       const { staffList } = res;
       return staffList.map((staff: { staffName: string; staffId: string; userId: string }) => ({
@@ -71,9 +78,11 @@ export const AddStatisticsFreeModal: React.FC<AddStatisticsFreeModalProps> = ({ 
           extra={'如当前员工已存在免统计模块，更新后会覆盖原有免统计模块'}
         >
           <Select mode="multiple" placeholder="请选择免统计模块">
-            <Select.Option value={1}>排行榜</Select.Option>
-            <Select.Option value={2}>战报</Select.Option>
-            <Select.Option value={3}>抽奖黑名单</Select.Option>
+            {statisticsFreeList.map(({ value, label }) => (
+              <Select.Option key={value} value={value}>
+                {label}
+              </Select.Option>
+            ))}
           </Select>
         </Form.Item>
       </Form>

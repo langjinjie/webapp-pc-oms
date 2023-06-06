@@ -292,7 +292,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
           singleChoice ? [item.id.toString()] : [...(keys as React.Key[]), item.id.toString()]
         );
       }
-      // onChange?.([...selectedList, item]);
     } else {
       selected = selectedList.filter((filterItem) => filterItem.id !== item.id.toString());
       setCheckedKeys((keys) => [...(keys as React.Key[]).filter((keysItem) => keysItem !== item.id.toString())]);
@@ -415,7 +414,12 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
                       clickSearchList(item, !selectedList.some((selectItem) => item.id.toString() === selectItem.id))
                     }
                   >
-                    <div className={style.name}>{item.name}</div>
+                    <div
+                      className={classNames(style.name, 'ellipsis')}
+                      title={`${item.name}${item.staffId ? ' ' + item.staffId + ' ' + item.deptName : ''}`}
+                    >
+                      {`${item.name}${item.staffId ? ' ' + item.staffId + ' ' + item.deptName : ''}`}
+                    </div>
                   </div>
                     ))
                   )
