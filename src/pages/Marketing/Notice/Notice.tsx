@@ -103,9 +103,10 @@ const Notice: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   const onJumpTypeChange = (val: number) => {
     setJumpType(val);
-    if (jumpType === 3) {
-      setIsPush(1);
+
+    if (val === 3) {
       form.setFieldsValue({ pushStatus: 1 });
+      setIsPush(1);
     }
   };
   return (
