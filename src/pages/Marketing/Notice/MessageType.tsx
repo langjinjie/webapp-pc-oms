@@ -50,7 +50,7 @@ const MessageType: React.FC<MessageTypeProps> = ({ value, onChange, disabled, fo
         <div className={style.msgDesc}>其他</div>
         <Form.Item name={'coverImg'} rules={[{ required: value === 3, message: '消息图片为其他类型时需要上传图片' }]}>
           <ImageUpload
-            disabled={value !== 3}
+            disabled={value !== 3 || disabled}
             className={style.upload}
             uploadBtnStyle={{ width: '270px', height: '115px' }}
           ></ImageUpload>
