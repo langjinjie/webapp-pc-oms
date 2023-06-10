@@ -55,6 +55,10 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/marketingMoment/edit',
     component: lazy(() => import('src/pages/Marketing/Moment/Edit'))
+  },
+  {
+    path: '/tagParsing',
+    component: lazy(() => import('src/pages/SystemSettings/TagParsing/TagParsing'))
   }
 ];
 
