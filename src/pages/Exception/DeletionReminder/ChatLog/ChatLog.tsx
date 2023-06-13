@@ -1007,14 +1007,7 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
   return (
     <div className={style.chatLog}>
       <div className={style.breadCrumbs}>
-        {!value && (
-          <BreadCrumbs
-            navList={[
-              { name: '删人提醒', path: '/deletionReminder' },
-              { name: (clientInfo?.clientName ? clientInfo?.clientName + '的' : '') + '聊天记录' }
-            ]}
-          />
-        )}
+        {!value && <BreadCrumbs navList={(location.state as any)?.navList || []} />}
       </div>
       <div className={style.header}>
         <span className={style.left}>

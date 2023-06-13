@@ -5,5 +5,13 @@ export const operationRoutes: RouteProps[] = [
   {
     path: '/tagParsing',
     component: lazy(() => import('src/pages/SystemSettings/TagParsing/TagParsing'))
+  },
+  {
+    path: '/tagParsing/clientDetail',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/ClientDetail/ClientDetail'))
+  },
+  {
+    path: '/tagParsing/chatLog',
+    component: lazy(() => import('src/pages/Exception/DeletionReminder/ChatLog/ChatLog'))
   }
 ];

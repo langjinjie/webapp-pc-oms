@@ -33,9 +33,11 @@ export const searchCols: SearchCol[] = [
 type TTableColumns = (param: {
   updateAllTag: () => void;
   selectivelyUpdate: (rowItem: IChatTagItem) => void;
+  viewClientDetail: (rowItem: IChatTagItem) => void;
+  viewChatList: (rowItem: IChatTagItem) => void;
 }) => ColumnsType<IChatTagItem>;
 
-export const tableColumns: TTableColumns = ({ updateAllTag, selectivelyUpdate }) => {
+export const tableColumns: TTableColumns = ({ updateAllTag, selectivelyUpdate, viewClientDetail, viewChatList }) => {
   return [
     { title: '客户昵称', dataIndex: 'clientName' },
     { title: '外部联系人id', dataIndex: 'externalUserid' },
@@ -62,8 +64,12 @@ export const tableColumns: TTableColumns = ({ updateAllTag, selectivelyUpdate })
             <Button type="link" onClick={() => selectivelyUpdate(value)}>
               选择标签更新
             </Button>
-            <Button type="link">查看客户详情</Button>
-            <Button type="link">查看聊天记录</Button>
+            <Button type="link" onClick={() => viewClientDetail(value)}>
+              查看客户详情
+            </Button>
+            <Button type="link" onClick={() => viewChatList(value)}>
+              查看聊天记录
+            </Button>
           </>
         );
       }
