@@ -28,7 +28,7 @@ export const contentSourceList = [
   { id: 2, name: '私有库' }
 ];
 
-export const searchCols: (reasonCodeList: any[], distributeLisType: 1 | 2) => SearchCol[] = (
+export const searchCols: (reasonCodeList: any[], distributeLisType: '1' | '2') => SearchCol[] = (
   reasonCodeList,
   distributeLisType
 ) => {
@@ -47,7 +47,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 1 | 2) => Se
       placeholder: '请输入',
       customNode: (
         <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-          <SelectStaff key={1} isDeleted={distributeLisType === 1 ? 0 : 1} />
+          <SelectStaff key={1} isDeleted={distributeLisType === '1' ? 0 : 1} />
         </Form.Item>
       )
     },
@@ -85,7 +85,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 1 | 2) => Se
       type: 'select',
       width: '140px',
       label: '转接状态',
-      options: distributeLisType === 1 ? onJobTransferStatusList : resignTransferStatusList
+      options: distributeLisType === '1' ? onJobTransferStatusList : resignTransferStatusList
     },
     {
       name: 'takeoverBeginTime-takeoverEndTime',
@@ -101,7 +101,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: 1 | 2) => Se
       options: reasonCodeList
     }
   ];
-  if (distributeLisType === 2) {
+  if (distributeLisType === '2') {
     searchColsList.pop();
   }
   return searchColsList;
@@ -144,7 +144,7 @@ export interface IClientColumns {
 }
 
 interface OperateProps {
-  distributeLisType: 1 | 2;
+  distributeLisType: '1' | '2';
 }
 
 const assginStaffStatus = {
@@ -237,7 +237,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns>
       }
     }
   ];
-  if (args.distributeLisType === 2) {
+  if (args.distributeLisType === '2') {
     columnList = columnList.filter((filterItem) => filterItem.title !== '转接原因');
   }
   return columnList;
