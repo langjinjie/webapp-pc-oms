@@ -406,6 +406,10 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Exception/LoginException/List'))
   },
   {
+    path: '/chatNR/detail',
+    component: lazy(() => import('src/pages/Exception/ChatNoResponse/ChatNoResponseDetail'))
+  },
+  {
     path: '/taskRule',
     component: lazy(() => import('src/pages/Task/RuleManage/List/List'))
   },
@@ -588,6 +592,11 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/deletionReminder',
     component: lazy(() => import('src/pages/Exception/DeletionReminder/List'))
+  },
+  // 超时未回复提示配置
+  {
+    path: '/chatNR',
+    component: lazy(() => import('src/pages/Exception/ChatNoResponse/ChatNoResponse'))
   },
   {
     path: '/staffCode/addCode',
