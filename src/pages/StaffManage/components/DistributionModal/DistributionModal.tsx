@@ -20,7 +20,7 @@ interface IDistributionClientProos {
   onClose?: (value?: any) => void;
   onOk?: (value?: IdistributionParam) => any;
   reasonNameList?: { id: string; name: string }[];
-  distributeLisType: 1 | 2;
+  distributeLisType: '1' | '2';
 }
 
 const titleNameList = ['客户分配原因', '分配客户', '转接提示'];
@@ -39,13 +39,14 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
   reasonNameList,
   distributeLisType
 }) => {
-  const [stepIndex, setStepIndex] = useState(distributeLisType === 2 ? 1 : 0);
+  const [stepIndex, setStepIndex] = useState(distributeLisType === '2' ? 1 : 0);
   const [distributionParam, setDistributionParam] = useState<IdistributionParam>({});
   const [treeData, setTreeData] = useState<any[]>([]);
   const [treeSearchList, setTreeSearchList] = useState<any[]>();
   const [selectedList, setSelectedList] = useState<any[]>([]);
   const [textAreaReadOnly, setTextReadOnly] = useState(true);
   const textAreaRef: MutableRefObject<any> = useRef(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const { TextArea } = Input;
 
@@ -53,13 +54,8 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
   const onResetHandle = () => {
     setDistributionParam({});
     setSelectedList([]);
-    setStepIndex(distributeLisType === 2 ? 1 : 0);
+    setStepIndex(distributeLisType === '2' ? 1 : 0);
     setTreeSearchList(undefined);
-  };
-
-  // 取消
-  const onCancelHandle = () => {
-    onClose?.();
   };
 
   // 下一步/确认
@@ -68,9 +64,10 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
     if (stepIndex < titleNameList.length - 1) {
       setStepIndex((stepIndex) => stepIndex + 1);
     } else {
+      setSubmitLoading(true);
       // 提交
       await onOk?.(distributionParam);
-      onCancelHandle();
+      setSubmitLoading(false);
     }
   };
 
@@ -229,10 +226,11 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
       okText={stepIndex < titleNameList.length - 1 ? '下一步' : '确认转接'}
       visible={visible}
       maskClosable={false}
-      onCancel={onCancelHandle}
+      onCancel={onClose}
       onOk={onOkHandle}
       okButtonProps={{
-        disabled: onOkBtnDisabled
+        disabled: onOkBtnDisabled,
+        loading: submitLoading
       }}
     >
       {stepIndex === 0 && (
@@ -262,7 +260,7 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
         <>
           <div className={style.chooseStaffTips}>
             温馨提醒：
-            {distributeLisType === 1
+            {distributeLisType === '1'
               ? (
               <>
                 <br />
