@@ -14,7 +14,6 @@ interface IAddLotteryListProps extends ModalProps {
   selectedDept?: boolean;
   title?: string;
   params: any;
-  setParams?: any;
   onCancel?: () => void;
   onOk?: (value: any) => void;
   isDeleted?: 0 | 1; // 0：在职 1：离职
@@ -39,7 +38,6 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
   showStaff,
   selectedDept = true,
   params,
-  setParams,
   onOk,
   onCancel: onClose,
   isDeleted,
@@ -129,14 +127,9 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
     return [...res2, ...res1];
   };
   const onOkHandle = async () => {
-    setParams?.({ visible: false, added: true, roleId: '' });
     onChange?.(filterChildren(selectedList));
     onOk?.(filterChildren(selectedList));
     onClose?.();
-  };
-  const onCancel = () => {
-    onClose?.();
-    setParams?.({ visible: false, added: false, roleId: '' });
   };
 
   // 异步获取组织架构及当前目录下的员工
@@ -386,7 +379,7 @@ const OrganizationalTree: React.FC<IAddLotteryListProps> = ({
       title={(params.added ? '添加' : '编辑') + '成员'}
       okText={'确认添加'}
       onOk={onOkHandle}
-      onCancel={onCancel}
+      onCancel={onClose}
       destroyOnClose
       {...props}
     >

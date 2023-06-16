@@ -138,8 +138,8 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
   };
 
   const onOkHandle = async () => {
-    onChange?.(selectedList);
-    onOk?.(selectedList);
+    onChange?.(filterChildren(selectedList));
+    onOk?.(filterChildren(selectedList));
     onClose?.();
   };
 

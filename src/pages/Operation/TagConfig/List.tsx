@@ -254,7 +254,7 @@ const TagConfig: React.FC<RouteComponentProps> = ({ history }) => {
           }}
           dataSource={dataSource}
           columns={columns({ onConfirm, onChange, tableCols, dataSource, tableType: 1, saveBuffer })}
-        ></NgTable>
+        />
       </div>
     </div>
   );

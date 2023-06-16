@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Key } from 'react';
 import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
@@ -23,15 +23,15 @@ export interface IChatTagItem {
 }
 
 export const searchCols: SearchCol[] = [
-  { name: 'clientName', label: '客户昵称', type: 'input' },
-  { name: 'externalUserid', label: '外部联系人id', type: 'input' },
-  { name: 'tagGroupName', label: '标签名称', type: 'input' },
-  { name: 'staffName', label: '客户经理姓名', type: 'input' },
+  { name: 'clientName', label: '客户昵称', type: 'input', placeholder: '请输入' },
+  { name: 'externalUserid', label: '外部联系人id', type: 'input', placeholder: '请输入' },
+  { name: 'tagGroupName', label: '标签名称', type: 'input', placeholder: '请输入' },
+  { name: 'staffName', label: '客户经理姓名', type: 'input', placeholder: '请输入' },
   { name: 'createTimeBegin-createTimeEnd', label: '标签生成时间', type: 'rangePicker' }
 ];
 
 type TTableColumns = (param: {
-  updateAllTag: () => void;
+  updateAllTag: (analyseId: Key[]) => void;
   selectivelyUpdate: (rowItem: IChatTagItem) => void;
   viewClientDetail: (rowItem: IChatTagItem) => void;
   viewChatList: (rowItem: IChatTagItem) => void;
@@ -39,31 +39,36 @@ type TTableColumns = (param: {
 
 export const tableColumns: TTableColumns = ({ updateAllTag, selectivelyUpdate, viewClientDetail, viewChatList }) => {
   return [
-    { title: '客户昵称', dataIndex: 'clientName' },
-    { title: '外部联系人id', dataIndex: 'externalUserid' },
-    { title: '客户经理姓名', dataIndex: 'staffName' },
-    { title: '客户经理企业微信账号', dataIndex: 'userid' },
-    { title: '聊天内容', dataIndex: 'msgContent' },
-    { title: '关键词', dataIndex: 'hitKeywords' },
-    { title: '生成标签', dataIndex: 'tagGroupNames' },
-    { title: '生成标签值', dataIndex: 'tagNames' },
-    { title: '标签生成时间', dataIndex: 'createTime' },
-    { title: '更新标签', dataIndex: 'updateTagGroupNames' },
-    { title: '更新标签值', dataIndex: 'updateTagNames' },
-    { title: '更新时间', dataIndex: 'updateTime' },
-    { title: '更新人', dataIndex: 'updateBy' },
+    { title: '客户昵称', dataIndex: 'clientName', width: 100 },
+    { title: '外部联系人id', dataIndex: 'externalUserid', width: 310 },
+    { title: '客户经理姓名', dataIndex: 'staffName', width: 150 },
+    { title: '客户经理企业微信账号', dataIndex: 'userId', width: 180 },
+    { title: '聊天内容', dataIndex: 'msgContent', ellipsis: true, width: 200 },
+    { title: '关键词', dataIndex: 'hitKeywords', width: 200 },
+    { title: '生成标签', dataIndex: 'tagGroupNames', ellipsis: true, width: 200 },
+    { title: '生成标签值', dataIndex: 'tagNames', ellipsis: true, width: 200 },
+    { title: '标签生成时间', dataIndex: 'dateCreated', width: 180 },
+    { title: '更新标签', dataIndex: 'updateTagGroupNames', ellipsis: true, width: 200 },
+    { title: '更新标签值', dataIndex: 'updateTagNames', ellipsis: true, width: 200 },
+    { title: '更新时间', dataIndex: 'lastUpdated', width: 180 },
+    { title: '更新人', dataIndex: 'updateBy', width: 200 },
     {
       title: '操作',
-      width: 400,
+      // width: 400,
+      fixed: 'right',
       render (value: IChatTagItem) {
         return (
           <>
-            <Button type="link" onClick={updateAllTag}>
-              全部更新
-            </Button>
-            <Button type="link" onClick={() => selectivelyUpdate(value)}>
-              选择标签更新
-            </Button>
+            {value.updateAllTag === 1 || (
+              <>
+                <Button type="link" onClick={() => updateAllTag([value.analyseId])}>
+                  全部更新
+                </Button>
+                <Button type="link" onClick={() => selectivelyUpdate(value)}>
+                  选择标签更新
+                </Button>
+              </>
+            )}
             <Button type="link" onClick={() => viewClientDetail(value)}>
               查看客户详情
             </Button>

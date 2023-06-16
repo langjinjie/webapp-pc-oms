@@ -1,39 +1,96 @@
 import React, { Key, useEffect, useState } from 'react';
 import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, tableColumns, IChatTagItem } from './Config';
-import { Button } from 'antd';
+import { Button, Modal, PaginationProps, message } from 'antd';
+import { useHistory } from 'react-router-dom';
+import { requestGetTagChatAnalyseList, requestUpdateBatchChatTag, requestUpdateChatTag } from 'src/apis/tagConfig';
 import UpdateTagModal from './UpdateTagModal/UpdateTagModal';
 import style from './style.module.less';
-import { useHistory } from 'react-router-dom';
 
 const TagParsing: React.FC = () => {
   const [list, setList] = useState<IChatTagItem[]>([]);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const [rowItem, setRowItem] = useState<IChatTagItem>();
+  const [pagination, setPagination] = useState<PaginationProps>({ current: 1, pageSize: 10, total: 0 });
+  const [searchValue, setSearchValue] = useState<{ [key: string]: string }>({});
+  const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const history = useHistory();
 
-  const onSearch = (values?: any) => {
-    console.log('values', values);
+  // 获取列表
+  const getList = async (values?: any) => {
+    setLoading(true);
+    const res = await requestGetTagChatAnalyseList(values).finally(() => setLoading(false));
+    if (res) {
+      const { list, total } = res;
+      setList(list || []);
+      setPagination((pagination) => ({
+        ...pagination,
+        total,
+        current: values?.pageNum || 1,
+        pageSize: values?.pageSize || 10
+      }));
+      setSelectedRowKeys([]);
+    }
   };
 
-  // 获取列表
-  const getList = () => {
-    setList([]);
+  const onSearch = (values?: any) => {
+    getList({ ...values, pageSize: pagination.pageSize }).then(() => setSearchValue(values));
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange (selectedRowKeys: Key[]) {
+      setSelectedRowKeys(selectedRowKeys);
+    },
+    getCheckboxProps: (record: IChatTagItem) => {
+      return {
+        disabled: record.updateAllTag === 1,
+        name: ''
+      };
+    }
+  };
+
+  // 切换分页
+  const paginationChange = (current: number, pageSize?: number) => {
+    // 判断是否切换pageSize，如果是切换pageSize则从第一页开始请求
+    const pageNum = pageSize === pagination.pageSize ? current : 1;
+    getList({ ...searchValue, pageNum, pageSize });
   };
 
   // 提交更新标签
-  const modalOnOk = (list: Key[]) => {
-    console.log('list', list);
+  const modalOnOk = async (param: any) => {
+    const res = await requestUpdateChatTag(param);
+    if (res) {
+      getList({ ...searchValue, pageNum: pagination.current, pageSize: pagination.pageSize });
+      setModalVisible(false);
+      message.success('标签已更新');
+    }
   };
 
   // 更新全部标签
-  const updateAllTag = () => {
-    console.log('更新全部标签');
+  const updateAllTag = (analyseIds: Key[]) => {
+    Modal.confirm({
+      title: '温馨提示',
+      content: '确定是否将标签全部更新',
+      async onOk () {
+        const res = await requestUpdateBatchChatTag({ analyseIds });
+        if (res) {
+          getList({ ...searchValue, pageNum: pagination.current, pageSize: pagination.pageSize });
+          message.success('标签已更新');
+        }
+      }
+    });
+  };
+
+  // 批量更新标签
+  const batchUpdateTag = () => {
+    updateAllTag(selectedRowKeys);
   };
 
   // 选择标签更新
   const selectivelyUpdate = (rowItem: IChatTagItem) => {
-    console.log('选择性更新标签');
     setRowItem(rowItem);
     setModalVisible(true);
   };
@@ -80,12 +137,21 @@ const TagParsing: React.FC = () => {
     <div className="container">
       <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
       <NgTable
+        rowKey="analyseId"
+        loading={loading}
         columns={tableColumns({ updateAllTag, selectivelyUpdate, viewClientDetail, viewChatList })}
-        id="analyseId"
         dataSource={list}
+        rowSelection={rowSelection}
+        pagination={pagination}
+        paginationChange={paginationChange}
       />
       {list.length === 0 || (
-        <Button className={style.batchBtn} shape="round">
+        <Button
+          className={style.batchBtn}
+          shape="round"
+          disabled={selectedRowKeys.length === 0}
+          onClick={batchUpdateTag}
+        >
           批量更新
         </Button>
       )}

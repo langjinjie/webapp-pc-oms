@@ -1,6 +1,7 @@
 import React, { Key, useEffect, useState } from 'react';
-import { Modal, NgTable } from 'src/components';
-import { requestGetChatTagList } from 'src/apis/systemSettings';
+import { NgTable } from 'src/components';
+import { Modal } from 'antd';
+import { requestGetChatTagList } from 'src/apis/tagConfig';
 import { PaginationConfig } from 'antd/es/pagination';
 import style from './style.module.less';
 
@@ -15,13 +16,23 @@ interface IUpdateTagModalProps {
   visible: boolean;
   analyseId?: string; // 会存解析ID
   title?: string;
-  onOk?: (list: Key[]) => void;
+  onOk?: (param: any) => void;
   onClose: () => void;
 }
 
 const UpdateTagModal: React.FC<IUpdateTagModalProps> = ({ visible, analyseId, title, onClose, onOk }) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const [list, setList] = useState<IUpdateChatTagItem[]>([]);
+  const [selectedRows, setSelectedRows] = useState<IUpdateChatTagItem[]>([]);
+  const [updateTagInfo, setUpdateTagInfo] = useState<{
+    clientName: string;
+    externalUserid: string;
+    msgContent: string;
+    list: IUpdateChatTagItem[];
+  }>({
+    clientName: '',
+    externalUserid: '',
+    msgContent: '',
+    list: []
+  });
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<PaginationConfig>({
     current: 1,
@@ -32,7 +43,7 @@ const UpdateTagModal: React.FC<IUpdateTagModalProps> = ({ visible, analyseId, ti
 
   // 重置
   const onReset = () => {
-    setSelectedRowKeys([]);
+    setSelectedRows([]);
     setPagination((pagination) => ({ ...pagination, current: 1 }));
   };
 
@@ -40,29 +51,35 @@ const UpdateTagModal: React.FC<IUpdateTagModalProps> = ({ visible, analyseId, ti
   const getChatTagList = async (values?: { pageNum?: number }) => {
     const res = await requestGetChatTagList({ analyseId, ...values });
     if (res) {
-      const { list, total } = res;
-      setList(list);
-      setPagination((pagination) => ({ ...pagination, total }));
+      const { clientName, externalUserid, msgContent, list, total } = res;
+      setUpdateTagInfo({ clientName, externalUserid, msgContent, list: list || [] });
+      setPagination((pagination) => ({ ...pagination, current: values?.pageNum || 1, total }));
     }
   };
 
   // 切换分页
   const paginationChange = (pageNum: number) => {
-    setPagination((pagination) => ({ ...pagination, current: pageNum }));
     getChatTagList({ pageNum });
   };
 
   const rowSelection = {
-    hideSelectAll: true,
-    selectedRowKeys,
-    onChange (selectedRowKeys: Key[]) {
-      setSelectedRowKeys(selectedRowKeys);
+    selectedRowKeys: selectedRows.map(({ detailId }) => detailId),
+    preserveSelectedRowKeys: true,
+    onChange (_: Key[], selectedRows: IUpdateChatTagItem[]) {
+      setSelectedRows(selectedRows);
+    },
+    getCheckboxProps: (record: IUpdateChatTagItem) => {
+      return {
+        disabled: record.updateTag === 1,
+        name: ''
+      };
     }
   };
 
   const onOkHandle = async () => {
     setLoading(true);
-    await onOk?.(selectedRowKeys);
+    const list = selectedRows.map(({ detailId, tagGroupName, tagName }) => ({ detailId, tagGroupName, tagName }));
+    await onOk?.({ analyseId, list });
     setLoading(false);
   };
 
@@ -82,21 +99,25 @@ const UpdateTagModal: React.FC<IUpdateTagModalProps> = ({ visible, analyseId, ti
       centered
       className={style.wrap}
       onOk={onOkHandle}
-      onClose={onClose}
+      onCancel={onClose}
       okButtonProps={{
-        loading
+        loading: loading
       }}
     >
       <div className={style.clientInfo}>
-        <div>客户昵称：{'李斯'}</div>
-        <div className={style.externalUserid}>外部联系人id：{'12hhdgagas277812'}</div>
+        <div>客户昵称：{updateTagInfo.clientName}</div>
+        <div className={style.externalUserid}>外部联系人id：{updateTagInfo.externalUserid}</div>
       </div>
-      <div className={style.chatInfo}>聊天内容：{'我老婆想给孩子买个熊孩子险，想先了解一下。'}</div>
+      <div className={style.chatInfo}>聊天内容：{updateTagInfo.msgContent}</div>
       <NgTable
         className={style.table}
+        rowKey="detailId"
         scroll={{ x: 662 }}
-        columns={[{ title: '标签' }, { title: '标签值' }]}
-        dataSource={list}
+        columns={[
+          { title: '标签', dataIndex: 'tagGroupName' },
+          { title: '标签值', dataIndex: 'tagName' }
+        ]}
+        dataSource={updateTagInfo.list}
         rowSelection={rowSelection}
         pagination={pagination}
         paginationChange={paginationChange}
