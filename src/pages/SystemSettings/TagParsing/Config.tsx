@@ -54,7 +54,7 @@ export const tableColumns: TTableColumns = ({ updateAllTag, selectivelyUpdate, v
     { title: '更新人', dataIndex: 'updateBy', width: 200 },
     {
       title: '操作',
-      // width: 400,
+      width: 400,
       fixed: 'right',
       render (value: IChatTagItem) {
         return (
