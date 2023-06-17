@@ -205,7 +205,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         selectedDept={true}
         showStaff={true}
         params={params}
-        setParams={setParams}
+        onCancel={() => setParams((params) => ({ ...params, visible: false }))}
         onOk={treeOnOk}
       />
       <Modal

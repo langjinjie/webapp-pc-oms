@@ -143,10 +143,6 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
     onClose?.();
   };
 
-  const onCancel = () => {
-    onClose?.();
-  };
-
   // 异步获取组织架构及当前目录下的员工
   const onLoadDataHandle = async ({ key }: any) => {
     // 获取对应的子节点
@@ -369,7 +365,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
       title={'添加成员' || title}
       okText={'确认添加'}
       onOk={onOkHandle}
-      onCancel={onCancel}
+      onCancel={onClose}
       destroyOnClose
       {...props}
     >
