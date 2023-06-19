@@ -69,7 +69,7 @@ const ChoosePrivilege: React.FC<IChoosePrivilege> = ({ value, onChange, readOnly
       });
     }
     return list;
-  }, [addMenu, list, value]);
+  }, [addMenu, list]);
   return (
     <div className={style.wrap}>
       <div className={style.titleWrap}>
