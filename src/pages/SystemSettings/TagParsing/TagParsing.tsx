@@ -146,14 +146,16 @@ const TagParsing: React.FC = () => {
         paginationChange={paginationChange}
       />
       {list.length === 0 || (
-        <Button
-          className={style.batchBtn}
-          shape="round"
-          disabled={selectedRowKeys.length === 0}
-          onClick={batchUpdateTag}
-        >
-          批量更新
-        </Button>
+        <div className="operationWrap">
+          <Button
+            className={style.batchBtn}
+            shape="round"
+            disabled={selectedRowKeys.length === 0}
+            onClick={batchUpdateTag}
+          >
+            批量更新
+          </Button>
+        </div>
       )}
       <UpdateTagModal
         analyseId={rowItem?.analyseId}
