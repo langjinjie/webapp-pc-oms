@@ -233,7 +233,7 @@ const StaffCode: React.FC = () => {
         pagination={pagination}
         paginationChange={paginationChange}
       />
-      <div className={'operationWrap'}>
+      <div className="operationWrap">
         <Button
           className={style.batchVoid}
           disabled={selectedRowKeys.length === 0 || ![0, 1].includes(recordItem?.status as number)}

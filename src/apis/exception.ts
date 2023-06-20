@@ -74,3 +74,46 @@ export const requestDownLoadImg: HttpFunction = (param) => {
 export const queryTagList: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/tag/list', param);
 };
+
+/**
+ * 会话超时提醒接口
+ */
+// 1.1、查询超时提醒规则列表接口
+export const getChatTimeoutRuleList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/chat/timeout/rule/list', param);
+};
+// 1.2、新增/编辑超时提醒规则接口
+export const editChatTimeoutRule: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/chat/timeout/rule/edit', param);
+};
+// 1.3、删除超时提醒规则接口
+export const delChatTimeoutRule: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/chat/timeout/rule/del', param);
+};
+
+// 1.4、查询超时记录列表接口
+export const getChatTimeoutRecordList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/chat/timeout/record/list', param);
+};
+// 1.5、下载超时记录接口
+export const downloadChatTimeoutRecord: HttpFunction = (param: Object) => {
+  return http.post(
+    '/tenacity-admin/api/chat/timeout/record/dl',
+    param,
+
+    {
+      responseType: 'blob'
+    }
+  );
+};
+// 1.6、下载模板文件（节假日/结束词）
+export const getChatTimeoutTpl: HttpFunction<{ type: 1 | 2 }> = (param) => {
+  return http.post('/tenacity-admin/api/chat/timeout/tpl/dl', param);
+};
+// 1.7、导入表格文件（节假日/结束词）
+export const uploadFileWithMark: HttpFunction = (params: any) => {
+  return http.post('/tenacity-admin/api/chat/timeout/import/file', params, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 100000
+  });
+};

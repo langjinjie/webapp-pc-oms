@@ -450,6 +450,8 @@ export type OperateType =
   | 'unTop'
   | 'scope';
 
+export type OnOperateType<T = any> = (operateType: OperateType, record?: T, index?: number) => void;
+
 export type NodeCodeType = 'node_tag' | 'node_date' | 'node_quota' | 'node_calendar';
 
 /* ------------------------------ 驾驶舱 ------------------------------ */

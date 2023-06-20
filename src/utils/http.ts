@@ -220,7 +220,7 @@ const request: HttpMethod = (url: string, params?: any, type: Method = 'get', co
   });
 };
 
-export type HttpFunction = (param: Object) => Promise<any>;
+export type HttpFunction<T = Object> = (param: T) => Promise<any>;
 
 export type Void2Promise = () => Promise<any>;
 
