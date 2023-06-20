@@ -138,12 +138,8 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
   };
 
   const onOkHandle = async () => {
-    onChange?.(selectedList);
-    onOk?.(selectedList);
-    onClose?.();
-  };
-
-  const onCancel = () => {
+    onChange?.(filterChildren(selectedList));
+    onOk?.(filterChildren(selectedList));
     onClose?.();
   };
 
@@ -369,7 +365,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
       title={'添加成员' || title}
       okText={'确认添加'}
       onOk={onOkHandle}
-      onCancel={onCancel}
+      onCancel={onClose}
       destroyOnClose
       {...props}
     >
