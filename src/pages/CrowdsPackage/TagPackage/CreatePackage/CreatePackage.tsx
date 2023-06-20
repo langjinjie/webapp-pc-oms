@@ -4,7 +4,7 @@ import { BreadCrumbs } from 'src/components';
 import { PlusOutlined } from '@ant-design/icons';
 import { RouteComponentProps } from 'react-router-dom';
 import { FilterTags, AddUserList, FilterClientAttr } from 'src/pages/CrowdsPackage/TagPackage/component';
-import { requestCreatePackageRule, requestGetPackageRule } from 'src/apis/CrowdsPackage';
+import { getAttrConfigOptions, requestCreatePackageRule, requestGetPackageRule } from 'src/apis/CrowdsPackage';
 import qs from 'qs';
 import classNames from 'classnames';
 import styles from './style.module.less';
@@ -40,8 +40,10 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   const [readOnly, setReadOnly] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [attrOptions, setAttrOptions] = useState<any[]>([]);
   const [formValues, setFormValues] = useState<any>({
-    type: 1
+    type: 1,
+    attrList: [{}]
   });
 
   const [addForm] = Form.useForm();
@@ -57,8 +59,6 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onFinishHandle = async (values?: any) => {
-    console.log(values);
-
     setSubmitLoading(true);
     // 格式化提交的数据
     const { addUserList, excludeUserList, ruleList } = values;
@@ -108,23 +108,37 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     const res = await requestGetPackageRule({ packageId });
     if (res) {
       // 处理ruleList
-      const ruleList = res.ruleList.map((tagList: IResRuleItem) => ({
-        tagList: [...tagList.interestTagList, ...tagList.factTagList, ...tagList.carTagList].map(
-          (tagItem: IResTagListItem) => ({
-            ...tagItem,
-            groupId: tagItem.tagGroupId,
-            groupName: tagItem.tagGroupName
-          })
-        )
-      }));
-      addForm.setFieldsValue({ ...res, ruleList });
+      const { ruleInfo, type, attrInfo, ...otherValues } = res;
+      console.log({ type });
+      if (type === 1) {
+        const ruleList = ruleInfo.ruleList.map((tagList: IResRuleItem) => ({
+          tagList: [...tagList.interestTagList, ...tagList.factTagList, ...tagList.carTagList].map(
+            (tagItem: IResTagListItem) => ({
+              ...tagItem,
+              groupId: tagItem.tagGroupId,
+              groupName: tagItem.tagGroupName
+            })
+          )
+        }));
+        addForm.setFieldsValue({ ...otherValues, ruleList, type });
+      } else {
+        addForm.setFieldsValue({ ...otherValues, attrList: attrInfo.attrList, type });
+        setFormValues(res);
+      }
     }
     setLoading(false);
     setReadOnly(true);
   };
 
+  const getAttrOptions = async () => {
+    const res = await getAttrConfigOptions({});
+    console.log(res);
+    setAttrOptions(res || []);
+  };
+
   useEffect(() => {
     getDetail();
+    getAttrOptions();
   }, []);
 
   return (
@@ -203,6 +217,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                         <FilterClientAttr
                           key={index + 'attr'}
                           name={name}
+                          options={attrOptions}
                           remove={fields.length > 1 ? () => remove(index) : undefined}
                         ></FilterClientAttr>
                       ))}
