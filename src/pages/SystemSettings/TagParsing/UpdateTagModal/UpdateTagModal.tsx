@@ -101,7 +101,8 @@ const UpdateTagModal: React.FC<IUpdateTagModalProps> = ({ visible, analyseId, ti
       onOk={onOkHandle}
       onCancel={onClose}
       okButtonProps={{
-        loading: loading
+        loading: loading,
+        disabled: selectedRows.length === 0
       }}
     >
       <div className={style.clientInfo}>
