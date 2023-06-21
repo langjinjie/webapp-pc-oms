@@ -397,4 +397,4 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
     </Drawer>
   );
 };
-export default TagFilter;
+export default React.memo(TagFilter);

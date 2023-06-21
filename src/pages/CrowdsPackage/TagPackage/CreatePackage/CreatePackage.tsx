@@ -61,37 +61,61 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   const onFinishHandle = async (values?: any) => {
     setSubmitLoading(true);
     // 格式化提交的数据
-    const { addUserList, excludeUserList, ruleList } = values;
-    const params = {
-      ...values,
-      addUserList: addUserList?.map(
-        ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
-          userId,
-          userName,
-          userType
-        })
-      ),
-      excludeUserList: excludeUserList?.map(
-        ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
-          userId,
-          userName,
-          userType
-        })
-      ),
-      /*
-      ruleList的结构
-      [{tagList:[{ type: number; tagId: string; tagName: string; groupId: string; groupName: string }, ...]}, ...]
-      */
-      ruleList: ruleList?.map(({ tagList }: IReqRuleItem) => ({
-        tagList: tagList?.map(({ type, tagId, tagName, groupId, groupName }) => ({
-          type,
-          tagId,
-          tagName,
-          tagGroupId: groupId,
-          tagGroupName: groupName
-        }))
-      }))
-    };
+    const {
+      addUserList,
+      excludeUserList,
+      ruleList,
+      type,
+      attrList,
+      fakeClientComputed,
+      distinctClient,
+      leaderComputed,
+      ...otherValue
+    } = values;
+    console.log(type, values);
+    let params = {};
+    if (type === 1) {
+      params = {
+        ...otherValue,
+        ruleInfo: {
+          ruleList: ruleList?.map(({ tagList }: IReqRuleItem) => ({
+            tagList: tagList?.map(({ type, tagId, tagName, groupId, groupName }) => ({
+              type,
+              tagId,
+              tagName,
+              tagGroupId: groupId,
+              tagGroupName: groupName
+            }))
+          })),
+          excludeUserList: excludeUserList?.map(
+            ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
+              userId,
+              userName,
+              userType
+            })
+          ),
+          addUserList: addUserList?.map(
+            ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
+              userId,
+              userName,
+              userType
+            })
+          ),
+          fakeClientComputed,
+          distinctClient,
+          leaderComputed
+        },
+        type
+      };
+    } else {
+      params = {
+        ...otherValue,
+        type,
+        attrInfo: {
+          attrList
+        }
+      };
+    }
     const res = await requestCreatePackageRule(params);
     if (res) {
       message.success('人群包创建成功');
@@ -132,13 +156,18 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
 
   const getAttrOptions = async () => {
     const res = await getAttrConfigOptions({});
-    console.log(res);
     setAttrOptions(res || []);
   };
 
   useEffect(() => {
-    getDetail();
-    getAttrOptions();
+    let isMounted = true;
+    if (isMounted) {
+      getDetail();
+      getAttrOptions();
+    }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -161,7 +190,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             <Input.TextArea className="width420" placeholder="请输入" maxLength={200} showCount readOnly={readOnly} />
           </Item>
           <Item label="选择分群类型" name="type">
-            <Radio.Group>
+            <Radio.Group disabled={readOnly}>
               <Radio value={1}>标签属性</Radio>
               <Radio value={2}>人员属性</Radio>
             </Radio.Group>
@@ -216,6 +245,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                       {fields.map(({ name }, index) => (
                         <FilterClientAttr
                           key={index + 'attr'}
+                          disabled={readOnly}
                           name={name}
                           options={attrOptions}
                           remove={fields.length > 1 ? () => remove(index) : undefined}
