@@ -170,6 +170,16 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     };
   }, []);
 
+  const onValuesChange = (changedValues: any, values: any) => {
+    setFormValues(values);
+    // 对form进行重置法
+    if (changedValues.type === 1) {
+      addForm.setFieldsValue({
+        attrList: [{}]
+      });
+      console.log(changedValues);
+    }
+  };
   return (
     <Spin spinning={loading} tip="加载中...">
       <div className="container">
@@ -179,7 +189,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
           className="mt20 edit"
           onFinish={onFinishHandle}
           scrollToFirstError={{ block: 'center', behavior: 'smooth' }}
-          onValuesChange={(_, values) => setFormValues(values)}
+          onValuesChange={onValuesChange}
           initialValues={formValues}
         >
           <div className="sectionTitle">基本信息</div>
@@ -238,7 +248,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                 </List>
                   )
                 : (
-                <List name="attrList" initialValue={[{}]} rules={[{ validator, message: '请添加任务推送规则' }]}>
+                <List name="attrList" initialValue={[{}]}>
                   {(fields, { add, remove }, { errors }) => (
                     <div className={styles.attrWrap}>
                       <p className="f14">选择人员</p>
@@ -246,21 +256,25 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                         <FilterClientAttr
                           key={index + 'attr'}
                           disabled={readOnly}
+                          formValues={formValues}
+                          index={index}
                           name={name}
                           options={attrOptions}
                           remove={fields.length > 1 ? () => remove(index) : undefined}
                         ></FilterClientAttr>
                       ))}
-                      <Button
-                        type="primary"
-                        className={classNames(styles.addTagGroup, 'mt20')}
-                        onClick={() => add({})}
-                        disabled={readOnly}
-                        icon={<PlusOutlined />}
-                        ghost
-                      >
-                        添加字段
-                      </Button>
+                      {
+                        <Button
+                          type="primary"
+                          className={classNames(styles.addTagGroup, 'mt20')}
+                          onClick={() => add({})}
+                          disabled={readOnly}
+                          icon={<PlusOutlined />}
+                          ghost
+                        >
+                          添加字段
+                        </Button>
+                      }
                       <Form.ErrorList errors={errors} />
                     </div>
                   )}
