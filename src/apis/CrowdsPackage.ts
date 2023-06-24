@@ -86,3 +86,10 @@ export const requestGetPackageRule: HttpFunction = (param) => {
 export const requestCreatePackageRule: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/tag/package/create', param);
 };
+
+// 1.14、查询人员属性配置（数量级几百）（新增）
+export const getAttrConfigOptions: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/tag/package/attr/config', param);
+};
+
+//

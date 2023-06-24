@@ -4,7 +4,7 @@ import { BreadCrumbs } from 'src/components';
 import { PlusOutlined } from '@ant-design/icons';
 import { RouteComponentProps } from 'react-router-dom';
 import { FilterTags, AddUserList, FilterClientAttr } from 'src/pages/CrowdsPackage/TagPackage/component';
-import { requestCreatePackageRule, requestGetPackageRule } from 'src/apis/CrowdsPackage';
+import { getAttrConfigOptions, requestCreatePackageRule, requestGetPackageRule } from 'src/apis/CrowdsPackage';
 import qs from 'qs';
 import classNames from 'classnames';
 import styles from './style.module.less';
@@ -40,8 +40,10 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   const [readOnly, setReadOnly] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [attrOptions, setAttrOptions] = useState<any[]>([]);
   const [formValues, setFormValues] = useState<any>({
-    type: 1
+    type: 1,
+    attrList: [{}]
   });
 
   const [addForm] = Form.useForm();
@@ -57,41 +59,63 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onFinishHandle = async (values?: any) => {
-    console.log(values);
-
     setSubmitLoading(true);
     // 格式化提交的数据
-    const { addUserList, excludeUserList, ruleList } = values;
-    const params = {
-      ...values,
-      addUserList: addUserList?.map(
-        ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
-          userId,
-          userName,
-          userType
-        })
-      ),
-      excludeUserList: excludeUserList?.map(
-        ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
-          userId,
-          userName,
-          userType
-        })
-      ),
-      /*
-      ruleList的结构
-      [{tagList:[{ type: number; tagId: string; tagName: string; groupId: string; groupName: string }, ...]}, ...]
-      */
-      ruleList: ruleList?.map(({ tagList }: IReqRuleItem) => ({
-        tagList: tagList?.map(({ type, tagId, tagName, groupId, groupName }) => ({
-          type,
-          tagId,
-          tagName,
-          tagGroupId: groupId,
-          tagGroupName: groupName
-        }))
-      }))
-    };
+    const {
+      addUserList,
+      excludeUserList,
+      ruleList,
+      type,
+      attrList,
+      fakeClientComputed,
+      distinctClient,
+      leaderComputed,
+      ...otherValue
+    } = values;
+    console.log(type, values);
+    let params = {};
+    if (type === 1) {
+      params = {
+        ...otherValue,
+        ruleInfo: {
+          ruleList: ruleList?.map(({ tagList }: IReqRuleItem) => ({
+            tagList: tagList?.map(({ type, tagId, tagName, groupId, groupName }) => ({
+              type,
+              tagId,
+              tagName,
+              tagGroupId: groupId,
+              tagGroupName: groupName
+            }))
+          })),
+          excludeUserList: excludeUserList?.map(
+            ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
+              userId,
+              userName,
+              userType
+            })
+          ),
+          addUserList: addUserList?.map(
+            ({ userId, userName, userType }: { userId: string; userName: string; userType: string }) => ({
+              userId,
+              userName,
+              userType
+            })
+          ),
+          fakeClientComputed,
+          distinctClient,
+          leaderComputed
+        },
+        type
+      };
+    } else {
+      params = {
+        ...otherValue,
+        type,
+        attrInfo: {
+          attrList
+        }
+      };
+    }
     const res = await requestCreatePackageRule(params);
     if (res) {
       message.success('人群包创建成功');
@@ -108,25 +132,54 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     const res = await requestGetPackageRule({ packageId });
     if (res) {
       // 处理ruleList
-      const ruleList = res.ruleList.map((tagList: IResRuleItem) => ({
-        tagList: [...tagList.interestTagList, ...tagList.factTagList, ...tagList.carTagList].map(
-          (tagItem: IResTagListItem) => ({
-            ...tagItem,
-            groupId: tagItem.tagGroupId,
-            groupName: tagItem.tagGroupName
-          })
-        )
-      }));
-      addForm.setFieldsValue({ ...res, ruleList });
+      const { ruleInfo, type, attrInfo, ...otherValues } = res;
+      console.log({ type });
+      if (type === 1) {
+        const ruleList = ruleInfo.ruleList.map((tagList: IResRuleItem) => ({
+          tagList: [...tagList.interestTagList, ...tagList.factTagList, ...tagList.carTagList].map(
+            (tagItem: IResTagListItem) => ({
+              ...tagItem,
+              groupId: tagItem.tagGroupId,
+              groupName: tagItem.tagGroupName
+            })
+          )
+        }));
+        addForm.setFieldsValue({ ...otherValues, ruleList, type });
+      } else {
+        addForm.setFieldsValue({ ...otherValues, attrList: attrInfo.attrList, type });
+        setFormValues(res);
+      }
     }
     setLoading(false);
     setReadOnly(true);
   };
 
+  const getAttrOptions = async () => {
+    const res = await getAttrConfigOptions({});
+    setAttrOptions(res || []);
+  };
+
   useEffect(() => {
-    getDetail();
+    let isMounted = true;
+    if (isMounted) {
+      getDetail();
+      getAttrOptions();
+    }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  const onValuesChange = (changedValues: any, values: any) => {
+    setFormValues(values);
+    // 对form进行重置法
+    if (changedValues.type === 1) {
+      addForm.setFieldsValue({
+        attrList: [{}]
+      });
+      console.log(changedValues);
+    }
+  };
   return (
     <Spin spinning={loading} tip="加载中...">
       <div className="container">
@@ -136,7 +189,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
           className="mt20 edit"
           onFinish={onFinishHandle}
           scrollToFirstError={{ block: 'center', behavior: 'smooth' }}
-          onValuesChange={(_, values) => setFormValues(values)}
+          onValuesChange={onValuesChange}
           initialValues={formValues}
         >
           <div className="sectionTitle">基本信息</div>
@@ -147,7 +200,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             <Input.TextArea className="width420" placeholder="请输入" maxLength={200} showCount readOnly={readOnly} />
           </Item>
           <Item label="选择分群类型" name="type">
-            <Radio.Group>
+            <Radio.Group disabled={readOnly}>
               <Radio value={1}>标签属性</Radio>
               <Radio value={2}>人员属性</Radio>
             </Radio.Group>
@@ -195,27 +248,33 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
                 </List>
                   )
                 : (
-                <List name="attrList" initialValue={[{}]} rules={[{ validator, message: '请添加任务推送规则' }]}>
+                <List name="attrList" initialValue={[{}]}>
                   {(fields, { add, remove }, { errors }) => (
                     <div className={styles.attrWrap}>
                       <p className="f14">选择人员</p>
                       {fields.map(({ name }, index) => (
                         <FilterClientAttr
                           key={index + 'attr'}
+                          disabled={readOnly}
+                          formValues={formValues}
+                          index={index}
                           name={name}
+                          options={attrOptions}
                           remove={fields.length > 1 ? () => remove(index) : undefined}
                         ></FilterClientAttr>
                       ))}
-                      <Button
-                        type="primary"
-                        className={classNames(styles.addTagGroup, 'mt20')}
-                        onClick={() => add({})}
-                        disabled={readOnly}
-                        icon={<PlusOutlined />}
-                        ghost
-                      >
-                        添加字段
-                      </Button>
+                      {
+                        <Button
+                          type="primary"
+                          className={classNames(styles.addTagGroup, 'mt20')}
+                          onClick={() => add({})}
+                          disabled={readOnly}
+                          icon={<PlusOutlined />}
+                          ghost
+                        >
+                          添加字段
+                        </Button>
+                      }
                       <Form.ErrorList errors={errors} />
                     </div>
                   )}
