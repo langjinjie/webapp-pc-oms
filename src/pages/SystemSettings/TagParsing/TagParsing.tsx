@@ -115,7 +115,7 @@ const TagParsing: React.FC = () => {
 
   // 查看聊天记录
   const viewChatList = (row: IChatTagItem) => {
-    history.push('/tagParsing/chatLog?partnerId=' + row.externalUserid + '&userId=' + row.userid, {
+    history.push('/tagParsing/chatLog?partnerId=' + row.externalUserid + '&userId=' + row.userId, {
       clientInfo: row,
       navList: [
         {

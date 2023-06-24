@@ -9,7 +9,7 @@ export interface IChatTagItem {
   externalUserid: string; // 是 外部联系人id
   staffId: string; // 是 员工id
   staffName: string; // 是 客户经理姓名
-  userid: string; // 是 客户经理企微账号
+  userId: string; // 是 客户经理企微账号
   msgContent: string; // 是 聊天内容
   hitKeywords: string; // 是 命中的关键词
   tagGroupNames: string; // 是 生成标签
