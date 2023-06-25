@@ -4,7 +4,7 @@ import TimeoutLogList from './list/TimeoutLogList';
 import TimeoutRuleList from './list/TimeoutRuleList';
 
 const ChatNoResponse: React.FC = () => {
-  const [currentTab, setCurrentTab] = useState('1');
+  const [currentTab, setCurrentTab] = useState('2');
   const onTapsChange = (current: string) => {
     setCurrentTab(current);
   };

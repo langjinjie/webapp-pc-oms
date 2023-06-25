@@ -165,11 +165,9 @@ export const TableColsFunOfDetail = ({
     ellipsis: { showTitle: false },
     render: (handlerMangeRoleName) => {
       return (
-        <AuthBtn path="/preview/delete">
-          <Tooltip placement="topLeft" title={handlerMangeRoleName}>
-            {handlerMangeRoleName || UNKNOWN}
-          </Tooltip>
-        </AuthBtn>
+        <Tooltip placement="topLeft" title={handlerMangeRoleName}>
+          {handlerMangeRoleName || UNKNOWN}
+        </Tooltip>
       );
     }
   },

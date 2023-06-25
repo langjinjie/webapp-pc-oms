@@ -1,4 +1,4 @@
-import { Button, Popconfirm } from 'antd';
+import { Button, Popconfirm, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
@@ -76,7 +76,14 @@ export const tableColumnsFun = (onOperate: OnOperateType<RuleColumns>): ColumnsT
     title: '规则名称',
     dataIndex: 'ruleName',
     key: 'ruleName',
-    ellipsis: true,
+    ellipsis: {
+      showTitle: false
+    },
+    render: (ruleName) => (
+      <Tooltip placement="topLeft" title={ruleName}>
+        {ruleName || UNKNOWN}
+      </Tooltip>
+    ),
     width: 200
   },
   {
@@ -151,52 +158,90 @@ export const tableColumnsFun = (onOperate: OnOperateType<RuleColumns>): ColumnsT
     )
   }
 ];
+
 export const logTableColumns: ColumnsType<RuleColumns> = [
   {
     title: '客户经理姓名',
     dataIndex: 'staffName',
     key: 'staffName',
     ellipsis: true,
-    width: 200
+    width: 120
   },
   {
     title: '客户经理企微账号',
     dataIndex: 'userid',
     key: 'userid',
-    width: 220
+    width: 150
   },
   {
     title: '超时提醒时间',
     dataIndex: 'timeoutRemindTime',
-    width: 160,
+    width: 180,
     key: 'timeoutRemindTime',
-    align: 'center',
     render: (timeoutRemindTime: string) => timeoutRemindTime || UNKNOWN
   },
   {
     title: '提醒后是否回复',
     dataIndex: 'timeoutReply',
-    width: 260,
-    render: (text) => replyOptions.filter((option) => option.id === text)[0]?.name || UNKNOWN,
-    align: 'center'
+    width: 160,
+    render: (text) => (text === 0 ? '否' : '是')
   },
   {
     title: '升级后是否回复',
     dataIndex: 'timeoutUpdateReply',
-    width: 140,
-    render: (text) => replyOptions.filter((option) => option.id === text)[0]?.name || UNKNOWN,
-    align: 'center'
+    width: 130,
+    render: (text) => (text === 0 ? '否' : '是')
   },
   {
     title: '客户昵称',
     dataIndex: 'clientName',
-    width: 140,
-    align: 'center'
+    width: 120
   },
   {
     title: '外包联系人ID',
     dataIndex: 'externalUserid',
-    width: 260,
-    render: (externalUserid: string) => externalUserid || UNKNOWN
+    ellipsis: { showTitle: false },
+    width: 140,
+    render: (externalUserid) => (
+      <Tooltip placement="topLeft" title={externalUserid}>
+        {externalUserid || UNKNOWN}
+      </Tooltip>
+    )
+  },
+  {
+    title: '超时未回复提醒团队长',
+    dataIndex: 'timeoutRemindTeamLeader',
+    render: (text) => text || UNKNOWN,
+    width: 200
+  },
+  {
+    title: '超时未回复提醒区域经理',
+    dataIndex: 'timeoutRemindAreaManager',
+    width: 200,
+    render: (text) => text || UNKNOWN
+  },
+  {
+    title: '超时未回复提醒大区经理',
+    dataIndex: 'timeoutRemindRegionManager',
+    width: 200,
+    render: (text) => text || UNKNOWN
+  },
+  {
+    title: '升级提醒团队长',
+    dataIndex: 'updateRemindTeamLeader',
+    width: 150,
+    render: (text) => text || UNKNOWN
+  },
+  {
+    title: '升级提醒区域经理',
+    dataIndex: 'updateRemindAreaManager',
+    width: 150,
+    render: (text) => text || UNKNOWN
+  },
+  {
+    title: '升级提醒大区经理',
+    dataIndex: 'updateRemindRegionManager',
+    width: 150,
+    render: (text) => text || UNKNOWN
   }
 ];
