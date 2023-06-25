@@ -5,6 +5,7 @@ import { RuleColumns, searchCols, tableColumnsFun } from './Config';
 import { useHistory } from 'react-router-dom';
 import { delChatTimeoutRule, getChatTimeoutRuleList, getChatTimeoutTpl, uploadFileWithMark } from 'src/apis/exception';
 import { OnOperateType } from 'src/utils/interface';
+import { useDidRecover } from 'react-router-cache-route';
 
 const TimeoutRuleList: React.FC = () => {
   const [dateVisible, setDateVisible] = useState(false);
@@ -70,11 +71,12 @@ const TimeoutRuleList: React.FC = () => {
     if (res) {
       message.success('删除成功');
       if (index !== undefined) {
-        const resData = dataSource.splice(index, 1);
-        if (resData.length === 0) {
+        const copyData = [...dataSource];
+        copyData.splice(index, 1);
+        if (copyData.length === 0) {
           getList({ pageNum: 1 });
         } else {
-          setDataSource(resData);
+          setDataSource(copyData);
         }
       } else {
         getList({ pageNum: 1 });
@@ -105,13 +107,20 @@ const TimeoutRuleList: React.FC = () => {
 
   // 规则操作按钮点击
   const onOperate: OnOperateType<RuleColumns> = (type, record, index) => {
-    console.log(type, record, index);
     if (type === 'delete') {
       onDeleteItems([record!], index);
     } else {
-      history.push('/chatNR/detail?ruleId=' + record?.ruleId);
+      history.push('/chatNR/detail?ruleId=' + record?.ruleId, { record });
     }
   };
+  // 监听页面是否需要刷新
+  useDidRecover(() => {
+    if (window.location.href.indexOf('pageNum') > 0) {
+      setPagination((pagination) => ({ ...pagination, pageNum: 1 }));
+      getList({ pageNum: 1 });
+      history.replace('/chatNR', {});
+    }
+  });
 
   return (
     <div className="mt14">

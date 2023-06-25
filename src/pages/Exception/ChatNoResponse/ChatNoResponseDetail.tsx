@@ -1,28 +1,65 @@
-import { Button, TimePicker, Form, Input, Radio } from 'antd';
-import { Moment } from 'moment';
-import React, { useState } from 'react';
+import { Button, TimePicker, Form, Input, Radio, message } from 'antd';
+import moment, { Moment } from 'moment';
+import React, { useEffect, useState } from 'react';
 import { BreadCrumbs } from 'src/components';
 import { SelectOrg } from 'src/pages/CustomerManage/components';
 import CustomTime from './component/CustomTime';
 import { editChatTimeoutRule } from 'src/apis/exception';
+import { RouteComponentProps } from 'react-router-dom';
 
-const ChatNoResponseDetail: React.FC = () => {
+const ChatNoResponseDetail: React.FC<RouteComponentProps<any, any, { record: any }>> = ({ history, location }) => {
   const [editForm] = Form.useForm();
   const [formValues, setFormValues] = useState<any>({});
 
+  const getDetail = () => {
+    const record = location.state?.record;
+    console.log(record);
+
+    if (record) {
+      const { remindBeginTime, remindEndTime, ...otherValues } = record;
+      setFormValues(record);
+      editForm.setFieldsValue({
+        ...otherValues,
+        remind: [moment(remindBeginTime, 'HH:mm'), moment(remindEndTime, 'HH:mm')]
+      });
+    }
+  };
   const onFinish = async (values: any) => {
-    const { remind } = values as { remind: [Moment, Moment] };
+    const { remind, timeoutRemindReceivers, manScopes, workDayRemindUpdate, updateRemindReceivers, ...otherValues } =
+      values;
     let remindBeginTime = '';
     let remindEndTime = '';
-    if (remind) {
+    if (remind as [Moment, Moment]) {
       remindBeginTime = remind[0].format('HH:mm');
       remindEndTime = remind[1].format('HH:mm');
     }
 
-    const res = await editChatTimeoutRule({ remindBeginTime, remindEndTime });
-    console.log(values);
-    console.log(res);
+    const res = await editChatTimeoutRule({
+      remindBeginTime,
+      remindEndTime,
+      ruleId: formValues.ruleId || '',
+      timeoutRemindReceivers: timeoutRemindReceivers.map((item: any) => ({
+        staffId: item.staffId,
+        staffName: item.staffName
+      })),
+      manScopes: manScopes.map((item: any) => ({ fullDeptId: item.fullDeptId, deptName: item.deptName })),
+      updateRemindReceivers:
+        workDayRemindUpdate === 1
+          ? updateRemindReceivers.map((item: any) => ({ staffId: item.staffId, staffName: item.staffName }))
+          : undefined, // 升级提醒接收人
+      workDayRemindUpdate,
+      ...otherValues
+    });
+    if (res) {
+      message.success('添加成功！');
+      // 传参触发缓存页面刷新
+      history.push('/chatNR?pageNum=1');
+    }
   };
+
+  useEffect(() => {
+    getDetail();
+  }, []);
   return (
     <div className="container">
       <BreadCrumbs
@@ -37,7 +74,7 @@ const ChatNoResponseDetail: React.FC = () => {
       <Form
         form={editForm}
         className="edit mt40"
-        onValuesChange={(_, values) => setFormValues(values)}
+        onValuesChange={(_, values) => setFormValues((formValues: any) => ({ ...formValues, ...values }))}
         onFinish={onFinish}
         initialValues={{ workDayRemindUpdate: 0 }}
       >
@@ -58,14 +95,14 @@ const ChatNoResponseDetail: React.FC = () => {
           label="超时提醒接收人"
           rules={[{ required: true, message: '请选择超时提醒接收人' }]}
           style={{ width: '780px' }}
-          name="receiver"
+          name="timeoutRemindReceivers"
         >
           <SelectOrg key={1} />
         </Form.Item>
         <Form.Item
           label="管理范围"
           rules={[{ required: true, message: '请选择管理范围' }]}
-          name="manScopeFull"
+          name="manScopes"
           style={{ width: '780px' }}
         >
           <SelectOrg key={2} type="dept" />
@@ -84,7 +121,7 @@ const ChatNoResponseDetail: React.FC = () => {
             <Form.Item
               label="升级提醒接收人"
               style={{ width: '780px' }}
-              name="remindReceiver"
+              name="updateRemindReceivers"
               rules={[{ required: true, message: '请选择提醒接收人' }]}
             >
               <SelectOrg key={1} />

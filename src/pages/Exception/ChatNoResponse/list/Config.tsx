@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
@@ -97,23 +97,28 @@ export const tableColumnsFun = (onOperate: OnOperateType<RuleColumns>): ColumnsT
   },
   {
     title: '超时提醒接收人',
-    dataIndex: 'timeoutRemindReceiverNames',
-    key: 'timeoutRemindReceiverNames',
+    dataIndex: 'timeoutRemindReceivers',
+    key: 'timeoutRemindReceivers',
     width: 260,
-    align: 'center'
+    ellipsis: true,
+    render: (timeoutRemindReceivers) => {
+      return timeoutRemindReceivers?.map((item: any) => item.staffName).join(',');
+    }
   },
   {
     title: '管理范围',
-    dataIndex: 'manScopeDeptNames',
+    dataIndex: 'manScopes',
     ellipsis: true,
     width: 260,
-    align: 'center'
+    render: (manScopes) => {
+      return manScopes?.map((item: any) => item.deptName).join(',');
+    }
   },
   {
     title: '工作日提醒升级',
-    dataIndex: 'updateBy',
+    dataIndex: 'workDayRemindUpdate',
     width: 260,
-    align: 'center'
+    render: (workDayRemindUpdate) => (workDayRemindUpdate === 0 ? '否' : '是')
   },
   {
     title: '升级提醒时间',
@@ -124,9 +129,10 @@ export const tableColumnsFun = (onOperate: OnOperateType<RuleColumns>): ColumnsT
   },
   {
     title: '升级提醒接收人',
-    dataIndex: 'updateRemindReceiverNames',
+    dataIndex: 'updateRemindReceivers',
     width: 260,
-    render: (updateRemindReceiverNames: string) => updateRemindReceiverNames || UNKNOWN
+    render: (updateRemindReceivers: any[]) =>
+      updateRemindReceivers?.map((item: any) => item.staffName).join(',') || UNKNOWN
   },
   {
     title: '操作',
@@ -138,9 +144,9 @@ export const tableColumnsFun = (onOperate: OnOperateType<RuleColumns>): ColumnsT
         <Button type="link" onClick={() => onOperate('edit', record, index)}>
           编辑
         </Button>
-        <Button type="link" onClick={() => onOperate('delete', record, index)}>
-          删除
-        </Button>
+        <Popconfirm title="是否确定删除规则" onConfirm={() => onOperate('delete', record, index)}>
+          <Button type="link">删除</Button>
+        </Popconfirm>
       </>
     )
   }
