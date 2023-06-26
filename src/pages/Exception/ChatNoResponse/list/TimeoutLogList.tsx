@@ -1,7 +1,7 @@
 import { Button, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { downloadChatTimeoutRecord, getChatTimeoutRecordList } from 'src/apis/exception';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { exportFile } from 'src/utils/base';
 import { logSearchCols, logTableColumns, RuleColumns } from './Config';
 
@@ -57,11 +57,15 @@ const TimeoutLogList: React.FC = () => {
     <div>
       <div className="flex mt30 align-end">
         <div className="cell">
-          <NgFormSearch isInline={false} firstRowChildCount={2} searchCols={logSearchCols} onSearch={onSearch} />
+          <AuthBtn path="/query">
+            <NgFormSearch isInline={false} firstRowChildCount={2} searchCols={logSearchCols} onSearch={onSearch} />
+          </AuthBtn>
         </div>
-        <Button type="primary" shape="round" onClick={downloadLog}>
-          下载记录
-        </Button>
+        <AuthBtn path="/download">
+          <Button type="primary" shape="round" onClick={downloadLog}>
+            下载记录
+          </Button>
+        </AuthBtn>
       </div>
       <NgTable
         key={'recordId'}

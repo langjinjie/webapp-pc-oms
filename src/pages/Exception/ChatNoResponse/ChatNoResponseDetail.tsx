@@ -79,7 +79,7 @@ const ChatNoResponseDetail: React.FC<RouteComponentProps<any, any, { record: any
         initialValues={{ workDayRemindUpdate: 0 }}
       >
         <Form.Item label="规则名称" name="ruleName" rules={[{ required: true }]}>
-          <Input className="width480" placeholder="请输入"></Input>
+          <Input className="width480" placeholder="请输入" maxLength={40}></Input>
         </Form.Item>
         <Form.Item label="超时提醒时间段" name="remind" rules={[{ required: true }]}>
           <TimePicker.RangePicker format={'HH:mm'} />

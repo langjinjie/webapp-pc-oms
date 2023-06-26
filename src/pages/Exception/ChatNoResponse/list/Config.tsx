@@ -1,6 +1,7 @@
 import { Button, Popconfirm, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
+import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { OnOperateType } from 'src/utils/interface';
@@ -148,12 +149,16 @@ export const tableColumnsFun = (onOperate: OnOperateType<RuleColumns>): ColumnsT
     fixed: 'right',
     render: (_, record, index) => (
       <>
-        <Button type="link" onClick={() => onOperate('edit', record, index)}>
-          编辑
-        </Button>
-        <Popconfirm title="是否确定删除规则" onConfirm={() => onOperate('delete', record, index)}>
-          <Button type="link">删除</Button>
-        </Popconfirm>
+        <AuthBtn path="/edit">
+          <Button type="link" onClick={() => onOperate('edit', record, index)}>
+            编辑
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/delete">
+          <Popconfirm title="是否确定删除规则" onConfirm={() => onOperate('delete', record, index)}>
+            <Button type="link">删除</Button>
+          </Popconfirm>
+        </AuthBtn>
       </>
     )
   }

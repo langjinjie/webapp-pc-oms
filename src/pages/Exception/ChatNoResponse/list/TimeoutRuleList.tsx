@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message, Modal, Space } from 'antd';
-import { NgFormSearch, NgTable, ExportModal } from 'src/components';
+import { NgFormSearch, NgTable, ExportModal, AuthBtn } from 'src/components';
 import { RuleColumns, searchCols, tableColumnsFun } from './Config';
 import { useHistory } from 'react-router-dom';
 import { delChatTimeoutRule, getChatTimeoutRuleList, getChatTimeoutTpl, uploadFileWithMark } from 'src/apis/exception';
@@ -125,36 +125,43 @@ const TimeoutRuleList: React.FC = () => {
   return (
     <div className="mt14">
       <Space size={20}>
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => {
-            history.push('/chatNR/detail');
-          }}
-        >
-          新建规则
-        </Button>
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => {
-            setDateVisible(true);
-          }}
-        >
-          工作日维护
-        </Button>
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => {
-            setFormatVisible(true);
-          }}
-        >
-          结束词过滤
-        </Button>
+        <AuthBtn path="/create">
+          <Button
+            type="primary"
+            shape="round"
+            onClick={() => {
+              history.push('/chatNR/detail');
+            }}
+          >
+            新建规则
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/workday">
+          <Button
+            type="primary"
+            shape="round"
+            onClick={() => {
+              setDateVisible(true);
+            }}
+          >
+            工作日维护
+          </Button>
+        </AuthBtn>
+        <AuthBtn path="/markFilter">
+          <Button
+            type="primary"
+            shape="round"
+            onClick={() => {
+              setFormatVisible(true);
+            }}
+          >
+            结束词过滤
+          </Button>
+        </AuthBtn>
       </Space>
-
-      <NgFormSearch className="mt30" searchCols={searchCols} onSearch={onSearch} />
+      <AuthBtn path="/query">
+        <NgFormSearch className="mt30" searchCols={searchCols} onSearch={onSearch} />
+      </AuthBtn>
       <NgTable
         rowKey="ruleId"
         rowSelection={{
@@ -169,17 +176,19 @@ const TimeoutRuleList: React.FC = () => {
         columns={tableColumnsFun(onOperate)}
       ></NgTable>
       {dataSource.length > 0 && (
-        <div className={'operationWrap'}>
-          <Button
-            type="primary"
-            shape={'round'}
-            disabled={selectedRows.length === 0}
-            ghost
-            onClick={() => batchDelete()}
-          >
-            批量删除
-          </Button>
-        </div>
+        <AuthBtn path="/delete">
+          <div className={'operationWrap'}>
+            <Button
+              type="primary"
+              shape={'round'}
+              disabled={selectedRows.length === 0}
+              ghost
+              onClick={() => batchDelete()}
+            >
+              批量删除
+            </Button>
+          </div>
+        </AuthBtn>
       )}
 
       <ExportModal
