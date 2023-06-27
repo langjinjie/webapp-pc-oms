@@ -211,13 +211,13 @@ export const logTableColumns: ColumnsType<RuleColumns> = [
     title: '提醒后是否回复',
     dataIndex: 'timeoutReply',
     width: 160,
-    render: (text) => (text === 0 ? '否' : '是')
+    render: (text) => (text === 0 ? '否' : text === 1 ? '是' : UNKNOWN)
   },
   {
     title: '升级后是否回复',
     dataIndex: 'timeoutUpdateReply',
     width: 130,
-    render: (text) => (text === 0 ? '否' : '是')
+    render: (text) => (text === 0 ? '否' : text === 1 ? '是' : UNKNOWN)
   },
   {
     title: '客户昵称',
