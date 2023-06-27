@@ -321,11 +321,16 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
 
   useEffect(() => {
     if (visible) {
+      console.log(value);
+
       setSelectedList(
         (value || []).map((mapItem) => ({
           ...mapItem,
           // deptId为number，统一转化为string
-          id: mapItem.staffId || mapItem.deptId.toString(),
+          id:
+            mapItem.staffId ||
+            mapItem.deptId?.toString() ||
+            mapItem.fullDeptId?.split(',')[mapItem.fullDeptId?.split(',').length - 1],
           name: mapItem.staffName || mapItem.deptName
         }))
       );

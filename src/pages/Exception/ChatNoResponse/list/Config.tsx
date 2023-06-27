@@ -179,11 +179,26 @@ export const logTableColumns: ColumnsType<RuleColumns> = [
     width: 150
   },
   {
+    title: '超时时间',
+    dataIndex: 'replyTimeout',
+    key: 'replyTimeout',
+    width: 150,
+    render: (replyTimeout: number) =>
+      replyTimeout ? `${Math.floor(replyTimeout / 60)}分钟 ${replyTimeout % 60}秒` : UNKNOWN
+  },
+  {
     title: '超时提醒时间',
     dataIndex: 'timeoutRemindTime',
     width: 180,
     key: 'timeoutRemindTime',
     render: (timeoutRemindTime: string) => timeoutRemindTime || UNKNOWN
+  },
+  {
+    title: '升级时间',
+    dataIndex: 'updateTimeout',
+    width: 150,
+    render: (updateTimeout: number) =>
+      updateTimeout ? `${Math.floor(updateTimeout / 60)}分钟 ${updateTimeout % 60}秒` : UNKNOWN
   },
   {
     title: '提醒后是否回复',
