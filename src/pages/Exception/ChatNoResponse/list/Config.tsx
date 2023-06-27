@@ -201,6 +201,13 @@ export const logTableColumns: ColumnsType<RuleColumns> = [
       updateTimeout ? `${Math.floor(updateTimeout / 60)}分钟 ${updateTimeout % 60}秒` : UNKNOWN
   },
   {
+    title: '升级提醒时间',
+    dataIndex: 'updateRemindTime',
+    width: 180,
+    key: 'updateRemindTime',
+    render: (updateRemindTime: string) => updateRemindTime || UNKNOWN
+  },
+  {
     title: '提醒后是否回复',
     dataIndex: 'timeoutReply',
     width: 160,
@@ -231,7 +238,11 @@ export const logTableColumns: ColumnsType<RuleColumns> = [
   {
     title: '超时未回复提醒团队长',
     dataIndex: 'timeoutRemindTeamLeader',
-    render: (text) => text || UNKNOWN,
+    render: (text) => (
+      <Tooltip placement="topLeft" title={text}>
+        {text || UNKNOWN}
+      </Tooltip>
+    ),
     width: 200
   },
   {

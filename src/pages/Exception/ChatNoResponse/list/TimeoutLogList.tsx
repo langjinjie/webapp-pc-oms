@@ -72,6 +72,7 @@ const TimeoutLogList: React.FC = () => {
         loading={loading}
         dataSource={dataSource}
         pagination={pagination}
+        loadData={getList}
         className="mt16"
         columns={logTableColumns}
       ></NgTable>
