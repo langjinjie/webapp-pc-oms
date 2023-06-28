@@ -37,7 +37,7 @@ const TimeoutLogList: React.FC = () => {
   };
   const onSearch = (values: any) => {
     setSearchValues(values);
-    getList(values);
+    getList({ ...values, pageNum: 1 });
   };
 
   useEffect(() => {
