@@ -108,9 +108,16 @@ export const tableColumnsFun = (onOperate: OnOperateType<RuleColumns>): ColumnsT
     dataIndex: 'timeoutRemindReceivers',
     key: 'timeoutRemindReceivers',
     width: 260,
-    ellipsis: true,
+    ellipsis: {
+      showTitle: false
+    },
     render: (timeoutRemindReceivers) => {
-      return timeoutRemindReceivers?.map((item: any) => item.staffName).join(',');
+      const str = timeoutRemindReceivers?.map((item: any) => item.staffName).join(',');
+      return (
+        <Tooltip placement="topLeft" title={str}>
+          {str}
+        </Tooltip>
+      );
     }
   },
   {
@@ -139,8 +146,17 @@ export const tableColumnsFun = (onOperate: OnOperateType<RuleColumns>): ColumnsT
     title: '升级提醒接收人',
     dataIndex: 'updateRemindReceivers',
     width: 260,
-    render: (updateRemindReceivers: any[]) =>
-      updateRemindReceivers?.map((item: any) => item.staffName).join(',') || UNKNOWN
+    ellipsis: {
+      showTitle: false
+    },
+    render: (updateRemindReceivers: any[]) => {
+      const str = updateRemindReceivers?.map((item: any) => item.staffName).join(',') || UNKNOWN;
+      return (
+        <Tooltip placement="topLeft" title={str}>
+          {str}
+        </Tooltip>
+      );
+    }
   },
   {
     title: '操作',
@@ -229,6 +245,7 @@ export const logTableColumns: ColumnsType<RuleColumns> = [
     dataIndex: 'externalUserid',
     ellipsis: { showTitle: false },
     width: 140,
+
     render: (externalUserid) => (
       <Tooltip placement="topLeft" title={externalUserid}>
         {externalUserid || UNKNOWN}
@@ -238,6 +255,9 @@ export const logTableColumns: ColumnsType<RuleColumns> = [
   {
     title: '超时未回复提醒团队长',
     dataIndex: 'timeoutRemindTeamLeader',
+    ellipsis: {
+      showTitle: false
+    },
     render: (text) => (
       <Tooltip placement="topLeft" title={text}>
         {text || UNKNOWN}
@@ -248,31 +268,66 @@ export const logTableColumns: ColumnsType<RuleColumns> = [
   {
     title: '超时未回复提醒区域经理',
     dataIndex: 'timeoutRemindAreaManager',
+    ellipsis: {
+      showTitle: false
+    },
     width: 200,
-    render: (text) => text || UNKNOWN
+    render: (text) => (
+      <Tooltip placement="topLeft" title={text}>
+        {text || UNKNOWN}
+      </Tooltip>
+    )
   },
   {
     title: '超时未回复提醒大区经理',
     dataIndex: 'timeoutRemindRegionManager',
     width: 200,
-    render: (text) => text || UNKNOWN
+    ellipsis: {
+      showTitle: false
+    },
+    render: (text) => (
+      <Tooltip placement="topLeft" title={text}>
+        {text || UNKNOWN}
+      </Tooltip>
+    )
   },
   {
     title: '升级提醒团队长',
     dataIndex: 'updateRemindTeamLeader',
     width: 150,
-    render: (text) => text || UNKNOWN
+    ellipsis: {
+      showTitle: false
+    },
+    render: (text) => (
+      <Tooltip placement="topLeft" title={text}>
+        {text || UNKNOWN}
+      </Tooltip>
+    )
   },
   {
     title: '升级提醒区域经理',
     dataIndex: 'updateRemindAreaManager',
     width: 150,
-    render: (text) => text || UNKNOWN
+    ellipsis: {
+      showTitle: false
+    },
+    render: (text) => (
+      <Tooltip placement="topLeft" title={text}>
+        {text || UNKNOWN}
+      </Tooltip>
+    )
   },
   {
     title: '升级提醒大区经理',
     dataIndex: 'updateRemindRegionManager',
     width: 150,
-    render: (text) => text || UNKNOWN
+    ellipsis: {
+      showTitle: false
+    },
+    render: (text) => (
+      <Tooltip placement="topLeft" title={text}>
+        {text || UNKNOWN}
+      </Tooltip>
+    )
   }
 ];
