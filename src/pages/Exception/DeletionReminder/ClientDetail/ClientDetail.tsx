@@ -68,29 +68,15 @@ export interface BoundCarInfo {
 
 const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   const [clientInfo, setClientInfo] = useState<ClientInfo>({});
-  // const [baseVisible, setBaseVisible] = useState<boolean>(false);
-  // const [attrVisible, setAttrVisible] = useState<boolean>(false);
-  // const [customizeVisible, setCustomizeVisible] = useState<boolean>(false);
-  // const [tagName, setTagName] = useState<string>('');
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [tabIndexes, setTabIndexes] = useState<number[]>([0]);
-  // const [oldTag, setOldTag] = useState<TagItem>({ tagId: '', tagName: '' });
-  // const [tagList, setTagList] = useState<Tag[]>([]);
-  // const [groupName, setGroupName] = useState<string>('');
-  // const [tagIndex, setTagIndex] = useState<number>(0);
   const [externalUserId, setExternalUserId] = useState<string>('');
   const [followStaffId, setfollowStaffId] = useState('');
-  // const [customTagList, setCustomTagList] = useState<Tag[]>([]);
   const [attrCollapse, setAttrCollapse] = useState<boolean>(false);
   const [customCollapse, setCustomCollapse] = useState<boolean>(false);
   const [carIndex, setCarIndex] = useState<number>(0);
-  // const [cardVisible, setCarVisible] = useState<boolean>(false);
-  // const [cardInfoVisible, setCardInfoVisible] = useState<boolean>(false);
-  // const [tagType, setTagType] = useState<number>(0); // 0 属性标签 1 车标签
   const [attrTagHideIndex, setAttrTagHideIndex] = useState<number>(0);
   const [customTagHideIndex, setCustomTagHideIndex] = useState<number>(0);
-  // const [customTagType, setCustomTagType] = useState<number>(0); // 0 修改 1 添加、修改
-  // const [editTagVisible, setEditTagVisible] = useState<boolean>(false);
   const [attrHasExpand, setAttrHasExpand] = useState<boolean>(false);
   const [customHasExpand, setCustomHasExpand] = useState<boolean>(false);
   const [loadAttrTag, setLoadAttrTag] = useState<boolean>(false);
@@ -99,12 +85,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   const [interestHasExpand, setInterestHasExpand] = useState<boolean>(false);
   const [loadInterestTag, setLoadInterestTag] = useState<boolean>(false);
   const [interestCollapse, setInterestCollapse] = useState<boolean>(false);
-  // const [editInterestVisible, setEditInterestVisible] = useState<boolean>(false);
-  // const [modifyField, setModifyField] = useState<string>('');
-  // const [boundVisible, setBoundVisible] = useState<boolean>(false);
-  // const [boundType, setBoundType] = useState<number>(0);
-  // const [boundTipVisible, setBoundTipVisible] = useState<boolean>(false);
-  // const [orderVisible, setOrderVisible] = useState<boolean>(false);
 
   const attrContentRef: MutableRefObject<any> = useRef(null);
   const interestContentRef: MutableRefObject<any> = useRef(null);
@@ -112,8 +92,6 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
   const location = useLocation();
 
   const tabList: string[] = ['客户动态', '客户画像', '服务建议'];
-
-  // const hasTag = (clientInfo.factTagList || []).length > 0 || (clientInfo.personalTagList || []).length > 0;
 
   const calcAttrTag = () => {
     if (!attrHasExpand || attrCollapse) {

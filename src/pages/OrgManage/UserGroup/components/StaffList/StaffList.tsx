@@ -51,7 +51,7 @@ const StaffList: React.FC<IStaffList> = ({ value, onChange, readOnly }) => {
         showStaff={true}
         selectedDept={false}
         params={params}
-        setParams={setParams}
+        onCancel={() => setParams((params) => ({ ...params, visible: false }))}
       />
     </div>
   );

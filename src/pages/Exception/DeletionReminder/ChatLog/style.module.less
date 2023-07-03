@@ -1,508 +1,509 @@
 .chatLog {
   padding: 10px;
-  .breadCrumbs {
-    padding: 10px 0;
-  }
-  .hunheContainer {
-    border: 0.5pt solid #ccc;
-    padding: 2pt 6pt;
+}
+.breadCrumbs {
+  padding: 10px 0;
+}
+.hunheContainer {
+  border: 0.5pt solid #ccc;
+  padding: 2pt 6pt;
+  width: 220pt;
+  .hunheWrap {
     width: 220pt;
-    .hunheWrap {
-      width: 220pt;
-      margin-top: 2pt;
-      .chatImgHunhe {
-        max-width: 200px;
-      }
-      .textHunhe {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        width: 200pt;
-      }
+    margin-top: 2pt;
+    .chatImgHunhe {
+      max-width: 200px;
     }
-    .line {
-      width: 210pt;
-      margin: 0 auto;
-      height: 0.5pt;
-      background-color: #ccc;
-    }
-    .bottom {
-      color: #ccc;
-      font-size: 8pt;
+    .textHunhe {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 200pt;
     }
   }
-  .header {
-    overflow: hidden;
-    margin-bottom: 20px;
+  .line {
+    width: 210pt;
+    margin: 0 auto;
+    height: 0.5pt;
+    background-color: #ccc;
   }
-  .left {
+  .bottom {
+    color: #ccc;
+    font-size: 8pt;
+  }
+}
+.header {
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.left {
+  float: left;
+}
+.right {
+  float: right;
+}
+.leftItem {
+  margin-right: 10px !important;
+}
+.rightItem {
+  margin-left: 20px !important;
+}
+.content {
+  clear: both;
+  overflow: hidden;
+  display: flex;
+  .contentMiddle,
+  .contentRight {
+    height: 660px;
     float: left;
+    border: 1px solid #ddd;
   }
-  .right {
-    float: right;
+  .contentLeft {
+    width: 200px;
+    min-width: 200px;
+    margin: 0 15px 0 0;
   }
-  .leftItem {
-    margin-right: 10px !important;
+  .contentMiddle {
+    width: 220px;
+    margin: 0 15px 0 0;
   }
-  .rightItem {
-    margin-left: 20px !important;
+  .contentRight {
+    flex-grow: 1;
+    width: calc(~'100% - 280px');
   }
-  .content {
-    clear: both;
-    overflow: hidden;
+  .contentLeftTitle {
+    padding: 10px 0;
+    text-align: center;
+    background: #f8f8f8;
+  }
+  .contentRightTitle {
     display: flex;
-    .contentMiddle,
-    .contentRight {
-      height: 660px;
-      float: left;
-      border: 1px solid #ddd;
+    justify-content: space-between;
+    padding: 5px 10px;
+    background: #f8f8f8;
+  }
+  .filterPersonType {
+    width: 200px;
+    margin: 10px 0;
+    text-align: center;
+    .ant-radio-button-wrapper {
+      padding: 0 28px;
     }
-    .contentLeft {
-      width: 200px;
-      min-width: 200px;
-      margin: 0 15px 0 0;
+  }
+  .avatar {
+    display: inline-block;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 50%;
+    margin: 0 10px 0 0;
+  }
+  // 第一栏
+  .personWrap {
+    overflow: auto;
+    height: calc(~'100% - 103px');
+  }
+  .person {
+    .personActive {
+      background: #bae7ff;
     }
-    .contentMiddle {
-      width: 220px;
-      margin: 0 15px 0 0;
-    }
-    .contentRight {
-      flex-grow: 1;
-      width: calc(~'100% - 280px');
-    }
-    .contentLeftTitle {
-      padding: 10px 0;
-      text-align: center;
-      background: #f8f8f8;
-    }
-    .contentRightTitle {
-      display: flex;
-      justify-content: space-between;
+    .personItem {
       padding: 5px 10px;
-      background: #f8f8f8;
-    }
-    .filterPersonType {
-      width: 200px;
-      margin: 10px 0;
-      text-align: center;
-      .ant-radio-button-wrapper {
-        padding: 0 28px;
-      }
-    }
-    .avatar {
-      display: inline-block;
-      width: 30px !important;
-      height: 30px !important;
-      border-radius: 50%;
-      margin: 0 10px 0 0;
-    }
-    // 第一栏
-    .personWrap {
-      overflow: auto;
-      height: calc(~'100% - 103px');
-    }
-    .person {
-      .personActive {
-        background: #bae7ff;
-      }
-      .personItem {
-        padding: 5px 10px;
-        align-items: center;
-        cursor: pointer;
-        .personName {
-          display: inline-block;
-          width: 126px;
-          height: 30px;
-          line-height: 30px;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          white-space: nowrap;
-        }
-      }
-    }
-    // 第二栏
-    .targetPersonWrap {
-      overflow: auto;
-      height: calc(100% - 34px);
-    }
-    .targetPerson {
-      padding: 10px;
-      .myTitle {
-        position: relative;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 5px;
-        z-index: 10;
-
-        .title {
-          margin-right: 20px;
-        }
-
-        .editIcon {
-          flex-shrink: 1;
-          display: block !important;
-          position: absolute;
-          right: 5px;
-          top: 5px;
-          font-size: 18px;
-          z-index: 100;
-          cursor: pointer;
-        }
-      }
-    }
-    // 第三栏
-    .filterChatType {
-      .download {
-        margin: 0 0 0 20px;
-        height: 22px;
-      }
-    }
-    .chatList {
-      height: calc(~'100% - 70px');
-      overflow: auto;
-      .chatItem {
-        padding: 10px 20px 5px 20px;
-        &:last-child {
-          .chatItemBottom {
-            border: none;
-          }
-        }
-        .chatItemTop {
-          display: flex;
-          align-items: center;
-          .name {
-            margin: 0 20px 0 0px;
-          }
-          .date {
-            color: #888;
-            margin: 0 20px 0 0px;
-          }
-        }
-        .chatItemBottom {
-          margin: 5px 0 0 41px;
-          padding: 0px 0 15px 0;
-          // border-bottom: 1px solid #ddd;
-          line-height: 16px;
-          width: 80%;
-        }
-      }
-    }
-    .pagination {
-      padding: 5px 0 5px 31px;
-      border-top: 1px solid #ddd;
-      background: #f8f8f8;
-      :global {
-        .ant-select-selector {
-          min-height: auto !important;
-        }
-        .ant-select-selection-item {
-          line-height: 22px !important;
-        }
-      }
-    }
-    .downloadIcon {
+      align-items: center;
       cursor: pointer;
-      margin: 0 0 0 20px;
-      font-size: 20px;
-      &:hover {
-        color: #1890ff;
+      .personName {
+        display: inline-block;
+        width: 126px;
+        height: 30px;
+        line-height: 30px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
     }
-    .markdownbottom {
-      border: 0.5pt solid #cccccc;
-      width: 358pt;
-      border-top: none;
-      padding: 2pt;
-    }
-    .markdownLine {
-      height: 0.5pt;
-      width: 344pt;
-      margin-left: 4pt;
-      background-color: #ccc;
-    }
-    .chatMsgArea {
+  }
+  // 第二栏
+  .targetPersonWrap {
+    overflow: auto;
+    height: calc(100% - 34px);
+  }
+  .targetPerson {
+    padding: 10px;
+    .myTitle {
+      position: relative;
       display: flex;
-      align-items: flex-end;
-      .markdownText {
-        width: 324pt;
-        min-height: 40pt;
-        padding: 6pt 10pt 0 4pt;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5px;
+      z-index: 10;
+
+      .title {
+        margin-right: 20px;
       }
-      .markdownIcon {
-        width: 30pt;
-        height: 30pt;
-        margin: 4pt 2pt 0 0;
-        align-self: flex-start;
+
+      .editIcon {
+        flex-shrink: 1;
+        display: block !important;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        font-size: 18px;
+        z-index: 100;
+        cursor: pointer;
       }
-      .fileWrap {
-        // 文件
-        width: 166pt;
-        height: 70pt;
-        border: 0.5pt solid #cccccc;
-        .top {
-          display: flex;
-          height: 50pt;
-          .text {
-            font-size: 11pt;
-            p {
-              width: 130pt;
-              line-height: 30pt;
-              margin-left: 6pt;
-              overflow: hidden;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              color: #111111;
-            }
-            span {
-              margin-left: 6pt;
-              color: #cccccc;
-            }
-          }
-          .img {
-            width: 22pt;
-            height: 24pt;
-            margin-top: 12pt;
-          }
-        }
-        .line {
-          height: 0.5pt;
-          background: #cccccc;
-          width: 150pt;
-          margin: 0 auto;
-        }
-        .bottom {
-          line-height: 19.5pt;
-          display: flex;
-          justify-content: space-between;
-          width: 150pt;
-          margin: 0 auto;
-          .fileType {
-            color: #cccccc;
-            font-size: 9pt;
-          }
-          .down {
-            font-size: 9pt;
-          }
+    }
+  }
+  // 第三栏
+  .filterChatType {
+    .download {
+      margin: 0 0 0 20px;
+      height: 22px;
+    }
+  }
+  .chatList {
+    height: calc(~'100% - 70px');
+    overflow: auto;
+    .chatItem {
+      padding: 10px 20px 5px 20px;
+      &:last-child {
+        .chatItemBottom {
+          border: none;
         }
       }
-      .redbagWrap {
-        // 红包
-        width: 166pt;
-        height: 70t;
-        .top {
-          background-color: #fb9f3c;
-          height: 50pt;
-          display: flex;
-          .img {
-            width: 20pt;
-            height: 26pt;
-            margin: 13pt 0 0 6pt;
-            background-repeat: no-repeat;
-          }
-          .textWrap {
-            width: 126pt;
-            margin-left: 6pt;
-            .wish {
-              color: #fff;
-              margin-top: 11pt;
-            }
-            .money {
-              margin-top: 4pt;
-              color: #fff;
-            }
-          }
+      .chatItemTop {
+        display: flex;
+        align-items: center;
+        .name {
+          margin: 0 20px 0 0px;
         }
-        .bottom {
-          border: 0.5pt solid #cccccc;
-          line-height: 20pt;
-          .text {
-            color: #999999;
-            margin-left: 6pt;
-          }
+        .date {
+          color: #888;
+          margin: 0 20px 0 0px;
         }
       }
-      .positionWrap {
-        // 位置信息
-        width: 166pt;
-        height: 110pt;
-        border: 0.5pt solid #cccccc;
-        .top {
+      .chatItemBottom {
+        margin: 5px 0 0 41px;
+        padding: 0px 0 15px 0;
+        // border-bottom: 1px solid #ddd;
+        line-height: 16px;
+        width: 80%;
+      }
+    }
+  }
+  .pagination {
+    padding: 5px 0 5px 31px;
+    border-top: 1px solid #ddd;
+    background: #f8f8f8;
+    :global {
+      .ant-select-selector {
+        min-height: auto !important;
+      }
+      .ant-select-selection-item {
+        line-height: 22px !important;
+      }
+    }
+  }
+  .downloadIcon {
+    cursor: pointer;
+    margin: 0 0 0 20px;
+    font-size: 20px;
+    &:hover {
+      color: #1890ff;
+    }
+  }
+  .markdownbottom {
+    border: 0.5pt solid #cccccc;
+    width: 358pt;
+    border-top: none;
+    padding: 2pt;
+  }
+  .markdownLine {
+    height: 0.5pt;
+    width: 344pt;
+    margin-left: 4pt;
+    background-color: #ccc;
+  }
+  .chatMsgArea {
+    display: flex;
+    align-items: flex-end;
+    .markdownText {
+      width: 324pt;
+      min-height: 40pt;
+      padding: 6pt 10pt 0 4pt;
+    }
+    .markdownIcon {
+      width: 30pt;
+      height: 30pt;
+      margin: 4pt 2pt 0 0;
+      align-self: flex-start;
+    }
+    .fileWrap {
+      // 文件
+      width: 166pt;
+      height: 70pt;
+      border: 0.5pt solid #cccccc;
+      .top {
+        display: flex;
+        height: 50pt;
+        .text {
+          font-size: 11pt;
           p {
-            height: 30pt;
+            width: 130pt;
             line-height: 30pt;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-          }
-        }
-        .bottom {
-          height: 80pt;
-        }
-      }
-      .smallAppWrap {
-        // 小程序消息
-        width: 140pt;
-        height: 150pt;
-        border: 0.5pt solid #cccccc;
-        .header {
-          display: flex;
-          .icon {
-            width: 15pt;
-            height: 15pt;
-            margin: 4px 2px 0 4px;
-          }
-          p {
-            width: 120pt;
-            height: 20pt;
-            line-height: 20pt;
+            margin-left: 6pt;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             color: #111111;
           }
-        }
-        .title {
-          height: 96pt;
-          overflow: auto;
-          background-color: gray;
-        }
-        .bottom {
-          color: #cccccc;
-          height: 20pt;
-          margin-left: 6px;
-          font-size: 9pt;
-          line-height: 20pt;
-        }
-      }
-      .remainDealWrap {
-        // 会议、日程、填表
-        width: 166pt;
-        min-height: 90pt;
-        border: 0.5pt solid #cccccc;
-        border-bottom: none;
-        display: flex;
-        .text {
-          width: 124pt;
-          height: 90pt;
-          overflow: auto;
-          padding: 2pt;
-          p,
-          li {
-            margin: 4pt;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+          span {
+            margin-left: 6pt;
+            color: #cccccc;
           }
         }
-        .icon {
-          width: 30pt;
-          height: 30pt;
-          margin: 4pt 0 0 4pt;
+        .img {
+          width: 22pt;
+          height: 24pt;
+          margin-top: 12pt;
         }
       }
-      .remainDealBottom {
-        height: 20pt;
-        width: 166pt;
-        border: 0.5pt solid #cccccc;
-        border-top: none;
-        .line {
-          height: 0.5pt;
-          background-color: #cccccc;
-          width: 150pt;
-          margin: 0 auto;
-        }
-        .title {
+      .line {
+        height: 0.5pt;
+        background: #cccccc;
+        width: 150pt;
+        margin: 0 auto;
+      }
+      .bottom {
+        line-height: 19.5pt;
+        display: flex;
+        justify-content: space-between;
+        width: 150pt;
+        margin: 0 auto;
+        .fileType {
           color: #cccccc;
-          font-size: 10pt;
-          padding: 4pt;
-          margin-left: 2pt;
+          font-size: 9pt;
         }
-      }
-      .chatMsg {
-        min-width: 300px;
-        padding: 15px;
-        background: #fafafa;
-        border-radius: 5px;
-        width: 80%;
-        .f18 {
-          font-size: 18px;
-          line-height: 18px;
-        }
-        .content {
-          margin: 5px 0 15px 0;
-          word-break: break-word;
-        }
-        .bottom {
-          border-top: 1px solid #ddd;
-          padding: 10px 0 0 0;
+        .down {
+          font-size: 9pt;
         }
       }
     }
-    .chatImg {
-      max-width: 200px;
-      vertical-align: baseline;
-    }
-    .chatRecords {
-      padding: 4pt 0 0 4pt;
+    .redbagWrap {
+      // 红包
       width: 166pt;
-      border: 0.5pt solid #ddd;
-      .chatRecordContent {
-        .name,
-        .date {
-          color: #ccc;
+      height: 70t;
+      .top {
+        background-color: #fb9f3c;
+        height: 50pt;
+        display: flex;
+        .img {
+          width: 20pt;
+          height: 26pt;
+          margin: 13pt 0 0 6pt;
+          background-repeat: no-repeat;
+        }
+        .textWrap {
+          width: 126pt;
+          margin-left: 6pt;
+          .wish {
+            color: #fff;
+            margin-top: 11pt;
+          }
+          .money {
+            margin-top: 4pt;
+            color: #fff;
+          }
         }
       }
       .bottom {
-        height: 20pt;
+        border: 0.5pt solid #cccccc;
         line-height: 20pt;
-        border-top: 0.5pt solid #ddd;
-        width: 154pt;
+        .text {
+          color: #999999;
+          margin-left: 6pt;
+        }
       }
     }
-    .noDataArea {
-      margin: 0 auto;
-      padding: 100px 0 0 0;
-      .noDataIcon {
-        font-size: 30px;
-        color: #1890ff;
-        margin: 0 0 20px 0;
-        text-align: center;
-      }
-      .noDataInfo {
-        font-size: 16px;
-        text-align: center;
-        color: #666;
-      }
-    }
-  }
-  .groupMemberContainer {
-    width: 250px;
-    overflow: scroll;
-    .title {
-      background-color: #f8f8f8;
-      line-height: 34px;
-      padding: 0 0 0 4px;
-    }
-    .groupMemberListWrap {
-      overflow: auto;
-      height: calc(100% - 36px);
-      .list {
-        margin: 2px;
-        span {
-          width: 120px;
-          display: inline-block;
+    .positionWrap {
+      // 位置信息
+      width: 166pt;
+      height: 110pt;
+      border: 0.5pt solid #cccccc;
+      .top {
+        p {
+          height: 30pt;
+          line-height: 30pt;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          position: relative;
-          top: -10px;
-          line-height: 20px;
         }
+      }
+      .bottom {
+        height: 80pt;
+      }
+    }
+    .smallAppWrap {
+      // 小程序消息
+      width: 140pt;
+      height: 150pt;
+      border: 0.5pt solid #cccccc;
+      .header {
+        display: flex;
+        .icon {
+          width: 15pt;
+          height: 15pt;
+          margin: 4px 2px 0 4px;
+        }
+        p {
+          width: 120pt;
+          height: 20pt;
+          line-height: 20pt;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          color: #111111;
+        }
+      }
+      .title {
+        height: 96pt;
+        overflow: auto;
+        background-color: gray;
+      }
+      .bottom {
+        color: #cccccc;
+        height: 20pt;
+        margin-left: 6px;
+        font-size: 9pt;
+        line-height: 20pt;
+      }
+    }
+    .remainDealWrap {
+      // 会议、日程、填表
+      width: 166pt;
+      min-height: 90pt;
+      border: 0.5pt solid #cccccc;
+      border-bottom: none;
+      display: flex;
+      .text {
+        width: 124pt;
+        height: 90pt;
+        overflow: auto;
+        padding: 2pt;
+        p,
+        li {
+          margin: 4pt;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+      .icon {
+        width: 30pt;
+        height: 30pt;
+        margin: 4pt 0 0 4pt;
+      }
+    }
+    .remainDealBottom {
+      height: 20pt;
+      width: 166pt;
+      border: 0.5pt solid #cccccc;
+      border-top: none;
+      .line {
+        height: 0.5pt;
+        background-color: #cccccc;
+        width: 150pt;
+        margin: 0 auto;
+      }
+      .title {
+        color: #cccccc;
+        font-size: 10pt;
+        padding: 4pt;
+        margin-left: 2pt;
+      }
+    }
+    .chatMsg {
+      min-width: 300px;
+      padding: 15px;
+      background: #fafafa;
+      border-radius: 5px;
+      width: 80%;
+      .f18 {
+        font-size: 18px;
+        line-height: 18px;
+      }
+      .content {
+        margin: 5px 0 15px 0;
+        word-break: break-word;
+      }
+      .bottom {
+        border-top: 1px solid #ddd;
+        padding: 10px 0 0 0;
+      }
+    }
+  }
+  .chatImg {
+    max-width: 200px;
+    vertical-align: baseline;
+  }
+  .chatRecords {
+    padding: 4pt 0 0 4pt;
+    width: 166pt;
+    border: 0.5pt solid #ddd;
+    .chatRecordContent {
+      .name,
+      .date {
+        color: #ccc;
+      }
+    }
+    .bottom {
+      height: 20pt;
+      line-height: 20pt;
+      border-top: 0.5pt solid #ddd;
+      width: 154pt;
+    }
+  }
+  .noDataArea {
+    margin: 0 auto;
+    padding: 100px 0 0 0;
+    .noDataIcon {
+      font-size: 30px;
+      color: #1890ff;
+      margin: 0 0 20px 0;
+      text-align: center;
+    }
+    .noDataInfo {
+      font-size: 16px;
+      text-align: center;
+      color: #666;
+    }
+  }
+}
+.groupMemberContainer {
+  width: 250px;
+  overflow: scroll;
+  .title {
+    background-color: #f8f8f8;
+    line-height: 34px;
+    padding: 0 0 0 4px;
+  }
+  .groupMemberListWrap {
+    overflow: auto;
+    height: calc(100% - 36px);
+    .list {
+      margin: 2px;
+      span {
+        width: 120px;
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        position: relative;
+        top: -10px;
+        line-height: 20px;
       }
     }
   }
 }
+
 // 询问modal
 .chatLogModalTitle {
   .titleArea {

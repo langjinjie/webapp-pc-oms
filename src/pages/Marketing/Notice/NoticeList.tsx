@@ -226,9 +226,11 @@ const NoticeList: React.FC<RouteComponentProps> = ({ history }) => {
         }}
       />
       <AuthBtn path="/delete">
-        <Button disabled={noticeIds.length === 0} onClick={() => deleteNotice()}>
-          删除
-        </Button>
+        <div className="operationWrap">
+          <Button disabled={noticeIds.length === 0} onClick={() => deleteNotice()}>
+            删除
+          </Button>
+        </div>
       </AuthBtn>
     </Card>
   );

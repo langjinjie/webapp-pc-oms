@@ -10,7 +10,7 @@ import classNames from 'classnames';
 import { Context } from 'src/store';
 
 interface IDistributeLogProps {
-  distributeLisType: 1 | 2; // 1: 在职继承 2: 离职继承
+  distributeLisType: '1' | '2'; // 1: 在职继承 2: 离职继承
 }
 
 const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => {
@@ -84,7 +84,7 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
   };
 
   const navList = useMemo(() => {
-    return [{ name: distributeLisType === 1 ? '在职分配' : '离职分配' }, { name: '分配记录' }];
+    return [{ name: distributeLisType === '1' ? '在职分配' : '离职分配' }, { name: '分配记录' }];
   }, []);
 
   useEffect(() => {
@@ -109,7 +109,6 @@ const DistributeLog: React.FC<IDistributeLogProps> = ({ distributeLisType }) => 
           onSearch={onSearch}
           onReset={onResetHandle}
         />
-
         <div className="mt20">
           <NgTable
             columns={tableColumns(activeKey as '1' | '2')}

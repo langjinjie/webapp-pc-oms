@@ -14,6 +14,7 @@ import { operationRoutes } from 'src/routes/operation';
 import { migrationRouters } from 'src/routes/migration';
 import { crowdsManage } from 'src/routes/crowdsPackage';
 import { market } from 'src/routes/market';
+import { tagManage } from 'src/routes/tagManage';
 
 export interface Menu {
   name: string;
@@ -402,6 +403,10 @@ export const routes: RouteProps[] = [
     component: lazy(() => import('src/pages/Exception/LoginException/List'))
   },
   {
+    path: '/chatNR/detail',
+    component: lazy(() => import('src/pages/Exception/ChatNoResponse/ChatNoResponseDetail'))
+  },
+  {
     path: '/taskRule',
     component: lazy(() => import('src/pages/Task/RuleManage/List/List'))
   },
@@ -501,7 +506,8 @@ export const routes: RouteProps[] = [
   // 分群管理
   ...crowdsManage,
   // -内容管理-进入朋友圈
-  ...market
+  ...market,
+  ...tagManage
 ];
 
 // 缓存路由
@@ -584,6 +590,11 @@ export const cacheRoutes: CacheRouteProps[] = [
   {
     path: '/deletionReminder',
     component: lazy(() => import('src/pages/Exception/DeletionReminder/List'))
+  },
+  // 超时未回复提示配置
+  {
+    path: '/chatNR',
+    component: lazy(() => import('src/pages/Exception/ChatNoResponse/ChatNoResponse'))
   },
   {
     path: '/staffCode/addCode',

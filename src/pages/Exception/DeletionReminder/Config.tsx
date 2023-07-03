@@ -105,7 +105,11 @@ export const tableColumnsFun = (): ColumnsType<IDelStaffList> => {
   // 查看聊天记录
   const viewChatList = (row: IDelStaffList) => {
     history.push('/deletionReminder/chatLog?partnerId=' + row.externalUserid + '&userId=' + row.userid, {
-      clientInfo: row
+      clientInfo: row,
+      navList: [
+        { name: '删人提醒', path: '/deletionReminder' },
+        { name: (row?.clientName ? row?.clientName + '的' : '') + '聊天记录' }
+      ]
     });
   };
 

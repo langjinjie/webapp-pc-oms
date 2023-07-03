@@ -1007,14 +1007,7 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
   return (
     <div className={style.chatLog}>
       <div className={style.breadCrumbs}>
-        {!value && (
-          <BreadCrumbs
-            navList={[
-              { name: '删人提醒', path: '/deletionReminder' },
-              { name: (clientInfo?.clientName ? clientInfo?.clientName + '的' : '') + '聊天记录' }
-            ]}
-          />
-        )}
+        {!value && <BreadCrumbs navList={(location.state as any)?.navList || []} />}
       </div>
       <div className={style.header}>
         <span className={style.left}>
@@ -1058,7 +1051,8 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
                       borderRadius: '50%',
                       margin: '0 10px 0 0'
                     }}
-                    src={clientInfo?.clientAvatar}
+                    // 优先获取传过来的头像，没有则取聊天记录中的头像
+                    src={clientInfo?.clientAvatar || chatList.list[0]?.fromUser.avatar}
                   />
                   <span title={clientInfo?.clientName} className={classNames(style.title, 'ellipsis')}>
                     {clientInfo?.clientName}

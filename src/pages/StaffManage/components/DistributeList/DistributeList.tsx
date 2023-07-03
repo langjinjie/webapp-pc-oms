@@ -3,7 +3,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Card, PaginationProps, Popover, Button, message } from 'antd';
+import { Card, PaginationProps, Popover, Button, message, Modal } from 'antd';
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, IClientColumns, tableColumnsFun } from './Config';
 import { useHistory } from 'react-router-dom';
@@ -21,7 +21,7 @@ import style from './style.module.less';
 import classNames from 'classnames';
 
 interface IDistributeListProps {
-  distributeLisType: 1 | 2; // 1: 在职继承 2: 离职继承
+  distributeLisType: '1' | '2'; // 1: 在职继承 2: 离职继承
 }
 
 const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) => {
@@ -47,7 +47,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   const getList = async (param?: { [key: string]: any }) => {
     setLoading(true);
     let res;
-    if (distributeLisType === 1) {
+    if (distributeLisType === '1') {
       res = await requestGetTransferClientList({ ...param });
     } else {
       res = await requestGetDimissionTransferList({ ...param });
@@ -145,7 +145,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
     },
     getCheckboxProps: (record: IClientColumns) => {
       return {
-        disabled: distributeLisType === 1 && [1, 4].includes(record.transferStatus),
+        disabled: [1, 4].includes(record.transferStatus),
         name: ''
       };
     }
@@ -158,7 +158,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
 
   // 分配记录
   const recordListHandle = () => {
-    if (distributeLisType === 2) {
+    if (distributeLisType === '2') {
       history.push('/resign/record');
     } else {
       history.push('/onjob/record');
@@ -179,7 +179,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
   // 确认分配转接
   const onDistriOk = async (param?: IdistributionParam) => {
     let res = '';
-    if (distributeLisType === 1) {
+    if (distributeLisType === '1') {
       res = await requestAssignClientTransfer({
         ...param,
         list: selectedRowList.map(({ externalUserid, staffId }) => ({ externalUserid, staffId }))
@@ -191,8 +191,13 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
       });
     }
     if (res) {
-      message.success('客户转接成功，如客户无拒绝则24小时后客户自动转接生效');
-      await getList({ ...formValue, pageNum: pagination.current, pageSize: pagination.pageSize });
+      setDistribution(false);
+      getList({ ...formValue, pageNum: pagination.current, pageSize: pagination.pageSize });
+      Modal.success({
+        title: '温馨提示',
+        centered: true,
+        content: '客户转接成功，如客户无拒绝则24小时后客户自动转接生效'
+      });
       setselectedRowList([]);
     }
   };
@@ -207,8 +212,8 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
 
     return (
       <div>
-        {distributeLisType === 1 ? '在职转接' : '离职继承'}
-        {distributeLisType === 1 && (
+        {distributeLisType === '1' ? '在职转接' : '离职继承'}
+        {distributeLisType === '1' && (
           <Popover content={content}>
             <QuestionCircleOutlined className="color-text-secondary f16 pointer" />
           </Popover>
@@ -244,13 +249,13 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
             分配客户
           </Button>
         </AuthBtn>
-        <AuthBtn path={distributeLisType === 1 ? '/assignRecord' : '/dimissionRecord'}>
+        <AuthBtn path={distributeLisType === '1' ? '/assignRecord' : '/dimissionRecord'}>
           <Button className={classNames(style.distributeLog, 'ml20')} onClick={recordListHandle}>
             分配记录
           </Button>
         </AuthBtn>
 
-        {distributeLisType === 2 && (
+        {distributeLisType === '2' && (
           <AuthBtn path="/query">
             <Button className={classNames(style.sync, 'ml20')} onClick={syncList} loading={syncLoading}>
               同步
@@ -260,7 +265,7 @@ const DistributeList: React.FC<IDistributeListProps> = ({ distributeLisType }) =
         <span className={classNames(style.selectNum, 'inline-block')}>
           *共计{tableSource.total}位待分配客户，
           <span className={style.selected}>已选择{selectedRowList.length}位</span>
-          {distributeLisType === 2 && <span className={style.syncTime}>上次同步时间: {tableSource?.syncTime}</span>}
+          {distributeLisType === '2' && <span className={style.syncTime}>上次同步时间: {tableSource?.syncTime}</span>}
         </span>
       </div>
       <div className="mt20">
