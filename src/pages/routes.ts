@@ -15,6 +15,7 @@ import { migrationRouters } from 'src/routes/migration';
 import { crowdsManage } from 'src/routes/crowdsPackage';
 import { market } from 'src/routes/market';
 import { tagManage } from 'src/routes/tagManage';
+import { group } from 'src/routes/group';
 
 export interface Menu {
   name: string;
@@ -507,7 +508,9 @@ export const routes: RouteProps[] = [
   ...crowdsManage,
   // -内容管理-进入朋友圈
   ...market,
-  ...tagManage
+  ...tagManage,
+  // 社群管理
+  ...group
 ];
 
 // 缓存路由
