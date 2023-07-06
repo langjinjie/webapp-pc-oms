@@ -21,3 +21,32 @@ export const editGroupGreeting: HttpFunction = (param: Object) => {
 export const delGroupGreeting: HttpFunction = (param: Object) => {
   return http.post('/tenacity-admin/api/cligroup/groupwelcome/del', param);
 };
+/**
+ * 客户群管理
+ */
+// 1.1、查询群列表接口
+export const queryGroupList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/corp/chat/group/list', param);
+};
+// 1.2、查询群成员列表接口
+export const queryGroupMemberList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/corp/chat/group/members', param);
+};
+// 1.3、查询群成员统计接口
+export const getGroupStatDetail: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/corp/chat/group/statDetail', param);
+};
+// 1.4、查询群列表下载接口
+export const downloadGroupList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/corp/chat/group/list/dload', param, {
+    responseType: 'blob',
+    timeout: 120000
+  });
+};
+// 1.5、查询群成员列表下载接口
+export const downloadGroupMemberList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/corp/chat/group/members/dload', param, {
+    responseType: 'blob',
+    timeout: 120000
+  });
+};

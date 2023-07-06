@@ -60,7 +60,6 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<GroupColType
       dataIndex: 'groupName',
       title: '群名称',
       ellipsis: true,
-
       width: 160
     },
     {
