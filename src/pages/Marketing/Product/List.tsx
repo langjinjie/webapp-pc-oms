@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, message, Modal, Space } from 'antd';
-
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import style from './style.module.less';
-
 import { columns, ProductProps, setSearchCols } from './Config';
 import { PlusOutlined } from '@ant-design/icons';
 import { RouteComponentProps } from 'react-router';
@@ -20,6 +18,7 @@ import { MyPaginationProps as PaginationProps } from 'src/components/TableCompon
 import moment from 'moment';
 import { useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
+import { DownLoadQRCodeModal } from './components';
 
 const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('营销素材-产品库');
@@ -49,6 +48,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visibleSetUserRight, setVisibleSetUserRight] = useState(false);
   const [isBatchSetRight, setIsBatchSetRight] = useState(false);
   const [currentGroupIds, setCurrentGroupIds] = useState<any[]>([]);
+  const [downLoadQRCodeVisible, setDownLoadQRCodeVisible] = useState(false);
 
   const handleEdit = (record: ProductProps) => {
     history.push('/marketingProduct/edit', { id: record.productId, type: '2' });
@@ -91,7 +91,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
       if (copyData.length === 0) {
         getList({ pageNum: 1 });
       } else {
-        setPagination((pagination) => ({ ...pagination, total: pagination.total - 1 }));
+        setPagination((pagination) => ({ ...pagination, total: (pagination.total as number) - 1 }));
       }
     }
   };
@@ -153,7 +153,21 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     setVisibleSetUserRight(true);
   };
 
-  const myColumns = columns({ handleEdit, deleteItem, viewItem, changeItemStatus, handleSort, setRight, copyItem });
+  const downLoadQRCode = () => {
+    console.log('下载产品二维码');
+    setDownLoadQRCodeVisible(true);
+  };
+
+  const myColumns = columns({
+    handleEdit,
+    deleteItem,
+    viewItem,
+    changeItemStatus,
+    handleSort,
+    setRight,
+    copyItem,
+    downLoadQRCode
+  });
 
   // 添加商品
   const addProduct = () => {
@@ -360,6 +374,11 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
         visible={visibleSetUserRight}
         onOk={confirmSetRight}
         onCancel={() => setVisibleSetUserRight(false)}
+      />
+      <DownLoadQRCodeModal
+        visible={downLoadQRCodeVisible}
+        onClose={() => setDownLoadQRCodeVisible(false)}
+        link={currentItem?.productUrl}
       />
     </div>
   );

@@ -4,12 +4,12 @@ import { productEdit, productConfig, productDetail } from 'src/apis/marketing';
 import NumberInput from 'src/components/NumberInput/NumberInput';
 import { Context } from 'src/store';
 import style from './style.module.less';
-import classNames from 'classnames';
 import NgUpload from '../Components/Upload/Upload';
 import { WechatShare } from '../Components/WechatShare/WechatShare';
 import { UploadFile } from 'src/components';
 import { getQueryParam } from 'tenacity-tools';
 import { SetUserRightFormItem } from '../Components/SetUserRight/SetUserRight';
+import { ProductScene } from './components';
 
 interface productConfigProps {
   id: number;
@@ -22,13 +22,46 @@ interface Config {
   areaList: any[];
   objectList: any[];
   premiumTypeList: any[];
-  tagList: any[];
+  // tagList: any[];
   sceneList: any[];
   productTypeList: any[];
+  productSceneList: {
+    id: string; // 是 配置id
+    name: string; // 是 产品场景名称
+    sortId: number; // 是 序号，升序规则
+  }[];
 }
 
 const { Option } = Select;
 const { Group } = Radio;
+
+// 配置类型列表
+const displayTypeList = [
+  { value: 1, label: '添加链接' },
+  { value: 2, label: '小程序ID' },
+  { value: 3, label: '上传图片' },
+  { value: 4, label: '上传视频' }
+];
+
+// 产品链接名称与产品类型对照表
+const corpProductLinkToSpecTypeName: { [key: string]: string } = {
+  0: '通用产品链接',
+  1: '个性化产品缺省链接',
+  2: '对接产品链接'
+};
+
+// 产品标签
+const Tags: React.FC<{ value?: any }> = ({ value }) => {
+  return (value || []).map((tag: any) => (
+    <>
+      {tag && (
+        <span className={style.tagItem} key={tag}>
+          {tag}
+        </span>
+      )}
+    </>
+  ));
+};
 
 const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const { userInfo } = useContext(Context);
@@ -50,9 +83,10 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     areaList: [],
     objectList: [],
     premiumTypeList: [],
-    tagList: [],
+    // tagList: [],
     sceneList: [],
-    productTypeList: []
+    productTypeList: [],
+    productSceneList: []
   });
 
   const [currency, setCurrency] = useState<string>('');
@@ -134,14 +168,6 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const onCurrencyChange = (newCurrency: any) => {
     setCurrency(newCurrency);
   };
-
-  // 配置类型列表
-  const displayTypeList = [
-    { value: 1, label: '添加链接' },
-    { value: 2, label: '小程序ID' },
-    { value: 3, label: '上传图片' },
-    { value: 4, label: '上传视频' }
-  ];
 
   /** 海报图片 */
   const posterBeforeUpload = (file: any) => {
@@ -261,9 +287,17 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   };
   // 获取配置列表
   const getProductConfig = async () => {
-    const res = await productConfig({ type: [1, 2, 3, 4, 5, 6] });
+    const res = await productConfig({ type: [1, 2, 3, 4, 5, 8] });
     if (res) {
-      setConfig(res);
+      setConfig({
+        ...res,
+        productSceneList: [
+          { id: '0', name: '无' },
+          { id: '1', name: '旅游场景' },
+          { id: '2', name: '儿童场景' },
+          { id: '3', name: '其他场景' }
+        ]
+      });
     }
   };
   const validatorLights = (value: string) => {
@@ -321,9 +355,27 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     const inputValue = e.target.value.replace(/，/gi, ',');
     form.setFields([{ name: 'highlights', value: inputValue }]);
   };
+
+  // 表单变化
   const onFormValuesChange = (values: any) => {
+    console.log('values', values);
     const { shareTitle, activityName, productName, shareCoverImgUrl, specType } = values;
+    // 特殊处理：选择对接类产品时候,只能选择上传图片
+    if (specType === 2) {
+      setDisplayType(3);
+      form.setFieldsValue({ displayType: 3 });
+    }
     setShareInfo((active) => ({ ...active, shareTitle, activityName, productName, shareCoverImgUrl, specType }));
+    // 产品标签由产品场景和产品分类组成
+    const { productScenes = [], categoryId } = values;
+    form.setFieldsValue({
+      tags: [
+        ...productScenes.map(
+          (id: string) => config.productSceneList.find(({ id: sceneId }) => id === sceneId.toString())?.name
+        ),
+        config.productTypeList.find(({ id }) => id === categoryId)?.name
+      ]
+    });
   };
   const onChangeDisplayType = (e: any) => {
     if (e.target.value === 1) {
@@ -334,7 +386,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     }
     // 3,4 来回切换
     if ([3, 4].includes(displayType) && [3, 4].includes(e.target.value)) {
-      // 将现在的sourceUrl保存起来,异步，不会立即生效
+      // 将现在的sourceUrl保存起来
       setOldSourceUrlParam({ displayType, sourceUrl: form.getFieldsValue().sourceUrl });
       // 将上次保存的oldSourceUrlParam赋值
       if (oldSourceUrlParam.displayType === e.target.value) {
@@ -401,10 +453,39 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             <Radio value={1}>分坐席个性化产品</Radio>
           </Group>
         </Form.Item>
+        {shareInfo.specType === 2 && (
+          <div className={style.integrationProduct}>
+            <Form.Item
+              name="type"
+              className={style.Integration}
+              label="对接类产品类型"
+              extra={
+                <div className="color-danger flex">
+                  <div>备注：</div>
+                  <div>
+                    <div>1、“线上线下模式”用户无法自主完</div>
+                    <div>2、“互联网模式”用户自主完成投保，直接出单</div>
+                  </div>
+                </div>
+              }
+            >
+              <Group>
+                <Radio value={0}>线上线下模式</Radio>
+                <Radio value={1}>互联网模式</Radio>
+              </Group>
+            </Form.Item>
+          </div>
+        )}
+
         <Form.Item label="配置类型" name="displayType" required initialValue={1}>
           <Group onChange={onChangeDisplayType} disabled={isReadOnly}>
             {displayTypeList.map((item) => (
-              <Radio key={item.value + item.label} value={item.value}>
+              // 当选择对接类产品时，只能选择上传图片，并且其他选项置灰
+              <Radio
+                key={item.value + item.label}
+                value={item.value}
+                disabled={shareInfo.specType === 2 && item.value !== 3}
+              >
                 {item.label}
               </Radio>
             ))}
@@ -412,7 +493,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         </Form.Item>
         {displayType === 1 && (
           <Form.Item
-            label={shareInfo.specType === 1 ? '个性化产品缺省链接' : '通用产品链接'}
+            label={corpProductLinkToSpecTypeName[shareInfo.specType.toString()]}
             name="corpProductLink"
             rules={[
               { required: true, message: '请输入产品链接' },
@@ -456,6 +537,9 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             </Form.Item>
           </>
         )}
+        <Form.Item name="productScenes" label="产品场景">
+          <ProductScene productSceneList={config.productSceneList} />
+        </Form.Item>
         <Form.Item name="categoryId" label="产品分类：" rules={[{ required: true, message: '请选择产品分类' }]}>
           <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
             {config.productTypeList.map((item, index) => {
@@ -473,21 +557,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           label="产品标签："
           rules={[{ type: 'array', required: true, message: '请选择产品标签' }]}
         >
-          <Select
-            placeholder="请选择"
-            allowClear
-            className={classNames('width320')}
-            mode="multiple"
-            disabled={isReadOnly}
-          >
-            {config.tagList?.map((item, index) => {
-              return (
-                <Option key={index} value={item.name}>
-                  {item.name}
-                </Option>
-              );
-            })}
-          </Select>
+          <Tags />
         </Form.Item>
         <Form.Item name="familyEnsureId" label="家庭保障：">
           <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
