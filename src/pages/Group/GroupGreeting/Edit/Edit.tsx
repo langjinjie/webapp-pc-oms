@@ -3,7 +3,7 @@ import { BreadCrumbs, ImageUpload, Preview } from 'src/components';
 
 import style from './style.module.less';
 import classNames from 'classnames';
-import { Button, Form, Input, Radio, message } from 'antd';
+import { Button, Form, Input, Radio, Switch, message } from 'antd';
 import { addGroupGreeting, editGroupGreeting, getGroupGreetingDetail } from 'src/apis/group';
 import { RouteComponentProps } from 'react-router-dom';
 import { urlSearchParams } from 'src/utils/base';
@@ -20,7 +20,12 @@ const GroupGreetingEdit: React.FC<RouteComponentProps> = ({ history, location })
     if (wcId) {
       setIsEdit(true);
       const res = await getGroupGreetingDetail({ wcId });
-      const values = { ...res, ...res?.mediaData, isSetMedia: res?.wcType > 1 ? 1 : 0 };
+      const values = {
+        ...res,
+        ...res?.mediaData,
+        isSetMedia: res?.wcType > 1 ? 1 : 0,
+        isSend: !!res?.isSend
+      };
       setFormValues({ ...values });
       editForm.setFieldsValue(values);
     }
@@ -32,19 +37,22 @@ const GroupGreetingEdit: React.FC<RouteComponentProps> = ({ history, location })
 
   // 提交表单数据
   const onFinish = async (values: any) => {
-    const { isSetMedia, mediaOrgUrl, linkTitle, linkPicurl, linkDesc, linkUrl, appid, ...otherValues } = values;
+    const { isSetMedia, mediaOrgUrl, linkTitle, linkPicurl, linkDesc, linkUrl, appid, isSend, ...otherValues } = values;
     let res;
+    console.log(values);
 
     if (formValues.wcId) {
       res = await editGroupGreeting({
         wcId: formValues.wcId || undefined,
         wcType: isSetMedia || 1,
+        isSend: isSend ? 1 : 0,
         mediaData: isSetMedia ? { mediaOrgUrl, linkTitle, linkPicurl, linkDesc, linkUrl, appid } : undefined,
         ...otherValues
       });
     } else {
       res = await addGroupGreeting({
         wcType: isSetMedia || 1,
+        isSend: isSend ? 1 : 0,
         mediaData: isSetMedia ? { mediaOrgUrl, linkTitle, linkPicurl, linkDesc, linkUrl, appid } : undefined,
         ...otherValues
       });
@@ -53,7 +61,6 @@ const GroupGreetingEdit: React.FC<RouteComponentProps> = ({ history, location })
       message.success(formValues.wcId ? '编辑成功' : '新增成功！');
       history.goBack();
     }
-    console.log(res);
   };
   return (
     <div className="container edit">
@@ -130,6 +137,7 @@ const GroupGreetingEdit: React.FC<RouteComponentProps> = ({ history, location })
                     </Form.Item>
                     <Form.Item
                       label="分享封面"
+                      extra="仅支持JPG/JPEG/PNG格式，尺寸为150*150且大小小于1MB的图片"
                       name={'linkPicurl'}
                       rules={[{ required: true, message: '请上传分享封面图片' }]}
                     >
@@ -145,6 +153,9 @@ const GroupGreetingEdit: React.FC<RouteComponentProps> = ({ history, location })
                 )}
               </>
             )}
+            <Form.Item label="消息通知" name="isSend" extra="开启后，会推送消息给所有客户群为群主的成员">
+              <Switch checkedChildren="开" unCheckedChildren="关" />
+            </Form.Item>
             <Form.Item className="formFooter" wrapperCol={{ offset: 8 }}>
               <Button type="primary" htmlType="submit" shape="round">
                 保存

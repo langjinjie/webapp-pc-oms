@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import OrgTreeSelect from 'src/components/OrgTreeSelect/OrgTreeSelect';
 import { NgFormSearch, NgTable } from 'src/components';
 import { GroupColType, searchCols, tableColsFun } from './Config';
-import { Button } from 'antd';
+import { Button, Modal, message } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
 import { MyPaginationProps } from 'src/components/TableComponent/TableComponent';
-import { queryGroupList } from 'src/apis/group';
+import { downloadGroupList, queryGroupList } from 'src/apis/group';
+import { exportFile } from 'src/utils/base';
 
 const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
   const [formValue, setFormValues] = useState({
@@ -46,8 +47,25 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   const onOperate = (type: any, record: GroupColType) => {
-    console.log(record);
-    history.push('/customergroup/member');
+    history.push('/customergroup/member?id=' + record.chatId);
+  };
+
+  const downloadList = () => {
+    Modal.confirm({
+      title: '确认导出群信息?',
+
+      onOk: async () => {
+        const res = await downloadGroupList(formValue);
+        console.log(res);
+
+        if (res && res.headers['content-disposition']?.split('=')[1]) {
+          const fileName = decodeURI(res.headers['content-disposition']?.split('=')[1]);
+          exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
+        } else {
+          message.warning('导出群信息异常');
+        }
+      }
+    });
   };
   return (
     <div className="container">
@@ -62,7 +80,7 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
             <div className="cell">
               <NgFormSearch isInline={false} firstRowChildCount={3} searchCols={searchCols} onSearch={onSearch} />
             </div>
-            <Button className="fixed flex mb10" type="primary" shape="round">
+            <Button className="fixed flex mb10" type="primary" shape="round" onClick={() => downloadList()}>
               导出群信息
             </Button>
           </div>
@@ -72,6 +90,7 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
             loadData={getList}
             columns={tableColsFun(onOperate)}
             dataSource={dataSource}
+            pagination={pagination}
           ></NgTable>
         </div>
       </div>

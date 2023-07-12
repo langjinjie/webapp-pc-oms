@@ -2,6 +2,8 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
+import { Avatar } from 'antd';
+import classNames from 'classnames';
 
 const memberTypeOptions = [
   {
@@ -55,9 +57,10 @@ export const searchCols: SearchCol[] = [
 
 export type memberColType = {
   groupNickname: string;
-  type: string;
+  type: number;
   joinScene: string;
   joinTime: string;
+  avatar: string;
 };
 export const tableCols: ColumnsType<memberColType> = [
   {
@@ -65,7 +68,15 @@ export const tableCols: ColumnsType<memberColType> = [
     dataIndex: 'groupNickname',
     title: '群成员',
     ellipsis: true,
-    render: (text) => <div>{text}</div>,
+    render: (text, record) => (
+      <div>
+        <Avatar size={36} src={record.avatar} />
+        <span className="ml10">{text}</span>
+        <span className={classNames({ 'color-success': record.type === 2, 'color-warning': record.type === 1 })}>
+          {record.type === 2 ? ' @微信' : '  @企业微信'}
+        </span>
+      </div>
+    ),
     width: 160
   },
   {

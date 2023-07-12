@@ -1,20 +1,84 @@
-import { Button, Divider } from 'antd';
-import React, { useState } from 'react';
+import { Button, Divider, Modal, message } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { BreadCrumbs, NgFormSearch, NgTable } from 'src/components';
-import { searchCols, tableCols } from './Config';
+import { memberColType, searchCols, tableCols } from './Config';
 
 import style from './style.module.less';
+import { MyPaginationProps } from 'src/components/TableComponent/TableComponent';
+import { queryGroupMemberList, getGroupStatDetail, downloadGroupMemberList } from 'src/apis/group';
+import { exportFile, urlSearchParams } from 'src/utils/base';
+import { RouteComponentProps } from 'react-router-dom';
 
-const GroupMember: React.FC = () => {
+const GroupMember: React.FC<RouteComponentProps> = ({ location }) => {
   const [groupDetail, setGroupDetail] = useState({
     count: 0,
     externalCount: 0,
     yesterdayJoinCount: 0,
+    groupName: '',
+    staffName: '',
     outCount: 0
   });
+
+  const [formValue, setFormValues] = useState({
+    title: ''
+  });
+  const [pagination, setPagination] = useState<MyPaginationProps>({
+    total: 0,
+    pageNum: 1,
+    pageSize: 10
+  });
+  const [dataSource, setDateSource] = useState<memberColType[]>([]);
+  const getList = async (params?: any) => {
+    const { id } = urlSearchParams<{ id: string }>(location.search);
+    const res = await queryGroupMemberList({
+      pageNum: pagination.pageNum,
+      chatId: id,
+      pageSize: pagination.pageSize,
+      ...formValue,
+      ...params
+    });
+    if (res) {
+      const { total, list } = res;
+      setPagination((pagination) => ({
+        ...pagination,
+        total,
+        pageNum: params?.pageNum || 1,
+        pageSize: params?.pageSize || pagination.pageSize
+      }));
+      setDateSource(list || []);
+    }
+  };
   const onSearch = (values: any) => {
-    console.log(values);
-    setGroupDetail(groupDetail);
+    setFormValues(values);
+    getList({ ...values, pageNum: 1 });
+  };
+
+  const getStatDetail = async () => {
+    const { id } = urlSearchParams<{ id: string }>(location.search);
+    const res = await getGroupStatDetail({ chatId: id });
+    res && setGroupDetail(res);
+  };
+  useEffect(() => {
+    getList();
+    getStatDetail();
+  }, []);
+
+  const downloadList = () => {
+    Modal.confirm({
+      title: '确认导出群成员信息?',
+
+      onOk: async () => {
+        const { id } = urlSearchParams<{ id: string }>(location.search);
+        const res = await downloadGroupMemberList({ ...formValue, chatId: id });
+
+        if (res && res.headers['content-disposition']?.split('=')[1]) {
+          const fileName = decodeURI(res.headers['content-disposition']?.split('=')[1]);
+          exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
+        } else {
+          message.warning('导出群成员信息异常');
+        }
+      }
+    });
   };
   return (
     <div className="container">
@@ -27,7 +91,9 @@ const GroupMember: React.FC = () => {
         ]}
       />
 
-      <h3 className="mt20 f20 bold">江西企微新试点团队先锋营群详情（群主：严雅敏）</h3>
+      <h3 className="mt20 f20 bold">
+        {groupDetail.groupName}（群主：{groupDetail.staffName}）
+      </h3>
       <Divider />
 
       <div className={style.dataWrap}>
@@ -57,12 +123,19 @@ const GroupMember: React.FC = () => {
           <div className="cell">
             <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
           </div>
-          <Button className="fixed flex mb10" type="primary" shape="round">
-            导出群信息
+          <Button className="fixed flex mb10" type="primary" shape="round" onClick={downloadList}>
+            导出群成员信息
           </Button>
         </div>
       </div>
-      <NgTable className="pt15" columns={tableCols}></NgTable>
+      <NgTable
+        pagination={pagination}
+        className="pt15"
+        setRowKey={(record) => record.groupNickname + record.joinTime}
+        loadData={getList}
+        columns={tableCols}
+        dataSource={dataSource}
+      ></NgTable>
     </div>
   );
 };
