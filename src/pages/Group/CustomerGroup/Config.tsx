@@ -1,8 +1,9 @@
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { UNKNOWN } from 'src/utils/base';
 import { OnOperateType } from 'src/utils/interface';
 
 const groupStatusOptions = [
@@ -59,7 +60,17 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<GroupColType
       key: 'groupName',
       dataIndex: 'groupName',
       title: '群名称',
-      ellipsis: true,
+      render: (title) => (
+        <Tooltip
+          placement="topLeft"
+          title={title ? <span style={{ wordBreak: 'break-all' }}>{title}</span> : undefined}
+        >
+          <span>{title || UNKNOWN}</span>
+        </Tooltip>
+      ),
+      ellipsis: {
+        showTitle: false
+      },
       width: 160
     },
     {
@@ -67,7 +78,7 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<GroupColType
       dataIndex: 'count',
       title: '总人数',
       ellipsis: true,
-      width: 160
+      width: 80
     },
     {
       key: 'staffName',
@@ -85,7 +96,7 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<GroupColType
           {text === 1 ? '可用' : '不可用'}
         </span>
       ),
-      width: 160
+      width: 80
     },
     {
       key: 'createTime',
