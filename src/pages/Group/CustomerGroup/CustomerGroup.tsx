@@ -10,6 +10,7 @@ import { downloadGroupList, queryGroupList } from 'src/apis/group';
 import { exportFile } from 'src/utils/base';
 
 const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
+  const [deptId, setDeptId] = useState<string>();
   const [formValue, setFormValues] = useState({
     title: ''
   });
@@ -22,6 +23,7 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
   const getList = async (params?: any) => {
     const res = await queryGroupList({
       pageNum: pagination.pageNum,
+      deptId,
       pageSize: pagination.pageSize,
       ...formValue,
       ...params
@@ -67,6 +69,11 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
       }
     });
   };
+
+  const onOrgTreeChange = (val: any) => {
+    console.log(val);
+    setDeptId(val.deptId);
+  };
   return (
     <div className="container">
       {/* <div className={style.desc}>
@@ -74,11 +81,20 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
       </div> */}
 
       <div className="pt20 flex">
-        <OrgTreeSelect />
+        <OrgTreeSelect onChange={onOrgTreeChange} selectedKey={deptId} />
         <div className="container cell ml20">
           <div className="flex align-end">
             <div className="cell">
-              <NgFormSearch isInline={false} firstRowChildCount={3} searchCols={searchCols} onSearch={onSearch} />
+              <NgFormSearch
+                isInline={false}
+                firstRowChildCount={3}
+                searchCols={searchCols}
+                onSearch={onSearch}
+                onReset={(values) => {
+                  onSearch({ deptId: undefined, ...values });
+                  setDeptId(undefined);
+                }}
+              />
             </div>
             <Button className="fixed flex mb10" type="primary" shape="round" onClick={() => downloadList()}>
               导出群信息

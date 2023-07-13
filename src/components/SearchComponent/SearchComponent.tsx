@@ -37,7 +37,7 @@ interface SearchComponentProps {
   isInline?: boolean;
   firstRowChildCount?: number;
   onSearch: (params: any) => void;
-  onReset?: () => void;
+  onReset?: (values?: any) => void;
   onValuesChange?: (changeValues: any, values: any) => void;
   loadData?: ((selectedOptions?: DefaultOptionType[] | undefined) => void) | undefined;
   onChangeOfCascader?:
@@ -145,7 +145,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
   const handleReset = () => {
     const values = searchForm.getFieldsValue();
     if (onReset) {
-      onReset();
+      onReset(dateValueFormat(values));
     } else {
       onChangeOfCascader?.([''], []);
       onSearch(dateValueFormat(values));

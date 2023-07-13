@@ -1,15 +1,24 @@
-import React, { Key, useEffect, useState } from 'react';
+import React, { Key, useEffect, useMemo, useState } from 'react';
 import { Tree } from 'antd';
 
 import { IOrganizationItem } from 'src/utils/interface';
 import style from './style.module.less';
 import { queryDepartmentList } from 'src/apis/organization';
 
-const OrgTreeSelect: React.FC = () => {
+interface OrgTreeSelectProps {
+  onChange: (val: any) => void;
+  selectedKey?: string;
+}
+const OrgTreeSelect: React.FC<OrgTreeSelectProps> = ({ onChange, selectedKey }) => {
   const [orgList, setOrganization] = useState<IOrganizationItem[]>([]);
-  const [currentNode, setCurrentNode] = useState<IOrganizationItem>({});
   const [expandIds, setExpandIds] = useState<Key[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState<Key[]>([]);
 
+  useMemo(() => {
+    if (!selectedKey) {
+      setSelectedKeys([]);
+    }
+  }, [selectedKey]);
   /**
    * 格式化数据源
    * @param data
@@ -78,10 +87,11 @@ const OrgTreeSelect: React.FC = () => {
         onExpand={(keys) => setExpandIds(keys)}
         treeData={orgList}
         loadData={onLoadData}
-        selectedKeys={[currentNode.deptId || '']}
+        selectedKeys={selectedKeys}
         onSelect={(selectedKeys, { selectedNodes }) => {
+          setSelectedKeys(selectedKeys);
           if (selectedNodes.length > 0) {
-            setCurrentNode(selectedNodes[0]);
+            onChange(selectedNodes[0]);
           }
         }}
       />
