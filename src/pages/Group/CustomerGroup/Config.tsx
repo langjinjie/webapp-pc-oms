@@ -2,6 +2,7 @@ import { Button, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 import React from 'react';
+import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { OnOperateType } from 'src/utils/interface';
@@ -113,9 +114,11 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<GroupColType
       width: 100,
       fixed: 'right',
       render: (text, record) => (
-        <Button type="link" onClick={() => onOperate('view', record)}>
-          群详情
-        </Button>
+        <AuthBtn path="/detail">
+          <Button type="link" onClick={() => onOperate('view', record)}>
+            群详情
+          </Button>
+        </AuthBtn>
       )
     }
   ];

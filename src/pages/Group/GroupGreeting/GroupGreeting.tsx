@@ -1,6 +1,6 @@
 import { Button, Image } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Icon, NgFormSearch, NgModal, NgTable, Preview } from 'src/components';
+import { AuthBtn, Icon, NgFormSearch, NgModal, NgTable, Preview } from 'src/components';
 import { GreetingColType, searchCols, tableColsFun } from './Config';
 import { RouteComponentProps } from 'react-router-dom';
 import { delGroupGreeting, getGroupGreetingDetail, queryGroupGreetingList } from 'src/apis/group';
@@ -78,23 +78,26 @@ const GroupSetGreeting: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <div className="container">
       <div>
-        <Button
-          type="primary"
-          shape="round"
-          onClick={() => {
-            history.push('/groupgreeting/edit');
-          }}
-        >
-          新增欢迎语
-        </Button>
+        <AuthBtn path="/add">
+          <Button
+            type="primary"
+            shape="round"
+            onClick={() => {
+              history.push('/groupgreeting/edit');
+            }}
+          >
+            新增欢迎语
+          </Button>
+        </AuthBtn>
 
         <Button type="link" className="ml20" onClick={() => setVisible(true)}>
           <Icon name="icon_common_16_question" className="f18 mr5  text-primary"></Icon>
           前端配置说明
         </Button>
       </div>
-
-      <NgFormSearch className="mt20" searchCols={searchCols} onSearch={onSearch}></NgFormSearch>
+      <AuthBtn path="/query">
+        <NgFormSearch className="mt20" searchCols={searchCols} onSearch={onSearch}></NgFormSearch>
+      </AuthBtn>
       <NgTable
         rowKey="wcId"
         pagination={pagination}
@@ -104,7 +107,13 @@ const GroupSetGreeting: React.FC<RouteComponentProps> = ({ history }) => {
         columns={tableColsFun(onOperate)}
       ></NgTable>
 
-      <NgModal visible={visible} title="前端配置说明" onCancel={() => setVisible(false)} onOk={() => setVisible(false)}>
+      <NgModal
+        visible={visible}
+        width={735}
+        title="前端配置说明"
+        onCancel={() => setVisible(false)}
+        onOk={() => setVisible(false)}
+      >
         <Image src={guidePic} preview={false}></Image>
       </NgModal>
       <NgModal

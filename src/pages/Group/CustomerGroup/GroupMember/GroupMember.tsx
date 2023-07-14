@@ -1,6 +1,6 @@
 import { Button, Divider, Modal, message } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { BreadCrumbs, NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, BreadCrumbs, NgFormSearch, NgTable } from 'src/components';
 import { memberColType, searchCols, tableCols } from './Config';
 
 import style from './style.module.less';
@@ -123,9 +123,11 @@ const GroupMember: React.FC<RouteComponentProps> = ({ location }) => {
           <div className="cell">
             <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
           </div>
-          <Button className="fixed flex mb10" type="primary" shape="round" onClick={downloadList}>
-            导出群成员信息
-          </Button>
+          <AuthBtn path="/detail/download">
+            <Button className="fixed flex mb10" type="primary" shape="round" onClick={downloadList}>
+              导出群成员信息
+            </Button>
+          </AuthBtn>
         </div>
       </div>
       <NgTable

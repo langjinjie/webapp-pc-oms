@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import OrgTreeSelect from 'src/components/OrgTreeSelect/OrgTreeSelect';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { GroupColType, searchCols, tableColsFun } from './Config';
 import { Button, Modal, message } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
@@ -81,24 +81,30 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
       </div> */}
 
       <div className="pt20 flex">
-        <OrgTreeSelect onChange={onOrgTreeChange} selectedKey={deptId} />
+        <AuthBtn path="/view">
+          <OrgTreeSelect onChange={onOrgTreeChange} selectedKey={deptId} />
+        </AuthBtn>
         <div className="container cell ml20">
           <div className="flex align-end">
             <div className="cell">
-              <NgFormSearch
-                isInline={false}
-                firstRowChildCount={3}
-                searchCols={searchCols}
-                onSearch={onSearch}
-                onReset={(values) => {
-                  onSearch({ deptId: undefined, ...values });
-                  setDeptId(undefined);
-                }}
-              />
+              <AuthBtn path="/view">
+                <NgFormSearch
+                  isInline={false}
+                  firstRowChildCount={3}
+                  searchCols={searchCols}
+                  onSearch={onSearch}
+                  onReset={(values) => {
+                    onSearch({ deptId: undefined, ...values });
+                    setDeptId(undefined);
+                  }}
+                />
+              </AuthBtn>
             </div>
-            <Button className="fixed flex mb10" type="primary" shape="round" onClick={() => downloadList()}>
-              导出群信息
-            </Button>
+            <AuthBtn path="/export">
+              <Button className="fixed flex mb10" type="primary" shape="round" onClick={() => downloadList()}>
+                导出群信息
+              </Button>
+            </AuthBtn>
           </div>
           <NgTable
             rowKey="chatId"

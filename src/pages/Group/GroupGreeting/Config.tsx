@@ -1,6 +1,7 @@
 import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
+import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { OnOperateType } from 'src/utils/interface';
@@ -93,15 +94,21 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<GreetingColT
       width: 140,
       render: (_, record, index) => (
         <>
-          <Button type="link" onClick={() => onOperate('edit', record)}>
-            修改
-          </Button>
-          <Button type="link" onClick={() => onOperate('view', record)}>
-            预览
-          </Button>
-          <Button type="link" onClick={() => onOperate('delete', record, index)}>
-            删除
-          </Button>
+          <AuthBtn path="/edit">
+            <Button type="link" onClick={() => onOperate('edit', record)}>
+              修改
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/preview">
+            <Button type="link" onClick={() => onOperate('view', record)}>
+              预览
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/delete">
+            <Button type="link" onClick={() => onOperate('delete', record, index)}>
+              删除
+            </Button>
+          </AuthBtn>
         </>
       )
     }
