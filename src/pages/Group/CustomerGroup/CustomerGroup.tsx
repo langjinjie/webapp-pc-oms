@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import OrgTreeSelect from 'src/components/OrgTreeSelect/OrgTreeSelect';
 import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
@@ -11,9 +11,8 @@ import { exportFile } from 'src/utils/base';
 
 const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
   const [deptId, setDeptId] = useState<string>();
-  const [formValue, setFormValues] = useState({
-    title: ''
-  });
+  const [formValue, setFormValues] = useState({});
+  const searchRef = useRef<{ handleReset:() => void }>();
   const [pagination, setPagination] = useState<MyPaginationProps>({
     total: 0,
     pageNum: 1,
@@ -41,6 +40,7 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
   };
   const onSearch = (values: any) => {
     setFormValues(values);
+
     getList({ ...values, pageNum: 1 });
   };
 
@@ -58,7 +58,6 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
 
       onOk: async () => {
         const res = await downloadGroupList(formValue);
-        console.log(res);
 
         if (res && res.headers['content-disposition']?.split('=')[1]) {
           const fileName = decodeURI(res.headers['content-disposition']?.split('=')[1]);
@@ -71,8 +70,10 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onOrgTreeChange = (val: any) => {
-    console.log(val);
     setDeptId(val.deptId);
+    setTimeout(() => {
+      searchRef.current?.handleReset();
+    }, 100);
   };
   return (
     <div className="container">
@@ -89,13 +90,13 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
             <div className="cell">
               <AuthBtn path="/view">
                 <NgFormSearch
+                  searchRef={searchRef}
                   isInline={false}
                   firstRowChildCount={3}
                   searchCols={searchCols}
                   onSearch={onSearch}
                   onReset={(values) => {
-                    onSearch({ deptId: undefined, ...values });
-                    setDeptId(undefined);
+                    onSearch({ deptId, ...values });
                   }}
                 />
               </AuthBtn>

@@ -89,9 +89,11 @@ const OrgTreeSelect: React.FC<OrgTreeSelectProps> = ({ onChange, selectedKey }) 
         loadData={onLoadData}
         selectedKeys={selectedKeys}
         onSelect={(selectedKeys, { selectedNodes }) => {
-          setSelectedKeys(selectedKeys);
-          if (selectedNodes.length > 0) {
-            onChange(selectedNodes[0]);
+          if (selectedKeys.length > 0) {
+            setSelectedKeys(selectedKeys);
+            if (selectedNodes.length > 0) {
+              onChange(selectedNodes[0]);
+            }
           }
         }}
       />

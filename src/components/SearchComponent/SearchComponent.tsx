@@ -82,21 +82,6 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
     }
     onChangeOfCascader?.(value, selectedOptions);
   };
-
-  useImperativeHandle(searchRef, () => ({
-    handleReset: () => {
-      searchForm.resetFields();
-    },
-    setFieldsValue: (values: any) => {
-      searchForm.setFieldsValue(values);
-    }
-  }));
-  useEffect(() => {
-    if (props.defaultValues?.catalogIds) {
-      searchForm.setFieldsValue({ catalogIds: props.defaultValues.catalogIds, ...props.defaultValues });
-    }
-  }, [props.defaultValues]);
-
   /**
    * 日期格式化
    */
@@ -124,7 +109,6 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
         delete values[rangePickerName];
       });
     }
-
     const dates = searchCols.filter((col) => col.type === 'date');
     if (dates.length > 0) {
       dates.forEach((date) => {
@@ -138,10 +122,8 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
 
     return values;
   };
-  const handleFinish = (values: any) => {
-    onSearch(dateValueFormat(values));
-  };
 
+  // 重置表单
   const handleReset = () => {
     const values = searchForm.getFieldsValue();
     if (onReset) {
@@ -150,6 +132,24 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
       onChangeOfCascader?.([''], []);
       onSearch(dateValueFormat(values));
     }
+  };
+
+  useImperativeHandle(searchRef, () => ({
+    handleReset: () => {
+      handleReset();
+    },
+    setFieldsValue: (values: any) => {
+      searchForm.setFieldsValue(values);
+    }
+  }));
+  useEffect(() => {
+    if (props.defaultValues?.catalogIds) {
+      searchForm.setFieldsValue({ catalogIds: props.defaultValues.catalogIds, ...props.defaultValues });
+    }
+  }, [props.defaultValues]);
+
+  const handleFinish = (values: any) => {
+    onSearch(dateValueFormat(values));
   };
 
   const handleValuesChange = (changedValues: any, values: any) => {
