@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
 import { AuthBtn } from 'src/components';
@@ -105,9 +105,9 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<GreetingColT
             </Button>
           </AuthBtn>
           <AuthBtn path="/delete">
-            <Button type="link" onClick={() => onOperate('delete', record, index)}>
-              删除
-            </Button>
+            <Popconfirm title="确定删除？" onConfirm={() => onOperate('delete', record, index)}>
+              <Button type="link">删除</Button>
+            </Popconfirm>
           </AuthBtn>
         </>
       )
