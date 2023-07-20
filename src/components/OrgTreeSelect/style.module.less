@@ -20,9 +20,6 @@
   }
 
   :global {
-    .ant-tree {
-      width: max-content;
-    }
     .ant-tree-list {
       .ant-tree-treenode {
         padding: 5px 0;
@@ -35,7 +32,7 @@
         }
 
         &.ant-tree-treenode-selected {
-          background: #f2f8ff;
+          background: rgba(48, 120, 219, 0.2);
           border-radius: 8px;
 
           .ant-tree-node-selected {
@@ -43,12 +40,7 @@
 
             :local {
               .nodeItem {
-                color: #111;
-
-                .dotIcon {
-                  color: gray;
-                  display: inline-block;
-                }
+                color: @primary-color;
               }
             }
           }

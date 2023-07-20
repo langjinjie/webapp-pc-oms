@@ -154,7 +154,7 @@ const GroupGreetingEdit: React.FC<RouteComponentProps> = ({ history, location })
               </>
             )}
             <Form.Item label="消息通知" name="isSend" extra="开启后，会推送消息给所有客户群为群主的成员">
-              <Switch checkedChildren="开" unCheckedChildren="关" />
+              <Switch checkedChildren="开" unCheckedChildren="关" disabled={formValues.wcId} />
             </Form.Item>
             <Form.Item className="formFooter" wrapperCol={{ offset: 8 }}>
               <Button type="primary" htmlType="submit" shape="round">
