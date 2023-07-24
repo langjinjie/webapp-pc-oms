@@ -57,7 +57,7 @@ const CustomerGroup: React.FC<RouteComponentProps> = ({ history }) => {
       title: '确认导出群信息?',
 
       onOk: async () => {
-        const res = await downloadGroupList(formValue);
+        const res = await downloadGroupList({ ...formValue, deptId });
 
         if (res && res.headers['content-disposition']?.split('=')[1]) {
           const fileName = decodeURI(res.headers['content-disposition']?.split('=')[1]);
