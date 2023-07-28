@@ -6,6 +6,41 @@
   "description": "tenacity-pc A B端",
   "glyphs": [
     {
+      "icon_id": "36657064",
+      "name": "icon_导航_228_社群管理",
+      "font_class": "icon_daohang_228_shequnguanli",
+      "unicode": "e697",
+      "unicode_decimal": 59031
+    },
+    {
+      "icon_id": "35224884",
+      "name": "icon_common_16_Edit",
+      "font_class": "icon_common_16_Edit",
+      "unicode": "e694",
+      "unicode_decimal": 59028
+    },
+    {
+      "icon_id": "35224885",
+      "name": "icon_common_12_保单",
+      "font_class": "icon_common_12_baodan",
+      "unicode": "e695",
+      "unicode_decimal": 59029
+    },
+    {
+      "icon_id": "35224886",
+      "name": "icon_common_16_增加",
+      "font_class": "icon_common_16_zengjia",
+      "unicode": "e696",
+      "unicode_decimal": 59030
+    },
+    {
+      "icon_id": "29816157",
+      "name": "eye",
+      "font_class": "eye",
+      "unicode": "e692",
+      "unicode_decimal": 59026
+    },
+    {
       "icon_id": "34242643",
       "name": "icon_导航_28_知识库",
       "font_class": "icon_daohang_28_zhishiku1",
