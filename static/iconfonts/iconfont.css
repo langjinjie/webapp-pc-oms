@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2613124 */
-  src: url('iconfont.woff2?t=1690533782492') format('woff2'),
-       url('iconfont.woff?t=1690533782492') format('woff'),
-       url('iconfont.ttf?t=1690533782492') format('truetype');
+  src: url('iconfont.woff2?t=1690538094916') format('woff2'),
+       url('iconfont.woff?t=1690538094916') format('woff'),
+       url('iconfont.ttf?t=1690538094916') format('truetype');
 }
 
 .iconfont {
@@ -13,7 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-icon_daohang_228_shequnguanli:before {
+.icon-icon_daohang_28_shequnguanli:before {
   content: "\e697";
 }
 
