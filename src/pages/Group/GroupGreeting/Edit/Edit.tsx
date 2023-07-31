@@ -76,9 +76,9 @@ const GroupGreetingEdit: React.FC<RouteComponentProps> = ({ history, location })
         ]}
       />
 
-      <div className={classNames(style.notice, 'mt20')}>
+      {/* <div className={classNames(style.notice, 'mt20')}>
         注：如果你已经在企业微信后台设置过欢迎语，系统设置的欢迎语可能不生效，如出现此问题，可联系企业微信超级管理员，登录后台检查是否已经配置过欢迎语。
-      </div>
+      </div> */}
       <div className="flex mt30">
         <div className="cell" style={{ maxWidth: '600px' }}>
           <Form
