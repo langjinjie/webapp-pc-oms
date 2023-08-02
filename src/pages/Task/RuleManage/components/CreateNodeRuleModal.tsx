@@ -17,6 +17,7 @@ type CreateNodeModalProps = React.ComponentProps<typeof NgModal> & {
 
 const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption, nodeCode, onSubmit, ...props }) => {
   const [ruleForm] = Form.useForm();
+
   const [currentNodeType, setCurrentNodeType] = useState<NodeCodeType>();
   const [currentNode, setCurrentNode] = useState<any>({});
   const [nodeOptions, setNodeOptions] = useState<any[]>([]);
@@ -39,8 +40,13 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
       setTagOptions(res.tagList || []);
     }
   };
-  const nodeChange = async (value: string) => {
-    const node = (nodeOptions.length > 0 ? nodeOptions : childOption!).filter((node) => node.nodeId === value)?.[0];
+  const nodeChange = async (value: string | object) => {
+    let node;
+    if (typeof value === 'string') {
+      node = (nodeOptions.length > 0 ? nodeOptions : childOption!).filter((node) => node.nodeId === value)?.[0];
+    } else {
+      node = value;
+    }
     setCurrentNode(node);
     // 如果是标签类型
     if (currentNodeType === 'node_tag') {
@@ -61,14 +67,15 @@ const CreateNodeModal: React.FC<CreateNodeModalProps> = ({ options, childOption,
       if (nodeCode) {
         setCurrentNodeType(nodeCode);
         setNodeOptions(childOption || []);
+
         const node = childOption?.[0];
-        setCurrentNode(node);
+
         getTagList(node.nodeName);
         ruleForm.setFieldsValue({
           nodeId: node.nodeId,
           nodeCode: nodeCode
         });
-        nodeChange(node.nodeId);
+        nodeChange(node);
       }
     } else {
       setFormValues({});
