@@ -151,6 +151,7 @@ export interface SpeechProps {
   [propKey: string]: any;
   contentObj: SpeechProps;
 }
+
 export const columns = (args: OperateProps): ColumnsType<SpeechProps> => {
   const { currentCorpId } = useContext(Context);
 

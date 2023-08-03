@@ -22,7 +22,7 @@ const BreadCrumbs: React.FC<BreadCrumbsProps> = ({ navList, navClick, className 
 
   const newNavList = useMemo(() => {
     return navList || (location.state as { navList?: Nav[] })?.navList || [];
-  }, [location]);
+  }, [location, navList]);
   // 点击Nav
   const clickNavListHandle = (path: string) => {
     history.push(path!);

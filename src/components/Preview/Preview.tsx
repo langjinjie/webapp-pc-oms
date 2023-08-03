@@ -8,11 +8,12 @@ import { getMomentDetail } from 'src/apis/marketing';
 
 interface IPreviewProps {
   value?: IPreviewValue;
+  title?: string;
   className?: string;
   isMoment?: boolean; // 是否是朋友圈（默认为聊天框）
 }
 
-const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
+const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment, title }) => {
   const [itemIds, setItemIds] = useState<any[]>([]);
 
   const getMomentDetailByFeedId = async () => {
@@ -36,7 +37,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, isMoment }) => {
       <div className={style.inner}>
         <header className={style.header}>
           <Icon name="zuojiantou-copy" className={style.back}></Icon>
-          <div className={style.staffName}>{isMoment ? '朋友圈' : '客户经理张晓雅'}</div>
+          <div className={style.staffName}>{title || (isMoment ? '朋友圈' : '客户经理张晓雅')}</div>
           <Icon name="diandian" className={style.more}></Icon>
         </header>
         <div className={classNames(style.content, { [style.isMoment]: isMoment })}>
