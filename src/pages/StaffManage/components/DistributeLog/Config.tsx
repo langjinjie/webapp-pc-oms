@@ -3,7 +3,6 @@ import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { onJobTransferStatusList, resignTransferStatusList } from '../DistributeList/Config';
-import { Form } from 'antd';
 import { SelectStaff } from 'src/pages/StaffManage/components';
 import classNames from 'classnames';
 
@@ -21,11 +20,7 @@ export const searchCols: (queryType: '1' | '2') => SearchCol[] = (queryType) => 
       type: 'custom',
       label: '所属客户经理',
       placeholder: '请输入',
-      customNode: (
-        <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-          <SelectStaff key={1} />
-        </Form.Item>
-      )
+      customNode: <SelectStaff />
     },
     {
       name: 'transferStatus',

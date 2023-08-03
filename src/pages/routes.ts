@@ -15,6 +15,7 @@ import { migrationRouters } from 'src/routes/migration';
 import { crowdsManage } from 'src/routes/crowdsPackage';
 import { market } from 'src/routes/market';
 import { tagManage } from 'src/routes/tagManage';
+import { publicManage } from 'src/routes/publicManage';
 
 export interface Menu {
   name: string;
@@ -56,7 +57,9 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/marketingMoment/edit',
     component: lazy(() => import('src/pages/Marketing/Moment/Edit'))
-  }
+  },
+  // 临时路由：销售线索
+  ...publicManage
 ];
 
 export const routes: RouteProps[] = [

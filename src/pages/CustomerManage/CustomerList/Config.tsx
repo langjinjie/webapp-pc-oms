@@ -1,6 +1,6 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
-import { Avatar, Button, Form } from 'antd';
+import { Avatar, Button } from 'antd';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { TagModal } from 'src/pages/StaffManage/components';
 import { SelectOrg } from 'src/pages/CustomerManage/components';
@@ -50,11 +50,7 @@ export const searchCols: SearchCol[] = [
     type: 'custom',
     width: 100,
     label: '客户标签',
-    customNode: (
-      <Form.Item key={'filterTag'} name="filterTag" label="客户标签">
-        <TagModal key={1} />
-      </Form.Item>
-    )
+    customNode: <TagModal />
   },
   {
     type: 'rangePicker',
@@ -66,22 +62,14 @@ export const searchCols: SearchCol[] = [
     type: 'custom',
     label: '所属客户经理',
     placeholder: '请输入',
-    customNode: (
-      <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-        <SelectOrg key={1} />
-      </Form.Item>
-    )
+    customNode: <SelectOrg />
   },
   {
     name: 'staffList',
     type: 'custom',
     label: '',
     placeholder: '请输入',
-    customNode: (
-      <Form.Item key={'orgDept'} name="orgDept" label="所属客户经理组织架构">
-        <SelectOrg key={2} type="dept" checkabledDTypeKeys={[2, 3, 4, 5]} />
-      </Form.Item>
-    )
+    customNode: <SelectOrg key={2} type="dept" checkabledDTypeKeys={[2, 3, 4, 5]} />
   }
 ];
 

@@ -174,7 +174,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 <Form.Item key={col.name} label={col.label} name={col.name}>
                   <Input
                     maxLength={col.maxLength || 50}
-                    placeholder={col.placeholder as string}
+                    placeholder={(col.placeholder as string) || '请输入'}
                     style={{ width: col.width }}
                     allowClear
                   />
@@ -185,7 +185,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                   <InputNumber
                     type={'number'}
                     max={col.maxLength}
-                    placeholder={col.placeholder as string}
+                    placeholder={(col.placeholder as string) || '请输入'}
                     style={{ width: col.width }}
                     controls={false}
                   />
@@ -193,7 +193,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               )) ||
               (col.type === 'select' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <Select placeholder="请选择" allowClear style={{ width: col.width }}>
+                  <Select placeholder={(col.placeholder as string) || '请选择'} allowClear style={{ width: col.width }}>
                     {col.options &&
                       col.options.map((option) => (
                         <Select.Option
@@ -218,6 +218,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               (col.type === 'cascader' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
                   <Cascader
+                    placeholder={(col.placeholder as string) || '请选择'}
                     changeOnSelect
                     options={col.cascaderOptions}
                     fieldNames={{ ...col.fieldNames }}
@@ -231,10 +232,14 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               )) ||
               (col.type === 'date' && (
                 <Form.Item key={col.name} label={col.label} name={col.name}>
-                  <DatePicker format="YYYY-MM-DD" />
+                  <DatePicker placeholder={col.placeholder as string} format="YYYY-MM-DD" />
                 </Form.Item>
               )) ||
-              (col.type === 'custom' && col.customNode)
+              (col.type === 'custom' && (
+                <Form.Item key={col.name} label={col.label} name={col.name}>
+                  {col.customNode}
+                </Form.Item>
+              ))
             );
           })}
           {props.children}
@@ -266,7 +271,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
               return (
                 (col.type === 'input' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Input placeholder={col.placeholder as string} style={{ width: col.width }} allowClear />
+                    <Input
+                      placeholder={(col.placeholder as string) || '请输入'}
+                      style={{ width: col.width }}
+                      allowClear
+                    />
                   </Form.Item>
                 )) ||
                 (col.type === 'inputNumber' && (
@@ -274,7 +283,7 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                     <InputNumber
                       type={'number'}
                       max={col.maxLength}
-                      placeholder={col.placeholder as string}
+                      placeholder={(col.placeholder as string) || '请输入'}
                       style={{ width: col.width }}
                       controls={false}
                     />
@@ -282,7 +291,11 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 )) ||
                 (col.type === 'select' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <Select placeholder="请选择" allowClear style={{ width: col.width }}>
+                    <Select
+                      placeholder={(col.placeholder as string) || '请选择'}
+                      allowClear
+                      style={{ width: col.width }}
+                    >
                       {col.options &&
                         col.options.map((option) => (
                           <Select.Option
@@ -297,15 +310,19 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 )) ||
                 (col.type === 'rangePicker' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <RangePicker format="YYYY-MM-DD" />
+                    <RangePicker format="YYYY-MM-DD" placeholder={col.placeholder as [string, string]} />
                   </Form.Item>
                 )) ||
                 (col.type === 'date' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <DatePicker format="YYYY-MM-DD" />
+                    <DatePicker format="YYYY-MM-DD" placeholder={col.placeholder as string} />
                   </Form.Item>
                 )) ||
-                (col.type === 'custom' && col.customNode)
+                (col.type === 'custom' && (
+                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                    {col.customNode}
+                  </Form.Item>
+                ))
               );
             })}
           </Row>
@@ -345,15 +362,19 @@ const SearchComponent: React.FC<SearchComponentProps> = (props) => {
                 )) ||
                 (col.type === 'rangePicker' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <RangePicker format="YYYY-MM-DD" />
+                    <RangePicker format="YYYY-MM-DD" placeholder={col.placeholder as [string, string]} />
                   </Form.Item>
                 )) ||
                 (col.type === 'date' && (
                   <Form.Item key={col.name} label={col.label} name={col.name}>
-                    <DatePicker format="YYYY-MM-DD" />
+                    <DatePicker format="YYYY-MM-DD" placeholder={col.placeholder as string} />
                   </Form.Item>
                 )) ||
-                (col.type === 'custom' && col.customNode)
+                (col.type === 'custom' && (
+                  <Form.Item key={col.name} label={col.label} name={col.name}>
+                    {col.customNode}
+                  </Form.Item>
+                ))
               );
             })}
             {props.children}

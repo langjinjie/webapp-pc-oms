@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form } from 'antd';
+import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { useHistory } from 'react-router-dom';
@@ -28,11 +28,7 @@ export const searchCols: () => SearchCol[] = () => {
       name: 'staffName',
       type: 'custom',
       label: '所属客户经理',
-      customNode: (
-        <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-          <SelectStaff key={1} type="staff" />
-        </Form.Item>
-      )
+      customNode: <SelectStaff type="staff" />
     },
     {
       name: 'clientName',
@@ -52,11 +48,7 @@ export const searchCols: () => SearchCol[] = () => {
       type: 'custom',
       width: 120,
       label: '组织架构',
-      customNode: (
-        <Form.Item key={'deptList'} name="deptList" label="组织架构">
-          <SelectStaff key={1} type="dept" />
-        </Form.Item>
-      )
+      customNode: <SelectStaff type="dept" />
     },
     {
       name: 'leaderName',
