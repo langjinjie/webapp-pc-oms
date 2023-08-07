@@ -28,6 +28,7 @@ export interface ProductProps {
   isOwner: string;
   isTop: string;
   groupId: string;
+  productUrl: string;
 }
 
 enum ProductStatus {
@@ -76,9 +77,10 @@ type ColumnsArgs = {
   deleteItem: (record: ProductProps, index: number) => void;
   handleSort: (record: ProductProps) => void;
   setRight: (record: ProductProps) => void;
+  downLoadQRCode: (record: ProductProps) => void;
 };
 const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
-  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort, setRight, copyItem } = args;
+  const { handleEdit, changeItemStatus, viewItem, deleteItem, handleSort, setRight, copyItem, downLoadQRCode } = args;
   return [
     { title: '产品名称', dataIndex: 'productName', width: 200, ellipsis: { showTitle: true } },
     {
@@ -151,7 +153,7 @@ const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
     },
     {
       title: '操作',
-      width: 300,
+      width: 310,
       dataIndex: 'status',
       align: 'left',
       fixed: 'right',
@@ -202,6 +204,11 @@ const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
           <AuthBtn path="/set">
             <Button type="link" onClick={() => setRight(obj)}>
               配置可见范围
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/set">
+            <Button type="link" onClick={() => downLoadQRCode(obj)}>
+              下载产品二维码
             </Button>
           </AuthBtn>
         </Space>

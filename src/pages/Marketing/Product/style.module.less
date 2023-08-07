@@ -63,5 +63,33 @@
     .ant-form-item-label {
       width: 160px;
     }
+    .ant-form-item-extra {
+      color: #f25555;
+    }
+  }
+}
+
+.tagItem {
+  display: inline-block;
+  padding: 0 8px;
+  height: 24px;
+  background: #eaf3fe;
+  border-radius: 8px;
+  line-height: 24px;
+  color: #318cf5;
+  & + .tagItem {
+    margin-left: 8px;
+  }
+}
+/* 对接产品类型 */
+.integrationProduct {
+  margin-left: 180px;
+  padding: 20px;
+  background-color: #f7f8fc;
+  border-radius: 8px;
+  :global {
+    .ant-form-item-label {
+      width: auto;
+    }
   }
 }
