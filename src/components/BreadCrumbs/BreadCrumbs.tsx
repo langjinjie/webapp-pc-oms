@@ -30,7 +30,7 @@ const BreadCrumbs: React.FC<BreadCrumbsProps> = ({ navList, navClick, className 
 
   return (
     <ul className={classNames(style.breadList, className)}>
-      <li className={style.currentItem}>当前位置：</li>
+      <li className={style.breadItem}>当前位置：</li>
       {newNavList.map((item, index: number) => (
         <li
           key={item.name}

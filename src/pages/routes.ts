@@ -61,6 +61,10 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/questionActivity',
     component: lazy(() => import('src/pages/PointsManage/QuestionActivity/QuestionActivity'))
+  },
+  {
+    path: '/questionActivity/add',
+    component: lazy(() => import('src/pages/PointsManage/QuestionActivity/Add/Add'))
   }
 ];
 
