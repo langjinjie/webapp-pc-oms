@@ -52,15 +52,17 @@ const corpProductLinkToSpecTypeName: { [key: string]: string } = {
 
 // 产品标签
 const Tags: React.FC<{ value?: any }> = ({ value }) => {
-  return (value || []).map((tag: any) => (
-    <>
-      {tag && (
-        <span className={style.tagItem} key={tag}>
+  return (value || []).map((tag: any, index: number) => {
+    if (tag) {
+      return (
+        <span className={style.tagItem} key={tag + index}>
           {tag}
         </span>
-      )}
-    </>
-  ));
+      );
+    } else {
+      return false;
+    }
+  });
 };
 
 const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
@@ -98,66 +100,86 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   const [oldSourceUrlParam, setOldSourceUrlParam] = useState({ displayType: 0, sourceUrl: '' });
   const [oldUrlParam, setOldUrlParam] = useState({ displayType: 0, url: '' });
 
-  // 获取详情
-  const getProductDetail = async (id: string) => {
-    const res = await productDetail({ productId: id });
+  // 获取配置列表
+  const getProductConfig = async () => {
+    const res = await productConfig({ type: [1, 2, 3, 4, 5, 8] });
     if (res) {
-      const {
-        productName,
-        productId,
-        categoryId,
-        familyEnsureId,
-        ensureTargetId,
-        ensureSceneId,
-        premiumTypeId,
-        speechcraft,
-        posterName,
-        shareTitle,
-        highlights,
-        corpProductLink,
-        shareCoverImgUrl,
-        posterImgUrl,
-        tags = '',
-        displayType,
-        username,
-        path,
-        sourceUrl,
-        recommendImgUrl,
-        whetherAssociated,
-        specType,
-        groupId
-      } = res;
+      setConfig(res);
+    }
+    return res;
+  };
 
-      setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl, whetherAssociated, specType });
-      const premium = (res.premium as number) / 100;
-      setPremiumValue(premium + '');
-      setCurrency(res.premiumTypeId);
-      setDisplayType(displayType);
+  // 获取详情
+  const getProductDetail = async (id?: string) => {
+    const config = (await getProductConfig()) as Config;
+    if (id) {
+      const res = await productDetail({ productId: id });
+      if (res) {
+        const {
+          productName,
+          productId,
+          categoryId,
+          familyEnsureId,
+          ensureTargetId,
+          ensureSceneId,
+          premiumTypeId,
+          speechcraft,
+          posterName,
+          shareTitle,
+          highlights,
+          corpProductLink,
+          shareCoverImgUrl,
+          posterImgUrl,
+          tags = '',
+          displayType,
+          username,
+          path,
+          sourceUrl,
+          recommendImgUrl,
+          whetherAssociated,
+          specType,
+          groupId,
+          productScenes,
+          corpProductType,
+          localProductLink
+        } = res;
 
-      form.setFieldsValue({
-        productName,
-        groupId,
-        productId,
-        specType,
-        corpProductLink,
-        categoryId,
-        familyEnsureId,
-        ensureTargetId,
-        ensureSceneId,
-        premiumTypeId,
-        speechcraft,
-        posterName,
-        shareTitle,
-        highlights,
-        posterImgUrl,
-        shareCoverImgUrl,
-        tags: tags?.split(',') || undefined,
-        displayType,
-        username,
-        path,
-        sourceUrl,
-        recommendImgUrl
-      });
+        setShareInfo({ productName, shareTitle, shareCoverImgUrl, posterImgUrl, whetherAssociated, specType });
+        const premium = (res.premium as number) / 100;
+        setPremiumValue(premium + '');
+        setCurrency(res.premiumTypeId);
+        setDisplayType(displayType);
+
+        form.setFieldsValue({
+          productName,
+          groupId,
+          productId,
+          specType,
+          corpProductLink,
+          categoryId,
+          familyEnsureId,
+          ensureTargetId,
+          ensureSceneId,
+          premiumTypeId,
+          speechcraft,
+          posterName,
+          shareTitle,
+          highlights,
+          posterImgUrl,
+          shareCoverImgUrl,
+          tags: tags?.split(',') || undefined,
+          displayType,
+          username,
+          path,
+          sourceUrl,
+          recommendImgUrl,
+          productScenes: productScenes
+            ?.split(',')
+            .map((scene: string) => config.productSceneList.find(({ name }) => name === scene)?.id),
+          corpProductType,
+          localProductLink
+        });
+      }
     }
   };
 
@@ -264,7 +286,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
   };
 
   const onFinish = async (values: any) => {
-    const { highlights, tags, groupId, ...otherValues } = values;
+    const { highlights, tags, groupId, productScenes, ...otherValues } = values;
 
     delete otherValues.group1;
     delete otherValues.group2;
@@ -277,29 +299,18 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
       premiumTypeId: currency,
       tags: tags.join(','),
       groupId: groupId || '',
-      highlights: highlights && highlights.replace(/，/gi, ',')
+      highlights: highlights && highlights.replace(/，/gi, ','),
+      productScenes: productScenes
+        ?.map((sceneId: string) => config.productSceneList.find(({ id }) => id === sceneId)?.name)
+        .toString()
     };
     const res = await productEdit(editParams);
     if (res) {
-      message.success('编辑成功！');
+      message.success(`${values.productId ? '编辑' : '新增'}成功！`);
       history.replace('/marketingProduct?pageNum=1');
     }
   };
-  // 获取配置列表
-  const getProductConfig = async () => {
-    const res = await productConfig({ type: [1, 2, 3, 4, 5, 8] });
-    if (res) {
-      setConfig({
-        ...res,
-        productSceneList: [
-          { id: '0', name: '无' },
-          { id: '1', name: '旅游场景' },
-          { id: '2', name: '儿童场景' },
-          { id: '3', name: '其他场景' }
-        ]
-      });
-    }
-  };
+
   const validatorLights = (value: string) => {
     if (!value) {
       return Promise.resolve();
@@ -330,8 +341,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
     const state = location.state || {};
     const { id = '', type = '0' } = state;
     setPropsState({ id, type });
-    getProductConfig();
-    id && getProductDetail(id);
+    getProductDetail(id);
     const isView = getQueryParam('isView');
     const isCopy = getQueryParam('isCopy');
 
@@ -358,7 +368,6 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
 
   // 表单变化
   const onFormValuesChange = (values: any) => {
-    console.log('values', values);
     const { shareTitle, activityName, productName, shareCoverImgUrl, specType } = values;
     // 特殊处理：选择对接类产品时候,只能选择上传图片
     if (specType === 2) {
@@ -447,18 +456,25 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         >
           <Input placeholder="请输入产品ID" className="width320" maxLength={40} readOnly={isReadOnly} />
         </Form.Item>
-        <Form.Item label="产品类型" name="specType" initialValue={0}>
-          <Group>
+        <Form.Item
+          label="产品类型"
+          name="specType"
+          initialValue={0}
+          extra={shareInfo.specType === 2 && '备注：选择对接类产品，客户点击进入页面后可以直接出单，进入投保流程'}
+        >
+          <Group disabled={isReadOnly}>
             <Radio value={0}>通用产品</Radio>
             <Radio value={1}>分坐席个性化产品</Radio>
+            {/* <Radio value={2}>对接类产品</Radio> */}
           </Group>
         </Form.Item>
         {shareInfo.specType === 2 && (
           <div className={style.integrationProduct}>
             <Form.Item
-              name="type"
+              name="corpProductType"
               className={style.Integration}
               label="对接类产品类型"
+              rules={[{ required: true }]}
               extra={
                 <div className="color-danger flex">
                   <div>备注：</div>
@@ -469,9 +485,9 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
                 </div>
               }
             >
-              <Group>
-                <Radio value={0}>线上线下模式</Radio>
-                <Radio value={1}>互联网模式</Radio>
+              <Group disabled={isReadOnly}>
+                <Radio value={1}>线上线下模式</Radio>
+                <Radio value={2}>互联网模式</Radio>
               </Group>
             </Form.Item>
           </div>
@@ -491,10 +507,10 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
             ))}
           </Group>
         </Form.Item>
-        {displayType === 1 && (
+        {(displayType === 1 || (displayType === 3 && shareInfo.specType === 2)) && (
           <Form.Item
             label={corpProductLinkToSpecTypeName[shareInfo.specType.toString()]}
-            name="corpProductLink"
+            name={shareInfo.specType === 2 ? 'localProductLink' : 'corpProductLink'}
             rules={[
               { required: true, message: '请输入产品链接' },
               { type: 'url', message: '请输入正确的链接' }
@@ -521,7 +537,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
               rules={[{ required: true, message: '请上传图片' }]}
               extra="为确保最佳展示效果，请上传宽度为750像素高清图片，仅支持.jpg格式"
             >
-              <NgUpload beforeUpload={beforeUploadImgHandle} />
+              <NgUpload beforeUpload={beforeUploadImgHandle} disabled={isReadOnly} />
             </Form.Item>
           </>
         )}
@@ -538,7 +554,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           </>
         )}
         <Form.Item name="productScenes" label="产品场景">
-          <ProductScene productSceneList={config.productSceneList} />
+          <ProductScene productSceneList={config.productSceneList} readOnly={isReadOnly} />
         </Form.Item>
         <Form.Item name="categoryId" label="产品分类：" rules={[{ required: true, message: '请选择产品分类' }]}>
           <Select placeholder="请选择" allowClear className="width320" disabled={isReadOnly}>
@@ -648,7 +664,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
         </Form.Item>
 
         <Form.Item label="可见范围设置" name={'groupId'}>
-          <SetUserRightFormItem form={form} />
+          <SetUserRightFormItem form={form} readonly={isReadOnly} />
         </Form.Item>
         {/* </Form> */}
 
@@ -662,7 +678,11 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           rules={[{ message: '请上传推荐图片' }]}
           extra="限制上传JPG格式，图片大小690*200，产品上架后推荐图不能更改"
         >
-          <NgUpload beforeUpload={recommendPicBeforeUpload} showDeleteBtn={shareInfo.whetherAssociated !== 0} />
+          <NgUpload
+            beforeUpload={recommendPicBeforeUpload}
+            showDeleteBtn={shareInfo.whetherAssociated !== 0}
+            disabled={isReadOnly}
+          />
         </Form.Item>
 
         <div className="sectionTitle" style={{ marginTop: '60px' }}>
@@ -676,7 +696,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
               rules={[{ required: true, message: '请上传分享封面图' }]}
               extra="为确保最佳展示效果，请上传132*132像素高清图片，仅支持.jpg格式"
             >
-              <NgUpload beforeUpload={shareCoverBeforeUpload} />
+              <NgUpload beforeUpload={shareCoverBeforeUpload} disabled={isReadOnly} />
             </Form.Item>
             <Form.Item
               label="小标题："
@@ -712,7 +732,7 @@ const ProductConfig: React.FC<productConfigProps> = ({ location, history }) => {
           name="posterImgUrl"
           extra="为确保最佳展示效果，请上传750*1334像素高清图片，仅支持.jpg格式"
         >
-          <NgUpload beforeUpload={posterBeforeUpload} />
+          <NgUpload beforeUpload={posterBeforeUpload} disabled={isReadOnly} />
         </Form.Item>
         <Form.Item
           label="海报名称："

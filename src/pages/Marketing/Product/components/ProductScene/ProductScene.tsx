@@ -5,6 +5,7 @@ import classNames from 'classnames';
 interface IProductSceneProps {
   value?: string[];
   onChange?: (value?: any) => void;
+  readOnly?: boolean;
   productSceneList?: {
     id: string; // 是 配置id
     name: string; // 是 产品场景名称
@@ -12,10 +13,10 @@ interface IProductSceneProps {
   }[];
 }
 
-const ProductScene: React.FC<IProductSceneProps> = ({ value = [], onChange, productSceneList }) => {
+const ProductScene: React.FC<IProductSceneProps> = ({ value = [], onChange, readOnly, productSceneList }) => {
   // 点击产品场景
   const onClickSceneItem = (row: { id: string; name: string }) => {
-    console.log(123);
+    if (readOnly) return;
     // 判断是否在
     if (value?.some((item) => item === row.id)) {
       onChange?.(value.filter((item) => item !== row.id));
@@ -29,7 +30,7 @@ const ProductScene: React.FC<IProductSceneProps> = ({ value = [], onChange, prod
       {productSceneList?.map(({ id, name }) => (
         <span
           key={id}
-          className={classNames(style.sceneItem, { [style.active]: value.includes(id) })}
+          className={classNames(style.sceneItem, { [style.active]: value.includes(id) }, { disabled: readOnly })}
           onClick={() => onClickSceneItem({ id, name })}
         >
           {name}
