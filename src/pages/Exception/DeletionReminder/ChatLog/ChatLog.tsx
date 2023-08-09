@@ -10,6 +10,7 @@ import { IDelStaffList } from 'src/pages/Exception/DeletionReminder/Config';
 import AudioPlay from './AudioPlay';
 import style from './style.module.less';
 import classNames from 'classnames';
+import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 interface ChatLogProps {
   value?: any;
 }
@@ -726,7 +727,12 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
           <div>
             <div className={'chatMsgArea'}>
               <div style={{ display: 'flex', border: '0.5pt solid #ccc', borderBottom: 'none' }}>
-                <div className={style.markdownText} dangerouslySetInnerHTML={{ __html: msgObj.content }}></div>
+                <div
+                  className={style.markdownText}
+                  dangerouslySetInnerHTML={{
+                    __html: dangerousHTMLToSafeHTML(msgObj.content)
+                  }}
+                ></div>
                 <div
                   className={style.markdownIcon}
                   style={{

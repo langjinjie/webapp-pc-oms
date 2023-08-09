@@ -18,6 +18,7 @@ import {
 } from 'src/apis/seatReport';
 import { AuthBtn } from 'src/components';
 import style from './style.module.less';
+import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 
 interface BoardItem {
   boardId: string;
@@ -345,7 +346,10 @@ const SeatReport: React.FC = () => {
             crossOrigin="anonymous"
             alt=""
           />
-          <div className={style.titleTips} dangerouslySetInnerHTML={{ __html: reportConfig?.useDesc || '' }} />
+          <div
+            className={style.titleTips}
+            dangerouslySetInnerHTML={{ __html: dangerousHTMLToSafeHTML(reportConfig?.useDesc || '') }}
+          />
         </div>
         <div className={style.areaWrap}>
           {(reportDetail.bodyList || []).map((item, index) => renderArea(item, index))}

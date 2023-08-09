@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { useMemo } from 'react';
 import { emojiData } from './emojiData';
 import style from './index.module.less';
+import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 const emotionMap: any = {};
 const emojiSource = require('./emoji-sprite.b5bd1fe0.png');
 emojiData.forEach((item) => {
@@ -96,7 +97,9 @@ const ParseEmoji: React.FC<{ content: string; customText?: customType }> = ({ co
         return (
           <span key={index}>
             {item.type === 1 && (
-              <span dangerouslySetInnerHTML={{ __html: item.content.replace(/\n|\r/g, '<br/>') }}></span>
+              <span
+                dangerouslySetInnerHTML={{ __html: dangerousHTMLToSafeHTML(item.content.replace(/\n|\r/g, '<br/>')) }}
+              ></span>
             )}
             {item.type === 2 && (
               <div

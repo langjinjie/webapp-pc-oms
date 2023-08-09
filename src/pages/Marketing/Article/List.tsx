@@ -22,6 +22,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
 import { useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
+import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 
 const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   useDocumentTitle('营销素材-文章库');
@@ -407,7 +408,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         footer={null}
         width={990}
       >
-        <div className={style.previewDesc} dangerouslySetInnerHTML={{ __html: htmlStr }}></div>
+        <div className={style.previewDesc} dangerouslySetInnerHTML={{ __html: dangerousHTMLToSafeHTML(htmlStr) }}></div>
       </Modal>
       <SetUserRight
         isBatch={isBatchSetRight}
