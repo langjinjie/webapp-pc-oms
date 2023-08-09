@@ -10,9 +10,18 @@ interface SetUserRightProps {
   value?: string;
   form: FormInstance<any>;
   readonly?: boolean;
+  allText?: string;
+  partText?: string;
 }
 
-export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, value, form, readonly }) => {
+export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({
+  onChange,
+  value,
+  form,
+  readonly,
+  allText,
+  partText
+}) => {
   const [originValues, setOriginValues] = useState<any>();
   const [visibleStaffList, setVisibleStaffList] = useState({
     visible: false,
@@ -98,8 +107,8 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
     <>
       <Form.Item name={'isSet'}>
         <Radio.Group onChange={(e) => onOpenChange(e.target.value)} disabled={readonly}>
-          <Radio value={0}>关闭</Radio>
-          <Radio value={1}>开启</Radio>
+          <Radio value={0}>{allText || '关闭'}</Radio>
+          <Radio value={1}>{partText || '开启'}</Radio>
         </Radio.Group>
       </Form.Item>
       {formValues.isSet
