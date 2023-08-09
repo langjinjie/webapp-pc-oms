@@ -9,6 +9,7 @@ import { Context } from 'src/store';
 import { accountStatusEdit2Name } from 'src/utils/commonData';
 import style from './style.module.less';
 import classNames from 'classnames';
+import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 
 const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
   const { currentCorpId: corpId } = useContext(Context);
@@ -130,7 +131,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
         return (
           <span
             dangerouslySetInnerHTML={{
-              __html:
+              __html: dangerousHTMLToSafeHTML(
                 replaceEnter(
                   (row.roles || []).reduce((prev: string, now: any, index: number) => {
                     prev +=
@@ -141,6 +142,7 @@ const TableColumns = (arg: { [key: string]: any }): ColumnsType<any> => {
                     return prev;
                   }, '')
                 ) || UNKNOWN
+              )
             }}
           />
         );

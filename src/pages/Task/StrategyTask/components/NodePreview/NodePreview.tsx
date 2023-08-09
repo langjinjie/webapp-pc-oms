@@ -2,6 +2,7 @@ import React from 'react';
 import { Preview } from 'src/components';
 import { Drawer } from 'antd';
 import style from './style.module.less';
+import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 
 export interface IValue {
   nodeRuleCode: string; // 节点动作规则编号
@@ -65,7 +66,9 @@ const NodePreview: React.FC<INodePreviewProps> = ({ visible, title, onClose, val
             ? (
             <span
               dangerouslySetInnerHTML={{
-                __html: `按照 <span class="italic"> ${value.actionRule.category} </span> 最新发布的内容`
+                __html: dangerousHTMLToSafeHTML(
+                  `按照 <span class="italic"> ${value.actionRule.category} </span> 最新发布的内容`
+                )
               }}
             ></span>
               )

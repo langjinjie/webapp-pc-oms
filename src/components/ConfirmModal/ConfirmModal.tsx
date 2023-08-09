@@ -3,6 +3,7 @@ import { Modal } from 'antd';
 import { Context } from 'src/store';
 import { IConfirmModalParam } from 'src/utils/interface';
 import style from './style.module.less';
+import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 
 const ConfirmModal: React.FC = () => {
   const { confirmModalParam, setConfirmModalParam } = useContext<{
@@ -40,7 +41,12 @@ const ConfirmModal: React.FC = () => {
         loading: isLoading
       }}
     >
-      <div className={style.content} dangerouslySetInnerHTML={{ __html: tips || '确定执行该操作吗？' }} />
+      <div
+        className={style.content}
+        dangerouslySetInnerHTML={{
+          __html: dangerousHTMLToSafeHTML(tips || '确定执行该操作吗？')
+        }}
+      />
     </Modal>
   );
 };
