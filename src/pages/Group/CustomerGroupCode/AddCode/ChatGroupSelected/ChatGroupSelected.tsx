@@ -1,6 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Table } from 'antd';
-import React, { useState } from 'react';
+import { Button, Input, Space, Table, Tag } from 'antd';
+import React, { Key, useEffect, useState } from 'react';
 import { getChatGroupList } from 'src/apis/group';
 import { NgModal } from 'src/components';
 
@@ -9,15 +9,16 @@ import classNames from 'classnames';
 
 interface ChatGroupType {
   chatId: string;
-  staffName: string;
+  chatName: string;
 }
 
 interface ChatGroupSelectedProps {
   value?: any;
   readonly?: boolean;
+  max?: number;
   onChange?: (value: any) => void;
 }
-const ChatGroupSelected: React.FC<ChatGroupSelectedProps> = ({ value, onChange, readonly }) => {
+const ChatGroupSelected: React.FC<ChatGroupSelectedProps> = ({ value, onChange, readonly, max = 5 }) => {
   const [visible, setVisible] = useState(false);
   const [queryValues, setQueryValues] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -29,15 +30,17 @@ const ChatGroupSelected: React.FC<ChatGroupSelectedProps> = ({ value, onChange, 
     total: 0
   });
   const getList = async (params?: any) => {
-    const res = await getChatGroupList({ ...params });
-    console.log(res);
-    setPagination(pagination);
-    setGroupList(res.list || []);
+    const res = await getChatGroupList({ ...params, name: queryValues });
+    if (res) {
+      const { list, total } = res;
+      setPagination((pagination) => ({ ...pagination, total, pageNum: params?.pageNum || 1 }));
+      setGroupList(list || []);
+    }
   };
 
-  const onRemove = (staffId: string) => {
-    const filteredStaffList = selectedRows.filter((item) => item.staffId !== staffId);
-    const filteredKeys = selectedRowKeys.filter((item) => item !== staffId);
+  const onRemove = (chatId: string) => {
+    const filteredStaffList = selectedRows.filter((item) => item.chatId !== chatId);
+    const filteredKeys = selectedRowKeys.filter((item) => item !== chatId);
     setSelectedRows(filteredStaffList);
     setSelectedRowKeys(filteredKeys);
   };
@@ -46,18 +49,40 @@ const ChatGroupSelected: React.FC<ChatGroupSelectedProps> = ({ value, onChange, 
     onChange?.(selectedRows);
     setVisible(false);
   };
+
+  useEffect(() => {
+    if (visible) {
+      getList();
+      value && setSelectedRowKeys(value?.map((item: ChatGroupType) => item.chatId));
+      value && setSelectedRows(value);
+    }
+  }, [visible]);
+
+  const onSelectionChange = (selectedRowKeys: Key[], selectedRows: (ChatGroupType | undefined)[]) => {
+    setSelectedRowKeys(selectedRowKeys);
+
+    const res = selectedRows.map((item, index) => {
+      if (!item) {
+        item = value.find((originValue: ChatGroupType) => originValue.chatId === selectedRowKeys[index]);
+      }
+      return item;
+    });
+
+    setSelectedRows(res as ChatGroupType[]);
+  };
   return (
     <>
       <div>
-        {value?.map(
-          (item: any, index: number) =>
-            index < 5 && (
-              <span key={item.staffId} style={{ display: 'inline-block' }}>
-                {item.staffName}
-                {index < value?.length - 1 && index < 4 ? '，' : ''}
-              </span>
-            )
-        )}
+        <Space className="mr10 mb10" wrap>
+          {value?.map(
+            (item: any, index: number) =>
+              index < 5 && (
+                <Tag key={item.chatId} style={{ display: 'inline-block' }}>
+                  {item.chatName || item.chatId}
+                </Tag>
+              )
+          )}
+        </Space>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -91,7 +116,14 @@ const ChatGroupSelected: React.FC<ChatGroupSelectedProps> = ({ value, onChange, 
             <div className={'mt10'}>
               <Table
                 size="small"
-                columns={[{ key: 'chatName', dataIndex: 'chatName', title: '群名称' }]}
+                columns={[
+                  {
+                    key: 'chatName',
+                    dataIndex: 'chatName',
+                    title: '群名称',
+                    render: (value, record) => value || record.chatId
+                  }
+                ]}
                 rowKey={'chatId'}
                 pagination={{
                   current: pagination.pageNum,
@@ -105,18 +137,16 @@ const ChatGroupSelected: React.FC<ChatGroupSelectedProps> = ({ value, onChange, 
                 }}
                 dataSource={groupList}
                 rowSelection={{
+                  hideSelectAll: true,
                   type: 'checkbox',
                   preserveSelectedRowKeys: true,
                   selectedRowKeys: selectedRowKeys,
                   getCheckboxProps: (record: ChatGroupType) => {
                     return {
-                      disabled: selectedRows.length === 5 && !selectedRowKeys.includes(record.staffId)
+                      disabled: selectedRows.length >= max && !selectedRowKeys.includes(record.chatId)
                     };
                   },
-                  onChange (selectedRowKeys, selectedRows) {
-                    setSelectedRows(selectedRows);
-                    setSelectedRowKeys(selectedRowKeys);
-                  }
+                  onChange: onSelectionChange
                 }}
               ></Table>
             </div>
@@ -131,8 +161,8 @@ const ChatGroupSelected: React.FC<ChatGroupSelectedProps> = ({ value, onChange, 
               </div>
               <div className={classNames(style.staffWrap)}>
                 {selectedRows.map((item) => (
-                  <div key={item.chatId} className={classNames(style.checkItem, 'flex justify-between align-center')}>
-                    <span>{item.staffName}</span>
+                  <div key={item?.chatId} className={classNames(style.checkItem, 'flex justify-between align-center')}>
+                    <span className="cell ellipsis">{item?.chatName || item?.chatId}</span>
                     <Button type="link" onClick={() => onRemove(item.chatId)}>
                       删除
                     </Button>

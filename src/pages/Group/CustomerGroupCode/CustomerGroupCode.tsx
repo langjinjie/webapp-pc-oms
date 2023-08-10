@@ -41,7 +41,7 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
     pageSize: 10
   });
 
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   // 查询群活码列表
   const getList = async (params?: any) => {
@@ -124,23 +124,28 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
     getStaffListByLiveCode({ pageNum });
   };
 
-  const downloadQRCode = (record: IStaff) => {
-    console.log('downloadQRCode');
-    QRCode.toDataURL(
-      'https://www.baidu.com',
-      {
-        type: 'image/jpeg',
-        margin: 1,
-        color: {
-          dark: '#000',
-          light: '#fff'
+  const downloadQRCode = async (record: IStaff) => {
+    const res = await shareCodeShortUrl({
+      staffId: record.staffId,
+      liveId: current?.liveId
+    });
+    if (res && res.shortUrl) {
+      QRCode.toDataURL(
+        res.shortUrl,
+        {
+          type: 'image/jpeg',
+          margin: 1,
+          color: {
+            dark: '#000',
+            light: '#fff'
+          }
+        },
+        (err, url) => {
+          if (err) throw err;
+          downloadImage(url, record.staffName + '.jpg');
         }
-      },
-      (err, url) => {
-        if (err) throw err;
-        downloadImage(url, record.staffName + '.jpg');
-      }
-    );
+      );
+    }
   };
   return (
     <div className="container">

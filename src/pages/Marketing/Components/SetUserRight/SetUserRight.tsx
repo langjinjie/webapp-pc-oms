@@ -115,7 +115,7 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({
         ? (
         <>
           <Form.Item name={'groupType'}>
-            <Radio.Group onChange={(e) => onChangeWithGroupType(e.target.value)}>
+            <Radio.Group onChange={(e) => onChangeWithGroupType(e.target.value)} disabled={readonly}>
               <Radio value={1}>按照员工组选择</Radio>
               <Radio value={2}>按照组织架构选择</Radio>
             </Radio.Group>
@@ -123,12 +123,12 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({
           {formValues.groupType === 1
             ? (
             <Form.Item name={'group1'} key="groupModal">
-              <UserGroupModal onChange={handleModalChange} />
+              <UserGroupModal onChange={handleModalChange} disabled={readonly} />
             </Form.Item>
               )
             : (
             <Form.Item name={'group2'} key="orgModal">
-              <UserOrgModal onChange={handleModalChange} />
+              <UserOrgModal onChange={handleModalChange} disabled={readonly} />
             </Form.Item>
               )}
           <Form.Item>

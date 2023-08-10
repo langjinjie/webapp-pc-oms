@@ -1,4 +1,4 @@
-import { Button, Popconfirm } from 'antd';
+import { Button, Popconfirm, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
@@ -43,39 +43,29 @@ export type ChatGroupLiveCodeType = {
   lastUpdated: string;
 };
 
-const wcTypeOptions = [
-  {
-    value: 1,
-    name: '文字'
-  },
-  {
-    value: 2,
-    name: '图片'
-  },
-  {
-    value: 3,
-    name: '链接'
-  },
-  {
-    value: 4,
-    name: '小程序'
-  }
-];
 export const tableColsFun = (onOperate: OnOperateType): ColumnsType<ChatGroupLiveCodeType> => {
   return [
     {
       key: 'liveId',
       dataIndex: 'liveId',
       title: '群活码ID',
-      ellipsis: true,
 
-      width: 160
+      width: 200
     },
     {
       key: 'name',
       dataIndex: 'name',
       title: '群活码名称',
-      render: (text) => wcTypeOptions.filter((type) => type.value === text)[0]?.name || UNKNOWN,
+      ellipsis: {
+        showTitle: false
+      },
+      render: (text) => {
+        return (
+          <Tooltip placement="topLeft" title={text}>
+            {text || UNKNOWN}
+          </Tooltip>
+        );
+      },
       width: 160
     },
 
@@ -83,12 +73,15 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<ChatGroupLiv
       key: 'chatNames',
       dataIndex: 'chatNames',
       title: '群名称',
-      ellipsis: true,
+      ellipsis: {
+        showTitle: false
+      },
+      render: (chatNames) => <Tooltip title={chatNames}>{chatNames || UNKNOWN}</Tooltip>,
       width: 160
     },
     {
-      key: 'updateBy',
-      dataIndex: 'updateBy',
+      key: 'expireDate',
+      dataIndex: 'expireDate',
       title: '有效期',
       ellipsis: true,
       width: 160
@@ -101,11 +94,11 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<ChatGroupLiv
     //   width: 200
     // },
     {
-      key: 'lastUpdated',
-      dataIndex: 'lastUpdated',
+      key: 'createBy',
+      dataIndex: 'createBy',
       title: '创建人',
       ellipsis: true,
-      width: 200
+      width: 100
     },
     {
       key: 'lastUpdated',
@@ -127,7 +120,11 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<ChatGroupLiv
             编辑
           </Button>
           <Popconfirm
-            title="删除后二维码将失效无法使用，且无法恢复，请谨慎操作"
+            title={
+              <p>
+                删除后二维码将失效无法使用，且无法恢复，<br></br>请谨慎操作
+              </p>
+            }
             onConfirm={() => onOperate('delete', record, index)}
           >
             <Button type="link">删除</Button>
