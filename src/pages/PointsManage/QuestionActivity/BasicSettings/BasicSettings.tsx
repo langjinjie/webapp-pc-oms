@@ -39,7 +39,7 @@ const BasicSettings: React.FC = () => {
         <div className={style.panel}>规则控制</div>
         <Item className="mt20" label="在群要求" required>
           <Item noStyle name="groupRequire">
-            <Radio.Group className="">
+            <Radio.Group>
               <Space direction="vertical">
                 <Radio value={1}>
                   达成调教即可奖励 <span className="color-text-placeholder">客户经理群内成员皆可</span>
