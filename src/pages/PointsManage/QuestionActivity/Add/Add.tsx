@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card, Tabs } from 'antd';
 import { BreadCrumbs } from 'src/components';
-import BasicSettings from 'src/pages/PointsManage/QuestionActivity/BasicSettings/BasicSettings';
-import QuestionSettings from 'src/pages/PointsManage/QuestionActivity/QuestionSettings/QuestionSettings';
+import BasicSettings from './BasicSettings/BasicSettings';
+import QuestionSettings from './QuestionSettings/QuestionSettings';
+import RewardRules from './RewardRules/RewardRules';
 import style from './style.module.less';
 
 const Add: React.FC = () => {
@@ -26,7 +27,7 @@ const Add: React.FC = () => {
           <QuestionSettings />
         </Tabs.TabPane>
         <Tabs.TabPane tab="奖励规则" key={'3'}>
-          奖励规则
+          <RewardRules />
         </Tabs.TabPane>
       </Tabs>
     </Card>
