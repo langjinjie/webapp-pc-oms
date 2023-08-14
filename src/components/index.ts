@@ -29,3 +29,5 @@ export { default as ScrollList } from './ScrollList/ScrollList';
 export { default as NoPermission } from 'src/components/NoPermission/NoPermission';
 export { default as ExportModal } from 'src/components/ExportModal/ExportModal';
 export { default as OrgTree } from 'src/components/OrgTree/OrgTree';
+export { default as OrgTreeSelect } from './OrgTreeSelect/OrgTreeSelect';
+export { default as SetGroupOwner } from './SetGroupOwner/SetGroupOwner';

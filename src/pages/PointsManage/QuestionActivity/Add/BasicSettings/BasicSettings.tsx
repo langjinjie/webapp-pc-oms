@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Form, Input, DatePicker, Radio, Space, Button } from 'antd';
-import { ChooseMoment } from 'src/pages/LiveCode/MomentCode/components';
+// import { ChooseMoment } from 'src/pages/LiveCode/MomentCode/components';
 import style from './style.module.less';
 import classNames from 'classnames';
-import { ImageUpload } from 'src/components';
+import { ImageUpload, SetGroupOwner } from 'src/components';
 
 const { Item } = Form;
 const { RangePicker } = DatePicker;
@@ -49,8 +49,11 @@ const BasicSettings: React.FC = () => {
             </Radio.Group>
           </Item>
           {groupRequire === 2 && (
-            <Item name="groupId">
-              <ChooseMoment className={style.chooseGroup} />
+            <>
+              <Item name="groupId">
+                {/* <ChooseMoment className={style.chooseGroup} /> */}
+                <SetGroupOwner />
+              </Item>
               <div className={classNames(style.tips, style.tipsText)}>
                 提醒：
                 <br />
@@ -58,7 +61,7 @@ const BasicSettings: React.FC = () => {
                 <br />
                 2、微信迁移至企微的群聊不可参与活动
               </div>
-            </Item>
+            </>
           )}
         </Item>
         <Item label="参与次数" required>

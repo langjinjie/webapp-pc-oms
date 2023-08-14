@@ -506,7 +506,7 @@ export interface ITooltip {
 
 export interface IPagination {
   current: number;
-  pageSize: number;
+  pageSize?: number;
   total: number;
   showTotal?: (total: any) => string;
 }
