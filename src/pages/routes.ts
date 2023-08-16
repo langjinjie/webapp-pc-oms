@@ -16,6 +16,7 @@ import { crowdsManage } from 'src/routes/crowdsPackage';
 import { market } from 'src/routes/market';
 import { tagManage } from 'src/routes/tagManage';
 import { group } from 'src/routes/group';
+import { marketActivityRoutes } from 'src/routes/marketActivity';
 
 export interface Menu {
   name: string;
@@ -57,7 +58,9 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/marketingMoment/edit',
     component: lazy(() => import('src/pages/Marketing/Moment/Edit'))
-  }
+  },
+  // 临时路由：营销活动
+  ...marketActivityRoutes
 ];
 
 export const routes: RouteProps[] = [
