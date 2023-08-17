@@ -153,7 +153,7 @@ const columns = (args: ColumnsArgs): ColumnsType<ProductProps> => {
     },
     {
       title: '操作',
-      width: 310,
+      width: 400,
       dataIndex: 'status',
       align: 'left',
       fixed: 'right',
