@@ -7,6 +7,7 @@ import { requestDownloadGroupLiveCode, requestManageGroupLiveCode } from 'src/ap
 import style from './style.module.less';
 import classNames from 'classnames';
 import { AuthBtn } from 'src/components';
+import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 
 export const statusList = [
   { value: 0, label: '正常' },
@@ -105,15 +106,16 @@ export const tableColumnsFun: ({ updateListHandle }: { updateListHandle?: () => 
         return (
           <span
             dangerouslySetInnerHTML={{
-              __html:
+              __html: dangerousHTMLToSafeHTML(
                 '总量：' +
-                (QRcodeState.codeNum || 0) +
-                '<br />' +
-                '即将过期：' +
-                (QRcodeState.expiringNum || 0) +
-                '<br />' +
-                '已过期：' +
-                (QRcodeState.expiredNum || 0)
+                  (QRcodeState.codeNum || 0) +
+                  '<br />' +
+                  '即将过期：' +
+                  (QRcodeState.expiringNum || 0) +
+                  '<br />' +
+                  '已过期：' +
+                  (QRcodeState.expiredNum || 0)
+              )
             }}
           />
         );

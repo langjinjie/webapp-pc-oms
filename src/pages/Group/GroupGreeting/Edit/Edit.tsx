@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BreadCrumbs, ImageUpload, Preview } from 'src/components';
 
-import style from './style.module.less';
-import classNames from 'classnames';
 import { Button, Form, Input, Radio, Switch, message } from 'antd';
 import { addGroupGreeting, editGroupGreeting, getGroupGreetingDetail } from 'src/apis/group';
 import { RouteComponentProps } from 'react-router-dom';
