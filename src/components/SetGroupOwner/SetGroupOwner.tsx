@@ -2,7 +2,7 @@
  * @description 选择群主
  */
 import React, { useState } from 'react';
-import { Button, Input, Table } from 'antd';
+import { Button, Table } from 'antd';
 import { NgModal, OrgTreeSelect } from 'src/components';
 import { requestGetDepStaffList } from 'src/apis/orgManage';
 import style from './style.module.less';
@@ -17,8 +17,9 @@ interface SetGroupOwnerProps {
   readonly?: boolean;
   value?: any;
   onChange?: (value: any) => void;
+  title?: string;
 }
-const SetGroupOwner: React.FC<SetGroupOwnerProps> = ({ value, onChange, readonly }) => {
+const SetGroupOwner: React.FC<SetGroupOwnerProps> = ({ value, onChange, readonly, title }) => {
   const [visible, setVisible] = useState(false);
   const [queryValues, setQueryValues] = useState({
     isGroupOwner: 1,
@@ -66,83 +67,76 @@ const SetGroupOwner: React.FC<SetGroupOwnerProps> = ({ value, onChange, readonly
   return (
     <div>
       <NgModal
+        className={style.modalWrap}
         visible={visible}
-        title="选择群主"
+        title={title || '选择群'}
         width={960}
         onCancel={() => setVisible(false)}
         onOk={() => handleOk()}
       >
-        <div className="flex">
-          <div className={style.colWrap}>
-            <h4 className={style.panelHeader}>部门列表</h4>
-            <OrgTreeSelect
-              onChange={({ deptId }) => {
-                setQueryValues((queryValues) => ({ ...queryValues, deptId, name: '' }));
-                getStaffGroupOwner({ deptId, name: '', pageNum: 1 });
-              }}
-            />
-          </div>
-          <div className={style.colWrap}>
-            <h4 className={style.panelHeader}>
-              <span>群主列表</span>
-              <span className="f12 float-right">共{pagination.total}个</span>
-            </h4>
-            <div className={style.staffList}>
-              <Input.Search
-                value={queryValues.name}
-                placeholder="请输入群主姓名"
-                onChange={(value) => setQueryValues((queryValues) => ({ ...queryValues, name: value.target.value }))}
-                onSearch={(val) => getStaffGroupOwner({ name: val })}
-              ></Input.Search>
-
-              <div className={classNames('mt22')}>
-                <Table
-                  columns={[{ key: 'staffName', dataIndex: 'staffName', title: '群主姓名' }]}
-                  rowKey={'staffId'}
-                  pagination={{
-                    current: pagination.pageNum,
-                    pageSize: pagination.pageSize,
-                    total: pagination.total,
-                    position: ['bottomRight'],
-                    simple: true,
-                    onChange: (pageNum) => {
-                      getStaffGroupOwner({ pageNum });
-                    }
-                  }}
-                  dataSource={staffList}
-                  rowSelection={{
-                    type: 'checkbox',
-                    preserveSelectedRowKeys: true,
-                    selectedRowKeys: selectedRowKeys,
-                    onChange (selectedRowKeys, selectedRows) {
-                      setSelectedStaffList(selectedRows);
-                      setSelectedRowKeys(selectedRowKeys);
-                    }
-                  }}
-                ></Table>
-              </div>
+        <div className={style.colWrap}>
+          <h4 className={style.panelHeader}>部门列表</h4>
+          <OrgTreeSelect
+            className="ml20"
+            onChange={({ deptId }) => {
+              setQueryValues((queryValues) => ({ ...queryValues, deptId, name: '' }));
+              getStaffGroupOwner({ deptId, name: '', pageNum: 1 });
+            }}
+          />
+        </div>
+        <div className={style.colWrap}>
+          <h4 className={style.panelHeader}>
+            <span>群聊列表</span>
+            <span className="f12 float-right">共{pagination.total}个</span>
+          </h4>
+          <div className={style.staffList}>
+            <div className={classNames('mt22')}>
+              <Table
+                columns={[{ key: 'staffName', dataIndex: 'staffName', title: '群主姓名' }]}
+                rowKey={'staffId'}
+                pagination={{
+                  current: pagination.pageNum,
+                  pageSize: pagination.pageSize,
+                  total: pagination.total,
+                  position: ['bottomRight'],
+                  simple: true,
+                  onChange: (pageNum) => {
+                    getStaffGroupOwner({ pageNum });
+                  }
+                }}
+                dataSource={staffList}
+                rowSelection={{
+                  type: 'checkbox',
+                  preserveSelectedRowKeys: true,
+                  selectedRowKeys: selectedRowKeys,
+                  onChange (selectedRowKeys, selectedRows) {
+                    setSelectedStaffList(selectedRows);
+                    setSelectedRowKeys(selectedRowKeys);
+                  }
+                }}
+              ></Table>
             </div>
           </div>
-          <div className={classNames(style.colWrap)}>
-            <h4 className={classNames(style.panelHeader, 'color-text-regular')}>
-              已选群主
-              <span className="f12 float-right">共{selectedRowKeys.length}个</span>
-            </h4>
-            <div className="ph20">
-              <div className={classNames(style.colTitle, 'flex justify-between color-text-regular')}>
-                <span>群主姓名</span>
-                <span>操作</span>
-              </div>
-              <div className={classNames(style.staffWrap)}>
-                {selectedStaffList.map((item) => (
-                  <div key={item.staffId} className={classNames(style.checkItem, 'flex justify-between align-center')}>
-                    <span>{item.staffName}</span>
-                    <Button type="link" onClick={() => onRemove(item.staffId)}>
-                      删除
-                    </Button>
-                  </div>
-                ))}
-              </div>
+        </div>
+        <div className={classNames(style.colWrap)}>
+          <h4 className={classNames(style.panelHeader, 'color-text-regular')}>
+            已选群聊
+            <span className="f12 float-right">共{selectedRowKeys.length}个</span>
+          </h4>
+          <div className="ph20">
+            <div className={classNames(style.colTitle, 'flex justify-between color-text-regular')}>
+              <span>群名称</span>
+              <span>操作</span>
+            </div>
+            <div className={classNames(style.staffWrap)}>
+              {selectedStaffList.map((item) => (
+                <div key={item.staffId} className={classNames(style.checkItem, 'flex justify-between align-center')}>
+                  <span>{item.staffName}</span>
+                  <Button type="link" onClick={() => onRemove(item.staffId)}>
+                    删除
+                  </Button>
+                </div>
+              ))}
             </div>
           </div>
         </div>

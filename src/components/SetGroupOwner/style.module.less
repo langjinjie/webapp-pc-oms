@@ -1,3 +1,12 @@
+.modalWrap {
+  :global {
+    .ant-modal-body {
+      display: flex;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+}
 .panelHeader {
   text-align: center;
   margin-bottom: 10px;
@@ -7,7 +16,7 @@
 
 .colWrap {
   padding: 10px 0px;
-  width: 33%;
+  flex: 1;
   height: 600px;
 
   &:nth-child(2) {

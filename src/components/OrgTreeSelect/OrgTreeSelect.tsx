@@ -3,12 +3,14 @@ import { Tree } from 'antd';
 import { IOrganizationItem } from 'src/utils/interface';
 import { requestGetDeptList } from 'src/apis/orgManage';
 import style from './style.module.less';
+import classNames from 'classnames';
 
 interface OrgTreeSelectProps {
   onChange: (val: any) => void;
   selectedKey?: string;
+  className?: string;
 }
-const OrgTreeSelect: React.FC<OrgTreeSelectProps> = ({ onChange, selectedKey }) => {
+const OrgTreeSelect: React.FC<OrgTreeSelectProps> = ({ onChange, selectedKey, className }) => {
   const [orgList, setOrganization] = useState<IOrganizationItem[]>([]);
   const [expandIds, setExpandIds] = useState<Key[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<Key[]>([]);
@@ -76,7 +78,7 @@ const OrgTreeSelect: React.FC<OrgTreeSelectProps> = ({ onChange, selectedKey }) 
   }, []);
 
   return (
-    <div className={style.treeWrap}>
+    <div className={classNames(style.treeWrap, className)}>
       <Tree
         fieldNames={{ title: 'deptName', key: 'deptId' }}
         blockNode
