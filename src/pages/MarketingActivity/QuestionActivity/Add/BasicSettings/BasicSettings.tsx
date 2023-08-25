@@ -114,14 +114,10 @@ const BasicSettings: React.FC = () => {
           <ImageUpload />
         </Item>
         <Item name="分享标题" label="分享标题">
-          <Input className="width240" placeholder="24个字内，不填写默认“打卡赢好礼" maxLength={24} />
+          <Input className="width240" placeholder="24个字内，不填写默认“打卡赢好礼”" maxLength={24} />
         </Item>
         <Item name="分享摘要" label="分享摘要">
-          <Input
-            className="width240"
-            placeholder="30个字内，不填写默认“我正在参加打卡活动，每日一签，好礼多多”"
-            maxLength={30}
-          />
+          <Input className="width240" placeholder="30个字内，不填写默认“我正在参加打卡活动”" maxLength={30} />
         </Item>
         <Button className={style.submitBtn} htmlType="submit" type="primary" shape="round">
           保存

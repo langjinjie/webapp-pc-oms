@@ -59,7 +59,7 @@ export const noVerRoutes: RouteProps[] = [
     path: '/marketingMoment/edit',
     component: lazy(() => import('src/pages/Marketing/Moment/Edit'))
   },
-  // 临时路由：营销活动
+  // 临时路由：问答活动&打卡活动
   ...marketActivityRoutes
 ];
 
