@@ -9,7 +9,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { OperateType } from 'src/utils/interface';
 import { copy } from 'tenacity-tools';
 import QRCode from 'qrcode';
-import { downloadImage } from 'src/utils/base';
+import { downloadImage, throttle } from 'src/utils/base';
 
 interface IStaff {
   staffId: string;
@@ -109,7 +109,7 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
   // 创建短链
-  const createShortUrl = async (staffId: string) => {
+  const createShortUrl = throttle(async (staffId: string) => {
     const res = await shareCodeShortUrl({
       staffId,
       liveId: current?.liveId
@@ -118,17 +118,18 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
       message.success('复制短链成功');
       copy(res.shortUrl, false);
     }
-  };
+  }, 1000);
 
   const onPaginationChangeStaff = (pageNum: number) => {
     getStaffListByLiveCode({ pageNum });
   };
 
-  const downloadQRCode = async (record: IStaff) => {
+  const downloadQRCode = throttle(async (record: IStaff) => {
     const res = await shareCodeShortUrl({
       staffId: record.staffId,
       liveId: current?.liveId
     });
+
     if (res && res.shortUrl) {
       QRCode.toDataURL(
         res.shortUrl,
@@ -142,11 +143,12 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
         },
         (err, url) => {
           if (err) throw err;
+          message.success('下载成功！');
           downloadImage(url, record.staffName + '.jpg');
         }
       );
     }
-  };
+  }, 500);
   return (
     <div className="container">
       <Button
