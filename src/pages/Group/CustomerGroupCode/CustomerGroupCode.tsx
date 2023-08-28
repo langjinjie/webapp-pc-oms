@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NgFormSearch, NgModal, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgModal, NgTable } from 'src/components';
 import { ChatGroupLiveCodeType, searchCols, tableColsFun } from './Config';
 import { MyPaginationProps } from 'src/components/TableComponent/TableComponent';
 import { delChatGroupCode, getChatGroupLiveCodeList, getLiveCodeOfStaffList, shareCodeShortUrl } from 'src/apis/group';
@@ -23,12 +23,7 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
   // 当前选中的群活码
   const [current, setCurrent] = useState<ChatGroupLiveCodeType>();
   // 群活码相关的坐席列表
-  const [staffList, setStaffList] = useState<IStaff[]>([
-    {
-      staffId: '11',
-      staffName: '李白'
-    }
-  ]);
+  const [staffList, setStaffList] = useState<IStaff[]>([]);
 
   const [pagination, setPagination] = useState<MyPaginationProps>({
     total: 0,
@@ -151,17 +146,21 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
   }, 500);
   return (
     <div className="container">
-      <Button
-        type="primary"
-        shape="round"
-        icon={<PlusOutlined />}
-        onClick={() => {
-          history.push('/clientgroupcode/add');
-        }}
-      >
-        新增群活码
-      </Button>
-      <NgFormSearch className="mt20" searchCols={searchCols} onSearch={onSearch}></NgFormSearch>
+      <AuthBtn path="/add">
+        <Button
+          type="primary"
+          shape="round"
+          icon={<PlusOutlined />}
+          onClick={() => {
+            history.push('/clientgroupcode/add');
+          }}
+        >
+          新增群活码
+        </Button>
+      </AuthBtn>
+      <AuthBtn path="/query">
+        <NgFormSearch className="mt20" searchCols={searchCols} onSearch={onSearch}></NgFormSearch>
+      </AuthBtn>
 
       <NgTable
         rowKey="liveId"

@@ -1,6 +1,7 @@
 import { Button, Popconfirm, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
+import { AuthBtn } from 'src/components';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { OnOperateType } from 'src/utils/interface';
@@ -116,22 +117,28 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<ChatGroupLiv
       width: 180,
       render: (_, record, index) => (
         <>
-          <Button type="link" onClick={() => onOperate('edit', record)}>
-            编辑
-          </Button>
-          <Popconfirm
-            title={
-              <p>
-                删除后二维码将失效无法使用，且无法恢复，<br></br>请谨慎操作
-              </p>
-            }
-            onConfirm={() => onOperate('delete', record, index)}
-          >
-            <Button type="link">删除</Button>
-          </Popconfirm>
-          <Button type="link" onClick={() => onOperate('other', record)}>
-            复制短链
-          </Button>
+          <AuthBtn path="/edit">
+            <Button type="link" onClick={() => onOperate('edit', record)}>
+              编辑
+            </Button>
+          </AuthBtn>
+          <AuthBtn path="/delete">
+            <Popconfirm
+              title={
+                <p>
+                  删除后二维码将失效无法使用，且无法恢复，<br></br>请谨慎操作
+                </p>
+              }
+              onConfirm={() => onOperate('delete', record, index)}
+            >
+              <Button type="link">删除</Button>
+            </Popconfirm>
+          </AuthBtn>
+          <AuthBtn path="/copy">
+            <Button type="link" onClick={() => onOperate('other', record)}>
+              复制短链
+            </Button>
+          </AuthBtn>
         </>
       )
     }
