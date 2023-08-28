@@ -51,7 +51,7 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
     if (res) {
       const { list, total } = res;
       setDataSource(list);
-      setPagination((pagination) => ({ ...pagination, total }));
+      setPagination((pagination) => ({ ...pagination, total, pageNum, pageSize }));
     }
   };
 
