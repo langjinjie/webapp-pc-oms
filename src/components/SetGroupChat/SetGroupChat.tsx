@@ -28,7 +28,7 @@ const SetGroupChat: React.FC<SetGroupChatProps> = ({ value, onChange, readonly, 
     deptType: 0,
     queryType: 1,
     isDeleted: 0,
-    name: '',
+    chatName: '',
     deptId: ''
   });
   const [staffList, setStaffList] = useState<IGroupChatItem[]>([]);
@@ -112,7 +112,7 @@ const SetGroupChat: React.FC<SetGroupChatProps> = ({ value, onChange, readonly, 
                       return <>{groupName || UNKNOWN}</>;
                     },
                     ellipsis: true,
-                    width: 230
+                    width: 240
                   }
                 ]}
                 rowKey="chatId"
@@ -135,6 +135,9 @@ const SetGroupChat: React.FC<SetGroupChatProps> = ({ value, onChange, readonly, 
                     setSelectedStaffList(selectedRows);
                     setSelectedRowKeys(selectedRowKeys);
                   }
+                }}
+                scroll={{
+                  x: 280
                 }}
               />
             </div>
