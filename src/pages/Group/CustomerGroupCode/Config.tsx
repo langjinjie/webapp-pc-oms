@@ -117,6 +117,11 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<ChatGroupLiv
       width: 180,
       render: (_, record, index) => (
         <>
+          <AuthBtn path="/view">
+            <Button type="link" onClick={() => onOperate('view', record)}>
+              查看
+            </Button>
+          </AuthBtn>
           <AuthBtn path="/edit">
             <Button type="link" onClick={() => onOperate('edit', record)}>
               编辑

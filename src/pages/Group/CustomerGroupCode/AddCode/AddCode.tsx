@@ -11,14 +11,19 @@ import moment from 'moment';
 const Item = Form.Item;
 const AddCode: React.FC<RouteComponentProps> = ({ location, history }) => {
   const [isEdit, setIsEdit] = useState(false);
+  const [isView, setIsView] = useState(false);
 
   const [formValues, setFormValues] = useState<any>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [codeForm] = Form.useForm();
   const getDetail = async () => {
-    const { liveId } = urlSearchParams(location.search);
+    const { liveId, isView } = urlSearchParams(location.search);
     if (liveId) {
-      setIsEdit(true);
+      if (isView) {
+        setIsView(true);
+      } else {
+        setIsEdit(true);
+      }
       const res = await getLiveCodeDetail({ liveId });
 
       setFormValues(res);
@@ -57,7 +62,7 @@ const AddCode: React.FC<RouteComponentProps> = ({ location, history }) => {
           {
             name: '群活码管理'
           },
-          { name: isEdit ? '编辑群活码' : '新增群活码' }
+          { name: isEdit ? '编辑群活码' : isView ? '查看群活码' : '新增群活码' }
         ]}
       />
       <div className="flex">
@@ -75,7 +80,7 @@ const AddCode: React.FC<RouteComponentProps> = ({ location, history }) => {
               { max: 64, message: '群活码名称长度最多为64位' }
             ]}
           >
-            <Input placeholder="请输入" className="width400" />
+            <Input disabled={isView} placeholder="请输入" className="width400" />
           </Item>
           <Item
             style={{
@@ -89,13 +94,13 @@ const AddCode: React.FC<RouteComponentProps> = ({ location, history }) => {
             name={'chatList'}
             extra="最多支持5个群，外部群（客户群）上限500，入群人数超过200人将自动进入下一个群，超过200的群不在支持二维码入群，需群里人手动邀请人员加入群聊直到上限500"
           >
-            <ChatGroupSelected />
+            <ChatGroupSelected readonly={isView} />
           </Item>
           <Item label="有效期" name={'expireDate'} rules={[{ required: true, message: '请选择有效期' }]}>
-            <DatePicker disabledDate={(date) => date && date < moment().startOf('day')}></DatePicker>
+            <DatePicker disabled={isView} disabledDate={(date) => date && date < moment().startOf('day')}></DatePicker>
           </Item>
           <Item label="使用员工" name={'staffGroupId'}>
-            <SetUserRightFormItem allText="全部员工" readonly={isEdit} partText="部分员工" form={codeForm} />
+            <SetUserRightFormItem allText="全部员工" readonly={isEdit || isView} partText="部分员工" form={codeForm} />
           </Item>
           <Item
             name={'liveCode'}
@@ -108,14 +113,16 @@ const AddCode: React.FC<RouteComponentProps> = ({ location, history }) => {
             label="添加群二维码"
             extra="支持jpg/png格式，大小不超过2M"
           >
-            <ImageUpload />
+            <ImageUpload disabled={isView} />
           </Item>
 
-          <Item className="formFooter" style={{ marginLeft: '140px' }}>
-            <Button type="primary" htmlType="submit" shape="round" loading={isSubmitting}>
-              保存
-            </Button>
-          </Item>
+          {!isView && (
+            <Item className="formFooter" style={{ marginLeft: '140px' }}>
+              <Button type="primary" htmlType="submit" shape="round" loading={isSubmitting}>
+                保存
+              </Button>
+            </Item>
+          )}
         </Form>
 
         <Preview value={formValues} />

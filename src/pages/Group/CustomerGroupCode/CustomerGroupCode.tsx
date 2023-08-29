@@ -90,6 +90,8 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
   const onOperate = async (type: OperateType, record: ChatGroupLiveCodeType, index?: number) => {
     if (type === 'edit') {
       history.push('/clientgroupcode/add?liveId=' + record.liveId);
+    } else if (type === 'view') {
+      history.push('/clientgroupcode/add?liveId=' + record.liveId + '&isView=1');
     } else if (type === 'other') {
       handleClickCopyBtn(record);
     } else if (type === 'delete') {
