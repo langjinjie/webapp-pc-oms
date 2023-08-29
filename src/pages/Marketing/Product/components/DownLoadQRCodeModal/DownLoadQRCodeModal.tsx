@@ -64,7 +64,7 @@ const DownLoadQRCodeModal: React.FC<IDownLoadQRCodeModalProps> = ({
         <img src={qrCode} />
       </div>
       <Input className={style.input} readOnly value={link} />
-      <Button className={style.copyBtn} shape="round" onClick={() => copy('')}>
+      <Button className={style.copyBtn} shape="round" onClick={() => copy(link)}>
         复制链接
       </Button>
     </Modal>
