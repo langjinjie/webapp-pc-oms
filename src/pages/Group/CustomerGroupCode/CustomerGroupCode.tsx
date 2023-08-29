@@ -172,7 +172,7 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
       ></NgTable>
 
       <NgModal visible={visible} title="复制短链" footer={null} onCancel={() => setVisible(false)}>
-        <h3>当前群{' 维权群 '}的内的员工列表：</h3>
+        <h3>当前群内的员工列表：</h3>
         <Table
           className="mt20"
           size="small"
