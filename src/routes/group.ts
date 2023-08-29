@@ -24,5 +24,15 @@ export const group: RouteProps[] = [
   {
     path: '/groupclock',
     component: lazy(() => import('src/pages/Group/GroupClock/GroupClock'))
+  },
+  {
+    // 客户群群活码管理
+    path: '/clientgroupcode',
+    component: lazy(() => import('src/pages/Group/CustomerGroupCode/CustomerGroupCode'))
+  },
+  {
+    // 客户群群活码管理
+    path: '/clientgroupcode/add',
+    component: lazy(() => import('src/pages/Group/CustomerGroupCode/AddCode/AddCode'))
   }
 ];
