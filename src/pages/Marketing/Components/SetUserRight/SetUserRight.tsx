@@ -10,9 +10,18 @@ interface SetUserRightProps {
   value?: string;
   form: FormInstance<any>;
   readonly?: boolean;
+  allText?: string;
+  partText?: string;
 }
 
-export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, value, form, readonly }) => {
+export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({
+  onChange,
+  value,
+  form,
+  readonly,
+  allText,
+  partText
+}) => {
   const [originValues, setOriginValues] = useState<any>();
   const [visibleStaffList, setVisibleStaffList] = useState({
     visible: false,
@@ -98,15 +107,15 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
     <>
       <Form.Item name={'isSet'}>
         <Radio.Group onChange={(e) => onOpenChange(e.target.value)} disabled={readonly}>
-          <Radio value={0}>关闭</Radio>
-          <Radio value={1}>开启</Radio>
+          <Radio value={0}>{allText || '关闭'}</Radio>
+          <Radio value={1}>{partText || '开启'}</Radio>
         </Radio.Group>
       </Form.Item>
       {formValues.isSet
         ? (
         <>
           <Form.Item name={'groupType'}>
-            <Radio.Group onChange={(e) => onChangeWithGroupType(e.target.value)}>
+            <Radio.Group onChange={(e) => onChangeWithGroupType(e.target.value)} disabled={readonly}>
               <Radio value={1}>按照员工组选择</Radio>
               <Radio value={2}>按照组织架构选择</Radio>
             </Radio.Group>
@@ -114,12 +123,12 @@ export const SetUserRightFormItem: React.FC<SetUserRightProps> = ({ onChange, va
           {formValues.groupType === 1
             ? (
             <Form.Item name={'group1'} key="groupModal">
-              <UserGroupModal onChange={handleModalChange} />
+              <UserGroupModal onChange={handleModalChange} disabled={readonly} />
             </Form.Item>
               )
             : (
             <Form.Item name={'group2'} key="orgModal">
-              <UserOrgModal onChange={handleModalChange} />
+              <UserOrgModal onChange={handleModalChange} disabled={readonly} />
             </Form.Item>
               )}
           <Form.Item>

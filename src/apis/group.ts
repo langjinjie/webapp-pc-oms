@@ -50,3 +50,33 @@ export const downloadGroupMemberList: HttpFunction = (param: Object) => {
     timeout: 120000
   });
 };
+
+// 1.1、群活码列表接口（新增）
+export const getChatGroupLiveCodeList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/org/chatgroup/live/list', param);
+};
+// 1.2、群活码详情接口（新增）
+export const getLiveCodeDetail: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/org/chatgroup/live/detail', param);
+};
+// 1.2A、群活码使用员工列表接口（新增）
+export const getLiveCodeOfStaffList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/org/chatgroup/live/staff/list', param);
+};
+// 1.3、新建/编辑群活码接口（新增）
+export const addChatGroupCode: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/org/chatgroup/live/addoredit', param);
+};
+// 1.4、删除群活码接口（新增）
+export const delChatGroupCode: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/org/chatgroup/live/del', param);
+};
+// 1.5、复制群活码短链接口（新增）
+export const shareCodeShortUrl: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/org/chatgroup/live/shorturl', param);
+};
+
+// 1.6、查询客户群列表接口（新增）
+export const getChatGroupList: HttpFunction = (param: Object) => {
+  return http.post('/tenacity-admin/api/org/chatgroup/chat/list', param);
+};
