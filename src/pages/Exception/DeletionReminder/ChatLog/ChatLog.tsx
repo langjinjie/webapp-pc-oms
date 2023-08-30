@@ -3,7 +3,7 @@ import { DatePicker, Input, Button, message, Spin, Radio, Pagination, Tag, Toolt
 import { requesrtGetSingleChatList } from 'src/apis/exception';
 import moment, { Moment } from 'moment';
 import { Icon, BreadCrumbs } from 'src/components';
-import { copy, getQueryParam } from 'tenacity-tools';
+import { getQueryParam } from 'tenacity-tools';
 import { useLocation } from 'react-router-dom';
 import { TOKEN_KEY } from 'src/utils/config';
 import { IDelStaffList } from 'src/pages/Exception/DeletionReminder/Config';
@@ -11,6 +11,7 @@ import AudioPlay from './AudioPlay';
 import style from './style.module.less';
 import classNames from 'classnames';
 import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
+import copy from 'copy-to-clipboard';
 interface ChatLogProps {
   value?: any;
 }
@@ -1067,7 +1068,7 @@ const chatLog: React.FC<ChatLogProps> = ({ value }) => {
                     className={style.editIcon}
                     name="a-icon_common_16_modelcharge"
                     onClick={() => {
-                      copy(clientInfo?.externalUserid || '', false);
+                      copy(clientInfo?.externalUserid || '');
                       message.success('外部联系人id复制成功');
                     }}
                   />

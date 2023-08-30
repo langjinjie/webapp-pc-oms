@@ -6,7 +6,8 @@
 import React, { useEffect, useState, useContext, useRef, MutableRefObject } from 'react';
 import { Input, Tree, TreeSelect, message } from 'antd';
 import classNames from 'classnames';
-import { setTitle, copy } from 'tenacity-tools';
+import { setTitle } from 'tenacity-tools';
+import copy from 'copy-to-clipboard';
 import { Icon, Modal, Empty, AuthBtn } from 'src/components';
 import {
   queryDepartmentList,
@@ -655,7 +656,7 @@ const Organization: React.FC = () => {
           className={style.operationItem}
           title={userInfo.depPrefix + String(currentNode.deptId)}
           onClick={() => {
-            copy(userInfo.depPrefix + currentNode.deptId!, false);
+            copy(userInfo.depPrefix + currentNode.deptId!);
             message.success('部门id已复制');
           }}
         >

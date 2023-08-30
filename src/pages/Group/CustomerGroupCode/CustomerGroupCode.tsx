@@ -7,7 +7,7 @@ import { Button, Table, message } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { OperateType } from 'src/utils/interface';
-import { copy } from 'tenacity-tools';
+import copy from 'copy-to-clipboard';
 import QRCode from 'qrcode';
 import { downloadImage, throttle } from 'src/utils/base';
 
@@ -113,7 +113,7 @@ const CustomerGroupCode: React.FC<RouteComponentProps> = ({ history }) => {
     });
     if (res && res.shortUrl) {
       message.success('复制短链成功');
-      copy(res.shortUrl, false);
+      copy(res.shortUrl);
     }
   }, 1000);
 

@@ -5,7 +5,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Button, message } from 'antd';
-import { copy } from 'tenacity-tools';
+import copy from 'copy-to-clipboard';
 import { TagEmpty } from 'src/components';
 import { requestGetClientRecommend } from 'src/apis/exception';
 import style from './style.module.less';
@@ -57,7 +57,7 @@ const ServiceSuggestion: React.FC<ServiceSuggestionProps> = ({ externalUserid, f
 
   const copyText = (text: string, type: number) => {
     const recommendTypes = ['产品', '文章', '活动'];
-    copy(text, false);
+    copy(text);
     message.success(`复制成功，去营销平台-${recommendTypes[type]}库搜索标题哦`);
   };
 

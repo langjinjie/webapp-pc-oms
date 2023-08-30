@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'src/components';
 import { Button, Input } from 'antd';
-import { copy } from 'tenacity-tools';
+import copy from 'copy-to-clipboard';
 import { downloadImage } from 'src/utils/base';
 import QRCode from 'qrcode';
 import style from './style.module.less';

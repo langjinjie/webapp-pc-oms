@@ -6,7 +6,7 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Button, message, FormProps } from 'antd';
 import classNames from 'classnames';
-import { copy } from 'tenacity-tools';
+import copy from 'copy-to-clipboard';
 import { queryCompanyInfo, saveCompanyInfo, updateCompanyStep } from 'src/apis/company';
 import style from './style.module.less';
 
@@ -81,7 +81,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ nextStep, prevStep, corpId }) => {
             onClick={() => {
               const url: string = form.getFieldValue('callBackUrl');
               if (url) {
-                copy(url, false);
+                copy(url);
                 message.success('复制成功');
               } else {
                 message.warn('请输入URL');

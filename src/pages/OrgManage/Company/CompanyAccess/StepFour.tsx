@@ -6,7 +6,7 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Button, message, FormProps } from 'antd';
 import classNames from 'classnames';
-import { copy } from 'tenacity-tools';
+import copy from 'copy-to-clipboard';
 import { FileUpload } from 'src/components';
 import { queryCompanyInfo, saveCompanyInfo, updateCompanyStep } from 'src/apis/company';
 import style from './style.module.less';
@@ -34,7 +34,7 @@ const StepFour: React.FC<StepFourProps> = ({ nextStep, prevStep, corpId }) => {
         onClick={() => {
           const values: string = form.getFieldValue(name);
           if (values) {
-            copy(values, false);
+            copy(values);
             message.success('复制成功');
           } else {
             message.warn('请输入' + label);

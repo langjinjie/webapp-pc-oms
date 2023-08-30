@@ -1,7 +1,7 @@
 import { Button, Card, Form, Input } from 'antd';
 import React, { useContext, useState } from 'react';
 import { connectionTransform } from 'src/apis/marketing';
-import { copy } from 'tenacity-tools';
+import copy from 'copy-to-clipboard';
 import { Context } from 'src/store/index';
 const Connection: React.FC = () => {
   const [shortUrl, setShortUrl] = useState('');
