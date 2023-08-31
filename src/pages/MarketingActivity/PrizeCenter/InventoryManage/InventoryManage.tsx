@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Card } from 'antd';
+import { Button, Card, message } from 'antd';
 import { BreadCrumbs, ExportModal, NgFormSearch, NgTable } from 'src/components';
 import { searchCols, TableColumns } from './Config';
+import { requestExportActivityGoodsStock } from 'src/apis/marketingActivity';
 import classNames from 'classnames';
 import style from './style.module.less';
+import qs from 'qs';
 
 const InventoryManage: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -12,8 +14,21 @@ const InventoryManage: React.FC = () => {
   const addStock = () => {
     setVisible(true);
   };
-  const exportOnOk = (file: File) => {
-    console.log('file', file);
+
+  // 首先调用统一的上传接口,然后
+  const exportOnOk = async (file: File) => {
+    const { goodsId } = qs.parse(location.search, { ignoreQueryPrefix: true });
+    // 创建一个空对象实例
+    const uploadData = new FormData();
+    // 调用append()方法来添加数据
+    uploadData.append('file', file);
+    uploadData.append('goodsId', goodsId as string);
+    const res = await requestExportActivityGoodsStock(uploadData);
+    if (res) {
+      console.log('123');
+      message.success('库存新增成功');
+      setVisible(false);
+    }
   };
   const handleDownload = () => {
     console.log('模板下载');

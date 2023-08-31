@@ -1,38 +1,61 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card } from 'antd';
+import { Button, Card, message } from 'antd';
 import { NgFormSearch, NgTable } from 'src/components';
-import { searchCols, TableColumns } from './Config';
+import { searchCols, TableColumns, IPrizeItem } from './Config';
 import { IPagination } from 'src/utils/interface';
-import style from './style.module.less';
 import { useHistory } from 'react-router-dom';
+import { requestActivityPrizeList, requestPpDownActivityPrize } from 'src/apis/marketingActivity';
+import style from './style.module.less';
 
 const PrizeCenter: React.FC = () => {
-  const [list, setList] = useState<any[]>([]);
+  const [list, setList] = useState<IPrizeItem[]>([]);
+  const [formVal, setFormVal] = useState<{ [key: string]: string }>({});
   const [pagination, setPagination] = useState<IPagination>({ current: 1, pageSize: 10, total: 0 });
 
   const history = useHistory();
 
   // 库存管理
-  const inventoryManage = (row: any) => {
-    console.log('row', row);
-    history.push('/prizeCenter/inventoryManage');
+  const inventoryManage = (row: IPrizeItem) => {
+    history.push(`/prizeCenter/inventoryManage?goodsId=${row.goodsId}`);
   };
 
-  const getList = (values?: any) => {
+  // 上下架
+  const upOrDown = async (row: IPrizeItem) => {
+    const { status } = row;
+    const res = await requestPpDownActivityPrize({ status: status ? 0 : 1 });
+    if (res) {
+      message.success(`奖品${status ? '下架' : '上架'}成功`);
+    }
+  };
+
+  // 修改奖品
+  const edit = (row: IPrizeItem) => {
+    history.push(`/prizeCenter/add?goodsId=${row.goodsId}`);
+  };
+
+  const getList = async (values?: any) => {
     const { current = 1, pageSize = 10 } = values || {};
-    console.log('values', values);
-    setList([{}]);
-    setPagination({ current, pageSize, total: 1 });
+    const res = await requestActivityPrizeList({ ...values });
+    if (res) {
+      const { list, total } = res;
+      setList(list);
+      setPagination({ current, pageSize, total });
+    }
+    return res;
   };
 
-  const onFinish = (values?: any) => {
+  const onFinish = async (values?: any) => {
     console.log('values', values);
+    const res = await getList(values);
+    if (res) {
+      setFormVal(values);
+    }
   };
 
   const paginationChange = (current: number, pageSize?: number) => {
-    // 如果修改pageSize,需要从第一
+    // 如果修改pageSize,需要从第一页重新获取
     const pageNum = pageSize === pagination.pageSize ? current : 1;
-    getList({ current: pageNum, pageSize });
+    getList({ ...formVal, current: pageNum, pageSize });
   };
 
   useEffect(() => {
@@ -46,7 +69,7 @@ const PrizeCenter: React.FC = () => {
       <NgFormSearch className="mt20" searchCols={searchCols} onSearch={onFinish} />
       <NgTable
         className="mt10"
-        columns={TableColumns({ inventoryManage })}
+        columns={TableColumns({ inventoryManage, upOrDown, edit })}
         dataSource={list}
         pagination={pagination}
         paginationChange={paginationChange}
