@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns } from './Config';
@@ -6,7 +6,7 @@ import AddRules from './AddRules';
 import style from './style.module.less';
 import classNames from 'classnames';
 
-const RewardRules: React.FC = () => {
+const RewardRules: React.FC<{ onConfirm: () => void }> = ({ onConfirm }) => {
   const [addVisible, setAddVisible] = useState(false);
 
   const edit = (row: any) => {
@@ -16,6 +16,10 @@ const RewardRules: React.FC = () => {
   const del = (row: any) => {
     console.log('row', row);
   };
+
+  useEffect(() => {
+    console.log('奖励规则', onConfirm);
+  }, []);
 
   return (
     <>

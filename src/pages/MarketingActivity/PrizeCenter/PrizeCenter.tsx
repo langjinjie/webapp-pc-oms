@@ -38,18 +38,16 @@ const PrizeCenter: React.FC = () => {
     const res = await requestActivityPrizeList({ ...values });
     if (res) {
       const { list, total } = res;
-      setList(list);
+      setList(list || []);
       setPagination({ current, pageSize, total });
     }
-    return res;
+    setList([{}]);
   };
 
   const onFinish = async (values?: any) => {
     console.log('values', values);
-    const res = await getList(values);
-    if (res) {
-      setFormVal(values);
-    }
+    await getList(values);
+    setFormVal(values);
   };
 
   const paginationChange = (current: number, pageSize?: number) => {

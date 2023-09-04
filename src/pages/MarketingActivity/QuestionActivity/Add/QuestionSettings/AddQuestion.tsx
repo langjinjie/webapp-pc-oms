@@ -49,21 +49,29 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, visible, onClose, onO
     >
       <Form form={form} onValuesChange={onValuesChange}>
         <Item label="题目名称">
-          <Item name="题目名称">
+          <Item name="topicTitle">
             <Input placeholder="请输入活动名称，40字以内" />
           </Item>
-          <Item className="mt20" name="题目名称图片" extra="仅支持JPG/JPEG/PNG格式，大小小于2MB的图片">
+          <Item className="mt20" name="imgUrl" extra="仅支持JPG/JPEG/PNG格式，大小小于2MB的图片">
             <ImageUpload />
           </Item>
         </Item>
-        <Item name="分值" label="分值">
+        <Item name="score" label="分值">
           <Input className="width240" placeholder="请输入整数，不填默认10分" />
         </Item>
-        <Item name="题型" label="题型">
+        <Item name="topicType" label="题型">
+          <Radio.Group>
+            <Radio value={1}>抽烟</Radio>
+            <Radio value={2}>体重比</Radio>
+            <Radio value={3}>家庭题目</Radio>
+            <Radio value={4}>普通单选多选</Radio>
+            <Radio value={5}>填空</Radio>
+          </Radio.Group>
+        </Item>
+        <Item name="isRadio" label="是否单选">
           <Radio.Group>
             <Radio value={1}>单选</Radio>
             <Radio value={2}>多选</Radio>
-            <Radio value={3}>问答</Radio>
           </Radio.Group>
         </Item>
         <List name="tagList" initialValue={[{}]}>

@@ -57,7 +57,9 @@ export const requestExportActivityGoodsStock: HttpFunction = (param) => {
  * @param goodsId string 是 商品ID
  */
 export const requestActivityGoodsStockDownLoad: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/activity/goods/stock/download', param);
+  return http.post('/tenacity-admin/api/activity/goods/stock/download', param, {
+    responseType: 'blob'
+  });
 };
 
 /**
@@ -102,7 +104,7 @@ export const requestDelActivityGoodsStock: HttpFunction = (param) => {
  * @param textColor varchar 是 字体颜色
  * @param activityPoster varchar 是 活动主页海报
  */
-export const requestAdd: HttpFunction = (param) => {
+export const requestAddQuestionActivityBase: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/add', param);
 };
 
@@ -121,7 +123,7 @@ export const requestActivityList: HttpFunction = (param) => {
 /**
  * @description 群答题活动上架和下架
  * @param activityId string 否 活动id
- * @param status int  活动状态:1-未上架、2-已上架、3-已下架；4、未开始；5、进行中；6、已结束
+ * @param status int  活动状态:2-已上架、3-已下架；
  */
 export const requestUpDownActivity: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/upDown', param);

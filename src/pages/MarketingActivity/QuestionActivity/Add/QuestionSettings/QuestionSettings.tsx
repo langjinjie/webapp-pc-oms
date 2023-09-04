@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { NgTable } from 'src/components';
 import { QuestionTableColumns } from './Config';
+import { requestActivityTopicList } from 'src/apis/marketingActivity';
 import AddQuestion from './AddQuestion';
 import style from './style.module.less';
 import classNames from 'classnames';
 
-const QuestionSettings: React.FC = () => {
+const QuestionSettings: React.FC<{ onConfirm: () => void }> = ({ onConfirm }) => {
   const [addVisible, setAddVisible] = useState(false);
   const [list, setList] = useState<any[]>([]);
+
+  // 获取题目列表
+  const getList = async () => {
+    const res = await requestActivityTopicList({});
+    console.log('res', res);
+  };
   // 修改题目
   const edit = (row: any) => {
     console.log('row', row);
@@ -18,6 +25,11 @@ const QuestionSettings: React.FC = () => {
     setList((list) => [...list, row]);
   };
 
+  console.log('题目设置渲染了');
+  useEffect(() => {
+    console.log('题目设置', onConfirm);
+    getList();
+  }, []);
   return (
     <>
       <div>

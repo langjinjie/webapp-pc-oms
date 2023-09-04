@@ -21,6 +21,7 @@ export const marketActivityRoutes: RouteProps[] = [
     path: '/checkIn/add',
     component: lazy(() => import('src/pages/MarketingActivity/CheckInActivity/Add/Add'))
   },
+  // 问答活动
   {
     path: '/questionActivity',
     component: lazy(() => import('src/pages/MarketingActivity/QuestionActivity/QuestionActivity'))
