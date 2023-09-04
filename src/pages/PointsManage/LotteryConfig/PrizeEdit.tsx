@@ -130,7 +130,7 @@ const PrizeEdit: React.FC<RouteComponentProps<any, any, State>> = ({ location, h
         <Form.Item name={'exchangeDesc'} label="兑换流程说明" rules={[{ required: true }]}>
           <Input.TextArea maxLength={300} showCount placeholder="请输入" autoSize={{ minRows: 4 }} />
         </Form.Item>
-        <Form.Item wrapperCol={{ offset: 4 }} className="formFooter">
+        <Form.Item className="formFooter">
           <Space size={20} className="ml20">
             <Button
               type="primary"

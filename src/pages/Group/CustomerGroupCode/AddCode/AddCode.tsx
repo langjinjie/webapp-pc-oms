@@ -117,7 +117,7 @@ const AddCode: React.FC<RouteComponentProps> = ({ location, history }) => {
           </Item>
 
           {!isView && (
-            <Item className="formFooter" style={{ marginLeft: '140px' }}>
+            <Item className="formFooter">
               <Button type="primary" htmlType="submit" shape="round" loading={isSubmitting}>
                 保存
               </Button>

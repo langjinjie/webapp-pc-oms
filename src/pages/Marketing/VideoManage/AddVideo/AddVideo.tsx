@@ -1,4 +1,4 @@
-import { Button, Form, Input, message, Select, Space } from 'antd';
+import { Button, Form, Input, message, Select } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { editVideo, getVideoDetail, getVideoTypeList } from 'src/apis/marketing';
@@ -159,21 +159,19 @@ const AddVideo: React.FC<RouteComponentProps> = ({ history, location }) => {
         </Form.Item>
 
         <Form.Item className="formFooter mt40">
-          <Space size={36} style={{ marginLeft: '140px' }}>
-            <Button
-              shape="round"
-              type="primary"
-              ghost
-              onClick={() => {
-                history.goBack();
-              }}
-            >
-              取消
-            </Button>
-            <Button shape="round" type="primary" htmlType="submit" loading={isSubmitting}>
-              确定
-            </Button>
-          </Space>
+          <Button
+            shape="round"
+            type="primary"
+            ghost
+            onClick={() => {
+              history.goBack();
+            }}
+          >
+            取消
+          </Button>
+          <Button shape="round" type="primary" htmlType="submit" loading={isSubmitting}>
+            确定
+          </Button>
         </Form.Item>
       </Form>
     </div>

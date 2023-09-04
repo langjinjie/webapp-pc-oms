@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Form, Input, Radio, Select, Space, FormInstance, message } from 'antd';
+import { Breadcrumb, Button, Form, Input, Radio, Select, FormInstance, message } from 'antd';
 import FormBlock from './components/FormBlock/FormBlock';
 import { getTaskStrategyTplDetail, saveScene } from 'src/apis/task';
 
@@ -162,18 +162,16 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
           <div className="formListTitle">配置操作区</div>
           <FormBlock value={tplDetail?.sceneList} isReadonly={isReadonly} />
 
-          <Form.Item>
-            <div className="flex justify-center formFooter">
-              <Space size={30}>
-                <Button type="primary" shape="round" ghost onClick={() => history.goBack()}>
-                  {isReadonly ? '返回' : '取消'}
+          <Form.Item className="formFooter">
+            <div className="flex justify-center ">
+              <Button type="primary" shape="round" ghost onClick={() => history.goBack()}>
+                {isReadonly ? '返回' : '取消'}
+              </Button>
+              {!isReadonly && (
+                <Button type="primary" shape="round" onClick={() => onBasicSubmit()}>
+                  确认
                 </Button>
-                {!isReadonly && (
-                  <Button type="primary" shape="round" onClick={() => onBasicSubmit()}>
-                    确认
-                  </Button>
-                )}
-              </Space>
+              )}
             </div>
           </Form.Item>
         </Form.Provider>

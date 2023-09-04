@@ -162,7 +162,7 @@ const GroupGreetingEdit: React.FC<RouteComponentProps> = ({ history, location })
             >
               <Switch checkedChildren="开" unCheckedChildren="关" disabled={formValues.wcId} />
             </Form.Item>
-            <Form.Item className="formFooter" wrapperCol={{ offset: 8 }}>
+            <Form.Item className="formFooter">
               <Button type="primary" htmlType="submit" shape="round">
                 保存
               </Button>

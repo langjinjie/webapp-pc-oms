@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Form, Input, InputNumber, message, Radio, Space } from 'antd';
+import { Breadcrumb, Button, Form, Input, InputNumber, message, Radio } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { addOrEditMenu } from 'src/apis/orgManage';
@@ -154,15 +154,13 @@ const MenuEdit: React.FC<RouteComponentProps<any, any, S>> = ({ history, locatio
             </>
           )}
 
-          <Form.Item wrapperCol={{ offset: 4 }}>
-            <Space size={40} className="formFooter">
-              <Button shape="round" onClick={() => onCancel()}>
-                取消
-              </Button>
-              <Button shape="round" htmlType="submit" type="primary">
-                确认
-              </Button>
-            </Space>
+          <Form.Item className="formFooter">
+            <Button shape="round" onClick={() => onCancel()}>
+              取消
+            </Button>
+            <Button shape="round" htmlType="submit" type="primary">
+              确认
+            </Button>
           </Form.Item>
         </Form>
       </div>

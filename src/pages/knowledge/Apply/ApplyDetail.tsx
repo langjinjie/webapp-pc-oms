@@ -1,4 +1,4 @@
-import { Button, Form, Input, message, Space, Steps } from 'antd';
+import { Button, Form, Input, message, Steps } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import InputShowLength from 'src/components/InputShowLength/InputShowLength';
@@ -206,18 +206,16 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
           </Steps>
         </div>
         <Form.Item className="formFooter mt40">
-          <Space size={36} style={{ marginLeft: '140px' }}>
-            <Button
-              shape="round"
-              type="primary"
-              ghost
-              onClick={() => {
-                history.goBack();
-              }}
-            >
-              返回
-            </Button>
-          </Space>
+          <Button
+            shape="round"
+            type="primary"
+            ghost
+            onClick={() => {
+              history.goBack();
+            }}
+          >
+            返回
+          </Button>
         </Form.Item>
       </Form>
     </div>

@@ -1,4 +1,4 @@
-import { Button, Card, Cascader, Form, Input, message, Space } from 'antd';
+import { Button, Card, Cascader, Form, Input, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import InputShowLength from 'src/components/InputShowLength/InputShowLength';
@@ -171,23 +171,21 @@ const KnowledgeEdit: React.FC<RouteComponentProps> = ({ history, location }) => 
           </Form.Item>
           <Form.Item label="有用点击数">{formData.openCount}</Form.Item>
           <Form.Item className="formFooter mt40">
-            <Space size={36} style={{ marginLeft: '140px' }}>
-              <Button
-                shape="round"
-                type="primary"
-                ghost
-                onClick={() => {
-                  history.goBack();
-                }}
-              >
-                {isView ? '返回' : '取消'}
+            <Button
+              shape="round"
+              type="primary"
+              ghost
+              onClick={() => {
+                history.goBack();
+              }}
+            >
+              {isView ? '返回' : '取消'}
+            </Button>
+            {!isView && (
+              <Button shape="round" type="primary" htmlType="submit" loading={isSubmitting}>
+                确定
               </Button>
-              {!isView && (
-                <Button shape="round" type="primary" htmlType="submit" loading={isSubmitting}>
-                  确定
-                </Button>
-              )}
-            </Space>
+            )}
           </Form.Item>
         </Form>
       </Card>

@@ -105,7 +105,7 @@ const FetchDataAdd: React.FC<RouteComponentProps> = ({ history, location }) => {
           )}
         </Form.List>
 
-        <Form.Item className="formFooter mt40" style={{ marginLeft: '240px' }}>
+        <Form.Item className="formFooter mt40">
           <Space size={36}>
             <Button
               shape="round"
