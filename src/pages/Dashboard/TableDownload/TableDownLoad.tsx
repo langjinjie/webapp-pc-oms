@@ -1,5 +1,5 @@
-import { Button, DatePicker, Form, message, PaginationProps, Select, Row } from 'antd';
-import moment, { Moment } from 'moment';
+import { Button, DatePicker, Form, message, PaginationProps, Select, Row, Input } from 'antd';
+import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import {
   asyncCreateDownloadFile,
@@ -35,12 +35,20 @@ const TableDownLoad: React.FC = () => {
   });
 
   const [dataSource, setDataSource] = useState<fileProps[]>([]);
-  const [templeList, setTempleList] = useState<
-    { templateName: string; tmpId: string; type: 0 | 1; chooseDept: 0 | 1 }[]
-  >([]);
+  interface TemplateType {
+    templateName: string;
+    tmpId: string;
+    type: 0 | 1;
+    chooseDept: 0 | 1;
+    chooseChatName: number;
+    chooseJobNumber: number;
+  }
+
+  const [templeList, setTempleList] = useState<TemplateType[]>([]);
   const [typeList, setTypeList] = useState<{ tyName: string; ftpId: string }[]>([]);
   const [templeType, setTempleType] = useState<0 | 1>(0);
   const [showSelect, setShowSelect] = useState(false);
+  const [currentTemplate, setCurrentTemplate] = useState<TemplateType>();
   // // 销售中心=》分中心部门
   const [centerDeptIdList, setCenterDeptIdList] = useState<IDepts[]>([]);
   // const [centerDeptIds, setCenterDeptIds] = useState<IDepts[]>([]);
@@ -98,6 +106,7 @@ const TableDownLoad: React.FC = () => {
   const selectOnChange = (value: string) => {
     const typeItem = templeList.find((findItem) => findItem.tmpId === value);
     setTempleType(typeItem?.type || 0);
+    setCurrentTemplate(typeItem);
     setShowSelect(typeItem?.chooseDept === 1);
     if (typeItem?.chooseDept !== 1) {
       form.setFieldsValue({
@@ -216,15 +225,8 @@ const TableDownLoad: React.FC = () => {
 
     exportFile(data, record.fileName!);
   };
-  const createFile = async (values: {
-    tmpId: string;
-    dateRange: [Moment, Moment];
-    centerDeptIds: string[];
-    areaDeptIds: string[];
-    bossDeptIds: string[];
-    leaderDeptIds: string[];
-  }) => {
-    const { tmpId, dateRange, centerDeptIds, areaDeptIds, bossDeptIds, leaderDeptIds } = values;
+  const createFile = async (values: any) => {
+    const { tmpId, dateRange, centerDeptIds, areaDeptIds, bossDeptIds, leaderDeptIds, chatName, jobNumber } = values;
     // templeType为1时,时间的开始时间为2021-08-01, 结束时间为当前时间
     const startTime = dateRange?.[0].format('YYYY-MM-DD') || '2021-08-01';
     const endTime = dateRange?.[1].format('YYYY-MM-DD') || moment().format('YYYY-MM-DD');
@@ -235,7 +237,9 @@ const TableDownLoad: React.FC = () => {
       centerDeptIds,
       areaDeptIds,
       bossDeptIds,
-      leaderDeptIds
+      leaderDeptIds,
+      chatName,
+      jobNumber
     });
     if (res) {
       message.success('提交成功');
@@ -278,6 +282,16 @@ const TableDownLoad: React.FC = () => {
               {/* type为1 不能选择时间 */}
               <DatePicker.RangePicker disabled={templeType === 1} allowClear />
             </Form.Item>
+            {!!currentTemplate?.chooseChatName && (
+              <Form.Item name={'chatName'} label="群名">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            )}
+            {!!currentTemplate?.chooseJobNumber && (
+              <Form.Item name={'jobNumber'} label="工号">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            )}
             <Form.Item extra="备注：点击生成报表按钮后，若列表还在处理中状态，请稍后手动刷新页面试试。">
               <Button type="primary" shape="round" htmlType="submit">
                 生成报表

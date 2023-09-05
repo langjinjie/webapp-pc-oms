@@ -77,7 +77,7 @@ const AddCode: React.FC<RouteComponentProps> = ({ location, history }) => {
             name="name"
             rules={[
               { required: true, message: '请输入群活码名称' },
-              { max: 64, message: '群活码名称长度最多为64位' }
+              { max: 30, message: '群活码名称长度最多为30位' }
             ]}
           >
             <Input disabled={isView} placeholder="请输入" className="width400" />

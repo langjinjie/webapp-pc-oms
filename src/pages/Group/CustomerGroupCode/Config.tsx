@@ -102,8 +102,8 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<ChatGroupLiv
       width: 100
     },
     {
-      key: 'lastUpdated',
-      dataIndex: 'lastUpdated',
+      key: 'dateCreated',
+      dataIndex: 'dateCreated',
       title: '创建时间',
       ellipsis: true,
       width: 200
@@ -114,7 +114,7 @@ export const tableColsFun = (onOperate: OnOperateType): ColumnsType<ChatGroupLiv
       dataIndex: 'name',
       title: '操作',
       fixed: 'right',
-      width: 180,
+      width: 200,
       render: (_, record, index) => (
         <>
           <AuthBtn path="/view">
