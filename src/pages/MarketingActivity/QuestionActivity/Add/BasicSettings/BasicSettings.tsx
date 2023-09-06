@@ -2,18 +2,40 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, DatePicker, Radio, Space, Button, InputNumber } from 'antd';
 import { ImageUpload, SetGroupChat } from 'src/components';
 import { formatDate } from 'src/utils/base';
-import { requestAddQuestionActivityBase } from 'src/apis/marketingActivity';
+import { requestAddQuestionActivityBase, requestQuestionActivityDetail } from 'src/apis/marketingActivity';
+import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import style from './style.module.less';
+import qs from 'qs';
 
 const { Item } = Form;
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-const BasicSettings: React.FC<{ onConfirm: () => void }> = ({ onConfirm }) => {
+const BasicSettings: React.FC<{
+  onConfirm: () => void;
+  activityInfoOnChange?: (value: { activityId: string; activityName: string }) => void;
+}> = ({ onConfirm, activityInfoOnChange }) => {
   const [groupRequire, setGroupRequire] = useState<number>();
 
   const [form] = Form.useForm();
+  const history = useHistory();
+
+  // 获取活动详情
+  const getDetail = async () => {
+    const { activityId } = qs.parse(location.search, { ignoreQueryPrefix: true });
+    if (!activityId) return activityInfoOnChange?.({ activityId: Date.now() + '', activityName: '基础设置' });
+    const res = await requestQuestionActivityDetail({ activityId });
+    if (res) {
+      console.log('res', res);
+      // 格式化群字段
+      res.chatIds = res.chatIds.map(({ chatId, chatName }: { chatId: string; chatName: string }) => ({
+        chatId,
+        groupName: chatName
+      }));
+      form.setFieldsValue(res);
+    }
+  };
 
   // 提交
   const onFinish = async (values?: any) => {
@@ -30,12 +52,16 @@ const BasicSettings: React.FC<{ onConfirm: () => void }> = ({ onConfirm }) => {
     }
     const res = await requestAddQuestionActivityBase({ ...values, startTime, endTime, chatIds });
     if (res) {
+      // 将活动名称和活动id保存下来
       onConfirm();
+      activityInfoOnChange?.({ activityId: res.activityId, activityName: values.activityName });
+      // 在url上拼上activityId
+      history.push(`/questionActivity/add?activityId=${res.activityId}`);
     }
   };
   console.log('基础设置渲染了');
   useEffect(() => {
-    console.log('基础设置', onConfirm);
+    getDetail();
   }, []);
   return (
     <div className={style.wrap}>
@@ -43,7 +69,7 @@ const BasicSettings: React.FC<{ onConfirm: () => void }> = ({ onConfirm }) => {
         form={form}
         scrollToFirstError={{ block: 'center', behavior: 'smooth' }}
         onFinish={onFinish}
-        onValuesChange={(changValues) => console.log('changValues', changValues)}
+        onValuesChange={(changValues: any) => console.log('changValues', changValues)}
       >
         <Item name="activityName" label="活动名称" rules={[{ required: true, message: '请输入活动名称，30字以内' }]}>
           <Input className="width480" placeholder="请输入活动名称，30字以内" maxLength={30} />
@@ -93,7 +119,7 @@ const BasicSettings: React.FC<{ onConfirm: () => void }> = ({ onConfirm }) => {
           </Item>
           <span>
             <Item name="playNum" noStyle>
-              <InputNumber className="width100 mr10" placeholder="请输入" />
+              <InputNumber className={classNames(style.inputNumber, 'width100')} placeholder="请输入" />
             </Item>
             次<span className={classNames(style.tipsText, 'ml20')}>提醒：多次参与奖品</span>
           </span>

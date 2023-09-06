@@ -4,7 +4,7 @@ import { NgFormSearch, NgTable } from 'src/components';
 import { searchCols, TableColumns, IQuestionActivityRow } from './Config';
 import { useHistory } from 'react-router-dom';
 import { IPagination } from 'src/utils/interface';
-import { requestActivityList, requestUpDownActivity } from 'src/apis/marketingActivity';
+import { requestQuestionActivityList, requestUpDownQuestionActivity } from 'src/apis/marketingActivity';
 import style from './style.module.less';
 
 const QuestionActivity: React.FC = () => {
@@ -15,7 +15,7 @@ const QuestionActivity: React.FC = () => {
 
   const getList = async (values?: any) => {
     const { current = 1, pageSize = 10 } = values || {};
-    const res = await requestActivityList({ ...values });
+    const res = await requestQuestionActivityList({ ...values });
     if (res) {
       const { list, total } = res;
       setList(list || []);
@@ -38,7 +38,7 @@ const QuestionActivity: React.FC = () => {
 
   // 上下架
   const putOrDown = async ({ activityId, status }: IQuestionActivityRow) => {
-    const res = await requestUpDownActivity({ status: [1, 3].includes(status) ? 3 : 4, activityId });
+    const res = await requestUpDownQuestionActivity({ status: [1, 3].includes(status) ? 3 : 4, activityId });
     if (res) {
       message.success(`${[1, 3].includes(status) ? '上架' : '下架'}成功`);
     }
@@ -66,6 +66,7 @@ const QuestionActivity: React.FC = () => {
       </Button>
       <NgFormSearch className={style.form} searchCols={searchCols} onSearch={onFinish} />
       <NgTable
+        rowKey={'activityId'}
         columns={TableColumns({ putOrDown, edit })}
         dataSource={list}
         pagination={pagination}

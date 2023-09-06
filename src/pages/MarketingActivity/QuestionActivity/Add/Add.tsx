@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Tabs } from 'antd';
 import { BreadCrumbs } from 'src/components';
-import { useHistory } from 'react-router-dom';
 import BasicSettings from './BasicSettings/BasicSettings';
 import QuestionSettings from './QuestionSettings/QuestionSettings';
 import RewardRules from './RewardRules/RewardRules';
@@ -9,10 +8,9 @@ import style from './style.module.less';
 import qs from 'qs';
 
 const Add: React.FC = () => {
-  const [activeKey, setActiveKey] = useState('2');
+  const [activeKey, setActiveKey] = useState('1');
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
-
-  const history = useHistory();
+  const [activityInfo, setActivityInfo] = useState<{ activityId: string; activityName: string }>();
 
   const tabOnChange = (activeKey: string) => {
     if (activeKeys.includes(activeKey)) {
@@ -25,6 +23,10 @@ const Add: React.FC = () => {
     if (!activityId) {
       setActiveKeys(['1', '2', '3']);
     }
+  };
+
+  const activityInfoOnChange = (value: { activityId: string; activityName: string }) => {
+    setActivityInfo(value);
   };
   console.log('组件重新渲染了');
   useEffect(() => {
@@ -44,13 +46,13 @@ const Add: React.FC = () => {
     >
       <Tabs onChange={tabOnChange} activeKey={activeKey}>
         <Tabs.TabPane tab="基础设置" key={'1'}>
-          <BasicSettings onConfirm={() => setActiveKey('2')} />
+          <BasicSettings onConfirm={() => setActiveKey('2')} activityInfoOnChange={activityInfoOnChange} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="题目设置" key={'2'}>
-          <QuestionSettings onConfirm={() => setActiveKey('3')} />
+          <QuestionSettings onConfirm={() => setActiveKey('3')} activityInfo={activityInfo} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="奖励规则" key={'3'}>
-          <RewardRules onConfirm={() => history.push('/questionActivity')} />
+          <RewardRules activityInfo={activityInfo} />
         </Tabs.TabPane>
       </Tabs>
     </Card>

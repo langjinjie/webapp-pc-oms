@@ -3,6 +3,16 @@ import http, { HttpFunction } from 'src/utils/http';
 /* ----------------------------- 奖品管理 ----------------------------- */
 
 /**
+ * @description 活动选择已上架商品列表查询
+ * @param param goodsName string
+ * @param param pageNum int 否 第几页，从1开始
+ * @param param pageSize int 否 页面记录数，默认为10
+ */
+export const requestActivityPrizeUpList: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/activity/goods/upList', param);
+};
+
+/**
  * @description 获取奖品列表
  * @param goodsId string 商品id
  * @param goodsName string 商品名称
@@ -116,7 +126,7 @@ export const requestAddQuestionActivityBase: HttpFunction = (param) => {
  * @param endTime date 是 活动结束时间yyyy-mm-dd hh:mm:ss
  * @param status Int 是 活动状态:1-未上架、2-已上架、3-已下架；4、未开始；5、进行中；6、已结束
  */
-export const requestActivityList: HttpFunction = (param) => {
+export const requestQuestionActivityList: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/list', param);
 };
 
@@ -125,7 +135,7 @@ export const requestActivityList: HttpFunction = (param) => {
  * @param activityId string 否 活动id
  * @param status int  活动状态:2-已上架、3-已下架；
  */
-export const requestUpDownActivity: HttpFunction = (param) => {
+export const requestUpDownQuestionActivity: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/upDown', param);
 };
 
@@ -141,8 +151,8 @@ export const requestActivityTopicList: HttpFunction = (param) => {
  * @description 查询活动详情
  * @param activityId string 是 活动id
  */
-export const requestActivityDetail: HttpFunction = (param) => {
-  return http.post('', param);
+export const requestQuestionActivityDetail: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/activity/group/detail', param);
 };
 
 /**
@@ -161,7 +171,7 @@ export const requestActivityDetail: HttpFunction = (param) => {
  * @param sort int 是 选项排序
  * @param choiceOption String 是 选项
  */
-export const requestAddOrUpdateActivityTopic: HttpFunction = (param) => {
+export const requestAddOrUpdateQuestionActivityTopic: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/topic/addOrUpdate', param);
 };
 
@@ -169,7 +179,7 @@ export const requestAddOrUpdateActivityTopic: HttpFunction = (param) => {
  * @description 删除题目
  * @param topicId String  是 题目ID
  */
-export const requestDelActivityTopic: HttpFunction = (param) => {
+export const requestDelQuestionActivityTopic: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/topic/delete', param);
 };
 
@@ -177,7 +187,7 @@ export const requestDelActivityTopic: HttpFunction = (param) => {
  * @description 查询题目详情
  * @param topicId String  是 题目ID
  */
-export const requestActivityTopicDetail: HttpFunction = (param) => {
+export const requestQuestionActivityTopicDetail: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/topic/detail', param);
 };
 
@@ -189,7 +199,7 @@ export const requestActivityTopicDetail: HttpFunction = (param) => {
  * @param goodsId string 否 商品ID
  * @param num strig 否 默认1：不需要填
  */
-export const requestUpdateActivityPrize: HttpFunction = (param) => {
+export const requestUpdateQuestionActivityPrize: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/prize/update', param);
 };
 
@@ -198,7 +208,7 @@ export const requestUpdateActivityPrize: HttpFunction = (param) => {
  * @param reportId  是 规则ID
  * @param activityId string 是 活动id
  */
-export const requestDelActivityPrize: HttpFunction = (param) => {
+export const requestDelQuestionActivityPrize: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/prize/del', param);
 };
 
@@ -206,7 +216,7 @@ export const requestDelActivityPrize: HttpFunction = (param) => {
  * @description 活动奖励规则配置列表
  * @param activityId string 是 活动id
  */
-export const requestActivityPrizeConfig: HttpFunction = (param) => {
+export const requestQuestionActivityPrizeConfig: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/activity/group/prize/config', param);
 };
 

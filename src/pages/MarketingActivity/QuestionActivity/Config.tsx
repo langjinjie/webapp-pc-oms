@@ -4,7 +4,7 @@ import React from 'react';
 import { SearchCol } from 'src/components';
 
 export interface IQuestionActivityRow {
-  activityId: string; // 否 活动id
+  activityId?: string; // 否 活动id
   activityName: String; // 是 活动名称
   status: number; // 是 活动状态:1-未上架、2-已上架、3-已下架；4、未开始；5、进行中；6、已结束
   startTime: string; // 是 活动开始时间yyyy-mm-dd hh:mm:ss
