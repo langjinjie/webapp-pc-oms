@@ -8,6 +8,7 @@ import {
 } from 'src/apis/marketingActivity';
 import style from './style.module.less';
 import classNames from 'classnames';
+import qs from 'qs';
 
 interface IAddQuestionProps {
   value?: any;
@@ -28,36 +29,61 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, value, visible, onClo
   const [form] = Form.useForm();
 
   const modalOnClose = () => {
+    form.resetFields();
     onClose?.();
   };
 
+  const { activityId } = qs.parse(location.search, { ignoreQueryPrefix: true });
+
   const getDetail = async () => {
-    const topicId = value || {};
+    const { topicId } = value || {};
     if (!topicId) return;
-    const res = await requestQuestionActivityTopicDetail({ topicId });
+    const res = await requestQuestionActivityTopicDetail({ topicId, activityId });
     if (res) {
+      let { topicType, isRadio, choiceDTOS } = res;
       // 将 topicType 为4 与 isRadio 进行整合 后端单选多选分成两个属性 topicType-4: 单选或多选，isRadio：1-单选，0-多选 前端 topicType: 1-单选 0-多选
       if (res.topicType === 4) {
-        res.topicType = res.isRadio;
+        topicType = isRadio;
+        choiceDTOS = choiceDTOS.map((item: any) => {
+          return {
+            ...item,
+            // isRightKey 前端需要数组,后端返回数字
+            isRightKey: item.isRightKey ? [1] : [0]
+          };
+        });
       }
-      form.setFieldsValue(res);
+      form.setFieldsValue({ ...res, topicType, choiceDTOS });
     }
   };
 
   const onOkHandle = async () => {
+    await form.validateFields();
     // 处理单选多选入参问题
-    const values = form.getFieldsValue();
+    let { topicTitle, score, topicType, choiceDTOS } = form.getFieldsValue();
     // 如果是单选或者多选，后端单选多选分成两个属性 topicType-4: 单选或多选，isRadio：1-单选，0-多选 前端 topicType: 1-单选 0-多选
-    if ([0, 1].includes(values.topicType)) {
-      values.isRadio = values.topicType;
-      values.topicType = 4;
+    let isRadio;
+    if ([0, 1].includes(topicType)) {
+      isRadio = topicType;
+      topicType = 4;
+      choiceDTOS.forEach((item: any, index: number) => {
+        item.sort = index + 1;
+        // isRightKey 前端是数组,后端需要数字
+        item.isRightKey = item.isRightKey[0] || 0;
+      });
     }
-    // 给选项添加sort字段
-    values.choiceDTOS = values.choiceDTOS.forEach((item: any, index: number) => {
-      item.sort = index + 1;
+    // 重置分数的数据格式 score
+    score = +score;
+    const res = await requestAddOrUpdateQuestionActivityTopic({
+      topicTitle,
+      topicId: value?.topicId,
+      activityId,
+      score,
+      topicType,
+      choiceDTOS,
+      isRadio
     });
-    const res = await requestAddOrUpdateQuestionActivityTopic({ ...values, topicId: value?.topicId });
     if (res) {
+      form.resetFields();
       onOk?.();
     }
   };
@@ -100,18 +126,18 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, value, visible, onClo
       onOk={onOkHandle}
     >
       <Form form={form} onValuesChange={onValuesChange} initialValues={{ topicType: 1 }}>
-        <Item label="题目名称">
-          <Item name="topicTitle">
+        <Item label="题目名称" required>
+          <Item name="topicTitle" rules={[{ required: true, message: '请输入题目名称' }]}>
             <Input placeholder="请输入活动名称，40字以内" maxLength={40} />
           </Item>
           <Item className="mt20" name="imgUrl" extra="仅支持JPG/JPEG/PNG格式，大小小于2MB的图片">
             <ImageUpload />
           </Item>
         </Item>
-        <Item name="score" label="分值">
+        <Item name="score" label="分值" rules={[{ required: true }]}>
           <Input className="width240" placeholder="请输入整数，不填默认10分" />
         </Item>
-        <Item name="topicType" label="题型">
+        <Item name="topicType" label="题型" rules={[{ required: true }]}>
           <Radio.Group>
             <Radio value={1}>单选</Radio>
             <Radio value={0}>多选</Radio>
@@ -137,14 +163,15 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, value, visible, onClo
                   <div className="ml40 mb20" key={field.key}>
                     <div className={style.questionItem}>
                       <div className="mb14">
-                        选项{optionList[index]} <Icon name="shanchu" className="ml10" onClick={() => remove(index)} />
+                        选项{optionList[index]}{' '}
+                        {fields.length && <Icon name="shanchu" className="ml10" onClick={() => remove(index)} />}
                       </div>
-                      <Item name={[field.name, 'choiceOption']}>
+                      <Item name={[field.name, 'choiceOption']} rules={[{ required: true, message: '请输入选项名称' }]}>
                         <Input placeholder="请输入" />
                       </Item>
-                      <Item name={[field.name, 'imgUrl']}>
+                      {/* <Item name={[field.name, 'imgUrl']}>
                         <ImageUpload />
-                      </Item>
+                      </Item> */}
 
                       <Item name={[field.name, 'isRightKey']}>
                         <Checkbox.Group onChange={() => isRightKeyOnChange(index)}>

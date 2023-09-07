@@ -11,29 +11,30 @@ const PrizeCenter: React.FC = () => {
   const [list, setList] = useState<IPrizeItem[]>([]);
   const [formVal, setFormVal] = useState<{ [key: string]: string }>({});
   const [pagination, setPagination] = useState<IPagination>({ current: 1, pageSize: 10, total: 0 });
+  const [loading, setLoading] = useState(true);
 
   const history = useHistory();
 
   const getList = async (values?: any) => {
+    setLoading(true);
     const { pageNum = 1, pageSize = 10 } = values || {};
-    const res = await requestActivityPrizeList({ ...values });
+    const res = await requestActivityPrizeList({ ...values }).finally(() => setLoading(false));
     if (res) {
       const { list, total } = res;
       setList(list || []);
       setPagination({ current: pageNum, pageSize, total });
     }
-    setList([{}]);
   };
 
   // 库存管理
-  const inventoryManage = (row: IPrizeItem) => {
-    history.push(`/prizeCenter/inventoryManage?goodsId=${row.goodsId}`);
+  const inventoryManage = ({ goodsId, goodsName }: IPrizeItem) => {
+    history.push(`/prizeCenter/inventoryManage?goodsId=${goodsId}&goodsName=${goodsName}`);
   };
 
   // 上下架
   const upOrDown = async (row: IPrizeItem) => {
-    const { status } = row;
-    const res = await requestPpDownActivityPrize({ status: status ? 0 : 1 });
+    const { status, goodsId } = row;
+    const res = await requestPpDownActivityPrize({ status: status ? 0 : 1, goodsId });
     if (res) {
       getList({ ...formVal, pageNum: pagination.current, pageSize: pagination.pageSize });
       message.success(`奖品${status ? '下架' : '上架'}成功`);
@@ -41,8 +42,8 @@ const PrizeCenter: React.FC = () => {
   };
 
   // 修改奖品
-  const edit = (row: IPrizeItem) => {
-    history.push(`/prizeCenter/add?goodsId=${row.goodsId}`);
+  const edit = ({ goodsId }: IPrizeItem) => {
+    history.push(`/prizeCenter/add?goodsId=${goodsId}`);
   };
 
   const onFinish = async (values?: any) => {
@@ -68,8 +69,11 @@ const PrizeCenter: React.FC = () => {
       <NgFormSearch className="mt20" searchCols={searchCols} onSearch={onFinish} />
       <NgTable
         className="mt10"
+        rowKey="goodsId"
         columns={TableColumns({ inventoryManage, upOrDown, edit })}
+        loading={loading}
         dataSource={list}
+        scroll={{ x: 'max-content' }}
         pagination={pagination}
         paginationChange={paginationChange}
       />

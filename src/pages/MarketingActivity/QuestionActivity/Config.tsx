@@ -1,7 +1,9 @@
 import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import classNames from 'classnames';
 import React from 'react';
 import { SearchCol } from 'src/components';
+import style from './style.module.less';
 
 export interface IQuestionActivityRow {
   activityId?: string; // 否 活动id
@@ -44,7 +46,13 @@ export const searchCols: SearchCol[] = [
 export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {
   return [
     { title: '活动编号', dataIndex: 'activityId' },
-    { title: '活动名称', dataIndex: 'activityName' },
+    {
+      title: '活动名称',
+      dataIndex: 'activityName',
+      render (activityName: string) {
+        return <span className={classNames(style.activityName, 'ellipsis inline-block')}>{activityName}</span>;
+      }
+    },
     {
       title: '活动时间',
       render (row: IQuestionActivityRow) {
@@ -63,6 +71,7 @@ export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {
     { title: '更新时间', dataIndex: 'lastUpdated' },
     {
       title: '操作',
+      fixed: 'right',
       render (row: IQuestionActivityRow) {
         return (
           <>

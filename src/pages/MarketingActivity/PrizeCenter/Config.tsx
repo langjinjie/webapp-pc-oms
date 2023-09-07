@@ -3,6 +3,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components';
 import { Button } from 'antd';
 import classNames from 'classnames';
+import style from './style.module.less';
 
 export interface IPrizeItem {
   goodsName: string; //
@@ -17,8 +18,8 @@ export interface IPrizeItem {
 }
 
 export const searchCols: SearchCol[] = [
-  { name: 'goodsId', label: '奖品批次', type: 'input' },
-  { name: 'goodsName', label: '奖品名称', type: 'input' },
+  { name: 'goodsId', label: '奖品批次', type: 'input', placeholder: '请输入' },
+  { name: 'goodsName', label: '奖品名称', type: 'input', placeholder: '请输入' },
   { name: 'start-end', label: '创建时间', type: 'rangePicker' }
 ];
 
@@ -31,7 +32,17 @@ export const TableColumns: (arg: {
 }) => ColumnsType = ({ inventoryManage, upOrDown, edit }) => {
   return [
     { title: '奖品批次', dataIndex: 'goodsId' },
-    { title: '奖品名称', dataIndex: 'goodsName' },
+    {
+      title: '奖品名称',
+      dataIndex: 'goodsName',
+      render (goodsName: string) {
+        return (
+          <span className={classNames(style.goodsName, 'ellipsis inline-block')} title={goodsName}>
+            {goodsName}
+          </span>
+        );
+      }
+    },
     { title: '奖品类型', render: () => <>兑换码</> },
     { title: '剩余库存', dataIndex: 'remainStock' },
     { title: '创建时间', dataIndex: 'dateCreated' },
@@ -47,6 +58,7 @@ export const TableColumns: (arg: {
                   'status-point-gray': status === 0
                 })}
               />
+              {status ? '上架' : '下架'}
             </span>
           </>
         );
@@ -56,6 +68,7 @@ export const TableColumns: (arg: {
     { title: '更新时间', dataIndex: 'lastUpdated' },
     {
       title: '操作',
+      fixed: 'right',
       render (row: IPrizeItem) {
         return (
           <>

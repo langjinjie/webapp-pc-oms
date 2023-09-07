@@ -15,13 +15,17 @@ const QuestionSettings: React.FC<{
   const [addVisible, setAddVisible] = useState(false);
   const [list, setList] = useState<any[]>([]);
   const [currentRow, setCurrentRow] = useState<ITopicRow>();
+  const [loading, setLoading] = useState(true);
 
   // 获取题目列表
   const getList = async () => {
+    setLoading(true);
     const { activityId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     const res = await requestActivityTopicList({ activityId });
+    setLoading(false);
     if (res) {
-      setList(res.list || []);
+      console.log('res', res);
+      setList(res);
     }
   };
 
@@ -45,6 +49,11 @@ const QuestionSettings: React.FC<{
     message.success('题目新增成功');
   };
 
+  const onClose = () => {
+    setAddVisible(false);
+    setCurrentRow(undefined);
+  };
+
   useEffect(() => {
     getList();
   }, []);
@@ -58,15 +67,20 @@ const QuestionSettings: React.FC<{
         新增题目
       </Button>
       <span className={classNames(style.tipsText, 'ml20')}>每个活动最多配置8个题目</span>
-      <NgTable className="mt20" rowKey="topicId" columns={QuestionTableColumns({ edit })} />
+      <NgTable
+        className="mt20"
+        dataSource={list}
+        loading={loading}
+        scroll={{ x: 'max-content' }}
+        rowKey="topicId"
+        columns={QuestionTableColumns({ edit })}
+      />
       {list.length === 0 || (
-        <div className="operationWrap">
-          <Button className={'ml20'} shape="round" onClick={onConfirm}>
-            下一步
-          </Button>
-        </div>
+        <Button className={'mt20'} shape="round" onClick={onConfirm}>
+          下一步
+        </Button>
       )}
-      <AddQuestion value={currentRow} visible={addVisible} onClose={() => setAddVisible(false)} onOk={onOk} />
+      <AddQuestion value={currentRow} visible={addVisible} onClose={onClose} onOk={onOk} />
     </>
   );
 };

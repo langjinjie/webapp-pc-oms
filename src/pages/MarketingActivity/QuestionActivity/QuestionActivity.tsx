@@ -12,16 +12,17 @@ const QuestionActivity: React.FC = () => {
   const [list, setList] = useState<IQuestionActivityRow[]>([]);
   const [formVal, setFormVal] = useState<{ [key: string]: string }>({});
   const [pagination, setPagination] = useState<IPagination>({ current: 1, pageSize: 10, total: 0 });
+  const [loading, setLoading] = useState(true);
 
   const getList = async (values?: any) => {
+    setLoading(true);
     const { pageNum = 1, pageSize = 10 } = values || {};
-    const res = await requestQuestionActivityList({ ...values });
+    const res = await requestQuestionActivityList({ ...values }).finally(() => setLoading(false));
     if (res) {
       const { list, total } = res;
       setList(list || []);
       setPagination({ current: pageNum, pageSize, total });
     }
-    setList([{}]);
   };
 
   const onFinish = async (values?: any) => {
@@ -47,7 +48,7 @@ const QuestionActivity: React.FC = () => {
 
   // 编辑修改
   const edit = ({ activityId }: IQuestionActivityRow) => {
-    history.push(`/questionActivity/add?=${activityId}`);
+    history.push(`/questionActivity/add?activityId=${activityId}`);
   };
 
   // 创建活动
@@ -55,7 +56,6 @@ const QuestionActivity: React.FC = () => {
     history.push('/questionActivity/add');
   };
 
-  console.log('奖励规则渲染了');
   useEffect(() => {
     getList();
   }, []);
@@ -69,6 +69,8 @@ const QuestionActivity: React.FC = () => {
       <NgTable
         rowKey={'activityId'}
         columns={TableColumns({ putOrDown, edit })}
+        loading={loading}
+        scroll={{ x: 'max-content' }}
         dataSource={list}
         pagination={pagination}
         paginationChange={paginationChange}

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import classNames from 'classnames';
+import style from './style.module.less';
 
 export interface ITopicRow {
   activityId: string; // 是 活动id
@@ -30,7 +32,17 @@ export const QuestionTableColumns: (arg: { edit: (row: any) => void }) => Column
         return <>{index + 1}</>;
       }
     },
-    { title: '题目名称', dataIndex: 'topicTitle' },
+    {
+      title: '题目名称',
+      dataIndex: 'topicTitle',
+      render (topicTitle: string) {
+        return (
+          <span className={classNames(style.topicTitle, '')} title={topicTitle}>
+            {topicTitle}
+          </span>
+        );
+      }
+    },
     {
       title: '题型',
       render (value: ITopicRow) {
@@ -50,7 +62,8 @@ export const QuestionTableColumns: (arg: { edit: (row: any) => void }) => Column
     { title: '更新时间', dataIndex: 'lastUpdated' },
     {
       title: '操作',
-      render (row: any) {
+      fixed: 'right',
+      render (row: ITopicRow) {
         return (
           <>
             <Button type="link" onClick={() => edit(row)}>

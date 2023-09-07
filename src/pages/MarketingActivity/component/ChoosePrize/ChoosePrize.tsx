@@ -45,15 +45,6 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
       const { list, total } = res;
       setList(list || []);
       setPagination({ current, pageSize, total });
-    } else {
-      setList([
-        {
-          goodsId: '1',
-          goodsName: '123',
-          remainStock: 1,
-          dateCreated: '2023-08-14'
-        }
-      ]);
     }
   };
 

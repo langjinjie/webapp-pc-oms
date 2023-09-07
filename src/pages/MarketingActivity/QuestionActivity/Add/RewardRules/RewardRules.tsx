@@ -12,12 +12,16 @@ const RewardRules: React.FC<{ activityInfo?: { activityId: string; activityName:
   const [addVisible, setAddVisible] = useState(false);
   const [list, setList] = useState<IPrizeConfig[]>([]);
   const [currentRow, setCurrentRow] = useState<IPrizeConfig>();
+  const [loading, setLoading] = useState(true);
 
   const getList = async () => {
+    setLoading(true);
     const { activityId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     const res = await requestQuestionActivityPrizeConfig({ activityId });
+    setLoading(false);
     if (res) {
-      setList([res]);
+      console.log('res', res);
+      setList(res);
     }
   };
 
@@ -41,6 +45,11 @@ const RewardRules: React.FC<{ activityInfo?: { activityId: string; activityName:
     message.success(`奖励规则${currentRow ? '编辑' : '新增'}成功`);
   };
 
+  const onClose = () => {
+    setCurrentRow(undefined);
+    setAddVisible(false);
+  };
+
   useEffect(() => {
     getList();
   }, []);
@@ -53,15 +62,16 @@ const RewardRules: React.FC<{ activityInfo?: { activityId: string; activityName:
       <Button className="mt20" type="primary" shape="round" onClick={() => setAddVisible(true)}>
         新增规则
       </Button>
-      <span className={classNames(style.tipsText, 'ml20')}>每个活动最多配置8个题目</span>
+      <span className={classNames(style.tipsText, 'ml20')}>每个活动最多配置1个奖励规则</span>
       <NgTable
         className="mt20"
         rowKey="reportId"
+        loading={loading}
         scroll={{ x: 'max-content' }}
         columns={TableColumns({ edit, del })}
         dataSource={list}
       />
-      <AddRules value={currentRow} visible={addVisible} onClose={() => setAddVisible(false)} onOk={onOk} />
+      <AddRules value={currentRow} visible={addVisible} onClose={onClose} onOk={onOk} />
     </>
   );
 };

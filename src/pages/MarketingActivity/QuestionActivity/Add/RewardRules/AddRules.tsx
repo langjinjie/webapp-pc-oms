@@ -5,6 +5,7 @@ import { IPrizeConfig } from './Config';
 import { requestUpdateQuestionActivityPrize } from 'src/apis/marketingActivity';
 import { ChoosePrize } from 'src/pages/MarketingActivity/component';
 import style from './style.module.less';
+import qs from 'qs';
 
 const { Item } = Form;
 
@@ -20,13 +21,26 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
   const [form] = Form.useForm();
 
   const onCloseHandle = () => {
+    form.resetFields();
     onClose?.();
   };
 
   const onOkHandle = async () => {
-    const { score, num, goods, goodsName } = form.getFieldsValue();
-    const res = await requestUpdateQuestionActivityPrize({ score, num, ...goods, goodsName });
+    const { activityId } = qs.parse(location.search, { ignoreQueryPrefix: true });
+    const { reportId } = value || {};
+    const {
+      score,
+      goods: { goodsName, goodsId }
+    } = form.getFieldsValue();
+    const res = await requestUpdateQuestionActivityPrize({
+      score,
+      goodsId,
+      goodsName,
+      activityId,
+      reportId
+    });
     if (res) {
+      form.resetFields();
       onOk?.();
     }
   };
@@ -58,9 +72,9 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
         <Item label="奖品" name="goods">
           <ChoosePrize />
         </Item>
-        <Item label="奖品数量" name="num">
+        {/* <Item label="奖品数量" name="num">
           <Input className="width100" placeholder="请输入" />
-        </Item>
+        </Item> */}
       </Form>
     </Modal>
   );

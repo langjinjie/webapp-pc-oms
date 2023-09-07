@@ -4,11 +4,11 @@ import { BreadCrumbs, ExportModal, NgFormSearch, NgTable } from 'src/components'
 import { searchCols, TableColumns, IStockRow } from './Config';
 import {
   requestExportActivityGoodsStock,
-  requestActivityGoodsStockDownLoad,
+  // requestActivityGoodsStockDownLoad,
   requestActivityGoodsStockList,
   requestDelActivityGoodsStock
 } from 'src/apis/marketingActivity';
-import { exportFile } from 'src/utils/base';
+// import { exportFile } from 'src/utils/base';
 import { IPagination } from 'src/utils/interface';
 import classNames from 'classnames';
 import style from './style.module.less';
@@ -19,8 +19,20 @@ const InventoryManage: React.FC = () => {
   const [list, setList] = useState<IStockRow[]>([]);
   const [formVal, setFormVal] = useState<{ [key: string]: string }>({});
   const [pagination, setPagination] = useState<IPagination>({ current: 1, pageSize: 10, total: 0 });
+  const [loading, setLoading] = useState(true);
 
-  const { goodsId } = qs.parse(location.search, { ignoreQueryPrefix: true });
+  const { goodsId, goodsName } = qs.parse(location.search, { ignoreQueryPrefix: true });
+
+  const getList = async (values?: any) => {
+    setLoading(true);
+    const { pageNum = 1, pageSize = 10 } = values || {};
+    const res = await requestActivityGoodsStockList({ goodsId, ...values }).finally(() => setLoading(false));
+    if (res) {
+      const { list, total } = res;
+      setList(list || []);
+      setPagination({ current: pageNum, pageSize, total });
+    }
+  };
 
   // 上传库存
   const addStock = () => {
@@ -36,45 +48,35 @@ const InventoryManage: React.FC = () => {
     uploadData.append('goodsId', goodsId as string);
     const res = await requestExportActivityGoodsStock(uploadData);
     if (res) {
-      console.log('123');
-      message.success('库存新增成功');
+      getList({ ...formVal, pageNum: pagination.current, pageSize: pagination.pageSize });
       setVisible(false);
+      message.success('库存新增成功');
     }
   };
-  // 模板链接写S
   const handleDownload = () => {
-    console.log('模板下载');
+    // 模板链接固定
+    window.location.href =
+      'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/activity/cardtepl.xlsx';
   };
 
-  const downLoad = async () => {
-    const res = await requestActivityGoodsStockDownLoad({ goodsId });
-    if (res) {
-      const fileName = decodeURI(res.headers['content-disposition']?.split('=')[1]) || '商品库存';
-      exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
-    }
-  };
-
-  const getList = async (values?: any) => {
-    const { current = 1, pageSize = 10 } = values || {};
-    const res = await requestActivityGoodsStockList({ ...values });
-    if (res) {
-      const { list, total } = res;
-      setList(list || []);
-      setPagination({ current, pageSize, total });
-    }
-    setList([{}]);
-  };
+  // 暂时不做下载功能
+  // const downLoad = async () => {
+  //   const res = await requestActivityGoodsStockDownLoad({ goodsId });
+  //   if (res) {
+  //     const fileName = decodeURI(res.headers['content-disposition']?.split('=')[1]) || '商品库存';
+  //     exportFile(res.data, fileName.split('.')[0], fileName.split('.')[1]);
+  //   }
+  // };
 
   const onFinish = async (values?: any) => {
-    console.log('values', values);
-    await getList();
+    await getList(values);
     setFormVal(values);
   };
 
   const paginationChange = (current: number, pageSize?: number) => {
     // 如果修改pageSize,需要从第一页重新获取
     const pageNum = pageSize === pagination.pageSize ? current : 1;
-    getList({ ...formVal, current: pageNum, pageSize });
+    getList({ ...formVal, pageNum, pageSize });
   };
 
   // 删除库存
@@ -82,7 +84,12 @@ const InventoryManage: React.FC = () => {
     const { couponNumber } = row;
     const res = await requestDelActivityGoodsStock({ couponNumber, goodsId });
     if (res) {
-      console.log('res', res);
+      getList({
+        ...formVal,
+        pageNum: list.length > 1 ? pagination.current : pagination.current - 1,
+        pageSize: pagination.pageSize
+      });
+      message.success('库存删除成功');
     }
   };
 
@@ -101,29 +108,41 @@ const InventoryManage: React.FC = () => {
         </>
       }
     >
-      <div>奖品批次：P52230103268794</div>
-      <div>奖品名称：洗车券</div>
+      <div>奖品批次：{goodsId}</div>
+      <div>奖品名称：{goodsName}</div>
       <Button className="mt20" type="primary" shape="round" onClick={addStock}>
         上传库存
       </Button>
-      <Button className="ml20" type="link">
+      <Button
+        className="ml20"
+        type="link"
+        href="https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/activity/cardtepl.xlsx"
+      >
         库存模板下载
       </Button>
       <span className={classNames(style.line, 'inline-block')} />
-      <Button type="link" onClick={downLoad}>
+      {/* <Button type="link" onClick={downLoad}>
         下载
-      </Button>
+      </Button> */}
       <NgFormSearch className="mt20" searchCols={searchCols} onSearch={onFinish} />
       <NgTable
         className="mt20"
+        rowKey="couponNumber"
         columns={TableColumns({ del })}
         scroll={{ x: 740 }}
+        loading={loading}
         dataSource={list}
         pagination={pagination}
         paginationChange={paginationChange}
       />
-      {/* 批量新增 */}
-      <ExportModal visible={visible} onOK={exportOnOk} onCancel={() => setVisible(false)} onDownLoad={handleDownload} />
+      {/* 上传库存 */}
+      <ExportModal
+        title="上传库存"
+        visible={visible}
+        onOK={exportOnOk}
+        onCancel={() => setVisible(false)}
+        onDownLoad={handleDownload}
+      />
     </Card>
   );
 };

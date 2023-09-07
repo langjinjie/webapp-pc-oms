@@ -18,7 +18,7 @@ const sendStatus = [
 ];
 
 export const searchCols: SearchCol[] = [
-  { name: 'couponNumber', label: '兑换码', type: 'input' },
+  { name: 'couponNumber', label: '兑换码', type: 'input', placeholder: '请输入' },
   {
     name: 'assignStatus',
     label: '发放状态',

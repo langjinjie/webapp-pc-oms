@@ -58,9 +58,7 @@ export const noVerRoutes: RouteProps[] = [
   {
     path: '/marketingMoment/edit',
     component: lazy(() => import('src/pages/Marketing/Moment/Edit'))
-  },
-  // 临时路由：问答活动&打卡活动
-  ...marketActivityRoutes
+  }
 ];
 
 export const routes: RouteProps[] = [
@@ -513,7 +511,9 @@ export const routes: RouteProps[] = [
   ...market,
   ...tagManage,
   // 社群管理
-  ...group
+  ...group,
+  // 问答活动&打卡活动
+  ...marketActivityRoutes
 ];
 
 // 缓存路由

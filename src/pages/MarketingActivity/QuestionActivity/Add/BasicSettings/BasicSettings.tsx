@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import style from './style.module.less';
 import qs from 'qs';
+import moment from 'moment';
 
 const { Item } = Form;
 const { RangePicker } = DatePicker;
@@ -17,6 +18,7 @@ const BasicSettings: React.FC<{
   activityInfoOnChange?: (value: { activityId: string; activityName: string }) => void;
 }> = ({ onConfirm, activityInfoOnChange }) => {
   const [groupRequire, setGroupRequire] = useState<number>();
+  const [isLimitCount, setIsLimitCount] = useState<number>();
 
   const [form] = Form.useForm();
   const history = useHistory();
@@ -27,19 +29,26 @@ const BasicSettings: React.FC<{
     if (!activityId) return activityInfoOnChange?.({ activityId: Date.now() + '', activityName: '基础设置' });
     const res = await requestQuestionActivityDetail({ activityId });
     if (res) {
-      console.log('res', res);
+      const { chatIds, playNum, startTime, endTime } = res;
       // 格式化群字段
-      res.chatIds = res.chatIds.map(({ chatId, chatName }: { chatId: string; chatName: string }) => ({
+      res.chatIds = (res.chatIds || []).map(({ chatId, chatName }: { chatId: string; chatName: string }) => ({
         chatId,
         groupName: chatName
       }));
-      form.setFieldsValue(res);
+      // 处理在群要求
+      setGroupRequire(chatIds?.length ? 2 : 1);
+      // 处理参与次数限制
+      setIsLimitCount(playNum ? 2 : 1);
+      // 处理活动时间
+      const activityTime = [moment(startTime, 'YYYY-MM-DD HH:mm:ss'), moment(endTime, 'YYYY-MM-DD HH:mm:ss')];
+      form.setFieldsValue({ ...res, playNum: playNum || undefined, activityTime });
+      activityInfoOnChange?.({ activityId: res.activityId, activityName: res.activityName });
     }
   };
 
   // 提交
   const onFinish = async (values?: any) => {
-    let { chatIds } = values;
+    let { chatIds, playNum = 0 } = values;
     // 处理时间
     const [startTime, endTime] = formatDate(values?.activityTime);
     delete values.activityTime;
@@ -50,7 +59,7 @@ const BasicSettings: React.FC<{
         chatName: groupName
       }));
     }
-    const res = await requestAddQuestionActivityBase({ ...values, startTime, endTime, chatIds });
+    const res = await requestAddQuestionActivityBase({ ...values, startTime, endTime, chatIds, playNum });
     if (res) {
       // 将活动名称和活动id保存下来
       onConfirm();
@@ -69,6 +78,7 @@ const BasicSettings: React.FC<{
         form={form}
         scrollToFirstError={{ block: 'center', behavior: 'smooth' }}
         onFinish={onFinish}
+        initialValues={{ themeColor: '#000000', buttonBgColor: '#000000', textColor: '#000000' }}
         onValuesChange={(changValues: any) => console.log('changValues', changValues)}
       >
         <Item name="activityName" label="活动名称" rules={[{ required: true, message: '请输入活动名称，30字以内' }]}>
@@ -84,7 +94,7 @@ const BasicSettings: React.FC<{
         <div className={style.panel}>规则控制</div>
         <Item className="mt20" label="在群要求" required>
           <Item noStyle>
-            <Radio.Group onChange={(e) => setGroupRequire(e.target.value)}>
+            <Radio.Group value={groupRequire} onChange={(e) => setGroupRequire(e.target.value)}>
               <Space direction="vertical">
                 <Radio value={1}>
                   达成调教即可奖励 <span className="color-text-placeholder">客户经理群内成员皆可</span>
@@ -111,15 +121,19 @@ const BasicSettings: React.FC<{
           )}
         </Item>
         <Item label="参与次数" required>
-          <Item name="参与次数" noStyle>
-            <Radio.Group>
-              <Radio value={1}>不限制</Radio>
-              <Radio value={2}>限制</Radio>
-            </Radio.Group>
-          </Item>
+          {/* <Item name="参与次数" noStyle> */}
+          <Radio.Group value={isLimitCount} onChange={(e) => setIsLimitCount(e.target.value)}>
+            <Radio value={1}>不限制</Radio>
+            <Radio value={2}>限制</Radio>
+          </Radio.Group>
+          {/* </Item> */}
           <span>
             <Item name="playNum" noStyle>
-              <InputNumber className={classNames(style.inputNumber, 'width100')} placeholder="请输入" />
+              <InputNumber
+                className={classNames(style.inputNumber, 'width100')}
+                placeholder="请输入"
+                readOnly={isLimitCount === 1}
+              />
             </Item>
             次<span className={classNames(style.tipsText, 'ml20')}>提醒：多次参与奖品</span>
           </span>
@@ -150,7 +164,7 @@ const BasicSettings: React.FC<{
         <Item name="shareTitle" label="分享标题">
           <Input className="width240" placeholder="24个字内，不填写默认“打卡赢好礼”" maxLength={24} />
         </Item>
-        <Item name="shareUrL" label="分享摘要">
+        <Item name="shareDesc" label="分享摘要">
           <Input className="width240" placeholder="30个字内，不填写默认“我正在参加打卡活动”" maxLength={30} />
         </Item>
         <Button className={style.submitBtn} htmlType="submit" type="primary" shape="round">
