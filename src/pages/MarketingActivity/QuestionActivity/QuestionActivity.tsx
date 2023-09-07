@@ -14,12 +14,12 @@ const QuestionActivity: React.FC = () => {
   const [pagination, setPagination] = useState<IPagination>({ current: 1, pageSize: 10, total: 0 });
 
   const getList = async (values?: any) => {
-    const { current = 1, pageSize = 10 } = values || {};
+    const { pageNum = 1, pageSize = 10 } = values || {};
     const res = await requestQuestionActivityList({ ...values });
     if (res) {
       const { list, total } = res;
       setList(list || []);
-      setPagination({ current, pageSize, total });
+      setPagination({ current: pageNum, pageSize, total });
     }
     setList([{}]);
   };
@@ -33,13 +33,14 @@ const QuestionActivity: React.FC = () => {
   const paginationChange = (current: number, pageSize?: number) => {
     // 如果修改pageSize,需要从第一页重新获取
     const pageNum = pageSize === pagination.pageSize ? current : 1;
-    getList({ ...formVal, current: pageNum, pageSize });
+    getList({ ...formVal, pageNum, pageSize });
   };
 
   // 上下架
   const putOrDown = async ({ activityId, status }: IQuestionActivityRow) => {
     const res = await requestUpDownQuestionActivity({ status: [1, 3].includes(status) ? 3 : 4, activityId });
     if (res) {
+      getList({ ...formVal, pageNum: pagination.current, pageSize: pagination.pageSize });
       message.success(`${[1, 3].includes(status) ? '上架' : '下架'}成功`);
     }
   };

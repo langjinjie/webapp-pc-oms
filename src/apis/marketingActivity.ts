@@ -242,7 +242,7 @@ export const requestQuestionActivityPrizeConfig: HttpFunction = (param) => {
  * @param chatGroupIds ArrayList 否 指定群id列表,在群要求为1时有值
  * @param chatId String 是 群id
  */
-export const requestAddCheckInActivity: HttpFunction = (param) => {
+export const requestAddCheckInActivityBase: HttpFunction = (param) => {
   return http.post('/tenacity-admin/activity/groupsign/acadd', param);
 };
 
@@ -257,7 +257,7 @@ export const requestAddCheckInActivity: HttpFunction = (param) => {
  * @param pageSize int 否 页面记录数，默认为10
  */
 export const requestCheckInActivityList: HttpFunction = (param) => {
-  return http.post('/tenacity_admin/activity/groupsign/aclist', param);
+  return http.post('/tenacity-admin/activity/groupsign/aclist', param);
 };
 
 /**
@@ -266,7 +266,7 @@ export const requestCheckInActivityList: HttpFunction = (param) => {
  * @param opType int 是 0=下架;1=上架
  */
 export const requestCheckInActivityUpOrDown: HttpFunction = (param) => {
-  return http.post('/tenacity_admin/activity/groupsign/acop', param);
+  return http.post('/tenacity-admin/activity/groupsign/acop', param);
 };
 
 /**
@@ -282,7 +282,7 @@ export const requestCheckInActivityDetail: HttpFunction = (param) => {
  * @param actId string 是 活动id
  */
 export const requestCheckInActivityRuleList: HttpFunction = (param) => {
-  return http.post('/tenacity_admin/activity/groupsign/rulelist', param);
+  return http.post('/tenacity-admin/activity/groupsign/rulelist', param);
 };
 
 /**
@@ -295,7 +295,7 @@ export const requestCheckInActivityRuleList: HttpFunction = (param) => {
  * @param condiDay int 是 累计天数
  */
 export const requestSaveCheckInActivityRule: HttpFunction = (param) => {
-  return http.post('/tenacity_admin/activity/groupsign/saverule', param);
+  return http.post('/tenacity-admin/activity/groupsign/saverule', param);
 };
 
 /**
@@ -304,5 +304,5 @@ export const requestSaveCheckInActivityRule: HttpFunction = (param) => {
  * @param param prId string 是 活动规则奖励id
  */
 export const requestDelCheckInActivityRule: HttpFunction = (param) => {
-  return http.post('/tenacity_admin/activity/groupsign/delrule', param);
+  return http.post('/tenacity-admin/activity/groupsign/delrule', param);
 };

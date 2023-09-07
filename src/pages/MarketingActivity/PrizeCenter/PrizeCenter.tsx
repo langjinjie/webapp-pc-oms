@@ -14,6 +14,17 @@ const PrizeCenter: React.FC = () => {
 
   const history = useHistory();
 
+  const getList = async (values?: any) => {
+    const { pageNum = 1, pageSize = 10 } = values || {};
+    const res = await requestActivityPrizeList({ ...values });
+    if (res) {
+      const { list, total } = res;
+      setList(list || []);
+      setPagination({ current: pageNum, pageSize, total });
+    }
+    setList([{}]);
+  };
+
   // 库存管理
   const inventoryManage = (row: IPrizeItem) => {
     history.push(`/prizeCenter/inventoryManage?goodsId=${row.goodsId}`);
@@ -24,6 +35,7 @@ const PrizeCenter: React.FC = () => {
     const { status } = row;
     const res = await requestPpDownActivityPrize({ status: status ? 0 : 1 });
     if (res) {
+      getList({ ...formVal, pageNum: pagination.current, pageSize: pagination.pageSize });
       message.success(`奖品${status ? '下架' : '上架'}成功`);
     }
   };
@@ -31,17 +43,6 @@ const PrizeCenter: React.FC = () => {
   // 修改奖品
   const edit = (row: IPrizeItem) => {
     history.push(`/prizeCenter/add?goodsId=${row.goodsId}`);
-  };
-
-  const getList = async (values?: any) => {
-    const { current = 1, pageSize = 10 } = values || {};
-    const res = await requestActivityPrizeList({ ...values });
-    if (res) {
-      const { list, total } = res;
-      setList(list || []);
-      setPagination({ current, pageSize, total });
-    }
-    setList([{}]);
   };
 
   const onFinish = async (values?: any) => {
@@ -53,7 +54,7 @@ const PrizeCenter: React.FC = () => {
   const paginationChange = (current: number, pageSize?: number) => {
     // 如果修改pageSize,需要从第一页重新获取
     const pageNum = pageSize === pagination.pageSize ? current : 1;
-    getList({ ...formVal, current: pageNum, pageSize });
+    getList({ ...formVal, pageNum, pageSize });
   };
 
   useEffect(() => {

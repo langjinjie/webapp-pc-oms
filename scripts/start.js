@@ -44,12 +44,12 @@ const devServerOptions = {
   proxy: [
     {
       context: ['/api', '/tenacity-admin', '/res'],
-      target: 'https://dev.tenacity.com.cn',
+      // target: 'https://dev.tenacity.com.cn',
       // target: 'http://172.30.15.141:7060',
-      // target: 'https://piccgz.tenacity.com.cn/',
-      // pathRewrite: {
-      //   '^/tenacity-admin': '/tenacity/tenacity-admin'
-      // },
+      target: 'https://piccgz.tenacity.com.cn/',
+      pathRewrite: {
+        '^/tenacity-admin': '/tenacity/tenacity-admin'
+      },
       secure: false,
       changeOrigin: true
     }

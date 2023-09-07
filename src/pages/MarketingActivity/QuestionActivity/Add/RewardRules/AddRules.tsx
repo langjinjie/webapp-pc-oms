@@ -3,7 +3,7 @@ import { Modal } from 'src/components';
 import { Form, Input } from 'antd';
 import { IPrizeConfig } from './Config';
 import { requestUpdateQuestionActivityPrize } from 'src/apis/marketingActivity';
-import ChoosePrize from './ChoosePrize';
+import { ChoosePrize } from 'src/pages/MarketingActivity/component';
 import style from './style.module.less';
 
 const { Item } = Form;

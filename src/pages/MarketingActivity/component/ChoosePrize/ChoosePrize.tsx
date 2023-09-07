@@ -2,7 +2,7 @@ import React, { Key, useEffect, useState } from 'react';
 import { Modal, NgTable } from 'src/components';
 import { Button } from 'antd';
 import { IPagination } from 'src/utils/interface';
-import style from './style.module.less';
+import { requestActivityPrizeUpList } from 'src/apis/marketingActivity';
 
 interface IChoosePrizeProps {
   value?: any;
@@ -32,8 +32,29 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
   };
 
   const onOk = () => {
-    onChange?.(selectedRows);
+    onChange?.(selectedRows[0]);
+    console.log('selectedRows', selectedRows[0]);
     onClose();
+  };
+
+  // 获取列表
+  const getList = async (values?: any) => {
+    const { current = 1, pageSize = 10 } = values || {};
+    const res = await requestActivityPrizeUpList({ ...values });
+    if (res) {
+      const { list, total } = res;
+      setList(list || []);
+      setPagination({ current, pageSize, total });
+    } else {
+      setList([
+        {
+          goodsId: '1',
+          goodsName: '123',
+          remainStock: 1,
+          dateCreated: '2023-08-14'
+        }
+      ]);
+    }
   };
 
   const paginationChange = (current: number, pageSize?: number) => {
@@ -42,6 +63,7 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
       newPagination.current = 1;
     }
     setPagination(newPagination);
+    getList(newPagination);
   };
 
   const rowSelection: any = {
@@ -53,18 +75,6 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
     }
   };
 
-  // 获取列表
-  const getList = () => {
-    setList([
-      {
-        奖品批次: '1',
-        奖品名称: '123',
-        剩余库存: 1,
-        创建时间: '2023-08-14'
-      }
-    ]);
-  };
-
   useEffect(() => {
     if (visible) {
       setSelectedRows(value || []);
@@ -73,31 +83,25 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
   }, [visible]);
   return (
     <>
-      <Button type="primary" shape="round" onClick={choosePrize}>
+      <span>{value?.goodsName}</span>
+      <Button className="ml10" type="primary" shape="round" onClick={choosePrize}>
         选择奖品
       </Button>
-      <Modal
-        centered
-        width={960}
-        title={'选择奖品'}
-        visible={visible}
-        onClose={onClose}
-        onOk={onOk}
-        className={style.choosePrizeModal}
-      >
+      <Modal centered width={960} title={'选择奖品'} visible={visible} onClose={onClose} onOk={onOk}>
         <Button className="mr10" type="primary" shape="round">
           新增奖品
         </Button>
         <Button shape="round">刷新</Button>
         <NgTable
           columns={[
-            { title: '奖品批次', dataIndex: '奖品批次' },
-            { title: '奖品名称', dataIndex: '奖品名称' },
-            { title: '剩余库存', dataIndex: '剩余库存' },
-            { title: '创建时间', dataIndex: '创建时间' }
+            { title: '奖品批次', dataIndex: 'goodsId' },
+            { title: '奖品名称', dataIndex: 'goodsName' },
+            { title: '剩余库存', dataIndex: 'remainStock' },
+            { title: '创建时间', dataIndex: 'dateCreated' }
           ]}
           dataSource={list}
           className="mt20"
+          rowKey="goodsId"
           scroll={{ x: 912 }}
           rowSelection={rowSelection}
           pagination={pagination}
