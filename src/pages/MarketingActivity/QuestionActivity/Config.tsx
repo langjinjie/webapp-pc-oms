@@ -75,13 +75,14 @@ export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {
       render (row: IQuestionActivityRow) {
         return (
           <>
+            {/* 未上架与已下架状态支持点击上架操作 */}
             {[1, 3].includes(row.status) && (
               <Popconfirm title="是否确定上架该活动" onConfirm={() => putOrDown(row)}>
                 <Button type="link">上架</Button>
               </Popconfirm>
             )}
-            {/* 除了未上架和已下架都可以进制下架操作 */}
-            {![1, 3].includes(row.status) && (
+            {/* 未开始与进行中状态支持点击下架操作 */}
+            {[4, 5].includes(row.status) && (
               <Popconfirm title="是否确定下架该活动" onConfirm={() => putOrDown(row)}>
                 <Button type="link">下架</Button>
               </Popconfirm>
