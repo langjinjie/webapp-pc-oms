@@ -39,7 +39,7 @@ const QuestionActivity: React.FC = () => {
 
   // 上下架
   const putOrDown = async ({ activityId, status }: IQuestionActivityRow) => {
-    const res = await requestUpDownQuestionActivity({ status: [1, 3].includes(status) ? 3 : 4, activityId });
+    const res = await requestUpDownQuestionActivity({ status: [1, 3].includes(status) ? 2 : 3, activityId });
     if (res) {
       getList({ ...formVal, pageNum: pagination.current, pageSize: pagination.pageSize });
       message.success(`${[1, 3].includes(status) ? '上架' : '下架'}成功`);
