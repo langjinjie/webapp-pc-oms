@@ -69,7 +69,7 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, value, visible, onClo
       choiceDTOS.forEach((item: any, index: number) => {
         item.sort = index + 1;
         // isRightKey 前端是数组,后端需要数字
-        item.isRightKey = item.isRightKey[0] || 0;
+        item.isRightKey = item.isRightKey?.[0] || 0;
       });
     }
     // 重置分数的数据格式 score
