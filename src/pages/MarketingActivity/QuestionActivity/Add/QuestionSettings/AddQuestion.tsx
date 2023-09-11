@@ -30,6 +30,7 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, value, visible, onClo
 
   const modalOnClose = () => {
     form.resetFields();
+    setTopicType(1);
     onClose?.();
   };
 
@@ -84,6 +85,7 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, value, visible, onClo
     });
     if (res) {
       form.resetFields();
+      setTopicType(1);
       onOk?.();
     }
   };
