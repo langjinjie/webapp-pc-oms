@@ -24,7 +24,6 @@ const QuestionSettings: React.FC<{
     const res = await requestActivityTopicList({ activityId });
     setLoading(false);
     if (res) {
-      console.log('res', res);
       setList(res);
     }
   };

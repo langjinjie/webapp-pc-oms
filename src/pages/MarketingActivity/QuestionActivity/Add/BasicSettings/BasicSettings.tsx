@@ -49,6 +49,7 @@ const BasicSettings: React.FC<{
   // 提交
   const onFinish = async (values?: any) => {
     let { chatIds, playNum = 0 } = values;
+    const { activityId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     // 处理时间
     const [startTime, endTime] = formatDate(values?.activityTime);
     delete values.activityTime;
@@ -59,13 +60,13 @@ const BasicSettings: React.FC<{
         chatName: groupName
       }));
     }
-    const res = await requestAddQuestionActivityBase({ ...values, startTime, endTime, chatIds, playNum });
+    const res = await requestAddQuestionActivityBase({ ...values, startTime, endTime, chatIds, playNum, activityId });
     if (res) {
+      // 在url上拼上activityId
+      history.push(`/questionActivity/add?activityId=${res.activityId}`);
       // 将活动名称和活动id保存下来
       onConfirm();
       activityInfoOnChange?.({ activityId: res.activityId, activityName: values.activityName });
-      // 在url上拼上activityId
-      history.push(`/questionActivity/add?activityId=${res.activityId}`);
     }
   };
   console.log('基础设置渲染了');
