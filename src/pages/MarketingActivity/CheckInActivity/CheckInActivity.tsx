@@ -12,13 +12,16 @@ const QuestionActivity: React.FC = () => {
   const [list, setList] = useState<ICheckInItem[]>([]);
   const [pagination, setPagination] = useState<IPagination>({ current: 0, pageSize: 10, total: 0 });
   const [formVal, setFormVal] = useState<{ [key: string]: any }>({});
+  const [loading, setLoading] = useState(true);
 
   const history = useHistory();
 
   const getList = async (values?: any) => {
     console.log('values', values);
+    setLoading(true);
     const { pageNum = 1, pageSize = 10 } = values || {};
     const res = await requestCheckInActivityList(values);
+    setLoading(false);
     if (res) {
       const { list, total } = res;
       setList(list || []);
@@ -54,9 +57,9 @@ const QuestionActivity: React.FC = () => {
     history.push('/checkIn/add?actId=' + row.actId);
   };
   // 复制活动
-  const copy = (row: any) => {
-    console.log('复制活动', row);
-  };
+  // const copy = (row: any) => {
+  //   console.log('复制活动', row);
+  // };
 
   // 创建活动
   const addActivity = () => {
@@ -77,9 +80,11 @@ const QuestionActivity: React.FC = () => {
         dataSource={list}
         className="mt20"
         rowKey="actId"
-        columns={TableColumns({ putOrDown, edit, copy })}
+        scroll={{ x: 'max-content' }}
+        columns={TableColumns({ putOrDown, edit })}
         pagination={pagination}
         paginationChange={paginationChange}
+        loading={loading}
       />
     </Card>
   );

@@ -20,14 +20,14 @@ const Add: React.FC = () => {
   const initActiveKeys = () => {
     const { activityId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     if (!activityId) {
-      setActiveKeys(['1', '2', '3']);
+      setActiveKeys(['1', '2']);
     }
   };
 
   const activityInfoOnChange = (value: { actId: string; subject: string }) => {
     setActivityInfo(value);
   };
-  console.log('组件重新渲染了');
+
   useEffect(() => {
     initActiveKeys();
   }, []);
@@ -37,7 +37,7 @@ const Add: React.FC = () => {
         <>
           <BreadCrumbs
             className={style.breadCrumbs}
-            navList={[{ path: '/questionActivity', name: '打卡活动' }, { name: '创建活动' }]}
+            navList={[{ path: '/checkIn', name: '打卡活动' }, { name: '创建活动' }]}
           />
           创建活动
         </>
@@ -45,9 +45,15 @@ const Add: React.FC = () => {
     >
       <Tabs onChange={tabOnChange} activeKey={activeKey}>
         <Tabs.TabPane tab="基础设置" key={'1'}>
-          <BasicSettings onConfirm={() => setActiveKey('2')} activityInfoOnChange={activityInfoOnChange} />
+          <BasicSettings
+            onConfirm={() => {
+              setActiveKey('2');
+              setActiveKeys(['1', '2']);
+            }}
+            activityInfoOnChange={activityInfoOnChange}
+          />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="题目设置" key={'2'}>
+        <Tabs.TabPane tab="奖励规则" key={'2'}>
           <RewardRules activityInfo={activityInfo} />
         </Tabs.TabPane>
       </Tabs>

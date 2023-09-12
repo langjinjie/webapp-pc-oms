@@ -26,7 +26,7 @@ const BasicSettings: React.FC<{
   // 获取活动详情
   const getDetail = async () => {
     const { activityId } = qs.parse(location.search, { ignoreQueryPrefix: true });
-    if (!activityId) return activityInfoOnChange?.({ activityId: Date.now() + '', activityName: '基础设置' });
+    if (!activityId) return;
     const res = await requestQuestionActivityDetail({ activityId });
     if (res) {
       const { chatIds, playNum, startTime, endTime } = res;

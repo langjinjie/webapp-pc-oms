@@ -2,22 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { Button, message } from 'antd';
 import { NgTable } from 'src/components';
 import { TableColumns, IRuleItem } from './Config';
-import { requestCheckInActivityRuleList, requestDelQuestionActivityPrize } from 'src/apis/marketingActivity';
+import { requestCheckInActivityRuleList, requestDelCheckInActivityRule } from 'src/apis/marketingActivity';
 import AddRules from './AddRules';
 import style from './style.module.less';
 import classNames from 'classnames';
 import qs from 'qs';
 
-const RewardRules: React.FC<{ activityInfo?: { activityId: string; activityName: string } }> = ({ activityInfo }) => {
+const RewardRules: React.FC<{ activityInfo?: { actId: string; subject: string } }> = ({ activityInfo }) => {
   const [addVisible, setAddVisible] = useState(false);
   const [list, setList] = useState<IRuleItem[]>([]);
   const [currentRow, setCurrentRow] = useState<IRuleItem>();
+  const [condiDayList, setCondiDayList] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const getList = async () => {
     const { actId } = qs.parse(location.search, { ignoreQueryPrefix: true });
+    setLoading(true);
     const res = await requestCheckInActivityRuleList({ actId });
+    setLoading(false);
     if (res) {
-      setList(res.list || []);
+      setList(res.signRuleList || []);
+      setCondiDayList((res.signRuleList || []).map(({ condiDay }: { condiDay: number }) => condiDay));
     }
   };
 
@@ -27,7 +32,7 @@ const RewardRules: React.FC<{ activityInfo?: { activityId: string; activityName:
   };
 
   const del = async ({ actId, prId }: IRuleItem) => {
-    const res = await requestDelQuestionActivityPrize({ actId, prId });
+    const res = await requestDelCheckInActivityRule({ actId, prId });
     if (res) {
       getList();
       message.success('规则删除成功');
@@ -47,8 +52,8 @@ const RewardRules: React.FC<{ activityInfo?: { activityId: string; activityName:
   return (
     <>
       <div>
-        <span>活动编号：{activityInfo?.activityId}</span>
-        <span className="ml40">活动名称：{activityInfo?.activityName}</span>
+        <span>活动编号：{activityInfo?.actId}</span>
+        <span className="ml40">活动名称：{activityInfo?.subject}</span>
       </div>
       <Button className="mt20" type="primary" shape="round" onClick={() => setAddVisible(true)}>
         新增规则
@@ -60,8 +65,15 @@ const RewardRules: React.FC<{ activityInfo?: { activityId: string; activityName:
         scroll={{ x: 'max-content' }}
         columns={TableColumns({ edit, del })}
         dataSource={list}
+        loading={loading}
       />
-      <AddRules value={currentRow} visible={addVisible} onClose={() => setAddVisible(false)} onOk={onOk} />
+      <AddRules
+        value={currentRow}
+        condiDayList={condiDayList}
+        visible={addVisible}
+        onClose={() => setAddVisible(false)}
+        onOk={onOk}
+      />
     </>
   );
 };

@@ -51,13 +51,7 @@ const Add: React.FC = () => {
           <BasicSettings
             onConfirm={() => {
               setActiveKey('2');
-              setActiveKeys((keys) => {
-                if (keys.includes('1')) {
-                  return keys;
-                } else {
-                  return [...keys, '1'];
-                }
-              });
+              setActiveKeys(['1', '2']);
             }}
             activityInfoOnChange={activityInfoOnChange}
           />
@@ -66,13 +60,7 @@ const Add: React.FC = () => {
           <QuestionSettings
             onConfirm={() => {
               setActiveKey('3');
-              setActiveKeys((keys) => {
-                if (keys.includes('2')) {
-                  return keys;
-                } else {
-                  return [...keys, '2'];
-                }
-              });
+              setActiveKeys(['1', '2', '3']);
             }}
             activityInfo={activityInfo}
           />

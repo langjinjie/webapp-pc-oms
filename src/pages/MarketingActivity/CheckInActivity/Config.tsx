@@ -2,6 +2,8 @@ import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
 import { SearchCol } from 'src/components';
+import style from './style.module.less';
+import classNames from 'classnames';
 
 export interface ICheckInItem {
   actCode: string; // 否 活动编号
@@ -18,7 +20,7 @@ export interface ICheckInItem {
 type TTableColumns = (params: {
   putOrDown: (row: ICheckInItem) => void;
   edit: (row: ICheckInItem) => void;
-  copy: (row: ICheckInItem) => void;
+  // copy: (row: ICheckInItem) => void;
 }) => ColumnsType<ICheckInItem>;
 
 export const statusList = [
@@ -35,16 +37,22 @@ export const searchCols: SearchCol[] = [
   { label: '创建时间', name: 'startTime-endTime', type: 'rangePicker' },
   {
     label: '状态',
-    name: '状态',
+    name: 'status',
     type: 'select',
     options: statusList
   }
 ];
 
-export const TableColumns: TTableColumns = ({ putOrDown, edit, copy }) => {
+export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {
   return [
     { title: '活动编号', dataIndex: 'actCode' },
-    { title: '活动名称', dataIndex: 'subject' },
+    {
+      title: '活动名称',
+      dataIndex: 'subject',
+      render (subject: string) {
+        return <span className={classNames(style.subject, 'ellipsis inline-block')}>{subject}</span>;
+      }
+    },
     {
       title: '活动时间',
       render (row: ICheckInItem) {
@@ -63,23 +71,24 @@ export const TableColumns: TTableColumns = ({ putOrDown, edit, copy }) => {
     { title: '更新时间', dataIndex: 'lastUpdated' },
     {
       title: '操作',
+      fixed: 'right',
       render (row: ICheckInItem) {
         return (
           <>
-            {row.status !== 3 && (
+            {[0, 4].includes(row.status) && (
               // 未上架与已下架状态支持点击上架操作 未开始与进行中状态支持点击下架操作
-              <Popconfirm
-                title={`是否确定${[0, 4].includes(row.status) ? '上架' : '下架'}该活动`}
-                onConfirm={() => putOrDown(row)}
-              >
-                <Button type="link">{[0, 4].includes(row.status) ? '上架' : '下架'}</Button>
+              <Popconfirm title={'是否确定上架该活动'} onConfirm={() => putOrDown(row)}>
+                <Button type="link">上架</Button>
+              </Popconfirm>
+            )}
+            {[1, 2].includes(row.status) && (
+              // 未上架与已下架状态支持点击上架操作 未开始与进行中状态支持点击下架操作
+              <Popconfirm title={'是否确定下架该活动'} onConfirm={() => putOrDown(row)}>
+                <Button type="link">下架</Button>
               </Popconfirm>
             )}
             <Button type="link" onClick={() => edit(row)}>
               修改
-            </Button>
-            <Button type="link" onClick={() => copy(row)}>
-              复制
             </Button>
           </>
         );

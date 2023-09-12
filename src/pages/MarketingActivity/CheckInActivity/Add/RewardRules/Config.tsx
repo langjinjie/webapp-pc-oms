@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 
 export interface IPrizeConfig {
@@ -32,15 +32,16 @@ export const TableColumns: TTableColumns = ({ edit, del }) => {
     { title: '更新时间', dataIndex: 'lastUpdated' },
     {
       title: '操作',
+      fixed: 'right',
       render (row: IRuleItem) {
         return (
           <>
             <Button type="link" onClick={() => edit(row)}>
               修改
             </Button>
-            <Button type="link" onClick={() => del(row)}>
-              删除
-            </Button>
+            <Popconfirm title="是否删除该规则" onConfirm={() => del(row)}>
+              <Button type="link">删除</Button>
+            </Popconfirm>
           </>
         );
       }

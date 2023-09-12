@@ -3,6 +3,7 @@ import { Modal, NgTable } from 'src/components';
 import { Button } from 'antd';
 import { IPagination } from 'src/utils/interface';
 import { requestActivityPrizeUpList } from 'src/apis/marketingActivity';
+import { AddPrizeModal } from '../index';
 
 interface IChoosePrizeProps {
   value?: any;
@@ -15,6 +16,8 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [list, setList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [addPrizeVisible, setAddPrizeVisible] = useState(false);
 
   // 选择奖品
   const choosePrize = () => {
@@ -33,18 +36,19 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
 
   const onOk = () => {
     onChange?.(selectedRows[0]);
-    console.log('selectedRows', selectedRows[0]);
     onClose();
   };
 
   // 获取列表
   const getList = async (values?: any) => {
-    const { current = 1, pageSize = 10 } = values || {};
+    setLoading(true);
+    const { pageNum = 1, pageSize = 10 } = values || {};
     const res = await requestActivityPrizeUpList({ ...values });
+    setLoading(false);
     if (res) {
       const { list, total } = res;
       setList(list || []);
-      setPagination({ current, pageSize, total });
+      setPagination({ current: pageNum, pageSize, total });
     }
   };
 
@@ -54,7 +58,7 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
       newPagination.current = 1;
     }
     setPagination(newPagination);
-    getList(newPagination);
+    getList({ pageNum: newPagination.current, pageSize: pageSize || 10 });
   };
 
   const rowSelection: any = {
@@ -66,9 +70,15 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
     }
   };
 
+  const onOkHandle = () => {
+    setAddPrizeVisible(false);
+    getList({ pageNum: pagination.current, pageSize: pagination.pageSize });
+  };
+
   useEffect(() => {
     if (visible) {
-      setSelectedRows(value || []);
+      setSelectedRows(value ? [value] : []);
+      setSelectedRowKeys(value ? [value.goodsId] : []);
       getList();
     }
   }, [visible]);
@@ -79,10 +89,12 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
         选择奖品
       </Button>
       <Modal centered width={960} title={'选择奖品'} visible={visible} onClose={onClose} onOk={onOk}>
-        <Button className="mr10" type="primary" shape="round">
+        <Button className="mr10" type="primary" shape="round" onClick={() => setAddPrizeVisible(true)}>
           新增奖品
         </Button>
-        <Button shape="round">刷新</Button>
+        <Button shape="round" onClick={() => getList({ pageNum: pagination.current, pageSize: pagination.pageSize })}>
+          刷新
+        </Button>
         <NgTable
           columns={[
             { title: '奖品批次', dataIndex: 'goodsId' },
@@ -93,12 +105,14 @@ const ChoosePrize: React.FC<IChoosePrizeProps> = ({ value, onChange }) => {
           dataSource={list}
           className="mt20"
           rowKey="goodsId"
+          loading={loading}
           scroll={{ x: 912 }}
           rowSelection={rowSelection}
           pagination={pagination}
           paginationChange={paginationChange}
         />
       </Modal>
+      <AddPrizeModal visible={addPrizeVisible} onOk={onOkHandle} onCancel={() => setAddPrizeVisible(false)} />
     </>
   );
 };

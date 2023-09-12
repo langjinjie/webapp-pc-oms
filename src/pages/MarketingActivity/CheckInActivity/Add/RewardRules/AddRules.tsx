@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { Modal } from 'src/components';
-import { Form, Input } from 'antd';
+import { Form, Input, message } from 'antd';
 import { IRuleItem } from './Config';
-import { requestUpdateQuestionActivityPrize } from 'src/apis/marketingActivity';
+import { requestSaveCheckInActivityRule } from 'src/apis/marketingActivity';
 import { ChoosePrize } from 'src/pages/MarketingActivity/component';
 import style from './style.module.less';
+import qs from 'qs';
 
 const { Item } = Form;
 
@@ -14,9 +15,10 @@ interface IAddRulesProps {
   visible: boolean;
   onClose?: () => void;
   onOk?: () => void;
+  condiDayList?: number[]; // 用于校验
 }
 
-const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, value }) => {
+const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, value, condiDayList }) => {
   const [form] = Form.useForm();
 
   const onCloseHandle = () => {
@@ -24,8 +26,24 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
   };
 
   const onOkHandle = async () => {
-    const { score, num, goods, goodsName } = form.getFieldsValue();
-    const res = await requestUpdateQuestionActivityPrize({ score, num, ...goods, goodsName });
+    form.validateFields();
+    const { actId } = qs.parse(location.search, { ignoreQueryPrefix: true });
+    const {
+      condiDay,
+      priCount,
+      goods: { goodsName, goodsId }
+    } = form.getFieldsValue();
+
+    // 奖励天数重复校验
+    if ((condiDayList || []).includes(+condiDay)) return message.info('存在相同奖励天数的规则');
+    const res = await requestSaveCheckInActivityRule({
+      condiDay: +condiDay,
+      priCount: +priCount,
+      goodsName,
+      goodsId,
+      actId,
+      prId: value?.prId
+    });
     if (res) {
       onOk?.();
     }
@@ -52,16 +70,16 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
       onOk={onOkHandle}
     >
       <Form form={form}>
-        <Item label="需累计签到">
-          <Item name="condiDay" noStyle>
+        <Item label="需累计签到" required>
+          <Item name="condiDay" noStyle rules={[{ required: true }]}>
             <Input className="width100 mr10" placeholder="请输入" />
           </Item>
           天
         </Item>
-        <Item label="奖品" name="goods">
+        <Item label="奖品" name="goods" rules={[{ required: true }]}>
           <ChoosePrize />
         </Item>
-        <Item label="奖品数量" name="priCount">
+        <Item label="奖品数量" name="priCount" rules={[{ required: true }]}>
           <Input className="width100" placeholder="请输入" />
         </Item>
       </Form>
