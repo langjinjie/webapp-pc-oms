@@ -104,8 +104,8 @@ const BasicSettings: React.FC<{
         <Item name="activityTime" label="活动时间" rules={[{ required: true, message: '请输入活动时间，20字以内' }]}>
           <RangePicker onCalendarChange={onCalendarChange} disabledDate={disabledDate} />
         </Item>
-        <Item name="desc" label="活动规则" rules={[{ required: true, message: '请输入内容，1000字以内' }]}>
-          <TextArea className={style.textArea} placeholder="请输入内容，1000字以内" maxLength={1000} />
+        <Item name="desc" label="活动规则" rules={[{ required: true, message: '请输入活动规则，1000字以内' }]}>
+          <TextArea className={style.textArea} placeholder="请输入活动规则，1000字以内" maxLength={1000} />
         </Item>
         <div className={style.panel}>规则控制</div>
         <Item className="mt20" label="在群要求" required>
@@ -113,7 +113,7 @@ const BasicSettings: React.FC<{
             <Radio.Group onChange={(e) => setGroupRequire(e.target.value)}>
               <Space direction="vertical">
                 <Radio value={0}>
-                  达成调教即可奖励 <span className="color-text-placeholder">客户经理群内成员皆可</span>
+                  任意外部群成员 <span className="color-text-placeholder">客户经理群内成员皆可</span>
                 </Radio>
                 <Radio value={1}>指定群成员</Radio>
               </Space>

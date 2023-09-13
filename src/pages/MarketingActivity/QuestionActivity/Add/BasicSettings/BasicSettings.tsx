@@ -89,8 +89,8 @@ const BasicSettings: React.FC<{
         <Item name="activityTime" label="活动时间" rules={[{ required: true, message: '请输入活动时间，20字以内' }]}>
           <RangePicker />
         </Item>
-        <Item name="activityDesc" label="活动规则" rules={[{ required: true, message: '请输入内容，1000字以内' }]}>
-          <TextArea className={style.textArea} placeholder="请输入内容，1000字以内" maxLength={1000} />
+        <Item name="activityDesc" label="活动规则" rules={[{ required: true, message: '请输入活动规则，1000字以内' }]}>
+          <TextArea className={style.textArea} placeholder="请输入活动规则，1000字以内" maxLength={1000} />
         </Item>
         <div className={style.panel}>规则控制</div>
         <Item className="mt20" label="在群要求" required>
@@ -98,7 +98,7 @@ const BasicSettings: React.FC<{
             <Radio.Group value={groupRequire} onChange={(e) => setGroupRequire(e.target.value)}>
               <Space direction="vertical">
                 <Radio value={1}>
-                  达成调教即可奖励 <span className="color-text-placeholder">客户经理群内成员皆可</span>
+                  达成条件即可奖励 <span className="color-text-placeholder">客户经理群内成员皆可</span>
                 </Radio>
                 <Radio value={2}>指定群成员</Radio>
               </Space>
@@ -163,10 +163,10 @@ const BasicSettings: React.FC<{
           <ImageUpload />
         </Item>
         <Item name="shareTitle" label="分享标题">
-          <Input className="width240" placeholder="24个字内，不填写默认“打卡赢好礼”" maxLength={24} />
+          <Input className="width240" placeholder="24个字内，不填写默认“答题赢好礼”" maxLength={24} />
         </Item>
         <Item name="shareDesc" label="分享摘要">
-          <Input className="width240" placeholder="30个字内，不填写默认“我正在参加打卡活动”" maxLength={30} />
+          <Input className="width240" placeholder="30个字内，不填写默认“我正在参加答题活动”" maxLength={30} />
         </Item>
         <Button className={style.submitBtn} htmlType="submit" type="primary" shape="round">
           保存

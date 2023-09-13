@@ -80,7 +80,11 @@ export const TableColumns: (arg: {
                 上架
               </Button>
             )}
-            {row.status === 1 && <Button type="link">下架</Button>}
+            {row.status === 1 && (
+              <Button type="link" onClick={() => upOrDown(row)}>
+                下架
+              </Button>
+            )}
             <Button type="link" onClick={() => edit(row)}>
               修改
             </Button>
