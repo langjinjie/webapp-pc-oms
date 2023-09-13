@@ -60,7 +60,7 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, value, visible, onClo
   const onOkHandle = async () => {
     await form.validateFields();
     // 处理单选多选入参问题
-    let { topicTitle, score, topicType, choiceDTOS } = form.getFieldsValue();
+    let { topicTitle, score, topicType, choiceDTOS, imgUrl } = form.getFieldsValue();
     // 如果是单选或者多选，后端单选多选分成两个属性 topicType-4: 单选或多选，isRadio：1-单选，0-多选 前端 topicType: 1-单选 0-多选
     let isRadio;
     if ([0, 1].includes(topicType)) {
@@ -81,7 +81,8 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, value, visible, onClo
       score,
       topicType,
       choiceDTOS,
-      isRadio
+      isRadio,
+      imgUrl
     });
     if (res) {
       form.resetFields();
