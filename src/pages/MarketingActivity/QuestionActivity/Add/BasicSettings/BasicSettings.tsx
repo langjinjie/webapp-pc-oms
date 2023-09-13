@@ -79,7 +79,6 @@ const BasicSettings: React.FC<{
         form={form}
         scrollToFirstError={{ block: 'center', behavior: 'smooth' }}
         onFinish={onFinish}
-        initialValues={{ themeColor: '#000000', buttonBgColor: '#000000', textColor: '#000000' }}
         onValuesChange={(changValues: any) => console.log('changValues', changValues)}
       >
         <Item name="activityName" label="活动名称" rules={[{ required: true, message: '请输入活动名称，30字以内' }]}>
@@ -149,13 +148,13 @@ const BasicSettings: React.FC<{
         >
           <ImageUpload />
         </Item>
-        <Item name="themeColor" label="主背景色">
+        <Item name="themeColor" label="主背景色" initialValue={'#2A2AE8'}>
           <Input className={style.colorPicker} type="color" />
         </Item>
-        <Item name="buttonBgColor" label="按钮背景色">
+        <Item name="buttonBgColor" label="按钮背景色" initialValue={'#FFC403'}>
           <Input className={style.colorPicker} type="color" />
         </Item>
-        <Item name="textColor" label="文字颜色">
+        <Item name="textColor" label="文字颜色" initialValue={'#ffffff'}>
           <Input className={style.colorPicker} type="color" />
         </Item>
         <div className={style.panel}>分享设置</div>

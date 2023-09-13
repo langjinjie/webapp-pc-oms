@@ -162,13 +162,13 @@ const BasicSettings: React.FC<{
         >
           <ImageUpload />
         </Item>
-        <Item name="themeBgcolour" label="主背景色">
+        <Item name="themeBgcolour" label="主背景色" initialValue={'#EA4128'}>
           <Input className={style.colorPicker} type="color" />
         </Item>
-        <Item name="buttonBgcolour" label="按钮背景色">
+        <Item name="buttonBgcolour" label="按钮背景色" initialValue={'#EA4128'}>
           <Input className={style.colorPicker} type="color" />
         </Item>
-        <Item name="wordBgcolour" label="文字颜色">
+        <Item name="wordBgcolour" label="文字颜色" initialValue={'#FFFFFF'}>
           <Input className={style.colorPicker} type="color" />
         </Item>
         <div className={style.panel}>奖励设置</div>
