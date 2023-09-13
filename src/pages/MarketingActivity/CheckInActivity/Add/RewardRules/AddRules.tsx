@@ -45,6 +45,7 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
       prId: value?.prId
     });
     if (res) {
+      form.resetFields();
       onOk?.();
     }
   };
