@@ -46,6 +46,7 @@ const BasicSettings: React.FC<{
 
   // 提交
   const onFinish = async (values?: any) => {
+    const { actId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     let { chatIds } = values;
     // 处理时间
     const [startTime, endTime] = formatDate(values?.activityTime);
@@ -63,21 +64,22 @@ const BasicSettings: React.FC<{
       startTime,
       endTime,
       chatIds,
-      signText: values.signText || '再接再厉'
+      signText: values.signText || '再接再厉',
+      actId
     });
     if (res) {
-      // 将活动名称和活动id保存下来
-      onConfirm();
-      activityInfoOnChange?.({ actId: res.actId, subject: values.subject });
       // 在url上拼上activityId
       history.push(`/checkIn/add?actId=${res.actId}`);
+      // 将活动名称和活动id保存下来
+      activityInfoOnChange?.({ actId: res.actId, subject: values.subject });
+      onConfirm();
     }
   };
 
   // 选中时间的回调 不能操作value，操作value会修改选择的时间
   const onCalendarChange: (value: any) => void = (value) => {
     if (value && value[0]) {
-      setStartTime(moment(value[0].valueOf()).add(30, 'days'));
+      setStartTime(moment(value[0].valueOf()).add(29, 'days'));
     } else {
       setStartTime(undefined);
     }
