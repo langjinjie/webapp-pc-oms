@@ -21,7 +21,7 @@ export const topicTypeList = [
   { id: 2, name: '体重比' },
   { id: 3, name: '家庭题目' },
   { id: 4, name: '普通单选或者多选' },
-  { id: 5, name: '填空' }
+  { id: 5, name: '问答' }
 ];
 
 export const QuestionTableColumns: (arg: { edit: (row: any) => void }) => ColumnsType<any> = ({ edit }) => {

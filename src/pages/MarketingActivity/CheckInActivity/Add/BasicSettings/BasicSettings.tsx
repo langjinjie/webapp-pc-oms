@@ -4,6 +4,7 @@ import { ImageUpload, SetGroupChat } from 'src/components';
 import { formatDate } from 'src/utils/base';
 import { requestAddCheckInActivityBase, requestCheckInActivityDetail } from 'src/apis/marketingActivity';
 import { useHistory } from 'react-router-dom';
+import Preview from './Preview';
 import moment, { Moment } from 'moment';
 import classNames from 'classnames';
 import style from './style.module.less';
@@ -19,6 +20,11 @@ const BasicSettings: React.FC<{
 }> = ({ onConfirm, activityInfoOnChange }) => {
   const [groupRequire, setGroupRequire] = useState<number>();
   const [startTime, setStartTime] = useState<Moment>();
+  const [previewVal, setPreviewVal] = useState<any>({
+    themeBgcolour: '#EA4128',
+    buttonBgcolour: '#EA4128',
+    wordBgcolour: '#FFFFFF'
+  });
 
   const [form] = Form.useForm();
   const history = useHistory();
@@ -40,6 +46,7 @@ const BasicSettings: React.FC<{
       // 处理活动时间
       const activityTime = [moment(startTime, 'YYYY-MM-DD HH:mm:ss'), moment(endTime, 'YYYY-MM-DD HH:mm:ss')];
       form.setFieldsValue({ ...res, activityTime });
+      setPreviewVal({ ...res, activityTime });
       activityInfoOnChange?.({ actId: res.actId, subject: res.subject });
     }
   };
@@ -98,7 +105,12 @@ const BasicSettings: React.FC<{
   }, []);
   return (
     <div className={style.wrap}>
-      <Form form={form} scrollToFirstError={{ block: 'center', behavior: 'smooth' }} onFinish={onFinish}>
+      <Form
+        form={form}
+        scrollToFirstError={{ block: 'center', behavior: 'smooth' }}
+        onFinish={onFinish}
+        onValuesChange={(_: any, values?: any) => setPreviewVal(values)}
+      >
         <Item name="subject" label="活动名称" rules={[{ required: true, message: '请输入活动名称，30字以内' }]}>
           <Input className="width480" placeholder="请输入活动名称，30字以内" maxLength={30} />
         </Item>
@@ -203,6 +215,7 @@ const BasicSettings: React.FC<{
           保存
         </Button>
       </Form>
+      <Preview className={style.preview} value={previewVal} title={previewVal?.shareTitle || '打卡活动'} />
     </div>
   );
 };

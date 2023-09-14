@@ -16,12 +16,6 @@ export interface IQuestionActivityRow {
   updateBy: string; // 是 更新人
 }
 
-// 搜索状态
-const searchStatusList = [
-  { id: 1, name: '未上架' },
-  { id: 3, name: '已下架' }
-];
-
 // 列表状态: 搜索状态+活动时间组合
 const tableStatusList = [
   { id: 1, name: '未上架' },
@@ -40,7 +34,7 @@ export const searchCols: SearchCol[] = [
   { label: '活动编号', name: 'activityId', type: 'input', placeholder: '请输入' },
   { label: '活动名称', name: 'activityName', type: 'input', placeholder: '请输入' },
   { label: '创建时间', name: 'startTime-endTime', type: 'rangePicker' },
-  { label: '状态', name: 'status', type: 'select', options: searchStatusList }
+  { label: '状态', name: 'status', type: 'select', options: tableStatusList }
 ];
 
 export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {

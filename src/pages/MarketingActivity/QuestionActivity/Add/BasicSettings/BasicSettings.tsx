@@ -4,6 +4,7 @@ import { ImageUpload, SetGroupChat } from 'src/components';
 import { formatDate } from 'src/utils/base';
 import { requestAddQuestionActivityBase, requestQuestionActivityDetail } from 'src/apis/marketingActivity';
 import { useHistory } from 'react-router-dom';
+import Preview from './Preview';
 import classNames from 'classnames';
 import style from './style.module.less';
 import qs from 'qs';
@@ -19,6 +20,11 @@ const BasicSettings: React.FC<{
 }> = ({ onConfirm, activityInfoOnChange }) => {
   const [groupRequire, setGroupRequire] = useState<number>();
   const [isLimitCount, setIsLimitCount] = useState<number>();
+  const [previewVal, setPreviewVal] = useState<any>({
+    themeColor: '#2A2AE8',
+    buttonBgColor: '#FFC403',
+    textColor: '#ffffff'
+  });
 
   const [form] = Form.useForm();
   const history = useHistory();
@@ -42,6 +48,7 @@ const BasicSettings: React.FC<{
       // 处理活动时间
       const activityTime = [moment(startTime, 'YYYY-MM-DD HH:mm:ss'), moment(endTime, 'YYYY-MM-DD HH:mm:ss')];
       form.setFieldsValue({ ...res, playNum: playNum || undefined, activityTime });
+      setPreviewVal({ ...res, playNum: playNum || undefined, activityTime });
       activityInfoOnChange?.({ activityId: res.activityId, activityName: res.activityName });
     }
   };
@@ -79,7 +86,7 @@ const BasicSettings: React.FC<{
         form={form}
         scrollToFirstError={{ block: 'center', behavior: 'smooth' }}
         onFinish={onFinish}
-        onValuesChange={(changValues: any) => console.log('changValues', changValues)}
+        onValuesChange={(_: any, values?: any) => setPreviewVal(values)}
       >
         <Item name="activityName" label="活动名称" rules={[{ required: true, message: '请输入活动名称，30字以内' }]}>
           <Input className="width480" placeholder="请输入活动名称，30字以内" maxLength={30} />
@@ -171,6 +178,8 @@ const BasicSettings: React.FC<{
           保存
         </Button>
       </Form>
+
+      <Preview className={style.preview} value={previewVal} title={previewVal?.shareTitle || '有奖答题'} />
     </div>
   );
 };
