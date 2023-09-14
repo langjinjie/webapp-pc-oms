@@ -134,16 +134,14 @@ const BasicSettings: React.FC<{
             <Radio value={2}>限制</Radio>
           </Radio.Group>
           {/* </Item> */}
-          <span>
-            <Item name="playNum" noStyle>
-              <InputNumber
-                className={classNames(style.inputNumber, 'width100')}
-                placeholder="请输入"
-                readOnly={isLimitCount === 1}
-              />
-            </Item>
-            次<span className={classNames(style.tipsText, 'ml20')}>提醒：多次参与奖品</span>
-          </span>
+          {isLimitCount === 2 && (
+            <span>
+              <Item name="playNum" noStyle>
+                <InputNumber className={classNames(style.inputNumber, 'width100')} placeholder="请输入" />
+              </Item>
+              次<span className={classNames(style.tipsText, 'ml20')}>提醒：多次参与奖品</span>
+            </span>
+          )}
         </Item>
         <div className={style.panel}>页面设置</div>
         <Item
