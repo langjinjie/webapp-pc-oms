@@ -45,7 +45,7 @@ export const searchCols: SearchCol[] = [
 
 export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {
   return [
-    { title: '活动编号', dataIndex: 'actCode' },
+    { title: '活动编号', dataIndex: 'actId' },
     {
       title: '活动名称',
       dataIndex: 'subject',

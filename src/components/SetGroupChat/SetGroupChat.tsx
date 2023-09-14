@@ -16,8 +16,8 @@ interface IGroupChatItem {
 
 interface SetGroupChatProps {
   readonly?: boolean;
-  value?: any;
-  onChange?: (value: any) => void;
+  value?: IGroupChatItem[];
+  onChange?: (value: IGroupChatItem[]) => void;
   title?: string;
   className?: string;
 }
@@ -66,9 +66,19 @@ const SetGroupChat: React.FC<SetGroupChatProps> = ({ value, onChange, readonly, 
     setVisible(false);
   };
 
+  // 处理回写
+  const reWrite = () => {
+    setSelectedStaffList(value || []);
+    setSelectedRowKeys((value || []).map(({ chatId }) => chatId));
+  };
+
   useEffect(() => {
     getStaffGroupOwner();
   }, []);
+
+  useEffect(() => {
+    if (visible) reWrite();
+  }, [visible]);
 
   return (
     <div>
@@ -178,7 +188,7 @@ const SetGroupChat: React.FC<SetGroupChatProps> = ({ value, onChange, readonly, 
               </span>
             )
         )}
-        {value?.length > 5 && ' ...... '}
+        {(value || []).length > 5 && ' ...... '}
         {!!value?.length && <span className="mr20"> 共{value?.length || 0}个群聊</span>}
         <Button type="primary" ghost shape="round" disabled={readonly} onClick={() => setVisible(true)}>
           请选择群
