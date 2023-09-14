@@ -35,14 +35,14 @@ const BasicSettings: React.FC<{
     if (!actId) return;
     const res = await requestCheckInActivityDetail({ actId });
     if (res) {
-      const { startTime, endTime, chatIds = [] } = res;
+      const { startTime, endTime, chatGroupIds = [] } = res;
       // 格式化群字段
-      res.chatIds = (chatIds || []).map(({ chatId, chatName }: { chatId: string; chatName: string }) => ({
+      res.chatGroupIds = (chatGroupIds || []).map(({ chatId, chatName }: { chatId: string; chatName: string }) => ({
         chatId,
         groupName: chatName
       }));
       // 处理在群要求
-      setGroupRequire(res.chatIds?.length ? 1 : 0);
+      setGroupRequire(res.chatGroupIds?.length ? 1 : 0);
       // 处理活动时间
       const activityTime = [moment(startTime, 'YYYY-MM-DD HH:mm:ss'), moment(endTime, 'YYYY-MM-DD HH:mm:ss')];
       form.setFieldsValue({ ...res, activityTime });
@@ -54,23 +54,20 @@ const BasicSettings: React.FC<{
   // 提交
   const onFinish = async (values?: any) => {
     const { actId } = qs.parse(location.search, { ignoreQueryPrefix: true });
-    let { chatIds } = values;
+    let { chatGroupIds } = values;
     // 处理时间
     const [startTime, endTime] = formatDate(values?.activityTime);
     delete values.activityTime;
-    if (chatIds) {
+    if (chatGroupIds) {
       // 处理群字段,原字段: {chatId: string; groupName: string}[] 需要格式化成 {chatId: string; chatName: string}[],
-      chatIds = chatIds.map(({ chatId, groupName }: { chatId: string; groupName: string }) => ({
-        chatId,
-        chatName: groupName
-      }));
+      chatGroupIds = chatGroupIds.map(({ chatId }: { chatId: string }) => chatId);
     }
     // signText 默认为 再接再厉
     const res = await requestAddCheckInActivityBase({
       ...values,
       startTime,
       endTime,
-      chatIds,
+      chatGroupIds,
       signText: values.signText || '再接再厉',
       actId
     });
