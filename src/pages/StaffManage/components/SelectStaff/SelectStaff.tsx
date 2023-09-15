@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Input } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { OrganizationalTree } from 'src/pages/RoleManage/components';
-import { Icon } from 'src/components';
+// import { OrganizationalTree } from 'src/pages/RoleManage/components';
+import { Icon, OrgTree } from 'src/components';
 
 interface ISelectStaffProps {
   value?: any;
@@ -55,13 +55,13 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({
         placeholder="请选择"
         disabled={disabled}
       />
-      <OrganizationalTree
+      <OrgTree
         onCancel={() => setOrgParam((orgParam) => ({ ...orgParam, visible: false }))}
         showStaff={type === 'staff'}
         selectedDept={type === 'dept'}
         isDeleted={isDeleted}
         value={value}
-        params={orgParam}
+        visible={orgParam.visible}
         title={type === 'staff' ? '选择客户经理' : '选择部门'}
         okText={'确认'}
         onChange={onChange}

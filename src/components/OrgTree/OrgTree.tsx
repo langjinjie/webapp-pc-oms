@@ -367,7 +367,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
       centered
       maskClosable={false}
       closable={false}
-      title={'添加成员' || title}
+      title={title || '添加成员'}
       okText={'确认添加'}
       onOk={onOkHandle}
       onCancel={onClose}

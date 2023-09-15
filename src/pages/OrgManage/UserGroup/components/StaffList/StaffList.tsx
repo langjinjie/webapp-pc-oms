@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Icon } from 'src/components';
+import { Icon, OrgTree } from 'src/components';
 import { Button } from 'antd';
-import { OrganizationalTree } from 'src/pages/RoleManage/components';
+// import { OrganizationalTree } from 'src/pages/RoleManage/components';
 import style from './style.module.less';
 import classNames from 'classnames';
 
@@ -45,12 +45,13 @@ const StaffList: React.FC<IStaffList> = ({ value, onChange, readOnly }) => {
       <Button className={style.chooseTagBtn} onClick={chooseStaff} disabled={readOnly}>
         选择人员
       </Button>
-      <OrganizationalTree
+      <OrgTree
         value={value}
         onChange={onChange}
         showStaff={true}
         selectedDept={false}
-        params={params}
+        title={params.added ? '添加成员' : '编辑成员'}
+        visible={params.visible}
         onCancel={() => setParams((params) => ({ ...params, visible: false }))}
       />
     </div>

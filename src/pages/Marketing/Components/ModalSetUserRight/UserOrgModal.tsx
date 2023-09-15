@@ -1,8 +1,8 @@
 import { Button, Tag } from 'antd';
 import React, { useState, useMemo } from 'react';
 import { createSingleGroup } from 'src/apis/marketing';
-import { NgModal } from 'src/components';
-import { OrganizationalTree } from 'src/pages/RoleManage/components';
+import { NgModal, OrgTree } from 'src/components';
+// import { OrganizationalTree } from 'src/pages/RoleManage/components';
 import styles from './style.module.less';
 interface UserGroupModalProps extends Omit<React.ComponentProps<typeof NgModal>, 'onOk'> {
   onChange?: (item: any) => void;
@@ -58,11 +58,9 @@ const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValu
       })}
       {tagList.length > 3 && <Tag title="点击修改可见范围可以查看全部人员">...</Tag>}
 
-      <OrganizationalTree
+      <OrgTree
         showStaff
-        params={{
-          visible: visibleUserGroup
-        }}
+        visible={visibleUserGroup}
         value={tagList}
         onCancel={() => setVisibleUserGroup(false)}
         onOk={handleOnOK}
