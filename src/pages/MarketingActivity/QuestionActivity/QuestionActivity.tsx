@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, message } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { Button, Card, message, Table } from 'antd';
+import { NgFormSearch } from 'src/components';
 import { searchCols, TableColumns, IQuestionActivityRow } from './Config';
 import { useHistory } from 'react-router-dom';
 import { IPagination } from 'src/utils/interface';
@@ -17,7 +17,8 @@ const QuestionActivity: React.FC = () => {
   const getList = async (values?: any) => {
     setLoading(true);
     const { pageNum = 1, pageSize = 10 } = values || {};
-    const res = await requestQuestionActivityList({ ...values }).finally(() => setLoading(false));
+    const res = await requestQuestionActivityList({ ...values });
+    setLoading(false);
     if (res) {
       const { list, total } = res;
       setList(list || []);
@@ -26,7 +27,6 @@ const QuestionActivity: React.FC = () => {
   };
 
   const onFinish = async (values?: any) => {
-    console.log('values', values);
     await getList(values);
     setFormVal(values);
   };
@@ -66,14 +66,13 @@ const QuestionActivity: React.FC = () => {
         创建活动
       </Button>
       <NgFormSearch className={style.form} searchCols={searchCols} onSearch={onFinish} />
-      <NgTable
+      <Table
         rowKey={'activityId'}
         columns={TableColumns({ putOrDown, edit })}
         loading={loading}
         scroll={{ x: 'max-content' }}
         dataSource={list}
-        pagination={pagination}
-        paginationChange={paginationChange}
+        pagination={{ ...pagination, onChange: paginationChange, showSizeChanger: true }}
       />
     </Card>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, message } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { Button, Card, message, Table } from 'antd';
+import { NgFormSearch } from 'src/components';
 import { searchCols, TableColumns, ICheckInItem } from './Config';
 import { useHistory } from 'react-router-dom';
 import { requestCheckInActivityList, requestCheckInActivityUpOrDown } from 'src/apis/marketingActivity';
@@ -17,7 +17,6 @@ const QuestionActivity: React.FC = () => {
   const history = useHistory();
 
   const getList = async (values?: any) => {
-    console.log('values', values);
     setLoading(true);
     const { pageNum = 1, pageSize = 10 } = values || {};
     const res = await requestCheckInActivityList(values);
@@ -76,14 +75,13 @@ const QuestionActivity: React.FC = () => {
         创建活动
       </Button>
       <NgFormSearch className={classNames(style.form, 'mt20')} searchCols={searchCols} onSearch={onFinish} />
-      <NgTable
+      <Table
         dataSource={list}
         className="mt20"
         rowKey="actId"
         scroll={{ x: 'max-content' }}
         columns={TableColumns({ putOrDown, edit })}
-        pagination={pagination}
-        paginationChange={paginationChange}
+        pagination={{ ...pagination, onChange: paginationChange, showSizeChanger: true }}
         loading={loading}
       />
     </Card>
