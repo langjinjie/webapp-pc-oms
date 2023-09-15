@@ -4,6 +4,7 @@ import { NgFormSearch } from 'src/components';
 import { searchCols, TableColumns, IQuestionActivityRow } from './Config';
 import { useHistory } from 'react-router-dom';
 import { IPagination } from 'src/utils/interface';
+import { copy } from 'tenacity-tools';
 import { requestQuestionActivityList, requestUpDownQuestionActivity } from 'src/apis/marketingActivity';
 import style from './style.module.less';
 
@@ -56,6 +57,12 @@ const QuestionActivity: React.FC = () => {
     history.push('/questionActivity/add');
   };
 
+  // 复制活动链接
+  const copyLink = ({ activityId }: IQuestionActivityRow) => {
+    const { origin, pathname } = location;
+    copy(origin + pathname.split('tenacity-oms')[0] + 'tenacity-webapp-mobile-activity/question?acId=' + activityId);
+  };
+
   useEffect(() => {
     getList();
   }, []);
@@ -68,7 +75,7 @@ const QuestionActivity: React.FC = () => {
       <NgFormSearch className={style.form} searchCols={searchCols} onSearch={onFinish} />
       <Table
         rowKey={'activityId'}
-        columns={TableColumns({ putOrDown, edit })}
+        columns={TableColumns({ putOrDown, edit, copy: copyLink })}
         loading={loading}
         scroll={{ x: 'max-content' }}
         dataSource={list}

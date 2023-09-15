@@ -28,6 +28,7 @@ const tableStatusList = [
 type TTableColumns = (params: {
   putOrDown: (row: IQuestionActivityRow) => void;
   edit: (row: IQuestionActivityRow) => void;
+  copy: (row: IQuestionActivityRow) => void;
 }) => ColumnsType<IQuestionActivityRow>;
 
 export const searchCols: SearchCol[] = [
@@ -37,7 +38,7 @@ export const searchCols: SearchCol[] = [
   { label: '状态', name: 'status', type: 'select', options: tableStatusList }
 ];
 
-export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {
+export const TableColumns: TTableColumns = ({ putOrDown, edit, copy }) => {
   return [
     { title: '活动编号', dataIndex: 'activityId' },
     {
@@ -87,6 +88,9 @@ export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {
                 修改
               </Button>
             )}
+            <Button type="link" onClick={() => copy(row)}>
+              复制
+            </Button>
           </>
         );
       }

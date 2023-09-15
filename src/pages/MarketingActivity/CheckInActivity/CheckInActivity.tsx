@@ -4,6 +4,7 @@ import { NgFormSearch } from 'src/components';
 import { searchCols, TableColumns, ICheckInItem } from './Config';
 import { useHistory } from 'react-router-dom';
 import { requestCheckInActivityList, requestCheckInActivityUpOrDown } from 'src/apis/marketingActivity';
+import { copy } from 'tenacity-tools';
 import style from './style.module.less';
 import classNames from 'classnames';
 import { IPagination } from 'src/utils/interface';
@@ -41,7 +42,7 @@ const QuestionActivity: React.FC = () => {
   };
 
   // 上下架
-  const putOrDown = async (row: any) => {
+  const putOrDown = async (row: ICheckInItem) => {
     // 未上架与已下架状态支持点击上架操作 未开始与进行中状态支持点击下架操作
     const { actId, status } = row;
     const res = await requestCheckInActivityUpOrDown({ actId, opType: [0, 4].includes(status) ? 1 : 0 });
@@ -52,7 +53,7 @@ const QuestionActivity: React.FC = () => {
   };
 
   // 编辑修改
-  const edit = (row: any) => {
+  const edit = (row: ICheckInItem) => {
     history.push('/checkIn/add?actId=' + row.actId);
   };
   // 复制活动
@@ -63,6 +64,12 @@ const QuestionActivity: React.FC = () => {
   // 创建活动
   const addActivity = () => {
     history.push('/checkIn/add');
+  };
+
+  // 复制活动链接
+  const copyLink = ({ actId }: ICheckInItem) => {
+    const { origin, pathname } = location;
+    copy(origin + pathname.split('tenacity-oms')[0] + 'tenacity-webapp-mobile-activity/checkIn?acId=' + actId);
   };
 
   useEffect(() => {
@@ -80,7 +87,7 @@ const QuestionActivity: React.FC = () => {
         className="mt20"
         rowKey="actId"
         scroll={{ x: 'max-content' }}
-        columns={TableColumns({ putOrDown, edit })}
+        columns={TableColumns({ putOrDown, edit, copy: copyLink })}
         pagination={{ ...pagination, onChange: paginationChange, showSizeChanger: true }}
         loading={loading}
       />

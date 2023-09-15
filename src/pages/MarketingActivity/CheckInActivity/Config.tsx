@@ -20,7 +20,7 @@ export interface ICheckInItem {
 type TTableColumns = (params: {
   putOrDown: (row: ICheckInItem) => void;
   edit: (row: ICheckInItem) => void;
-  // copy: (row: ICheckInItem) => void;
+  copy: (row: ICheckInItem) => void;
 }) => ColumnsType<ICheckInItem>;
 
 export const statusList = [
@@ -43,7 +43,7 @@ export const searchCols: SearchCol[] = [
   }
 ];
 
-export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {
+export const TableColumns: TTableColumns = ({ putOrDown, edit, copy }) => {
   return [
     { title: '活动编号', dataIndex: 'actId' },
     {
@@ -89,6 +89,12 @@ export const TableColumns: TTableColumns = ({ putOrDown, edit }) => {
             )}
             <Button type="link" onClick={() => edit(row)}>
               修改
+            </Button>
+            <Button type="link" onClick={() => edit(row)}>
+              修改
+            </Button>
+            <Button type="link" onClick={() => copy(row)}>
+              复制
             </Button>
           </>
         );
