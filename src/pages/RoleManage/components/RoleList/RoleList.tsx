@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Key, useContext } from 'react';
 import { Button, Form, Input, message, Table, TableColumnProps } from 'antd';
-import { Icon, NgTable, Modal, AuthBtn } from 'src/components';
-import { OrganizationalTree } from 'src/pages/RoleManage/components';
+import { Icon, NgTable, Modal, AuthBtn, OrgTree } from 'src/components';
+// import { OrganizationalTree } from 'src/pages/RoleManage/components';
 import { TableColumns, TablePagination } from './Config';
 import { IRoleList } from 'src/utils/interface';
 import { roleTypeRouteList } from 'src/utils/commonData';
@@ -146,6 +146,7 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       const res = await requestGetCurRoleUserList({ roleId });
       if (res) {
         treeOnchange([...(res.staffList || []), ...(res.deptList || [])]);
+        console.log('added', added);
         setParams({ visible: true, added, roleId });
       }
     }
@@ -199,12 +200,13 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
         })}
       />
       {/* 添加/编辑成员 */}
-      <OrganizationalTree
+      <OrgTree
         value={treeValue}
         onChange={treeOnchange}
         selectedDept={true}
         showStaff={true}
-        params={params}
+        title={params.added ? '添加成员' : '管理成员'}
+        visible={params.visible}
         onCancel={() => setParams((params) => ({ ...params, visible: false }))}
         onOk={treeOnOk}
       />
