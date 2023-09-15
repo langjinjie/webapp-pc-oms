@@ -184,7 +184,7 @@ const AddQuestion: React.FC<IAddQuestionProps> = ({ title, value, visible, onClo
                     </div>
                   </div>
                 ))}
-                {fields.length <= 3 && (
+                {fields.length <= 5 && (
                   <Button
                     className={classNames(style.addBtn, 'ml40')}
                     icon={<PlusOutlined />}

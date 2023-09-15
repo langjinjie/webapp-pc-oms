@@ -19,7 +19,7 @@ const BasicSettings: React.FC<{
   activityInfoOnChange?: (value: { activityId: string; activityName: string }) => void;
 }> = ({ onConfirm, activityInfoOnChange }) => {
   const [groupRequire, setGroupRequire] = useState<number>();
-  const [isLimitCount, setIsLimitCount] = useState<number>();
+  const [isLimitCount, setIsLimitCount] = useState<number>(1);
   const [previewVal, setPreviewVal] = useState<any>({
     themeColor: '#2A2AE8',
     buttonBgColor: '#FFC403',
@@ -139,7 +139,7 @@ const BasicSettings: React.FC<{
               <Item name="playNum" noStyle>
                 <InputNumber className={classNames(style.inputNumber, 'width100')} placeholder="请输入" />
               </Item>
-              次<span className={classNames(style.tipsText, 'ml20')}>提醒：多次参与奖品</span>
+              次<span className={classNames(style.tipsText, 'ml20')}>提醒：多次参与奖品也只能领取一次</span>
             </span>
           )}
         </Item>
