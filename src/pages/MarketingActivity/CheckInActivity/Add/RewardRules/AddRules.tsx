@@ -30,7 +30,7 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
     const { actId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     const {
       condiDay,
-      priCount,
+      // priCount,
       goods: { goodsName, goodsId }
     } = form.getFieldsValue();
     console.log();
@@ -40,7 +40,7 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
     }
     const res = await requestSaveCheckInActivityRule({
       condiDay: +condiDay,
-      priCount: +priCount,
+      // priCount: +priCount,
       goodsName,
       goodsId,
       actId,
@@ -54,8 +54,8 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
 
   const getDetail = () => {
     if (!value) return;
-    const { condiDay, priCount, goodsId, goodsName } = value;
-    form.setFieldsValue({ condiDay, priCount, goods: { goodsId, goodsName } });
+    const { condiDay, /* priCount, */ goodsId, goodsName } = value;
+    form.setFieldsValue({ condiDay, /* priCount, */ goods: { goodsId, goodsName } });
   };
 
   useEffect(() => {
@@ -82,9 +82,9 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
         <Item label="奖品" name="goods" rules={[{ required: true }]}>
           <ChoosePrize />
         </Item>
-        <Item label="奖品数量" name="priCount" rules={[{ required: true }]}>
+        {/* <Item label="奖品数量" name="priCount" rules={[{ required: true }]}>
           <Input className="width100" placeholder="请输入" />
-        </Item>
+        </Item> */}
       </Form>
     </Modal>
   );
