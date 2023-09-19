@@ -140,7 +140,7 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
         visible={staffVisible}
         onCancel={() => setStaffVisible(false)}
         onChange={staffOnChangeHandle}
-        showStaff
+        selectedType="staff"
         isDeleted={0}
       />
       {/* 客户列表选择框 */}

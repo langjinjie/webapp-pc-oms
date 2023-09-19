@@ -203,12 +203,11 @@ const RoleList: React.FC<IRoleType> = ({ roleType }) => {
       <OrgTree
         value={treeValue}
         onChange={treeOnchange}
-        selectedDept={true}
-        showStaff={true}
         title={params.added ? '添加成员' : '管理成员'}
         visible={params.visible}
         onCancel={() => setParams((params) => ({ ...params, visible: false }))}
         onOk={treeOnOk}
+        isDeleted={0}
       />
       <Modal
         className={style.adminModal}

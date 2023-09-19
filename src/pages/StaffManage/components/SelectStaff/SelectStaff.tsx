@@ -57,8 +57,7 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({
       />
       <OrgTree
         onCancel={() => setOrgParam((orgParam) => ({ ...orgParam, visible: false }))}
-        showStaff={type === 'staff'}
-        selectedDept={type === 'dept'}
+        selectedType={type}
         isDeleted={isDeleted}
         value={value}
         visible={orgParam.visible}
