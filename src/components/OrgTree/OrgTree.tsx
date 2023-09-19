@@ -41,7 +41,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
   selectedType = 'all',
   onOk,
   onCancel: onClose,
-  isDeleted,
+  isDeleted = 0,
   checkStrictly,
   singleChoice,
   checkabledDTypeKeys,
@@ -268,7 +268,8 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
     if (res) {
       const list = [...(res.staffList || []), ...(res.deptList || [])];
       list.forEach((item: any) => {
-        item.id = item.staffId || item.deptId;
+        // deptId后端返回为number 需要转换为string
+        item.id = item.staffId || item.deptId.toString();
         item.name = item.staffName || item.deptName;
       });
       setTreeSearchList(list);
