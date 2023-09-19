@@ -282,11 +282,17 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
       return Modal.warning({ title: '操作提示', content: '不能选择该部门', centered: true });
     }
     let selected: any[] = [];
-    if (!checked) {
+    if (checked) {
       selected = singleChoice ? [item] : [...selectedList, item];
     } else {
       selected = selectedList.filter(
-        (filterItem) => !(filterItem.id === item.id || item.fullDeptId.split(',').includes(filterItem.deptId))
+        (filterItem) =>
+          // 如果是员工,则需要将员工的祖先部门取消勾选,如果是部门,则需要将部门的上下级部门和下级员工全部取消勾选
+          !(
+            filterItem.id === item.id ||
+            item.fullDeptId.split(',').includes(filterItem.id) ||
+            (!item.staffId && filterItem.fullDeptId.split(',').includes(item.id))
+          )
       );
     }
     setSelectedList(selected);
@@ -392,12 +398,17 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
                   <div
                     key={item.id}
                     className={classNames(style.searchItem, {
-                      [style.active]: selectedList.some((selectItem) => item.id === selectItem.id)
+                      [style.active]: selectedList.some(
+                        (selectItem) => item.id === selectItem.id || item.fullDeptId.split(',').includes(selectItem.id)
+                      )
                     })}
                     onClick={() =>
                       clickSearchList(
                         item,
-                        selectedList.some((selectItem) => item.id === selectItem.id)
+                        !selectedList.some(
+                          (selectItem) =>
+                            item.id === selectItem.id || item.fullDeptId.split(',').includes(selectItem.id)
+                        )
                       )
                     }
                   >
