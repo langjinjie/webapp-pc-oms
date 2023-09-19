@@ -62,8 +62,7 @@ const SelectStaff: React.FC<ISelectStaffProps> = ({
       <OrgTree
         visible={visible}
         onCancel={() => setVisible(false)}
-        showStaff={type === 'staff'}
-        selectedDept={type === 'dept'}
+        selectedType={type}
         value={value}
         title={type === 'dept' ? '选择部门' : '选择客户经理'}
         okText={'确认'}
