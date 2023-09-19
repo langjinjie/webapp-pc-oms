@@ -285,7 +285,9 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
     if (!checked) {
       selected = singleChoice ? [item] : [...selectedList, item];
     } else {
-      selected = selectedList.filter((filterItem) => filterItem.id !== item.id);
+      selected = selectedList.filter(
+        (filterItem) => !(filterItem.id === item.id || item.fullDeptId.split(',').includes(filterItem.deptId))
+      );
     }
     setSelectedList(selected);
   };
