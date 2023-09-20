@@ -182,7 +182,7 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
       const curGroupItem = newChooseTags.find((findItem) => findItem.groupId === tagItem.groupId);
       if (curGroupItem) {
         // 判断该标签组中的标签是否被选中
-        if (curGroupItem.tagList || [].some((tag: any) => tag.tagId === tagItem.tagId)) {
+        if ((curGroupItem.tagList || []).some((tag: any) => tag.tagId === tagItem.tagId)) {
           curGroupItem.tagList = (curGroupItem.tagList || []).filter(
             (filterItem: any) => filterItem.tagId !== tagItem.tagId
           );
