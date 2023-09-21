@@ -178,7 +178,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
       checked = checke as Key[];
     }
     let newSelectedList = [...selectedList];
-    setCheckedKeys(singleChoice ? [checked[checked.length - 1]] : checked);
+    setCheckedKeys(singleChoice ? (info.checked ? [info.node.id] : []) : checked);
     // 只选择员工
     if (selectedType === 'staff') {
       // 如果点击的是部门
