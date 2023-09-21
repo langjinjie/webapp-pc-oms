@@ -219,10 +219,15 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
         }
       }
     } else {
-      newSelectedList = [
-        ...selectedList.filter((filterItem) => !flatTreeData.some(({ id }) => id === filterItem.id)),
-        ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
-      ];
+      if (!info.checked && !info.node.staffId) {
+        // 如果点击的是部门并且是取消选中，则需要过滤掉该部门下面的所有的部门
+        newSelectedList = newSelectedList.filter((item) => !item.fullDeptId.split(',').includes(info.node.id));
+      } else {
+        newSelectedList = [
+          ...selectedList.filter((filterItem) => !flatTreeData.some(({ id }) => id === filterItem.id)),
+          ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
+        ];
+      }
     }
     setSelectedList(singleChoice ? (info.checked ? [info.node] : []) : newSelectedList);
   };

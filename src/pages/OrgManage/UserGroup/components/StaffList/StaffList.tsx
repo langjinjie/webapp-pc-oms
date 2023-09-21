@@ -48,8 +48,7 @@ const StaffList: React.FC<IStaffList> = ({ value, onChange, readOnly }) => {
       <OrgTree
         value={value}
         onChange={onChange}
-        showStaff={true}
-        selectedDept={false}
+        selectedType="staff"
         title={params.added ? '添加成员' : '编辑成员'}
         visible={params.visible}
         onCancel={() => setParams((params) => ({ ...params, visible: false }))}
