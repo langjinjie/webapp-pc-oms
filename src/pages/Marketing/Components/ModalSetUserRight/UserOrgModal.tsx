@@ -59,7 +59,6 @@ const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValu
       {tagList.length > 3 && <Tag title="点击修改可见范围可以查看全部人员">...</Tag>}
 
       <OrgTree
-        selectedType="staff"
         visible={visibleUserGroup}
         value={tagList}
         onCancel={() => setVisibleUserGroup(false)}
