@@ -17,18 +17,13 @@ interface IDownLoadQRCodeModalProps {
  * @param param0
  * @returns
  */
-const DownLoadQRCodeModal: React.FC<IDownLoadQRCodeModalProps> = ({
-  title,
-  visible,
-  onClose,
-  link = 'https://coding-net-production-file-ci.codehub.cn/knowledge/knowledge/knowledge/knowledge'
-}) => {
+const DownLoadQRCodeModal: React.FC<IDownLoadQRCodeModalProps> = ({ title, visible, onClose, link }) => {
   const [qrCode, setQrCode] = useState('');
 
   // 合成图片
   const generateQR = async () => {
     try {
-      const qrCode = await QRCode.toDataURL(link);
+      const qrCode = await QRCode.toDataURL(link as string);
       setQrCode(qrCode);
     } catch (err) {
       console.error('err', err);
@@ -55,7 +50,7 @@ const DownLoadQRCodeModal: React.FC<IDownLoadQRCodeModalProps> = ({
       visible={visible}
       onClose={onClose}
       footer={
-        <Button className={style.downLoadBtn} type="primary" onClick={downLoadQRCode}>
+        <Button disabled={!link} className={style.downLoadBtn} type="primary" onClick={downLoadQRCode}>
           下载二维码
         </Button>
       }
@@ -64,7 +59,7 @@ const DownLoadQRCodeModal: React.FC<IDownLoadQRCodeModalProps> = ({
         <img src={qrCode} />
       </div>
       <Input className={style.input} readOnly value={link} />
-      <Button className={style.copyBtn} shape="round" onClick={() => copy(link)}>
+      <Button disabled={!link} className={style.copyBtn} shape="round" onClick={() => copy(link || '')}>
         复制链接
       </Button>
     </Modal>
