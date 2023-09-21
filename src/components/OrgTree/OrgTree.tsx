@@ -221,7 +221,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
     } else {
       if (!info.checked && !info.node.staffId) {
         // 如果点击的是部门并且是取消选中，则需要过滤掉该部门下面的所有的部门
-        newSelectedList = newSelectedList.filter((item) => !item.fullDeptId.split(',').includes(info.node.id));
+        newSelectedList = newSelectedList.filter((item) => !item.fullDeptId?.split(',').includes(info.node.id));
       } else {
         newSelectedList = [
           ...selectedList.filter((filterItem) => !flatTreeData.some(({ id }) => id === filterItem.id)),
@@ -253,7 +253,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
         // 当删除员工得时候,如果该员工所在的部门id也被选中,则所在部门也要移除checkedKeys列表
         setCheckedKeys((keys) => [
           ...(keys as React.Key[]).filter(
-            (keysItem) => !item.fullDeptId.split(',').includes(keysItem) && keysItem !== item.id
+            (keysItem) => !item.fullDeptId?.split(',').includes(keysItem) && keysItem !== item.id
           )
         ]);
       } else {
@@ -277,7 +277,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
         item.id = item.staffId || item.deptId.toString();
         item.name = item.staffName || item.deptName;
       });
-      setTreeSearchList(list);
+      setTreeSearchList(list.filter(({ fullDeptId }) => fullDeptId));
     }
   };
 
@@ -295,8 +295,8 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
           // 如果是员工,则需要将员工的祖先部门取消勾选,如果是部门,则需要将部门的上下级部门和下级员工全部取消勾选
           !(
             filterItem.id === item.id ||
-            item.fullDeptId.split(',').includes(filterItem.id) ||
-            (!item.staffId && filterItem.fullDeptId.split(',').includes(item.id))
+            item.fullDeptId?.split(',').includes(filterItem.id) ||
+            (!item.staffId && filterItem.fullDeptId?.split(',').includes(item.id))
           )
       );
     }
@@ -357,7 +357,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
         .filter(
           (item: any) =>
             // 过滤部门的下级,
-            item.fullDeptId.split(',').some((deptId: string) => valueKeys.includes(deptId)) ||
+            item.fullDeptId?.split(',').some((deptId: string) => valueKeys.includes(deptId)) ||
             // 过滤当前级
             valueKeys.includes(item.id)
         )
@@ -404,7 +404,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
                     key={item.id}
                     className={classNames(style.searchItem, {
                       [style.active]: selectedList.some(
-                        (selectItem) => item.id === selectItem.id || item.fullDeptId.split(',').includes(selectItem.id)
+                        (selectItem) => item.id === selectItem.id || item.fullDeptId?.split(',').includes(selectItem.id)
                       )
                     })}
                     onClick={() =>
@@ -412,7 +412,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
                         item,
                         !selectedList.some(
                           (selectItem) =>
-                            item.id === selectItem.id || item.fullDeptId.split(',').includes(selectItem.id)
+                            item.id === selectItem.id || item.fullDeptId?.split(',').includes(selectItem.id)
                         )
                       )
                     }
