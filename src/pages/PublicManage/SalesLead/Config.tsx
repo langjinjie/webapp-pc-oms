@@ -49,13 +49,13 @@ export const searchCols: SearchCol[] = [
   },
   {
     name: 'followName',
-    label: '跟进入',
+    label: '跟进人',
     type: 'custom',
     customNode: <SelectOrg />
   },
   {
     name: 'followDept',
-    label: '跟进入',
+    label: '跟进人部门',
     type: 'custom',
     customNode: <SelectOrg type="dept" />
   },
@@ -95,14 +95,30 @@ export const tableColumns: (edit: (row: ISalesLeadRow) => void) => ColumnsType<I
       }
     },
     { title: '跟进人', dataIndex: 'followName' },
-    { title: '跟进入组织架构', dataIndex: 'followFullDeptName' },
+    {
+      title: '跟进入组织架构',
+      dataIndex: 'followFullDeptName',
+      render (followFullDeptName: string) {
+        return (
+          <span className="ellipsis inline-block width280" title={followFullDeptName}>
+            {followFullDeptName}
+          </span>
+        );
+      }
+    },
     { title: '备注', dataIndex: 'remark' },
     {
       title: '操作',
-      render (row) {
+      fixed: 'right',
+      render (row: ISalesLeadRow) {
         return (
+          /*
+          分配 => 待分配 - 1
+          撤回 => 已分配/自动分配/再分配 - [2,3,5]
+          再分配 => 撤回 - 4
+           */
           <Button type="link" onClick={() => edit(row)}>
-            分配
+            {`${row.status === 1 ? '分配' : row.status === 4 ? '再分配' : '撤回'}`}
           </Button>
         );
       }

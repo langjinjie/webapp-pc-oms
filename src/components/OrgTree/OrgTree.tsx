@@ -222,7 +222,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
             newSelectedList = [...newSelectedList, { ...info.node }];
           } else {
             // 取消选择按个员工
-            newSelectedList = [...newSelectedList.filter((filterItem) => filterItem.staffId !== info.node.staffId)];
+            newSelectedList = newSelectedList.filter((filterItem) => filterItem.staffId !== info.node.staffId);
           }
         }
       }
@@ -299,6 +299,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
   };
 
   const seletedCount = useMemo(() => {
+    console.log('selectedList', selectedList);
     const seletedCount = filterChildren(selectedList).reduce((prev: number, now: any) => {
       if (!now.staffId) {
         prev += now.effCount || now.staffCount || 0;

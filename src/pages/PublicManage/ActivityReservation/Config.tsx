@@ -1,7 +1,7 @@
 import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { ColumnsType } from 'antd/lib/table';
-import { Button } from 'antd';
+import { Button, Popconfirm } from 'antd';
 
 export interface IActivityRow {
   leadActivityId: string; // 是 活动ID
@@ -73,9 +73,9 @@ export const tableColumns: tableColumns = ({ toTop, view, putOrDown, getLink, de
             <Button type="link" onClick={() => getLink(row)}>
               获取链接
             </Button>
-            <Button type="link" onClick={() => delItem(row)}>
-              删除
-            </Button>
+            <Popconfirm title="确定删除该活动吗？" onConfirm={() => delItem(row)}>
+              <Button type="link">删除</Button>
+            </Popconfirm>
           </>
         );
       }

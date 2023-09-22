@@ -58,6 +58,53 @@ export const requestActivityLeadActivityDetail: HttpFunction = (param) => {
 };
 
 /**
+ * @description 创建/编辑线索活动接口
+ * @param param
+ */
+export const requestCreateActivityLeadActivity: HttpFunction<{
+  leadActivityId?: string; // 活动Id
+}> = (param) => {
+  return http.post('/tenacity-admin/api/activity/leadActivity/create', param);
+};
+
+/**
+ * @description 线索活动上下架接口
+ * @param param
+ */
+export const requestManActivityLeadActivity: HttpFunction<{
+  leadActivityId: string; // 活动Id
+  type: number; // 类型: 1-上架;2-下架
+}> = (param) => {
+  return http.post('/tenacity-admin/api/activity/leadActivity/man', param);
+};
+
+/**
+ * @description 线索活动删除接口
+ * @param param
+ */
+export const requestDelActivityLeadActivity: HttpFunction<{
+  leadActivityId: string; // 活动Id
+}> = (param) => {
+  return http.post('/tenacity-admin/api/activity/leadActivity/del', param);
+};
+
+/**
+ * @description 线索活动置顶接口
+ * @param param
+ */
+export const requestTopActivityLeadActivity: HttpFunction<{
+  leadActivityId: string; // 活动Id
+}> = (param) => {
+  return http.post('/tenacity-admin/api/activity/leadActivity/top', param);
+};
+
+export const requestActivityLeadActivityShortUrl: HttpFunction<{
+  leadActivityId: string; // 活动Id
+}> = (param) => {
+  return http.post('/tenacity-admin/api/activity/leadActivity/shorturl', param);
+};
+
+/**
  * @description 获取活码列表接口
  * @param liveCodeType int 否 活码类型，1-员工活码，2-群活码
  * @param pageNum int 否 第几页，从1开始
