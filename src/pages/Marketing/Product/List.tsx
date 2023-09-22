@@ -153,8 +153,8 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
     setVisibleSetUserRight(true);
   };
 
-  const downLoadQRCode = () => {
-    console.log('下载产品二维码');
+  const downLoadQRCode = (record?: ProductProps) => {
+    setCurrentItem(record);
     setDownLoadQRCodeVisible(true);
   };
 
