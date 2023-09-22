@@ -30,17 +30,16 @@ const AddRules: React.FC<IAddRulesProps> = ({ title, visible, onClose, onOk, val
     const { actId } = qs.parse(location.search, { ignoreQueryPrefix: true });
     const {
       condiDay,
-      // priCount,
+      priCount = 1,
       goods: { goodsName, goodsId }
     } = form.getFieldsValue();
-    console.log();
     // 奖励天数重复校验
     if ((condiDayList || []).filter((day) => day !== +(condiDay || 0)).includes(+condiDay)) {
       return message.info('存在相同奖励天数的规则');
     }
     const res = await requestSaveCheckInActivityRule({
       condiDay: +condiDay,
-      // priCount: +priCount,
+      priCount: +priCount,
       goodsName,
       goodsId,
       actId,
