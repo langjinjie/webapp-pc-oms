@@ -4,7 +4,14 @@ import { NgFormSearch, NgTable } from 'src/components';
 import { IActivityRow, searchCols, tableColumns } from './Config';
 import { IPagination } from 'src/utils/interface';
 import { useHistory } from 'react-router-dom';
-import { requestActivityLeadActivityList, requestManActivityLeadActivity } from 'src/apis/publicManage';
+import {
+  requestActivityLeadActivityList,
+  requestManActivityLeadActivity,
+  requestDelActivityLeadActivity,
+  requestTopActivityLeadActivity,
+  requestActivityLeadActivityShortUrl
+} from 'src/apis/publicManage';
+import { copy } from 'tenacity-tools';
 // import style from './style.module.less';
 
 const ActivityReservation: React.FC = () => {
@@ -39,37 +46,54 @@ const ActivityReservation: React.FC = () => {
   };
 
   // 置顶
-  const toTop = (row: IActivityRow) => {
-    // setRecordItem(row);
-    console.log('置顶', row);
+  const toTop = async ({ leadActivityId }: IActivityRow) => {
+    console.log('置顶');
+    const res = await requestTopActivityLeadActivity({ leadActivityId });
+    if (res) {
+      console.log('res', res);
+      getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
+    }
   };
 
   // 查看
-  const view = (row: IActivityRow) => {
+  const view = ({ leadActivityId }: IActivityRow) => {
     // setRecordItem(row);
-    console.log('查看', row);
+    console.log('查看');
+    history.push('/activityReservation/add?leadActivityId=' + leadActivityId);
   };
 
   // 上下架 status: 1-未上架; 2-已上架; 3-已下架
   const putOrDown = async ({ status, leadActivityId }: IActivityRow) => {
-    // type: 1-上架; 2-下架
-    const res = await requestManActivityLeadActivity({ type: status === 2 ? 2 : 1, leadActivityId });
+    // type: 1-上架; 2-下架、
+    const type = status === 2 ? 2 : 1;
+    const res = await requestManActivityLeadActivity({ type, leadActivityId });
     if (res) {
       getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
-      message.success('');
+      message.success(`${type === 1 ? '上架' : '下架'}成功`);
     }
   };
 
   // 获取链接
-  const getLink = (row: IActivityRow) => {
+  const getLink = async ({ leadActivityId }: IActivityRow) => {
     // setRecordItem(row);
-    console.log('获取链接', row);
+    console.log('获取链接');
+    const res = await requestActivityLeadActivityShortUrl({ leadActivityId });
+    if (res) {
+      console.log('res', res);
+      copy(res.shortUrl);
+    }
   };
 
   // 删除
-  const delItem = (row: IActivityRow) => {
-    // setRecordItem(row);
-    console.log('删除', row);
+  const delItem = async ({ leadActivityId }: IActivityRow) => {
+    console.log('删除');
+    const { current, pageSize } = pagination;
+    const res = await requestDelActivityLeadActivity({ leadActivityId });
+    if (res) {
+      console.log('res', res);
+      getList({ ...formParam, pageNum: list.length <= 1 ? current - 1 : current, pageSize });
+      message.success('删除成功');
+    }
   };
 
   // 切换分页

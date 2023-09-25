@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Radio, Checkbox, Select, Button } from 'antd';
+import { Form, Input, Radio, Checkbox, Select, Button, message } from 'antd';
 import { BreadCrumbs, ImageUpload } from 'src/components';
 import { ChooseLiveCode, Preview } from 'src/pages/PublicManage/ActivityReservation/components';
 import { IValue } from 'src/pages/PublicManage/ActivityReservation/components/Preview/Preview';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
+import { requestCreateActivityLeadActivity } from 'src/apis/publicManage';
 import FilterChannelTag from 'src/pages/LiveCode/MomentCode/components/FilterChannelTag/FilterChannelTag';
 import classNames from 'classnames';
 import style from './style.module.less';
+import qs from 'qs';
 
 const { TextArea } = Input;
 const { Item } = Form;
@@ -50,6 +52,16 @@ const AddActivity: React.FC = () => {
     }
   };
 
+  const onFinish = async (values: { [key: string]: any }) => {
+    const { leadActivityId } = qs.parse(location.search) as { leadActivityId: string };
+    console.log('values', values);
+    const res = await requestCreateActivityLeadActivity({ leadActivityId, ...values });
+    if (res) {
+      console.log('res', res);
+      message.success(`活动${leadActivityId ? '编辑' : '新增'}成功`);
+    }
+  };
+
   useEffect(() => {
     getChannelGroupList();
   }, []);
@@ -65,10 +77,24 @@ const AddActivity: React.FC = () => {
           { name: '新增活动' }
         ]}
       />
-      <Form form={form} className={style.form} onValuesChange={onValuesChange}>
+      <Form
+        form={form}
+        className={style.form}
+        onValuesChange={onValuesChange}
+        scrollToFirstError={{ block: 'center', behavior: 'smooth' }}
+        onFinish={onFinish}
+      >
         <div className={style.panel}>
           <div className={style.title}>基本信息</div>
           <div className={style.content}>
+            <Item
+              label="上传背景图1"
+              name="bgImgUrl1"
+              extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
+              rules={[{ required: true, message: '请上传背景图' }]}
+            >
+              <ImageUpload />
+            </Item>
             <Item label="活动名称" name="leadActivityName" rules={[{ required: true, message: '请输入活动名称' }]}>
               <Input className={style.input} placeholder="请输入活动名称" />
             </Item>
