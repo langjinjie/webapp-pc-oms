@@ -61,9 +61,7 @@ export const requestActivityLeadActivityDetail: HttpFunction = (param) => {
  * @description 创建/编辑线索活动接口
  * @param param
  */
-export const requestCreateActivityLeadActivity: HttpFunction<{
-  leadActivityId?: string; // 活动Id
-}> = (param) => {
+export const requestCreateActivityLeadActivity: HttpFunction<{ [key: string]: any }> = (param) => {
   return http.post('/tenacity-admin/api/activity/leadActivity/create', param);
 };
 

@@ -5,7 +5,8 @@ import { ChooseLiveCode, Preview } from 'src/pages/PublicManage/ActivityReservat
 import { IValue } from 'src/pages/PublicManage/ActivityReservation/components/Preview/Preview';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
-import { requestCreateActivityLeadActivity } from 'src/apis/publicManage';
+import { requestCreateActivityLeadActivity, requestActivityLeadActivityDetail } from 'src/apis/publicManage';
+import { RouteComponentProps } from 'react-router-dom';
 import FilterChannelTag from 'src/pages/LiveCode/MomentCode/components/FilterChannelTag/FilterChannelTag';
 import classNames from 'classnames';
 import style from './style.module.less';
@@ -15,7 +16,7 @@ const { TextArea } = Input;
 const { Item } = Form;
 const { Group } = Radio;
 
-const AddActivity: React.FC = () => {
+const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
   const [type, setType] = useState<1 | 2>();
   const [channelTagList, setChannelTagList] = useState<IChannelTagList[]>([]);
   const [liveCodeType, setLiveCodeType] = useState<1 | 2>();
@@ -31,7 +32,22 @@ const AddActivity: React.FC = () => {
     }
   };
 
-  //
+  // 获取详情
+  const getDetail = async () => {
+    const { leadActivityId } = qs.parse(location.search) as { leadActivityId: string };
+    if (!leadActivityId) return;
+    const res = await requestActivityLeadActivityDetail({ leadActivityId });
+    console.log('res', res);
+    if (res) {
+      const { type, liveCodeType } = res;
+      // 处理类型
+      setType(type);
+      // 处理活码类型
+      setLiveCodeType(liveCodeType);
+      form.setFieldsValue(res);
+    }
+  };
+
   const onValuesChange = (changedValues: { [key: string]: any }, values: { [key: string]: any }) => {
     const { mainImgUrl, chooseNeed = [], liveCodeItem } = values;
     setPreviewValue({
@@ -54,16 +70,37 @@ const AddActivity: React.FC = () => {
 
   const onFinish = async (values: { [key: string]: any }) => {
     const { leadActivityId } = qs.parse(location.search) as { leadActivityId: string };
+    let { needClientName, needPhone, needCarNumber, type, liveCodeItem } = values;
     console.log('values', values);
-    const res = await requestCreateActivityLeadActivity({ leadActivityId, ...values });
+    // 处理人工留资 type = 1
+    if (type === 1) {
+      needClientName = needClientName?.[0] || 0;
+      needPhone = needPhone?.[0] || 0;
+      needCarNumber = needCarNumber?.[0] || 0;
+    }
+    // 处理活码 type = 2
+    if (type === 2) {
+      liveCodeItem = liveCodeItem[0];
+      delete values.liveCodeItem;
+    }
+    const res = await requestCreateActivityLeadActivity({
+      leadActivityId,
+      ...values,
+      needClientName,
+      needPhone,
+      needCarNumber,
+      ...liveCodeItem
+    });
     if (res) {
       console.log('res', res);
       message.success(`活动${leadActivityId ? '编辑' : '新增'}成功`);
+      history.push('');
     }
   };
 
   useEffect(() => {
     getChannelGroupList();
+    getDetail();
   }, []);
 
   return (
@@ -87,14 +124,6 @@ const AddActivity: React.FC = () => {
         <div className={style.panel}>
           <div className={style.title}>基本信息</div>
           <div className={style.content}>
-            <Item
-              label="上传背景图1"
-              name="bgImgUrl1"
-              extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
-              rules={[{ required: true, message: '请上传背景图' }]}
-            >
-              <ImageUpload />
-            </Item>
             <Item label="活动名称" name="leadActivityName" rules={[{ required: true, message: '请输入活动名称' }]}>
               <Input className={style.input} placeholder="请输入活动名称" />
             </Item>
@@ -135,14 +164,16 @@ const AddActivity: React.FC = () => {
             </Item>
             {/* 人工留资 */}
             {type === 1 && (
-              <Item label="留资选择" name="chooseNeed">
-                <Checkbox.Group
-                  options={[
-                    { label: '客户姓名', value: 'needClientName' },
-                    { label: '电话号码', value: 'needPhone' },
-                    { label: '车牌号', value: 'needCarNumber' }
-                  ]}
-                />
+              <Item label="留资选择">
+                <Item name="needClientName" noStyle>
+                  <Checkbox.Group options={[{ label: '客户姓名', value: 1 }]} />
+                </Item>
+                <Item name="needPhone" noStyle>
+                  <Checkbox.Group options={[{ label: '电话号码', value: 1 }]} />
+                </Item>
+                <Item name="needCarNumber" noStyle>
+                  <Checkbox.Group options={[{ label: '车牌号', value: 1 }]} />
+                </Item>
               </Item>
             )}
             {/*  */}
@@ -197,7 +228,7 @@ const AddActivity: React.FC = () => {
               >
                 确定
               </Button>
-              <Button className={style.cancelBtn} onClick={() => history.back()}>
+              <Button className={style.cancelBtn} onClick={() => history.goBack()}>
                 {/* {readOnly ? '返回' : '取消'} */}
                 返回
               </Button>

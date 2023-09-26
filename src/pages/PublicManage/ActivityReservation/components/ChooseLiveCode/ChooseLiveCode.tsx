@@ -9,7 +9,8 @@ import { requestGetActivityLeadActivityLiveCodeList } from 'src/apis/publicManag
 
 interface ILiveCodeItem {
   liveId: string;
-  name: string;
+  liveName: string;
+  liveQrCode: string;
 }
 
 interface ChooseLiveCodeProps {
@@ -111,6 +112,7 @@ const ChooseLiveCode: React.FC<ChooseLiveCodeProps> = ({ liveCodeType, value, on
         readOnly
         className={classNames(style.input, className)}
         placeholder="请选择活码"
+        value={value?.map(({ liveName }) => liveName).toString()}
         suffix={
           !disabled && value ? <Icon name="guanbi" onClick={delAll} /> : <DownOutlined className={style.downOutlined} />
         }
@@ -148,9 +150,9 @@ const ChooseLiveCode: React.FC<ChooseLiveCodeProps> = ({ liveCodeType, value, on
         <div>
           <div className="color-text-primary mt22">已选择</div>
           <div className={classNames(style.selectWrap, 'mt12')}>
-            {selectedRows.map(({ liveId, name }) => (
+            {selectedRows.map(({ liveId, liveName }) => (
               <div className={classNames(style.customTag)} key={liveId}>
-                <span>{name}</span>
+                <span>{liveName}</span>
                 <Icon className={style.closeIcon} name="biaoqian_quxiao" onClick={() => removeItem(liveId)}></Icon>
               </div>
             ))}
