@@ -5,13 +5,13 @@
  */
 
 import React from 'react';
-import Icon from '../SvgIcon/SvgIcon';
+import { Spin } from 'antd';
 import style from './style.module.less';
 
 const Loading: React.FC = () => {
   return (
     <div className={style.wrap}>
-      <Icon className={style.icon} name="jiazai" />
+      <Spin />
     </div>
   );
 };
