@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal } from 'src/components';
 import { Form, Input } from 'antd';
 import style from './style.module.less';
@@ -21,15 +21,29 @@ const AllocationModal: React.FC<IAllocationModalProps> = ({ visible, title, onCl
   const onOkHandle = async () => {
     await form.validateFields();
     await onOk(form.getFieldsValue());
-    form.resetFields();
   };
 
-  console.log('销售线索分配渲染了');
+  const onCloseHandle = () => {
+    onClose?.();
+  };
+
+  useEffect(() => {
+    if (visible) {
+      form.resetFields();
+    }
+  }, [visible]);
+
   return (
-    <Modal title={title || '销售线索分配'} visible={visible} className={style.wrap} onClose={onClose} onOk={onOkHandle}>
+    <Modal
+      title={title || '销售线索分配'}
+      visible={visible}
+      className={style.wrap}
+      onClose={onCloseHandle}
+      onOk={onOkHandle}
+    >
       <Form form={form}>
         <Item name="staffId" label="分配人员">
-          <SelectOrg type="staff" singleChoice />
+          <SelectOrg type="staff" singleChoice isLeader={1} />
         </Item>
         <Item name="remark" label="分配备注">
           <Input placeholder="请输入" />

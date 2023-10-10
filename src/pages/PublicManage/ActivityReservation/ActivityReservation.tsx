@@ -25,7 +25,6 @@ const ActivityReservation: React.FC = () => {
 
   const getList = async (values?: any) => {
     const res = await requestActivityLeadActivityList({ ...values });
-    setList([{}]);
     if (res) {
       const { list, total } = res;
       setList(list || []);
@@ -116,17 +115,19 @@ const ActivityReservation: React.FC = () => {
   }, []);
 
   return (
-    <Card title="销售线索">
+    <Card title="销售线索" bordered={false}>
       <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
       <Button type="primary" shape="round" onClick={addActivity}>
         创建活动
       </Button>
       <NgTable
         className="mt20"
+        rowKey="leadActivityId"
         loading={loading}
         columns={tableColumns({ toTop, view, putOrDown, getLink, delItem })}
         dataSource={list}
         scroll={{ x: 'max-content' }}
+        pagination={pagination}
         paginationChange={paginationChange}
       />
     </Card>

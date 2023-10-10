@@ -3,6 +3,8 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { SelectOrg } from '../../CustomerManage/components';
 import { ColumnsType } from 'antd/lib/table';
 import { Button } from 'antd';
+import classNames from 'classnames';
+import style from './style.module.less';
 
 export interface ISalesLeadRow {
   leadId: string; //  是 线索ID
@@ -27,6 +29,14 @@ export const leadStatus = [
   { id: 5, name: '再分配' }
 ];
 
+const leadStatusToOption: { [key: string]: string } = {
+  1: '分配',
+  2: '撤回',
+  3: '/',
+  4: '再分配',
+  5: '撤回'
+};
+
 // 搜索字段配置
 export const searchCols: SearchCol[] = [
   { name: 'channel', label: '渠道来源', type: 'input', placeholder: '' },
@@ -39,25 +49,25 @@ export const searchCols: SearchCol[] = [
     name: 'fromStaffName',
     label: '分享人',
     type: 'custom',
-    customNode: <SelectOrg />
+    customNode: <SelectOrg singleChoice />
   },
   {
     name: 'fromDeptId',
     label: '分享人组织架构',
     type: 'custom',
-    customNode: <SelectOrg type="dept" />
+    customNode: <SelectOrg type="dept" singleChoice />
   },
   {
     name: 'followName',
     label: '跟进人',
     type: 'custom',
-    customNode: <SelectOrg />
+    customNode: <SelectOrg singleChoice />
   },
   {
     name: 'followDept',
     label: '跟进人部门',
     type: 'custom',
-    customNode: <SelectOrg type="dept" />
+    customNode: <SelectOrg type="dept" singleChoice />
   },
   {
     name: 'createTimeBegin-createTimeEnd',
@@ -88,7 +98,7 @@ export const tableColumns: (edit: (row: ISalesLeadRow) => void) => ColumnsType<I
       dataIndex: 'fromFullDeptNmae',
       render (fromFullDeptNmae: string) {
         return (
-          <span className="ellipsis inline-block width280" title={fromFullDeptNmae}>
+          <span className={classNames(style.text, 'ellipsis inline-block width280')} title={fromFullDeptNmae}>
             {fromFullDeptNmae}
           </span>
         );
@@ -100,7 +110,7 @@ export const tableColumns: (edit: (row: ISalesLeadRow) => void) => ColumnsType<I
       dataIndex: 'followFullDeptName',
       render (followFullDeptName: string) {
         return (
-          <span className="ellipsis inline-block width280" title={followFullDeptName}>
+          <span className={classNames(style.text, 'ellipsis inline-block width280')} title={followFullDeptName}>
             {followFullDeptName}
           </span>
         );
@@ -113,12 +123,13 @@ export const tableColumns: (edit: (row: ISalesLeadRow) => void) => ColumnsType<I
       render (row: ISalesLeadRow) {
         return (
           /*
-          分配 => 待分配 - 1
-          撤回 => 已分配/自动分配/再分配 - [2,3,5]
-          再分配 => 撤回 - 4
+          分配操作 => 状态: 待分配 - 1
+          撤回操作 => 状态: 已分配/再分配 - [2,5]
+          再分配操作 => 状态: 撤回 - 4
+          状态为自动分配不能进行任何操作
            */
           <Button type="link" onClick={() => edit(row)}>
-            {`${row.status === 1 ? '分配' : row.status === 4 ? '再分配' : '撤回'}`}
+            {leadStatusToOption[row.status.toString()]}
           </Button>
         );
       }

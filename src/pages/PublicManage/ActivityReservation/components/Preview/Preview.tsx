@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Icon } from 'src/components';
 import style from './style.module.less';
 import classNames from 'classnames';
@@ -8,6 +8,7 @@ export interface IValue {
   liveQrCode?: string;
   /* 👆上面是群活码 👇下面是人工留资  */
   mainImgUrl?: string;
+  bgImgUrl?: string;
   needClientName?: 0 | 1;
   needPhone?: 0 | 1;
   needCarNumber?: 0 | 1;
@@ -20,6 +21,9 @@ interface IPreviewProps {
 }
 
 const Preview: React.FC<IPreviewProps> = ({ value, className, type }) => {
+  useEffect(() => {
+    console.log('value', value);
+  }, [value]);
   return (
     <div className={classNames(style.phoneWrap, className)}>
       <div className={style.inner}>
@@ -28,7 +32,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, type }) => {
           <div className={style.staffName}>客户经理</div>
           <Icon name="diandian" className={style.more}></Icon>
         </header>
-        <div className={classNames(style.content)}>
+        <div className={classNames(style.content)} style={{ backgroundImage: `url(${value?.bgImgUrl})` }}>
           {type === 1 && (
             <>
               <div className={style.mainImgUrl}>
@@ -48,7 +52,7 @@ const Preview: React.FC<IPreviewProps> = ({ value, className, type }) => {
           )}
           {type === 2 && (
             <>
-              <div className={style.banner}>
+              <div className={style.banner} style={{ backgroundImage: `url(${value?.mainImgUrl})` }}>
                 <div className={classNames(style.name, 'two-line-ellipsis')} title={value?.liveName}>
                   {value?.liveName}
                 </div>

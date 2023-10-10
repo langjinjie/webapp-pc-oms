@@ -109,6 +109,7 @@ export const searchStaffList: HttpFC<{
   searchType?: 1 | 2; // 1-部门 2-员工
   isDeleted?: 0 | 1; // 0-在职 1-离职
   isFull?: boolean; // 信息是否完善
+  isLeader?: 0 | 1; // 是否只查询领导，0-不是；1-是；默认为空
 }> = (param) => {
   return http.post('/tenacity-admin/api/stafforg/searchstaff', param);
 };

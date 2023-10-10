@@ -25,7 +25,7 @@ const { Item } = Form;
 
 /**
  * @description 选择活码组件
- * @param liveCodeType 1 | 2 活码类型 1-员工活码 2-群活码
+ * @param liveCodeType 活码类型 1-员工活码 2-群活码
  */
 const ChooseLiveCode: React.FC<ChooseLiveCodeProps> = ({ liveCodeType, value, onChange, className, disabled }) => {
   const [visible, setVisible] = useState(false);
@@ -68,20 +68,21 @@ const ChooseLiveCode: React.FC<ChooseLiveCodeProps> = ({ liveCodeType, value, on
     const res = await requestGetActivityLeadActivityLiveCodeList({ ...values, liveCodeType });
     if (res) {
       setList(res.list);
-      setPagination((pagination) => ({ ...pagination, total: res.total, current: values.pageNum || 1 }));
-      setFormVal(values);
+      setPagination((pagination) => ({ ...pagination, total: res.total, current: values?.pageNum || 1 }));
     }
     setTableLoading(false);
   };
 
   // 搜索
   const onFinishHandle = (values?: any) => {
-    getList(values).then(() => setSelectedRowKeys([]));
+    getList(values);
+    setFormVal(values);
   };
 
   // 重置
   const onResetHandle = () => {
-    getList().then(() => setSelectedRowKeys([]));
+    getList();
+    setFormVal({});
   };
 
   // 切换分页
@@ -135,6 +136,7 @@ const ChooseLiveCode: React.FC<ChooseLiveCodeProps> = ({ liveCodeType, value, on
         </Form>
         <NgTable
           className="mt20"
+          rowKey="liveId"
           scroll={{ x: 752 }}
           columns={[
             { title: '活码ID', dataIndex: 'liveId' },

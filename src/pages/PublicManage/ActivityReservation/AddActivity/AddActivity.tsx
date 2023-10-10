@@ -16,6 +16,34 @@ const { TextArea } = Input;
 const { Item } = Form;
 const { Group } = Radio;
 
+interface IChannelTagListProps {
+  channelTagList?: IChannelTagList[];
+  value?: IChannelTagList[];
+  onChange?: (value?: IChannelTagList[]) => void;
+}
+
+// 选择渠道标签
+const ChannelTagGroup: React.FC<IChannelTagListProps> = ({ channelTagList, value, onChange }) => {
+  const onChangeHandle = (tagItem: IChannelTagList) => {
+    onChange?.([tagItem]);
+  };
+
+  return (
+    <>
+      {(channelTagList || []).map((tagItem) => (
+        <Radio
+          key={tagItem.tagId}
+          value={tagItem.tagId}
+          checked={value?.some(({ tagId }) => tagId === tagItem.tagId)}
+          onClick={() => onChangeHandle(tagItem)}
+        >
+          {tagItem.tagName}
+        </Radio>
+      ))}
+    </>
+  );
+};
+
 const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
   const [type, setType] = useState<1 | 2>();
   const [channelTagList, setChannelTagList] = useState<IChannelTagList[]>([]);
@@ -49,12 +77,13 @@ const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const onValuesChange = (changedValues: { [key: string]: any }, values: { [key: string]: any }) => {
-    const { mainImgUrl, chooseNeed = [], liveCodeItem } = values;
+    const { bgImgUrl, mainImgUrl, liveCodeItem, needClientName, needPhone, needCarNumber } = values;
     setPreviewValue({
       mainImgUrl,
-      ...chooseNeed.reduce((prev: { [key: string]: any }, key: string) => {
-        return { ...prev, [key]: 1 };
-      }, {}),
+      bgImgUrl,
+      needClientName: needClientName?.[0],
+      needPhone: needPhone?.[0],
+      needCarNumber: needCarNumber?.[0],
       ...liveCodeItem
     });
     const keyList = Object.keys(changedValues);
@@ -92,9 +121,8 @@ const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
       ...liveCodeItem
     });
     if (res) {
-      console.log('res', res);
       message.success(`活动${leadActivityId ? '编辑' : '新增'}成功`);
-      history.push('');
+      history.push('/activityReservation');
     }
   };
 
@@ -134,11 +162,11 @@ const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
         </div>
         <div className={style.panel}>
           <div className={style.title}>配置活动</div>
-          {liveCodeType === 1 || (
-            <div className={style.preview}>
-              <Preview type={type} value={previewValue} />
-            </div>
-          )}
+          {/* {liveCodeType === 1 || ( */}
+          <div className={style.preview}>
+            <Preview type={type} value={previewValue} />
+          </div>
+          {/* )} */}
           <div className={style.content}>
             <Item
               label="上传背景图"
@@ -178,7 +206,7 @@ const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
             )}
             {/*  */}
             {type === 2 && (
-              <Item label="活码类型">
+              <Item label="活码类型" required>
                 <Item name="liveCodeType" noStyle>
                   <Select
                     className={classNames(style.select, 'width160')}
@@ -189,7 +217,7 @@ const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
                     placeholder="请选择活码类型"
                   />
                 </Item>
-                <Item name="liveCodeItem" noStyle>
+                <Item name="liveCodeItem" noStyle rules={[{ required: true, message: '请选择活码' }]}>
                   <ChooseLiveCode liveCodeType={liveCodeType} />
                 </Item>
               </Item>
@@ -205,13 +233,7 @@ const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
                   rules={[{ required: true, message: '请选择投放渠道' }]}
                   extra="*未找到适合的渠道，请联系管理员进行新增"
                 >
-                  <Radio.Group>
-                    {channelTagList.map((tagItem) => (
-                      <Radio key={tagItem.tagId} value={tagItem.tagId}>
-                        {tagItem.tagName}
-                      </Radio>
-                    ))}
-                  </Radio.Group>
+                  <ChannelTagGroup channelTagList={channelTagList} />
                 </Item>
                 <Item label="其他渠道标签" name="otherTagList">
                   <FilterChannelTag />

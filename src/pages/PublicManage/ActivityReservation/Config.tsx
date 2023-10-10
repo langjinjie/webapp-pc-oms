@@ -58,18 +58,15 @@ export const tableColumns: tableColumns = ({ toTop, view, putOrDown, getLink, de
       render (row) {
         return (
           <>
-            <Button type="link" onClick={() => toTop(row)}>
-              置顶
-            </Button>
+            <Popconfirm title={'确定置顶该活动吗？'} onConfirm={() => toTop(row)}>
+              <Button type="link">置顶</Button>
+            </Popconfirm>
             <Button type="link" onClick={() => view(row)}>
               查看
             </Button>
-            <Button type="link" onClick={() => putOrDown(row)}>
-              下架
-            </Button>
-            <Button type="link" onClick={() => putOrDown(row)}>
-              上架
-            </Button>
+            <Popconfirm title={`确定${row.status === 2 ? '下架' : '上架'}该活动吗？`} onConfirm={() => putOrDown(row)}>
+              <Button type="link">{`${row.status === 2 ? '下架' : '上架'}`}</Button>
+            </Popconfirm>
             <Button type="link" onClick={() => getLink(row)}>
               获取链接
             </Button>
