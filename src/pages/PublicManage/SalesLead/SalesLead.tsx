@@ -80,8 +80,10 @@ const SalesLead: React.FC = () => {
     状态:撤回            =>      操作:再分配   4      =>  3
   */
   const edit = async (row: ISalesLeadRow) => {
-    // 2,5 撤回,
     if (row.status === 3) return message.warn('自动分配不支持任何操作');
+    // 非批量操作
+    setIsBatch(false);
+    // 2,5 撤回,
     if (![2, 5].includes(row.status)) {
       setRecordItem(row);
       setVisible(true);
@@ -150,9 +152,11 @@ const SalesLead: React.FC = () => {
         paginationChange={paginationChange}
       />
       {list.length === 0 || (
-        <Button className={style.batchBtn} disabled={selectedRowKeys.length === 0} onClick={batchMan}>
-          批量分配
-        </Button>
+        <div className="operationWrap">
+          <Button className={style.batchBtn} disabled={selectedRowKeys.length === 0} onClick={batchMan}>
+            批量分配
+          </Button>
+        </div>
       )}
       <AllocationModal
         title={isBatch ? '销售线索批量分配' : '销售线索分配'}

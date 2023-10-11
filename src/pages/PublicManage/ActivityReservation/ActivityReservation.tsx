@@ -46,18 +46,15 @@ const ActivityReservation: React.FC = () => {
 
   // 置顶
   const toTop = async ({ leadActivityId }: IActivityRow) => {
-    console.log('置顶');
     const res = await requestTopActivityLeadActivity({ leadActivityId });
     if (res) {
-      console.log('res', res);
       getList({ ...formParam, pageNum: pagination.current, pageSize: pagination.pageSize });
+      message.success('置顶成功');
     }
   };
 
   // 查看
   const view = ({ leadActivityId }: IActivityRow) => {
-    // setRecordItem(row);
-    console.log('查看');
     history.push('/activityReservation/add?leadActivityId=' + leadActivityId);
   };
 
@@ -74,22 +71,17 @@ const ActivityReservation: React.FC = () => {
 
   // 获取链接
   const getLink = async ({ leadActivityId }: IActivityRow) => {
-    // setRecordItem(row);
-    console.log('获取链接');
     const res = await requestActivityLeadActivityShortUrl({ leadActivityId });
     if (res) {
-      console.log('res', res);
       copy(res.shortUrl);
     }
   };
 
   // 删除
   const delItem = async ({ leadActivityId }: IActivityRow) => {
-    console.log('删除');
     const { current, pageSize } = pagination;
     const res = await requestDelActivityLeadActivity({ leadActivityId });
     if (res) {
-      console.log('res', res);
       getList({ ...formParam, pageNum: list.length <= 1 ? current - 1 : current, pageSize });
       message.success('删除成功');
     }

@@ -5,6 +5,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { Button } from 'antd';
 import classNames from 'classnames';
 import style from './style.module.less';
+import { UNKNOWN } from 'src/utils/base';
 
 export interface ISalesLeadRow {
   leadId: string; //  是 线索ID
@@ -89,34 +90,70 @@ export const tableColumns: (edit: (row: ISalesLeadRow) => void) => ColumnsType<I
         return <>{leadStatus.find(({ id }) => id === status)?.name}</>;
       }
     },
-    { title: '客户昵称', dataIndex: 'nickName' },
-    { title: '手机号码', dataIndex: 'phone' },
-    { title: '车牌号', dataIndex: 'carNumber' },
-    { title: '分享人', dataIndex: 'fromStaffName' },
+    {
+      title: '客户昵称',
+      dataIndex: 'nickName',
+      render (nickName: string) {
+        return <>{nickName || UNKNOWN}</>;
+      }
+    },
+    {
+      title: '手机号码',
+      dataIndex: 'phone',
+      render (phone: string) {
+        return <>{phone || UNKNOWN}</>;
+      }
+    },
+    {
+      title: '车牌号',
+      dataIndex: 'carNumber',
+      render (carNumber: string) {
+        return <>{carNumber || UNKNOWN}</>;
+      }
+    },
+    {
+      title: '分享人',
+      dataIndex: 'fromStaffName',
+      render (fromStaffName: string) {
+        return <>{fromStaffName || UNKNOWN}</>;
+      }
+    },
     {
       title: '分享人组织架构',
       dataIndex: 'fromFullDeptNmae',
       render (fromFullDeptNmae: string) {
         return (
           <span className={classNames(style.text, 'ellipsis inline-block width280')} title={fromFullDeptNmae}>
-            {fromFullDeptNmae}
+            {fromFullDeptNmae || UNKNOWN}
           </span>
         );
       }
     },
-    { title: '跟进人', dataIndex: 'followName' },
+    {
+      title: '跟进人',
+      dataIndex: 'followName',
+      render (followName: string) {
+        return <>{followName || UNKNOWN}</>;
+      }
+    },
     {
       title: '跟进入组织架构',
       dataIndex: 'followFullDeptName',
       render (followFullDeptName: string) {
         return (
           <span className={classNames(style.text, 'ellipsis inline-block width280')} title={followFullDeptName}>
-            {followFullDeptName}
+            {followFullDeptName || UNKNOWN}
           </span>
         );
       }
     },
-    { title: '备注', dataIndex: 'remark' },
+    {
+      title: '备注',
+      dataIndex: 'remark',
+      render (remark?: string) {
+        return <>{remark || UNKNOWN}</>;
+      }
+    },
     {
       title: '操作',
       fixed: 'right',
