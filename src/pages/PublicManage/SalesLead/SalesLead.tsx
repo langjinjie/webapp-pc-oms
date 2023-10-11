@@ -1,6 +1,6 @@
 import React, { Key, useEffect, useState } from 'react';
 import { Button, Card, Modal as AntModal, message } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { ISalesLeadRow, searchCols, tableColumns } from './Config';
 import { IPagination } from 'src/utils/interface';
 import { requestActivityLeadList, requestManActivityLead } from 'src/apis/publicManage';
@@ -140,7 +140,9 @@ const SalesLead: React.FC = () => {
 
   return (
     <Card title="销售线索" bordered={false}>
-      <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
+      <AuthBtn path="/query">
+        <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
+      </AuthBtn>
       <NgTable
         columns={tableColumns(edit)}
         dataSource={list}
@@ -152,11 +154,13 @@ const SalesLead: React.FC = () => {
         paginationChange={paginationChange}
       />
       {list.length === 0 || (
-        <div className="operationWrap">
-          <Button className={style.batchBtn} disabled={selectedRowKeys.length === 0} onClick={batchMan}>
-            批量分配
-          </Button>
-        </div>
+        <AuthBtn path="/batchManage">
+          <div className="operationWrap">
+            <Button className={style.batchBtn} disabled={selectedRowKeys.length === 0} onClick={batchMan}>
+              批量分配
+            </Button>
+          </div>
+        </AuthBtn>
       )}
       <AllocationModal
         title={isBatch ? '销售线索批量分配' : '销售线索分配'}

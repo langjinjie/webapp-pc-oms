@@ -6,6 +6,7 @@ import { Button } from 'antd';
 import classNames from 'classnames';
 import style from './style.module.less';
 import { UNKNOWN } from 'src/utils/base';
+import { AuthBtn } from 'src/components';
 
 export interface ISalesLeadRow {
   leadId: string; //  是 线索ID
@@ -165,9 +166,11 @@ export const tableColumns: (edit: (row: ISalesLeadRow) => void) => ColumnsType<I
           再分配操作 => 状态: 撤回 - 4
           状态为自动分配不能进行任何操作
            */
-          <Button type="link" onClick={() => edit(row)}>
-            {leadStatusToOption[row.status.toString()]}
-          </Button>
+          <AuthBtn path="/manage">
+            <Button type="link" onClick={() => edit(row)}>
+              {leadStatusToOption[row.status.toString()]}
+            </Button>
+          </AuthBtn>
         );
       }
     }

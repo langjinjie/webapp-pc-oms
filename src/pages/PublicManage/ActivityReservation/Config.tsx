@@ -2,6 +2,7 @@ import React from 'react';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { ColumnsType } from 'antd/lib/table';
 import { Button, Popconfirm } from 'antd';
+import { AuthBtn } from 'src/components';
 
 export interface IActivityRow {
   leadActivityId: string; // 是 活动ID
@@ -58,21 +59,34 @@ export const tableColumns: tableColumns = ({ toTop, view, putOrDown, getLink, de
       render (row) {
         return (
           <>
-            <Popconfirm title={'确定置顶该活动吗？'} onConfirm={() => toTop(row)}>
-              <Button type="link">置顶</Button>
-            </Popconfirm>
-            <Button type="link" onClick={() => view(row)}>
-              查看
-            </Button>
-            <Popconfirm title={`确定${row.status === 2 ? '下架' : '上架'}该活动吗？`} onConfirm={() => putOrDown(row)}>
-              <Button type="link">{`${row.status === 2 ? '下架' : '上架'}`}</Button>
-            </Popconfirm>
-            <Button type="link" onClick={() => getLink(row)}>
-              获取链接
-            </Button>
-            <Popconfirm title="确定删除该活动吗？" onConfirm={() => delItem(row)}>
-              <Button type="link">删除</Button>
-            </Popconfirm>
+            <AuthBtn path="/top">
+              <Popconfirm title={'确定置顶该活动吗？'} onConfirm={() => toTop(row)}>
+                <Button type="link">置顶</Button>
+              </Popconfirm>
+            </AuthBtn>
+            <AuthBtn path="/view">
+              <Button type="link" onClick={() => view(row)}>
+                查看
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/manage">
+              <Popconfirm
+                title={`确定${row.status === 2 ? '下架' : '上架'}该活动吗？`}
+                onConfirm={() => putOrDown(row)}
+              >
+                <Button type="link">{`${row.status === 2 ? '下架' : '上架'}`}</Button>
+              </Popconfirm>
+            </AuthBtn>
+            <AuthBtn path="/getLink">
+              <Button type="link" onClick={() => getLink(row)}>
+                获取链接
+              </Button>
+            </AuthBtn>
+            <AuthBtn path="/delete">
+              <Popconfirm title="确定删除该活动吗？" onConfirm={() => delItem(row)}>
+                <Button type="link">删除</Button>
+              </Popconfirm>
+            </AuthBtn>
           </>
         );
       }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, message } from 'antd';
-import { NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
 import { IActivityRow, searchCols, tableColumns } from './Config';
 import { IPagination } from 'src/utils/interface';
 import { useHistory } from 'react-router-dom';
@@ -108,10 +108,14 @@ const ActivityReservation: React.FC = () => {
 
   return (
     <Card title="销售线索" bordered={false}>
-      <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
-      <Button type="primary" shape="round" onClick={addActivity}>
-        创建活动
-      </Button>
+      <AuthBtn path="/query">
+        <NgFormSearch searchCols={searchCols} onSearch={onSearch} />
+      </AuthBtn>
+      <AuthBtn path="/add">
+        <Button type="primary" shape="round" onClick={addActivity}>
+          创建活动
+        </Button>
+      </AuthBtn>
       <NgTable
         className="mt20"
         rowKey="leadActivityId"
