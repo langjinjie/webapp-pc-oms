@@ -42,7 +42,7 @@ type tableColumns = (param: {
 // Table表头配置
 export const tableColumns: tableColumns = ({ toTop, view, putOrDown, getLink, delItem }) => {
   return [
-    { title: '活动', dataIndex: 'leadActivityId' },
+    { title: '活动ID', dataIndex: 'leadActivityId' },
     { title: '活动名称', dataIndex: 'leadActivityName' },
     {
       title: '状态',
@@ -56,7 +56,7 @@ export const tableColumns: tableColumns = ({ toTop, view, putOrDown, getLink, de
     {
       title: '操作',
       fixed: 'right',
-      render (row) {
+      render (row: IActivityRow) {
         return (
           <>
             <AuthBtn path="/top">
