@@ -200,7 +200,7 @@ const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
             <Item
               label="上传背景图"
               name="bgImgUrl"
-              extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
+              // extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
               rules={[{ required: true, message: '请上传背景图' }]}
             >
               <ImageUpload disabled={!!leadActivityId} />
@@ -208,7 +208,7 @@ const AddActivity: React.FC<RouteComponentProps> = ({ history }) => {
             <Item
               label="上传主图"
               name="mainImgUrl"
-              extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
+              // extra="为确保最佳展示效果，请上传670*200像素高清图片，仅支持.jpg格式"
               rules={[{ required: true, message: '请上传上传主图' }]}
             >
               <ImageUpload disabled={!!leadActivityId} />
