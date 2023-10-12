@@ -3,6 +3,8 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { ColumnsType } from 'antd/lib/table';
 import { Button, Popconfirm } from 'antd';
 import { AuthBtn } from 'src/components';
+import classNames from 'classnames';
+import style from './style.module.less';
 
 export interface IActivityRow {
   leadActivityId: string; // 是 活动ID
@@ -43,7 +45,13 @@ type tableColumns = (param: {
 export const tableColumns: tableColumns = ({ toTop, view, putOrDown, getLink, delItem }) => {
   return [
     { title: '活动ID', dataIndex: 'leadActivityId' },
-    { title: '活动名称', dataIndex: 'leadActivityName' },
+    {
+      title: '活动名称',
+      dataIndex: 'leadActivityName',
+      render (leadActivityName: string) {
+        return <span className={classNames(style.leadActivityName, 'ellipsis inline-block')}>{leadActivityName}</span>;
+      }
+    },
     {
       title: '状态',
       dataIndex: 'status',

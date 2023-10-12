@@ -99,6 +99,13 @@ export const tableColumns: (edit: (row: ISalesLeadRow) => void) => ColumnsType<I
       }
     },
     {
+      title: '客户姓名',
+      dataIndex: 'clientName',
+      render (clientName: string) {
+        return <>{clientName || UNKNOWN}</>;
+      }
+    },
+    {
       title: '手机号码',
       dataIndex: 'phone',
       render (phone: string) {
