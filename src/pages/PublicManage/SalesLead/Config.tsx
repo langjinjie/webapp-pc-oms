@@ -17,7 +17,7 @@ export interface ISalesLeadRow {
   phone?: string; //  否 手机号码
   carNumber?: string; //  否 车牌号
   fromStaffName?: string; //  否 分享人
-  fromFullDeptNmae?: string; //  否 分享人部门全称
+  fromFullDeptName?: string; //  否 分享人部门全称
   followName?: string; //  否 跟进人
   followFullDeptName?: string; //  否 跟进人部门全称
   remark?: string; //  否 备注
@@ -121,11 +121,11 @@ export const tableColumns: (edit: (row: ISalesLeadRow) => void) => ColumnsType<I
     },
     {
       title: '分享人组织架构',
-      dataIndex: 'fromFullDeptNmae',
-      render (fromFullDeptNmae: string) {
+      dataIndex: 'fromFullDeptName',
+      render (fromFullDeptName: string) {
         return (
-          <span className={classNames(style.text, 'ellipsis inline-block width280')} title={fromFullDeptNmae}>
-            {fromFullDeptNmae || UNKNOWN}
+          <span className={classNames(style.text, 'ellipsis inline-block width280')} title={fromFullDeptName}>
+            {fromFullDeptName || UNKNOWN}
           </span>
         );
       }
