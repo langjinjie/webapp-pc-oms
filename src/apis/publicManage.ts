@@ -31,7 +31,7 @@ export const requestActivityLeadList: HttpFunction = (param) => {
  * @param remark string 否 分配/再分配时填写的备注原因
  */
 export const requestManActivityLead: HttpFunction = (param) => {
-  return http.post('/tenacity-admin/api/activity/lead/man', { fromType: 1, ...param });
+  return http.post('/tenacity-admin/api/activity/lead/man', param);
 };
 
 /**
