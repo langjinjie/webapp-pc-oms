@@ -20,7 +20,7 @@ const AllocationModal: React.FC<IAllocationModalProps> = ({ visible, title, onCl
 
   const onOkHandle = async () => {
     await form.validateFields();
-    await onOk(form.getFieldsValue());
+    onOk(form.getFieldsValue());
   };
 
   const onCloseHandle = () => {
@@ -42,10 +42,10 @@ const AllocationModal: React.FC<IAllocationModalProps> = ({ visible, title, onCl
       onOk={onOkHandle}
     >
       <Form form={form}>
-        <Item name="staffId" label="分配人员">
+        <Item name="staffId" label="分配人员" required rules={[{ required: true, message: '请选择分配人员' }]}>
           <SelectOrg type="staff" singleChoice isLeader={1} />
         </Item>
-        <Item name="remark" label="分配备注">
+        <Item name="remark" label="分配备注" required rules={[{ required: true, message: '请输入分配备注' }]}>
           <Input placeholder="请输入" />
         </Item>
       </Form>
