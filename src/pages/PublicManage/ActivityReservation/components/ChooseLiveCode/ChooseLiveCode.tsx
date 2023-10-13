@@ -45,7 +45,6 @@ const ChooseLiveCode: React.FC<ChooseLiveCodeProps> = ({ liveCodeType, value, on
 
   // 提交
   const onOk = () => {
-    console.log('value', value);
     setVisible(false);
     onChange?.(selectedRows);
   };
@@ -91,7 +90,7 @@ const ChooseLiveCode: React.FC<ChooseLiveCodeProps> = ({ liveCodeType, value, on
   };
 
   const rowSelection: any = {
-    hideSelectAll: false,
+    type: 'radio',
     selectedRowKeys: selectedRowKeys,
     onChange: (selectedRowKeys: string[], selectedRows: ILiveCodeItem[]) => {
       // 处理非本页选中的key的问题
