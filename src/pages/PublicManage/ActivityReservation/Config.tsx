@@ -49,7 +49,11 @@ export const tableColumns: tableColumns = ({ toTop, view, putOrDown, getLink, de
       title: '活动名称',
       dataIndex: 'leadActivityName',
       render (leadActivityName: string) {
-        return <span className={classNames(style.leadActivityName, 'ellipsis inline-block')}>{leadActivityName}</span>;
+        return (
+          <span className={classNames(style.leadActivityName, 'ellipsis inline-block')} title={leadActivityName}>
+            {leadActivityName}
+          </span>
+        );
       }
     },
     {
