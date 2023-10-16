@@ -90,9 +90,6 @@ export const TableColumns: TTableColumns = ({ putOrDown, edit, copy }) => {
             <Button type="link" onClick={() => edit(row)}>
               修改
             </Button>
-            <Button type="link" onClick={() => edit(row)}>
-              修改
-            </Button>
             <Button type="link" onClick={() => copy(row)}>
               复制
             </Button>
