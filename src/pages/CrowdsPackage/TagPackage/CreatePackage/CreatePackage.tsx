@@ -3,8 +3,13 @@ import { Button, Divider, Form, Input, message, Radio, Space, Spin } from 'antd'
 import { BreadCrumbs } from 'src/components';
 import { PlusOutlined } from '@ant-design/icons';
 import { RouteComponentProps } from 'react-router-dom';
-import { FilterTags, AddUserList, FilterClientAttr } from 'src/pages/CrowdsPackage/TagPackage/component';
-import { getAttrConfigOptions, requestCreatePackageRule, requestGetPackageRule } from 'src/apis/CrowdsPackage';
+import { FilterTags, AddUserList, FilterClientAttr, UploadExcel } from 'src/pages/CrowdsPackage/TagPackage/component';
+import {
+  getAttrConfigOptions,
+  requestCreatePackageRule,
+  requestGetPackageRule,
+  requestGetPackageDetail
+} from 'src/apis/CrowdsPackage';
 import qs from 'qs';
 import classNames from 'classnames';
 import styles from './style.module.less';
@@ -45,7 +50,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     type: 1,
     attrList: [{}]
   });
-
+  const [excelDetail, setExcelDetail] = useState<any>();
   const [addForm] = Form.useForm();
   const { List, Item } = Form;
 
@@ -154,6 +159,18 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     setReadOnly(true);
   };
 
+  // 获取人群包详情
+  const getExcelDetail = async () => {
+    const { packageId, packageType } = qs.parse(location.search, { ignoreQueryPrefix: true });
+    if (!packageId || packageType !== '3') return;
+    setLoading(true);
+    const res = await requestGetPackageDetail({ packageId });
+    if (res) {
+      setExcelDetail(res);
+    }
+    setLoading(false);
+  };
+
   const getAttrOptions = async () => {
     const res = await getAttrConfigOptions({});
     setAttrOptions(res || []);
@@ -163,6 +180,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     let isMounted = true;
     if (isMounted) {
       getDetail();
+      getExcelDetail();
       getAttrOptions();
     }
     return () => {
@@ -171,13 +189,13 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   const onValuesChange = (changedValues: any, values: any) => {
+    console.log(changedValues);
     setFormValues(values);
     // 对form进行重置法
     if (changedValues.type === 1) {
       addForm.setFieldsValue({
         attrList: [{}]
       });
-      console.log(changedValues);
     }
   };
   return (
@@ -203,176 +221,198 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             <Radio.Group disabled={readOnly}>
               <Radio value={1}>标签属性</Radio>
               <Radio value={2}>人员属性</Radio>
+              <Radio value={3}>手工导入文件</Radio>
             </Radio.Group>
           </Item>
 
           <div className="sectionTitle">分群规则</div>
-          <div className={styles.panel}>
-            <div className={styles.panelTitle}>
-              创建规则{' '}
-              <span className="color-danger ml20">
-                备注：
-                {formValues.type === 1
-                  ? '标签组内为交集，标签组与标签组之间为并集逻辑。'
-                  : '下方选择的属性逻辑上交集'}{' '}
-              </span>
-            </div>
-            <div className={styles.panelContent}>
-              {formValues.type === 1
-                ? (
-                <List
-                  name="ruleList"
-                  initialValue={[{ tagList: [] }]}
-                  rules={[{ validator, message: '请添加任务推送规则' }]}
-                >
-                  {(fields, { add, remove }, { errors }) => (
-                    <>
-                      {fields.map((field: any, index) => (
-                        <div key={field.key + index}>
-                          <Item name={[field.name, 'tagList']} rules={[{ validator, message: '请添加筛选标签' }]}>
-                            <FilterTags removeHandle={remove} fieldIndex={index} isTagFlat readOnly={readOnly} />
-                          </Item>
-                        </div>
-                      ))}
-                      <Button
-                        className={classNames(styles.addTagGroup, 'mt20')}
-                        onClick={() => add({})}
-                        disabled={readOnly}
-                        icon={<PlusOutlined />}
-                      >
-                        新增标签组
-                      </Button>
-                      <Form.ErrorList errors={errors} />
-                    </>
-                  )}
-                </List>
-                  )
-                : (
-                <List name="attrList" initialValue={[{}]}>
-                  {(fields, { add, remove }, { errors }) => (
-                    <div className={styles.attrWrap}>
-                      <p className="f14">选择人员</p>
-                      {fields.map(({ name }, index) => (
-                        <FilterClientAttr
-                          key={index + 'attr'}
-                          disabled={readOnly}
-                          formValues={formValues}
-                          index={index}
-                          name={name}
-                          options={attrOptions}
-                          remove={fields.length > 1 ? () => remove(index) : undefined}
-                        ></FilterClientAttr>
-                      ))}
-                      {
-                        <Button
-                          type="primary"
-                          className={classNames(styles.addTagGroup, 'mt20')}
-                          onClick={() => add({})}
-                          disabled={readOnly}
-                          icon={<PlusOutlined />}
-                          ghost
-                        >
-                          添加字段
-                        </Button>
-                      }
-                      <Form.ErrorList errors={errors} />
-                    </div>
-                  )}
-                </List>
-                  )}
-            </div>
-            <div className={styles.panelContent}>
-              <Form.Item
-                label="更新方式"
-                style={{ marginBottom: '0' }}
-                name="refreshType"
-                rules={[{ required: true, message: '请选择更新方式' }]}
-                extra={
-                  <div className="color-text-placeholder flex mt10">
-                    <div>备注：</div>
-                    <ul>
-                      <li>1、手动更新 当人群包生效后，点击更新进行数据更新</li>
-                      <li>2、每日更新 每日晚上均会进行更新</li>
-                    </ul>
-                  </div>
-                }
-              >
-                <Radio.Group disabled={readOnly}>
-                  <Radio value={2}>手动更新</Radio>
-                  <Radio value={1}>每日更新</Radio>
-                </Radio.Group>
-              </Form.Item>
-            </div>
-          </div>
-
-          {formValues.type === 1 && (
+          {formValues.type !== 3 && (
             <>
-              {/* 手工添加 */}
-              <div className="sectionTitle mt40">手工新增</div>
-              <div className={classNames(styles.panelContent, 'ml20')} style={{ width: '980px' }}>
-                <div className="flex justify-between align-center">
-                  <span>手工新增</span>
+              <div className={styles.panel}>
+                <div className={styles.panelTitle}>
+                  创建规则{' '}
+                  <span className="color-danger ml20">
+                    备注：
+                    {formValues.type === 1
+                      ? '标签组内为交集，标签组与标签组之间为并集逻辑。'
+                      : '下方选择的属性逻辑上交集'}{' '}
+                  </span>
                 </div>
-                <Divider style={{ margin: '14px 0' }}></Divider>
-                <Item name="addUserList">
-                  <AddUserList readOnly={readOnly} />
-                </Item>
-              </div>
-              <div className={classNames(styles.panelContent, 'ml20 mt20')} style={{ width: '980px' }}>
-                <div className="flex justify-between align-center">
-                  <span>手工排除</span>
+                <div className={styles.panelContent}>
+                  {formValues.type === 1
+                    ? (
+                    <List
+                      name="ruleList"
+                      initialValue={[{ tagList: [] }]}
+                      rules={[{ validator, message: '请添加任务推送规则' }]}
+                    >
+                      {(fields, { add, remove }, { errors }) => (
+                        <>
+                          {fields.map((field: any, index) => (
+                            <div key={field.key + index}>
+                              <Item name={[field.name, 'tagList']} rules={[{ validator, message: '请添加筛选标签' }]}>
+                                <FilterTags removeHandle={remove} fieldIndex={index} isTagFlat readOnly={readOnly} />
+                              </Item>
+                            </div>
+                          ))}
+                          <Button
+                            className={classNames(styles.addTagGroup, 'mt20')}
+                            onClick={() => add({})}
+                            disabled={readOnly}
+                            icon={<PlusOutlined />}
+                          >
+                            新增标签组
+                          </Button>
+                          <Form.ErrorList errors={errors} />
+                        </>
+                      )}
+                    </List>
+                      )
+                    : (
+                    <List name="attrList" initialValue={[{}]}>
+                      {(fields, { add, remove }, { errors }) => (
+                        <div className={styles.attrWrap}>
+                          <p className="f14">选择人员</p>
+                          {fields.map(({ name }, index) => (
+                            <FilterClientAttr
+                              key={index + 'attr'}
+                              disabled={readOnly}
+                              formValues={formValues}
+                              index={index}
+                              name={name}
+                              options={attrOptions}
+                              remove={fields.length > 1 ? () => remove(index) : undefined}
+                            ></FilterClientAttr>
+                          ))}
+                          {
+                            <Button
+                              type="primary"
+                              className={classNames(styles.addTagGroup, 'mt20')}
+                              onClick={() => add({})}
+                              disabled={readOnly}
+                              icon={<PlusOutlined />}
+                              ghost
+                            >
+                              添加字段
+                            </Button>
+                          }
+                          <Form.ErrorList errors={errors} />
+                        </div>
+                      )}
+                    </List>
+                      )}
                 </div>
-                <Divider style={{ margin: '14px 0' }}></Divider>
-                <Item name="excludeUserList">
-                  <AddUserList readOnly={readOnly} />
-                </Item>
+                <div className={styles.panelContent}>
+                  <Form.Item
+                    label="更新方式"
+                    style={{ marginBottom: '0' }}
+                    name="refreshType"
+                    rules={[{ required: true, message: '请选择更新方式' }]}
+                    extra={
+                      <div className="color-text-placeholder flex mt10">
+                        <div>备注：</div>
+                        <ul>
+                          <li>1、手动更新 当人群包生效后，点击更新进行数据更新</li>
+                          <li>2、每日更新 每日晚上均会进行更新</li>
+                        </ul>
+                      </div>
+                    }
+                  >
+                    <Radio.Group disabled={readOnly}>
+                      <Radio value={2}>手动更新</Radio>
+                      <Radio value={1}>每日更新</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                </div>
               </div>
-              <div className={classNames(styles.panelContent, 'ml20 mt20')} style={{ width: '980px' }}>
-                <Form.Item
-                  label="假客户模型是否参与计算"
-                  labelCol={{ span: 24 }}
-                  name="fakeClientComputed"
-                  initialValue={1}
-                  rules={[{ required: true, message: '请选择假客户模型是否参与计算' }]}
-                  extra={<div className="color-danger ml20">备注：选择“是”，则会将假客户模型的客户进行排除计算。</div>}
-                >
-                  <Radio.Group style={{ marginLeft: '20px' }} disabled={readOnly}>
-                    <Radio value={1}>是</Radio>
-                    <Radio value={0}>否</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                <Divider style={{ margin: 0 }} />
-                <Form.Item
-                  label="是否去重客户，一个客户仅给一个客户经理处理 "
-                  name="distinctClient"
-                  initialValue={1}
-                  labelCol={{ span: 24 }}
-                  rules={[{ required: true, message: '请选择是否去重客户' }]}
-                  extra={
-                    <div className="color-danger ml20">
-                      备注：选择“是”，如果有多个客户经理对应一个客户，会通过规则留下一个客户对应一个客户经理，不会正对一个客户生成多个客户经理的任务
+
+              {formValues.type === 1 && (
+                <>
+                  {/* 手工添加 */}
+                  <div className="sectionTitle mt40">手工新增</div>
+                  <div className={classNames(styles.panelContent, 'ml20')} style={{ width: '980px' }}>
+                    <div className="flex justify-between align-center">
+                      <span>手工新增</span>
                     </div>
-                  }
-                >
-                  <Radio.Group style={{ marginLeft: '20px' }} disabled={readOnly}>
-                    <Radio value={1}>是</Radio>
-                    <Radio value={0}>否</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                <Divider style={{ margin: 0 }} />
-                <Form.Item
-                  label="人群包是否计算领导（上级领导计算在内）："
-                  name="leaderComputed"
-                  initialValue={0}
-                  labelCol={{ span: 24 }}
-                  rules={[{ required: true, message: '请选择是否计算领导' }]}
-                >
-                  <Radio.Group style={{ marginLeft: '20px' }} disabled={readOnly}>
-                    <Radio value={1}>是</Radio>
-                    <Radio value={0}>否，仅计算客户经理</Radio>
-                  </Radio.Group>
-                </Form.Item>
+                    <Divider style={{ margin: '14px 0' }}></Divider>
+                    <Item name="addUserList">
+                      <AddUserList readOnly={readOnly} />
+                    </Item>
+                  </div>
+                  <div className={classNames(styles.panelContent, 'ml20 mt20')} style={{ width: '980px' }}>
+                    <div className="flex justify-between align-center">
+                      <span>手工排除</span>
+                    </div>
+                    <Divider style={{ margin: '14px 0' }}></Divider>
+                    <Item name="excludeUserList">
+                      <AddUserList readOnly={readOnly} />
+                    </Item>
+                  </div>
+                  <div className={classNames(styles.panelContent, 'ml20 mt20')} style={{ width: '980px' }}>
+                    <Form.Item
+                      label="假客户模型是否参与计算"
+                      labelCol={{ span: 24 }}
+                      name="fakeClientComputed"
+                      initialValue={1}
+                      rules={[{ required: true, message: '请选择假客户模型是否参与计算' }]}
+                      extra={
+                        <div className="color-danger ml20">备注：选择“是”，则会将假客户模型的客户进行排除计算。</div>
+                      }
+                    >
+                      <Radio.Group style={{ marginLeft: '20px' }} disabled={readOnly}>
+                        <Radio value={1}>是</Radio>
+                        <Radio value={0}>否</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                    <Divider style={{ margin: 0 }} />
+                    <Form.Item
+                      label="是否去重客户，一个客户仅给一个客户经理处理 "
+                      name="distinctClient"
+                      initialValue={1}
+                      labelCol={{ span: 24 }}
+                      rules={[{ required: true, message: '请选择是否去重客户' }]}
+                      extra={
+                        <div className="color-danger ml20">
+                          备注：选择“是”，如果有多个客户经理对应一个客户，会通过规则留下一个客户对应一个客户经理，不会正对一个客户生成多个客户经理的任务
+                        </div>
+                      }
+                    >
+                      <Radio.Group style={{ marginLeft: '20px' }} disabled={readOnly}>
+                        <Radio value={1}>是</Radio>
+                        <Radio value={0}>否</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                    <Divider style={{ margin: 0 }} />
+                    <Form.Item
+                      label="人群包是否计算领导（上级领导计算在内）："
+                      name="leaderComputed"
+                      initialValue={0}
+                      labelCol={{ span: 24 }}
+                      rules={[{ required: true, message: '请选择是否计算领导' }]}
+                    >
+                      <Radio.Group style={{ marginLeft: '20px' }} disabled={readOnly}>
+                        <Radio value={1}>是</Radio>
+                        <Radio value={0}>否，仅计算客户经理</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
+          {formValues.type === 3 && (
+            <>
+              <Form.Item name="importInfo" required rules={[{ required: true, message: '请上传文件' }]}>
+                <UploadExcel />
+              </Form.Item>
+              {/* {excelDetail && (<> */}
+              <div className="flex align-center">
+                <div>{excelDetail?.computeMsg || 'xxxx人群包文件已导入成功'}</div>
+                <Button className="ml10">删除</Button>
               </div>
+              <div>此次导入共计: {excelDetail?.clientNum || '3万行数据'}</div>
+              {/* </>)} */}
             </>
           )}
 

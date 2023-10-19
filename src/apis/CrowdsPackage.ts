@@ -92,4 +92,10 @@ export const getAttrConfigOptions: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/tag/package/attr/config', param);
 };
 
-//
+// 导入Excel文件
+export const exportExcel: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/file/upload', param, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 100000
+  });
+};
