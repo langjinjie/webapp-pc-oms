@@ -8,11 +8,13 @@ import {
   getAttrConfigOptions,
   requestCreatePackageRule,
   requestGetPackageRule,
-  requestGetPackageDetail
+  requestGetPackageDetail,
+  requestGetDelPackageExcel
 } from 'src/apis/CrowdsPackage';
 import qs from 'qs';
 import classNames from 'classnames';
 import styles from './style.module.less';
+import { computedOptions } from '../Config';
 
 interface IReqRuleItem {
   tagList: IReqTagListItem[];
@@ -63,6 +65,10 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  const { packageId, packageType } = qs.parse(location.search, { ignoreQueryPrefix: true }) as {
+    [key: string]: string;
+  };
+
   const onFinishHandle = async (values?: any) => {
     setSubmitLoading(true);
     // 格式化提交的数据
@@ -77,8 +83,8 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
       leaderComputed,
       ...otherValue
     } = values;
-    console.log(type, values);
     let params = {};
+    // type === 1
     if (type === 1) {
       params = {
         ...otherValue,
@@ -112,13 +118,23 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
         },
         type
       };
-    } else {
+      // type === 2
+    } else if (type === 2) {
       params = {
         ...otherValue,
         type,
         attrInfo: {
           attrList
         }
+      };
+      // type === 3
+    } else {
+      params = {
+        ...otherValue,
+        type,
+        importInfo: otherValue.importInfo && { filePath: otherValue.importInfo },
+        refreshType: 2,
+        packageId
       };
     }
     const res = await requestCreatePackageRule(params);
@@ -131,14 +147,12 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 获取详情
   const getDetail = async () => {
-    const { packageId } = qs.parse(location.search, { ignoreQueryPrefix: true });
-    if (!packageId) return;
+    if (!packageId || packageType === '3') return;
     setLoading(true);
     const res = await requestGetPackageRule({ packageId });
     if (res) {
       // 处理ruleList
       const { ruleInfo, type, attrInfo, ...otherValues } = res;
-      console.log({ type });
       if (type === 1) {
         const ruleList = ruleInfo.ruleList.map((tagList: IResRuleItem) => ({
           tagList: [...tagList.interestTagList, ...tagList.factTagList, ...tagList.carTagList].map(
@@ -161,12 +175,14 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 获取人群包详情
   const getExcelDetail = async () => {
-    const { packageId, packageType } = qs.parse(location.search, { ignoreQueryPrefix: true });
     if (!packageId || packageType !== '3') return;
     setLoading(true);
     const res = await requestGetPackageDetail({ packageId });
     if (res) {
+      const { packageType, ...otherValues } = res;
       setExcelDetail(res);
+      setFormValues({ ...otherValues, type: packageType });
+      addForm.setFieldsValue({ ...otherValues, type: packageType });
     }
     setLoading(false);
   };
@@ -174,6 +190,15 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   const getAttrOptions = async () => {
     const res = await getAttrConfigOptions({});
     setAttrOptions(res || []);
+  };
+
+  // 删除人群包已上传的文件
+  const delExcel = async () => {
+    const res = await requestGetDelPackageExcel({ packageId });
+    if (res) {
+      message.success('人群包文件删除成功');
+      getExcelDetail();
+    }
   };
 
   useEffect(() => {
@@ -189,7 +214,6 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   const onValuesChange = (changedValues: any, values: any) => {
-    console.log(changedValues);
     setFormValues(values);
     // 对form进行重置法
     if (changedValues.type === 1) {
@@ -218,7 +242,7 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
             <Input.TextArea className="width420" placeholder="请输入" maxLength={200} showCount readOnly={readOnly} />
           </Item>
           <Item label="选择分群类型" name="type">
-            <Radio.Group disabled={readOnly}>
+            <Radio.Group disabled={readOnly || !!packageId}>
               <Radio value={1}>标签属性</Radio>
               <Radio value={2}>人员属性</Radio>
               <Radio value={3}>手工导入文件</Radio>
@@ -403,16 +427,34 @@ const CreateGroup: React.FC<RouteComponentProps> = ({ history }) => {
 
           {formValues.type === 3 && (
             <>
-              <Form.Item name="importInfo" required rules={[{ required: true, message: '请上传文件' }]}>
-                <UploadExcel />
+              <Form.Item name="importInfo" noStyle>
+                <UploadExcel
+                  onDownload={() =>
+                    (location.href =
+                      'https://insure-prod-server-1305111576.cos.ap-guangzhou.myqcloud.com/file/pack/%E4%BA%BA%E7%BE%A4%E5%8C%85%E5%AF%BC%E5%85%A5%E6%96%87%E4%BB%B6%E6%A8%A1%E6%9D%BF.xlsx')
+                  }
+                />
               </Form.Item>
-              {/* {excelDetail && (<> */}
-              <div className="flex align-center">
-                <div>{excelDetail?.computeMsg || 'xxxx人群包文件已导入成功'}</div>
-                <Button className="ml10">删除</Button>
-              </div>
-              <div>此次导入共计: {excelDetail?.clientNum || '3万行数据'}</div>
-              {/* </>)} */}
+              <span className="inline-block ml10">{formValues.importInfo}</span>
+              {excelDetail && (
+                <>
+                  <div className="flex align-center mt10">
+                    <i
+                      className={classNames('status-point', {
+                        'status-point-gray': excelDetail.computeStatus === 1,
+                        'status-point-green': excelDetail.computeStatus === 2,
+                        'status-point-red': excelDetail.computeStatus === 3
+                      })}
+                    />
+                    {computedOptions.find((item) => item.id === excelDetail.computeStatus)?.name}
+                    <div className="ml10">{excelDetail?.computeMsg}</div>
+                    <Button className="ml10" disabled={excelDetail.computeStatus !== 2} onClick={delExcel}>
+                      删除
+                    </Button>
+                  </div>
+                  <div className="mt10">此次导入共计: {`${excelDetail?.clientNum || 0}行数据`}</div>
+                </>
+              )}
             </>
           )}
 

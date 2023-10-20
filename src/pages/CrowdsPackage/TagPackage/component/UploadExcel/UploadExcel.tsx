@@ -18,11 +18,12 @@ const UploadExcel: React.FC<IExport> = ({ value, onChange, onOk, onDownload }) =
     const uploadData = new FormData();
     // 调用append()方法来添加数据
     uploadData.append('file', file);
-    uploadData.append('bizKey', 'excel-EXCEL');
+    uploadData.append('bizKey', 'excel');
     const res = await exportExcel(uploadData);
     if (res) {
       onChange?.(res.filePath);
       onOk?.(res.filePath);
+      setVisible(false);
     }
   };
 

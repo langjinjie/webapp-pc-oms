@@ -229,7 +229,8 @@ export const tableColumnsFun: TTableColumnsFun = ({
                 <Button
                   type="link"
                   loading={btnLoadingPackageId.compute === record.packageId}
-                  disabled={record.computeStatus === 1}
+                  // 手工导入文件的人群包不支持点击计算
+                  disabled={record.packageType === 3 || record.computeStatus === 1}
                   onClick={() => computeHandle(record)}
                 >
                   点击计算

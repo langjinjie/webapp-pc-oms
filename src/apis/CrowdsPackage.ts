@@ -99,3 +99,10 @@ export const exportExcel: HttpFunction = (param) => {
     timeout: 100000
   });
 };
+
+// 人群包文件删除接口
+export const requestGetDelPackageExcel: HttpFunction<{
+  packageId: string; //  是 人群包id，仅支持手工导入文件类型的人群包
+}> = (param) => {
+  return http.post('/tenacity-admin/api/tag/package/delFile', param);
+};

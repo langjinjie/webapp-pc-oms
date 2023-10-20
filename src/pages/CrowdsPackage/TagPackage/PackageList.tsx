@@ -105,7 +105,9 @@ const TagGroupList: React.FC<RouteComponentProps> = ({ history }) => {
   const viewDetail = ({ packageId, packageType }: ICrowdsPackageRow) => {
     // 分群类型，1-标签属性；2-人员属性；3-手工导入文件
     if (packageType === 3) {
-      history.push('/tagPackage/create?packageId=' + packageId + '&packageType=' + packageType);
+      history.push('/tagPackage/create?packageId=' + packageId + '&packageType=' + packageType, {
+        navList: [{ name: '标签分群', path: '/tagPackage' }, { name: '分群详情' }]
+      });
     } else {
       history.push('/tagPackage/detail?packageId=' + packageId);
     }
