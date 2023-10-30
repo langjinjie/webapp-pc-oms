@@ -1,13 +1,17 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
-import { OnOperateType } from 'src/utils/interface';
 import { Button } from 'antd';
 
 interface ChannelType {
   id: string;
 }
 
-export const tableColumnsFun = (onOperate: OnOperateType): ColumnsType<ChannelType> => {
+type TTableColumnsFun = (args: {
+  onOperate: (row: any) => void;
+  addNotice: (row: any) => void;
+}) => ColumnsType<ChannelType>;
+
+export const tableColumnsFun: TTableColumnsFun = ({ onOperate, addNotice }) => {
   return [
     {
       title: '序号',
@@ -42,13 +46,14 @@ export const tableColumnsFun = (onOperate: OnOperateType): ColumnsType<ChannelTy
     {
       title: '操作',
       width: 150,
+      fixed: 'right',
       render: () => {
         return (
           <>
             <Button type="link" onClick={() => onOperate('edit')}>
               编辑
             </Button>
-            <Button type="link" onClick={() => onOperate('edit')}>
+            <Button type="link" onClick={() => addNotice('edit')}>
               添加通知人
             </Button>
           </>
