@@ -119,7 +119,6 @@ type colargsType = {
 const columns = (args: colargsType): ColumnsType<Article> => {
   const { handleEdit, changeItemStatus, viewItem, deleteItem, handleTop, setRight } = args;
   const { isMainCorp } = useContext(Context);
-  console.log(isMainCorp);
 
   // if (isMainCorp) {
   return [

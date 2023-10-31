@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Button, message, Modal, Space } from 'antd';
-
+import ChannelModal from './Components/ChannelModal';
 import {
   getNewsList,
   operateArticleStatus,
@@ -44,6 +44,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visible, toggleVisible] = useState(false);
   const [htmlStr, setHtmlStr] = useState('');
   const [currentItem, setCurrentItem] = useState<Article | null>();
+  const [downArticleVisible, setDownArticleVisible] = useState<boolean>(true);
 
   // 批量设置权限的状态
   const [selectRows, setSelectRows] = useState<Article[]>();
@@ -317,6 +318,12 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  // 下载文章链接
+  const downArticleOnOk = (channelId: string) => {
+    console.log('downArticleOnOk', channelId);
+    setDownArticleVisible(false);
+  };
+
   return (
     <div className={classNames(style.wrap, 'container')}>
       {/* Form 表单查询 start */}
@@ -333,6 +340,9 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
           添加
         </Button>
       </AuthBtn>
+      <Button className="ml20" type="primary" shape="round" onClick={() => setDownArticleVisible(true)}>
+        下载文章链接
+      </Button>
       <AuthBtn path="/query">
         <div className={'pt20'}>
           <NgFormSearch
@@ -417,6 +427,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         onOk={confirmSetRight}
         onCancel={() => setVisibleSetUserRight(false)}
       />
+      <ChannelModal visible={downArticleVisible} onCancel={() => setDownArticleVisible(false)} onOk={downArticleOnOk} />
     </div>
   );
 };
