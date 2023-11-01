@@ -6,7 +6,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Input, Button, Space, Tabs } from 'antd';
-import { NgModal, Icon } from 'src/components';
+import { NgModal, Icon, ITagFilterValue } from 'src/components';
 import { queryTagList, searchTagByTagName as searchTagList } from 'src/apis/task';
 import { TagCategory, TagItem } from 'src/utils/interface';
 import EmptyTag from './EmptyTag';
@@ -16,14 +16,14 @@ import style from './style.module.less';
 const { Search } = Input;
 
 interface TagFilterProps {
-  value?: { logicType: 1 | 2; tagList: TagItem[] };
-  onChange?: (value?: { logicType: 1 | 2; tagList: TagItem[] }) => void;
+  value?: ITagFilterValue;
+  onOk?: (value?: ITagFilterValue) => void;
   visible: boolean;
   className?: string;
   onClose: () => void;
 }
 
-const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose, ...props }) => {
+const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onOk, onClose, ...props }) => {
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [logicType, setLogicType] = useState<1 | 2>(2);
   const [attrTagList, setAttrTagList] = useState<TagCategory[]>([]);
@@ -129,35 +129,12 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onChange, onClose
     } else {
       newChooseTags = [...newChooseTags, tagItem];
     }
-    // if (curGroupItem) {
-    //   // 判断该标签组中的标签是否被选中
-    //   if (curGroupItem.tagList.some((tag) => tag.tagId === tagItem.tagId)) {
-    //     curGroupItem.tagList = curGroupItem.tagList.filter((filterItem) => filterItem.tagId !== tagItem.tagId);
-    //   } else {
-    //     curGroupItem.tagList = [...curGroupItem.tagList, { tagId: tagItem.tagId, tagName: tagItem.tagName }];
-    //   }
-    // } else {
-    //   const newGroupItem: TagGroup = {
-    //     displayType: tagItem.displayType || 0,
-    //     groupId: tagItem.groupId || '',
-    //     groupName: tagItem.groupName || '',
-    //     tagList: [
-    //       {
-    //         tagId: tagItem.tagId,
-    //         tagName: tagItem.tagName
-    //       }
-    //     ]
-    //   };
-    //   newChooseTags = [...newChooseTags, newGroupItem];
-    // }
-    // 过滤掉tagList为空数组的
-    // newChooseTags = newChooseTags.filter((newItem) => newItem.tagList && newItem.tagList.length);
     setChooseTags(newChooseTags);
   };
 
   // 确定
   const onOkHandle = () => {
-    onChange?.({ logicType, tagList: chooseTags });
+    onOk?.({ logicType, tagList: chooseTags });
   };
 
   // 取消选择

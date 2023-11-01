@@ -1,9 +1,9 @@
 import React from 'react';
-import { /* Button, */ Form } from 'antd';
+import { Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, TagFilterComponent } from 'src/components';
 import { UNKNOWN } from 'src/utils/base';
-import { SelectStaff, TagModal } from 'src/pages/StaffManage/components';
+import { SelectStaff } from 'src/pages/StaffManage/components';
 import { TagItem } from 'src/utils/interface';
 import style from './style.module.less';
 import classNames from 'classnames';
@@ -59,7 +59,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: '1' | '2') =
       label: '客户标签',
       customNode: (
         <Form.Item key={'filterTag'} name="filterTag" label="客户标签">
-          <TagModal key={1} />
+          <TagFilterComponent key={1} />
         </Form.Item>
       )
     },

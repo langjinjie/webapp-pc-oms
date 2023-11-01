@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
 import { Avatar, Button, Form } from 'antd';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { TagModal } from 'src/pages/StaffManage/components';
+import { TagFilterComponent, AuthBtn } from 'src/components';
 import { SelectOrg } from 'src/pages/CustomerManage/components';
 import { UserOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
@@ -10,7 +10,6 @@ import { UNKNOWN } from 'src/utils/base';
 import { TagItem } from 'src/utils/interface';
 import classNames from 'classnames';
 import style from './style.module.less';
-import { AuthBtn } from 'src/components';
 
 /**
  * 部门类型id及名称对照
@@ -52,7 +51,7 @@ export const searchCols: SearchCol[] = [
     label: '客户标签',
     customNode: (
       <Form.Item key={'filterTag'} name="filterTag" label="客户标签">
-        <TagModal key={1} />
+        <TagFilterComponent key={1} />
       </Form.Item>
     )
   },
