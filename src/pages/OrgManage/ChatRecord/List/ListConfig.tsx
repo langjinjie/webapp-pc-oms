@@ -28,7 +28,7 @@ export const searchCols: SearchCol[] = [
     width: '160px'
   },
   {
-    name: 'staffName',
+    name: 'staffList',
     type: 'custom',
     width: '160px',
     label: '客户经理',

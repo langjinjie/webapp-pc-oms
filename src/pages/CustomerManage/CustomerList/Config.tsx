@@ -65,9 +65,9 @@ export const searchCols: SearchCol[] = [
     customNode: <SelectOrg />
   },
   {
-    name: 'staffList',
+    name: 'orgDept',
     type: 'custom',
-    label: '',
+    label: '所属客户经理组织架构',
     placeholder: '请输入',
     customNode: <SelectOrg key={2} type="dept" checkabledDTypeKeys={[2, 3, 4, 5]} />
   }

@@ -25,7 +25,7 @@ export const transferStatusList = [
 export const searchCols: () => SearchCol[] = () => {
   return [
     {
-      name: 'staffName',
+      name: 'staffList',
       type: 'custom',
       label: '所属客户经理',
       customNode: <SelectStaff type="staff" />
