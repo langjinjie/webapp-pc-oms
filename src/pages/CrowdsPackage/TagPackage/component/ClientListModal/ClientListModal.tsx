@@ -1,9 +1,8 @@
 import React, { Key, useEffect, useState } from 'react';
 import { Button, DatePicker, Form, Input, Modal, PaginationProps, Tag } from 'antd';
-import { NgTable } from 'src/components';
+import { NgTable, TagFilterComponent } from 'src/components';
 import { TableColumnsFun, IList, orgDeptType2Name } from './Config';
 import { requestGetClientList } from 'src/apis/customerManage';
-import { TagModal } from 'src/pages/StaffManage/components';
 
 import style from './style.module.less';
 import { SelectOrg } from 'src/pages/CustomerManage/components';
@@ -143,7 +142,7 @@ const ClientListModal: React.FC<IClientListModalProps> = ({ value, onChange, vis
             <Input placeholder="请输入" className={style.inpiut} />
           </Item>
           <Item name="filterTag" label="客户标签">
-            <TagModal className={style.select} />
+            <TagFilterComponent className={style.select} />
           </Item>
           <Item label="加好友时间" name="addTime">
             <RangePicker className={style.rangePicker} />

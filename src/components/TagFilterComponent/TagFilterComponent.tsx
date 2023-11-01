@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input } from 'antd';
 import TagFilterModal from './TagFilterModal';
 import { TagItem } from 'src/utils/interface';
@@ -7,18 +7,23 @@ import { Icon } from 'src/components';
 import styles from './tag.module.less';
 import classNames from 'classnames';
 
-interface ComponentsProps {
-  onChange?: (value?: { logicType: 1 | 2; tagList: TagItem[] }) => void;
-  value?: { logicType: 1 | 2; tagList: TagItem[] };
+export interface ITagFilterValue {
+  logicType?: 1 | 2;
+  tagList: TagItem[];
+}
+
+interface ITagFilterComponentProps {
+  onChange?: (value?: ITagFilterValue) => void;
+  value?: ITagFilterValue;
   className?: string;
 }
-const TagFilterComponents: React.FC<ComponentsProps> = (props) => {
-  const { value, onChange, className } = props;
+const TagFilterComponents: React.FC<ITagFilterComponentProps> = ({ value, onChange, className }) => {
   const [visible, setVisible] = useState(false);
-  const filterClients = (tag: { logicType: 1 | 2; tagList: TagItem[] }) => {
-    // setTag(tag);
+
+  const handleOk = (tag?: ITagFilterValue) => {
+    onChange?.(tag);
+    console.log(111);
     setVisible(false);
-    onChange && onChange(tag);
   };
 
   // 取消选择
@@ -26,9 +31,6 @@ const TagFilterComponents: React.FC<ComponentsProps> = (props) => {
     onChange?.(undefined);
   };
 
-  useEffect(() => {
-    value && filterClients(value);
-  }, [value]);
   const onClose = () => {
     setVisible(false);
   };
@@ -48,15 +50,12 @@ const TagFilterComponents: React.FC<ComponentsProps> = (props) => {
         placeholder="请选择"
       />
       <TagFilterModal
-        // chooseTag={(tags: { logicType: 1 | 2; tagList: TagGroup[] }) => {
-        //   filterClients(tags);
-        // }}
         value={value}
         visible={visible}
         onClose={() => {
           onClose();
         }}
-        onChange={onChange}
+        onOk={handleOk}
       />
     </>
   );
