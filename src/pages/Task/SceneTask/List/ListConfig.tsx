@@ -1,8 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { AuthBtn } from 'src/components';
+import { SearchCol, AuthBtn } from 'src/components';
 
 export const searchCols: SearchCol[] = [
   {

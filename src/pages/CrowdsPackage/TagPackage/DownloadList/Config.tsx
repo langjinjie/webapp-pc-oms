@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, message } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol } from 'src/components';
 import { UNKNOWN, exportFile } from 'src/utils/base';
 import { requestDownloadPackageFile } from 'src/apis/CrowdsPackage';
 import classNames from 'classnames';

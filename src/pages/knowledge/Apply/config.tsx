@@ -1,8 +1,8 @@
 import { Button, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React from 'react';
-import { AuthBtn } from 'src/components';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { AuthBtn, SearchCol } from 'src/components';
+
 import { UNKNOWN } from 'src/utils/base';
 
 const auditStatus = [

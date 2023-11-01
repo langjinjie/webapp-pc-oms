@@ -1,12 +1,11 @@
 import React, { useContext } from 'react';
 // import classNames from 'classnames';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, AuthBtn } from 'src/components';
 import { Button, Space, Tooltip, Modal, message } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { AuthBtn } from 'src/components';
 import { Context } from 'src/store';
 import { operateSpeechStatus } from 'src/apis/salesCollection';
 import ParseEmoji from './Components/Emoji/parseEmoji';

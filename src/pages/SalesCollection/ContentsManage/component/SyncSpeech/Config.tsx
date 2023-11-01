@@ -1,6 +1,6 @@
 import React /* , { useContext } */ from 'react';
 // import classNames from 'classnames';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol } from 'src/components';
 import { /* Button, Space,  */ Tooltip /* , Modal, message */ } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';

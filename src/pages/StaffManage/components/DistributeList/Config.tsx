@@ -1,5 +1,4 @@
 import React from 'react';
-import { Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol, TagFilterComponent } from 'src/components';
 import { UNKNOWN } from 'src/utils/base';
@@ -45,11 +44,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: '1' | '2') =
       type: 'custom',
       label: '所属客户经理',
       placeholder: '请输入',
-      customNode: (
-        <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-          <SelectStaff key={1} isDeleted={distributeLisType === '1' ? 0 : 1} />
-        </Form.Item>
-      )
+      customNode: <SelectStaff isDeleted={distributeLisType === '1' ? 0 : 1} />
     },
     // 搜索自定义Form表单
     {
@@ -57,11 +52,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: '1' | '2') =
       type: 'custom',
       width: 140,
       label: '客户标签',
-      customNode: (
-        <Form.Item key={'filterTag'} name="filterTag" label="客户标签">
-          <TagFilterComponent key={1} />
-        </Form.Item>
-      )
+      customNode: <TagFilterComponent key={1} />
     },
     {
       name: 'addBeginTime-addEndTime',

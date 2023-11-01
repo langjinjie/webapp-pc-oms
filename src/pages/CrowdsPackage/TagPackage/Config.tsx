@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, message, Modal, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, AuthBtn } from 'src/components';
 import { useHistory } from 'react-router';
 import {
   requestManagePackageRun,
@@ -11,7 +11,6 @@ import {
 } from 'src/apis/CrowdsPackage';
 import classNames from 'classnames';
 import { UNKNOWN } from 'src/utils/base';
-import { AuthBtn } from 'src/components';
 
 interface ICrowdsPackageRow {
   packageId: string; // 是 分群ID
