@@ -166,6 +166,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
     info: any
   ) => {
     let checked: Key[] = [];
+    let newSelectedList = [...selectedList];
 
     if (checkStrictly) {
       checked = (
@@ -174,61 +175,69 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
           halfChecked: Key[];
         }
       ).checked;
+      newSelectedList = info.checked
+        ? [...newSelectedList, info.node]
+        : newSelectedList.filter(({ id }) => id !== info.node.id);
     } else {
       checked = checke as Key[];
-    }
-    let newSelectedList = [...selectedList];
-    setCheckedKeys(singleChoice ? [checked[checked.length - 1]] : checked);
-    // 只选择员工
-    if (selectedType === 'staff') {
-      // 如果点击的是部门
-      if (!info.node.staffId) {
-        // 获取该部门下的所有员工
-        const res = await requestGetDepStaffList({
-          queryType: 1,
-          deptType: 0,
-          deptId: info.node.id,
-          pageSize: 9999,
-          isDeleted
-        });
-        res.list.forEach((item: any) => {
-          item.id = item.staffId;
-          item.name = item.staffName;
-          item.isLeaf = true;
-        });
-        // 判断是选中还是取消
-        if (info.checked) {
-          const selectedListKeys = selectedList.map((mapItem) => mapItem.id);
-          newSelectedList = [
-            ...newSelectedList,
-            ...res.list.filter((filterItem: { id: string }) => !selectedListKeys.includes(filterItem.id))
-          ];
+      // 只选择员工
+      if (selectedType === 'staff') {
+        if (!info.node.staffId) {
+          // 如果点击的是部门: 获取该部门下的所有员工
+          const res = await requestGetDepStaffList({
+            queryType: 1,
+            deptType: 0,
+            deptId: info.node.id,
+            pageSize: 9999,
+            isDeleted
+          });
+          res.list.forEach((item: any) => {
+            item.id = item.staffId;
+            item.name = item.staffName;
+            item.isLeaf = true;
+          });
+          // 判断是选中还是取消
+          if (info.checked) {
+            const selectedListKeys = selectedList.map((mapItem) => mapItem.id);
+            newSelectedList = [
+              ...newSelectedList,
+              ...res.list.filter((filterItem: { id: string }) => !selectedListKeys.includes(filterItem.id))
+            ];
+          } else {
+            const resListKeys = res.list.map((mapItem: { id: string }) => mapItem.id);
+            newSelectedList = newSelectedList.filter((filterItem) => !resListKeys.includes(filterItem.id));
+          }
         } else {
-          const resListKeys = res.list.map((mapItem: { id: string }) => mapItem.id);
-          newSelectedList = newSelectedList.filter((filterItem) => !resListKeys.includes(filterItem.id));
+          // 点击的是员工
+          if (info.checked) {
+            // 选择单个员工
+            newSelectedList = [...newSelectedList, { ...info.node }];
+          } else {
+            // 取消选择按个员工,需要将祖先部门也取消选中
+            newSelectedList = newSelectedList.filter(
+              (filterItem) => !(filterItem.id === info.node.id || info.node.fullDeptId.includes(filterItem.id))
+            );
+          }
         }
       } else {
-        if (info.checked) {
-          // 选择单个员工
-          newSelectedList = [...newSelectedList, { ...info.node }];
-        } else {
-          // 取消选择按个员工,需要将祖先部门也取消选中
+        if (!info.checked && !info.node.staffId) {
+          // 取消勾选部门
+          // 如果点击的是部门并且是取消选中，则需要过滤掉该部门下面的所有的部门员工,它的祖先部门也要被取消选择
           newSelectedList = newSelectedList.filter(
-            (filterItem) => !(filterItem.id === info.node.id || info.node.fullDeptId.includes(filterItem.id))
+            (item) =>
+              !item.fullDeptId?.split(',').includes(info.node.id) && !info.node.fullDeptId.split(',').includes(item.id)
           );
+        } else {
+          // 包含两种情况:1.选中部门;2.选中/取消员工
+          // 将不在树中的单独拎出来放在新的选中列表中,然后再使用checked来过滤添加到新的选中列表中
+          newSelectedList = [
+            ...selectedList.filter((filterItem) => !flatTreeData.some(({ id }) => id === filterItem.id)),
+            ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
+          ];
         }
       }
-    } else {
-      if (!info.checked && !info.node.staffId) {
-        // 如果点击的是部门并且是取消选中，则需要过滤掉该部门下面的所有的部门
-        newSelectedList = newSelectedList.filter((item) => !item.fullDeptId?.split(',').includes(info.node.id));
-      } else {
-        newSelectedList = [
-          ...selectedList.filter((filterItem) => !flatTreeData.some(({ id }) => id === filterItem.id)),
-          ...flatTreeData.filter((filterItem) => (checked as Key[]).includes(filterItem.id))
-        ];
-      }
     }
+    setCheckedKeys(singleChoice ? (info.checked ? [info.node.id] : []) : checked);
     setSelectedList(singleChoice ? (info.checked ? [info.node] : []) : newSelectedList);
   };
 
@@ -326,6 +335,8 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
 
   useEffect(() => {
     if (visible) {
+      console.log(value);
+
       setSelectedList(
         (value || [])
           .map((mapItem) => ({
