@@ -142,6 +142,7 @@ const AddUserList: React.FC<ISelectStaffProps> = ({ value, onChange, readOnly })
         onChange={staffOnChangeHandle}
         selectedType="staff"
         isDeleted={0}
+        isDeptActiveStaff
       />
       {/* 客户列表选择框 */}
       <ClientListModal
