@@ -275,7 +275,7 @@ export const filterChildren = (arr: any[]): any[] => {
     newArr.forEach((childrenItem) => {
       if (item === childrenItem) return;
       // 找出该选中节点的所有后代节点
-      if (childrenItem.fullDeptId.split(',').includes(item.deptId.toString())) {
+      if (childrenItem.fullDeptId?.split(',').includes(item.deptId.toString())) {
         if (childrenItem.staffId) {
           newArr1.push(childrenItem.staffId);
         } else {

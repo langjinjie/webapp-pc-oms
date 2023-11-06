@@ -212,7 +212,7 @@ const AddCode: React.FC = () => {
     return (selectStaffList || []).filter(
       (fliterItem) =>
         (!staffName || fliterItem.staffName.includes(staffName)) &&
-        (!dept || fliterItem.fullDeptId.split(',').some((deptId: string) => depts.includes(deptId)))
+        (!dept || fliterItem.fullDeptId?.split(',').some((deptId: string) => depts.includes(deptId)))
     );
   }, [staffSearchValues, selectStaffList]);
 
