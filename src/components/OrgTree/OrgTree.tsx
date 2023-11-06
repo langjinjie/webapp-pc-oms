@@ -215,7 +215,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
           } else {
             // 取消选择按个员工,需要将祖先部门也取消选中
             newSelectedList = newSelectedList.filter(
-              (filterItem) => !(filterItem.id === info.node.id || info.node.fullDeptId.includes(filterItem.id))
+              (filterItem) => !(filterItem.id === info.node.id || info.node.fullDeptId?.includes(filterItem.id))
             );
           }
         }
@@ -225,7 +225,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
           // 如果点击的是部门并且是取消选中，则需要过滤掉该部门下面的所有的部门员工,它的祖先部门也要被取消选择
           newSelectedList = newSelectedList.filter(
             (item) =>
-              !item.fullDeptId?.split(',').includes(info.node.id) && !info.node.fullDeptId.split(',').includes(item.id)
+              !item.fullDeptId?.split(',').includes(info.node.id) && !info.node.fullDeptId?.split(',').includes(item.id)
           );
         } else {
           // 包含两种情况:1.选中部门;2.选中/取消员工

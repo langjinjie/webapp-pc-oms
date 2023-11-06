@@ -71,7 +71,7 @@ const AddModal: React.FC<IAddLotteryListProps> = ({ addScopeParam, setAddScopePa
       newArr.forEach((childrenItem) => {
         if (item === childrenItem) return;
         // 找出该选中节点的所有后代节点
-        if (childrenItem.fullDeptId.split(',').includes(item.deptId)) {
+        if (childrenItem.fullDeptId?.split(',').includes(item.deptId)) {
           newArr1.push(childrenItem.deptId);
         }
       });
