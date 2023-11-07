@@ -51,9 +51,10 @@ const FetchDataDownLoad: React.FC<RouteComponentProps> = ({ location }) => {
         getList({ pageNum: 1 });
       }
     } else {
-      const { data } = await downloadExecSqlRecord({ recordId: record.recordId });
-
-      exportFile(data, record.name, '.csv');
+      const res = await downloadExecSqlRecord({ recordId: record.recordId });
+      if (res) {
+        exportFile(res.data, record.name, res.headers['content-type']?.match(/\/(.*?);/)?.[1] || 'zip');
+      }
     }
   };
 
