@@ -12,11 +12,18 @@ interface FilterClientAttrProps {
   formValues: any;
   index: number;
 }
-const FilterClientAttr: React.FC<FilterClientAttrProps> = ({ name, remove, options, disabled, formValues }) => {
+const FilterClientAttr: React.FC<FilterClientAttrProps> = ({ name, remove, options, disabled, formValues, index }) => {
   const [condOptions, setCondOptions] = useState<any[]>([]);
   const [valueOptions, setValueOptions] = useState<any[]>([]);
   const fieldCodeList = useMemo<string[]>(() => {
-    return formValues.attrList?.map((item: any) => item.fieldCode) || [];
+    const res = formValues.attrList?.map((item: any) => item.fieldCode) || [];
+    const currentFieldCode = res[index];
+    if (currentFieldCode) {
+      const current = options.filter((option) => option.code === currentFieldCode)[0];
+      setCondOptions(current.condList || []);
+      setValueOptions(current.valueList || []);
+    }
+    return res;
   }, [formValues.attrList]);
 
   const handleSelectChange = (value: string) => {
@@ -24,6 +31,7 @@ const FilterClientAttr: React.FC<FilterClientAttrProps> = ({ name, remove, optio
     setCondOptions(current.condList || []);
     setValueOptions(current.valueList || []);
   };
+
   return (
     <div className={classNames('flex', style.wrap)}>
       {disabled
