@@ -8,7 +8,7 @@ import React, { useState, useEffect, useContext, Suspense } from 'react';
 import { Redirect, Route, withRouter, RouteProps, RouteComponentProps, NavLink } from 'react-router-dom';
 import CacheRoute, { CacheRouteProps, CacheSwitch } from 'react-router-cache-route';
 import classNames from 'classnames';
-import { Icon, ConfirmModal, Loading } from 'src/components';
+import { Icon, ConfirmModal } from 'src/components';
 import { Context } from 'src/store';
 import { routes, cacheRoutes, noVerRoutes } from 'src/pages/routes';
 import { queryUserInfo, queryMenuList, requestGetMstatus } from 'src/apis';
@@ -113,13 +113,8 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
     );
 
     return (
-      <CacheSwitch location={location}>
-        {cacheRoutes
-          .filter(({ path }) => auThPaths.some((val) => (path || '').includes(val)))
-          .map(({ path, ...props }: CacheRouteProps) => (
-            <CacheRoute saveScrollPosition className="cache-route" key={`rt${path}`} path={path} {...props} exact />
-          ))}
-        <Suspense fallback={<Loading />}>
+      <Suspense fallback={null}>
+        <CacheSwitch location={location}>
           {noVerRoutes.map(({ path, ...props }: RouteProps) => (
             <Route key={`rt${path}`} path={path} {...props} exact />
           ))}
@@ -128,10 +123,14 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
             .map(({ path, ...props }: RouteProps) => (
               <Route key={`rt${path}`} path={path} {...props} exact />
             ))}
-        </Suspense>
-
-        <Redirect from="/*" to="/noPermission" />
-      </CacheSwitch>
+          {cacheRoutes
+            .filter(({ path }) => auThPaths.some((val) => (path || '').includes(val)))
+            .map(({ path, ...props }: CacheRouteProps) => (
+              <CacheRoute saveScrollPosition className="cache-route" key={`rt${path}`} path={path} {...props} exact />
+            ))}
+          <Redirect from="/*" to="/noPermission" />
+        </CacheSwitch>
+      </Suspense>
     );
   };
 
