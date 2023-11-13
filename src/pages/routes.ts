@@ -484,8 +484,6 @@ export const routes: RouteProps[] = [
   ...dataRoutes,
   // 资源管理
   ...operationRoutes,
-  // 欢迎语
-  ...migrationRouters,
   /* * 客户管理
    */
   {
