@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from 'antd';
 import { ExportModal } from 'src/components';
 import { exportExcel } from 'src/apis/CrowdsPackage';
@@ -8,9 +8,10 @@ interface IExport {
   onChange?: (value?: string) => void;
   onOk?: (value?: string) => void;
   onDownload?: () => void;
+  title?: string;
 }
 
-const UploadExcel: React.FC<IExport> = ({ value, onChange, onOk, onDownload }) => {
+const UploadExcel: React.FC<IExport> = ({ onChange, onOk, onDownload, title }) => {
   const [visible, setVisible] = useState(false);
 
   const onOkHandle = async (file: File) => {
@@ -27,17 +28,13 @@ const UploadExcel: React.FC<IExport> = ({ value, onChange, onOk, onDownload }) =
     }
   };
 
-  useEffect(() => {
-    console.log('value', value);
-  }, [value]);
-
   return (
     <>
       <Button type="primary" shape="round" onClick={() => setVisible(true)}>
         导入文件
       </Button>
       <ExportModal
-        title="导入审核链"
+        title={title || '导入表格'}
         visible={visible}
         onCancel={() => setVisible(false)}
         onOK={onOkHandle}
