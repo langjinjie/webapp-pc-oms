@@ -280,7 +280,8 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
     const res = await searchStaffList({
       keyWords: treeSearchValue,
       searchType: selectedType === 'dept' ? 1 : selectedType === 'all' ? undefined : 2, // 1-搜索部门 2-搜索员工 不传则搜索全部
-      isFull: true
+      isFull: true,
+      isDeleted
     });
     if (res) {
       const list = [...(res.staffList || []), ...(res.deptList || [])];
