@@ -127,6 +127,15 @@
     "src/**/*.less"
   ],
   "babel": {
+    "plugins": [
+      [
+        "import",
+        {
+          "libraryName": "antd",
+          "style": "css"
+        }
+      ]
+    ],
     "presets": [
       [
         "@babel/preset-env",

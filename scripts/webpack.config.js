@@ -10,17 +10,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const DotEnvWebpack = require('dotenv-webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
+const threadLoader = require('thread-loader');
 
 const NODE_ENV = process.env.NODE_ENV;
 
 const isDev = NODE_ENV === 'development';
 
 const argv = require('yargs').argv;
-
-const cssReg = /\.css$/;
-const cssModuleReg = /\.module\.css$/;
-const lessReg = /\.less$/;
-const lessModuleReg = /\.module\.less$/;
 
 // 环境变量配置
 const envConfig = {
@@ -65,23 +61,20 @@ const getStyleLoader = (isModule = false, isLess = false) => {
   return loaders;
 };
 
-/**
- * 获取babel loader
- * @param isTs
- * @returns {{loader: string, options: {plugins: [[string, {libraryName: string, style: string}]]}}}
- */
-const getBabelLoader = (isTs = false) => {
-  const loader = {
-    loader: 'babel-loader',
-    options: {
-      plugins: [['import', { libraryName: 'antd', style: 'css' }]]
-    }
-  };
-  if (isTs) {
-    loader.options.presets = ['@babel/preset-typescript'];
-  }
-  return loader;
+const jsWorkerPool = {
+  // options
+
+  // 产生的 worker 的数量，默认是 (cpu 核心数 - 1)
+  // 当 require('os').cpus() 是 undefined 时，则为 1
+  workers: 2,
+
+  // 闲置时定时删除 worker 进程
+  // 默认为 500ms
+  // 可以设置为无穷大， 这样在监视模式(--watch)下可以保持 worker 持续存在
+  poolTimeout: 2000
 };
+
+threadLoader.warmup(jsWorkerPool, ['babel-loader']);
 
 module.exports = function () {
   const ROOT_PATH = path.resolve(__dirname, '../');
@@ -96,6 +89,7 @@ module.exports = function () {
   )}${fix(date.getMinutes(), 2)}${fix(date.getSeconds(), 2)}`;
 
   return {
+    // noParse: /jquery|lodash/, // noParse 配置的意思是让 webpack 忽略没有模块化的文件
     entry: {
       main: path.resolve(ROOT_PATH, './src/index.tsx')
     },
@@ -109,25 +103,23 @@ module.exports = function () {
     module: {
       rules: [
         {
-          test: cssReg,
-          exclude: cssModuleReg,
+          test: /\.css$/,
+          exclude: /\.module\.css$/,
           use: getStyleLoader(false, false)
         },
         {
-          test: cssModuleReg,
+          test: /\.module\.css$/,
           exclude: /node_modules/,
           use: getStyleLoader(true, false)
         },
         {
-          test: lessReg,
-          exclude: lessModuleReg,
-          // use: 'happypack/loader?id=less',
+          test: /\.less$/,
+          exclude: /\.module\.less$/,
           use: getStyleLoader(false, true)
         },
         {
-          test: lessModuleReg,
+          test: /\.module\.less$/,
           exclude: /node_modules/,
-          // use: 'happypack/loader?id=lessModule',
           use: getStyleLoader(true, true)
         },
         {
@@ -146,16 +138,20 @@ module.exports = function () {
         {
           test: /\.(ts|tsx)$/,
           exclude: /node_modules/,
-          use: ['thread-loader', getBabelLoader]
-        },
-        {
-          test: /\.(js|jsx)$/,
-          exclude: /node_modules/,
-          use: ['thread-loader', getBabelLoader]
+          use: [
+            { loader: 'thread-loader', options: jsWorkerPool },
+            {
+              loader: 'babel-loader',
+              options: {
+                presets: ['@babel/preset-typescript']
+              }
+            }
+          ]
         },
         {
           test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ico$/],
           loader: 'url-loader',
+          exclude: /node_modules/,
           options: {
             esModule: false,
             limit: 10000,
@@ -165,6 +161,7 @@ module.exports = function () {
         {
           test: /\.(woff|svg|eot|ttf)\??.*$/,
           loader: 'url-loader',
+          exclude: /node_modules/,
           options: {
             limit: 10000,
             name: time + '/font/[name].[contenthash:8].[ext]'
