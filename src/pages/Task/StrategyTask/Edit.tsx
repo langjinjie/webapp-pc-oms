@@ -67,6 +67,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               }));
             }
             rule.pushTime = moment(rule.pushTime)?.format('HH:mm') || '';
+            rule.speechcraft = rule.speechcraft || '';
             return rule;
           });
           return scene;
