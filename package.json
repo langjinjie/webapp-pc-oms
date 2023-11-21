@@ -7,6 +7,7 @@
     "start": "node scripts/start.js",
     "build": "cross-env NODE_ENV=production webpack --config ./scripts/build.js --env prod",
     "build:test": "cross-env NODE_ENV=production webpack --config ./scripts/build.js --env test",
+    "analyzer": "cross-env NODE_ENV=production webpack --config ./scripts/build-analyzer.js --env prod",
     "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx src/"
   },
   "husky": {
@@ -100,6 +101,7 @@
     "postcss-loader": "^5.2.0",
     "prettier": "^2.3.0",
     "simple-progress-webpack-plugin": "^2.0.0",
+    "speed-measure-webpack-plugin": "^1.5.0",
     "style-loader": "^2.0.0",
     "terser-webpack-plugin": "^5.1.1",
     "thread-loader": "^3.0.4",
@@ -107,6 +109,7 @@
     "typescript": "^4.2.4",
     "url-loader": "^4.1.1",
     "webpack": "^5.36.2",
+    "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"

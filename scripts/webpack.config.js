@@ -149,22 +149,17 @@ module.exports = function () {
           ]
         },
         {
-          test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ico$/],
-          loader: 'url-loader',
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+
           exclude: /node_modules/,
-          options: {
-            esModule: false,
-            limit: 10000,
-            name: time + '/images/[name].[contenthash:8].[ext]'
-          }
-        },
-        {
-          test: /\.(woff|svg|eot|ttf)\??.*$/,
-          loader: 'url-loader',
-          exclude: /node_modules/,
-          options: {
-            limit: 10000,
-            name: time + '/font/[name].[contenthash:8].[ext]'
+          type: 'asset/resource',
+          // options: {
+          //   esModule: false,
+          //   limit: 10000,
+          //   name: time + '/images/[name].[contenthash:8].[ext]'
+          // }
+          generator: {
+            outputPath: time + '/images'
           }
         }
       ]
