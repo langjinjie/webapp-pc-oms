@@ -143,7 +143,7 @@ export const tableColumns: (edit: (row: ISalesLeadRow) => void) => ColumnsType<I
       }
     },
     {
-      title: '跟进入组织架构',
+      title: '跟进人组织架构',
       dataIndex: 'followFullDeptName',
       render (followFullDeptName: string) {
         return (
