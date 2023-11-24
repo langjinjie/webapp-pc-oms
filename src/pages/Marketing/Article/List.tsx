@@ -326,7 +326,6 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
       // 获取filename
       const fileName = res.headers['content-disposition'].split('.')?.[0];
       // 获取contentType 它的格式为: application/xlsx;charset=UTF-8
-
       const suffix = res.headers['content-type']?.match(/\/(.*?);/)?.[1] || 'xlsx';
       exportFile(res.data, fileName, suffix);
     }
