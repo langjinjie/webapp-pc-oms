@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Button, message, Modal, Space } from 'antd';
-import ChannelModal from './Components/ChannelModal';
+import DownActLink from './Components/DownActLink';
 import {
   getNewsList,
   operateArticleStatus,
   updateNewsState,
   getNewsDetail,
   getTagsOrCategorys,
-  setUserRightWithArticle
+  setUserRightWithArticle,
+  requestDownLoadNews
 } from 'src/apis/marketing';
 
 import style from './style.module.less';
@@ -20,7 +21,7 @@ import { setSearchCols, columns, Article, PaginationProps } from './Config';
 import classNames from 'classnames';
 import { PlusOutlined } from '@ant-design/icons';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
-import { useDocumentTitle } from 'src/utils/base';
+import { exportFile, useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
 import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 
@@ -44,7 +45,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visible, toggleVisible] = useState(false);
   const [htmlStr, setHtmlStr] = useState('');
   const [currentItem, setCurrentItem] = useState<Article | null>();
-  const [downArticleVisible, setDownArticleVisible] = useState<boolean>(true);
+  const [downArticleVisible, setDownArticleVisible] = useState<boolean>(false);
 
   // 批量设置权限的状态
   const [selectRows, setSelectRows] = useState<Article[]>();
@@ -319,9 +320,16 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   // 下载文章链接
-  const downArticleOnOk = (channelId: string) => {
-    console.log('downArticleOnOk', channelId);
-    setDownArticleVisible(false);
+  const downArticleOnOk = async (channelId: string) => {
+    const res = await requestDownLoadNews({ channelId });
+    if (res) {
+      // 获取filename
+      const fileName = res.headers['content-disposition'].split('.')?.[0];
+      // 获取contentType 它的格式为: application/xlsx;charset=UTF-8
+
+      const suffix = res.headers['content-type']?.match(/\/(.*?);/)?.[1] || 'xlsx';
+      exportFile(res.data, fileName, suffix);
+    }
   };
 
   return (
@@ -427,7 +435,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         onOk={confirmSetRight}
         onCancel={() => setVisibleSetUserRight(false)}
       />
-      <ChannelModal visible={downArticleVisible} onCancel={() => setDownArticleVisible(false)} onOk={downArticleOnOk} />
+      <DownActLink visible={downArticleVisible} onCancel={() => setDownArticleVisible(false)} onOk={downArticleOnOk} />
     </div>
   );
 };

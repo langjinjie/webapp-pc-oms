@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import style from './style.module.less';
-
-import FormSearch, { AuthBtn } from 'src/components';
+import { AuthBtn, NgFormSearch } from 'src/components';
 import NgTable from 'src/components/TableComponent/OldTableComponent';
 import { setSearchCols, columns, Poster } from './Config';
 import { Button, message, Modal, Space } from 'antd';
@@ -330,7 +329,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
           </Button>
         </AuthBtn>
         <AuthBtn path="/query">
-          <FormSearch
+          <NgFormSearch
             searchCols={setSearchCols(categoryList)}
             onSearch={handleSearch}
             onValuesChange={(changesValue, values) => {

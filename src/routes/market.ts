@@ -20,6 +20,6 @@ export const market: RouteProps[] = [
   // 机构渠道维护
   {
     path: '/channelManage',
-    component: lazy(() => import('src/pages/Marketing/Channel/ChannelList'))
+    component: lazy(() => import('src/pages/Marketing/ArticleChannel/ChannelList'))
   }
 ];

@@ -3,7 +3,7 @@
  * @author Lester
  * @date 2021-12-21 13:57
  */
-import React, { useEffect, useState, Key, useContext } from 'react';
+import React, { useEffect, useState, Key /* , useContext */ } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { setTitle } from 'tenacity-tools';
 import { Table, TableColumnProps, Button, message, Popconfirm, Modal as AntdModal } from 'antd';
@@ -18,7 +18,7 @@ import {
 } from 'src/apis/company';
 import { ItemProps } from 'src/utils/interface';
 import style from './style.module.less';
-import { Context } from 'src/store';
+// import { Context } from 'src/store';
 import CallLimit from './CallLimit';
 
 interface CompanyItem {
@@ -36,7 +36,7 @@ interface AccountItem {
 }
 
 const Company: React.FC<RouteComponentProps> = ({ history }) => {
-  const { isMainCorp }: any = useContext(Context);
+  // const { isMainCorp }: any = useContext(Context);
   const [companyList, setCompanyList] = useState<CompanyItem[]>([]);
   const [adminVisible, setAdminVisible] = useState<boolean>(false);
   const [currentCorpId, setCurrentCorpId] = useState<string>('');
@@ -85,9 +85,9 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   // 设置公有云调用次数
-  const setCallLimit = () => {
-    setCallLimitVisible(true);
-  };
+  // const setCallLimit = () => {
+  //   setCallLimitVisible(true);
+  // };
 
   const copyFeature = async (targetCorpId: string) => {
     const res: any = await copyCompanyFeature({ targetCorpId });
@@ -163,11 +163,11 @@ const Company: React.FC<RouteComponentProps> = ({ history }) => {
               <Button type="link">一键复制功能权限</Button>
             </Popconfirm>
           </AuthBtn>
-          {!isMainCorp && (
+          {/* {!isMainCorp && (
             <Button type="link" onClick={setCallLimit}>
               公有云调用次数
             </Button>
-          )}
+          )} */}
         </>
       )
     }

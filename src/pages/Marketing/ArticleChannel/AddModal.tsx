@@ -1,19 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'src/components';
-import { Form, Input } from 'antd';
+import { Form, Input, InputNumber } from 'antd';
+import { IColumn } from './config';
 import style from './style.module.less';
 
+export interface IAddModalValues {
+  channelId?: string; // 否 渠道id，编辑时必填
+  channelName: string; // 是 渠道名称
+  channelCode?: string; // 否 渠道代码，不传则后端自动生成
+  articleCnt: number; // 是 文章总访问次数
+}
+
 interface IAddModalProps {
-  value?: any;
+  value?: IColumn;
   visible: boolean;
   title?: string;
   onClose: () => void;
-  onOk?: (values?: { [key: string]: any }) => Promise<any>;
+  onOk?: (values: IAddModalValues) => Promise<any>;
 }
 
 const { Item } = Form;
 
 const AddModal: React.FC<IAddModalProps> = ({ value, visible, title, onClose, onOk }) => {
+  const [loading, setLoading] = useState(false);
+
   const [form] = Form.useForm();
 
   const handleCancel = () => {
@@ -22,13 +32,14 @@ const AddModal: React.FC<IAddModalProps> = ({ value, visible, title, onClose, on
 
   const handleOk = async () => {
     const res = await form.validateFields();
-    console.log('res', res);
-    await onOk?.(res);
-    handleCancel();
+    setLoading(true);
+    await onOk?.({ ...res, channelId: value?.channelId });
+    setLoading(false);
   };
 
   useEffect(() => {
     if (visible) {
+      console.log('value', value);
       form.setFieldsValue(value);
     }
   }, [visible]);
@@ -39,14 +50,14 @@ const AddModal: React.FC<IAddModalProps> = ({ value, visible, title, onClose, on
       onClose={handleCancel}
       centered
       visible={visible}
-      className={style.modalWrap}
       onOk={handleOk}
+      okButtonProps={{ loading }}
     >
       <Form form={form}>
         <Item
           label="机构名称"
           className={style.item}
-          name="机构名称"
+          name="channelName"
           required
           rules={[{ required: true, message: '请输入机构名称' }]}
         >
@@ -55,7 +66,7 @@ const AddModal: React.FC<IAddModalProps> = ({ value, visible, title, onClose, on
         <Item
           label="渠道代码"
           className={style.item}
-          name="渠道代码"
+          name="channelCode"
           required
           rules={[{ required: true, message: '请输入机构代码' }]}
         >
@@ -64,11 +75,11 @@ const AddModal: React.FC<IAddModalProps> = ({ value, visible, title, onClose, on
         <Item
           label="访问总次数"
           className={style.item}
-          name="访问总次数"
+          name="articleCnt"
           required
           rules={[{ required: true, message: '请输入访问总次数' }]}
         >
-          <Input className="width320" />
+          <InputNumber className="width320" min={0} />
         </Item>
       </Form>
     </Modal>
