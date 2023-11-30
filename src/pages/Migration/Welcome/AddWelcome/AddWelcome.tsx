@@ -90,7 +90,7 @@ const AddWelcome: React.FC = () => {
             <Form.Item name="welcomeWord">
               <CustomTextArea maxLength={100} disabled={readOnly} />
             </Form.Item>
-            <Item noStyle name="welcomes" rules={[{ required: true, message: '请配置欢迎语' }]}>
+            <Item noStyle name="welcomes">
               <AddMarket disabled={readOnly} />
             </Item>
             <Preview className={style.preview} value={previewValue} />
