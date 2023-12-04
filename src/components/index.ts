@@ -31,3 +31,4 @@ export { default as ExportModal } from 'src/components/ExportModal/ExportModal';
 export { default as OrgTree } from 'src/components/OrgTree/OrgTree';
 export { default as TagFilterComponent, type ITagFilterValue } from './TagFilterComponent/TagFilterComponent';
 export { default as TagFilterModal } from './TagFilterComponent/TagFilterModal';
+export { default as SelectOrg } from './SelectOrg/SelectOrg';

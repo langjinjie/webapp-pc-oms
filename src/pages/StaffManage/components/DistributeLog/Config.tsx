@@ -4,7 +4,7 @@ import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { UNKNOWN } from 'src/utils/base';
 import { onJobTransferStatusList, resignTransferStatusList } from '../DistributeList/Config';
 import { Form } from 'antd';
-import { SelectStaff } from 'src/pages/StaffManage/components';
+import { SelectOrg } from 'src/components';
 import classNames from 'classnames';
 
 export const searchCols: (queryType: '1' | '2') => SearchCol[] = (queryType) => {
@@ -23,7 +23,7 @@ export const searchCols: (queryType: '1' | '2') => SearchCol[] = (queryType) => 
       placeholder: '请输入',
       customNode: (
         <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-          <SelectStaff key={1} />
+          <SelectOrg key={1} />
         </Form.Item>
       )
     },
