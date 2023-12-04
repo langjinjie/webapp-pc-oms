@@ -1,12 +1,10 @@
 import React, { Key, useEffect, useState } from 'react';
 import { Button, DatePicker, Form, Input, Modal, PaginationProps, Tag } from 'antd';
-import { NgTable } from 'src/components';
+import { NgTable, SelectOrg } from 'src/components';
 import { TableColumnsFun, IList, orgDeptType2Name } from './Config';
 import { requestGetClientList } from 'src/apis/customerManage';
 import { TagModal } from 'src/pages/StaffManage/components';
-
 import style from './style.module.less';
-import { SelectOrg } from 'src/pages/CustomerManage/components';
 
 interface IClientListModalProps {
   value?: any[];

@@ -1,8 +1,7 @@
 import { Button, TimePicker, Form, Input, Radio, message } from 'antd';
 import moment, { Moment } from 'moment';
 import React, { useEffect, useState } from 'react';
-import { BreadCrumbs } from 'src/components';
-import { SelectOrg } from 'src/pages/CustomerManage/components';
+import { BreadCrumbs, SelectOrg } from 'src/components';
 import CustomTime from './component/CustomTime';
 import { editChatTimeoutRule } from 'src/apis/exception';
 import { RouteComponentProps } from 'react-router-dom';
