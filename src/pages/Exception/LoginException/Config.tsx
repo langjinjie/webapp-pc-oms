@@ -2,8 +2,7 @@ import React from 'react';
 import { Button, Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
-import { AuthBtn } from 'src/components';
+import { SelectOrg, AuthBtn } from 'src/components';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
 import style from './style.module.less';
@@ -22,7 +21,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
       label: '客户经理',
       customNode: (
         <Form.Item key={'staffNames'} name="staffNames" label="客户经理">
-          <SelectStaff key={1} type="staff" />
+          <SelectOrg key={1} type="staff" />
         </Form.Item>
       )
     },
@@ -40,7 +39,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
       label: '组织架构',
       customNode: (
         <Form.Item key={'deptIds'} name="deptIds" label="组织架构">
-          <SelectStaff key={1} type="dept" />
+          <SelectOrg key={1} type="dept" />
         </Form.Item>
       )
     },

@@ -1,7 +1,6 @@
 import React, { Key, useEffect, useState } from 'react';
 import { Button, DatePicker, Form, Input, message, Modal, Row, Select } from 'antd';
-import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
-import { NgTable } from 'src/components';
+import { SelectOrg, NgTable } from 'src/components';
 import { tableColumnsFun, IStaffLiveCode, liveTypeList } from './Config';
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
@@ -194,7 +193,7 @@ const StaffCode: React.FC = () => {
             />
           </Item>
           <Item label="使用员工" name="staffId">
-            <SelectStaff type="staff" singleChoice />
+            <SelectOrg type="staff" singleChoice />
           </Item>
           <Item label="活码类型" name="liveType">
             <Select options={liveTypeList} placeholder="请选择" allowClear />

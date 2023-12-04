@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, message, Radio } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
-import { BreadCrumbs, ImageUpload } from 'src/components';
+import { BreadCrumbs, ImageUpload, SelectOrg } from 'src/components';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { requestGetGroupLiveCodeDetail, requestEditGroupLiveCode } from 'src/apis/liveCode';
@@ -9,7 +9,6 @@ import { IGroupLive } from 'src/pages/LiveCode/MomentCode/components/Preview/Pre
 import Preview from '../components/Preview/Preview';
 import FilterChannelTag from 'src/pages/LiveCode/MomentCode/components/FilterChannelTag/FilterChannelTag';
 import AccessChatModal from 'src/pages/LiveCode/MomentCode/components/AccessChatModal/AccessChatModal';
-import { SelectStaff /* , TagModal */ } from 'src/pages/StaffManage/components';
 import classNames from 'classnames';
 import qs from 'qs';
 import style from './style.module.less';
@@ -157,7 +156,7 @@ const AddCode: React.FC = () => {
               />
             </Item>
             <Item label="过期提醒人员" name="notifyUsers">
-              <SelectStaff className={style.input} />
+              <SelectOrg className={style.input} />
             </Item>
           </div>
         </div>

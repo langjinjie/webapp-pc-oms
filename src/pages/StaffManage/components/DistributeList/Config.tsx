@@ -1,9 +1,8 @@
 import React from 'react';
 import { Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol, TagFilterComponent } from 'src/components';
+import { SearchCol, TagFilterComponent, SelectOrg } from 'src/components';
 import { UNKNOWN } from 'src/utils/base';
-import { SelectStaff } from 'src/pages/StaffManage/components';
 import { TagItem } from 'src/utils/interface';
 import style from './style.module.less';
 import classNames from 'classnames';
@@ -47,7 +46,7 @@ export const searchCols: (reasonCodeList: any[], distributeLisType: '1' | '2') =
       placeholder: '请输入',
       customNode: (
         <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-          <SelectStaff key={1} isDeleted={distributeLisType === '1' ? 0 : 1} />
+          <SelectOrg key={1} isDeleted={distributeLisType === '1' ? 0 : 1} />
         </Form.Item>
       )
     },
