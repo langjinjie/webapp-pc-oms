@@ -1,6 +1,6 @@
 import React, { Key } from 'react';
 import { Button, Table, Form, Input, Popconfirm, Modal } from 'antd';
-import { SelectStaff } from 'src/pages/StaffManage/components';
+import { SelectOrg } from 'src/components';
 import style from './style.module.less';
 import classNames from 'classnames';
 
@@ -46,7 +46,7 @@ const StaffList: React.FC<IStaffListProps> = ({
           <Input className={style.staffListInput} placeholder="待输入" allowClear />
         </Item>
         <Item label="选择部门" name="dept">
-          <SelectStaff type="dept" className={style.staffListSelect} />
+          <SelectOrg type="dept" className={style.staffListSelect} />
         </Item>
         <Button className={style.staffListSearch} type="primary" onClick={searchStaffList}>
           搜索

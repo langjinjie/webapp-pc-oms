@@ -1,8 +1,7 @@
 import React, { Key, useEffect, useMemo, useState } from 'react';
 import { Button, DatePicker, Form, Input, message, Radio, RadioChangeEvent, Spin } from 'antd';
 import { useHistory /* , useLocation */ } from 'react-router-dom';
-import { BreadCrumbs, ImageUpload } from 'src/components';
-import { SelectStaff } from 'src/pages/StaffManage/components';
+import { BreadCrumbs, ImageUpload, SelectOrg } from 'src/components';
 import { AddMarket, Preview, StaffList } from 'src/pages/LiveCode/StaffCode/components';
 import { IChannelTagList } from 'src/pages/Operation/ChannelTag/Config';
 import { requestGetChannelGroupList } from 'src/apis/channelTag';
@@ -297,7 +296,7 @@ const AddCode: React.FC = () => {
                 </Group>
               </Item>
               <Item label="使用成员" name="staffs" rules={[{ required: true, message: '请选择使用成员' }]}>
-                <SelectStaff
+                <SelectOrg
                   value={selectStaffList}
                   onChange={selectStaffOnChange}
                   className={style.select}

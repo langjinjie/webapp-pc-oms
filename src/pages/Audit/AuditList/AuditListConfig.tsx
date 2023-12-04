@@ -3,10 +3,10 @@ import { Button, Form } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 import { OperateType } from 'src/utils/interface';
-import { SelectStaff } from 'src/pages/StaffManage/components';
+import { SelectOrg, AuthBtn } from 'src/components';
 import classNames from 'classnames';
 import { UNKNOWN } from 'src/utils/base';
-import { AuthBtn } from 'src/components';
+
 // 0-审核中；1-审批通过；2-审批不通过；3-撤回；4-自动审批通过
 export const statusOptions = [
   { id: 0, name: '审核中' },
@@ -42,7 +42,7 @@ export const searchCols: SearchCol[] = [
 
     customNode: (
       <Form.Item key={'applyList'} name="applyList" label="申请人">
-        <SelectStaff key={1} />
+        <SelectOrg key={1} />
       </Form.Item>
     )
   },
@@ -62,7 +62,7 @@ export const searchCols: SearchCol[] = [
     width: '280px',
     customNode: (
       <Form.Item key={'curHandlerList'} name="curHandlerList" label="审批人">
-        <SelectStaff key={1} />
+        <SelectOrg key={1} />
       </Form.Item>
     )
   },
