@@ -117,7 +117,8 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
               name: item.deptName,
               id: item.deptId.toString(),
               isLeaf: false,
-              checkable: !singleChoice,
+              // 多选模式判断 部门不展示勾选框只是当选择模式是staff,并且为singleChoice
+              checkable: !(singleChoice && selectedType === 'staff'),
               disableCheckbox: checkabledDTypeKeys && !checkabledDTypeKeys?.includes(item.dType)
             };
           } else {
@@ -126,7 +127,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
               parentId,
               name: item.deptName,
               id: item.deptId.toString(),
-              checkable: !singleChoice,
+              checkable: !(singleChoice && selectedType === 'staff'),
               disableCheckbox: checkabledDTypeKeys && !checkabledDTypeKeys?.includes(item.dType)
             };
           }
