@@ -126,7 +126,7 @@ export const setTableColumns = ({
       title: '排序',
       dataIndex: 'sortId',
       width: 120,
-      render: (value) => <span>{value || UNKNOWN}</span>
+      render: (value) => <span>{value ?? UNKNOWN}</span>
     },
     {
       title: '路由地址',
