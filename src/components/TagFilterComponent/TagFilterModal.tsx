@@ -189,7 +189,9 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, value, onOk, onClose, ..
         <div className={style.chooseTagList}>
           {chooseTags.map((tagItem) => (
             <span key={tagItem.tagId} className={style.chooseTagItem}>
-              {`${tagItem.displayType ? tagItem.groupName + ': ' + tagItem.tagName : tagItem.tagName}`}
+              {`${
+                tagItem.displayType ? tagItem.groupName?.replace(/兴趣|意愿$/g, '') + tagItem.tagName : tagItem.tagName
+              }`}
               <span className={style.close} onClick={() => cancelChooseHandle(tagItem)}>
                 <Icon className={style.closeIcon} name="icon_common_Line_Close" />
               </span>

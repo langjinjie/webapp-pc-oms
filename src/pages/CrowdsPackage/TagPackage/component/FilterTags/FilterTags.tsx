@@ -97,8 +97,8 @@ const FilterTags: React.FC<IFilterTagsProps> = (props) => {
         >
           {`${
             tagItem.displayType === 2 || tagItem.displayType === 1 || tagItem.displayType === 3
-              ? tagItem.groupName
-              : tagItem.groupName.slice(0, tagItem.groupName.length - 2)
+              ? tagItem.groupName.replace(/兴趣|意愿$/g, '')
+              : ''
           } ` + tagItem.tagName}
         </Tag>
       ));

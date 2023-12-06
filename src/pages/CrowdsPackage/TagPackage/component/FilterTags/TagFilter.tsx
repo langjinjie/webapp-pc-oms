@@ -238,8 +238,8 @@ const TagFilter: React.FC<TagFilterProps> = ({ visible, chooseTag, chooseTagList
         <span key={item.tagId} className={style.chooseTagItem}>
           {`${
             item.displayType === 2 || item.displayType === 1 || item.displayType === 3
-              ? item.groupName
-              : item.groupName.slice(0, item.groupName.length - 2)
+              ? item.groupName.replace(/意愿|兴趣$/g, '')
+              : ''
           } ` + item.tagName}
 
           <span className={style.close} onClick={() => cancelChooseHandle({ groupId: item.groupId, ...item })}>

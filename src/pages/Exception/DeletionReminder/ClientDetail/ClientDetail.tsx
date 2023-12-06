@@ -340,7 +340,7 @@ const ClientDetail: React.FC<RouteComponentProps> = ({ history }) => {
                     //   setOldTag(item);
                     // }}
                   >
-                    {item.displayType === 1 ? item.groupName!.replace(/兴趣|意愿/g, '') : ''}
+                    {item.displayType === 1 ? item.groupName!.replace(/兴趣|意愿$/g, '') : ''}
                     {item.tagName}
                   </li>
                 ))}
