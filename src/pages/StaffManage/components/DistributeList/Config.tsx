@@ -186,7 +186,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns>
             className={'ellipsis'}
             title={tagList
               ?.map((tagItem) =>
-                tagItem.displayType ? tagItem.groupName?.replace(/兴趣|意愿/g, '') + tagItem.tagName : tagItem.tagName
+                tagItem.displayType ? tagItem.groupName?.replace(/兴趣|意愿$/g, '') + tagItem.tagName : tagItem.tagName
               )
               .toString()
               .replace(/,/g, '，')}
@@ -199,7 +199,7 @@ export const tableColumnsFun = (args: OperateProps): ColumnsType<IClientColumns>
                   [style.blue]: mapItem.modified === 0
                 })}
               >
-                {mapItem.displayType === 1 ? mapItem.groupName!.replace(/兴趣|意愿/g, '') : ''}
+                {mapItem.displayType === 1 ? mapItem.groupName!.replace(/兴趣|意愿$/g, '') : ''}
                 {mapItem.tagName}
               </span>
             ))}
