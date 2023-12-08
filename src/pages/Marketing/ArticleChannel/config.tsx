@@ -48,6 +48,9 @@ export const tableColumnsFun: TTableColumnsFun = ({ onOperate, addNotice }) => {
     {
       title: '访问百分比',
       dataIndex: 'articlePercent',
+      render (articlePercent: number) {
+        return <>{(articlePercent ?? 0) * 100 + '%'}</>;
+      },
       width: 80
     },
     {
