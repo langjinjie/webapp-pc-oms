@@ -65,10 +65,11 @@ const DownActLink: React.FC<IDownArticleLinkProps> = ({ title, visible, onCancel
       onOk={handleOk}
       okButtonProps={{ loading: okBtnLoading }}
     >
-      <Form form={form}>
+      <Form form={form} initialValues={{ channelId: '' }}>
         <Item name="channelId">
           <Radio.Group>
             <Space direction="vertical">
+              <Radio value="">公有云文章</Radio>
               {list.map(({ channelId, channelName }) => (
                 <Radio key={channelId} value={channelId}>
                   {channelName}
