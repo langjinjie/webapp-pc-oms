@@ -321,8 +321,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
 
   // 下载文章链接
   const downArticleOnOk = async (channelId: string) => {
-    const res = await requestDownLoadNews({ channelId });
-    console.log('res', res);
+    const res = await requestDownLoadNews({ channelId, ...queryForm });
     if (res) {
       // 获取filename
       const fileName = decodeURIComponent(res.headers['content-disposition'].split('=')?.[1]);

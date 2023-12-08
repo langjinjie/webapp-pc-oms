@@ -538,11 +538,11 @@ export const uploadVideo: HttpFunction = (param: object) => {
 export const requestDownLoadNews: HttpFunction<{
   title?: string; // 否 文章标题
   categoryId?: string; // 否 分类
-  recommendType?: number; // 否 推荐内容：0-文章/1-活动/2-产品/3-无
+  recommendType?: string; // 否 推荐内容：0-文章/1-活动/2-产品/3-无
   fromSource?: string; // 否 渠道来源
   minTime?: string; // 否 创建开始时间
   maxTime?: string; // 否 创建结束时间
-  syncBank?: number; // 否 状态
+  syncBank?: string; // 否 状态
   channelId?: string; // 否 渠道id，空表示公有云文章
 }> = (param) => {
   return http.post('/tenacity-admin/api/news/download', param, {
