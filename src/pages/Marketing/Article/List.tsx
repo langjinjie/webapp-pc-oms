@@ -322,12 +322,15 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   // 下载文章链接
   const downArticleOnOk = async (channelId: string) => {
     const res = await requestDownLoadNews({ channelId });
+    console.log('res', res);
     if (res) {
       // 获取filename
-      const fileName = res.headers['content-disposition'].split('.')?.[0];
+      const fileName = decodeURIComponent(res.headers['content-disposition'].split('=')?.[1]);
       // 获取contentType 它的格式为: application/xlsx;charset=UTF-8
       const suffix = res.headers['content-type']?.match(/\/(.*?);/)?.[1] || 'xlsx';
       exportFile(res.data, fileName, suffix);
+      setDownArticleVisible(false);
+      message.success('文章链接下载成功');
     }
   };
 

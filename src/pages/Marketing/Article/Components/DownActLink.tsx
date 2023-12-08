@@ -24,26 +24,10 @@ const DownActLink: React.FC<IDownArticleLinkProps> = ({ title, visible, onCancel
   // 获取列表
   const getList = async (pageNum: number) => {
     const res = await requestChannelList({ pageNum });
-    console.log('res', res);
     if (res) {
       const { list, total } = res;
       setList(list || []);
       setPagination((pagination) => ({ ...pagination, total }));
-    } else {
-      setList([
-        {
-          channelId: '1',
-          channelName: '公有云文章'
-        },
-        {
-          channelId: '2',
-          channelName: '江西人保'
-        },
-        {
-          channelId: '3',
-          channelName: '河北人保'
-        }
-      ]);
     }
   };
 

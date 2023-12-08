@@ -561,7 +561,7 @@ export const requestChannelList: HttpFunction<{
   pageNum?: number; // 否 第几页，默认第一页
   pageSize?: number; // 否 分页大小，默认10条
 }> = (params) => {
-  return http.get('/tenacity-admin/api/channel/list', params);
+  return http.post('/tenacity-admin/api/channel/list', params);
 };
 
 /**

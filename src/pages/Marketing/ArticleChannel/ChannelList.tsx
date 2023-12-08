@@ -10,7 +10,7 @@ import {
   requestEditChannel
 } from 'src/apis/marketing';
 import AddModal, { IAddModalValues } from './AddModal';
-import AddNotice, { INoticeValue } from './AddNotice';
+import AddNotice, { INoticeValue, IINotifyItem } from './AddNotice';
 
 const ChannelList: React.FC = () => {
   const [list, setList] = useState<any[]>([]);
@@ -22,34 +22,14 @@ const ChannelList: React.FC = () => {
 
   // 获取列表
   const getList = async (values?: { [key: string]: any }) => {
-    const { pageNumber = 1, pageSize = 10 } = values || {};
+    const { pageNum = 1, pageSize = 10 } = values || {};
     setLoading(true);
     const res = await requestChannelList({ ...values });
     setLoading(false);
-    console.log('res', res);
     if (res) {
       const { list, total } = res;
-      setPagination((pagination) => ({ ...pagination, current: pageNumber, pageSize, total }));
-      setList(list || []);
-    } else {
-      setList([
-        {
-          channelId: '1',
-          channelName: '1',
-          channelCode: '1',
-          articleCnt: '1',
-          articleUsedCnt: '1',
-          articlePercent: '1'
-        },
-        {
-          channelId: '2',
-          channelName: '2',
-          channelCode: '2',
-          articleCnt: '2',
-          articleUsedCnt: '2',
-          articlePercent: '2'
-        }
-      ]);
+      setPagination((pagination) => ({ ...pagination, current: pageNum, pageSize, total }));
+      setList(list ?? []);
     }
   };
 
@@ -80,6 +60,7 @@ const ChannelList: React.FC = () => {
     if (res) {
       message.success(`机构渠道${values.channelId ? '编辑' : '新增'}成功`);
       addChannelOnCancel();
+      getList({ pageNum: pagination.current, pageSize: pagination.pageSize });
     }
     return res;
   };
@@ -93,17 +74,13 @@ const ChannelList: React.FC = () => {
   // 打开添加人弹框
   const addNotice = async (row: IColumn) => {
     const res = await getChannelNotifyList(row.channelId);
-    if (!res) {
-      const notifyList = [
-        { staffId: 'bafd444062c548468e07737f2ee97a64', staffName: '郎金杰', userId: 'LangJinJie1' },
-        { staffId: '5309a5f8e0d0f7e24c474f47d4018ad6', staffName: '孙广东', userId: 'SunGuangDong' }
-      ];
-      // useState放进Promise会变成同步,需要保证
+    if (res) {
+      const { notifyList } = res;
+      // useState放进Promise会变成同步,需要保证先后顺序
       setCurrentRow({
         ...row,
-        ...res,
         // SelectOrg组件接受的是一个数组,需要对数据进行格式化
-        notifyList: notifyList.map((item) => ({ staff: [item] }))
+        notifyList: notifyList.map((item: IINotifyItem) => ({ staff: [item] }))
       });
       setNoticeVisible(true);
     }
@@ -117,7 +94,6 @@ const ChannelList: React.FC = () => {
   // 提交设置通知人
   const addNoticeOnOk = async (value: INoticeValue) => {
     const { channelId, notifyList } = value;
-    console.log('value', value);
     // 格式化notifyList,notifyList只需要传userId的string[]
     const res = await requestChannelAddNotify({
       channelId,

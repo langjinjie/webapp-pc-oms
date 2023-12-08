@@ -6,15 +6,13 @@ import { IColumn } from './config';
 import style from './style.module.less';
 
 export interface INoticeValue extends IColumn {
-  notifyList: INotifyList[];
+  notifyList: { staff: IINotifyItem[] }[];
 }
 
-interface INotifyList {
-  staff: {
-    userId: string;
-    staffId?: string;
-    staffName?: string;
-  }[];
+export interface IINotifyItem {
+  userId: string;
+  staffId?: string;
+  staffName?: string;
 }
 
 interface IAddModalProps {
@@ -57,7 +55,7 @@ const AddNotice: React.FC<IAddModalProps> = ({ value, visible, onOk, onCancel })
       onOk={handleOk}
       okButtonProps={{ loading: okBtnLoading }}
     >
-      <Form form={form}>
+      <Form form={form} initialValues={{ notifyList: [{ staff: [] }] }}>
         <Item label="机构名称" className={style.item} name="channelName">
           <Input className="width320" readOnly />
         </Item>

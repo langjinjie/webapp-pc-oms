@@ -39,8 +39,7 @@ const AddModal: React.FC<IAddModalProps> = ({ value, visible, title, onClose, on
 
   useEffect(() => {
     if (visible) {
-      console.log('value', value);
-      form.setFieldsValue(value);
+      value ? form.setFieldsValue(value) : form.resetFields();
     }
   }, [visible]);
 
@@ -61,7 +60,7 @@ const AddModal: React.FC<IAddModalProps> = ({ value, visible, title, onClose, on
           required
           rules={[{ required: true, message: '请输入机构名称' }]}
         >
-          <Input className="width320" />
+          <Input placeholder="请输入" className="width320" />
         </Item>
         <Item
           label="渠道代码"
@@ -70,7 +69,7 @@ const AddModal: React.FC<IAddModalProps> = ({ value, visible, title, onClose, on
           required
           rules={[{ required: true, message: '请输入机构代码' }]}
         >
-          <Input className="width320" />
+          <Input placeholder="请输入" className="width320" />
         </Item>
         <Item
           label="访问总次数"
@@ -79,7 +78,7 @@ const AddModal: React.FC<IAddModalProps> = ({ value, visible, title, onClose, on
           required
           rules={[{ required: true, message: '请输入访问总次数' }]}
         >
-          <InputNumber className="width320" min={0} />
+          <InputNumber placeholder="请输入" className="width320" min={0} />
         </Item>
       </Form>
     </Modal>
