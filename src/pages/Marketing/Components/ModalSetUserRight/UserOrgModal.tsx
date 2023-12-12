@@ -63,6 +63,7 @@ const UserOrgModal: React.FC<UserGroupModalProps> = ({ onChange, value: propValu
         value={tagList}
         onCancel={() => setVisibleUserGroup(false)}
         onOk={handleOnOK}
+        isDeptActiveStaff
       />
 
       <Button shape="round" onClick={handleShowSelectModal} disabled={disabled}>

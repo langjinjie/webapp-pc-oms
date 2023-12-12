@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { AuthBtn, SelectOrg, SearchCol } from 'src/components';
-
 import { OperateType } from 'src/utils/interface';
 
 export const searchCols: SearchCol[] = [
