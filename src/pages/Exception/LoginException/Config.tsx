@@ -1,8 +1,7 @@
 import React from 'react';
-import { Button, Form } from 'antd';
+import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { SelectOrg, AuthBtn } from 'src/components';
+import { SelectOrg, AuthBtn, SearchCol } from 'src/components';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
 import style from './style.module.less';
@@ -19,11 +18,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
       name: 'staffNames',
       type: 'custom',
       label: '客户经理',
-      customNode: (
-        <Form.Item key={'staffNames'} name="staffNames" label="客户经理">
-          <SelectOrg key={1} type="staff" />
-        </Form.Item>
-      )
+      customNode: <SelectOrg type="staff" />
     },
     {
       name: 'date',
@@ -37,11 +32,7 @@ export const searchCols: (reasonCodeList: any[]) => SearchCol[] = () => {
       type: 'custom',
       width: 120,
       label: '组织架构',
-      customNode: (
-        <Form.Item key={'deptIds'} name="deptIds" label="组织架构">
-          <SelectOrg key={1} type="dept" />
-        </Form.Item>
-      )
+      customNode: <SelectOrg type="dept" />
     },
     {
       name: 'unloginCountWeek',

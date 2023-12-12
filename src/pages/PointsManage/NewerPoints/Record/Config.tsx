@@ -1,6 +1,6 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol } from 'src/components';
 import { state2Name, periodType2Name } from 'src/pages/PointsManage/PointsConfig/List/Config';
 import classNames from 'classnames';
 import style from './style.module.less';

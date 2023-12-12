@@ -1,9 +1,8 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, AuthBtn } from 'src/components';
 import classNames from 'classnames';
 import style from './style.module.less';
-import { AuthBtn } from 'src/components';
 
 export interface IChannelItem {
   groupId: string; // 是 标签组id

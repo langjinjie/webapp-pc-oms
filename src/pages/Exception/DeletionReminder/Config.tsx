@@ -1,9 +1,8 @@
 import React from 'react';
-import { Button, Form } from 'antd';
+import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, AuthBtn, SelectOrg } from 'src/components';
 import { useHistory } from 'react-router-dom';
-import { SelectOrg, AuthBtn } from 'src/components';
 import style from './style.module.less';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
@@ -24,14 +23,10 @@ export const transferStatusList = [
 export const searchCols: () => SearchCol[] = () => {
   return [
     {
-      name: 'staffName',
+      name: 'staffList',
       type: 'custom',
       label: '所属客户经理',
-      customNode: (
-        <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-          <SelectOrg key={1} type="staff" />
-        </Form.Item>
-      )
+      customNode: <SelectOrg type="staff" />
     },
     {
       name: 'clientName',
@@ -51,11 +46,7 @@ export const searchCols: () => SearchCol[] = () => {
       type: 'custom',
       width: 120,
       label: '组织架构',
-      customNode: (
-        <Form.Item key={'deptList'} name="deptList" label="组织架构">
-          <SelectOrg key={1} type="dept" />
-        </Form.Item>
-      )
+      customNode: <SelectOrg type="dept" />
     },
     {
       name: 'leaderName',

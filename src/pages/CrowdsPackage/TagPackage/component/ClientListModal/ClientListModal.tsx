@@ -3,6 +3,7 @@ import { Button, DatePicker, Form, Input, Modal, PaginationProps, Tag } from 'an
 import { NgTable, SelectOrg, TagFilterComponent } from 'src/components';
 import { TableColumnsFun, IList, orgDeptType2Name } from './Config';
 import { requestGetClientList } from 'src/apis/customerManage';
+
 import style from './style.module.less';
 
 interface IClientListModalProps {

@@ -1,7 +1,6 @@
 import { Button, Popconfirm, Space, TableColumnProps, Tooltip } from 'antd';
 import React from 'react';
-import { AuthBtn } from 'src/components';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { AuthBtn, SearchCol } from 'src/components';
 import { OperateType } from 'src/utils/interface';
 
 export const searchCols: SearchCol[] = [

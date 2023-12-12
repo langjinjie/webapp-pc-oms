@@ -1,4 +1,4 @@
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol } from 'src/components';
 
 export const setSearchCols: SearchCol[] = [
   {

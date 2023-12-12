@@ -1,10 +1,9 @@
 import React from 'react';
 import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, AuthBtn } from 'src/components';
 import classNames from 'classnames';
 import { UNKNOWN } from 'src/utils/base';
-import { AuthBtn } from 'src/components';
 
 export interface ICrowdsPackageRow {
   packageId: string; // 是 分群ID

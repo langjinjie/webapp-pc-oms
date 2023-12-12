@@ -1,10 +1,9 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, SelectOrg } from 'src/components';
 import { UNKNOWN } from 'src/utils/base';
 import { onJobTransferStatusList, resignTransferStatusList } from '../DistributeList/Config';
-import { Form } from 'antd';
-import { SelectOrg } from 'src/components';
+
 import classNames from 'classnames';
 
 export const searchCols: (queryType: '1' | '2') => SearchCol[] = (queryType) => {
@@ -21,11 +20,7 @@ export const searchCols: (queryType: '1' | '2') => SearchCol[] = (queryType) => 
       type: 'custom',
       label: '所属客户经理',
       placeholder: '请输入',
-      customNode: (
-        <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-          <SelectOrg key={1} />
-        </Form.Item>
-      )
+      customNode: <SelectOrg />
     },
     {
       name: 'transferStatus',

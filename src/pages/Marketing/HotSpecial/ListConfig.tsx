@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Image, Popconfirm, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol } from 'src/components';
 import classNames from 'classnames';
 import { OperateType } from 'src/utils/interface';
 

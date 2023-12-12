@@ -1,11 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, AuthBtn } from 'src/components';
 import moment from 'moment';
 import { Button, Popconfirm, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { UNKNOWN } from 'src/utils/base';
-import { AuthBtn } from 'src/components';
 
 export const SearchCols: SearchCol[] = [
   {

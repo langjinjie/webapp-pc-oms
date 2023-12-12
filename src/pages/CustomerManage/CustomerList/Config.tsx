@@ -1,8 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
-import { Avatar, Button, Form } from 'antd';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { TagFilterComponent, SelectOrg, AuthBtn } from 'src/components';
+import { Avatar, Button } from 'antd';
+import { SearchCol, TagFilterComponent, AuthBtn, SelectOrg } from 'src/components';
 import { UserOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import { UNKNOWN } from 'src/utils/base';
@@ -48,11 +47,7 @@ export const searchCols: SearchCol[] = [
     type: 'custom',
     width: 100,
     label: '客户标签',
-    customNode: (
-      <Form.Item key={'filterTag'} name="filterTag" label="客户标签">
-        <TagFilterComponent key={1} />
-      </Form.Item>
-    )
+    customNode: <TagFilterComponent />
   },
   {
     type: 'rangePicker',
@@ -64,22 +59,14 @@ export const searchCols: SearchCol[] = [
     type: 'custom',
     label: '所属客户经理',
     placeholder: '请输入',
-    customNode: (
-      <Form.Item key={'staffList'} name="staffList" label="所属客户经理">
-        <SelectOrg key={1} />
-      </Form.Item>
-    )
+    customNode: <SelectOrg />
   },
   {
-    name: 'staffList',
+    name: 'orgDept',
     type: 'custom',
-    label: '',
+    label: '所属客户经理组织架构',
     placeholder: '请输入',
-    customNode: (
-      <Form.Item key={'orgDept'} name="orgDept" label="所属客户经理组织架构">
-        <SelectOrg key={2} type="dept" checkabledDTypeKeys={[2, 3, 4, 5]} />
-      </Form.Item>
-    )
+    customNode: <SelectOrg type="dept" checkabledDTypeKeys={[2, 3, 4, 5]} />
   }
 ];
 

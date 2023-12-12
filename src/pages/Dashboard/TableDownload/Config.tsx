@@ -4,7 +4,7 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { AuthBtn } from 'src/components';
 // import { AuthBtn } from 'src/components';
-// import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+// import { SearchCol } from 'src/components';
 import { UNKNOWN } from 'src/utils/base';
 
 // export const SearchCols: SearchCol[] = [

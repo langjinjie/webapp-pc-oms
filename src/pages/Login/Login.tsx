@@ -39,8 +39,8 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
         history.push('/chooseInst');
         const resInfo: any = (await queryUserInfo()) || {};
         setUserInfo(resInfo);
-        setIsMainCorp(resInfo.isMainCorp === 1);
         setCurrentCorpId(resInfo.corpId);
+        setIsMainCorp(resInfo.isMainCorp === 1);
       }
     }
   };

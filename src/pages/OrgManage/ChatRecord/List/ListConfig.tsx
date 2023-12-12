@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button, Space, Form } from 'antd';
+import { Button, Space } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { AuthBtn, SelectOrg } from 'src/components';
+import { AuthBtn, SelectOrg, SearchCol } from 'src/components';
+
 import { OperateType } from 'src/utils/interface';
 
 export const searchCols: SearchCol[] = [
@@ -27,15 +27,11 @@ export const searchCols: SearchCol[] = [
     width: '160px'
   },
   {
-    name: 'staffName',
+    name: 'staffList',
     type: 'custom',
     width: '160px',
     label: '客户经理',
-    customNode: (
-      <Form.Item key={'staffList'} name="staffList" label="客户经理">
-        <SelectOrg key={1} type="staff" />
-      </Form.Item>
-    )
+    customNode: <SelectOrg type="staff" />
   }
 ];
 

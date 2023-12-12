@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AuthBtn, NgFormSearch, NgTable } from 'src/components';
+import { AuthBtn, NgFormSearch, NgTable, OptionProps } from 'src/components';
 import { setSearchCols, tableColumns } from './Config';
 import { useAsync } from 'src/utils/use-async';
 // import moment from 'moment';
@@ -8,7 +8,6 @@ import { NgModal } from 'src/components/NgModal/NgModal';
 import { useDocumentTitle } from 'src/utils/base';
 import styles from './style.module.less';
 import { Form, Image, Input, InputNumber, message, Modal, PaginationProps } from 'antd';
-import { OptionProps } from 'src/components/SearchComponent/SearchComponent';
 
 const ExclusiveList: React.FC = () => {
   const { isLoading, run } = useAsync();

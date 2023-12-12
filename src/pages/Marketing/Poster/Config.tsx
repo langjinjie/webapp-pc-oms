@@ -2,12 +2,11 @@ import React, { useContext } from 'react';
 import { Button, Image, Popconfirm, Space, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, AuthBtn } from 'src/components';
 import classNames from 'classnames';
 
 import styles from './style.module.less';
 import { Context } from 'src/store';
-import { AuthBtn } from 'src/components';
 
 export const setSearchCols = (options: any[]): SearchCol[] => {
   return [

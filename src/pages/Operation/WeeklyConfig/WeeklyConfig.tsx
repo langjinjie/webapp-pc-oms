@@ -9,10 +9,9 @@ import { Card, Table, PaginationProps, TableColumnType, Button, Modal, message }
 import qs from 'qs';
 import classNames from 'classnames';
 import { setTitle } from 'tenacity-tools';
-import { AuthBtn, Icon, NgFormSearch } from 'src/components';
+import { AuthBtn, Icon, NgFormSearch, SearchCol } from 'src/components';
 import { queryWeeklyList, publishConfig, deleteConfig } from 'src/apis/weekly';
 import style from './style.module.less';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 
 interface SearchParam {
   startTime?: string;

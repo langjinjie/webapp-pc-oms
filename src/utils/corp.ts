@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { getCorpList } from 'src/apis/marketing';
-import { OptionProps } from 'src/components/SearchComponent/SearchComponent';
+import { OptionProps } from 'src/components';
 import { useAsync } from 'src/utils/use-async';
 
 const getCorps = async () => {

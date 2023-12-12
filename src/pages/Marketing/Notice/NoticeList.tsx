@@ -9,10 +9,9 @@ import { Button as AntdBtn, Card, message, Modal, PaginationProps, Table, TableC
 import { setTitle } from 'tenacity-tools';
 import { Icon, Button } from 'tenacity-ui';
 import classNames from 'classnames';
-import { NgFormSearch, AuthBtn } from 'src/components';
+import { NgFormSearch, AuthBtn, SearchCol } from 'src/components';
 import { delNotice, queryNoticeList } from 'src/apis/notice';
 import style from './style.module.less';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
 
 interface SearchParam {
   startTime?: string;

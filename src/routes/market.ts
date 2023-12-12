@@ -16,5 +16,10 @@ export const market: RouteProps[] = [
   {
     path: '/todayMoment/add',
     component: lazy(() => import('src/pages/Marketing/TodayMoment/AddMoment/AddMoment'))
+  },
+  // 机构渠道维护
+  {
+    path: '/channelManage',
+    component: lazy(() => import('src/pages/Marketing/ArticleChannel/ChannelList'))
   }
 ];

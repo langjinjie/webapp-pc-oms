@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import style from './style.module.less';
 
-import FormSearch from 'src/components/SearchComponent/SearchComponent';
+import { NgFormSearch, AuthBtn } from 'src/components';
 import NgTable from 'src/components/TableComponent/OldTableComponent';
 import { setSearchCols, columns, Poster } from './Config';
 import { Button, message, Modal, Space } from 'antd';
@@ -21,7 +21,6 @@ import { Context } from 'src/store';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
 import { useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
-import { AuthBtn } from 'src/components';
 
 interface PostPosterData {
   total: number;
@@ -331,7 +330,7 @@ const ProductList: React.FC<RouteComponentProps> = ({ history }) => {
           </Button>
         </AuthBtn>
         <AuthBtn path="/query">
-          <FormSearch
+          <NgFormSearch
             searchCols={setSearchCols(categoryList)}
             onSearch={handleSearch}
             onValuesChange={(changesValue, values) => {

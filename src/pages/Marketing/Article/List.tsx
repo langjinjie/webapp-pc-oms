@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Button, message, Modal, Space } from 'antd';
-
+import DownActLink from './Components/DownActLink';
 import {
   getNewsList,
   operateArticleStatus,
   updateNewsState,
   getNewsDetail,
   getTagsOrCategorys,
-  setUserRightWithArticle
+  setUserRightWithArticle,
+  requestDownLoadNews
 } from 'src/apis/marketing';
 
 import style from './style.module.less';
@@ -20,7 +21,7 @@ import { setSearchCols, columns, Article, PaginationProps } from './Config';
 import classNames from 'classnames';
 import { PlusOutlined } from '@ant-design/icons';
 import { OnlineModal } from '../Components/OnlineModal/OnlineModal';
-import { useDocumentTitle } from 'src/utils/base';
+import { exportFile, useDocumentTitle } from 'src/utils/base';
 import { SetUserRight } from '../Components/ModalSetUserRight/SetUserRight';
 import dangerousHTMLToSafeHTML from 'src/utils/dangerousHTMLToSafeHTML';
 
@@ -44,6 +45,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
   const [visible, toggleVisible] = useState(false);
   const [htmlStr, setHtmlStr] = useState('');
   const [currentItem, setCurrentItem] = useState<Article | null>();
+  const [downArticleVisible, setDownArticleVisible] = useState<boolean>(false);
 
   // 批量设置权限的状态
   const [selectRows, setSelectRows] = useState<Article[]>();
@@ -317,6 +319,20 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  // 下载文章链接
+  const downArticleOnOk = async (channelId: string) => {
+    const res = await requestDownLoadNews({ channelId, ...queryForm });
+    if (res) {
+      // 获取filename
+      const fileName = decodeURIComponent(res.headers['content-disposition'].split('=')?.[1]);
+      // 获取contentType 它的格式为: application/xlsx;charset=UTF-8
+      const suffix = res.headers['content-type']?.match(/\/(.*?);/)?.[1] || 'xlsx';
+      exportFile(res.data, fileName, suffix);
+      setDownArticleVisible(false);
+      message.success('文章链接下载成功');
+    }
+  };
+
   return (
     <div className={classNames(style.wrap, 'container')}>
       {/* Form 表单查询 start */}
@@ -333,6 +349,13 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
           添加
         </Button>
       </AuthBtn>
+      {isMainCorp && (
+        <AuthBtn path="/download">
+          <Button className="ml20" type="primary" shape="round" onClick={() => setDownArticleVisible(true)}>
+            下载文章链接
+          </Button>
+        </AuthBtn>
+      )}
       <AuthBtn path="/query">
         <div className={'pt20'}>
           <NgFormSearch
@@ -417,6 +440,7 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
         onOk={confirmSetRight}
         onCancel={() => setVisibleSetUserRight(false)}
       />
+      <DownActLink visible={downArticleVisible} onCancel={() => setDownArticleVisible(false)} onOk={downArticleOnOk} />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol } from 'src/components';
 import { UNKNOWN } from 'src/utils/base';
 import { statisticsFreeList } from './Components/ExportStaff/AddStatisticsFreeModal';
 

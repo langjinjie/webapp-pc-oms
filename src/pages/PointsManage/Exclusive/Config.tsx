@@ -1,10 +1,10 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table';
-import { OptionProps, SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { OptionProps, SearchCol, AuthBtn } from 'src/components';
 import { Button, Image, Tooltip } from 'antd';
 import { UNKNOWN } from 'src/utils/base';
 import classNames from 'classnames';
-import { AuthBtn } from 'src/components';
+
 const sendStatusOptions = [
   { id: 0, name: '未发放' },
   { id: 1, name: '已发放' }

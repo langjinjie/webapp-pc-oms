@@ -528,3 +528,75 @@ export const delVideoType: HttpFunction = (param: object) => {
 export const uploadVideo: HttpFunction = (param: object) => {
   return http.post('/tenacity-admin/api/video/upload', param);
 };
+
+// ---------------------------------------------------------------- 文章库渠道列表
+/**
+ * @description 1.1、文章链接下载接口
+ * @param param
+ * @returns
+ */
+export const requestDownLoadNews: HttpFunction<{
+  title?: string; // 否 文章标题
+  categoryId?: string; // 否 分类
+  recommendType?: string; // 否 推荐内容：0-文章/1-活动/2-产品/3-无
+  fromSource?: string; // 否 渠道来源
+  minTime?: string; // 否 创建开始时间
+  maxTime?: string; // 否 创建结束时间
+  syncBank?: string; // 否 状态
+  channelId?: string; // 否 渠道id，空表示公有云文章
+}> = (param) => {
+  return http.post('/tenacity-admin/api/news/download', param, {
+    responseType: 'blob'
+  });
+};
+
+/**
+ * @description 1.2、机构渠道列表接口
+ * @param params
+ * @returns
+ */
+export const requestChannelList: HttpFunction<{
+  channelName?: string; // 否 渠道名称
+  channelCode?: string; // 否 渠道代码
+  pageNum?: number; // 否 第几页，默认第一页
+  pageSize?: number; // 否 分页大小，默认10条
+}> = (params) => {
+  return http.post('/tenacity-admin/api/channel/list', params);
+};
+
+/**
+ * @description 1.3、机构渠道编辑接口
+ * @param params
+ * @returns
+ */
+export const requestEditChannel: HttpFunction<{
+  channelId?: string; // 否 渠道id，编辑时必填
+  channelName: string; // 是 渠道名称
+  channelCode?: string; // 否 渠道代码，不传则后端自动生成
+  articleCnt: number; // 是 文章总访问次数
+}> = (params) => {
+  return http.post('/tenacity-admin/api/channel/edit', params);
+};
+
+/**
+ * @description 1.4、机构渠道添加通知人接口
+ * @param params
+ * @returns
+ */
+export const requestChannelAddNotify: HttpFunction<{
+  channelId: string; // 是 渠道id
+  notifyList: string[]; // 是 通知人企微账号列表
+}> = (params) => {
+  return http.post('/tenacity-admin/api/channel/addnotify', params);
+};
+
+/**
+ * @description 1.5、机构渠道查询通知人接口
+ * @param params
+ * @returns
+ */
+export const requestChannelNotify: HttpFunction<{
+  channelId: string; // 是 渠道id
+}> = (params) => {
+  return http.post('/tenacity-admin/api/channel/notifylist', params);
+};

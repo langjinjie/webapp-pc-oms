@@ -1,7 +1,7 @@
 import React, { Key } from 'react';
 import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol } from 'src/components';
 
 export interface IChatTagItem {
   analyseId: string; // 是 会存解析ID

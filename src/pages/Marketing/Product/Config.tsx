@@ -3,9 +3,8 @@ import { ColumnsType } from 'antd/es/table';
 import { Popconfirm, Space, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import classNames from 'classnames';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { SearchCol, AuthBtn } from 'src/components';
 import { UNKNOWN } from 'src/utils/base';
-import { AuthBtn } from 'src/components';
 
 export interface SearchParamsProps {
   rangePicker: undefined | Moment[];

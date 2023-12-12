@@ -1,10 +1,9 @@
 import React from 'react';
-import { Button, Form } from 'antd';
+import { Button } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
+import { AuthBtn, SelectOrg, SearchCol } from 'src/components';
 import { AuditColumnsProp, auditTypeOptions, onOperateType, statusOptions } from '../AuditList/AuditListConfig';
 import classNames from 'classnames';
-import { AuthBtn, SelectOrg } from 'src/components';
 
 export const searchCols: SearchCol[] = [
   {
@@ -12,11 +11,7 @@ export const searchCols: SearchCol[] = [
     type: 'custom',
     label: '申请人',
     width: '180px',
-    customNode: (
-      <Form.Item key={'applyList'} name="applyList" label="申请人">
-        <SelectOrg key={1} />
-      </Form.Item>
-    )
+    customNode: <SelectOrg />
   },
   {
     name: 'applyType',
@@ -32,11 +27,7 @@ export const searchCols: SearchCol[] = [
     label: '审批人',
     placeholder: '请输入',
     width: '280px',
-    customNode: (
-      <Form.Item key={'curHandlerList'} name="curHandlerList" label="审批人">
-        <SelectOrg key={1} />
-      </Form.Item>
-    )
+    customNode: <SelectOrg key={1} />
   },
   {
     name: 'approvalNo',
