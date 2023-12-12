@@ -18,6 +18,7 @@ interface IAddLotteryListProps extends ModalProps {
   checkStrictly?: boolean; // checkable 状态下节点选择完全受控（父子节点选中状态不再关联）
   singleChoice?: boolean;
   checkabledDTypeKeys?: Key[]; // 允许被选中的部门类型，不传则全部能选中
+  isLeader?: 0 | 1; // 是否只查询领导，0-不是；1-是；默认为空
 }
 
 interface ItreeProps {
@@ -46,6 +47,7 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
   singleChoice,
   checkabledDTypeKeys,
   title,
+  isLeader,
   ...props
 }) => {
   const [treeData, setTreeData] = useState<any[]>([]);
@@ -105,7 +107,8 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
           if (
             ['staff', 'all'].includes(selectedType) &&
             item.isLeaf &&
-            (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId, isDeleted })).list.length
+            (await requestGetDepStaffList({ queryType: 0, deptType: 0, deptId: item.deptId, isDeleted, isLeader })).list
+              .length
           ) {
             // deptId是number类型，需要统一转成跟staffId一样的string类型
             return {
@@ -337,8 +340,6 @@ const OrgTree: React.FC<IAddLotteryListProps> = ({
 
   useEffect(() => {
     if (visible) {
-      console.log(value);
-
       setSelectedList(
         (value || [])
           .map((mapItem) => ({

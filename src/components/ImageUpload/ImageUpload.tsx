@@ -19,6 +19,7 @@ interface ImageUploadProps {
   beforeUpload?: (file: any) => void;
   className?: string;
   uploadBtnStyle?: any;
+  id?: string;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -27,7 +28,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   disabled,
   beforeUpload,
   className,
-  uploadBtnStyle
+  uploadBtnStyle,
+  id
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -125,20 +127,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   return (
-    <Upload
-      accept="image/*"
-      disabled={disabled}
-      listType="picture-card"
-      showUploadList={false}
-      // action="/tenacity-admin/api/file/upload"
-      customRequest={uploadFile}
-      data={{ bizKey: 'news' }}
-      beforeUpload={beforeUploadHandle}
-      onChange={fileChange}
-      className={classNames(style.imageUpload, className)}
-    >
-      {value ? uploadImg : uploadButton}
-    </Upload>
+    <div id={id}>
+      <Upload
+        accept="image/*"
+        disabled={disabled}
+        listType="picture-card"
+        showUploadList={false}
+        // action="/tenacity-admin/api/file/upload"
+        customRequest={uploadFile}
+        data={{ bizKey: 'news' }}
+        beforeUpload={beforeUploadHandle}
+        onChange={fileChange}
+        className={classNames(style.imageUpload, className)}
+      >
+        {value ? uploadImg : uploadButton}
+      </Upload>
+    </div>
   );
 };
 

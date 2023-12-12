@@ -15,6 +15,7 @@ interface ISelectStaffProps {
   disabled?: boolean;
   checkabledDTypeKeys?: Key[];
   isDeleted?: 0 | 1; // 0不包含离职 1-包含离职
+  isLeader?: 0 | 1; // 是否只查询领导，0-不是；1-是；默认为空
 }
 
 const SelectOrg: React.FC<ISelectStaffProps> = ({
@@ -25,7 +26,8 @@ const SelectOrg: React.FC<ISelectStaffProps> = ({
   singleChoice,
   disabled,
   checkabledDTypeKeys,
-  isDeleted = 0
+  isDeleted = 0,
+  isLeader
 }) => {
   const [visible, setVisible] = useState(false);
 
@@ -71,6 +73,7 @@ const SelectOrg: React.FC<ISelectStaffProps> = ({
         singleChoice={singleChoice}
         checkabledDTypeKeys={checkabledDTypeKeys}
         isDeleted={isDeleted}
+        isLeader={isLeader}
       />
     </>
   );
