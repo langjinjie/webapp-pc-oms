@@ -27,7 +27,7 @@ const DownActLink: React.FC<IDownArticleLinkProps> = ({ title, visible, onCancel
     if (res) {
       const { list, total } = res;
       setList(list || []);
-      setPagination((pagination) => ({ ...pagination, total }));
+      setPagination((pagination) => ({ ...pagination, current: pageNum, total }));
     }
   };
 
@@ -69,7 +69,7 @@ const DownActLink: React.FC<IDownArticleLinkProps> = ({ title, visible, onCancel
         <Item name="channelId">
           <Radio.Group>
             <Space direction="vertical">
-              <Radio value="">公有云文章</Radio>
+              {pagination.current === 1 && <Radio value="">公有云文章</Radio>}
               {list.map(({ channelId, channelName }) => (
                 <Radio key={channelId} value={channelId}>
                   {channelName}
