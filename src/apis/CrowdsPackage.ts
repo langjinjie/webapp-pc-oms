@@ -92,4 +92,17 @@ export const getAttrConfigOptions: HttpFunction = (param) => {
   return http.post('/tenacity-admin/api/tag/package/attr/config', param);
 };
 
-//
+// 导入Excel文件
+export const exportExcel: HttpFunction = (param) => {
+  return http.post('/tenacity-admin/api/file/upload', param, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 100000
+  });
+};
+
+// 人群包文件删除接口
+export const requestGetDelPackageExcel: HttpFunction<{
+  packageId: string; //  是 人群包id，仅支持手工导入文件类型的人群包
+}> = (param) => {
+  return http.post('/tenacity-admin/api/tag/package/delFile', param);
+};

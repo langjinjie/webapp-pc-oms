@@ -1,19 +1,12 @@
-import React, { useState } from 'react';
-import { Button, message, Modal, Popconfirm } from 'antd';
+import React from 'react';
+import { Button, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { SearchCol } from 'src/components/SearchComponent/SearchComponent';
-import { useHistory } from 'react-router';
-import {
-  requestManagePackageRun,
-  requestExportPackage,
-  requestGetDelPackage,
-  requestGetPackageCompute
-} from 'src/apis/CrowdsPackage';
 import classNames from 'classnames';
 import { UNKNOWN } from 'src/utils/base';
 import { AuthBtn } from 'src/components';
 
-interface ICrowdsPackageRow {
+export interface ICrowdsPackageRow {
   packageId: string; // 是 分群ID
   packageName: string; // 是 分群名称
   computeStatus: number; // 是 计算状态（1-计算中、2-计算成功、3-计算失败）
@@ -25,6 +18,7 @@ interface ICrowdsPackageRow {
   clientNum: number; // 否 客户数量
   staffNum: number; // 否 对应坐席数量
   updateTime: string; // 否 更新时间
+  packageType: number; // 分群类型，1-标签属性；2-人员属性；3-手工导入文件
 }
 
 const statusOptions = [
@@ -95,70 +89,26 @@ interface VideoColumn {
   [prop: string]: any;
 }
 
-export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsType<VideoColumn> => {
-  const [btnLoadingPackageId, setBtnLoadingPackageId] = useState<{
+type TTableColumnsFun = (param: {
+  btnLoadingPackageId: {
     export: string; // 导出按钮
     compute: string; // 计算按钮
-  }>({ export: '', compute: '' });
+  };
+  viewDetail: (row: ICrowdsPackageRow) => void;
+  manageHandle: (row: ICrowdsPackageRow) => void;
+  deleteHandle: (row: ICrowdsPackageRow) => void;
+  computeHandle: (row: ICrowdsPackageRow) => void;
+  exportGroup: (row: ICrowdsPackageRow) => void;
+}) => ColumnsType<VideoColumn>;
 
-  const history = useHistory();
-
-  // 导出人群包
-  const exportGroup = async (row: ICrowdsPackageRow) => {
-    setBtnLoadingPackageId((param) => ({ ...param, export: row.packageId }));
-    const { packageId, computeRecordId } = row;
-    const res = await requestExportPackage({ packageId, computeRecordId });
-    if (res) {
-      Modal.confirm({
-        title: '操作提示',
-        centered: true,
-        content: '人群包导出成功，是否跳转到人群包下载列表？',
-        onOk () {
-          history.push('/tagPackage/download', {
-            navList: [{ name: '标签分群', path: '/tagPackage' }, { name: '查看人群包下载列表' }]
-          });
-        }
-      });
-    }
-    setBtnLoadingPackageId((param) => ({ ...param, export: '' }));
-  };
-  // 查看分群详情
-  const viewDetail = (row: ICrowdsPackageRow) => {
-    history.push('/tagPackage/detail?packageId=' + row.packageId);
-  };
-  // 开启/暂停 status： 1-开启；2-暂停
-  const manageHandle = async (row: ICrowdsPackageRow) => {
-    setBtnLoadingPackageId((param) => ({ ...param, manage: row.packageId }));
-    const { packageId, runStatus } = row;
-    const res = await requestManagePackageRun({ packageId, status: runStatus === 1 ? 2 : 1 });
-    if (res) {
-      message.success(`人群包${runStatus === 1 ? '暂停' : '开启'}成功`);
-      getList();
-    } else {
-      message.error(`人群包${runStatus === 1 ? '暂停' : '开启'}失败`);
-    }
-    setBtnLoadingPackageId((param) => ({ ...param, manage: '' }));
-  };
-  // 删除人群包
-  const deleteHandle = async (row: ICrowdsPackageRow) => {
-    const { packageId } = row;
-    const res = await requestGetDelPackage({ list: [{ packageId }] });
-    if (res) {
-      message.success('人群包删除成功');
-      getList();
-    }
-  };
-  // 计算人群包
-  const computeHandle = async (row: ICrowdsPackageRow) => {
-    setBtnLoadingPackageId((param) => ({ ...param, compute: row.packageId }));
-    const { packageId } = row;
-    const res = await requestGetPackageCompute({ packageId });
-    if (res) {
-      message.success('计算成功');
-      getList();
-    }
-    setBtnLoadingPackageId((param) => ({ ...param, compute: '' }));
-  };
+export const tableColumnsFun: TTableColumnsFun = ({
+  btnLoadingPackageId,
+  viewDetail,
+  manageHandle,
+  deleteHandle,
+  computeHandle,
+  exportGroup
+}) => {
   return [
     {
       key: 'packageId',
@@ -279,7 +229,8 @@ export const tableColumnsFun = ({ getList }: { getList: () => void }): ColumnsTy
                 <Button
                   type="link"
                   loading={btnLoadingPackageId.compute === record.packageId}
-                  disabled={record.computeStatus === 1}
+                  // 手工导入文件的人群包不支持点击计算
+                  disabled={record.packageType === 3 || record.computeStatus === 1}
                   onClick={() => computeHandle(record)}
                 >
                   点击计算
