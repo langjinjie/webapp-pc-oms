@@ -32,3 +32,5 @@ export { default as OrgTree } from 'src/components/OrgTree/OrgTree';
 export { default as TagFilterComponent, type ITagFilterValue } from './TagFilterComponent/TagFilterComponent';
 export { default as TagFilterModal } from './TagFilterComponent/TagFilterModal';
 export { default as SelectOrg } from './SelectOrg/SelectOrg';
+export { default as OrgTreeSelect } from './OrgTreeSelect/OrgTreeSelect';
+export { default as SetGroupChat } from './SetGroupChat/SetGroupChat';

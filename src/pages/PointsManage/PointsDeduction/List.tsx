@@ -65,8 +65,8 @@ const PointsDeduction: React.FC<RouteComponentProps> = ({ history }) => {
   const rowSelection = {
     hideSelectAll: false,
     selectedRowKeys: selectedRowKeys,
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DeductProps[]) => {
-      onSelectChange(selectedRowKeys, selectedRows);
+    onChange: (selectedRowKeys: React.Key[]) => {
+      onSelectChange(selectedRowKeys);
     },
     getCheckboxProps: (record: DeductProps) => {
       return {

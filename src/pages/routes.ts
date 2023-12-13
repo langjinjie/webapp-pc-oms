@@ -17,6 +17,7 @@ import { market } from 'src/routes/market';
 import { tagManage } from 'src/routes/tagManage';
 import { group } from 'src/routes/group';
 import { publicManage } from 'src/routes/publicManage';
+import { marketActivityRoutes } from 'src/routes/marketActivity';
 
 export interface Menu {
   name: string;
@@ -511,7 +512,9 @@ export const routes: RouteProps[] = [
   ...market,
   ...tagManage,
   // 社群管理
-  ...group
+  ...group,
+  // 问答活动&打卡活动
+  ...marketActivityRoutes
 ];
 
 // 缓存路由

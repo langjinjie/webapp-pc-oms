@@ -6,6 +6,7 @@ import style from './style.module.less';
 import { Icon } from 'src/components';
 import { IPagination } from 'src/utils/interface';
 import classNames from 'classnames';
+import { UNKNOWN } from 'src/utils/base';
 
 interface IGroupChat {
   chatId: string; // 是 客户群id
@@ -17,9 +18,10 @@ interface IGroupChat {
 interface IChooseMomentProps {
   value?: IGroupChat;
   onChange?: (value?: any) => void;
+  className?: string;
 }
 
-const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
+const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange, className }) => {
   const [groupChatListVisible, setGroupChatListVisible] = useState(false);
   const [groupChatList, setGroupChatList] = useState<IGroupChat[]>([]);
   const [pagination, setPagination] = useState<IPagination>({ current: 1, pageSize: 10, total: 0 });
@@ -97,9 +99,9 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
     }
   }, [groupChatListVisible]);
   return (
-    <div>
-      <div className={style.chooseChat}>
-        <div className={style.name}>{value?.chatName}</div>
+    <>
+      <div className={classNames(style.chooseChat, className)}>
+        <div className={style.name}>{value && (value?.chatName || UNKNOWN)}</div>
         <Button icon={<PlusOutlined />} className={style.btn} onClick={() => setGroupChatListVisible(true)}>
           选择客户群
         </Button>
@@ -155,7 +157,7 @@ const ChooseMoment: React.FC<IChooseMomentProps> = ({ value, onChange }) => {
         </Form>
         <Pagination size="small" {...pagination} onChange={paginationChange} showSizeChanger={false} />
       </Modal>
-    </div>
+    </>
   );
 };
 
