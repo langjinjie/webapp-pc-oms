@@ -17,9 +17,13 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin'); // 简单打包进度百分比
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin'); // css压缩
 const TerserWebpackPlugin = require('terser-webpack-plugin'); // js压缩
-const webpackConfig = require('./webpack.config');
+const webpackConfig = require('./webpack.base');
 const CompressionPlugin = require('compression-webpack-plugin');
 const webpack = require('webpack');
+const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path');
+const commonConfig = require('./common');
 
 const buildConfig = {
   // devtool: 'source-map',
@@ -36,6 +40,20 @@ const buildConfig = {
     new webpack.IgnorePlugin({
       contextRegExp: /^.\/locale$/,
       resourceRegExp: /moment$/
+    }),
+    new MiniCssExtractPlugin({
+      filename: commonConfig.time + '/css/[name].[chunkhash:8].css',
+      chunkFilename: commonConfig.time + '/css/[id].[chunkhash:8].css',
+      ignoreOrder: true
+    }),
+    new CopyPlugin({
+      patterns: [
+        // Copy glob results (with dot files) to /absolute/path/
+        {
+          from: path.resolve(commonConfig.ROOT_PATH, './static/'),
+          to: path.resolve(commonConfig.ROOT_PATH, './dist/' + commonConfig.time + '/static')
+        }
+      ]
     })
   ],
   performance: {

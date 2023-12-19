@@ -15,7 +15,7 @@ process.on('unhandledRejection', (err) => {
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const { merge } = require('webpack-merge');
-const webpackConfig = require('./webpack.config');
+const webpackConfig = require('./webpack.base');
 
 const PORT = parseInt(process.env.PORT, 10) || 8060;
 const HOST = process.env.HOST || 'localhost';

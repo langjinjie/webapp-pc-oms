@@ -4,9 +4,9 @@
   "description": "app of tenacity",
   "main": "index.js",
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "cross-env NODE_ENV=production webpack --config ./scripts/build.js --env prod",
-    "build:test": "cross-env NODE_ENV=production webpack --config ./scripts/build.js --env test",
+    "start": "node scripts/webpack.dev.config.js  --progress --watch --colors --profile",
+    "build": "cross-env NODE_ENV=production webpack --config ./scripts/webpack.prod.config.js --env prod",
+    "build:test": "cross-env NODE_ENV=production webpack --config ./scripts/webpack.prod.config.js --env test",
     "analyzer": "cross-env NODE_ENV=production webpack --config ./scripts/build-analyzer.js --env prod",
     "lint": "eslint --fix --ext .js,.jsx,.ts,.tsx src/"
   },
