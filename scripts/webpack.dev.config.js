@@ -1,19 +1,7 @@
-/**
- * @name start
- * @author Lester
- * @date 2021-05-11 10:31
- */
-'use strict';
-
-process.env.NODE_ENV = 'development';
-
-// 当Promise 被 reject 且没有 reject 处理器的时候，会触发 unhandledrejection 事件
-process.on('unhandledRejection', (err) => {
-  throw err;
-});
-
+const portfinder = require('portfinder');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const { merge } = require('webpack-merge');
 const webpackConfig = require('./webpack.base');
 
@@ -22,8 +10,14 @@ const HOST = process.env.HOST || 'localhost';
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 
 const startConfig = {
-  devtool: 'source-map',
-  target: 'web'
+  devtool: 'eval-cheap-module-source-map',
+  target: 'web',
+  plugins: [
+    new ReactRefreshWebpackPlugin() // 添加热更新插件
+  ],
+  watchOptions: {
+    ignored: /node_modules/ // 最小化 watch 监控范围
+  }
 };
 
 const compiler = webpack(merge(webpackConfig(), startConfig));
@@ -45,22 +39,26 @@ const devServerOptions = {
     {
       context: ['/api', '/tenacity-admin', '/res'],
       target: 'https://dev.tenacity.com.cn',
-      // target: 'http://172.30.15.141:7060',
-      // target: 'https://piccgz.tenacity.com.cn/',
-      // pathRewrite: {
-      //   '^/tenacity-admin': '/tenacity/tenacity-admin'
-      // },
+      // target: 'http://192.168.31.178:7060',
+      // target: 'http://10.2.10.43:8080',
       secure: false,
       changeOrigin: true
     }
   ]
 };
-
-const server = new WebpackDevServer(compiler, devServerOptions);
-
-server.listen(PORT, HOST, (err) => {
-  if (err) {
-    return console.log(err);
-  }
-  console.log(`Starting sever on ${protocol}://${HOST}:${PORT}`);
-});
+portfinder.basePort = PORT;
+portfinder
+  .getPortPromise()
+  .then((port) => {
+    devServerOptions.port = port;
+    const server = new WebpackDevServer(compiler, devServerOptions);
+    server.listen(port, HOST, (err) => {
+      if (err) {
+        return console.log(err);
+      }
+      console.log(`Starting sever on ${protocol}://${HOST}:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
