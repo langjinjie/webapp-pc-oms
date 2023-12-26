@@ -75,6 +75,7 @@ const StrategyTaskEdit: React.FC<RouteComponentProps> = ({ location, history }) 
               }));
             }
             rule.pushTime = moment(rule.pushTime)?.format('HH:mm') || '';
+            rule.speechcraft = rule.speechcraft || ''; // 话术改为支持不填写，接口不做修改；前端传空字符串进去
             return rule;
           });
           return scene;
