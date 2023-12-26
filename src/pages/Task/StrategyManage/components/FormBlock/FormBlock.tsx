@@ -442,7 +442,7 @@ const FormBlock: React.FC<FormBlockProps> = ({ value, hideAdd, isCorp, isReadonl
 
                                     <Form.Item
                                       name={[nodeName, 'speechcraft']}
-                                      rules={[{ required: true, message: '请输入自定义话术' }]}
+                                      rules={[{ message: '请输入自定义话术' }]}
                                       className={styles.speechCol}
                                     >
                                       <ManuallyAddSpeech isReadonly={isReadonly} />
