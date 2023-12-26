@@ -349,13 +349,13 @@ const ArticleList: React.FC<RouteComponentProps> = ({ history }) => {
           添加
         </Button>
       </AuthBtn>
-      {isMainCorp && (
-        <AuthBtn path="/download">
-          <Button className="ml20" type="primary" shape="round" onClick={() => setDownArticleVisible(true)}>
-            下载文章链接
-          </Button>
-        </AuthBtn>
-      )}
+      {/* {isMainCorp && ( */}
+      <AuthBtn path="/download">
+        <Button className="ml20" type="primary" shape="round" onClick={() => setDownArticleVisible(true)}>
+          下载文章链接
+        </Button>
+      </AuthBtn>
+      {/* )} */}
       <AuthBtn path="/query">
         <div className={'pt20'}>
           <NgFormSearch
