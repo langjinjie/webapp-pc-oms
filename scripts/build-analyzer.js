@@ -20,10 +20,13 @@ const TerserWebpackPlugin = require('terser-webpack-plugin'); // js压缩
 const webpackConfig = require('./webpack.config');
 const CompressionPlugin = require('compression-webpack-plugin');
 const webpack = require('webpack');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const buildConfig = {
   // devtool: 'source-map',
   plugins: [
+    // 打包体积分析
+    new BundleAnalyzerPlugin(),
     new CleanWebpackPlugin(),
     new SimpleProgressWebpackPlugin(),
     new CompressionPlugin({

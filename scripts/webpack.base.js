@@ -6,16 +6,16 @@
 
 const path = require('path');
 const HtmlPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const DotEnvWebpack = require('dotenv-webpack');
-const CopyPlugin = require('copy-webpack-plugin');
+const commonConfig = require('./common');
+
 const webpack = require('webpack');
 const threadLoader = require('thread-loader');
 
 const NODE_ENV = process.env.NODE_ENV;
 
 const isDev = NODE_ENV === 'development';
-
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const argv = require('yargs').argv;
 
 // 环境变量配置
@@ -77,25 +77,14 @@ const jsWorkerPool = {
 threadLoader.warmup(jsWorkerPool, ['babel-loader']);
 
 module.exports = function () {
-  const ROOT_PATH = path.resolve(__dirname, '../');
-
-  const fix = (num, length) => {
-    return ('' + num).length < length ? (new Array(length + 1).join('0') + num).slice(-length) : '' + num;
-  };
-  const date = new Date();
-  const time = `${date.getFullYear()}${fix(date.getMonth() + 1, 2)}${fix(date.getDate(), 2)}${fix(
-    date.getHours(),
-    2
-  )}${fix(date.getMinutes(), 2)}${fix(date.getSeconds(), 2)}`;
-
   return {
     // noParse: /jquery|lodash/, // noParse 配置的意思是让 webpack 忽略没有模块化的文件
     entry: {
-      main: path.resolve(ROOT_PATH, './src/index.tsx')
+      main: path.resolve(commonConfig.ROOT_PATH, './src/index.tsx')
     },
     output: {
-      path: path.resolve(ROOT_PATH, './dist'),
-      filename: time + '/js/[name].[chunkhash:8].bundle.js',
+      path: path.resolve(commonConfig.ROOT_PATH, './dist'),
+      filename: commonConfig.time + '/js/[name].[chunkhash:8].bundle.js',
       publicPath: isDev ? '/' : '/tenacity-oms/'
       // publicPath: isDev ? '/' : './'
     },
@@ -149,30 +138,19 @@ module.exports = function () {
           ]
         },
         {
-          test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ico$/],
-          loader: 'url-loader',
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
           exclude: /node_modules/,
-          options: {
-            esModule: false,
-            limit: 10000,
-            name: time + '/images/[name].[contenthash:8].[ext]'
-          }
-        },
-        {
-          test: /\.(woff|svg|eot|ttf)\??.*$/,
-          loader: 'url-loader',
-          exclude: /node_modules/,
-          options: {
-            limit: 10000,
-            name: time + '/font/[name].[contenthash:8].[ext]'
+          type: 'asset/resource',
+          generator: {
+            outputPath: commonConfig.time + '/images'
           }
         }
       ]
     },
     resolve: {
       alias: {
-        src: path.resolve(ROOT_PATH, './src'),
-        '@': path.resolve(ROOT_PATH, './src')
+        src: path.resolve(commonConfig.ROOT_PATH, './src'),
+        '@': path.resolve(commonConfig.ROOT_PATH, './src')
       },
       extensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.less', '.css']
     },
@@ -180,32 +158,20 @@ module.exports = function () {
       new DotEnvWebpack({
         path: envConfig[argv.env || 'local']
       }),
-      new CopyPlugin({
-        patterns: [
-          // Copy glob results (with dot files) to /absolute/path/
-          {
-            from: path.resolve(ROOT_PATH, './static/'),
-            to: path.resolve(ROOT_PATH, './dist/' + time + '/static')
-          }
-        ]
-      }),
+
       new HtmlPlugin({
-        template: path.resolve(ROOT_PATH, './public/index.html'),
-        favicon: path.resolve(ROOT_PATH, './public/favicon.ico'),
-        projectPath: process.env.NODE_ENV === 'production' ? '/tenacity-oms/' + time : '',
+        template: path.resolve(commonConfig.ROOT_PATH, './public/index.html'),
+        favicon: path.resolve(commonConfig.ROOT_PATH, './public/favicon.ico'),
+        projectPath: process.env.NODE_ENV === 'production' ? '/tenacity-oms/' + commonConfig.time : '',
         // html压缩
         minify: {
           collapseWhitespace: true,
           preserveLineBreaks: true
         }
       }),
-      new MiniCssExtractPlugin({
-        filename: isDev ? time + '/css/[name][hash:8].css' : time + '/css/[name].[chunkhash:8].css',
-        chunkFilename: isDev ? time + '/css/[id][hash:8].css' : time + '/css/[id].[chunkhash:8].css',
-        ignoreOrder: true
-      }),
+
       new webpack.DefinePlugin({
-        'process.env.BASE_PATH': time,
+        'process.env.BASE_PATH': commonConfig.time,
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
       })
     ]
