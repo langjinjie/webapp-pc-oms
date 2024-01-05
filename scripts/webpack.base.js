@@ -140,10 +140,10 @@ module.exports = function () {
         {
           test: /\.(png|svg|jpg|jpeg|gif)$/i,
           exclude: /node_modules/,
-          type: 'asset/resource',
-          generator: {
-            outputPath: commonConfig.time + '/images'
-          }
+          type: 'asset/resource'
+          // generator: {
+          //   outputPath: commonConfig.time + '/images'
+          // }
         }
       ]
     },
