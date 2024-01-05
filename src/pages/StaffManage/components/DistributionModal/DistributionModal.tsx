@@ -300,7 +300,10 @@ const DistributionModal: React.FC<IDistributionClientProos> = ({
                         })}
                         onClick={() => clickSearchList(item)}
                       >
-                        <div className={style.name}>{item.name}</div>
+                        <div
+                          className={style.name}
+                          title={`${item.name}${item.userId ? ' ' + item.userId + ' ' + item.deptName : ''}`}
+                        >{`${item.name}${item.userId ? ' ' + item.userId + ' ' + item.deptName : ''}`}</div>
                       </div>
                         ))
                       )
