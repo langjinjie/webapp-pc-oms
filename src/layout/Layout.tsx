@@ -5,9 +5,8 @@
  */
 
 import React, { useState, useEffect, useContext, Suspense } from 'react';
-import { Redirect, Route, withRouter, RouteProps, RouteComponentProps, NavLink } from 'react-router-dom';
+import { Redirect, Route, withRouter, RouteProps, RouteComponentProps } from 'react-router-dom';
 import CacheRoute, { CacheRouteProps, CacheSwitch } from 'react-router-cache-route';
-import classNames from 'classnames';
 import { Icon, ConfirmModal } from 'src/components';
 import { Context } from 'src/store';
 import { routes, cacheRoutes, noVerRoutes } from 'src/pages/routes';
@@ -15,7 +14,7 @@ import { queryUserInfo, queryMenuList, requestGetMstatus } from 'src/apis';
 import { MenuItem } from 'src/utils/interface';
 import Header from './Header';
 import './style.less';
-import { Layout, message, Menu, MenuProps } from 'antd';
+import { Layout, Menu, MenuProps } from 'antd';
 import { TOKEN_KEY } from 'src/utils/config';
 import Update from 'src/pages/Update/Update';
 
@@ -39,8 +38,6 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
   const { setUserInfo, setIsMainCorp, setCurrentCorpId, menuList, setMenuList, setBtnList, setBeforePath } =
     useContext(Context);
   const [isCollapse] = useState<boolean>(false);
-  const [subMenus, setSubMenus] = useState<MenuItem[]>([]);
-  const [menuIndex, setMenuIndex] = useState<number | null>(null);
   const [loaded, setLoaded] = useState<boolean>(false);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [siderMenuList, setSiderMenuList] = useState<SiderMenuItem[]>([]);
@@ -58,8 +55,6 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
     );
     if (currentMenuIndex > -1) {
       const subMenus = menus[currentMenuIndex].children || [];
-      setMenuIndex(currentMenuIndex);
-      setSubMenus(subMenus);
 
       // 根据路径来判断当前页面的按钮
       const currentIndex = subMenus.findIndex((subMenu: MenuItem) => subMenu.path.includes(currentMenu));
@@ -195,7 +190,7 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
       {updating || (
         <Layout className="layout">
           <Layout.Header style={{ position: 'fixed', zIndex: 1000, width: '100%' }}>
-            <Header setMenuIndex={setMenuIndex} setSubMenus={setSubMenus} />
+            <Header />
           </Layout.Header>
           <Layout.Sider
             trigger={null}
@@ -213,65 +208,7 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
               selectedKeys={selectedKeys}
               onClick={onMenuClick}
               onOpenChange={onOpenChange}
-            ></Menu>
-            {false && (
-              <ul className="menu-list">
-                {menuList.map((menu: MenuItem, index: number) => (
-                  <li
-                    className={classNames('menu-item', {
-                      'menu-active': menuIndex === index
-                    })}
-                    key={menu.menuId}
-                    onClick={() => {
-                      if (menu.children && menu.children.length > 0) {
-                        const path = ((menu.children || [])[0] || {}).path;
-                        if (path.indexOf('http') > -1) {
-                          window.open(path, '_blank');
-                          return false;
-                        }
-                        setMenuIndex(index);
-                        history.push(((menu.children || [])[0] || {}).path);
-                      } else {
-                        message.warn('无子级菜单，请联系管理员');
-                      }
-                    }}
-                  >
-                    <Icon className="menu-icon" name={menu.menuIcon!} />
-                    <span className="menu-name">{menu.menuName}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {false && (
-              <ul style={{ display: isCollapse ? 'none' : 'block' }} className="sub-menu-list">
-                {subMenus.map((subMenu: MenuItem) => {
-                  return (
-                    subMenu?.path && (
-                      <li key={subMenu.menuId}>
-                        {subMenu?.path.indexOf('http') > -1
-                          ? (
-                          <a
-                            target={'_blank'}
-                            className="sub-menu-item"
-                            href={subMenu?.path as string}
-                            rel="noreferrer"
-                          >
-                            {subMenu.menuName}
-                          </a>
-                            )
-                          : (
-                          <NavLink to={subMenu?.path} activeClassName={'sub-menu-active'} className="sub-menu-item">
-                            {subMenu.menuName}
-                          </NavLink>
-                            )}
-                        ||{' '}
-                      </li>
-                    )
-                  );
-                })}
-              </ul>
-            )}
+            />
           </Layout.Sider>
           <Layout style={{ marginTop: 80, background: '#fff' }}>
             <Layout.Content>

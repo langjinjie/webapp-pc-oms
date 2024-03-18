@@ -12,12 +12,7 @@ import { InstItem } from 'src/utils/interface';
 import './style.less';
 import { TOKEN_KEY } from 'src/utils/config';
 
-interface IIndexProps {
-  setMenuIndex: (param: any) => void;
-  setSubMenus: (param: any) => void;
-}
-
-const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
+const Header: React.FC = () => {
   const { userInfo, instList, setInstList } = useContext(Context);
   const [changeVisible, setChangeVisible] = useState<boolean>(false);
 
@@ -74,8 +69,6 @@ const Header: React.FC<IIndexProps> = ({ setMenuIndex, setSubMenus }) => {
           alt=""
           onClick={() => {
             history.push('/index');
-            setMenuIndex(null);
-            setSubMenus([]);
           }}
         />
         {envName && <span>({envName})</span>}
