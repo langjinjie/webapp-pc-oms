@@ -14,7 +14,7 @@ import { queryUserInfo, queryMenuList, requestGetMstatus } from 'src/apis';
 import { MenuItem } from 'src/utils/interface';
 import Header from './Header';
 import './style.less';
-import { Layout, Menu, MenuProps } from 'antd';
+import { Layout, Menu, MenuProps, Space, Switch } from 'antd';
 import { TOKEN_KEY } from 'src/utils/config';
 import Update from 'src/pages/Update/Update';
 
@@ -187,6 +187,16 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
 
   return (
     <>
+      <Space style={{ height: 60, padding: '0 20px', position: 'fixed', zIndex: 999999 }}>
+        切换主题
+        <Switch
+          onChange={(checked) => {
+            const htmlEl = document.documentElement;
+            htmlEl.setAttribute('data-theme', checked ? 'dark' : 'light');
+            htmlEl.setAttribute('style', `color-scheme: ${checked ? 'dark' : 'light'};`);
+          }}
+        />
+      </Space>
       {updating || (
         <Layout className="layout">
           <Layout.Header style={{ position: 'fixed', zIndex: 1000, width: '100%' }}>
@@ -210,7 +220,7 @@ const MyLayout: React.FC<RouteComponentProps> = ({ history, location }) => {
               onOpenChange={onOpenChange}
             />
           </Layout.Sider>
-          <Layout style={{ marginTop: 80, background: '#fff' }}>
+          <Layout style={{ marginTop: 80, background: '#fff', width: 'auto' }}>
             <Layout.Content>
               <div>{renderRoute()}</div>
             </Layout.Content>

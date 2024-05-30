@@ -14,6 +14,7 @@ import 'moment/locale/zh-cn';
 import App from './App';
 import './index.less';
 import './antd.less';
+import './theme/antd.less';
 
 ReactDom.render(
   <ConfigProvider locale={locale}>

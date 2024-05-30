@@ -1,0 +1,20 @@
+@import './variable.less';
+
+html[data-theme='dark'] {
+  @import (less) './dark.less';
+}
+
+html[data-theme='dark'],
+html[data-theme='default'] {
+  .ant-btn {
+    font-size: var(--font-size-lg);
+
+    &-lg {
+      font-size: 18px;
+    }
+
+    &-sm {
+      font-size: var(--font-size-base);
+    }
+  }
+}
