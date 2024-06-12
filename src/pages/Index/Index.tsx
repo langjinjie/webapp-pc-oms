@@ -33,7 +33,7 @@ const Index: React.FC = () => {
     }, 0);
   };
 
-  useDocumentTitle('内部运营系统');
+  useDocumentTitle('内部运营系统11');
   const { userInfo } = useContext(Context);
   return (
     <div className={style.wrap}>
